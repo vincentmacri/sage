@@ -24,9 +24,59 @@ def process_docstring_aliases(app, what, name, obj, options, docstringlines):
     """
     Change the docstrings for aliases to point to the original object.
     """
-    basename = name.rpartition('.')[2]
-    if hasattr(obj, '__name__') and obj.__name__ != basename:
-        docstringlines[:] = ['See :obj:`%s`.' % name]
+    #if what == 'module' or (hasattr(obj, '__name__') and obj.__name__.startswith('_')):
+    #    # Alias detection doesn't work or make sense for modules
+    #    # Do not change docstring if it is aliased to a private function
+    #    return None
+    if what not in ('function', 'method'):
+        # Alias detection doesn't make sense for modules
+        # Alias handling is implemented for classes in:
+        # src/sage_docbuild/ext/sage_autodoc.py
+
+        # Since sage_autodoc is supposed to be replaced (issue #30893)
+        # we implement function/method alias handling here.
+        return None
+    
+    input_id = hash(str([app, what, name, obj, options, docstringlines]))
+
+    lines = []
+    lines.append(f'{input_id} {"=" * 30} start process_docstring_aliases {"=" * 30}')
+    lines.append(f'app: {app}')
+    lines.append(f'what: {what}')
+    lines.append(f'name: {name}')
+    lines.append(f'obj: {obj}')
+
+    obj_name = name.rpartition('.')[2]
+
+    if hasattr(obj, '__name__'):
+        original_name = obj.__name__
+
+        if obj_name == original_name or original_name.startswith('_'):
+            # If names match this is not an alias.
+
+            # If original name starts with '_' then this is an alias
+            # of a private function/method and so we keep the docstring.
+            return None
+
+        if what == 'method':
+            lines.append('ALIAS REPLACED')
+            docstringlines[:] = [f'alias of :meth:`{original_name}`.']
+        else:
+            if original_name == '<lambda>':
+                # Function is a lambda expression,
+                # which has no documentation to link to.
+                return None
+            else:
+                lines.append('ALIAS REPLACED')
+                docstringlines[:] = [f'alias of :func:`{original_name}`.']
+    else:
+        # Function is assigned to something with no __name__
+        # This usually happens with factory function, which should have their
+        # own docstring anyway.
+        return None
+
+    lines.append(f'{"=" * 30} end process_docstring_aliases {"=" * 30}')
+    print(f'\n {input_id} '.join(lines))
 
 
 def process_directives(app, what, name, obj, options, docstringlines):
@@ -164,4 +214,5 @@ def setup(app):
     app.connect('autodoc-process-docstring', process_dollars)
     app.connect('autodoc-process-docstring', process_inherited)
     app.connect('autodoc-process-docstring', skip_TESTS_block)
+
     app.add_transform(SagemathTransform)
