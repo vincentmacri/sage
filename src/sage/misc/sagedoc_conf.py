@@ -36,7 +36,7 @@ def process_docstring_aliases(app, what, name, obj, options, docstringlines):
         # Since sage_autodoc is supposed to be replaced (issue #30893)
         # we implement function/method alias handling here.
         return None
-    
+
     input_id = hash(str([app, what, name, obj, options, docstringlines]))
 
     lines = []
