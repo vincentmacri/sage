@@ -28,8 +28,6 @@ env:
 jobs:
   doc-html:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
