@@ -21,9 +21,6 @@ cdef class Matrix(sage.structure.element.Matrix):
     cdef public object _base_ring
     cdef bint _is_immutable
 
-    cpdef long ncols(self) noexcept
-    cpdef long nrows(self) noexcept
-
     cpdef _add_(self, other)
     cpdef _sub_(self, other)
 
