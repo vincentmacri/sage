@@ -1,0 +1,657 @@
+ninja: Entering directory `/home/vince/Documents/git/sage/build/cp312'
+[1/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/libs/eclib/mat.pyx
+[2/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/algebras/quatalg/quaternion_algebra_cython.pyx
+[3/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/combinat/posets/hasse_cython_flint.pyx
+[4/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/algebras/finite_dimensional_algebras/finite_dimensional_algebra_element.pyx
+[5/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/integral_points_generic_dense.pyx
+[6/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/coding/ag_code_decoders.pyx
+[7/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/palp_normal_form.pyx
+[8/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/crypto/sbox.pyx
+[9/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/integral_points_integer_dense.pyx
+[10/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/echelon_matrix.pyx
+[11/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/change_ring.pyx
+[12/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix1.pyx
+[13/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/polyhedron/combinatorial_polyhedron/list_of_faces.pyx
+warning: /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/memory_allocator/memory_allocator.pxd:9:23: Implicit noexcept declaration is deprecated. Function declaration should contain 'noexcept' keyword.
+[14/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_cdv.pyx
+[15/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_complex_double_dense.pyx
+[16/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/polyhedron/combinatorial_polyhedron/conversions.pyx
+warning: /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/memory_allocator/memory_allocator.pxd:9:23: Implicit noexcept declaration is deprecated. Function declaration should contain 'noexcept' keyword.
+[17/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/geometry/polyhedron/combinatorial_polyhedron/base.pyx
+warning: /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/memory_allocator/memory_allocator.pxd:9:23: Implicit noexcept declaration is deprecated. Function declaration should contain 'noexcept' keyword.
+[18/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_dense.pyx
+[19/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_complex_ball_dense.pyx
+[20/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_generic_dense.pyx
+[21/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_double_sparse.pyx
+[22/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_gap.pyx
+[23/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_laurent_mpolynomial_dense.pyx
+[24/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_generic_sparse.pyx
+[25/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix0.pyx
+[26/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_double_dense.pyx
+[27/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_numpy_dense.pyx
+[28/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_numpy_integer_dense.pyx
+[29/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_gf2e_dense.pyx
+[30/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_symbolic_sparse.pyx
+[31/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_real_double_dense.pyx
+[32/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_symbolic_dense.pyx
+[33/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_polynomial_dense.pyx
+[34/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/misc_mpfr.pyx
+[35/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/misc.pyx
+[36/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_sparse.pyx
+[37/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/misc_flint.pyx
+[38/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_window.pyx
+[39/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/strassen.pyx
+[40/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_mod2_dense.pyx
+[41/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_mpolynomial_dense.pyx
+[42/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_modn_sparse.pyx
+[43/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix2.pyx
+[44/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_cyclo_dense.pyx
+[45/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_integer_sparse.pyx
+[46/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_modn_dense_double.pyx
+[47/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/modular/arithgroup/arithgroup_element.pyx
+[48/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_modn_dense_float.pyx
+[49/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_rational_sparse.pyx
+[50/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/modular/arithgroup/congroup.pyx
+[51/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/modules/numpy_util.pyx
+[52/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/modular/modsym/heilbronn.pyx
+[53/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/rings/function_field/hermite_form_polynomial.pyx
+[54/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/rings/function_field/khuri_makdisi.pyx
+[55/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_rational_dense.pyx
+[56/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/modular/pollack_stevens/dist.pyx
+[57/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matroids/lean_matrix.pyx
+warning: /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/memory_allocator/memory_allocator.pxd:9:23: Implicit noexcept declaration is deprecated. Function declaration should contain 'noexcept' keyword.
+[58/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matrix/matrix_integer_dense.pyx
+[59/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/rings/polynomial/laurent_polynomial_mpair.pyx
+[60/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx
+[61/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/matroids/linear_matroid.pyx
+warning: /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/memory_allocator/memory_allocator.pxd:9:23: Implicit noexcept declaration is deprecated. Function declaration should contain 'noexcept' keyword.
+[62/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/rings/polynomial/polynomial_gf2x.pyx
+[63/189] Compiling Cython source /home/vince/Documents/git/sage/src/sage/rings/polynomial/real_roots.pyx
+[64/189] Compiling C++ object src/sage/algebras/quatalg/quaternion_algebra_cython.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_algebras_quatalg_quaternion_algebra_cython.pyx.cpp.o
+[65/189] Compiling C object src/sage/combinat/posets/hasse_cython_flint.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_combinat_posets_hasse_cython_flint.pyx.c.o
+[66/189] Compiling C object src/sage/algebras/finite_dimensional_algebras/finite_dimensional_algebra_element.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_algebras_finite_dimensional_algebras_finite_dimensional_algebra_element.pyx.c.o
+[67/189] Compiling C++ object src/sage/libs/eclib/mat.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_libs_eclib_mat.pyx.cpp.o
+[68/189] Compiling C object src/sage/geometry/polyhedron/combinatorial_polyhedron/list_of_faces.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_polyhedron_combinatorial_polyhedron_list_of_faces.pyx.c.o
+[69/189] Compiling C object src/sage/geometry/polyhedron/combinatorial_polyhedron/conversions.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_polyhedron_combinatorial_polyhedron_conversions.pyx.c.o
+[70/189] Compiling C object src/sage/matrix/change_ring.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_change_ring.pyx.c.o
+In file included from src/sage/matrix/change_ring.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/change_ring.pyx.c:1129:
+../../src/sage/libs/flint/flint_wrap.h:31: warning: "I" redefined
+   31 | #define I Iv
+      | 
+In file included from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/npy_common.h:380,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/ndarraytypes.h:4,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/ndarrayobject.h:12,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/arrayobject.h:5,
+                 from src/sage/matrix/change_ring.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/change_ring.pyx.c:1123:
+/home/vince/.conda/envs/sage-dev/x86_64-conda-linux-gnu/sysroot/usr/include/complex.h:53: note: this is the location of the previous definition
+   53 | #define I _Complex_I
+      | 
+[71/189] Compiling C object src/sage/matrix/echelon_matrix.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_echelon_matrix.pyx.c.o
+[72/189] Compiling C object src/sage/matrix/matrix_cdv.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_cdv.pyx.c.o
+[73/189] Compiling C object src/sage/geometry/palp_normal_form.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_palp_normal_form.pyx.c.o
+[74/189] Compiling C object src/sage/geometry/integral_points_integer_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_integral_points_integer_dense.pyx.c.o
+[75/189] Compiling C object src/sage/geometry/integral_points_generic_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_integral_points_generic_dense.pyx.c.o
+[76/189] Compiling C object src/sage/matrix/matrix_complex_double_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_complex_double_dense.pyx.c.o
+[77/189] Compiling C object src/sage/crypto/sbox.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_crypto_sbox.pyx.c.o
+src/sage/crypto/sbox.cpython-312-x86_64-linux-gnu.so.p/src/sage/crypto/sbox.pyx.c: In function '__pyx_pf_4sage_6crypto_4sbox_4SBox_6__eq__':
+src/sage/crypto/sbox.cpython-312-x86_64-linux-gnu.so.p/src/sage/crypto/sbox.pyx.c:8740:42: warning: self-comparison always evaluates to true [-Wtautological-compare]
+ 8740 |   __pyx_t_2 = (__pyx_v_self->_big_endian == __pyx_v_self->_big_endian);
+      |                                          ^~
+[78/189] Compiling C object src/sage/matrix/matrix_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_dense.pyx.c.o
+[79/189] Compiling C object src/sage/matrix/matrix_complex_ball_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_complex_ball_dense.pyx.c.o
+src/sage/matrix/matrix_complex_ball_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_complex_ball_dense.pyx.c:8887:65: warning: '__pyx_f_4sage_5rings_11complex_arb_11ComplexBall__new' defined but not used [-Wunused-function]
+ 8887 | static struct __pyx_obj_4sage_5rings_11complex_arb_ComplexBall *__pyx_f_4sage_5rings_11complex_arb_11ComplexBall__new(struct __pyx_obj_4sage_5rings_11complex_arb_ComplexBall *__pyx_v_self) {
+      |                                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[80/189] Compiling C object src/sage/matrix/matrix_double_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_double_sparse.pyx.c.o
+[81/189] Compiling C object src/sage/matrix/matrix_gap.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_gap.pyx.c.o
+[82/189] Compiling C object src/sage/matrix/matrix_generic_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_generic_dense.pyx.c.o
+[83/189] Compiling C object src/sage/matrix/matrix_generic_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_generic_sparse.pyx.c.o
+[84/189] Compiling C object src/sage/matrix/matrix_numpy_integer_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_numpy_integer_dense.pyx.c.o
+[85/189] Compiling C object src/sage/matrix/matrix_laurent_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_laurent_mpolynomial_dense.pyx.c.o
+[86/189] Compiling C object src/sage/matrix/matrix1.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix1.pyx.c.o
+[87/189] Compiling C object src/sage/matrix/matrix_numpy_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_numpy_dense.pyx.c.o
+[88/189] Compiling C object src/sage/matrix/matrix_real_double_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_real_double_dense.pyx.c.o
+[89/189] Compiling C object src/sage/coding/ag_code_decoders.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_coding_ag_code_decoders.pyx.c.o
+[90/189] Compiling C object src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_gf2e_dense.pyx.c.o
+In function '__Pyx_PyLong_FromSize_t',
+    inlined from '__pyx_pf_4sage_6matrix_17matrix_gf2e_dense_17Matrix_gf2e_dense_32echelonize.constprop' at src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_gf2e_dense.pyx.c:13644:15:
+src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_gf2e_dense.pyx.c:28714:12: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+28714 |     return PyLong_FromSize_t(ival);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_gf2e_dense.pyx.c: In function '__pyx_pf_4sage_6matrix_17matrix_gf2e_dense_17Matrix_gf2e_dense_32echelonize.constprop':
+src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_gf2e_dense.pyx.c:13212:10: note: '__pyx_v_r' was declared here
+13212 |   size_t __pyx_v_r;
+      |          ^~~~~~~~~
+[91/189] Compiling C object src/sage/geometry/polyhedron/combinatorial_polyhedron/base.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_geometry_polyhedron_combinatorial_polyhedron_base.pyx.c.o
+[92/189] Compiling C object src/sage/matrix/matrix_symbolic_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_symbolic_dense.pyx.c.o
+[93/189] Compiling C object src/sage/matrix/matrix_double_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_double_dense.pyx.c.o
+[94/189] Compiling C object src/sage/matrix/matrix_symbolic_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_symbolic_sparse.pyx.c.o
+[95/189] Compiling C object src/sage/matrix/misc_mpfr.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_misc_mpfr.pyx.c.o
+[96/189] Compiling C object src/sage/matrix/misc_flint.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_misc_flint.pyx.c.o
+[97/189] Compiling C object src/sage/matrix/matrix_window.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_window.pyx.c.o
+[98/189] Compiling C object src/sage/matrix/misc.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_misc.pyx.c.o
+[99/189] Compiling C object src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix0.pyx.c.o
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c: In function '__pyx_pf_4sage_6matrix_7matrix0_6Matrix_28__getitem__':
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:11565:20: warning: '__pyx_v_row' may be used uninitialized [-Wmaybe-uninitialized]
+11565 |       __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->get_unsafe(__pyx_v_self, __pyx_v_row, __pyx_v_col); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1058, __pyx_L1_error)
+      |                   ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:10407:7: note: '__pyx_v_row' was declared here
+10407 |   int __pyx_v_row;
+      |       ^~~~~~~~~~~
+In function '__pyx_pf_4sage_6matrix_7matrix0_6Matrix_30__setitem__',
+    inlined from '__pyx_pw_4sage_6matrix_7matrix0_6Matrix_31__setitem__' at src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:12393:13,
+    inlined from '__pyx_mp_ass_subscript_4sage_6matrix_7matrix0_Matrix' at src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:50218:12:
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:14248:22: warning: '__pyx_v_col' may be used uninitialized [-Wmaybe-uninitialized]
+14248 |         __pyx_t_3 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->set_unsafe(__pyx_v_self, __pyx_t_11, __pyx_v_col, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1584, __pyx_L1_error)
+      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c: In function '__pyx_mp_ass_subscript_4sage_6matrix_7matrix0_Matrix':
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:12409:14: note: '__pyx_v_col' was declared here
+12409 |   Py_ssize_t __pyx_v_col;
+      |              ^~~~~~~~~~~
+In function '__pyx_pf_4sage_6matrix_7matrix0_6Matrix_30__setitem__',
+    inlined from '__pyx_pw_4sage_6matrix_7matrix0_6Matrix_31__setitem__' at src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:12393:13,
+    inlined from '__pyx_mp_ass_subscript_4sage_6matrix_7matrix0_Matrix' at src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:50218:12:
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:14175:22: warning: '__pyx_v_row' may be used uninitialized [-Wmaybe-uninitialized]
+14175 |         __pyx_t_3 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->set_unsafe(__pyx_v_self, __pyx_v_row, __pyx_t_11, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1580, __pyx_L1_error)
+      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c: In function '__pyx_mp_ass_subscript_4sage_6matrix_7matrix0_Matrix':
+src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix0.pyx.c:12408:14: note: '__pyx_v_row' was declared here
+12408 |   Py_ssize_t __pyx_v_row;
+      |              ^~~~~~~~~~~
+[100/189] Compiling C object src/sage/matrix/matrix_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_sparse.pyx.c.o
+[101/189] Compiling C object src/sage/matrix/strassen.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_strassen.pyx.c.o
+[102/189] Compiling C++ object src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_mpolynomial_dense.pyx.cpp.o
+src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mpolynomial_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_24matrix_mpolynomial_dense_24Matrix_mpolynomial_dense_6_echelonize_gauss_bareiss(__pyx_obj_4sage_6matrix_24matrix_mpolynomial_dense_Matrix_mpolynomial_dense*)':
+src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mpolynomial_dense.pyx.cpp:7123:47: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+ 7123 |       for (__pyx_t_11 = __pyx_v_n; __pyx_t_11 < __pyx_t_15; __pyx_t_11+=1) {
+      |                                    ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mpolynomial_dense.pyx.cpp:7151:43: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+ 7151 |     for (__pyx_t_8 = __pyx_v_m; __pyx_t_8 < __pyx_t_15; __pyx_t_8+=1) {
+      |                                 ~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mpolynomial_dense.pyx.cpp:7163:37: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+ 7163 |       for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_17; __pyx_t_9+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~~
+[103/189] Compiling C++ object src/sage/matrix/matrix_cyclo_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_cyclo_dense.pyx.cpp.o
+In file included from src/sage/matrix/matrix_cyclo_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_cyclo_dense.pyx.cpp:6003:
+../../src/sage/libs/ntl/ntlwrap_impl.h:716:13: warning: 'void ZZ_pX_InvMod_newton_ram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  716 | static void ZZ_pX_InvMod_newton_ram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:681:13: warning: 'void ZZ_pX_InvMod_newton_unram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  681 | static void ZZ_pX_InvMod_newton_unram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn, const struct ZZ_pContext &cp)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:655:13: warning: 'void ZZ_pX_right_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  655 | static void ZZ_pX_right_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:629:13: warning: 'void ZZ_pX_left_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  629 | static void ZZ_pX_left_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:575:13: warning: 'void ZZ_pX_min_val_coeff(long int&, long int&, const NTL::ZZ_pX&, const NTL::ZZ&)' defined but not used [-Wunused-function]
+  575 | static void ZZ_pX_min_val_coeff(long & valuation, long &index, const struct ZZ_pX &f, const struct ZZ &p)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:537:13: warning: 'void ZZ_pEX_conv_modulus(NTL::ZZ_pEX&, const NTL::ZZ_pEX&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  537 | static void ZZ_pEX_conv_modulus(ZZ_pEX &fout, const ZZ_pEX &fin, const ZZ_pContext &modout)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:441:13: warning: 'void ZZ_pX_linear_roots(NTL::ZZ_p***, long int*, NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  441 | static void ZZ_pX_linear_roots(struct ZZ_p*** v, long* n, struct ZZ_pX* f)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:427:13: warning: 'void ZZ_pX_factor(NTL::ZZ_pX***, long int**, long int*, NTL::ZZ_pX*, long int)' defined but not used [-Wunused-function]
+  427 | static void ZZ_pX_factor(struct ZZ_pX*** v, long** e, long* n, struct ZZ_pX* x, long verbose)
+      |             ^~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:415:14: warning: 'char* ZZ_pX_trace_list(NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  415 | static char* ZZ_pX_trace_list(struct ZZ_pX* x)
+      |              ^~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:398:13: warning: 'void ZZX_squarefree_decomposition(NTL::ZZX***, long int**, long int*, NTL::ZZX*)' defined but not used [-Wunused-function]
+  398 | static void ZZX_squarefree_decomposition(struct ZZX*** v, long** e, long* n, struct ZZX* x)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:334:14: warning: 'char* ZZX_trace_list(NTL::ZZX*)' defined but not used [-Wunused-function]
+  334 | static char* ZZX_trace_list(struct ZZX* x)
+      |              ^~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:132:14: warning: 'char* ZZX_repr(NTL::ZZX*)' defined but not used [-Wunused-function]
+  132 | static char* ZZX_repr(struct ZZX* x)
+      |              ^~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:35:13: warning: 'void mpz_to_ZZ(NTL::ZZ*, mpz_srcptr)' defined but not used [-Wunused-function]
+   35 | static void mpz_to_ZZ(struct ZZ* output, mpz_srcptr x)
+      |             ^~~~~~~~~
+[104/189] Compiling C++ object src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_mod2_dense.pyx.cpp.o
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_17matrix_mod2_dense_8pluq(PyObject*, __pyx_obj_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense*, PyObject*, int)':
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp:27382:37: warning: comparison of integer expressions of different signedness: 'int' and 'long unsigned int' [-Wsign-compare]
+27382 |       for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_9; __pyx_t_5+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp:27405:37: warning: comparison of integer expressions of different signedness: 'int' and 'long unsigned int' [-Wsign-compare]
+27405 |       for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_9; __pyx_t_5+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_17matrix_mod2_dense_10ple(PyObject*, __pyx_obj_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense*, PyObject*, int)':
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp:27860:37: warning: comparison of integer expressions of different signedness: 'int' and 'long unsigned int' [-Wsign-compare]
+27860 |       for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_9; __pyx_t_5+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_mod2_dense.pyx.cpp:27883:37: warning: comparison of integer expressions of different signedness: 'int' and 'long unsigned int' [-Wsign-compare]
+27883 |       for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_9; __pyx_t_5+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+[105/189] Compiling C object src/sage/matrix/matrix_polynomial_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_polynomial_dense.pyx.c.o
+[106/189] Compiling C++ object src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_rational_dense.pyx.cpp.o
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_21matrix_rational_dense_21Matrix_rational_dense_68_echelonize_padic(__pyx_obj_4sage_6matrix_21matrix_rational_dense_Matrix_rational_dense*)':
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp:25707:320: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+25707 |   __pyx_t_10 = (((struct __pyx_vtabstruct_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense *)__pyx_v_X->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_X), 0) != __pyx_t_9);
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp:25720:324: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+25720 |       __pyx_t_10 = (((struct __pyx_vtabstruct_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense *)__pyx_v_X->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_X), 0) == __pyx_t_9);
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp:25793:33: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+25793 |   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_12; __pyx_t_9+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp:25818:37: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+25818 |     for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
+      |                          ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_21matrix_rational_dense_21Matrix_rational_dense_88_set_row_to_negative_of_row_of_A_using_subset_of_columns(__pyx_obj_4sage_6matrix_21matrix_rational_dense_Matrix_rational_dense*, Py_ssize_t, __pyx_obj_4sage_6matrix_7matrix2_Matrix*, Py_ssize_t, PyObject*, PyObject*)':
+src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_dense.pyx.cpp:32611:26: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+32611 |   __pyx_t_3 = (__pyx_v_r >= ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), 0));
+      |                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[107/189] Compiling C object src/sage/modular/arithgroup/arithgroup_element.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_modular_arithgroup_arithgroup_element.pyx.c.o
+[108/189] Compiling C++ object src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_modn_sparse.pyx.cpp.o
+src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_sparse.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_18matrix_modn_sparse_18Matrix_modn_sparse_24matrix_from_rows(__pyx_obj_4sage_6matrix_18matrix_modn_sparse_Matrix_modn_sparse*, PyObject*)':
+src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_sparse.pyx.cpp:14343:28: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+14343 |     __pyx_t_1 = (__pyx_v_i >= ((struct __pyx_vtabstruct_4sage_6matrix_18matrix_modn_sparse_Matrix_modn_sparse *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self), 0));
+      |                  ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_sparse.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_18matrix_modn_sparse_18Matrix_modn_sparse_26matrix_from_columns(__pyx_obj_4sage_6matrix_18matrix_modn_sparse_Matrix_modn_sparse*, PyObject*)':
+src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_sparse.pyx.cpp:14797:33: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+14797 |   for (__pyx_v_i = 0; __pyx_v_i < __pyx_t_17; __pyx_v_i++) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~~
+[109/189] Compiling C object src/sage/modular/arithgroup/congroup.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_modular_arithgroup_congroup.pyx.c.o
+[110/189] Compiling C++ object src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_integer_dense.pyx.cpp.o
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function '__mpz_struct (* __pyx_f_4sage_6matrix_20matrix_integer_dense_fmpz_mat_to_mpz_array(fmpz_mat_struct*))[1]':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:15974:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and '__pyx_t_4sage_4libs_5flint_5types_slong' {aka 'long int'} [-Wsign-compare]
+15974 |   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:15986:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and '__pyx_t_4sage_4libs_5flint_5types_slong' {aka 'long int'} [-Wsign-compare]
+15986 |     for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_20matrix_integer_dense_20Matrix_integer_dense_36is_primitive(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22307:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22307 |     for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_7; __pyx_t_5+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22319:39: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22319 |       for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
+      |                            ~~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22562:37: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22562 |       for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_7; __pyx_t_5+=1) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22574:41: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22574 |         for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
+      |                              ~~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22683:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22683 |     for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_7; __pyx_t_5+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:22695:39: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+22695 |       for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
+      |                            ~~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_20matrix_integer_dense_20Matrix_integer_dense_50_reduce(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*, PyObject*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:26529:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+26529 |   for (__pyx_v_i = 0; __pyx_v_i < __pyx_t_7; __pyx_v_i++) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_20matrix_integer_dense_20Matrix_integer_dense_106_rational_kernel_iml(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:44506:35: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+44506 |   for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
+      |                        ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:44518:37: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'long int' [-Wsign-compare]
+44518 |     for (__pyx_t_18 = 0; __pyx_t_18 < __pyx_t_17; __pyx_t_18+=1) {
+      |                          ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_20matrix_integer_dense_20Matrix_integer_dense_108_rational_kernel_flint(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:44827:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+44827 |   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_11; __pyx_t_8+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:44839:37: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'long int' [-Wsign-compare]
+44839 |     for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
+      |                          ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_20matrix_integer_dense_20Matrix_integer_dense_120_solve_iml(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*, __pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*, PyObject*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:48212:35: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+48212 |   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
+      |                        ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:48423:35: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+48423 |     for (__pyx_v_i = 0; __pyx_v_i < __pyx_t_10; __pyx_v_i++) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:48433:37: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+48433 |       for (__pyx_v_j = 0; __pyx_v_j < __pyx_t_9; __pyx_v_j++) {
+      |                           ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp: In function 'PyObject* __pyx_f_4sage_6matrix_20matrix_integer_dense__lift_crt(__pyx_obj_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense*, PyObject*, int, __pyx_opt_args_4sage_6matrix_20matrix_integer_dense__lift_crt*)':
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62019:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62019 |   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_1; __pyx_t_6+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62090:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62090 |   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_1; __pyx_t_6+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62112:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62112 |   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_1; __pyx_t_6+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62124:37: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62124 |     for (__pyx_t_18 = 0; __pyx_t_18 < __pyx_t_20; __pyx_t_18+=1) {
+      |                          ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62159:37: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62159 |     for (__pyx_t_18 = 0; __pyx_t_18 < __pyx_t_20; __pyx_t_18+=1) {
+      |                          ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62182:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62182 |   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_1; __pyx_t_6+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_integer_dense.pyx.cpp:62204:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+62204 |   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_1; __pyx_t_6+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+[111/189] Compiling C object src/sage/modular/modsym/heilbronn.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_modular_modsym_heilbronn.pyx.c.o
+[112/189] Compiling C++ object src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_modn_dense_double.pyx.cpp.o
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp: In function 'PyObject* __pyx_f_4sage_6matrix_24matrix_modn_dense_double_linbox_minpoly(__pyx_t_4sage_6matrix_24matrix_modn_dense_double_celement, Py_ssize_t, __pyx_t_4sage_6matrix_24matrix_modn_dense_double_celement*)':
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp:13396:35: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'std::vector<double>::size_type' {aka 'long unsigned int'} [-Wsign-compare]
+13396 |     for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp: In function 'PyObject* __pyx_f_4sage_6matrix_24matrix_modn_dense_double_linbox_charpoly(__pyx_t_4sage_6matrix_24matrix_modn_dense_double_celement, Py_ssize_t, __pyx_t_4sage_6matrix_24matrix_modn_dense_double_celement*)':
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp:13608:33: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'size_t' {aka 'long unsigned int'} [-Wsign-compare]
+13608 |   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+In function 'PyObject* __pyx_pf_4sage_6matrix_24matrix_modn_dense_double_26Matrix_modn_dense_template_32_echelon_in_place_classical(__pyx_obj_4sage_6matrix_24matrix_modn_dense_double_Matrix_modn_dense_template*)',
+    inlined from 'PyObject* __pyx_pw_4sage_6matrix_24matrix_modn_dense_double_26Matrix_modn_dense_template_33_echelon_in_place_classical(PyObject*, PyObject* const*, Py_ssize_t, PyObject*)' at src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp:21816:121:
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp:22302:34: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+22302 |   __pyx_t_13 = PyLong_FromSsize_t(__pyx_v_r); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 1927, __pyx_L1_error)
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp: In function 'PyObject* __pyx_pw_4sage_6matrix_24matrix_modn_dense_double_26Matrix_modn_dense_template_33_echelon_in_place_classical(PyObject*, PyObject* const*, Py_ssize_t, PyObject*)':
+src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_double.pyx.cpp:21826:14: note: '__pyx_v_r' was declared here
+21826 |   Py_ssize_t __pyx_v_r;
+      |              ^~~~~~~~~
+[113/189] Compiling C object src/sage/matroids/lean_matrix.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matroids_lean_matrix.pyx.c.o
+src/sage/matroids/lean_matrix.cpython-312-x86_64-linux-gnu.so.p/src/sage/matroids/lean_matrix.pyx.c: In function '__pyx_f_4sage_8matroids_11lean_matrix_12BinaryMatrix_is_isomorphic':
+src/sage/matroids/lean_matrix.cpython-312-x86_64-linux-gnu.so.p/src/sage/matroids/lean_matrix.pyx.c:31170:103: warning: '__pyx_v_i' may be used uninitialized [-Wmaybe-uninitialized]
+31170 |   __pyx_v_e = __pyx_fuse_0__pyx_f_4sage_15data_structures_11bitset_base_bitset_first((__pyx_v_s_eq->_M[__pyx_v_i]));
+      |                                                                                                       ^
+src/sage/matroids/lean_matrix.cpython-312-x86_64-linux-gnu.so.p/src/sage/matroids/lean_matrix.pyx.c:30808:8: note: '__pyx_v_i' was declared here
+30808 |   long __pyx_v_i;
+      |        ^~~~~~~~~
+[114/189] Compiling C++ object src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_modn_dense_float.pyx.cpp.o
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp: In function 'PyObject* __pyx_f_4sage_6matrix_23matrix_modn_dense_float_linbox_minpoly(__pyx_t_4sage_6matrix_23matrix_modn_dense_float_celement, Py_ssize_t, __pyx_t_4sage_6matrix_23matrix_modn_dense_float_celement*)':
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp:13394:35: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'std::vector<float, std::allocator<float> >::size_type' {aka 'long unsigned int'} [-Wsign-compare]
+13394 |     for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp: In function 'PyObject* __pyx_f_4sage_6matrix_23matrix_modn_dense_float_linbox_charpoly(__pyx_t_4sage_6matrix_23matrix_modn_dense_float_celement, Py_ssize_t, __pyx_t_4sage_6matrix_23matrix_modn_dense_float_celement*)':
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp:13606:33: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'size_t' {aka 'long unsigned int'} [-Wsign-compare]
+13606 |   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+In function 'PyObject* __pyx_pf_4sage_6matrix_23matrix_modn_dense_float_26Matrix_modn_dense_template_32_echelon_in_place_classical(__pyx_obj_4sage_6matrix_23matrix_modn_dense_float_Matrix_modn_dense_template*)',
+    inlined from 'PyObject* __pyx_pw_4sage_6matrix_23matrix_modn_dense_float_26Matrix_modn_dense_template_33_echelon_in_place_classical(PyObject*, PyObject* const*, Py_ssize_t, PyObject*)' at src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp:21814:120:
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp:22300:34: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+22300 |   __pyx_t_13 = PyLong_FromSsize_t(__pyx_v_r); if (unlikely(!__pyx_t_13)) __PYX_ERR(1, 1927, __pyx_L1_error)
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp: In function 'PyObject* __pyx_pw_4sage_6matrix_23matrix_modn_dense_float_26Matrix_modn_dense_template_33_echelon_in_place_classical(PyObject*, PyObject* const*, Py_ssize_t, PyObject*)':
+src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_modn_dense_float.pyx.cpp:21824:14: note: '__pyx_v_r' was declared here
+21824 |   Py_ssize_t __pyx_v_r;
+      |              ^~~~~~~~~
+[115/189] Compiling C object src/sage/rings/function_field/hermite_form_polynomial.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_rings_function_field_hermite_form_polynomial.pyx.c.o
+[116/189] Compiling C++ object src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_modules_numpy_util.pyx.cpp.o
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp: In function 'int __pyx_fuse_0__pyx_f_4sage_7modules_10numpy_util__set_matrix_mod2_from_numpy_helper(__pyx_obj_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense*, PyArrayObject*, int)':
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23113:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23113 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[0]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23119:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23119 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[1]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp: In function 'int __pyx_fuse_1__pyx_f_4sage_7modules_10numpy_util__set_matrix_mod2_from_numpy_helper(__pyx_obj_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense*, PyArrayObject*, int)':
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23427:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23427 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[0]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23433:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23433 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[1]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp: In function 'int __pyx_fuse_2__pyx_f_4sage_7modules_10numpy_util__set_matrix_mod2_from_numpy_helper(__pyx_obj_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense*, PyArrayObject*, int)':
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23741:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23741 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[0]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so.p/src/sage/modules/numpy_util.pyx.cpp:23747:313: warning: comparison of integer expressions of different signedness: 'long unsigned int' and 'npy_intp' {aka 'long int'} [-Wsign-compare]
+23747 |   __pyx_t_2 = (((struct __pyx_vtabstruct_4sage_6matrix_17matrix_mod2_dense_Matrix_mod2_dense *)__pyx_v_a->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_a), 0) == (__pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_b))[1]));
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[117/189] Compiling C++ object src/sage/matrix/matrix_rational_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_rational_sparse.pyx.cpp.o
+src/sage/matrix/matrix_rational_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_sparse.pyx.cpp: In function 'PyObject* __pyx_pf_4sage_6matrix_22matrix_rational_sparse_22Matrix_rational_sparse_32_set_row_to_negative_of_row_of_A_using_subset_of_columns(__pyx_obj_4sage_6matrix_22matrix_rational_sparse_Matrix_rational_sparse*, Py_ssize_t, __pyx_obj_4sage_6matrix_7matrix2_Matrix*, Py_ssize_t, PyObject*, PyObject*)':
+src/sage/matrix/matrix_rational_sparse.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix_rational_sparse.pyx.cpp:15034:26: warning: comparison of integer expressions of different signedness: 'Py_ssize_t' {aka 'long int'} and 'long unsigned int' [-Wsign-compare]
+15034 |   __pyx_t_3 = (__pyx_v_r >= ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), 0));
+      |                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[118/189] Linking target src/sage/libs/eclib/mat.cpython-312-x86_64-linux-gnu.so
+[119/189] Linking target src/sage/algebras/finite_dimensional_algebras/finite_dimensional_algebra_element.cpython-312-x86_64-linux-gnu.so
+[120/189] Linking target src/sage/algebras/quatalg/quaternion_algebra_cython.cpython-312-x86_64-linux-gnu.so
+[121/189] Linking target src/sage/coding/ag_code_decoders.cpython-312-x86_64-linux-gnu.so
+[122/189] Linking target src/sage/combinat/posets/hasse_cython_flint.cpython-312-x86_64-linux-gnu.so
+[123/189] Linking target src/sage/crypto/sbox.cpython-312-x86_64-linux-gnu.so
+[124/189] Linking target src/sage/geometry/integral_points_generic_dense.cpython-312-x86_64-linux-gnu.so
+[125/189] Linking target src/sage/geometry/integral_points_integer_dense.cpython-312-x86_64-linux-gnu.so
+[126/189] Linking target src/sage/geometry/palp_normal_form.cpython-312-x86_64-linux-gnu.so
+[127/189] Linking target src/sage/geometry/polyhedron/combinatorial_polyhedron/base.cpython-312-x86_64-linux-gnu.so
+[128/189] Linking target src/sage/geometry/polyhedron/combinatorial_polyhedron/conversions.cpython-312-x86_64-linux-gnu.so
+[129/189] Linking target src/sage/geometry/polyhedron/combinatorial_polyhedron/list_of_faces.cpython-312-x86_64-linux-gnu.so
+[130/189] Linking target src/sage/matrix/change_ring.cpython-312-x86_64-linux-gnu.so
+[131/189] Linking target src/sage/matrix/echelon_matrix.cpython-312-x86_64-linux-gnu.so
+[132/189] Linking target src/sage/matrix/matrix0.cpython-312-x86_64-linux-gnu.so
+[133/189] Linking target src/sage/matrix/matrix1.cpython-312-x86_64-linux-gnu.so
+[134/189] Linking target src/sage/matrix/matrix_cdv.cpython-312-x86_64-linux-gnu.so
+[135/189] Compiling C object src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_rings_function_field_khuri_makdisi.pyx.c.o
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c: In function '__pyx_f_4sage_5rings_14function_field_13khuri_makdisi_17KhuriMakdisi_base_mu_image':
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c:6068:8: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+ 6068 |     if (unlikely(!__pyx_t_13)) {
+      |        ^
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c:5726:14: note: '__pyx_v_r' was declared here
+ 5726 |   Py_ssize_t __pyx_v_r;
+      |              ^~~~~~~~~
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c: In function '__pyx_f_4sage_5rings_14function_field_13khuri_makdisi_17KhuriMakdisi_base_mu_preimage':
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c:6600:8: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+ 6600 |     if (unlikely(!__pyx_t_16)) {
+      |        ^
+src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/function_field/khuri_makdisi.pyx.c:6132:14: note: '__pyx_v_r' was declared here
+ 6132 |   Py_ssize_t __pyx_v_r;
+      |              ^~~~~~~~~
+[136/189] Compiling C++ object src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_rings_polynomial_polynomial_gf2x.pyx.cpp.o
+src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp:7881:18: warning: 'PyObject* __pyx_f_4sage_5rings_10polynomial_15polynomial_gf2x_celement_repr(NTL::GF2X*, long int)' defined but not used [-Wunused-function]
+ 7881 | static PyObject *__pyx_f_4sage_5rings_10polynomial_15polynomial_gf2x_celement_repr(CYTHON_UNUSED GF2X *__pyx_v_e, CYTHON_UNUSED long __pyx_v_parent) {
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp:5135:
+../../src/sage/libs/ntl/ntlwrap_impl.h:716:13: warning: 'void ZZ_pX_InvMod_newton_ram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  716 | static void ZZ_pX_InvMod_newton_ram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:681:13: warning: 'void ZZ_pX_InvMod_newton_unram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  681 | static void ZZ_pX_InvMod_newton_unram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn, const struct ZZ_pContext &cp)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:655:13: warning: 'void ZZ_pX_right_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  655 | static void ZZ_pX_right_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:629:13: warning: 'void ZZ_pX_left_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  629 | static void ZZ_pX_left_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:575:13: warning: 'void ZZ_pX_min_val_coeff(long int&, long int&, const NTL::ZZ_pX&, const NTL::ZZ&)' defined but not used [-Wunused-function]
+  575 | static void ZZ_pX_min_val_coeff(long & valuation, long &index, const struct ZZ_pX &f, const struct ZZ &p)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:537:13: warning: 'void ZZ_pEX_conv_modulus(NTL::ZZ_pEX&, const NTL::ZZ_pEX&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  537 | static void ZZ_pEX_conv_modulus(ZZ_pEX &fout, const ZZ_pEX &fin, const ZZ_pContext &modout)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:441:13: warning: 'void ZZ_pX_linear_roots(NTL::ZZ_p***, long int*, NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  441 | static void ZZ_pX_linear_roots(struct ZZ_p*** v, long* n, struct ZZ_pX* f)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:427:13: warning: 'void ZZ_pX_factor(NTL::ZZ_pX***, long int**, long int*, NTL::ZZ_pX*, long int)' defined but not used [-Wunused-function]
+  427 | static void ZZ_pX_factor(struct ZZ_pX*** v, long** e, long* n, struct ZZ_pX* x, long verbose)
+      |             ^~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:415:14: warning: 'char* ZZ_pX_trace_list(NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  415 | static char* ZZ_pX_trace_list(struct ZZ_pX* x)
+      |              ^~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:398:13: warning: 'void ZZX_squarefree_decomposition(NTL::ZZX***, long int**, long int*, NTL::ZZX*)' defined but not used [-Wunused-function]
+  398 | static void ZZX_squarefree_decomposition(struct ZZX*** v, long** e, long* n, struct ZZX* x)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:334:14: warning: 'char* ZZX_trace_list(NTL::ZZX*)' defined but not used [-Wunused-function]
+  334 | static char* ZZX_trace_list(struct ZZX* x)
+      |              ^~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:132:14: warning: 'char* ZZX_repr(NTL::ZZX*)' defined but not used [-Wunused-function]
+  132 | static char* ZZX_repr(struct ZZX* x)
+      |              ^~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:35:13: warning: 'void mpz_to_ZZ(NTL::ZZ*, mpz_srcptr)' defined but not used [-Wunused-function]
+   35 | static void mpz_to_ZZ(struct ZZ* output, mpz_srcptr x)
+      |             ^~~~~~~~~
+In function 'Py_hash_t __pyx_pf_4sage_5rings_10polynomial_15polynomial_gf2x_19Polynomial_template_34__hash__(__pyx_obj_4sage_5rings_10polynomial_15polynomial_gf2x_Polynomial_template*)',
+    inlined from 'Py_hash_t __pyx_pw_4sage_5rings_10polynomial_15polynomial_gf2x_19Polynomial_template_35__hash__(PyObject*)' at src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp:15220:98:
+src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp:15385:28: warning: '__pyx_v_var_name_hash' may be used uninitialized [-Wmaybe-uninitialized]
+15385 |         __pyx_v_result_mon = ((0xF4243 * __pyx_v_result_mon) ^ __pyx_v_var_name_hash);
+      |         ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp: In function 'Py_hash_t __pyx_pw_4sage_5rings_10polynomial_15polynomial_gf2x_19Polynomial_template_35__hash__(PyObject*)':
+src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/polynomial_gf2x.pyx.cpp:15231:8: note: '__pyx_v_var_name_hash' was declared here
+15231 |   long __pyx_v_var_name_hash;
+      |        ^~~~~~~~~~~~~~~~~~~~~
+[137/189] Linking target src/sage/matrix/matrix_complex_double_dense.cpython-312-x86_64-linux-gnu.so
+[138/189] Linking target src/sage/matrix/matrix_dense.cpython-312-x86_64-linux-gnu.so
+[139/189] Linking target src/sage/matrix/matrix_double_dense.cpython-312-x86_64-linux-gnu.so
+[140/189] Linking target src/sage/matrix/matrix_gap.cpython-312-x86_64-linux-gnu.so
+[141/189] Linking target src/sage/matrix/matrix_complex_ball_dense.cpython-312-x86_64-linux-gnu.so
+[142/189] Linking target src/sage/matrix/matrix_double_sparse.cpython-312-x86_64-linux-gnu.so
+[143/189] Linking target src/sage/matrix/matrix_generic_dense.cpython-312-x86_64-linux-gnu.so
+[144/189] Compiling C object src/sage/modular/pollack_stevens/dist.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_modular_pollack_stevens_dist.pyx.c.o
+[145/189] Linking target src/sage/matrix/matrix_numpy_dense.cpython-312-x86_64-linux-gnu.so
+[146/189] Linking target src/sage/matrix/matrix_generic_sparse.cpython-312-x86_64-linux-gnu.so
+[147/189] Linking target src/sage/matrix/matrix_laurent_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so
+[148/189] Linking target src/sage/matrix/matrix_numpy_integer_dense.cpython-312-x86_64-linux-gnu.so
+[149/189] Linking target src/sage/matrix/matrix_real_double_dense.cpython-312-x86_64-linux-gnu.so
+[150/189] Linking target src/sage/matrix/matrix_gf2e_dense.cpython-312-x86_64-linux-gnu.so
+[151/189] Linking target src/sage/matrix/matrix_sparse.cpython-312-x86_64-linux-gnu.so
+[152/189] Linking target src/sage/matrix/matrix_symbolic_dense.cpython-312-x86_64-linux-gnu.so
+[153/189] Linking target src/sage/matrix/matrix_symbolic_sparse.cpython-312-x86_64-linux-gnu.so
+[154/189] Linking target src/sage/matrix/matrix_polynomial_dense.cpython-312-x86_64-linux-gnu.so
+[155/189] Linking target src/sage/matrix/misc.cpython-312-x86_64-linux-gnu.so
+[156/189] Linking target src/sage/matrix/matrix_window.cpython-312-x86_64-linux-gnu.so
+[157/189] Linking target src/sage/matrix/misc_mpfr.cpython-312-x86_64-linux-gnu.so
+[158/189] Linking target src/sage/matrix/strassen.cpython-312-x86_64-linux-gnu.so
+[159/189] Linking target src/sage/matrix/misc_flint.cpython-312-x86_64-linux-gnu.so
+[160/189] Linking target src/sage/matrix/matrix_mod2_dense.cpython-312-x86_64-linux-gnu.so
+[161/189] Linking target src/sage/matrix/matrix_modn_dense_double.cpython-312-x86_64-linux-gnu.so
+[162/189] Linking target src/sage/matrix/matrix_integer_dense.cpython-312-x86_64-linux-gnu.so
+[163/189] Linking target src/sage/matrix/matrix_cyclo_dense.cpython-312-x86_64-linux-gnu.so
+[164/189] Linking target src/sage/matrix/matrix_mpolynomial_dense.cpython-312-x86_64-linux-gnu.so
+[165/189] Linking target src/sage/matrix/matrix_modn_dense_float.cpython-312-x86_64-linux-gnu.so
+[166/189] Linking target src/sage/matroids/lean_matrix.cpython-312-x86_64-linux-gnu.so
+[167/189] Linking target src/sage/modular/arithgroup/arithgroup_element.cpython-312-x86_64-linux-gnu.so
+[168/189] Linking target src/sage/modular/arithgroup/congroup.cpython-312-x86_64-linux-gnu.so
+[169/189] Compiling C++ object src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_schemes_hyperelliptic_curves_hypellfrob.pyx.cpp.o
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp: In function 'void __pyx_f_4sage_4libs_3ntl_10conversion_set_ntl_matrix_modn_dense_float(NTL::mat_ZZ_p&, __pyx_obj_4sage_4libs_3ntl_15ntl_ZZ_pContext_ntl_ZZ_pContext_class*, __pyx_obj_4sage_6matrix_23matrix_modn_dense_float_Matrix_modn_dense_float*)':
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6004:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6004 |   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6016:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6016 |     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp: In function 'void __pyx_f_4sage_4libs_3ntl_10conversion_set_ntl_matrix_modn_dense_double(NTL::mat_ZZ_p&, __pyx_obj_4sage_4libs_3ntl_15ntl_ZZ_pContext_ntl_ZZ_pContext_class*, __pyx_obj_4sage_6matrix_24matrix_modn_dense_double_Matrix_modn_dense_double*)':
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6140:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6140 |   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6152:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6152 |     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp: In function 'void __pyx_f_4sage_4libs_3ntl_10conversion_set_ntl_matrix_modn_generic_dense(NTL::mat_ZZ_p&, __pyx_obj_4sage_4libs_3ntl_15ntl_ZZ_pContext_ntl_ZZ_pContext_class*, __pyx_obj_4sage_6matrix_20matrix_generic_dense_Matrix_generic_dense*)':
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6276:33: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6276 |   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+      |                       ~~~~~~~~~~^~~~~~~~~~~
+src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:6288:35: warning: comparison of integer expressions of different signedness: 'size_t' {aka 'long unsigned int'} and 'Py_ssize_t' {aka 'long int'} [-Wsign-compare]
+ 6288 |     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      |                         ~~~~~~~~~~^~~~~~~~~~~
+In file included from src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so.p/src/sage/schemes/hyperelliptic_curves/hypellfrob.pyx.cpp:4598:
+../../src/sage/libs/ntl/ntlwrap_impl.h: At global scope:
+../../src/sage/libs/ntl/ntlwrap_impl.h:716:13: warning: 'void ZZ_pX_InvMod_newton_ram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  716 | static void ZZ_pX_InvMod_newton_ram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:681:13: warning: 'void ZZ_pX_InvMod_newton_unram(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ_pXModulus&, const NTL::ZZ_pContext&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  681 | static void ZZ_pX_InvMod_newton_unram(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ_pXModulus &F, const struct ZZ_pContext &cpn, const struct ZZ_pContext &cp)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:655:13: warning: 'void ZZ_pX_right_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  655 | static void ZZ_pX_right_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:629:13: warning: 'void ZZ_pX_left_pshift(NTL::ZZ_pX&, const NTL::ZZ_pX&, const NTL::ZZ&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  629 | static void ZZ_pX_left_pshift(struct ZZ_pX &x, const struct ZZ_pX &a, const struct ZZ &pn, const struct ZZ_pContext &c)
+      |             ^~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:575:13: warning: 'void ZZ_pX_min_val_coeff(long int&, long int&, const NTL::ZZ_pX&, const NTL::ZZ&)' defined but not used [-Wunused-function]
+  575 | static void ZZ_pX_min_val_coeff(long & valuation, long &index, const struct ZZ_pX &f, const struct ZZ &p)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:537:13: warning: 'void ZZ_pEX_conv_modulus(NTL::ZZ_pEX&, const NTL::ZZ_pEX&, const NTL::ZZ_pContext&)' defined but not used [-Wunused-function]
+  537 | static void ZZ_pEX_conv_modulus(ZZ_pEX &fout, const ZZ_pEX &fin, const ZZ_pContext &modout)
+      |             ^~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:441:13: warning: 'void ZZ_pX_linear_roots(NTL::ZZ_p***, long int*, NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  441 | static void ZZ_pX_linear_roots(struct ZZ_p*** v, long* n, struct ZZ_pX* f)
+      |             ^~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:427:13: warning: 'void ZZ_pX_factor(NTL::ZZ_pX***, long int**, long int*, NTL::ZZ_pX*, long int)' defined but not used [-Wunused-function]
+  427 | static void ZZ_pX_factor(struct ZZ_pX*** v, long** e, long* n, struct ZZ_pX* x, long verbose)
+      |             ^~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:415:14: warning: 'char* ZZ_pX_trace_list(NTL::ZZ_pX*)' defined but not used [-Wunused-function]
+  415 | static char* ZZ_pX_trace_list(struct ZZ_pX* x)
+      |              ^~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:398:13: warning: 'void ZZX_squarefree_decomposition(NTL::ZZX***, long int**, long int*, NTL::ZZX*)' defined but not used [-Wunused-function]
+  398 | static void ZZX_squarefree_decomposition(struct ZZX*** v, long** e, long* n, struct ZZX* x)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:334:14: warning: 'char* ZZX_trace_list(NTL::ZZX*)' defined but not used [-Wunused-function]
+  334 | static char* ZZX_trace_list(struct ZZX* x)
+      |              ^~~~~~~~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:132:14: warning: 'char* ZZX_repr(NTL::ZZX*)' defined but not used [-Wunused-function]
+  132 | static char* ZZX_repr(struct ZZX* x)
+      |              ^~~~~~~~
+../../src/sage/libs/ntl/ntlwrap_impl.h:35:13: warning: 'void mpz_to_ZZ(NTL::ZZ*, mpz_srcptr)' defined but not used [-Wunused-function]
+   35 | static void mpz_to_ZZ(struct ZZ* output, mpz_srcptr x)
+      |             ^~~~~~~~~
+[170/189] Linking target src/sage/matrix/matrix_modn_sparse.cpython-312-x86_64-linux-gnu.so
+[171/189] Linking target src/sage/modular/pollack_stevens/dist.cpython-312-x86_64-linux-gnu.so
+[172/189] Linking target src/sage/modular/modsym/heilbronn.cpython-312-x86_64-linux-gnu.so
+[173/189] Linking target src/sage/matrix/matrix_rational_dense.cpython-312-x86_64-linux-gnu.so
+[174/189] Linking target src/sage/modules/numpy_util.cpython-312-x86_64-linux-gnu.so
+[175/189] Linking target src/sage/rings/function_field/hermite_form_polynomial.cpython-312-x86_64-linux-gnu.so
+[176/189] Linking target src/sage/rings/function_field/khuri_makdisi.cpython-312-x86_64-linux-gnu.so
+[177/189] Linking target src/sage/schemes/hyperelliptic_curves/hypellfrob.cpython-312-x86_64-linux-gnu.so
+[178/189] Linking target src/sage/rings/polynomial/polynomial_gf2x.cpython-312-x86_64-linux-gnu.so
+[179/189] Linking target src/sage/matrix/matrix_rational_sparse.cpython-312-x86_64-linux-gnu.so
+[180/189] Compiling C object src/sage/rings/polynomial/laurent_polynomial_mpair.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_rings_polynomial_laurent_polynomial_mpair.pyx.c.o
+[181/189] Linking target src/sage/rings/polynomial/laurent_polynomial_mpair.cpython-312-x86_64-linux-gnu.so
+[182/189] Compiling C object src/sage/matroids/linear_matroid.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matroids_linear_matroid.pyx.c.o
+[183/189] Linking target src/sage/matroids/linear_matroid.cpython-312-x86_64-linux-gnu.so
+[184/189] Compiling C object src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix2.pyx.c.o
+In function '__pyx_pf_4sage_6matrix_7matrix2_6Matrix_264_cyclic_subspace',
+    inlined from '__pyx_pw_4sage_6matrix_7matrix2_6Matrix_265_cyclic_subspace' at src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c:95276:13:
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c:95794:27: warning: '__pyx_v_k' may be used uninitialized [-Wmaybe-uninitialized]
+95794 |   __pyx_t_7 = ((__pyx_v_n + __pyx_v_k) + 1);
+      |                ~~~~~~~~~~~^~~~~~~~~~~~
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c: In function '__pyx_pw_4sage_6matrix_7matrix2_6Matrix_265_cyclic_subspace':
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c:95290:14: note: '__pyx_v_k' was declared here
+95290 |   Py_ssize_t __pyx_v_k;
+      |              ^~~~~~~~~
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c: In function '__pyx_f_4sage_6matrix_7matrix2_6Matrix__block_ldlt':
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c:105904:18: warning: '__pyx_v_r' may be used uninitialized [-Wmaybe-uninitialized]
+105904 |     __pyx_t_3 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_r, __pyx_v_r); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 15313, __pyx_L1_error)
+       |                 ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so.p/src/sage/matrix/matrix2.pyx.c:104729:14: note: '__pyx_v_r' was declared here
+104729 |   Py_ssize_t __pyx_v_r;
+       |              ^~~~~~~~~
+[185/189] Linking target src/sage/matrix/matrix2.cpython-312-x86_64-linux-gnu.so
+[186/189] Compiling C object src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_rings_polynomial_real_roots.pyx.c.o
+In file included from src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:1132:
+../../src/sage/libs/flint/flint_wrap.h:31: warning: "I" redefined
+   31 | #define I Iv
+      | 
+In file included from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/npy_common.h:380,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/ndarraytypes.h:4,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/ndarrayobject.h:12,
+                 from /home/vince/.conda/envs/sage-dev/lib/python3.12/site-packages/numpy/_core/include/numpy/arrayobject.h:5,
+                 from src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:1125:
+/home/vince/.conda/envs/sage-dev/x86_64-conda-linux-gnu/sysroot/usr/include/complex.h:53: note: this is the location of the previous definition
+   53 | #define I _Complex_I
+      | 
+In function '__pyx_pf_4sage_5rings_10polynomial_10real_roots_2de_casteljau_intvec',
+    inlined from '__pyx_pw_4sage_5rings_10polynomial_10real_roots_3de_casteljau_intvec' at src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:18387:13:
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:19138:14: warning: '__pyx_v_num_ui' may be used uninitialized [-Wmaybe-uninitialized]
+19138 |           if (__pyx_t_6) {
+      |              ^
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c: In function '__pyx_pw_4sage_5rings_10polynomial_10real_roots_3de_casteljau_intvec':
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:18419:17: note: '__pyx_v_num_ui' was declared here
+18419 |   unsigned long __pyx_v_num_ui;
+      |                 ^~~~~~~~~~~~~~
+In function '__pyx_pf_4sage_5rings_10polynomial_10real_roots_2de_casteljau_intvec',
+    inlined from '__pyx_pw_4sage_5rings_10polynomial_10real_roots_3de_casteljau_intvec' at src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:18387:13:
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:19110:14: warning: '__pyx_v_diff_ui' may be used uninitialized [-Wmaybe-uninitialized]
+19110 |           if (__pyx_t_6) {
+      |              ^
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c: In function '__pyx_pw_4sage_5rings_10polynomial_10real_roots_3de_casteljau_intvec':
+src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so.p/src/sage/rings/polynomial/real_roots.pyx.c:18421:17: note: '__pyx_v_diff_ui' was declared here
+18421 |   unsigned long __pyx_v_diff_ui;
+      |                 ^~~~~~~~~~~~~~~
+[187/189] Linking target src/sage/rings/polynomial/real_roots.cpython-312-x86_64-linux-gnu.so
+[188/189] Compiling C++ object src/sage/matrix/matrix_integer_sparse.cpython-312-x86_64-linux-gnu.so.p/meson-generated_src_sage_matrix_matrix_integer_sparse.pyx.cpp.o
+[189/189] Linking target src/sage/matrix/matrix_integer_sparse.cpython-312-x86_64-linux-gnu.so
+INFO: autodetecting backend as ninja
+INFO: calculating backend command to run: /home/vince/.conda/envs/sage-dev/bin/ninja -C /home/vince/Documents/git/sage/build/cp312
