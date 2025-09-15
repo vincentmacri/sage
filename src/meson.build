@@ -259,7 +259,6 @@ add_project_arguments('--embed-positions', language: 'cython')
 add_project_arguments('-X fast_getattr=True', language: 'cython')
 #add_project_arguments('-X language_level="3"', language : 'cython')
 add_project_arguments('-X legacy_implicit_noexcept=True', language: 'cython')
-add_project_arguments('--annotate', language: 'cython')
 add_project_arguments(
   '-X preliminary_late_includes_cy28=True',
   language: 'cython',
