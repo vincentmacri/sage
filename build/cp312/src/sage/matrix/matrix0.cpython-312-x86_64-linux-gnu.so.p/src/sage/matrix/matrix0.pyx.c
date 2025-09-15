@@ -22517,7 +22517,7 @@ static PyObject *__pyx_pf_4sage_6matrix_7matrix0_6Matrix_56_latex_(struct __pyx_
 /* "sage/matrix/matrix0.pyx":2389
  *     ###################################################
  * 
- *     cpdef unsigned long ncols(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long ncols(self) noexcept:             # <<<<<<<<<<<<<<
  *         """
  *         Return the number of columns of this matrix.
 */
@@ -22608,7 +22608,7 @@ static unsigned long __pyx_f_4sage_6matrix_7matrix0_6Matrix_ncols(struct __pyx_o
  *         """
  *         return self._ncols             # <<<<<<<<<<<<<<
  * 
- *     cpdef unsigned long nrows(self):
+ *     cpdef unsigned long nrows(self) noexcept:
 */
   __pyx_r = __pyx_v_self->__pyx_base._ncols;
   goto __pyx_L0;
@@ -22616,7 +22616,7 @@ static unsigned long __pyx_f_4sage_6matrix_7matrix0_6Matrix_ncols(struct __pyx_o
   /* "sage/matrix/matrix0.pyx":2389
  *     ###################################################
  * 
- *     cpdef unsigned long ncols(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long ncols(self) noexcept:             # <<<<<<<<<<<<<<
  *         """
  *         Return the number of columns of this matrix.
 */
@@ -22706,7 +22706,7 @@ static PyObject *__pyx_pf_4sage_6matrix_7matrix0_6Matrix_58ncols(struct __pyx_ob
 /* "sage/matrix/matrix0.pyx":2411
  *         return self._ncols
  * 
- *     cpdef unsigned long nrows(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long nrows(self) noexcept:             # <<<<<<<<<<<<<<
  *         r"""
  *         Return the number of rows of this matrix.
 */
@@ -22805,7 +22805,7 @@ static unsigned long __pyx_f_4sage_6matrix_7matrix0_6Matrix_nrows(struct __pyx_o
   /* "sage/matrix/matrix0.pyx":2411
  *         return self._ncols
  * 
- *     cpdef unsigned long nrows(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long nrows(self) noexcept:             # <<<<<<<<<<<<<<
  *         r"""
  *         Return the number of rows of this matrix.
 */
@@ -53177,7 +53177,7 @@ __Pyx_RefNannySetupContext("PyInit_matrix0", 0);
   /* "sage/matrix/matrix0.pyx":2389
  *     ###################################################
  * 
- *     cpdef unsigned long ncols(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long ncols(self) noexcept:             # <<<<<<<<<<<<<<
  *         """
  *         Return the number of columns of this matrix.
 */
@@ -53189,7 +53189,7 @@ __Pyx_RefNannySetupContext("PyInit_matrix0", 0);
   /* "sage/matrix/matrix0.pyx":2411
  *         return self._ncols
  * 
- *     cpdef unsigned long nrows(self):             # <<<<<<<<<<<<<<
+ *     cpdef unsigned long nrows(self) noexcept:             # <<<<<<<<<<<<<<
  *         r"""
  *         Return the number of rows of this matrix.
 */
