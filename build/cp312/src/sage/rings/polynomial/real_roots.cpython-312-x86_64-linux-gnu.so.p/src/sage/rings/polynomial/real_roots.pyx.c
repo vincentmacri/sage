@@ -4162,6 +4162,8 @@ static CYTHON_INLINE struct __pyx_obj_4sage_5rings_9real_mpfi_RealIntervalFieldE
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -6032,9 +6034,7 @@ static const char __pyx_k_lower[] = "lower";
 static const char __pyx_k_lsign[] = "lsign";
 static const char __pyx_k_msign[] = "msign";
 static const char __pyx_k_msize[] = "msize";
-static const char __pyx_k_ncols[] = "ncols";
 static const char __pyx_k_ndivs[] = "ndivs";
-static const char __pyx_k_nrows[] = "nrows";
 static const char __pyx_k_ocean[] = "ocean";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_right[] = "right";
@@ -6808,7 +6808,7 @@ typedef struct {
   PyObject *__pyx_slice[1];
   PyObject *__pyx_tuple[13];
   PyObject *__pyx_codeobj_tab[99];
-  PyObject *__pyx_string_tab[615];
+  PyObject *__pyx_string_tab[613];
   PyObject *__pyx_int_0;
   PyObject *__pyx_int_1;
   PyObject *__pyx_int_2;
@@ -7250,241 +7250,239 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_mt __pyx_string_tab[377]
 #define __pyx_n_u_n __pyx_string_tab[378]
 #define __pyx_n_u_name __pyx_string_tab[379]
-#define __pyx_n_u_ncols __pyx_string_tab[380]
-#define __pyx_n_u_ndivides __pyx_string_tab[381]
-#define __pyx_n_u_ndivs __pyx_string_tab[382]
-#define __pyx_n_u_neg __pyx_string_tab[383]
-#define __pyx_n_u_negCounter __pyx_string_tab[384]
-#define __pyx_n_u_neg_cl __pyx_string_tab[385]
-#define __pyx_n_u_neg_err __pyx_string_tab[386]
-#define __pyx_n_u_new_err __pyx_string_tab[387]
-#define __pyx_n_u_new_exp __pyx_string_tab[388]
-#define __pyx_n_u_new_lsb __pyx_string_tab[389]
-#define __pyx_n_u_new_neg __pyx_string_tab[390]
-#define __pyx_n_u_new_pos __pyx_string_tab[391]
-#define __pyx_n_u_new_rel_bounds __pyx_string_tab[392]
-#define __pyx_n_u_next __pyx_string_tab[393]
-#define __pyx_n_u_nextabove __pyx_string_tab[394]
-#define __pyx_n_u_nextbelow __pyx_string_tab[395]
-#define __pyx_n_u_nrows __pyx_string_tab[396]
-#define __pyx_n_u_ntargs __pyx_string_tab[397]
-#define __pyx_n_u_num __pyx_string_tab[398]
-#define __pyx_n_u_num_fits_ui __pyx_string_tab[399]
-#define __pyx_n_u_num_less_diff __pyx_string_tab[400]
-#define __pyx_n_u_num_ui __pyx_string_tab[401]
-#define __pyx_n_u_numerator __pyx_string_tab[402]
-#define __pyx_kp_u_numpy__core_multiarray_failed_to __pyx_string_tab[403]
-#define __pyx_kp_u_numpy__core_umath_failed_to_impo __pyx_string_tab[404]
-#define __pyx_n_u_oc __pyx_string_tab[405]
-#define __pyx_n_u_ocean __pyx_string_tab[406]
-#define __pyx_n_u_ocean__islands __pyx_string_tab[407]
-#define __pyx_n_u_ocean_all_done __pyx_string_tab[408]
-#define __pyx_n_u_ocean_approx_bp __pyx_string_tab[409]
-#define __pyx_n_u_ocean_find_roots __pyx_string_tab[410]
-#define __pyx_n_u_ocean_increase_precision __pyx_string_tab[411]
-#define __pyx_n_u_ocean_refine_all __pyx_string_tab[412]
-#define __pyx_n_u_ocean_reset_root_width __pyx_string_tab[413]
-#define __pyx_n_u_ocean_roots __pyx_string_tab[414]
-#define __pyx_n_u_ocean_target __pyx_string_tab[415]
-#define __pyx_kp_u_ocean_with_precision __pyx_string_tab[416]
-#define __pyx_n_u_oceans __pyx_string_tab[417]
-#define __pyx_n_u_ok __pyx_string_tab[418]
-#define __pyx_n_u_old __pyx_string_tab[419]
-#define __pyx_n_u_old_msb __pyx_string_tab[420]
-#define __pyx_n_u_one __pyx_string_tab[421]
-#define __pyx_n_u_out_of_bounds __pyx_string_tab[422]
-#define __pyx_kp_u_over __pyx_string_tab[423]
-#define __pyx_n_u_p __pyx_string_tab[424]
-#define __pyx_n_u_p1 __pyx_string_tab[425]
-#define __pyx_n_u_p1_2 __pyx_string_tab[426]
-#define __pyx_n_u_p2 __pyx_string_tab[427]
-#define __pyx_n_u_p2_2 __pyx_string_tab[428]
-#define __pyx_n_u_parent __pyx_string_tab[429]
-#define __pyx_n_u_pending_pos_coeff __pyx_string_tab[430]
-#define __pyx_n_u_pending_pos_exp __pyx_string_tab[431]
-#define __pyx_n_u_poly __pyx_string_tab[432]
-#define __pyx_n_u_polynomial_root __pyx_string_tab[433]
-#define __pyx_n_u_pop __pyx_string_tab[434]
-#define __pyx_n_u_pos __pyx_string_tab[435]
-#define __pyx_n_u_posCounter __pyx_string_tab[436]
-#define __pyx_n_u_pos_err __pyx_string_tab[437]
-#define __pyx_n_u_precise __pyx_string_tab[438]
-#define __pyx_n_u_precompute_degree_reduction_cach __pyx_string_tab[439]
-#define __pyx_n_u_prepare __pyx_string_tab[440]
-#define __pyx_n_u_prod __pyx_string_tab[441]
-#define __pyx_n_u_pseudoinverse __pyx_string_tab[442]
-#define __pyx_n_u_pull_right __pyx_string_tab[443]
-#define __pyx_n_u_pulling __pyx_string_tab[444]
-#define __pyx_n_u_python_random __pyx_string_tab[445]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[446]
-#define __pyx_n_u_qdiv __pyx_string_tab[447]
-#define __pyx_n_u_qualname __pyx_string_tab[448]
-#define __pyx_n_u_r __pyx_string_tab[449]
-#define __pyx_n_u_r1 __pyx_string_tab[450]
-#define __pyx_n_u_r2 __pyx_string_tab[451]
-#define __pyx_n_u_ra __pyx_string_tab[452]
-#define __pyx_n_u_rand __pyx_string_tab[453]
-#define __pyx_n_u_randrange __pyx_string_tab[454]
-#define __pyx_n_u_randstate __pyx_string_tab[455]
-#define __pyx_n_u_range __pyx_string_tab[456]
-#define __pyx_n_u_rational __pyx_string_tab[457]
-#define __pyx_n_u_rational_root_bounds __pyx_string_tab[458]
-#define __pyx_n_u_rbounds __pyx_string_tab[459]
-#define __pyx_n_u_rbp __pyx_string_tab[460]
-#define __pyx_n_u_real_roots __pyx_string_tab[461]
-#define __pyx_n_u_realfield_rndu_cache __pyx_string_tab[462]
-#define __pyx_n_u_refine __pyx_string_tab[463]
-#define __pyx_n_u_refine_all __pyx_string_tab[464]
-#define __pyx_n_u_refine_recurse __pyx_string_tab[465]
-#define __pyx_n_u_region __pyx_string_tab[466]
-#define __pyx_n_u_region_width __pyx_string_tab[467]
-#define __pyx_n_u_rel_bounds __pyx_string_tab[468]
-#define __pyx_n_u_rel_roots __pyx_string_tab[469]
-#define __pyx_n_u_rel_width __pyx_string_tab[470]
-#define __pyx_n_u_rel_width_rr __pyx_string_tab[471]
-#define __pyx_n_u_relative_bounds __pyx_string_tab[472]
-#define __pyx_n_u_repr __pyx_string_tab[473]
-#define __pyx_n_u_res __pyx_string_tab[474]
-#define __pyx_n_u_reset_root_width __pyx_string_tab[475]
-#define __pyx_n_u_return __pyx_string_tab[476]
-#define __pyx_n_u_retval __pyx_string_tab[477]
-#define __pyx_n_u_reverse __pyx_string_tab[478]
-#define __pyx_n_u_reverse_intvec __pyx_string_tab[479]
-#define __pyx_n_u_rf __pyx_string_tab[480]
-#define __pyx_n_u_rf2 __pyx_string_tab[481]
-#define __pyx_n_u_rgap __pyx_string_tab[482]
-#define __pyx_n_u_ribp __pyx_string_tab[483]
-#define __pyx_n_u_right __pyx_string_tab[484]
-#define __pyx_n_u_rightmost __pyx_string_tab[485]
-#define __pyx_n_u_rlb __pyx_string_tab[486]
-#define __pyx_n_u_rnd __pyx_string_tab[487]
-#define __pyx_n_u_rng __pyx_string_tab[488]
-#define __pyx_n_u_rnx __pyx_string_tab[489]
-#define __pyx_n_u_root __pyx_string_tab[490]
-#define __pyx_n_u_root_bounds __pyx_string_tab[491]
-#define __pyx_kp_u_root_isolation_context_seed_d __pyx_string_tab[492]
-#define __pyx_n_u_roots __pyx_string_tab[493]
-#define __pyx_n_u_row __pyx_string_tab[494]
-#define __pyx_n_u_rr_gap __pyx_string_tab[495]
-#define __pyx_n_u_rr_gap_region __pyx_string_tab[496]
-#define __pyx_n_u_rt __pyx_string_tab[497]
-#define __pyx_n_u_rtarget __pyx_string_tab[498]
-#define __pyx_n_u_rts __pyx_string_tab[499]
-#define __pyx_n_u_rub __pyx_string_tab[500]
-#define __pyx_n_u_rv __pyx_string_tab[501]
-#define __pyx_n_u_rx __pyx_string_tab[502]
-#define __pyx_n_u_s __pyx_string_tab[503]
-#define __pyx_n_u_sage_arith_misc __pyx_string_tab[504]
-#define __pyx_n_u_sage_matrix_matrix_space __pyx_string_tab[505]
-#define __pyx_n_u_sage_misc_functional __pyx_string_tab[506]
-#define __pyx_n_u_sage_misc_misc_c __pyx_string_tab[507]
-#define __pyx_n_u_sage_misc_randstate __pyx_string_tab[508]
-#define __pyx_n_u_sage_modules_free_module __pyx_string_tab[509]
-#define __pyx_n_u_sage_modules_free_module_element __pyx_string_tab[510]
-#define __pyx_n_u_sage_rings_infinity __pyx_string_tab[511]
-#define __pyx_n_u_sage_rings_integer_ring __pyx_string_tab[512]
-#define __pyx_n_u_sage_rings_polynomial_polynomial __pyx_string_tab[513]
-#define __pyx_n_u_sage_rings_polynomial_real_roots __pyx_string_tab[514]
-#define __pyx_kp_u_sage_rings_polynomial_real_roots_2 __pyx_string_tab[515]
-#define __pyx_n_u_sage_rings_qqbar __pyx_string_tab[516]
-#define __pyx_n_u_sage_rings_rational_field __pyx_string_tab[517]
-#define __pyx_n_u_sage_rings_real_double __pyx_string_tab[518]
-#define __pyx_n_u_sage_rings_real_mpfi __pyx_string_tab[519]
-#define __pyx_n_u_sage_rings_real_mpfr __pyx_string_tab[520]
-#define __pyx_n_u_sage_structure_element __pyx_string_tab[521]
-#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[522]
-#define __pyx_n_u_samps __pyx_string_tab[523]
-#define __pyx_n_u_scale __pyx_string_tab[524]
-#define __pyx_n_u_scale2 __pyx_string_tab[525]
-#define __pyx_n_u_scale_intvec_var __pyx_string_tab[526]
-#define __pyx_n_u_scale_log2 __pyx_string_tab[527]
-#define __pyx_n_u_scale_log2_delta __pyx_string_tab[528]
-#define __pyx_n_u_scv __pyx_string_tab[529]
-#define __pyx_n_u_seed __pyx_string_tab[530]
-#define __pyx_n_u_self __pyx_string_tab[531]
-#define __pyx_n_u_set_name __pyx_string_tab[532]
-#define __pyx_n_u_shift __pyx_string_tab[533]
-#define __pyx_n_u_shrink_bp __pyx_string_tab[534]
-#define __pyx_n_u_sign __pyx_string_tab[535]
-#define __pyx_n_u_sign_2 __pyx_string_tab[536]
-#define __pyx_n_u_simplest_rational __pyx_string_tab[537]
-#define __pyx_n_u_size __pyx_string_tab[538]
-#define __pyx_n_u_sizes __pyx_string_tab[539]
-#define __pyx_n_u_skip_squarefree __pyx_string_tab[540]
-#define __pyx_n_u_slen __pyx_string_tab[541]
-#define __pyx_n_u_slope __pyx_string_tab[542]
-#define __pyx_n_u_slope_err __pyx_string_tab[543]
-#define __pyx_kp_u_slope_err_s __pyx_string_tab[544]
-#define __pyx_n_u_slope_range __pyx_string_tab[545]
-#define __pyx_n_u_sort __pyx_string_tab[546]
-#define __pyx_n_u_sparse __pyx_string_tab[547]
-#define __pyx_n_u_spec __pyx_string_tab[548]
-#define __pyx_n_u_split __pyx_string_tab[549]
-#define __pyx_n_u_split_for_targets __pyx_string_tab[550]
-#define __pyx_n_u_split_targets __pyx_string_tab[551]
-#define __pyx_n_u_splitting __pyx_string_tab[552]
-#define __pyx_n_u_sqrtd __pyx_string_tab[553]
-#define __pyx_n_u_squarefree_decomposition __pyx_string_tab[554]
-#define __pyx_n_u_strategy __pyx_string_tab[555]
-#define __pyx_n_u_sub_1 __pyx_string_tab[556]
-#define __pyx_n_u_subsample_vec_doctest __pyx_string_tab[557]
-#define __pyx_n_u_sum __pyx_string_tab[558]
-#define __pyx_n_u_swap_01 __pyx_string_tab[559]
-#define __pyx_n_u_swap_cl __pyx_string_tab[560]
-#define __pyx_n_u_swap_neg_cl __pyx_string_tab[561]
-#define __pyx_n_u_t __pyx_string_tab[562]
-#define __pyx_n_u_target_list __pyx_string_tab[563]
-#define __pyx_n_u_target_list_splitpoint __pyx_string_tab[564]
-#define __pyx_n_u_target_lsb __pyx_string_tab[565]
-#define __pyx_n_u_target_lsb_h __pyx_string_tab[566]
-#define __pyx_n_u_target_lsb_l __pyx_string_tab[567]
-#define __pyx_n_u_target_region __pyx_string_tab[568]
-#define __pyx_n_u_target_width __pyx_string_tab[569]
-#define __pyx_n_u_target_widths __pyx_string_tab[570]
-#define __pyx_n_u_targets __pyx_string_tab[571]
-#define __pyx_n_u_taylor_shift1_intvec __pyx_string_tab[572]
-#define __pyx_n_u_time __pyx_string_tab[573]
-#define __pyx_n_u_tl1 __pyx_string_tab[574]
-#define __pyx_n_u_tl2 __pyx_string_tab[575]
-#define __pyx_n_u_tmp __pyx_string_tab[576]
-#define __pyx_n_u_tmp2 __pyx_string_tab[577]
-#define __pyx_n_u_to_bernstein __pyx_string_tab[578]
-#define __pyx_n_u_to_bernstein_warp __pyx_string_tab[579]
-#define __pyx_n_u_to_ocean __pyx_string_tab[580]
-#define __pyx_n_u_total_islands __pyx_string_tab[581]
-#define __pyx_n_u_transpose __pyx_string_tab[582]
-#define __pyx_n_u_try_rand_split __pyx_string_tab[583]
-#define __pyx_n_u_try_split __pyx_string_tab[584]
-#define __pyx_n_u_type_code __pyx_string_tab[585]
-#define __pyx_n_u_u __pyx_string_tab[586]
-#define __pyx_n_u_ub __pyx_string_tab[587]
-#define __pyx_n_u_union __pyx_string_tab[588]
-#define __pyx_n_u_upper __pyx_string_tab[589]
-#define __pyx_n_u_upper_field __pyx_string_tab[590]
-#define __pyx_n_u_use_ints __pyx_string_tab[591]
-#define __pyx_n_u_usign __pyx_string_tab[592]
-#define __pyx_kp_u_usign_d __pyx_string_tab[593]
-#define __pyx_n_u_v __pyx_string_tab[594]
-#define __pyx_n_u_v0 __pyx_string_tab[595]
-#define __pyx_n_u_v0_err __pyx_string_tab[596]
-#define __pyx_n_u_variations __pyx_string_tab[597]
-#define __pyx_n_u_vector __pyx_string_tab[598]
-#define __pyx_n_u_vn __pyx_string_tab[599]
-#define __pyx_n_u_vn_err __pyx_string_tab[600]
-#define __pyx_n_u_vs __pyx_string_tab[601]
-#define __pyx_n_u_vsize __pyx_string_tab[602]
-#define __pyx_n_u_warp __pyx_string_tab[603]
-#define __pyx_n_u_warp_map __pyx_string_tab[604]
-#define __pyx_n_u_warp_map___init __pyx_string_tab[605]
-#define __pyx_n_u_warp_map_from_ocean __pyx_string_tab[606]
-#define __pyx_n_u_warp_map_to_ocean __pyx_string_tab[607]
-#define __pyx_n_u_width __pyx_string_tab[608]
-#define __pyx_n_u_wordsize __pyx_string_tab[609]
-#define __pyx_kp_u_wordsize_d __pyx_string_tab[610]
-#define __pyx_n_u_wordsize_rational __pyx_string_tab[611]
-#define __pyx_n_u_x __pyx_string_tab[612]
-#define __pyx_n_u_zero __pyx_string_tab[613]
-#define __pyx_n_u_zero_roots __pyx_string_tab[614]
+#define __pyx_n_u_ndivides __pyx_string_tab[380]
+#define __pyx_n_u_ndivs __pyx_string_tab[381]
+#define __pyx_n_u_neg __pyx_string_tab[382]
+#define __pyx_n_u_negCounter __pyx_string_tab[383]
+#define __pyx_n_u_neg_cl __pyx_string_tab[384]
+#define __pyx_n_u_neg_err __pyx_string_tab[385]
+#define __pyx_n_u_new_err __pyx_string_tab[386]
+#define __pyx_n_u_new_exp __pyx_string_tab[387]
+#define __pyx_n_u_new_lsb __pyx_string_tab[388]
+#define __pyx_n_u_new_neg __pyx_string_tab[389]
+#define __pyx_n_u_new_pos __pyx_string_tab[390]
+#define __pyx_n_u_new_rel_bounds __pyx_string_tab[391]
+#define __pyx_n_u_next __pyx_string_tab[392]
+#define __pyx_n_u_nextabove __pyx_string_tab[393]
+#define __pyx_n_u_nextbelow __pyx_string_tab[394]
+#define __pyx_n_u_ntargs __pyx_string_tab[395]
+#define __pyx_n_u_num __pyx_string_tab[396]
+#define __pyx_n_u_num_fits_ui __pyx_string_tab[397]
+#define __pyx_n_u_num_less_diff __pyx_string_tab[398]
+#define __pyx_n_u_num_ui __pyx_string_tab[399]
+#define __pyx_n_u_numerator __pyx_string_tab[400]
+#define __pyx_kp_u_numpy__core_multiarray_failed_to __pyx_string_tab[401]
+#define __pyx_kp_u_numpy__core_umath_failed_to_impo __pyx_string_tab[402]
+#define __pyx_n_u_oc __pyx_string_tab[403]
+#define __pyx_n_u_ocean __pyx_string_tab[404]
+#define __pyx_n_u_ocean__islands __pyx_string_tab[405]
+#define __pyx_n_u_ocean_all_done __pyx_string_tab[406]
+#define __pyx_n_u_ocean_approx_bp __pyx_string_tab[407]
+#define __pyx_n_u_ocean_find_roots __pyx_string_tab[408]
+#define __pyx_n_u_ocean_increase_precision __pyx_string_tab[409]
+#define __pyx_n_u_ocean_refine_all __pyx_string_tab[410]
+#define __pyx_n_u_ocean_reset_root_width __pyx_string_tab[411]
+#define __pyx_n_u_ocean_roots __pyx_string_tab[412]
+#define __pyx_n_u_ocean_target __pyx_string_tab[413]
+#define __pyx_kp_u_ocean_with_precision __pyx_string_tab[414]
+#define __pyx_n_u_oceans __pyx_string_tab[415]
+#define __pyx_n_u_ok __pyx_string_tab[416]
+#define __pyx_n_u_old __pyx_string_tab[417]
+#define __pyx_n_u_old_msb __pyx_string_tab[418]
+#define __pyx_n_u_one __pyx_string_tab[419]
+#define __pyx_n_u_out_of_bounds __pyx_string_tab[420]
+#define __pyx_kp_u_over __pyx_string_tab[421]
+#define __pyx_n_u_p __pyx_string_tab[422]
+#define __pyx_n_u_p1 __pyx_string_tab[423]
+#define __pyx_n_u_p1_2 __pyx_string_tab[424]
+#define __pyx_n_u_p2 __pyx_string_tab[425]
+#define __pyx_n_u_p2_2 __pyx_string_tab[426]
+#define __pyx_n_u_parent __pyx_string_tab[427]
+#define __pyx_n_u_pending_pos_coeff __pyx_string_tab[428]
+#define __pyx_n_u_pending_pos_exp __pyx_string_tab[429]
+#define __pyx_n_u_poly __pyx_string_tab[430]
+#define __pyx_n_u_polynomial_root __pyx_string_tab[431]
+#define __pyx_n_u_pop __pyx_string_tab[432]
+#define __pyx_n_u_pos __pyx_string_tab[433]
+#define __pyx_n_u_posCounter __pyx_string_tab[434]
+#define __pyx_n_u_pos_err __pyx_string_tab[435]
+#define __pyx_n_u_precise __pyx_string_tab[436]
+#define __pyx_n_u_precompute_degree_reduction_cach __pyx_string_tab[437]
+#define __pyx_n_u_prepare __pyx_string_tab[438]
+#define __pyx_n_u_prod __pyx_string_tab[439]
+#define __pyx_n_u_pseudoinverse __pyx_string_tab[440]
+#define __pyx_n_u_pull_right __pyx_string_tab[441]
+#define __pyx_n_u_pulling __pyx_string_tab[442]
+#define __pyx_n_u_python_random __pyx_string_tab[443]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[444]
+#define __pyx_n_u_qdiv __pyx_string_tab[445]
+#define __pyx_n_u_qualname __pyx_string_tab[446]
+#define __pyx_n_u_r __pyx_string_tab[447]
+#define __pyx_n_u_r1 __pyx_string_tab[448]
+#define __pyx_n_u_r2 __pyx_string_tab[449]
+#define __pyx_n_u_ra __pyx_string_tab[450]
+#define __pyx_n_u_rand __pyx_string_tab[451]
+#define __pyx_n_u_randrange __pyx_string_tab[452]
+#define __pyx_n_u_randstate __pyx_string_tab[453]
+#define __pyx_n_u_range __pyx_string_tab[454]
+#define __pyx_n_u_rational __pyx_string_tab[455]
+#define __pyx_n_u_rational_root_bounds __pyx_string_tab[456]
+#define __pyx_n_u_rbounds __pyx_string_tab[457]
+#define __pyx_n_u_rbp __pyx_string_tab[458]
+#define __pyx_n_u_real_roots __pyx_string_tab[459]
+#define __pyx_n_u_realfield_rndu_cache __pyx_string_tab[460]
+#define __pyx_n_u_refine __pyx_string_tab[461]
+#define __pyx_n_u_refine_all __pyx_string_tab[462]
+#define __pyx_n_u_refine_recurse __pyx_string_tab[463]
+#define __pyx_n_u_region __pyx_string_tab[464]
+#define __pyx_n_u_region_width __pyx_string_tab[465]
+#define __pyx_n_u_rel_bounds __pyx_string_tab[466]
+#define __pyx_n_u_rel_roots __pyx_string_tab[467]
+#define __pyx_n_u_rel_width __pyx_string_tab[468]
+#define __pyx_n_u_rel_width_rr __pyx_string_tab[469]
+#define __pyx_n_u_relative_bounds __pyx_string_tab[470]
+#define __pyx_n_u_repr __pyx_string_tab[471]
+#define __pyx_n_u_res __pyx_string_tab[472]
+#define __pyx_n_u_reset_root_width __pyx_string_tab[473]
+#define __pyx_n_u_return __pyx_string_tab[474]
+#define __pyx_n_u_retval __pyx_string_tab[475]
+#define __pyx_n_u_reverse __pyx_string_tab[476]
+#define __pyx_n_u_reverse_intvec __pyx_string_tab[477]
+#define __pyx_n_u_rf __pyx_string_tab[478]
+#define __pyx_n_u_rf2 __pyx_string_tab[479]
+#define __pyx_n_u_rgap __pyx_string_tab[480]
+#define __pyx_n_u_ribp __pyx_string_tab[481]
+#define __pyx_n_u_right __pyx_string_tab[482]
+#define __pyx_n_u_rightmost __pyx_string_tab[483]
+#define __pyx_n_u_rlb __pyx_string_tab[484]
+#define __pyx_n_u_rnd __pyx_string_tab[485]
+#define __pyx_n_u_rng __pyx_string_tab[486]
+#define __pyx_n_u_rnx __pyx_string_tab[487]
+#define __pyx_n_u_root __pyx_string_tab[488]
+#define __pyx_n_u_root_bounds __pyx_string_tab[489]
+#define __pyx_kp_u_root_isolation_context_seed_d __pyx_string_tab[490]
+#define __pyx_n_u_roots __pyx_string_tab[491]
+#define __pyx_n_u_row __pyx_string_tab[492]
+#define __pyx_n_u_rr_gap __pyx_string_tab[493]
+#define __pyx_n_u_rr_gap_region __pyx_string_tab[494]
+#define __pyx_n_u_rt __pyx_string_tab[495]
+#define __pyx_n_u_rtarget __pyx_string_tab[496]
+#define __pyx_n_u_rts __pyx_string_tab[497]
+#define __pyx_n_u_rub __pyx_string_tab[498]
+#define __pyx_n_u_rv __pyx_string_tab[499]
+#define __pyx_n_u_rx __pyx_string_tab[500]
+#define __pyx_n_u_s __pyx_string_tab[501]
+#define __pyx_n_u_sage_arith_misc __pyx_string_tab[502]
+#define __pyx_n_u_sage_matrix_matrix_space __pyx_string_tab[503]
+#define __pyx_n_u_sage_misc_functional __pyx_string_tab[504]
+#define __pyx_n_u_sage_misc_misc_c __pyx_string_tab[505]
+#define __pyx_n_u_sage_misc_randstate __pyx_string_tab[506]
+#define __pyx_n_u_sage_modules_free_module __pyx_string_tab[507]
+#define __pyx_n_u_sage_modules_free_module_element __pyx_string_tab[508]
+#define __pyx_n_u_sage_rings_infinity __pyx_string_tab[509]
+#define __pyx_n_u_sage_rings_integer_ring __pyx_string_tab[510]
+#define __pyx_n_u_sage_rings_polynomial_polynomial __pyx_string_tab[511]
+#define __pyx_n_u_sage_rings_polynomial_real_roots __pyx_string_tab[512]
+#define __pyx_kp_u_sage_rings_polynomial_real_roots_2 __pyx_string_tab[513]
+#define __pyx_n_u_sage_rings_qqbar __pyx_string_tab[514]
+#define __pyx_n_u_sage_rings_rational_field __pyx_string_tab[515]
+#define __pyx_n_u_sage_rings_real_double __pyx_string_tab[516]
+#define __pyx_n_u_sage_rings_real_mpfi __pyx_string_tab[517]
+#define __pyx_n_u_sage_rings_real_mpfr __pyx_string_tab[518]
+#define __pyx_n_u_sage_structure_element __pyx_string_tab[519]
+#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[520]
+#define __pyx_n_u_samps __pyx_string_tab[521]
+#define __pyx_n_u_scale __pyx_string_tab[522]
+#define __pyx_n_u_scale2 __pyx_string_tab[523]
+#define __pyx_n_u_scale_intvec_var __pyx_string_tab[524]
+#define __pyx_n_u_scale_log2 __pyx_string_tab[525]
+#define __pyx_n_u_scale_log2_delta __pyx_string_tab[526]
+#define __pyx_n_u_scv __pyx_string_tab[527]
+#define __pyx_n_u_seed __pyx_string_tab[528]
+#define __pyx_n_u_self __pyx_string_tab[529]
+#define __pyx_n_u_set_name __pyx_string_tab[530]
+#define __pyx_n_u_shift __pyx_string_tab[531]
+#define __pyx_n_u_shrink_bp __pyx_string_tab[532]
+#define __pyx_n_u_sign __pyx_string_tab[533]
+#define __pyx_n_u_sign_2 __pyx_string_tab[534]
+#define __pyx_n_u_simplest_rational __pyx_string_tab[535]
+#define __pyx_n_u_size __pyx_string_tab[536]
+#define __pyx_n_u_sizes __pyx_string_tab[537]
+#define __pyx_n_u_skip_squarefree __pyx_string_tab[538]
+#define __pyx_n_u_slen __pyx_string_tab[539]
+#define __pyx_n_u_slope __pyx_string_tab[540]
+#define __pyx_n_u_slope_err __pyx_string_tab[541]
+#define __pyx_kp_u_slope_err_s __pyx_string_tab[542]
+#define __pyx_n_u_slope_range __pyx_string_tab[543]
+#define __pyx_n_u_sort __pyx_string_tab[544]
+#define __pyx_n_u_sparse __pyx_string_tab[545]
+#define __pyx_n_u_spec __pyx_string_tab[546]
+#define __pyx_n_u_split __pyx_string_tab[547]
+#define __pyx_n_u_split_for_targets __pyx_string_tab[548]
+#define __pyx_n_u_split_targets __pyx_string_tab[549]
+#define __pyx_n_u_splitting __pyx_string_tab[550]
+#define __pyx_n_u_sqrtd __pyx_string_tab[551]
+#define __pyx_n_u_squarefree_decomposition __pyx_string_tab[552]
+#define __pyx_n_u_strategy __pyx_string_tab[553]
+#define __pyx_n_u_sub_1 __pyx_string_tab[554]
+#define __pyx_n_u_subsample_vec_doctest __pyx_string_tab[555]
+#define __pyx_n_u_sum __pyx_string_tab[556]
+#define __pyx_n_u_swap_01 __pyx_string_tab[557]
+#define __pyx_n_u_swap_cl __pyx_string_tab[558]
+#define __pyx_n_u_swap_neg_cl __pyx_string_tab[559]
+#define __pyx_n_u_t __pyx_string_tab[560]
+#define __pyx_n_u_target_list __pyx_string_tab[561]
+#define __pyx_n_u_target_list_splitpoint __pyx_string_tab[562]
+#define __pyx_n_u_target_lsb __pyx_string_tab[563]
+#define __pyx_n_u_target_lsb_h __pyx_string_tab[564]
+#define __pyx_n_u_target_lsb_l __pyx_string_tab[565]
+#define __pyx_n_u_target_region __pyx_string_tab[566]
+#define __pyx_n_u_target_width __pyx_string_tab[567]
+#define __pyx_n_u_target_widths __pyx_string_tab[568]
+#define __pyx_n_u_targets __pyx_string_tab[569]
+#define __pyx_n_u_taylor_shift1_intvec __pyx_string_tab[570]
+#define __pyx_n_u_time __pyx_string_tab[571]
+#define __pyx_n_u_tl1 __pyx_string_tab[572]
+#define __pyx_n_u_tl2 __pyx_string_tab[573]
+#define __pyx_n_u_tmp __pyx_string_tab[574]
+#define __pyx_n_u_tmp2 __pyx_string_tab[575]
+#define __pyx_n_u_to_bernstein __pyx_string_tab[576]
+#define __pyx_n_u_to_bernstein_warp __pyx_string_tab[577]
+#define __pyx_n_u_to_ocean __pyx_string_tab[578]
+#define __pyx_n_u_total_islands __pyx_string_tab[579]
+#define __pyx_n_u_transpose __pyx_string_tab[580]
+#define __pyx_n_u_try_rand_split __pyx_string_tab[581]
+#define __pyx_n_u_try_split __pyx_string_tab[582]
+#define __pyx_n_u_type_code __pyx_string_tab[583]
+#define __pyx_n_u_u __pyx_string_tab[584]
+#define __pyx_n_u_ub __pyx_string_tab[585]
+#define __pyx_n_u_union __pyx_string_tab[586]
+#define __pyx_n_u_upper __pyx_string_tab[587]
+#define __pyx_n_u_upper_field __pyx_string_tab[588]
+#define __pyx_n_u_use_ints __pyx_string_tab[589]
+#define __pyx_n_u_usign __pyx_string_tab[590]
+#define __pyx_kp_u_usign_d __pyx_string_tab[591]
+#define __pyx_n_u_v __pyx_string_tab[592]
+#define __pyx_n_u_v0 __pyx_string_tab[593]
+#define __pyx_n_u_v0_err __pyx_string_tab[594]
+#define __pyx_n_u_variations __pyx_string_tab[595]
+#define __pyx_n_u_vector __pyx_string_tab[596]
+#define __pyx_n_u_vn __pyx_string_tab[597]
+#define __pyx_n_u_vn_err __pyx_string_tab[598]
+#define __pyx_n_u_vs __pyx_string_tab[599]
+#define __pyx_n_u_vsize __pyx_string_tab[600]
+#define __pyx_n_u_warp __pyx_string_tab[601]
+#define __pyx_n_u_warp_map __pyx_string_tab[602]
+#define __pyx_n_u_warp_map___init __pyx_string_tab[603]
+#define __pyx_n_u_warp_map_from_ocean __pyx_string_tab[604]
+#define __pyx_n_u_warp_map_to_ocean __pyx_string_tab[605]
+#define __pyx_n_u_width __pyx_string_tab[606]
+#define __pyx_n_u_wordsize __pyx_string_tab[607]
+#define __pyx_kp_u_wordsize_d __pyx_string_tab[608]
+#define __pyx_n_u_wordsize_rational __pyx_string_tab[609]
+#define __pyx_n_u_x __pyx_string_tab[610]
+#define __pyx_n_u_zero __pyx_string_tab[611]
+#define __pyx_n_u_zero_roots __pyx_string_tab[612]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -7609,7 +7607,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<13; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<99; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<615; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<613; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   Py_CLEAR(clear_module_state->__pyx_int_0);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_int_2);
@@ -7758,7 +7756,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<13; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<99; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<615; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<613; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_0);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_1);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_2);
@@ -57875,16 +57873,15 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
   int __pyx_v_a;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
-  size_t __pyx_t_5;
-  int __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
+  PyObject *__pyx_t_5 = NULL;
+  size_t __pyx_t_6;
+  int __pyx_t_7;
   int __pyx_t_8;
   int __pyx_t_9;
-  int __pyx_t_10;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -57899,28 +57896,11 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
 */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(__pyx_assertions_enabled())) {
-    __pyx_t_1 = __Pyx_PyLong_From_int(__pyx_v_k); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4589, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PyObject_RichCompare(__pyx_mstate_global->__pyx_int_0, __pyx_t_1, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4589, __pyx_L1_error)
-    if (__Pyx_PyObject_IsTrue(__pyx_t_2)) {
-      __Pyx_DECREF(__pyx_t_2);
-      __pyx_t_4 = ((PyObject *)__pyx_v_m);
-      __Pyx_INCREF(__pyx_t_4);
-      __pyx_t_5 = 0;
-      {
-        PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
-        __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_nrows, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4589, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-      }
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_t_3, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4589, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_1 = (0 <= __pyx_v_k);
+    if (__pyx_t_1) {
+      __pyx_t_1 = (__pyx_v_k < ((struct __pyx_vtabstruct_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense *)__pyx_v_m->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_m), 0));
     }
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 4589, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_6)) {
+    if (unlikely(!__pyx_t_1)) {
       __Pyx_Raise(__pyx_builtin_AssertionError, 0, 0, 0);
       __PYX_ERR(0, 4589, __pyx_L1_error)
     }
@@ -57938,25 +57918,9 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
 */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(__pyx_assertions_enabled())) {
-    __pyx_t_1 = ((PyObject *)__pyx_v_m);
-    __Pyx_INCREF(__pyx_t_1);
-    __pyx_t_5 = 0;
-    {
-      PyObject *__pyx_callargs[2] = {__pyx_t_1, NULL};
-      __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4590, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-    }
-    __pyx_t_7 = PyObject_Length(((PyObject *)__pyx_v_v)); if (unlikely(__pyx_t_7 == ((Py_ssize_t)-1))) __PYX_ERR(0, 4590, __pyx_L1_error)
-    __pyx_t_1 = PyLong_FromSsize_t(__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4590, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_t_1, Py_LE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4590, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 4590, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_6)) {
+    __pyx_t_2 = PyObject_Length(((PyObject *)__pyx_v_v)); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 4590, __pyx_L1_error)
+    __pyx_t_1 = (((struct __pyx_vtabstruct_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense *)__pyx_v_m->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_m), 0) <= __pyx_t_2);
+    if (unlikely(!__pyx_t_1)) {
       __Pyx_Raise(__pyx_builtin_AssertionError, 0, 0, 0);
       __PYX_ERR(0, 4590, __pyx_L1_error)
     }
@@ -57972,15 +57936,15 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
  * 
  *     cdef mpz_t tmp
 */
-  __pyx_t_1 = NULL;
+  __pyx_t_4 = NULL;
   __Pyx_INCREF((PyObject *)__pyx_mstate_global->__pyx_ptype_4sage_5rings_7integer_Integer);
-  __pyx_t_2 = ((PyObject *)__pyx_mstate_global->__pyx_ptype_4sage_5rings_7integer_Integer); 
-  __pyx_t_5 = 1;
+  __pyx_t_5 = ((PyObject *)__pyx_mstate_global->__pyx_ptype_4sage_5rings_7integer_Integer); 
+  __pyx_t_6 = 1;
   {
-    PyObject *__pyx_callargs[2] = {__pyx_t_1, __pyx_mstate_global->__pyx_int_0};
-    __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_mstate_global->__pyx_int_0};
+    __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+__pyx_t_6, (2-__pyx_t_6) | (__pyx_t_6*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4592, __pyx_L1_error)
     __Pyx_GOTREF((PyObject *)__pyx_t_3);
   }
@@ -57994,19 +57958,7 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
  *     cdef int vsize = len(v)
  *     cdef int ra
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_m);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_5 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4596, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-  }
-  __pyx_t_8 = __Pyx_PyLong_As_int(__pyx_t_3); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 4596, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_msize = __pyx_t_8;
+  __pyx_v_msize = ((struct __pyx_vtabstruct_4sage_6matrix_20matrix_integer_dense_Matrix_integer_dense *)__pyx_v_m->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_m), 0);
 
   /* "sage/rings/polynomial/real_roots.pyx":4597
  * 
@@ -58015,8 +57967,8 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
  *     cdef int ra
  *     cdef int a
 */
-  __pyx_t_7 = PyObject_Length(((PyObject *)__pyx_v_v)); if (unlikely(__pyx_t_7 == ((Py_ssize_t)-1))) __PYX_ERR(0, 4597, __pyx_L1_error)
-  __pyx_v_vsize = __pyx_t_7;
+  __pyx_t_2 = PyObject_Length(((PyObject *)__pyx_v_v)); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 4597, __pyx_L1_error)
+  __pyx_v_vsize = __pyx_t_2;
 
   /* "sage/rings/polynomial/real_roots.pyx":4600
  *     cdef int ra
@@ -58034,10 +57986,10 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
  *         ra = subsample_vec(a, msize, vsize)
  *         m.get_unsafe_mpz(k, a, tmp)
 */
-  __pyx_t_8 = __pyx_v_msize;
-  __pyx_t_9 = __pyx_t_8;
-  for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
-    __pyx_v_a = __pyx_t_10;
+  __pyx_t_7 = __pyx_v_msize;
+  __pyx_t_8 = __pyx_t_7;
+  for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+    __pyx_v_a = __pyx_t_9;
 
     /* "sage/rings/polynomial/real_roots.pyx":4602
  *     mpz_init(tmp)
@@ -58098,10 +58050,9 @@ static PyObject *__pyx_pf_4sage_5rings_10polynomial_10real_roots_66dprod_imatrow
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("sage.rings.polynomial.real_roots.dprod_imatrow_vec", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -64867,7 +64818,6 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_mt, sizeof(__pyx_k_mt), 0, 1, 1}, /* PyObject cname: __pyx_n_u_mt */
   {__pyx_k_n, sizeof(__pyx_k_n), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
-  {__pyx_k_ncols, sizeof(__pyx_k_ncols), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ncols */
   {__pyx_k_ndivides, sizeof(__pyx_k_ndivides), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ndivides */
   {__pyx_k_ndivs, sizeof(__pyx_k_ndivs), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ndivs */
   {__pyx_k_neg, sizeof(__pyx_k_neg), 0, 1, 1}, /* PyObject cname: __pyx_n_u_neg */
@@ -64883,7 +64833,6 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_next, sizeof(__pyx_k_next), 0, 1, 1}, /* PyObject cname: __pyx_n_u_next */
   {__pyx_k_nextabove, sizeof(__pyx_k_nextabove), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nextabove */
   {__pyx_k_nextbelow, sizeof(__pyx_k_nextbelow), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nextbelow */
-  {__pyx_k_nrows, sizeof(__pyx_k_nrows), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nrows */
   {__pyx_k_ntargs, sizeof(__pyx_k_ntargs), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ntargs */
   {__pyx_k_num, sizeof(__pyx_k_num), 0, 1, 1}, /* PyObject cname: __pyx_n_u_num */
   {__pyx_k_num_fits_ui, sizeof(__pyx_k_num_fits_ui), 0, 1, 1}, /* PyObject cname: __pyx_n_u_num_fits_ui */

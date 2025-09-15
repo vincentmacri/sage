@@ -2613,6 +2613,8 @@ static struct __pyx_vtabstruct_4sage_9structure_7element_Matrix *__pyx_vtabptr_4
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -9652,15 +9654,6 @@ static Py_ssize_t __pyx_pw_4sage_8algebras_27finite_dimensional_algebras_34finit
 
 static Py_ssize_t __pyx_pf_4sage_8algebras_27finite_dimensional_algebras_34finite_dimensional_algebra_element_31FiniteDimensionalAlgebraElement_22__len__(struct __pyx_obj_4sage_8algebras_27finite_dimensional_algebras_34finite_dimensional_algebra_element_FiniteDimensionalAlgebraElement *__pyx_v_self) {
   Py_ssize_t __pyx_r;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  size_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__len__", 0);
 
   /* "sage/algebras/finite_dimensional_algebras/finite_dimensional_algebra_element.pyx":386
  *             3
@@ -9669,19 +9662,7 @@ static Py_ssize_t __pyx_pf_4sage_8algebras_27finite_dimensional_algebras_34finit
  * 
  *     # (Rich) comparison
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_self->_vector);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 386, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 386, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_r = __pyx_t_4;
+  __pyx_r = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_self->_vector->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self->_vector), 0);
   goto __pyx_L0;
 
   /* "sage/algebras/finite_dimensional_algebras/finite_dimensional_algebra_element.pyx":371
@@ -9693,13 +9674,7 @@ static Py_ssize_t __pyx_pf_4sage_8algebras_27finite_dimensional_algebras_34finit
 */
 
   /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element.FiniteDimensionalAlgebraElement.__len__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
   __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 

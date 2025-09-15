@@ -2979,6 +2979,8 @@ static struct __pyx_vtabstruct_4sage_9structure_7element_Matrix *__pyx_vtabptr_4
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -4322,8 +4324,6 @@ static const char __pyx_k_xgcd[] = "xgcd";
 static const char __pyx_k_zero[] = "zero";
 static const char __pyx_k_1_QfA[] = "\200\001\360@\001\000\005\014\320\013\033\2301\320\034-\250Q\250f\260A";
 static const char __pyx_k_coeff[] = "coeff";
-static const char __pyx_k_ncols[] = "ncols";
-static const char __pyx_k_nrows[] = "nrows";
 static const char __pyx_k_pivot[] = "pivot";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_right[] = "right";
@@ -4454,7 +4454,7 @@ typedef struct {
   PyTypeObject *__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial_generic_dense_inexact;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   PyObject *__pyx_codeobj_tab[3];
-  PyObject *__pyx_string_tab[63];
+  PyObject *__pyx_string_tab[61];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
 PyTypeObject *__pyx_CommonTypesMetaclassType;
@@ -4532,29 +4532,27 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_module __pyx_string_tab[37]
 #define __pyx_n_u_n __pyx_string_tab[38]
 #define __pyx_n_u_name __pyx_string_tab[39]
-#define __pyx_n_u_ncols __pyx_string_tab[40]
-#define __pyx_n_u_nrows __pyx_string_tab[41]
-#define __pyx_n_u_p __pyx_string_tab[42]
-#define __pyx_n_u_parent __pyx_string_tab[43]
-#define __pyx_n_u_pivot __pyx_string_tab[44]
-#define __pyx_n_u_pivot_cols __pyx_string_tab[45]
-#define __pyx_n_u_pop __pyx_string_tab[46]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[47]
-#define __pyx_n_u_q __pyx_string_tab[48]
-#define __pyx_n_u_qualname __pyx_string_tab[49]
-#define __pyx_n_u_range __pyx_string_tab[50]
-#define __pyx_n_u_reversed_hermite_form __pyx_string_tab[51]
-#define __pyx_n_u_right __pyx_string_tab[52]
-#define __pyx_n_u_sage_matrix_constructor __pyx_string_tab[53]
-#define __pyx_n_u_sage_rings_function_field_hermit __pyx_string_tab[54]
-#define __pyx_kp_u_sage_rings_function_field_hermit_2 __pyx_string_tab[55]
-#define __pyx_n_u_sage_structure_element __pyx_string_tab[56]
-#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[57]
-#define __pyx_n_u_set_name __pyx_string_tab[58]
-#define __pyx_n_u_transformation __pyx_string_tab[59]
-#define __pyx_n_u_x __pyx_string_tab[60]
-#define __pyx_n_u_xgcd __pyx_string_tab[61]
-#define __pyx_n_u_zero __pyx_string_tab[62]
+#define __pyx_n_u_p __pyx_string_tab[40]
+#define __pyx_n_u_parent __pyx_string_tab[41]
+#define __pyx_n_u_pivot __pyx_string_tab[42]
+#define __pyx_n_u_pivot_cols __pyx_string_tab[43]
+#define __pyx_n_u_pop __pyx_string_tab[44]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[45]
+#define __pyx_n_u_q __pyx_string_tab[46]
+#define __pyx_n_u_qualname __pyx_string_tab[47]
+#define __pyx_n_u_range __pyx_string_tab[48]
+#define __pyx_n_u_reversed_hermite_form __pyx_string_tab[49]
+#define __pyx_n_u_right __pyx_string_tab[50]
+#define __pyx_n_u_sage_matrix_constructor __pyx_string_tab[51]
+#define __pyx_n_u_sage_rings_function_field_hermit __pyx_string_tab[52]
+#define __pyx_kp_u_sage_rings_function_field_hermit_2 __pyx_string_tab[53]
+#define __pyx_n_u_sage_structure_element __pyx_string_tab[54]
+#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[55]
+#define __pyx_n_u_set_name __pyx_string_tab[56]
+#define __pyx_n_u_transformation __pyx_string_tab[57]
+#define __pyx_n_u_x __pyx_string_tab[58]
+#define __pyx_n_u_xgcd __pyx_string_tab[59]
+#define __pyx_n_u_zero __pyx_string_tab[60]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -4633,7 +4631,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial_generic_dense);
   Py_CLEAR(clear_module_state->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial_generic_dense_inexact);
   for (int i=0; i<3; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<63; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<61; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
@@ -4712,7 +4710,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial_generic_dense);
   Py_VISIT(traverse_module_state->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial_generic_dense_inexact);
   for (int i=0; i<3; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<63; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<61; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
@@ -5581,16 +5579,16 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  size_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  size_t __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
+  int __pyx_t_7;
   int __pyx_t_8;
   int __pyx_t_9;
   int __pyx_t_10;
-  int __pyx_t_11;
-  PyObject *(*__pyx_t_12)(PyObject *);
+  PyObject *(*__pyx_t_11)(PyObject *);
+  Py_ssize_t __pyx_t_12;
   Py_ssize_t __pyx_t_13;
   Py_ssize_t __pyx_t_14;
   int __pyx_t_15;
@@ -5622,19 +5620,7 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *     cdef Py_ssize_t n = A.ncols()
  *     cdef Py_ssize_t i = m - 1
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_A);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_nrows, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 90, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_m = __pyx_t_4;
+  __pyx_v_m = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), 0);
 
   /* "sage/rings/function_field/hermite_form_polynomial.pyx":91
  * 
@@ -5643,19 +5629,7 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *     cdef Py_ssize_t i = m - 1
  *     cdef Py_ssize_t j = n - 1
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_A);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 91, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_n = __pyx_t_4;
+  __pyx_v_n = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), 0);
 
   /* "sage/rings/function_field/hermite_form_polynomial.pyx":92
  *     cdef Py_ssize_t m = A.nrows()
@@ -5682,24 +5656,24 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  * 
  *     cdef int di, dk
 */
-  __pyx_t_6 = ((PyObject *)__pyx_v_A);
-  __Pyx_INCREF(__pyx_t_6);
-  __pyx_t_3 = 0;
+  __pyx_t_4 = ((PyObject *)__pyx_v_A);
+  __Pyx_INCREF(__pyx_t_4);
+  __pyx_t_5 = 0;
   {
-    PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
-    __pyx_t_5 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_base_ring, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 97, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
+    __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_base_ring, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
   }
-  __pyx_t_2 = __pyx_t_5;
+  __pyx_t_2 = __pyx_t_3;
   __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
+  __pyx_t_5 = 0;
   {
     PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_zero, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_zero, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
@@ -5735,39 +5709,39 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  * 
  *     while j >= 0:
 */
-    __pyx_t_5 = NULL;
+    __pyx_t_3 = NULL;
     __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_identity_matrix); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = ((PyObject *)__pyx_v_A);
-    __Pyx_INCREF(__pyx_t_7);
-    __pyx_t_3 = 0;
+    __pyx_t_6 = ((PyObject *)__pyx_v_A);
+    __Pyx_INCREF(__pyx_t_6);
+    __pyx_t_5 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_7, NULL};
-      __pyx_t_6 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_base_ring, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 104, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
+      PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
+      __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_base_ring, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 104, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_7 = PyLong_FromSsize_t(__pyx_v_m); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 104, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_3 = 1;
+    __pyx_t_6 = PyLong_FromSsize_t(__pyx_v_m); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 104, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = 1;
     #if CYTHON_UNPACK_METHODS
     if (unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
-      assert(__pyx_t_5);
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_3);
       PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_3);
       __Pyx_INCREF(__pyx__function);
       __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
-      __pyx_t_3 = 0;
+      __pyx_t_5 = 0;
     }
     #endif
     {
-      PyObject *__pyx_callargs[3] = {__pyx_t_5, __pyx_t_6, __pyx_t_7};
-      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_3, (3-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      PyObject *__pyx_callargs[3] = {__pyx_t_3, __pyx_t_4, __pyx_t_6};
+      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 104, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
@@ -5795,8 +5769,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *         k = i
 */
   while (1) {
-    __pyx_t_8 = (__pyx_v_j >= 0);
-    if (!__pyx_t_8) break;
+    __pyx_t_7 = (__pyx_v_j >= 0);
+    if (!__pyx_t_7) break;
 
     /* "sage/rings/function_field/hermite_form_polynomial.pyx":108
  *     while j >= 0:
@@ -5815,20 +5789,20 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *         if k >= 0:
 */
     while (1) {
-      __pyx_t_9 = (__pyx_v_k >= 0);
-      if (__pyx_t_9) {
+      __pyx_t_8 = (__pyx_v_k >= 0);
+      if (__pyx_t_8) {
       } else {
-        __pyx_t_8 = __pyx_t_9;
+        __pyx_t_7 = __pyx_t_8;
         goto __pyx_L8_bool_binop_done;
       }
       __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 109, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 109, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_10 = (!__pyx_t_9);
-      __pyx_t_8 = __pyx_t_10;
+      __pyx_t_9 = (!__pyx_t_8);
+      __pyx_t_7 = __pyx_t_9;
       __pyx_L8_bool_binop_done:;
-      if (!__pyx_t_8) break;
+      if (!__pyx_t_7) break;
 
       /* "sage/rings/function_field/hermite_form_polynomial.pyx":110
  *         k = i
@@ -5847,8 +5821,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *             # swap the kth row with the ith row
  *             if k < i:
 */
-    __pyx_t_8 = (__pyx_v_k >= 0);
-    if (__pyx_t_8) {
+    __pyx_t_7 = (__pyx_v_k >= 0);
+    if (__pyx_t_7) {
 
       /* "sage/rings/function_field/hermite_form_polynomial.pyx":113
  *         if k >= 0:
@@ -5857,8 +5831,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                 A.swap_rows_c(i, k)
  *                 if transformation:
 */
-      __pyx_t_8 = (__pyx_v_k < __pyx_v_i);
-      if (__pyx_t_8) {
+      __pyx_t_7 = (__pyx_v_k < __pyx_v_i);
+      if (__pyx_t_7) {
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":114
  *             # swap the kth row with the ith row
@@ -5926,22 +5900,22 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *             while k >= 0 and A.get_unsafe(k, j):
  *                 dk = A.get_unsafe(k, j).degree()
 */
-      __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_j); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 119, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_1 = __pyx_t_7;
+      __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_j); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 119, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_1 = __pyx_t_6;
       __Pyx_INCREF(__pyx_t_1);
-      __pyx_t_3 = 0;
+      __pyx_t_5 = 0;
       {
         PyObject *__pyx_callargs[2] = {__pyx_t_1, NULL};
-        __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_degree, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+        __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_degree, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
         __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
       }
-      __pyx_t_11 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 119, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 119, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_v_di = __pyx_t_11;
+      __pyx_v_di = __pyx_t_10;
 
       /* "sage/rings/function_field/hermite_form_polynomial.pyx":120
  *             # put the row with the smalllest degree to the ith row
@@ -5951,19 +5925,19 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                 if dk < di:
 */
       while (1) {
-        __pyx_t_10 = (__pyx_v_k >= 0);
-        if (__pyx_t_10) {
+        __pyx_t_9 = (__pyx_v_k >= 0);
+        if (__pyx_t_9) {
         } else {
-          __pyx_t_8 = __pyx_t_10;
+          __pyx_t_7 = __pyx_t_9;
           goto __pyx_L15_bool_binop_done;
         }
         __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 120, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 120, __pyx_L1_error)
+        __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 120, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_8 = __pyx_t_10;
+        __pyx_t_7 = __pyx_t_9;
         __pyx_L15_bool_binop_done:;
-        if (!__pyx_t_8) break;
+        if (!__pyx_t_7) break;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":121
  *             di = A.get_unsafe(i, j).degree()
@@ -5974,20 +5948,20 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
         __pyx_t_1 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_j); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 121, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_7 = __pyx_t_1;
-        __Pyx_INCREF(__pyx_t_7);
-        __pyx_t_3 = 0;
+        __pyx_t_6 = __pyx_t_1;
+        __Pyx_INCREF(__pyx_t_6);
+        __pyx_t_5 = 0;
         {
-          PyObject *__pyx_callargs[2] = {__pyx_t_7, NULL};
-          __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_degree, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-          __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+          PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
+          __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_degree, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+          __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
         }
-        __pyx_t_11 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 121, __pyx_L1_error)
+        __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 121, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_v_dk = __pyx_t_11;
+        __pyx_v_dk = __pyx_t_10;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":122
  *             while k >= 0 and A.get_unsafe(k, j):
@@ -5996,8 +5970,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                     A.swap_rows_c(i, k)
  *                     di = dk
 */
-        __pyx_t_8 = (__pyx_v_dk < __pyx_v_di);
-        if (__pyx_t_8) {
+        __pyx_t_7 = (__pyx_v_dk < __pyx_v_di);
+        if (__pyx_t_7) {
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":123
  *                 dk = A.get_unsafe(k, j).degree()
@@ -6094,20 +6068,20 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                 if l < 0:
 */
         while (1) {
-          __pyx_t_10 = (__pyx_v_l >= 0);
-          if (__pyx_t_10) {
+          __pyx_t_9 = (__pyx_v_l >= 0);
+          if (__pyx_t_9) {
           } else {
-            __pyx_t_8 = __pyx_t_10;
+            __pyx_t_7 = __pyx_t_9;
             goto __pyx_L23_bool_binop_done;
           }
           __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 131, __pyx_L1_error)
+          __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 131, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_9 = (!__pyx_t_10);
-          __pyx_t_8 = __pyx_t_9;
+          __pyx_t_8 = (!__pyx_t_9);
+          __pyx_t_7 = __pyx_t_8;
           __pyx_L23_bool_binop_done:;
-          if (!__pyx_t_8) break;
+          if (!__pyx_t_7) break;
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":132
  *                 # find a row with nonzero entry in the jth column
@@ -6126,8 +6100,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                     break
  * 
 */
-        __pyx_t_8 = (__pyx_v_l < 0);
-        if (__pyx_t_8) {
+        __pyx_t_7 = (__pyx_v_l < 0);
+        if (__pyx_t_7) {
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":134
  *                     l -= 1
@@ -6186,10 +6160,10 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
         __pyx_t_1 = ((PyObject *)__pyx_v_a);
         __Pyx_INCREF(__pyx_t_1);
-        __pyx_t_3 = 0;
+        __pyx_t_5 = 0;
         {
           PyObject *__pyx_callargs[2] = {__pyx_t_1, ((PyObject *)__pyx_v_b)};
-          __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_xgcd, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+          __pyx_t_2 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_xgcd, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
           if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 138, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
@@ -6206,62 +6180,62 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
           if (likely(PyTuple_CheckExact(sequence))) {
             __pyx_t_1 = PyTuple_GET_ITEM(sequence, 0);
             __Pyx_INCREF(__pyx_t_1);
-            __pyx_t_7 = PyTuple_GET_ITEM(sequence, 1);
-            __Pyx_INCREF(__pyx_t_7);
-            __pyx_t_6 = PyTuple_GET_ITEM(sequence, 2);
+            __pyx_t_6 = PyTuple_GET_ITEM(sequence, 1);
             __Pyx_INCREF(__pyx_t_6);
+            __pyx_t_4 = PyTuple_GET_ITEM(sequence, 2);
+            __Pyx_INCREF(__pyx_t_4);
           } else {
             __pyx_t_1 = __Pyx_PyList_GetItemRef(sequence, 0);
             if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
             __Pyx_XGOTREF(__pyx_t_1);
-            __pyx_t_7 = __Pyx_PyList_GetItemRef(sequence, 1);
-            if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
-            __Pyx_XGOTREF(__pyx_t_7);
-            __pyx_t_6 = __Pyx_PyList_GetItemRef(sequence, 2);
+            __pyx_t_6 = __Pyx_PyList_GetItemRef(sequence, 1);
             if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
             __Pyx_XGOTREF(__pyx_t_6);
+            __pyx_t_4 = __Pyx_PyList_GetItemRef(sequence, 2);
+            if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 138, __pyx_L1_error)
+            __Pyx_XGOTREF(__pyx_t_4);
           }
           #else
           __pyx_t_1 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_7 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_6 = __Pyx_PySequence_ITEM(sequence, 2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = __Pyx_PySequence_ITEM(sequence, 2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 138, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
           #endif
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         } else {
           Py_ssize_t index = -1;
-          __pyx_t_5 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_5);
+          __pyx_t_3 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 138, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_12 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_5);
-          index = 0; __pyx_t_1 = __pyx_t_12(__pyx_t_5); if (unlikely(!__pyx_t_1)) goto __pyx_L26_unpacking_failed;
+          __pyx_t_11 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_3);
+          index = 0; __pyx_t_1 = __pyx_t_11(__pyx_t_3); if (unlikely(!__pyx_t_1)) goto __pyx_L26_unpacking_failed;
           __Pyx_GOTREF(__pyx_t_1);
-          index = 1; __pyx_t_7 = __pyx_t_12(__pyx_t_5); if (unlikely(!__pyx_t_7)) goto __pyx_L26_unpacking_failed;
-          __Pyx_GOTREF(__pyx_t_7);
-          index = 2; __pyx_t_6 = __pyx_t_12(__pyx_t_5); if (unlikely(!__pyx_t_6)) goto __pyx_L26_unpacking_failed;
+          index = 1; __pyx_t_6 = __pyx_t_11(__pyx_t_3); if (unlikely(!__pyx_t_6)) goto __pyx_L26_unpacking_failed;
           __Pyx_GOTREF(__pyx_t_6);
-          if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_5), 3) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
-          __pyx_t_12 = NULL;
-          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+          index = 2; __pyx_t_4 = __pyx_t_11(__pyx_t_3); if (unlikely(!__pyx_t_4)) goto __pyx_L26_unpacking_failed;
+          __Pyx_GOTREF(__pyx_t_4);
+          if (__Pyx_IternextUnpackEndCheck(__pyx_t_11(__pyx_t_3), 3) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
+          __pyx_t_11 = NULL;
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           goto __pyx_L27_unpacking_done;
           __pyx_L26_unpacking_failed:;
-          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_12 = NULL;
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          __pyx_t_11 = NULL;
           if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
           __PYX_ERR(0, 138, __pyx_L1_error)
           __pyx_L27_unpacking_done:;
         }
         if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 138, __pyx_L1_error)
-        if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 138, __pyx_L1_error)
         if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 138, __pyx_L1_error)
+        if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 138, __pyx_L1_error)
         __Pyx_XDECREF_SET(__pyx_v_d, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_1));
         __pyx_t_1 = 0;
-        __Pyx_XDECREF_SET(__pyx_v_p, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_7));
-        __pyx_t_7 = 0;
-        __Pyx_XDECREF_SET(__pyx_v_q, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
+        __Pyx_XDECREF_SET(__pyx_v_p, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
         __pyx_t_6 = 0;
+        __Pyx_XDECREF_SET(__pyx_v_q, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_4));
+        __pyx_t_4 = 0;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":139
  *                 b = <Polynomial> A.get_unsafe(l, j)
@@ -6285,12 +6259,12 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
         __pyx_t_2 = PyNumber_FloorDivide(((PyObject *)__pyx_v_b), ((PyObject *)__pyx_v_d)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_6 = PyNumber_Negative(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 140, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
+        __pyx_t_4 = PyNumber_Negative(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 140, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 140, __pyx_L1_error)
-        __Pyx_XDECREF_SET(__pyx_v_f, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
-        __pyx_t_6 = 0;
+        if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 140, __pyx_L1_error)
+        __Pyx_XDECREF_SET(__pyx_v_f, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_4));
+        __pyx_t_4 = 0;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":142
  *                 f = -(b // d)
@@ -6299,9 +6273,9 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                 A.set_unsafe(l, j, zero)
  * 
 */
-        __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_j, ((PyObject *)__pyx_v_d)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_j, ((PyObject *)__pyx_v_d)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":143
  * 
@@ -6310,9 +6284,9 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  * 
  *                 for c in range(j):
 */
-        __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_j, ((PyObject *)__pyx_v_zero)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 143, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_j, ((PyObject *)__pyx_v_zero)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 143, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":145
  *                 A.set_unsafe(l, j, zero)
@@ -6321,8 +6295,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                     Aic = <Polynomial> A.get_unsafe(i, c)
  *                     Alc = <Polynomial> A.get_unsafe(l, c)
 */
-        __pyx_t_4 = __pyx_v_j;
-        __pyx_t_13 = __pyx_t_4;
+        __pyx_t_12 = __pyx_v_j;
+        __pyx_t_13 = __pyx_t_12;
         for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
           __pyx_v_c = __pyx_t_14;
 
@@ -6333,11 +6307,11 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                     Alc = <Polynomial> A.get_unsafe(l, c)
  *                     A.set_unsafe(i, c, p * Aic + q * Alc)
 */
-          __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 146, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_2 = __pyx_t_6;
+          __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_c); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __pyx_t_2 = __pyx_t_4;
           __Pyx_INCREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_XDECREF_SET(__pyx_v_Aic, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_2));
           __pyx_t_2 = 0;
 
@@ -6350,11 +6324,11 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
           __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_6 = __pyx_t_2;
-          __Pyx_INCREF(__pyx_t_6);
+          __pyx_t_4 = __pyx_t_2;
+          __Pyx_INCREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __Pyx_XDECREF_SET(__pyx_v_Alc, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
-          __pyx_t_6 = 0;
+          __Pyx_XDECREF_SET(__pyx_v_Alc, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_4));
+          __pyx_t_4 = 0;
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":148
  *                     Aic = <Polynomial> A.get_unsafe(i, c)
@@ -6363,17 +6337,17 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                     A.set_unsafe(l, c, f * Aic + e * Alc)
  *                 if transformation:
 */
-          __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_p), ((PyObject *)__pyx_v_Aic)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 148, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = PyNumber_Multiply(((PyObject *)__pyx_v_p), ((PyObject *)__pyx_v_Aic)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_2 = PyNumber_Multiply(((PyObject *)__pyx_v_q), ((PyObject *)__pyx_v_Alc)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 148, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __pyx_t_6 = PyNumber_Add(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_6);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_c, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_i, __pyx_v_c, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":149
@@ -6385,16 +6359,16 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
           __pyx_t_2 = PyNumber_Multiply(((PyObject *)__pyx_v_f), ((PyObject *)__pyx_v_Aic)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_7 = PyNumber_Multiply(((PyObject *)__pyx_v_e), ((PyObject *)__pyx_v_Alc)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 149, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 149, __pyx_L1_error)
+          __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_e), ((PyObject *)__pyx_v_Alc)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 149, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = PyNumber_Add(__pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 149, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_c, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 149, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+          __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_l, __pyx_v_c, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 149, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_6);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         }
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":150
@@ -6413,8 +6387,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                         Uic = <Polynomial> U.get_unsafe(i, c)
  *                         Ulc = <Polynomial> U.get_unsafe(l, c)
 */
-          __pyx_t_4 = __pyx_v_m;
-          __pyx_t_13 = __pyx_t_4;
+          __pyx_t_12 = __pyx_v_m;
+          __pyx_t_13 = __pyx_t_12;
           for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
             __pyx_v_c = __pyx_t_14;
 
@@ -6426,13 +6400,13 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                         U.set_unsafe(i, c, p * Uic + q * Ulc)
 */
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 152, __pyx_L1_error) }
-            __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_i, __pyx_v_c); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 152, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_7);
-            __pyx_t_6 = __pyx_t_7;
-            __Pyx_INCREF(__pyx_t_6);
-            __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-            __Pyx_XDECREF_SET(__pyx_v_Uic, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
-            __pyx_t_6 = 0;
+            __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_i, __pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 152, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __pyx_t_4 = __pyx_t_6;
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_XDECREF_SET(__pyx_v_Uic, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_4));
+            __pyx_t_4 = 0;
 
             /* "sage/rings/function_field/hermite_form_polynomial.pyx":153
  *                     for c in range(m):
@@ -6442,13 +6416,13 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                         U.set_unsafe(l, c, f * Uic + e * Ulc)
 */
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 153, __pyx_L1_error) }
-            __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_l, __pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 153, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_7 = __pyx_t_6;
-            __Pyx_INCREF(__pyx_t_7);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_XDECREF_SET(__pyx_v_Ulc, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_7));
-            __pyx_t_7 = 0;
+            __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_l, __pyx_v_c); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 153, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_4);
+            __pyx_t_6 = __pyx_t_4;
+            __Pyx_INCREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+            __Pyx_XDECREF_SET(__pyx_v_Ulc, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
+            __pyx_t_6 = 0;
 
             /* "sage/rings/function_field/hermite_form_polynomial.pyx":154
  *                         Uic = <Polynomial> U.get_unsafe(i, c)
@@ -6458,18 +6432,18 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *             pivot_cols.append(j)
 */
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 154, __pyx_L1_error) }
-            __pyx_t_7 = PyNumber_Multiply(((PyObject *)__pyx_v_p), ((PyObject *)__pyx_v_Uic)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 154, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_7);
-            __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_q), ((PyObject *)__pyx_v_Ulc)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 154, __pyx_L1_error)
+            __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_p), ((PyObject *)__pyx_v_Uic)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 154, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
+            __pyx_t_4 = PyNumber_Multiply(((PyObject *)__pyx_v_q), ((PyObject *)__pyx_v_Ulc)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 154, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_4);
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_i, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 154, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+            __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_i, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 154, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_4);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
             /* "sage/rings/function_field/hermite_form_polynomial.pyx":155
  *                         Ulc = <Polynomial> U.get_unsafe(l, c)
@@ -6479,17 +6453,17 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *             i -= 1
 */
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 155, __pyx_L1_error) }
-            __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_f), ((PyObject *)__pyx_v_Uic)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 155, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_6);
+            __pyx_t_4 = PyNumber_Multiply(((PyObject *)__pyx_v_f), ((PyObject *)__pyx_v_Uic)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 155, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_4);
             __pyx_t_2 = PyNumber_Multiply(((PyObject *)__pyx_v_e), ((PyObject *)__pyx_v_Ulc)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 155, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_7);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __pyx_t_6 = PyNumber_Add(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 155, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_l, __pyx_v_c, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+            __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_l, __pyx_v_c, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           }
 
@@ -6551,8 +6525,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *         j = pivot_cols[i]
  *         ip = m - 1 - i
 */
-  __pyx_t_4 = __Pyx_PyList_GET_SIZE(__pyx_v_pivot_cols); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 161, __pyx_L1_error)
-  __pyx_t_13 = __pyx_t_4;
+  __pyx_t_12 = __Pyx_PyList_GET_SIZE(__pyx_v_pivot_cols); if (unlikely(__pyx_t_12 == ((Py_ssize_t)-1))) __PYX_ERR(0, 161, __pyx_L1_error)
+  __pyx_t_13 = __pyx_t_12;
   for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
     __pyx_v_i = __pyx_t_14;
 
@@ -6587,11 +6561,11 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
     __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = __pyx_t_2;
-    __Pyx_INCREF(__pyx_t_7);
+    __pyx_t_6 = __pyx_t_2;
+    __Pyx_INCREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_pivot, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_7));
-    __pyx_t_7 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_pivot, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
+    __pyx_t_6 = 0;
 
     /* "sage/rings/function_field/hermite_form_polynomial.pyx":167
  * 
@@ -6602,17 +6576,17 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
     __pyx_t_2 = ((PyObject *)__pyx_v_pivot);
     __Pyx_INCREF(__pyx_t_2);
-    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
     {
       PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-      __pyx_t_7 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_lc, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __pyx_t_6 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_lc, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 167, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
     }
-    __pyx_t_2 = PyNumber_Invert(__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_Invert(__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF_SET(__pyx_v_coeff, __pyx_t_2);
     __pyx_t_2 = 0;
 
@@ -6637,12 +6611,12 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
       __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = PyNumber_Multiply(__pyx_t_2, __pyx_v_coeff); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 169, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_6 = PyNumber_Multiply(__pyx_t_2, __pyx_v_coeff); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 169, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_c, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
+      __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_c, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
 
@@ -6678,12 +6652,12 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
         if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 172, __pyx_L1_error) }
         __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_ip, __pyx_v_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_7 = PyNumber_Multiply(__pyx_t_2, __pyx_v_coeff); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 172, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
+        __pyx_t_6 = PyNumber_Multiply(__pyx_t_2, __pyx_v_coeff); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 172, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_ip, __pyx_v_c, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
+        __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_ip, __pyx_v_c, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
 
@@ -6705,11 +6679,11 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
     __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = __pyx_t_2;
-    __Pyx_INCREF(__pyx_t_7);
+    __pyx_t_6 = __pyx_t_2;
+    __Pyx_INCREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF_SET(__pyx_v_pivot, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_7));
-    __pyx_t_7 = 0;
+    __Pyx_DECREF_SET(__pyx_v_pivot, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
+    __pyx_t_6 = 0;
 
     /* "sage/rings/function_field/hermite_form_polynomial.pyx":175
  * 
@@ -6730,17 +6704,17 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *             if q:
  *                 for c in range(j + 1):
 */
-      __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_j); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 176, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_7, ((PyObject *)__pyx_v_pivot)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_j); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_6, ((PyObject *)__pyx_v_pivot)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 176, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = PyNumber_Negative(__pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 176, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_6 = PyNumber_Negative(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 176, __pyx_L1_error)
-      __Pyx_XDECREF_SET(__pyx_v_q, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_7));
-      __pyx_t_7 = 0;
+      if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_mstate_global->__pyx_ptype_4sage_5rings_10polynomial_18polynomial_element_Polynomial))))) __PYX_ERR(0, 176, __pyx_L1_error)
+      __Pyx_XDECREF_SET(__pyx_v_q, ((struct __pyx_obj_4sage_5rings_10polynomial_18polynomial_element_Polynomial *)__pyx_t_6));
+      __pyx_t_6 = 0;
 
       /* "sage/rings/function_field/hermite_form_polynomial.pyx":177
  *         for k in range(ip + 1, m):
@@ -6749,8 +6723,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                 for c in range(j + 1):
  *                     A.set_unsafe(k, c, <Polynomial> A.get_unsafe(k, c)
 */
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(((PyObject *)__pyx_v_q)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 177, __pyx_L1_error)
-      if (__pyx_t_8) {
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(((PyObject *)__pyx_v_q)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 177, __pyx_L1_error)
+      if (__pyx_t_7) {
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":178
  *             q = -(<Polynomial> A.get_unsafe(k, j) // pivot)
@@ -6771,8 +6745,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                                  + q * <Polynomial> A.get_unsafe(ip, c))
  *                 if transformation:
 */
-          __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_c); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 179, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
+          __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 179, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_6);
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":180
  *                 for c in range(j + 1):
@@ -6783,13 +6757,13 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
           __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_ip, __pyx_v_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_q), __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 180, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = PyNumber_Multiply(((PyObject *)__pyx_v_q), __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_2 = PyNumber_Add(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
+          __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":179
  *             if q:
@@ -6798,10 +6772,10 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                                  + q * <Polynomial> A.get_unsafe(ip, c))
  *                 if transformation:
 */
-          __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 179, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_A->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_A), __pyx_v_k, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 179, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
 
         /* "sage/rings/function_field/hermite_form_polynomial.pyx":181
@@ -6834,8 +6808,8 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
 */
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 183, __pyx_L1_error) }
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 183, __pyx_L1_error) }
-            __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_k, __pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_6);
+            __pyx_t_4 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_k, __pyx_v_c); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_4);
 
             /* "sage/rings/function_field/hermite_form_polynomial.pyx":184
  *                     for c in range(m):
@@ -6847,13 +6821,13 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
             if (unlikely(!__pyx_v_U)) { __Pyx_RaiseUnboundLocalError("U"); __PYX_ERR(0, 184, __pyx_L1_error) }
             __pyx_t_2 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.get_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_ip, __pyx_v_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_7 = PyNumber_Multiply(((PyObject *)__pyx_v_q), __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 184, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_7);
+            __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_q), __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 184, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
+            __pyx_t_2 = PyNumber_Add(__pyx_t_4, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
             /* "sage/rings/function_field/hermite_form_polynomial.pyx":183
  *                 if transformation:
@@ -6862,10 +6836,10 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
  *                                      + q * <Polynomial> U.get_unsafe(ip, c))
  * 
 */
-            __pyx_t_7 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_k, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 183, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_7);
+            __pyx_t_6 = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_U->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.set_unsafe(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_U), __pyx_v_k, __pyx_v_c, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           }
 
           /* "sage/rings/function_field/hermite_form_polynomial.pyx":181
@@ -6929,9 +6903,9 @@ static PyObject *__pyx_pf_4sage_5rings_14function_field_23hermite_form_polynomia
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_AddTraceback("sage.rings.function_field.hermite_form_polynomial.reversed_hermite_form", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -8122,8 +8096,6 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_module, sizeof(__pyx_k_module), 0, 1, 1}, /* PyObject cname: __pyx_n_u_module */
   {__pyx_k_n, sizeof(__pyx_k_n), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
-  {__pyx_k_ncols, sizeof(__pyx_k_ncols), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ncols */
-  {__pyx_k_nrows, sizeof(__pyx_k_nrows), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nrows */
   {__pyx_k_p, sizeof(__pyx_k_p), 0, 1, 1}, /* PyObject cname: __pyx_n_u_p */
   {__pyx_k_parent, sizeof(__pyx_k_parent), 0, 1, 1}, /* PyObject cname: __pyx_n_u_parent */
   {__pyx_k_pivot, sizeof(__pyx_k_pivot), 0, 1, 1}, /* PyObject cname: __pyx_n_u_pivot */

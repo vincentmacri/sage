@@ -2981,6 +2981,8 @@ static struct __pyx_vtabstruct_4sage_9structure_7element_Matrix *__pyx_vtabptr_4
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -3489,13 +3491,6 @@ static CYTHON_INLINE int __Pyx_PyList_Extend(PyObject* L, PyObject* v) {
 #endif
 }
 
-/* PyObjectFastCallMethod.proto */
-#if CYTHON_VECTORCALL && PY_VERSION_HEX >= 0x03090000
-#define __Pyx_PyObject_FastCallMethod(name, args, nargsf) PyObject_VectorcallMethod(name, args, nargsf, NULL)
-#else
-static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *args, size_t nargsf);
-#endif
-
 /* PyDictVersioning.proto */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
 #define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
@@ -3545,6 +3540,13 @@ static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name);
 
 /* ExtTypeTest.proto */
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
+
+/* PyObjectFastCallMethod.proto */
+#if CYTHON_VECTORCALL && PY_VERSION_HEX >= 0x03090000
+#define __Pyx_PyObject_FastCallMethod(name, args, nargsf) PyObject_VectorcallMethod(name, args, nargsf, NULL)
+#else
+static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *args, size_t nargsf);
+#endif
 
 /* AssertionsEnabled.proto */
 #if CYTHON_COMPILING_IN_LIMITED_API  ||  (CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030C0000)
@@ -4284,8 +4286,6 @@ static const char __pyx_k_1_QfA[] = "\200\001\360@\001\000\005\014\320\013\033\2
 static const char __pyx_k_A0_t1[] = "\200A\3600\000\t\020\210t\2201";
 static const char __pyx_k_close[] = "close";
 static const char __pyx_k_equal[] = "equal";
-static const char __pyx_k_ncols[] = "ncols";
-static const char __pyx_k_nrows[] = "nrows";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_right[] = "right";
 static const char __pyx_k_stack[] = "stack";
@@ -4528,7 +4528,7 @@ typedef struct {
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   __Pyx_CachedCFunction __pyx_umethod_PyList_Type_pop;
   PyObject *__pyx_codeobj_tab[29];
-  PyObject *__pyx_string_tab[96];
+  PyObject *__pyx_string_tab[94];
   PyObject *__pyx_int_0;
   PyObject *__pyx_int_1;
   PyObject *__pyx_int_2;
@@ -4711,42 +4711,40 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_multiple __pyx_string_tab[57]
 #define __pyx_n_u_n __pyx_string_tab[58]
 #define __pyx_n_u_name __pyx_string_tab[59]
-#define __pyx_n_u_ncols __pyx_string_tab[60]
-#define __pyx_n_u_negate __pyx_string_tab[61]
-#define __pyx_n_u_next __pyx_string_tab[62]
-#define __pyx_n_u_nrows __pyx_string_tab[63]
-#define __pyx_n_u_parent __pyx_string_tab[64]
-#define __pyx_n_u_pop __pyx_string_tab[65]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[66]
-#define __pyx_n_u_qualname __pyx_string_tab[67]
-#define __pyx_n_u_range __pyx_string_tab[68]
-#define __pyx_n_u_rank __pyx_string_tab[69]
-#define __pyx_n_u_right __pyx_string_tab[70]
-#define __pyx_n_u_right_kernel_matrix __pyx_string_tab[71]
-#define __pyx_n_u_sage_matrix_constructor __pyx_string_tab[72]
-#define __pyx_n_u_sage_rings_function_field_khuri __pyx_string_tab[73]
-#define __pyx_kp_u_sage_rings_function_field_khuri_2 __pyx_string_tab[74]
-#define __pyx_n_u_sage_rings_integer __pyx_string_tab[75]
-#define __pyx_n_u_sage_structure_element __pyx_string_tab[76]
-#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[77]
-#define __pyx_n_u_self __pyx_string_tab[78]
-#define __pyx_n_u_send __pyx_string_tab[79]
-#define __pyx_n_u_set_name __pyx_string_tab[80]
-#define __pyx_n_u_stack __pyx_string_tab[81]
-#define __pyx_n_u_subtract __pyx_string_tab[82]
-#define __pyx_n_u_throw __pyx_string_tab[83]
-#define __pyx_n_u_transpose __pyx_string_tab[84]
-#define __pyx_n_u_value __pyx_string_tab[85]
-#define __pyx_n_u_w0 __pyx_string_tab[86]
-#define __pyx_n_u_w1 __pyx_string_tab[87]
-#define __pyx_n_u_w2 __pyx_string_tab[88]
-#define __pyx_n_u_wd __pyx_string_tab[89]
-#define __pyx_n_u_wd1 __pyx_string_tab[90]
-#define __pyx_n_u_wd2 __pyx_string_tab[91]
-#define __pyx_n_u_we __pyx_string_tab[92]
-#define __pyx_n_u_wf __pyx_string_tab[93]
-#define __pyx_n_u_x __pyx_string_tab[94]
-#define __pyx_n_u_zero_divisor __pyx_string_tab[95]
+#define __pyx_n_u_negate __pyx_string_tab[60]
+#define __pyx_n_u_next __pyx_string_tab[61]
+#define __pyx_n_u_parent __pyx_string_tab[62]
+#define __pyx_n_u_pop __pyx_string_tab[63]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[64]
+#define __pyx_n_u_qualname __pyx_string_tab[65]
+#define __pyx_n_u_range __pyx_string_tab[66]
+#define __pyx_n_u_rank __pyx_string_tab[67]
+#define __pyx_n_u_right __pyx_string_tab[68]
+#define __pyx_n_u_right_kernel_matrix __pyx_string_tab[69]
+#define __pyx_n_u_sage_matrix_constructor __pyx_string_tab[70]
+#define __pyx_n_u_sage_rings_function_field_khuri __pyx_string_tab[71]
+#define __pyx_kp_u_sage_rings_function_field_khuri_2 __pyx_string_tab[72]
+#define __pyx_n_u_sage_rings_integer __pyx_string_tab[73]
+#define __pyx_n_u_sage_structure_element __pyx_string_tab[74]
+#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[75]
+#define __pyx_n_u_self __pyx_string_tab[76]
+#define __pyx_n_u_send __pyx_string_tab[77]
+#define __pyx_n_u_set_name __pyx_string_tab[78]
+#define __pyx_n_u_stack __pyx_string_tab[79]
+#define __pyx_n_u_subtract __pyx_string_tab[80]
+#define __pyx_n_u_throw __pyx_string_tab[81]
+#define __pyx_n_u_transpose __pyx_string_tab[82]
+#define __pyx_n_u_value __pyx_string_tab[83]
+#define __pyx_n_u_w0 __pyx_string_tab[84]
+#define __pyx_n_u_w1 __pyx_string_tab[85]
+#define __pyx_n_u_w2 __pyx_string_tab[86]
+#define __pyx_n_u_wd __pyx_string_tab[87]
+#define __pyx_n_u_wd1 __pyx_string_tab[88]
+#define __pyx_n_u_wd2 __pyx_string_tab[89]
+#define __pyx_n_u_we __pyx_string_tab[90]
+#define __pyx_n_u_wf __pyx_string_tab[91]
+#define __pyx_n_u_x __pyx_string_tab[92]
+#define __pyx_n_u_zero_divisor __pyx_string_tab[93]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -4841,7 +4839,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_4sage_5rings_14function_field_13khuri_makdisi___pyx_scope_struct_14_genexpr);
   Py_CLEAR(clear_module_state->__pyx_type_4sage_5rings_14function_field_13khuri_makdisi___pyx_scope_struct_14_genexpr);
   for (int i=0; i<29; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<96; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<94; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   Py_CLEAR(clear_module_state->__pyx_int_0);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_int_2);
@@ -4941,7 +4939,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_4sage_5rings_14function_field_13khuri_makdisi___pyx_scope_struct_14_genexpr);
   Py_VISIT(traverse_module_state->__pyx_type_4sage_5rings_14function_field_13khuri_makdisi___pyx_scope_struct_14_genexpr);
   for (int i=0; i<29; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<96; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<94; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_0);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_1);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_2);
@@ -5727,10 +5725,10 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  size_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  size_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
   PyObject *(*__pyx_t_7)(PyObject *);
   PyObject *__pyx_t_8 = NULL;
   PyObject *__pyx_t_9 = NULL;
@@ -5756,19 +5754,7 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *         c = mu_mat.ncols() // n
  *         mat = matrix(0, c)
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_we);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_n = __pyx_t_4;
+  __pyx_v_n = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_we->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_we), 0);
 
   /* "sage/rings/function_field/khuri_makdisi.pyx":128
  * 
@@ -5777,25 +5763,7 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *         mat = matrix(0, c)
  *         for v in wd:
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_mu_mat);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_2 = PyLong_FromSsize_t(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = PyNumber_FloorDivide(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_5); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_v_c = __pyx_t_4;
+  __pyx_v_c = (((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_mu_mat->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_mu_mat), 0) / __pyx_v_n);
 
   /* "sage/rings/function_field/khuri_makdisi.pyx":129
  *         n = we.ncols()
@@ -5805,34 +5773,34 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat = mat.stack(we * matrix(n, v * mu_mat))
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = PyLong_FromSsize_t(__pyx_v_c); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 129, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_3 = 1;
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyLong_FromSsize_t(__pyx_v_c); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_1))) {
-    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_1);
+  if (unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
     assert(__pyx_t_2);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_1);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_1, __pyx__function);
-    __pyx_t_3 = 0;
+    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+    __pyx_t_5 = 0;
   }
   #endif
   {
-    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_mstate_global->__pyx_int_0, __pyx_t_6};
-    __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+__pyx_t_3, (3-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_mstate_global->__pyx_int_0, __pyx_t_4};
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 129, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
   }
-  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 129, __pyx_L1_error)
-  __pyx_v_mat = ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_5);
-  __pyx_t_5 = 0;
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_v_mat = ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "sage/rings/function_field/khuri_makdisi.pyx":130
  *         c = mu_mat.ncols() // n
@@ -5842,45 +5810,45 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat.echelonize()
 */
   if (likely(PyList_CheckExact(((PyObject *)__pyx_v_wd))) || PyTuple_CheckExact(((PyObject *)__pyx_v_wd))) {
-    __pyx_t_5 = ((PyObject *)__pyx_v_wd); __Pyx_INCREF(__pyx_t_5);
-    __pyx_t_4 = 0;
+    __pyx_t_1 = ((PyObject *)__pyx_v_wd); __Pyx_INCREF(__pyx_t_1);
+    __pyx_t_6 = 0;
     __pyx_t_7 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_5 = PyObject_GetIter(((PyObject *)__pyx_v_wd)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_6 = -1; __pyx_t_1 = PyObject_GetIter(((PyObject *)__pyx_v_wd)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_7 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 130, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_7)) {
-      if (likely(PyList_CheckExact(__pyx_t_5))) {
+      if (likely(PyList_CheckExact(__pyx_t_1))) {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_5);
+          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 130, __pyx_L1_error)
           #endif
-          if (__pyx_t_4 >= __pyx_temp) break;
+          if (__pyx_t_6 >= __pyx_temp) break;
         }
-        __pyx_t_1 = __Pyx_PyList_GetItemRef(__pyx_t_5, __pyx_t_4);
-        ++__pyx_t_4;
+        __pyx_t_3 = __Pyx_PyList_GetItemRef(__pyx_t_1, __pyx_t_6);
+        ++__pyx_t_6;
       } else {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_5);
+          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_1);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 130, __pyx_L1_error)
           #endif
-          if (__pyx_t_4 >= __pyx_temp) break;
+          if (__pyx_t_6 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_4));
+        __pyx_t_3 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_6));
         #else
-        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_5, __pyx_t_4);
+        __pyx_t_3 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_6);
         #endif
-        ++__pyx_t_4;
+        ++__pyx_t_6;
       }
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
     } else {
-      __pyx_t_1 = __pyx_t_7(__pyx_t_5);
-      if (unlikely(!__pyx_t_1)) {
+      __pyx_t_3 = __pyx_t_7(__pyx_t_1);
+      if (unlikely(!__pyx_t_3)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 130, __pyx_L1_error)
@@ -5889,10 +5857,10 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
         break;
       }
     }
-    __Pyx_GOTREF(__pyx_t_1);
-    if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_4sage_7modules_19free_module_element_FreeModuleElement))))) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_XDECREF_SET(__pyx_v_v, ((struct __pyx_obj_4sage_7modules_19free_module_element_FreeModuleElement *)__pyx_t_1));
-    __pyx_t_1 = 0;
+    __Pyx_GOTREF(__pyx_t_3);
+    if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_4sage_7modules_19free_module_element_FreeModuleElement))))) __PYX_ERR(0, 130, __pyx_L1_error)
+    __Pyx_XDECREF_SET(__pyx_v_v, ((struct __pyx_obj_4sage_7modules_19free_module_element_FreeModuleElement *)__pyx_t_3));
+    __pyx_t_3 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":131
  *         mat = matrix(0, c)
@@ -5901,8 +5869,8 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat.echelonize()
  *             r = mat.rank()
 */
-    __pyx_t_6 = ((PyObject *)__pyx_v_mat);
-    __Pyx_INCREF(__pyx_t_6);
+    __pyx_t_4 = ((PyObject *)__pyx_v_mat);
+    __Pyx_INCREF(__pyx_t_4);
     __pyx_t_8 = NULL;
     __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 131, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
@@ -5910,7 +5878,7 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
     __Pyx_GOTREF(__pyx_t_10);
     __pyx_t_11 = PyNumber_Multiply(((PyObject *)__pyx_v_v), ((PyObject *)__pyx_v_mu_mat)); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 131, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
-    __pyx_t_3 = 1;
+    __pyx_t_5 = 1;
     #if CYTHON_UNPACK_METHODS
     if (unlikely(PyMethod_Check(__pyx_t_9))) {
       __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_9);
@@ -5919,12 +5887,12 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
       __Pyx_INCREF(__pyx_t_8);
       __Pyx_INCREF(__pyx__function);
       __Pyx_DECREF_SET(__pyx_t_9, __pyx__function);
-      __pyx_t_3 = 0;
+      __pyx_t_5 = 0;
     }
     #endif
     {
       PyObject *__pyx_callargs[3] = {__pyx_t_8, __pyx_t_10, __pyx_t_11};
-      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+__pyx_t_3, (3-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
@@ -5935,18 +5903,18 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
     __pyx_t_9 = PyNumber_Multiply(((PyObject *)__pyx_v_we), __pyx_t_2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 131, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_9};
-      __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_stack, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_t_9};
+      __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_stack, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
     }
-    if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 131, __pyx_L1_error)
-    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_1));
-    __pyx_t_1 = 0;
+    if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_3));
+    __pyx_t_3 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":132
  *         for v in wd:
@@ -5957,15 +5925,15 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
 */
     __pyx_t_9 = ((PyObject *)__pyx_v_mat);
     __Pyx_INCREF(__pyx_t_9);
-    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
     {
       PyObject *__pyx_callargs[2] = {__pyx_t_9, NULL};
-      __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_echelonize, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_echelonize, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 132, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
     }
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":133
  *             mat = mat.stack(we * matrix(n, v * mu_mat))
@@ -5976,16 +5944,16 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
 */
     __pyx_t_9 = ((PyObject *)__pyx_v_mat);
     __Pyx_INCREF(__pyx_t_9);
-    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
     {
       PyObject *__pyx_callargs[2] = {__pyx_t_9, NULL};
-      __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_rank, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_rank, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
     }
-    __pyx_t_12 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_12 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_12 = __Pyx_PyIndex_AsSsize_t(__pyx_t_3); if (unlikely((__pyx_t_12 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_r = __pyx_t_12;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":134
@@ -6002,28 +5970,28 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
     __pyx_t_11 = __pyx_builtin_range; 
     __pyx_t_10 = PyLong_FromSsize_t(__pyx_v_r); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 134, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_3 = 1;
+    __pyx_t_5 = 1;
     {
       PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_10};
-      __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_11, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_11, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 134, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_6};
-      __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_matrix_from_rows, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_4};
+      __pyx_t_3 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_matrix_from_rows, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 134, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
     }
-    if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 134, __pyx_L1_error)
-    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_1));
-    __pyx_t_1 = 0;
+    if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 134, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_3));
+    __pyx_t_3 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":135
  *             r = mat.rank()
@@ -6069,10 +6037,10 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat.echelonize()
 */
   }
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   goto __pyx_L8_for_end;
   __pyx_L4_break:;
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   goto __pyx_L8_for_end;
   __pyx_L8_for_end:;
 
@@ -6127,8 +6095,8 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
@@ -6165,11 +6133,11 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   size_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
+  PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
-  PyObject *(*__pyx_t_8)(PyObject *);
+  Py_ssize_t __pyx_t_6;
+  PyObject *(*__pyx_t_7)(PyObject *);
+  PyObject *__pyx_t_8 = NULL;
   PyObject *__pyx_t_9 = NULL;
   Py_ssize_t __pyx_t_10;
   PyObject *(*__pyx_t_11)(PyObject *);
@@ -6196,19 +6164,7 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  * 
  *         perp = wde.right_kernel_matrix()
 */
-  __pyx_t_2 = ((PyObject *)__pyx_v_we);
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 158, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  __pyx_t_4 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 158, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_ne = __pyx_t_4;
+  __pyx_v_ne = ((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_we->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.ncols(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_we), 0);
 
   /* "sage/rings/function_field/khuri_makdisi.pyx":160
  *         ne = we.ncols()
@@ -6239,36 +6195,28 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             vmu = matrix([v * matrix(ne, row) for row in mu_mat])
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyLong_From_long(((struct __pyx_vtabstruct_4sage_6matrix_7matrix2_Matrix *)__pyx_v_mu_mat->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_mu_mat), 0)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 161, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_7 = ((PyObject *)__pyx_v_mu_mat);
-  __Pyx_INCREF(__pyx_t_7);
-  __pyx_t_3 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_7, NULL};
-    __pyx_t_6 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_nrows, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 161, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-  }
   __pyx_t_3 = 1;
   #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_5))) {
-    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_5);
+  if (unlikely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_4);
     assert(__pyx_t_2);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_5);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_5, __pyx__function);
+    __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
     __pyx_t_3 = 0;
   }
   #endif
   {
-    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_mstate_global->__pyx_int_0, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+__pyx_t_3, (3-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_mstate_global->__pyx_int_0, __pyx_t_5};
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+__pyx_t_3, (3-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
@@ -6285,44 +6233,44 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
 */
   if (likely(PyList_CheckExact(((PyObject *)__pyx_v_we))) || PyTuple_CheckExact(((PyObject *)__pyx_v_we))) {
     __pyx_t_1 = ((PyObject *)__pyx_v_we); __Pyx_INCREF(__pyx_t_1);
-    __pyx_t_4 = 0;
-    __pyx_t_8 = NULL;
+    __pyx_t_6 = 0;
+    __pyx_t_7 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_1 = PyObject_GetIter(((PyObject *)__pyx_v_we)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __pyx_t_6 = -1; __pyx_t_1 = PyObject_GetIter(((PyObject *)__pyx_v_we)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __pyx_t_7 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 162, __pyx_L1_error)
   }
   for (;;) {
-    if (likely(!__pyx_t_8)) {
+    if (likely(!__pyx_t_7)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         {
           Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 162, __pyx_L1_error)
           #endif
-          if (__pyx_t_4 >= __pyx_temp) break;
+          if (__pyx_t_6 >= __pyx_temp) break;
         }
-        __pyx_t_5 = __Pyx_PyList_GetItemRef(__pyx_t_1, __pyx_t_4);
-        ++__pyx_t_4;
+        __pyx_t_4 = __Pyx_PyList_GetItemRef(__pyx_t_1, __pyx_t_6);
+        ++__pyx_t_6;
       } else {
         {
           Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_1);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 162, __pyx_L1_error)
           #endif
-          if (__pyx_t_4 >= __pyx_temp) break;
+          if (__pyx_t_6 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_4));
+        __pyx_t_4 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_6));
         #else
-        __pyx_t_5 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_4);
+        __pyx_t_4 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_6);
         #endif
-        ++__pyx_t_4;
+        ++__pyx_t_6;
       }
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 162, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
     } else {
-      __pyx_t_5 = __pyx_t_8(__pyx_t_1);
-      if (unlikely(!__pyx_t_5)) {
+      __pyx_t_4 = __pyx_t_7(__pyx_t_1);
+      if (unlikely(!__pyx_t_4)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 162, __pyx_L1_error)
@@ -6331,10 +6279,10 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
         break;
       }
     }
-    __Pyx_GOTREF(__pyx_t_5);
-    if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_4sage_7modules_19free_module_element_FreeModuleElement))))) __PYX_ERR(0, 162, __pyx_L1_error)
-    __Pyx_XDECREF_SET(__pyx_v_v, ((struct __pyx_obj_4sage_7modules_19free_module_element_FreeModuleElement *)__pyx_t_5));
-    __pyx_t_5 = 0;
+    __Pyx_GOTREF(__pyx_t_4);
+    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_7modules_19free_module_element_FreeModuleElement))))) __PYX_ERR(0, 162, __pyx_L1_error)
+    __Pyx_XDECREF_SET(__pyx_v_v, ((struct __pyx_obj_4sage_7modules_19free_module_element_FreeModuleElement *)__pyx_t_4));
+    __pyx_t_4 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":163
  *         mat = matrix(0, mu_mat.nrows())
@@ -6343,12 +6291,12 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat = mat.stack(perp * vmu.transpose())
  *             mat.echelonize()
 */
-    __pyx_t_6 = NULL;
+    __pyx_t_5 = NULL;
     __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_matrix); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     { /* enter inner scope */
-      __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 163, __pyx_L7_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_8 = PyList_New(0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 163, __pyx_L7_error)
+      __Pyx_GOTREF(__pyx_t_8);
       if (likely(PyList_CheckExact(((PyObject *)__pyx_v_mu_mat))) || PyTuple_CheckExact(((PyObject *)__pyx_v_mu_mat))) {
         __pyx_t_9 = ((PyObject *)__pyx_v_mu_mat); __Pyx_INCREF(__pyx_t_9);
         __pyx_t_10 = 0;
@@ -6429,7 +6377,7 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
         __pyx_t_14 = PyNumber_Multiply(((PyObject *)__pyx_v_v), __pyx_t_12); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 163, __pyx_L7_error)
         __Pyx_GOTREF(__pyx_t_14);
         __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-        if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_14))) __PYX_ERR(0, 163, __pyx_L7_error)
+        if (unlikely(__Pyx_ListComp_Append(__pyx_t_8, (PyObject*)__pyx_t_14))) __PYX_ERR(0, 163, __pyx_L7_error)
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       }
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
@@ -6443,27 +6391,27 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
     __pyx_t_3 = 1;
     #if CYTHON_UNPACK_METHODS
     if (unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_2);
-      assert(__pyx_t_6);
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+      assert(__pyx_t_5);
       PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(__pyx__function);
       __Pyx_DECREF_SET(__pyx_t_2, __pyx__function);
       __pyx_t_3 = 0;
     }
     #endif
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_7};
-      __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_8};
+      __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 163, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 163, __pyx_L1_error)
-    __Pyx_XDECREF_SET(__pyx_v_vmu, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_5));
-    __pyx_t_5 = 0;
+    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_XDECREF_SET(__pyx_v_vmu, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_4));
+    __pyx_t_4 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":164
  *         for v in we:
@@ -6474,31 +6422,31 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
 */
     __pyx_t_2 = ((PyObject *)__pyx_v_mat);
     __Pyx_INCREF(__pyx_t_2);
-    __pyx_t_6 = ((PyObject *)__pyx_v_vmu);
-    __Pyx_INCREF(__pyx_t_6);
+    __pyx_t_5 = ((PyObject *)__pyx_v_vmu);
+    __Pyx_INCREF(__pyx_t_5);
     __pyx_t_3 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
-      __pyx_t_7 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_transpose, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 164, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, NULL};
+      __pyx_t_8 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_transpose, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 164, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_8);
     }
-    __pyx_t_6 = PyNumber_Multiply(((PyObject *)__pyx_v_perp), __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 164, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_t_5 = PyNumber_Multiply(((PyObject *)__pyx_v_perp), __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_3 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_6};
-      __pyx_t_5 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_stack, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_5};
+      __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_stack, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 164, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 164, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 164, __pyx_L1_error)
-    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_5));
-    __pyx_t_5 = 0;
+    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 164, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_4));
+    __pyx_t_4 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":165
  *             vmu = matrix([v * matrix(ne, row) for row in mu_mat])
@@ -6507,17 +6455,17 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             r = mat.rank()
  *             mat = mat.matrix_from_rows(range(r))
 */
-    __pyx_t_6 = ((PyObject *)__pyx_v_mat);
-    __Pyx_INCREF(__pyx_t_6);
+    __pyx_t_5 = ((PyObject *)__pyx_v_mat);
+    __Pyx_INCREF(__pyx_t_5);
     __pyx_t_3 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
-      __pyx_t_5 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_echelonize, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 165, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, NULL};
+      __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_echelonize, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":166
  *             mat = mat.stack(perp * vmu.transpose())
@@ -6526,18 +6474,18 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             mat = mat.matrix_from_rows(range(r))
  *             if expected_codim and r == expected_codim:
 */
-    __pyx_t_6 = ((PyObject *)__pyx_v_mat);
-    __Pyx_INCREF(__pyx_t_6);
+    __pyx_t_5 = ((PyObject *)__pyx_v_mat);
+    __Pyx_INCREF(__pyx_t_5);
     __pyx_t_3 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
-      __pyx_t_5 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_rank, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 166, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, NULL};
+      __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_rank, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_5); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 166, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_10 = __Pyx_PyIndex_AsSsize_t(__pyx_t_4); if (unlikely((__pyx_t_10 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 166, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_r = __pyx_t_10;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":167
@@ -6547,18 +6495,18 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *             if expected_codim and r == expected_codim:
  *                 break
 */
-    __pyx_t_6 = ((PyObject *)__pyx_v_mat);
-    __Pyx_INCREF(__pyx_t_6);
-    __pyx_t_7 = NULL;
+    __pyx_t_5 = ((PyObject *)__pyx_v_mat);
+    __Pyx_INCREF(__pyx_t_5);
+    __pyx_t_8 = NULL;
     __Pyx_INCREF(__pyx_builtin_range);
     __pyx_t_9 = __pyx_builtin_range; 
     __pyx_t_14 = PyLong_FromSsize_t(__pyx_v_r); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __pyx_t_3 = 1;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_7, __pyx_t_14};
+      PyObject *__pyx_callargs[2] = {__pyx_t_8, __pyx_t_14};
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
@@ -6566,16 +6514,16 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
     }
     __pyx_t_3 = 0;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_2};
-      __pyx_t_5 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_matrix_from_rows, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_2};
+      __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_matrix_from_rows, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 167, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
     }
-    if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 167, __pyx_L1_error)
-    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_5));
-    __pyx_t_5 = 0;
+    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_4sage_6matrix_7matrix2_Matrix))))) __PYX_ERR(0, 167, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_mat, ((struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *)__pyx_t_4));
+    __pyx_t_4 = 0;
 
     /* "sage/rings/function_field/khuri_makdisi.pyx":168
  *             r = mat.rank()
@@ -6663,13 +6611,13 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
  *     cpdef Matrix negate(self, Matrix wd):
 */
   __Pyx_XDECREF((PyObject *)__pyx_r);
-  __pyx_t_5 = ((PyObject *)__pyx_v_mat);
-  __Pyx_INCREF(__pyx_t_5);
+  __pyx_t_4 = ((PyObject *)__pyx_v_mat);
+  __Pyx_INCREF(__pyx_t_4);
   __pyx_t_3 = 0;
   {
-    PyObject *__pyx_callargs[2] = {__pyx_t_5, NULL};
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
     __pyx_t_1 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_right_kernel_matrix, __pyx_callargs+__pyx_t_3, (1-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
@@ -6690,9 +6638,9 @@ static struct __pyx_obj_4sage_6matrix_7matrix2_Matrix *__pyx_f_4sage_5rings_14fu
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_12);
   __Pyx_XDECREF(__pyx_t_13);
@@ -22243,10 +22191,8 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_multiple, sizeof(__pyx_k_multiple), 0, 1, 1}, /* PyObject cname: __pyx_n_u_multiple */
   {__pyx_k_n, sizeof(__pyx_k_n), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
-  {__pyx_k_ncols, sizeof(__pyx_k_ncols), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ncols */
   {__pyx_k_negate, sizeof(__pyx_k_negate), 0, 1, 1}, /* PyObject cname: __pyx_n_u_negate */
   {__pyx_k_next, sizeof(__pyx_k_next), 0, 1, 1}, /* PyObject cname: __pyx_n_u_next */
-  {__pyx_k_nrows, sizeof(__pyx_k_nrows), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nrows */
   {__pyx_k_parent, sizeof(__pyx_k_parent), 0, 1, 1}, /* PyObject cname: __pyx_n_u_parent */
   {__pyx_k_pop, sizeof(__pyx_k_pop), 0, 1, 1}, /* PyObject cname: __pyx_n_u_pop */
   {__pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 1, 1}, /* PyObject cname: __pyx_n_u_pyx_vtable */
@@ -23743,19 +23689,6 @@ static void __Pyx_RaiseArgtupleInvalid(
                  (num_expected == 1) ? "" : "s", num_found);
 }
 
-/* PyObjectFastCallMethod */
-#if !CYTHON_VECTORCALL || PY_VERSION_HEX < 0x03090000
-static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *args, size_t nargsf) {
-    PyObject *result;
-    PyObject *attr = PyObject_GetAttr(args[0], name);
-    if (unlikely(!attr))
-        return NULL;
-    result = __Pyx_PyObject_FastCall(attr, args+1, nargsf - 1);
-    Py_DECREF(attr);
-    return result;
-}
-#endif
-
 /* PyDictVersioning */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
 static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
@@ -23837,6 +23770,19 @@ static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
     __Pyx_DECREF_TypeName(type_name);
     return 0;
 }
+
+/* PyObjectFastCallMethod */
+#if !CYTHON_VECTORCALL || PY_VERSION_HEX < 0x03090000
+static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *args, size_t nargsf) {
+    PyObject *result;
+    PyObject *attr = PyObject_GetAttr(args[0], name);
+    if (unlikely(!attr))
+        return NULL;
+    result = __Pyx_PyObject_FastCall(attr, args+1, nargsf - 1);
+    Py_DECREF(attr);
+    return result;
+}
+#endif
 
 /* RaiseException */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {

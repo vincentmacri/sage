@@ -2878,6 +2878,8 @@ static struct __pyx_vtabstruct_4sage_5rings_7integer_Integer *__pyx_vtabptr_4sag
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -4086,7 +4088,6 @@ static const char __pyx_k_floor[] = "floor";
 static const char __pyx_k_isqrt[] = "isqrt";
 static const char __pyx_k_level[] = "level";
 static const char __pyx_k_lifts[] = "lifts";
-static const char __pyx_k_ncols[] = "ncols";
 static const char __pyx_k_order[] = "order";
 static const char __pyx_k_proof[] = "proof";
 static const char __pyx_k_range[] = "range";
@@ -4272,7 +4273,7 @@ typedef struct {
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   PyObject *__pyx_tuple[3];
   PyObject *__pyx_codeobj_tab[5];
-  PyObject *__pyx_string_tab[139];
+  PyObject *__pyx_string_tab[138];
   PyObject *__pyx_int_0;
   PyObject *__pyx_int_1;
   PyObject *__pyx_int_2;
@@ -4408,56 +4409,55 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_msg __pyx_string_tab[86]
 #define __pyx_kp_u_multimod_echelon __pyx_string_tab[87]
 #define __pyx_n_u_name __pyx_string_tab[88]
-#define __pyx_n_u_ncols __pyx_string_tab[89]
-#define __pyx_kp_u_not_enough_primes __pyx_string_tab[90]
-#define __pyx_kp_u_now_comparing_pivots_and_droppin __pyx_string_tab[91]
-#define __pyx_kp_u_now_doing_rational_reconstructio __pyx_string_tab[92]
-#define __pyx_n_u_one __pyx_string_tab[93]
-#define __pyx_n_u_order __pyx_string_tab[94]
-#define __pyx_n_u_other_bnd __pyx_string_tab[95]
-#define __pyx_n_u_p __pyx_string_tab[96]
-#define __pyx_n_u_parent __pyx_string_tab[97]
-#define __pyx_n_u_pivots __pyx_string_tab[98]
-#define __pyx_n_u_pop __pyx_string_tab[99]
-#define __pyx_n_u_previous_prime __pyx_string_tab[100]
-#define __pyx_n_u_problem __pyx_string_tab[101]
-#define __pyx_n_u_prod __pyx_string_tab[102]
-#define __pyx_n_u_proof __pyx_string_tab[103]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[104]
-#define __pyx_n_u_qualname __pyx_string_tab[105]
-#define __pyx_n_u_range __pyx_string_tab[106]
-#define __pyx_n_u_rational_reconstruction __pyx_string_tab[107]
-#define __pyx_kp_u_rational_reconstruction_complete __pyx_string_tab[108]
-#define __pyx_n_u_right __pyx_string_tab[109]
-#define __pyx_n_u_sage_arith_misc __pyx_string_tab[110]
-#define __pyx_n_u_sage_matrix_matrix_modn_dense_do __pyx_string_tab[111]
-#define __pyx_n_u_sage_matrix_matrix_modn_sparse __pyx_string_tab[112]
-#define __pyx_n_u_sage_matrix_misc __pyx_string_tab[113]
-#define __pyx_kp_u_sage_matrix_misc_flint __pyx_string_tab[114]
-#define __pyx_kp_u_sage_matrix_misc_mpfr __pyx_string_tab[115]
-#define __pyx_kp_u_sage_matrix_misc_pyx __pyx_string_tab[116]
-#define __pyx_n_u_sage_misc_lazy_import __pyx_string_tab[117]
-#define __pyx_n_u_sage_misc_verbose __pyx_string_tab[118]
-#define __pyx_n_u_sage_rings_rational_field __pyx_string_tab[119]
-#define __pyx_n_u_sage_structure_element __pyx_string_tab[120]
-#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[121]
-#define __pyx_n_u_sage_structure_proof_proof __pyx_string_tab[122]
-#define __pyx_n_u_self __pyx_string_tab[123]
-#define __pyx_n_u_set_name __pyx_string_tab[124]
-#define __pyx_kp_u_start_crt_linear_combination __pyx_string_tab[125]
-#define __pyx_n_u_t __pyx_string_tab[126]
-#define __pyx_n_u_t0 __pyx_string_tab[127]
-#define __pyx_kp_u_time_for_pivot_compare __pyx_string_tab[128]
-#define __pyx_kp_u_time_to_put_reduced_matrix_in_ec __pyx_string_tab[129]
-#define __pyx_kp_u_time_to_reduce_matrix_mod_p __pyx_string_tab[130]
-#define __pyx_kp_u_time_to_take_linear_combination __pyx_string_tab[131]
-#define __pyx_n_u_tm __pyx_string_tab[132]
-#define __pyx_kp_u_total_time __pyx_string_tab[133]
-#define __pyx_n_u_verbose __pyx_string_tab[134]
-#define __pyx_n_u_w __pyx_string_tab[135]
-#define __pyx_n_u_x __pyx_string_tab[136]
-#define __pyx_kp_u_x_2 __pyx_string_tab[137]
-#define __pyx_n_u_y __pyx_string_tab[138]
+#define __pyx_kp_u_not_enough_primes __pyx_string_tab[89]
+#define __pyx_kp_u_now_comparing_pivots_and_droppin __pyx_string_tab[90]
+#define __pyx_kp_u_now_doing_rational_reconstructio __pyx_string_tab[91]
+#define __pyx_n_u_one __pyx_string_tab[92]
+#define __pyx_n_u_order __pyx_string_tab[93]
+#define __pyx_n_u_other_bnd __pyx_string_tab[94]
+#define __pyx_n_u_p __pyx_string_tab[95]
+#define __pyx_n_u_parent __pyx_string_tab[96]
+#define __pyx_n_u_pivots __pyx_string_tab[97]
+#define __pyx_n_u_pop __pyx_string_tab[98]
+#define __pyx_n_u_previous_prime __pyx_string_tab[99]
+#define __pyx_n_u_problem __pyx_string_tab[100]
+#define __pyx_n_u_prod __pyx_string_tab[101]
+#define __pyx_n_u_proof __pyx_string_tab[102]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[103]
+#define __pyx_n_u_qualname __pyx_string_tab[104]
+#define __pyx_n_u_range __pyx_string_tab[105]
+#define __pyx_n_u_rational_reconstruction __pyx_string_tab[106]
+#define __pyx_kp_u_rational_reconstruction_complete __pyx_string_tab[107]
+#define __pyx_n_u_right __pyx_string_tab[108]
+#define __pyx_n_u_sage_arith_misc __pyx_string_tab[109]
+#define __pyx_n_u_sage_matrix_matrix_modn_dense_do __pyx_string_tab[110]
+#define __pyx_n_u_sage_matrix_matrix_modn_sparse __pyx_string_tab[111]
+#define __pyx_n_u_sage_matrix_misc __pyx_string_tab[112]
+#define __pyx_kp_u_sage_matrix_misc_flint __pyx_string_tab[113]
+#define __pyx_kp_u_sage_matrix_misc_mpfr __pyx_string_tab[114]
+#define __pyx_kp_u_sage_matrix_misc_pyx __pyx_string_tab[115]
+#define __pyx_n_u_sage_misc_lazy_import __pyx_string_tab[116]
+#define __pyx_n_u_sage_misc_verbose __pyx_string_tab[117]
+#define __pyx_n_u_sage_rings_rational_field __pyx_string_tab[118]
+#define __pyx_n_u_sage_structure_element __pyx_string_tab[119]
+#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[120]
+#define __pyx_n_u_sage_structure_proof_proof __pyx_string_tab[121]
+#define __pyx_n_u_self __pyx_string_tab[122]
+#define __pyx_n_u_set_name __pyx_string_tab[123]
+#define __pyx_kp_u_start_crt_linear_combination __pyx_string_tab[124]
+#define __pyx_n_u_t __pyx_string_tab[125]
+#define __pyx_n_u_t0 __pyx_string_tab[126]
+#define __pyx_kp_u_time_for_pivot_compare __pyx_string_tab[127]
+#define __pyx_kp_u_time_to_put_reduced_matrix_in_ec __pyx_string_tab[128]
+#define __pyx_kp_u_time_to_reduce_matrix_mod_p __pyx_string_tab[129]
+#define __pyx_kp_u_time_to_take_linear_combination __pyx_string_tab[130]
+#define __pyx_n_u_tm __pyx_string_tab[131]
+#define __pyx_kp_u_total_time __pyx_string_tab[132]
+#define __pyx_n_u_verbose __pyx_string_tab[133]
+#define __pyx_n_u_w __pyx_string_tab[134]
+#define __pyx_n_u_x __pyx_string_tab[135]
+#define __pyx_kp_u_x_2 __pyx_string_tab[136]
+#define __pyx_n_u_y __pyx_string_tab[137]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -4522,7 +4522,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_4sage_6matrix_22matrix_rational_sparse_Matrix_rational_sparse);
   for (int i=0; i<3; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<139; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<138; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   Py_CLEAR(clear_module_state->__pyx_int_0);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_int_2);
@@ -4596,7 +4596,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_4sage_6matrix_22matrix_rational_sparse_Matrix_rational_sparse);
   for (int i=0; i<3; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<139; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<138; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_0);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_1);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_2);
@@ -9024,16 +9024,8 @@ static PyObject *__pyx_pf_4sage_6matrix_4misc_2matrix_rational_echelon_form_mult
  *             verbose("Validity of result checked.", level=2, caller_name="multimod echelon")
  *             break
 */
-    __pyx_t_2 = ((PyObject *)__pyx_v_self);
-    __Pyx_INCREF(__pyx_t_2);
-    __pyx_t_5 = 0;
-    {
-      PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-      __pyx_t_13 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_ncols, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 365, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_13);
-    }
+    __pyx_t_13 = __Pyx_PyLong_From_long(((struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->ncols(__pyx_v_self, 0)); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 365, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_13);
     __pyx_t_2 = PyNumber_Multiply(__pyx_v_hdE, __pyx_t_13); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 365, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
@@ -10829,7 +10821,6 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_msg, sizeof(__pyx_k_msg), 0, 1, 1}, /* PyObject cname: __pyx_n_u_msg */
   {__pyx_k_multimod_echelon, sizeof(__pyx_k_multimod_echelon), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_multimod_echelon */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
-  {__pyx_k_ncols, sizeof(__pyx_k_ncols), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ncols */
   {__pyx_k_not_enough_primes, sizeof(__pyx_k_not_enough_primes), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_not_enough_primes */
   {__pyx_k_now_comparing_pivots_and_droppin, sizeof(__pyx_k_now_comparing_pivots_and_droppin), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_now_comparing_pivots_and_droppin */
   {__pyx_k_now_doing_rational_reconstructio, sizeof(__pyx_k_now_doing_rational_reconstructio), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_now_doing_rational_reconstructio */

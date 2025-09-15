@@ -2386,7 +2386,7 @@ cdef class Matrix(sage.structure.element.Matrix):
     ## Basic Properties
     ###################################################
 
-    def ncols(self):
+    cpdef long ncols(self):
         """
         Return the number of columns of this matrix.
 
@@ -2408,7 +2408,7 @@ cdef class Matrix(sage.structure.element.Matrix):
         """
         return self._ncols
 
-    def nrows(self):
+    cpdef long nrows(self):
         r"""
         Return the number of rows of this matrix.
 

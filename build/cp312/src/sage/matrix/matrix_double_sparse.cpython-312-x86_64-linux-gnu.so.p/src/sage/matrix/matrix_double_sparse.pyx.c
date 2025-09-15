@@ -2589,6 +2589,8 @@ static struct __pyx_vtabstruct_4sage_9structure_7element_Matrix *__pyx_vtabptr_4
 
 struct __pyx_vtabstruct_4sage_6matrix_7matrix0_Matrix {
   struct __pyx_vtabstruct_4sage_9structure_7element_Matrix __pyx_base;
+  long (*ncols)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
+  long (*nrows)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, int __pyx_skip_dispatch);
   int (*_will_use_strassen)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_will_use_strassen_echelon)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
   int (*_strassen_default_cutoff)(struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *, struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *);
@@ -3391,6 +3393,14 @@ static void __pyx_insert_code_object(int code_line, __Pyx_CachedCodeObjectType* 
 static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
+/* GCCDiagnostics.proto */
+#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+#define __Pyx_HAS_GCC_DIAGNOSTIC
+#endif
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value);
+
 /* FormatTypeName.proto */
 #if CYTHON_COMPILING_IN_LIMITED_API
 typedef PyObject *__Pyx_TypeName;
@@ -3407,14 +3417,6 @@ typedef const char *__Pyx_TypeName;
 #define __Pyx_PyType_GetFullyQualifiedName(tp) ((tp)->tp_name)
 #define __Pyx_DECREF_TypeName(obj)
 #endif
-
-/* GCCDiagnostics.proto */
-#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-#define __Pyx_HAS_GCC_DIAGNOSTIC
-#endif
-
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyLong_As_long(PyObject *);
@@ -3595,7 +3597,6 @@ static const char __pyx_k_size[] = "size";
 static const char __pyx_k_skew[] = "skew";
 static const char __pyx_k_1_QfA[] = "\200\001\360@\001\000\005\014\320\013\033\2301\320\034-\250Q\250f\260A";
 static const char __pyx_k_cvx_L[] = "cvx_L";
-static const char __pyx_k_nrows[] = "nrows";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_right[] = "right";
 static const char __pyx_k_super[] = "super";
@@ -3743,7 +3744,7 @@ typedef struct {
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   PyObject *__pyx_tuple[1];
   PyObject *__pyx_codeobj_tab[5];
-  PyObject *__pyx_string_tab[85];
+  PyObject *__pyx_string_tab[84];
   PyObject *__pyx_float_1eneg_12;
   PyObject *__pyx_int_1;
 /* #### Code section: module_state_contents ### */
@@ -3836,38 +3837,37 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_name __pyx_string_tab[50]
 #define __pyx_n_u_nmethods __pyx_string_tab[51]
 #define __pyx_n_u_nonzero_positions __pyx_string_tab[52]
-#define __pyx_n_u_nrows __pyx_string_tab[53]
-#define __pyx_n_u_numeric __pyx_string_tab[54]
-#define __pyx_n_u_options __pyx_string_tab[55]
-#define __pyx_n_u_p __pyx_string_tab[56]
-#define __pyx_n_u_parent __pyx_string_tab[57]
-#define __pyx_n_u_pop __pyx_string_tab[58]
-#define __pyx_n_u_postorder __pyx_string_tab[59]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[60]
-#define __pyx_n_u_qualname __pyx_string_tab[61]
-#define __pyx_n_u_r __pyx_string_tab[62]
-#define __pyx_n_u_range __pyx_string_tab[63]
-#define __pyx_n_u_right __pyx_string_tab[64]
-#define __pyx_n_u_row_idxs __pyx_string_tab[65]
-#define __pyx_n_u_sage_matrix_matrix_double_sparse __pyx_string_tab[66]
-#define __pyx_kp_u_sage_matrix_matrix_double_sparse_2 __pyx_string_tab[67]
-#define __pyx_n_u_sage_rings_complex_double __pyx_string_tab[68]
-#define __pyx_n_u_sage_structure_element __pyx_string_tab[69]
-#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[70]
-#define __pyx_n_u_self __pyx_string_tab[71]
-#define __pyx_n_u_set_name __pyx_string_tab[72]
-#define __pyx_n_u_size __pyx_string_tab[73]
-#define __pyx_n_u_skew __pyx_string_tab[74]
-#define __pyx_n_u_spmatrix __pyx_string_tab[75]
-#define __pyx_n_u_super __pyx_string_tab[76]
-#define __pyx_n_u_symbolic __pyx_string_tab[77]
-#define __pyx_n_u_tc __pyx_string_tab[78]
-#define __pyx_n_u_tolerance __pyx_string_tab[79]
-#define __pyx_n_u_type_code __pyx_string_tab[80]
-#define __pyx_n_u_value_type __pyx_string_tab[81]
-#define __pyx_n_u_values __pyx_string_tab[82]
-#define __pyx_n_u_x __pyx_string_tab[83]
-#define __pyx_n_u_z __pyx_string_tab[84]
+#define __pyx_n_u_numeric __pyx_string_tab[53]
+#define __pyx_n_u_options __pyx_string_tab[54]
+#define __pyx_n_u_p __pyx_string_tab[55]
+#define __pyx_n_u_parent __pyx_string_tab[56]
+#define __pyx_n_u_pop __pyx_string_tab[57]
+#define __pyx_n_u_postorder __pyx_string_tab[58]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[59]
+#define __pyx_n_u_qualname __pyx_string_tab[60]
+#define __pyx_n_u_r __pyx_string_tab[61]
+#define __pyx_n_u_range __pyx_string_tab[62]
+#define __pyx_n_u_right __pyx_string_tab[63]
+#define __pyx_n_u_row_idxs __pyx_string_tab[64]
+#define __pyx_n_u_sage_matrix_matrix_double_sparse __pyx_string_tab[65]
+#define __pyx_kp_u_sage_matrix_matrix_double_sparse_2 __pyx_string_tab[66]
+#define __pyx_n_u_sage_rings_complex_double __pyx_string_tab[67]
+#define __pyx_n_u_sage_structure_element __pyx_string_tab[68]
+#define __pyx_kp_u_sage_structure_element_pxd __pyx_string_tab[69]
+#define __pyx_n_u_self __pyx_string_tab[70]
+#define __pyx_n_u_set_name __pyx_string_tab[71]
+#define __pyx_n_u_size __pyx_string_tab[72]
+#define __pyx_n_u_skew __pyx_string_tab[73]
+#define __pyx_n_u_spmatrix __pyx_string_tab[74]
+#define __pyx_n_u_super __pyx_string_tab[75]
+#define __pyx_n_u_symbolic __pyx_string_tab[76]
+#define __pyx_n_u_tc __pyx_string_tab[77]
+#define __pyx_n_u_tolerance __pyx_string_tab[78]
+#define __pyx_n_u_type_code __pyx_string_tab[79]
+#define __pyx_n_u_value_type __pyx_string_tab[80]
+#define __pyx_n_u_values __pyx_string_tab[81]
+#define __pyx_n_u_x __pyx_string_tab[82]
+#define __pyx_n_u_z __pyx_string_tab[83]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -3926,7 +3926,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_type_4sage_6matrix_20matrix_double_sparse_Matrix_double_sparse);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<85; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<84; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   Py_CLEAR(clear_module_state->__pyx_float_1eneg_12);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   return 0;
@@ -3987,7 +3987,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_type_4sage_6matrix_20matrix_double_sparse_Matrix_double_sparse);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<85; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<84; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_float_1eneg_12);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_int_1);
   return 0;
@@ -5767,16 +5767,8 @@ static PyObject *__pyx_pf_4sage_6matrix_20matrix_double_sparse_20Matrix_double_s
   __pyx_t_3 = NULL;
   __Pyx_INCREF(__pyx_builtin_range);
   __pyx_t_11 = __pyx_builtin_range; 
-  __pyx_t_14 = ((PyObject *)__pyx_v_self);
-  __Pyx_INCREF(__pyx_t_14);
-  __pyx_t_4 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_14, NULL};
-    __pyx_t_15 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_nrows, __pyx_callargs+__pyx_t_4, (1-__pyx_t_4) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_14); __pyx_t_14 = 0;
-    if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 220, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_15);
-  }
+  __pyx_t_15 = __Pyx_PyLong_From_long(((struct __pyx_vtabstruct_4sage_6matrix_20matrix_double_sparse_Matrix_double_sparse *)__pyx_v_self->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_vtab)->__pyx_base.__pyx_base.__pyx_base.__pyx_base.__pyx_base.nrows(((struct __pyx_obj_4sage_6matrix_7matrix0_Matrix *)__pyx_v_self), 0)); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_15);
   __pyx_t_4 = 1;
   {
     PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_t_15};
@@ -7144,7 +7136,6 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
   {__pyx_k_nmethods, sizeof(__pyx_k_nmethods), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nmethods */
   {__pyx_k_nonzero_positions, sizeof(__pyx_k_nonzero_positions), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nonzero_positions */
-  {__pyx_k_nrows, sizeof(__pyx_k_nrows), 0, 1, 1}, /* PyObject cname: __pyx_n_u_nrows */
   {__pyx_k_numeric, sizeof(__pyx_k_numeric), 0, 1, 1}, /* PyObject cname: __pyx_n_u_numeric */
   {__pyx_k_options, sizeof(__pyx_k_options), 0, 1, 1}, /* PyObject cname: __pyx_n_u_options */
   {__pyx_k_p, sizeof(__pyx_k_p), 0, 1, 1}, /* PyObject cname: __pyx_n_u_p */
@@ -11513,45 +11504,6 @@ bad:
 }
 #endif
 
-/* FormatTypeName */
-#if CYTHON_COMPILING_IN_LIMITED_API && __PYX_LIMITED_VERSION_HEX < 0x030d0000
-static __Pyx_TypeName
-__Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp)
-{
-    PyObject *module = NULL, *name = NULL, *result = NULL;
-    #if __PYX_LIMITED_VERSION_HEX < 0x030b0000
-    name = __Pyx_PyObject_GetAttrStr((PyObject *)tp,
-                                               __pyx_mstate_global->__pyx_n_u_qualname);
-    #else
-    name = PyType_GetQualName(tp);
-    #endif
-    if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) goto bad;
-    module = __Pyx_PyObject_GetAttrStr((PyObject *)tp,
-                                               __pyx_mstate_global->__pyx_n_u_module);
-    if (unlikely(module == NULL) || unlikely(!PyUnicode_Check(module))) goto bad;
-    if (PyUnicode_CompareWithASCIIString(module, "builtins") == 0) {
-        result = name;
-        name = NULL;
-        goto done;
-    }
-    result = PyUnicode_FromFormat("%U.%U", module, name);
-    if (unlikely(result == NULL)) goto bad;
-  done:
-    Py_XDECREF(name);
-    Py_XDECREF(module);
-    return result;
-  bad:
-    PyErr_Clear();
-    if (name) {
-        result = name;
-        name = NULL;
-    } else {
-        result = __Pyx_NewRef(__pyx_mstate_global->__pyx_kp_u__2);
-    }
-    goto done;
-}
-#endif
-
 /* CIntToPy */
 static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value) {
 #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
@@ -11622,6 +11574,45 @@ static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value) {
 #endif
     }
 }
+
+/* FormatTypeName */
+#if CYTHON_COMPILING_IN_LIMITED_API && __PYX_LIMITED_VERSION_HEX < 0x030d0000
+static __Pyx_TypeName
+__Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp)
+{
+    PyObject *module = NULL, *name = NULL, *result = NULL;
+    #if __PYX_LIMITED_VERSION_HEX < 0x030b0000
+    name = __Pyx_PyObject_GetAttrStr((PyObject *)tp,
+                                               __pyx_mstate_global->__pyx_n_u_qualname);
+    #else
+    name = PyType_GetQualName(tp);
+    #endif
+    if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) goto bad;
+    module = __Pyx_PyObject_GetAttrStr((PyObject *)tp,
+                                               __pyx_mstate_global->__pyx_n_u_module);
+    if (unlikely(module == NULL) || unlikely(!PyUnicode_Check(module))) goto bad;
+    if (PyUnicode_CompareWithASCIIString(module, "builtins") == 0) {
+        result = name;
+        name = NULL;
+        goto done;
+    }
+    result = PyUnicode_FromFormat("%U.%U", module, name);
+    if (unlikely(result == NULL)) goto bad;
+  done:
+    Py_XDECREF(name);
+    Py_XDECREF(module);
+    return result;
+  bad:
+    PyErr_Clear();
+    if (name) {
+        result = name;
+        name = NULL;
+    } else {
+        result = __Pyx_NewRef(__pyx_mstate_global->__pyx_kp_u__2);
+    }
+    goto done;
+}
+#endif
 
 /* CIntFromPyVerify */
 #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
