@@ -133,7 +133,7 @@ jobs:
           meson compile -C builddir doc-html
         env:
           SAGE_USE_CDNS: yes
-          SAGE_DOCBUILD_OPTS: "--include-tests-blocks"
+          SAGE_SKIP_TESTS_BLOCKS: no
 
       - name: Copy doc
         run: |

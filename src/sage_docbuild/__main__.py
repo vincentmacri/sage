@@ -518,7 +518,7 @@ error messages. To be certain that these are real errors, run
     if args.live_doc:
         os.environ['SAGE_LIVE_DOC'] = 'yes'
     if args.skip_tests:
-        os.environ['SAGE_SKIP_TESTS_BLOCKS'] = 'True'
+        os.environ['SAGE_SKIP_TESTS_BLOCKS'] = 'yes'
     if args.use_cdns:
         os.environ['SAGE_USE_CDNS'] = 'yes'
     os.environ['SAGE_DOC_SRC'] = str(args.source_dir)
