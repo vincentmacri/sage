@@ -1079,8 +1079,10 @@ def setup(app):
     app.connect('autodoc-process-docstring', process_dollars)
     app.connect('autodoc-process-docstring', process_inherited)
     app.connect('autodoc-process-docstring', process_docstring_aliases)
-    if os.environ.get('SAGE_SKIP_TESTS_BLOCKS', 'no') == 'yes':
+    if os.environ.get('SAGE_SKIP_TESTS_BLOCKS', 'yes') == 'yes':
+        print('SKIPPING TESTS BLOCK')
         app.connect('autodoc-process-docstring', skip_TESTS_block)
+    print('NOT SKIPPING TESTS BLOCK')
     app.connect('autodoc-skip-member', skip_member)
     app.add_transform(SagemathTransform)
     if SAGE_LIVE_DOC == 'yes' or SAGE_PREPARSED_DOC == 'yes':
