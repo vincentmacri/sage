@@ -188,7 +188,7 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
     defined in :class:`CommutativeKeyExchangeBase` and do not need to implement
     method defined in :class:`KeyExchangeBase`. This class is for convenience
     to reduce code duplication when implementing key exchange schemes where
-    Alice and Bob perform the same calculations. 
+    Alice and Bob perform the same calculations.
     """
 
     @abstractmethod
@@ -219,7 +219,9 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
             - ``secret_key``: A secret key that has been chosen beforehand
             - ``public_key``: A public key that has been sent to this party through
                 an insecure channel
+
         OUTPUT:
+
             - A shared secret key between the two parties
         """
         raise NotImplementedError
