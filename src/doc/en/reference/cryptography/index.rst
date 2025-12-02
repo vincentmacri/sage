@@ -18,6 +18,9 @@ Cryptography
 
    sage/crypto/public_key/blum_goldwasser
 
+   sage/crypto/public_key/key_exchange/finite_field_diffie_hellman
+   sage/crypto/public_key/key_exchange/key_exchange_base
+
    sage/crypto/stream
    sage/crypto/stream_cipher
 
@@ -33,9 +36,5 @@ Cryptography
 
    sage/crypto/lattice
    sage/crypto/lwe
-
-   sage/crypto/key_exchange/catalog
-   sage/crypto/key_exchange/key_exchange_scheme
-   sage/crypto/key_exchange/diffie_hellman
 
 .. include:: ../footer.txt
