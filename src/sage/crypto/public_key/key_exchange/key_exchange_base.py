@@ -2,8 +2,8 @@ r"""
 Key Exchange Schemes
 
 This module contains base classes for key exchange schemes. The classes defined
-in this module cannot be initialized directly. It is the responsibility of child
-classes to implement specific key exchange schemes.
+in this module should not be initialized directly. It is the responsibility of
+child classes to implement specific key exchange schemes.
 
 A key exchange protocol establishes a shared secret value between two parties,
 Alice and Bob. Either party is able to initiate the key exchange, in the sense
