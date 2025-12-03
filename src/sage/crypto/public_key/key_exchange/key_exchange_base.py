@@ -1,5 +1,5 @@
 r"""
-Key Exchange Schemes
+Base Classes for Key Exchange Schemes
 
 This module contains base classes for key exchange schemes. The classes defined
 in this module should not be initialized directly. It is the responsibility of
@@ -38,7 +38,7 @@ class KeyExchangeBase(SageObject, ABC):
     Implementers of this class must implement all abstract methods
     defined in :meth:`KeyExchangeBase`.
 
-    If all `alice` methods are the same as `bob` methods,
+    If all ``alice`` methods are the same as ``bob`` methods,
     then the :class:`CommutativeKeyExchangeBase` might be easier to implement.
     """
 
@@ -61,7 +61,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         OUTPUT:
 
-        - A valid public key that will be sent to Bob
+        A valid public key that will be sent to Bob
         """
         raise NotImplementedError
 
@@ -84,7 +84,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         OUTPUT:
 
-        - A valid public key that will be sent to Alice
+        A valid public key that will be sent to Alice
         """
         raise NotImplementedError
 
@@ -101,8 +101,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         OUTPUT:
 
-        - A secret key that is shared between Alice and Bob
-
+        A secret key that is shared between Alice and Bob
         """
         raise NotImplementedError
 
@@ -119,8 +118,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         OUTPUT:
 
-        - The secret key that is shared between Alice and Bob
-
+        The secret key that is shared between Alice and Bob
         """
         raise NotImplementedError
 
@@ -130,8 +128,9 @@ class KeyExchangeBase(SageObject, ABC):
         key exchange.
 
         OUTPUT:
-            A two tuple (secret_key, public_key) which is Alice's
-            secret and public keys
+
+        A two tuple (secret_key, public_key) which is Alice's
+        secret and public keys
         """
         alice_sk = self.alice_secret_key()
         alice_pk = self.alice_public_key(alice_sk)
@@ -143,8 +142,9 @@ class KeyExchangeBase(SageObject, ABC):
         key exchange.
 
         OUTPUT:
-            A 2-tuple (secret_key, public_key) which is Bob's
-            secret and public keys
+
+        A 2-tuple (secret_key, public_key) which is Bob's
+        secret and public keys
         """
         bob_sk = self.bob_secret_key()
         bob_pk = self.bob_public_key(bob_sk)
@@ -158,7 +158,8 @@ class KeyExchangeBase(SageObject, ABC):
         and Bob are not the same.
 
         OUTPUT:
-            A 5-tuple (alice_secret_key, alice_public_key, bob_secret_key, bob_public_key, shared_secret)
+
+        A 5-tuple ``(alice_secret_key, alice_public_key, bob_secret_key, bob_public_key, shared_secret)``
         """
         alice_sk, alice_pk = self.alice_key_generate()
         bob_sk, bob_pk = self.bob_key_generate()
@@ -205,7 +206,7 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
 
         INPUT:
 
-            - ``secret_key``: A secret key that has been chosen beforehand
+        - ``secret_key``: A secret key that has been chosen beforehand
         """
         raise NotImplementedError
 
@@ -216,87 +217,60 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
 
         INPUT:
 
-            - ``secret_key``: A secret key that has been chosen beforehand
-            - ``public_key``: A public key that has been sent to this party through
-                an insecure channel
+        - ``secret_key``: A secret key that has been chosen beforehand
+        - ``public_key``: A public key that has been sent to this party through
+            an insecure channel
 
         OUTPUT:
 
-            - A shared secret key between the two parties
+        A shared secret key between the two parties
         """
         raise NotImplementedError
 
     def alice_secret_key(self) -> Any:
         r"""
-        Generate a valid secret key for Alice.
+        Alias of :meth:`secret_key` for compatibility with base class.
+
+        :meta private:
         """
         return self.secret_key()
 
     def alice_public_key(self, alice_secret_key) -> Any:
         r"""
-        Generate a valid public key for Alice.
+        Alias of :meth:`public_key` for compatibility with base class.
 
-        INPUT:
-
-        - ``alice_secret_key``: Alice's secret key that will be used to generate
-            the public key
-
-        OUTPUT:
-
-        - A valid public key that will be sent to Bob
+        :meta private:
         """
         return self.public_key(alice_secret_key)
 
     def bob_secret_key(self) -> Any:
         r"""
-        Generate a valid secret key for Bob.
+        Alias of :meth:`secret_key` for compatibility with base class.
+
+        :meta private:
         """
         return self.secret_key()
 
     def bob_public_key(self, bob_secret_key) -> Any:
         r"""
-        Generate a valid public key for Bob.
+        Alias of :meth:`public_key` for compatibility with base class.
 
-        INPUT:
-
-        - ``bob_secret_key``: Bob's secret key that will be used to generate
-            the public key
-
-        OUTPUT:
-
-        - A valid public key that will be sent to Alice
+        :meta private:
         """
         return self.public_key(bob_secret_key)
 
     def alice_compute_shared_secret(self, alice_sk, bob_pk) -> Any:
         """
-        Compute Alice's shared secret.
+        Alias of :meth:`compute_shared_secret` for compatibility with base class.
 
-        INPUT:
-
-        - ``alice_secret_key``: Alice's secret key that is kept secret from all parties
-
-        - ``bob_public_key``: Bob's public key that has been sent to Alice
-
-        OUTPUT:
-
-        - A secret key that is shared between Alice and Bob
-
+        :meta private:
         """
         return self.compute_shared_secret(alice_sk, bob_pk)
 
     def bob_compute_shared_secret(self, bob_sk, alice_pk) -> Any:
         r"""
-        Compute Bob's shared secret.
+        Alias of :meth:`compute_shared_secret` for compatibility with base class.
 
-        INPUT:
-
-        - ``bob_secret_key``: Bob's secret key that is kept secret from all parties
-
-        - ``alice_public_key``: Alice's public key that has been sent to Bob
-
-        OUTPUT:
-
-        - The secret key that is shared between Alice and Bob
+        :meta private:
         """
         return self.compute_shared_secret(bob_sk, alice_pk)

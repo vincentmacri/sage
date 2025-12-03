@@ -1,4 +1,6 @@
 r"""
+Finite Field Diffie-Hellman
+
 Toy implementation of Diffie-Hellman key exchange over finite fields `\Zmod{p}`.
 
 AUTHORS:
