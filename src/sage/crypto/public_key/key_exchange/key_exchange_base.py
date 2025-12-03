@@ -154,8 +154,8 @@ class KeyExchangeBase(SageObject, ABC):
         r"""
         Do a full key exchange and returns all public keys, secret keys,
         and the computed shared secret between Alice and Bob. Raises
-        an AssertException if the computed shared secret between Alice
-        and Bob are not the same.
+        an ``AssertException`` if Alice and Bob do not compute the same
+        shared secret.
 
         OUTPUT:
 
@@ -169,7 +169,7 @@ class KeyExchangeBase(SageObject, ABC):
 
     def _test_key_exchange(self, **options):
         r"""
-        Tests the key exchange generates the same shared secrets for both parties.
+        Test that the key exchange generates the same shared secret for both parties.
         """
         tester = self._tester(**options)
         alice_sk, alice_pk = self.alice_key_generate()
