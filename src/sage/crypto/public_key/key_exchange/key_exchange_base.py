@@ -56,7 +56,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         INPUT:
 
-        - ``alice_secret_key``: Alice's secret key that will be used to generate
+        - ``alice_secret_key`` -- Alice's secret key that will be used to generate
             the public key
 
         OUTPUT:
@@ -79,7 +79,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         INPUT:
 
-        - ``bob_secret_key``: Bob's secret key that will be used to generate
+        - ``bob_secret_key`` -- Bob's secret key that will be used to generate
             the public key
 
         OUTPUT:
@@ -95,9 +95,9 @@ class KeyExchangeBase(SageObject, ABC):
 
         INPUT:
 
-        - ``alice_secret_key``: Alice's secret key that is kept secret from all parties
+        - ``alice_secret_key`` -- Alice's secret key that is kept secret from all parties
 
-        - ``bob_public_key``: Bob's public key that has been sent to Alice
+        - ``bob_public_key`` -- Bob's public key that has been sent to Alice
 
         OUTPUT:
 
@@ -112,9 +112,9 @@ class KeyExchangeBase(SageObject, ABC):
 
         INPUT:
 
-        - ``bob_secret_key``: Bob's secret key that is kept secret from all parties
+        - ``bob_secret_key`` -- Bob's secret key that is kept secret from all parties
 
-        - ``alice_public_key``: Alice's public key that has been sent to Bob
+        - ``alice_public_key`` -- Alice's public key that has been sent to Bob
 
         OUTPUT:
 
@@ -206,7 +206,7 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
 
         INPUT:
 
-        - ``secret_key``: A secret key that has been chosen beforehand
+        - ``secret_key`` -- A secret key that has been chosen beforehand
         """
         raise NotImplementedError
 
@@ -217,8 +217,8 @@ class CommutativeKeyExchangeBase(KeyExchangeBase):
 
         INPUT:
 
-        - ``secret_key``: A secret key that has been chosen beforehand
-        - ``public_key``: A public key that has been sent to this party through
+        - ``secret_key`` -- A secret key that has been chosen beforehand
+        - ``public_key`` -- A public key that has been sent to this party through
             an insecure channel
 
         OUTPUT:
