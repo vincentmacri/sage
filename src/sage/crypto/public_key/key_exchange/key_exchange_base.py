@@ -129,7 +129,7 @@ class KeyExchangeBase(SageObject, ABC):
 
         OUTPUT:
 
-        A two tuple (secret_key, public_key) which is Alice's
+        A 2-tuple (secret_key, public_key) which is Alice's
         secret and public keys
         """
         alice_sk = self.alice_secret_key()
