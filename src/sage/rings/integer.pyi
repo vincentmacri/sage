@@ -1,3 +1,5 @@
+from typing import overload
+
 from sage.libs.gmp.types import __mpz_struct, mpz_t, mpz_ptr
 from sage.libs.gmp.mpz import mpz_set
 
@@ -22,37 +24,53 @@ class Integer(EuclideanDomainElement):
     def _add_(self, other: object) -> object:
         ...
 
+    @overload
+    def __add__(self, other: int) -> Integer:
+        ...
+
+    @overload
+    def __radd__(self, other: int) -> Integer:
+        ...
+
     def _mul_(self, other: object) -> object:
+        ...
+
+    @overload
+    def __mul__(self, other: int) -> Integer:
+        ...
+
+    @overload
+    def __rmul__(self, other: int) -> Integer:
         ...
 
     def _pow_(self, other: object) -> object:
         ...
 
-    def _and(self, other: 'Integer') -> 'Integer':
+    def _and(self, other: Integer) -> Integer:
         ...
 
-    def _or(self, other: 'Integer') -> 'Integer':
+    def _or(self, other: Integer) -> Integer:
         ...
 
-    def _xor(self, other: 'Integer') -> 'Integer':
+    def _xor(self, other: Integer) -> Integer:
         ...
 
-    def _exact_log_log2_iter(self, m: 'Integer') -> int:
+    def _exact_log_log2_iter(self, m: Integer) -> int:
         ...
 
     def _exact_log_mpfi_log(self, m: object) -> int:
         ...
 
-    def _valuation(self, p: 'Integer') -> RingElement:
+    def _valuation(self, p: Integer) -> RingElement:
         ...
 
-    def _val_unit(self, p: 'Integer') -> object:
+    def _val_unit(self, p: Integer) -> object:
         ...
 
-    def _divide_knowing_divisible_by(self, right: 'Integer') -> 'Integer':
+    def _divide_knowing_divisible_by(self, right: Integer) -> Integer:
         ...
 
-    def _is_power_of(self, n: 'Integer') -> bool:
+    def _is_power_of(self, n: Integer) -> bool:
         ...
 
     def _pseudoprime_is_prime(self, proof: object) -> bool:
@@ -61,12 +79,12 @@ class Integer(EuclideanDomainElement):
 def mpz_set_str_python(z: mpz_ptr, s: str, base: int) -> int:
     ...
 
-def smallInteger(value: int) -> 'Integer':
+def smallInteger(value: int) -> Integer:
     ...
 
 _small_primes_table: list[bool]
 
-def _Integer_from_mpz(e: mpz_t) -> 'Integer':
+def _Integer_from_mpz(e: mpz_t) -> Integer:
     z = Integer.__new__(Integer)
     mpz_set(z.value, e)
     return z
