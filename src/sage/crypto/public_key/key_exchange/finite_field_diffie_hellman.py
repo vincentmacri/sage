@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 class FiniteFieldDiffieHellman(CommutativeKeyExchangeBase):
 
-    def __init__(self, p, generator, proof: bool = True) -> None:
+    def __init__(self, p: Integer | int, generator: Integer | IntegerMod_abstract | int, proof: bool = True) -> None:
         r"""
         Create an instance of the Diffie-Hellman key exchange scheme using the
         given prime ``p`` and base ``g``.

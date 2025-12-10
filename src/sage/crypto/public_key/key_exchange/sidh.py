@@ -1,8 +1,15 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import random
 
-from sage.crypto.public_key.key_exchange.key_exchange_base import KeyExchangeBase
 from sage.rings.integer import Integer
 from sage.schemes.elliptic_curves.ell_curve_isogeny import EllipticCurveIsogeny
+
+from .key_exchange_base import KeyExchangeBase
+
+if TYPE_CHECKING:
+    from sage.schemes.elliptic_curves.ell_finite_field import EllipticCurve_finite_field
+    from sage.schemes.elliptic_curves.ell_point import EllipticCurvePoint_finite_field
 
 
 class SIDH(KeyExchangeBase):
@@ -23,16 +30,25 @@ class SIDH(KeyExchangeBase):
         sage: Q_A = E(426 * i + 394, 51 * i + 79)
         sage: P_B = E(358 * i + 275, 410 * i + 104)
         sage: Q_B = E(20 * i + 185, 281 * i + 239)
-        sage: toy_sidh = key_exchange.SIDH(p, e_A, e_B, E, P_A, P_B, Q_A, Q_B)
+        sage: toy_sidh = key_exchange.SIDH(p, E, P_A, P_B, Q_A, Q_B)
         doctest:...: FutureWarning: SageMath's key exchange functionality is experimental and might change in the future.
                      See https://github.com/sagemath/sage/issues/41218 for details.
         sage: TestSuite(toy_sidh).run()
     """
 
-    def __init__(self, p, e_A, e_B, E, P_A, P_B, Q_A, Q_B):
-        self._p = p
-        self._e_A = e_A
-        self._e_B = e_B
+    def __init__(
+        self,
+        p: Integer | int,
+        E: EllipticCurve_finite_field,
+        P_A: EllipticCurvePoint_finite_field,
+        P_B: EllipticCurvePoint_finite_field,
+        Q_A: EllipticCurvePoint_finite_field,
+        Q_B: EllipticCurvePoint_finite_field,
+    ) -> None:
+        self._p = Integer(p)
+        n = self._p + 1
+        self._e_A: Integer = n.valuation(2)
+        self._e_B: Integer = n.valuation(3)
         self._E = E
         self._P_A = P_A
         self._P_B = P_B
@@ -40,15 +56,20 @@ class SIDH(KeyExchangeBase):
         self._Q_B = Q_B
 
     def parameters(self):
+        r"""
+        Return the parameter set of the SIDH instance.
+
+        OUTPUT:
+
+        A tuple (`p`, `E`, `P_A`, `P_B`, `Q_A`, `Q_B`) where:
+        """
         return (self._p, self._e_A, self._e_B, self._E, self._P_A, self._P_B, self._Q_A, self._Q_B)
 
-    def alice_secret_key(self):
-        k_A = random.randint(0, self._e_A)
-        return Integer(k_A)
+    def alice_secret_key(self) -> Integer:
+        return Integer(random.randint(0, self._e_A))
 
-    def bob_secret_key(self):
-        k_B = random.randint(0, self._e_B)
-        return Integer(k_B)
+    def bob_secret_key(self) -> Integer:
+        return Integer(random.randint(0, self._e_B))
 
     def alice_public_key(self, alice_secret_key):
         phi_A = self.alice_first_secret_isogeny(alice_secret_key)
@@ -77,9 +98,7 @@ class SIDH(KeyExchangeBase):
         return j_B
 
     def alice_first_secret_isogeny(self, alice_secret_key):
-        isogenyMap = self.buildIsogenyByBreakingDown(
-            alice_secret_key, 2, self._E, self._P_A, self._Q_A
-        )
+        isogenyMap = self.buildIsogenyByBreakingDown(alice_secret_key, 2, self._E, self._P_A, self._Q_A)
         return isogenyMap[0]
 
     def bob_first_secret_isogeny(self, bob_secret_key):
