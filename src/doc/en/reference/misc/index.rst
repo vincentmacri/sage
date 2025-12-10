@@ -223,9 +223,7 @@ Distribution
 
 Credits
 ~~~~~~~
-
-.. toctree::
-   :maxdepth: 1
+.. toctree:: :maxdepth: 1
 
    sage/misc/citation
    sage/misc/copying
@@ -267,7 +265,7 @@ Miscellaneous Inspection and Development Tools
    sage/misc/classgraph
    sage/misc/dev_tools
    sage/misc/function_mangling
-   sage/misc/rest_index_of_methods
+   sage/misc/types
 
 Low-Level Utilities
 -------------------
