@@ -9,6 +9,11 @@ is imported at runtime.
 The purpose of this module is to provide aliases when there are many types that
 easily coerce into another type, or when the same code will give a different type
 depending on whether the preparser is enabled or not.
+
+Type unions defined in this module should usually only be used for annotating parameters,
+for return values we should be able to give the exact type. If the return type depends
+on the parameters, a union can be used as the return type and ``typing.overload``
+can be used to specify the return type for various combinations of parameters.
 """
 # ****************************************************************************
 #       Copyright (C) 2025 Vincent Macri <vincent.macri@ucalgary.ca>
