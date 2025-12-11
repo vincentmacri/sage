@@ -15,6 +15,7 @@ for return values we should be able to give the exact type. If the return type d
 on the parameters, a union can be used as the return type and ``typing.overload``
 can be used to specify the return type for various combinations of parameters.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2025 Vincent Macri <vincent.macri@ucalgary.ca>
 #
@@ -33,5 +34,3 @@ if typing.TYPE_CHECKING:
 
     type Int = Integer | int
     type IntMod = IntegerMod_abstract | Int
-else:
-    assert False, 'sage.misc.types cannot be imported at runtime, it may only be imported in an if `typing.TYPE_CHECKING` block'
