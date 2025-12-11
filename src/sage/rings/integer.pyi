@@ -1,10 +1,11 @@
-from typing import overload
+from typing import overload, override
 
 from sage.libs.gmp.types import __mpz_struct, mpz_t, mpz_ptr
 from sage.libs.gmp.mpz import mpz_set
 
 from sage.structure.element import EuclideanDomainElement, RingElement
 from sage.categories.morphism import Morphism
+from sage.misc.types import Int
 
 class Integer(EuclideanDomainElement):
     value: __mpz_struct[1]
@@ -24,23 +25,7 @@ class Integer(EuclideanDomainElement):
     def _add_(self, other: object) -> object:
         ...
 
-    @overload
-    def __add__(self, other: int) -> Integer:
-        ...
-
-    @overload
-    def __radd__(self, other: int) -> Integer:
-        ...
-
     def _mul_(self, other: object) -> object:
-        ...
-
-    @overload
-    def __mul__(self, other: int) -> Integer:
-        ...
-
-    @overload
-    def __rmul__(self, other: int) -> Integer:
         ...
 
     def _pow_(self, other: object) -> object:
@@ -75,6 +60,51 @@ class Integer(EuclideanDomainElement):
 
     def _pseudoprime_is_prime(self, proof: object) -> bool:
         ...
+
+    @overload
+    def __add__(self, other: int) -> Integer: ...
+
+    @overload
+    def __add__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __sub__(self, other: int) -> Integer: ...
+
+    @overload
+    def __sub__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __rsub__(self, other: int) -> Integer: ...
+
+    @overload
+    def __rsub__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __radd__(self, other: int) -> Integer: ...
+
+    @overload
+    def __radd__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __mul__(self, other: int) -> Integer: ...
+
+    @overload
+    def __mul__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __rmul__(self, other: int) -> Integer: ...
+
+    @overload
+    def __rmul__(self, other: Integer) -> Integer: ...
+
+    @overload
+    def __pow__(self, other: Int) -> Integer: ...
+
+    @overload
+    def __pow__(self, other: int, modulo: Int | None) -> Integer: ...
+
+    @overload
+    def __pow__(self, other: Integer, modulo: Int | None) -> Integer: ...
 
 def mpz_set_str_python(z: mpz_ptr, s: str, base: int) -> int:
     ...
