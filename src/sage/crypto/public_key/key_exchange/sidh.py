@@ -49,13 +49,21 @@ class SIDH(KeyExchangeBase):
         n = self._p + 1
         self._e_A: Integer = n.valuation(2)
         self._e_B: Integer = n.valuation(3)
+        # TODO: Test if anything breaks if we have a cofactor
         self._E = E
         self._P_A = P_A
         self._P_B = P_B
         self._Q_A = Q_A
         self._Q_B = Q_B
 
-    def parameters(self):
+    def parameters(self) -> tuple[
+            Integer,
+            EllipticCurve_finite_field,
+            EllipticCurvePoint_finite_field,
+            EllipticCurvePoint_finite_field,
+            EllipticCurvePoint_finite_field,
+            EllipticCurvePoint_finite_field
+            ]:
         r"""
         Return the parameter set of the SIDH instance.
 
@@ -63,7 +71,7 @@ class SIDH(KeyExchangeBase):
 
         A tuple (`p`, `E`, `P_A`, `P_B`, `Q_A`, `Q_B`) where:
         """
-        return (self._p, self._e_A, self._e_B, self._E, self._P_A, self._P_B, self._Q_A, self._Q_B)
+        return (self._p, self._E, self._P_A, self._P_B, self._Q_A, self._Q_B)
 
     def alice_secret_key(self) -> Integer:
         return Integer(random.randint(0, self._e_A))
