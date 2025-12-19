@@ -3,6 +3,12 @@ Finite Field Diffie-Hellman
 
 Toy implementation of Diffie-Hellman key exchange over finite fields `\Zmod{p}`.
 
+.. WARNING::
+
+    This is a toy implementation for educational use only! Do not use
+    this implementation, or any cryptographic features of Sage, in any
+    setting where security is needed!
+
 AUTHORS:
 
 - Vincent Macri (2024-07-30): initial version
@@ -56,12 +62,6 @@ class FiniteFieldDiffieHellman(CommutativeKeyExchangeBase):
           checking that ``p`` is prime. This should be set to ``False``
           when using large (cryptographic size) primes, otherwise checking
           primality will take too long.
-
-        .. WARNING::
-
-            This is a toy implementation for educational use only! Do not use
-            this implementation, or any cryptographic features of Sage, in any
-            setting where security is needed!
 
         REFERENCES:
 

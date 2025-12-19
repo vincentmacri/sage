@@ -26,7 +26,7 @@ AUTHORS:
 # ****************************************************************************
 
 from abc import abstractmethod
-from typing import Any
+from typing import Any, Self
 
 from sage.misc.superseded import experimental_warning
 from sage.structure.sage_object import SageObject
@@ -128,7 +128,26 @@ class KeyExchangeBase(SageObject):
     @abstractmethod
     def parameters(self) -> tuple:
         """
-        A list of the public parameters of the key exchange.
+        A tuple of the public parameters of the key exchange.
+
+        :meth:`parameters` should a tuple of useful attributes of the instance
+        which are sufficient to define the parameter set of the key exchange
+        scheme that the instance represents. For some implementations this
+        may simply be the parameters passed to ``__init__`` when the object was
+        constructed. For some implementations we may wish to return additional
+        information for convenience. For example, a key exchange scheme that
+        works over an elliptic curve over a finite field may wish to return the
+        characteristic of the finite field in addition to the elliptic curve, even
+        though the finite field can be accessed via methods on elliptic curve objects.
+        
+        The default implementations of ``_eq_`` and ``__hash__`` for
+        :class:`KeyExchangeBase` are implementing using :meth:`parameters`.
+        Hence two key exchange instances ``a`` and ``b`` compare as equal
+        if and only if ``a.parameters()`` == ``b.parameters()``. Similarly,
+        a key exchange instance ``a`` is hashable if and only if ``a.parameters()``
+        is hashable. This is a reasonable default that should work for most key
+        exchange schemes, but user classes can override the ``_eq_`` and ``__hash__``
+        methods if this is not desirable.
 
         OUTPUT:
 
@@ -136,10 +155,9 @@ class KeyExchangeBase(SageObject):
         """
         raise NotImplementedError
 
-    def alice_key_generate(self) -> tuple[Any, Any]:
+    def alice_key_pair(self) -> tuple[Any, Any]:
         r"""
-        Generate a valid (secret key, public key) pair for Alice's
-        key exchange.
+        Generate a valid (secret key, public key) key pair for Alice.
 
         OUTPUT:
 
@@ -150,10 +168,9 @@ class KeyExchangeBase(SageObject):
         alice_pk = self.alice_public_key(alice_sk)
         return (alice_sk, alice_pk)
 
-    def bob_key_generate(self) -> tuple[Any, Any]:
+    def bob_key_pair(self) -> tuple[Any, Any]:
         r"""
-        Generate a valid (secret key, public key) pair for Bob's
-        key exchange.
+        Generate a valid (secret key, public key) key pair for Bob.
 
         OUTPUT:
 
@@ -175,11 +192,28 @@ class KeyExchangeBase(SageObject):
 
         A 5-tuple ``(alice_secret_key, alice_public_key, bob_secret_key, bob_public_key, shared_secret)``
         """
-        alice_sk, alice_pk = self.alice_key_generate()
-        bob_sk, bob_pk = self.bob_key_generate()
+        alice_sk, alice_pk = self.alice_key_pair()
+        bob_sk, bob_pk = self.bob_key_pair()
         alice_shared_secret = self.alice_compute_shared_secret(alice_sk, bob_pk)
         assert alice_shared_secret == self.bob_compute_shared_secret(bob_sk, alice_pk)
         return (alice_sk, alice_pk, bob_sk, bob_pk, alice_shared_secret)
+
+    @classmethod
+    def named_parameter_set(cls, name: str) -> Self:
+        r"""
+        Convenience method to easily construct particular instances of a key exchange scheme
+        for actual parameter sets that are used in practice and have names. Implementations
+        may also wish to implement a parameter set named 'toy' of a size that is just large
+        enough to be non-trivial but is nowhere near cryptographic size. Implementations may
+        also wish to set a custom name on the key exchange instance before returning it.
+
+        Sage library implementations of key exchange schemes should define a 'toy' implementation
+        and use it for most tests to reduce testing time.
+        """
+        raise ValueError(f'Unknown parameter set name "{name}" for {cls}')
+
+    def _repr_(self) -> str:
+        return f'{type(self).__name__} with parameter set: {self.parameters()}'
 
     def __eq__(self, other) -> bool:
         return isinstance(other, type(self)) and self.parameters() == other.parameters()
@@ -192,8 +226,8 @@ class KeyExchangeBase(SageObject):
         Test that the key exchange generates the same shared secret for both parties.
         """
         tester = self._tester(**options)
-        alice_sk, alice_pk = self.alice_key_generate()
-        bob_sk, bob_pk = self.bob_key_generate()
+        alice_sk, alice_pk = self.alice_key_pair()
+        bob_sk, bob_pk = self.bob_key_pair()
         alice_shared_secret = self.alice_compute_shared_secret(alice_sk, bob_pk)
         bob_shared_secret = self.bob_compute_shared_secret(bob_sk, alice_pk)
         tester.assertEqual(alice_shared_secret, bob_shared_secret)
