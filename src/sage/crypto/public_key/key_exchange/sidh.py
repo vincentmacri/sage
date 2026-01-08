@@ -13,7 +13,7 @@ rather than :class:`CommutativeKeyExchangeBase`.
 """
 
 from __future__ import annotations
-from typing import Literal, overload, Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING
 import random
 
 from sage.rings.finite_rings.finite_field_constructor import FiniteField
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from sage.schemes.elliptic_curves.ell_point import EllipticCurvePoint_finite_field
 
     PublicKeySIDH = tuple[EllipticCurve_finite_field, EllipticCurvePoint_finite_field, EllipticCurvePoint_finite_field]
-
+    SecretKeySIDH = Integer | int
 
 class SIDH(KeyExchangeBase):
     """
@@ -51,19 +51,17 @@ class SIDH(KeyExchangeBase):
         sage: Q_A = E(426 * i + 394, 51 * i + 79)
         sage: P_B = E(358 * i + 275, 410 * i + 104)
         sage: Q_B = E(20 * i + 185, 281 * i + 239)
-        sage: toy_sidh = key_exchange.SIDH(E, P_A, P_B, Q_A, Q_B)
+        sage: toy_sidh = key_exchange.SIDH(E, P_A, Q_A, P_B, Q_B)
         doctest:...: FutureWarning: SageMath's key exchange functionality is experimental and might change in the future.
                      See https://github.com/sagemath/sage/issues/41218 for details.
         sage: TestSuite(toy_sidh).run()
-
-        TODO: Check order of points (should it be P_A, Q_A, P_B, Q_B?)
     """
     def __init__(
         self,
         E: EllipticCurve_finite_field,
         P_A: EllipticCurvePoint_finite_field | None = None,
-        P_B: EllipticCurvePoint_finite_field | None = None,
         Q_A: EllipticCurvePoint_finite_field | None = None,
+        P_B: EllipticCurvePoint_finite_field | None = None,
         Q_B: EllipticCurvePoint_finite_field | None = None,
     ) -> None:
         K = E.base_field()
@@ -71,10 +69,11 @@ class SIDH(KeyExchangeBase):
         n = self._p + 1
         self._e_A: Integer = n.valuation(2)
         self._e_B: Integer = n.valuation(3)
+
         # TODO: Test if anything breaks if we have a cofactor
         self._E = E
 
-        # TODO: Check how these points should be generated
+        # TODO: Generate basis points method described on page 13 of SIKE spec
         def full_order_point():
             while True:
                 P = self._E.random_point()
@@ -91,23 +90,28 @@ class SIDH(KeyExchangeBase):
             validate_point(P_A)
             self._P_A = P_A
 
-        if P_B is None:
-            self._P_B = (3 ** self._e_B) * full_order_point()
-        else:
-            validate_point(P_B)
-            self._P_B = P_B
-
         if Q_A is None:
-            self._Q_A = (2 ** self._e_A) * full_order_point()
+            self._Q_A = (3 ** self._e_B) * full_order_point()
         else:
             validate_point(Q_A)
             self._Q_A = Q_A
+
+        if P_B is None:
+            self._P_B = (2 ** self._e_A) * full_order_point()
+        else:
+            validate_point(P_B)
+            self._P_B = P_B
 
         if Q_B is None:
             self._Q_B = (2 ** self._e_A) * full_order_point()
         else:
             validate_point(Q_B)
             self._Q_B = Q_B
+
+        assert self._P_A.order() == 2 ** self._e_A
+        assert self._Q_A.order() == 2 ** self._e_A
+        assert self._P_B.order() == 3 ** self._e_B
+        assert self._Q_B.order() == 3 ** self._e_B
 
     @classmethod
     def named_parameter_set(cls, name: str) -> Self:
@@ -131,9 +135,24 @@ class SIDH(KeyExchangeBase):
             Q_A = E(426 * i + 394, 51 * i + 79)
             P_B = E(358 * i + 275, 410 * i + 104)
             Q_B = E(20 * i + 185, 281 * i + 239)
-            toy = cls(E, P_A, P_B, Q_A, Q_B)
+            toy = cls(E, P_A, Q_A, P_B, Q_B)
             toy.rename('sidh-toy')
             return toy
+        elif name == 'p434':
+            R = ZZ['x']
+            x = R.gen()
+            p = 2**216 * 3**137 - 1
+            K = FiniteField(p**2, name='i', modulus=x**2 + 1)
+            i = K.gen()
+            E = EllipticCurve(K, [0, 6, 0, 1, 0])
+            #P_A = E(100 * i + 248, 304 * i + 199)
+            #Q_A = E(426 * i + 394, 51 * i + 79)
+            #P_B = E(358 * i + 275, 410 * i + 104)
+            #Q_B = E(20 * i + 185, 281 * i + 239)
+            #p434 = cls(E, P_A, Q_A, P_B, Q_B)
+            p434 = cls(E)
+            p434.rename('sidh-p434')
+            return p434
         return super().named_parameter_set()
 
     def parameters(self) -> tuple[
@@ -149,16 +168,14 @@ class SIDH(KeyExchangeBase):
 
         OUTPUT:
 
-        TODO: Check order of points
-        A tuple (`E`, `P_A`, `P_B`, `Q_A`, `Q_B`) where:
+        A tuple (`E`, `P_A`, `Q_A`, `P_B`, `Q_B`) where:
 
         - `p` is the characteristic of the finite field `\GF{p^2}`
         - `E` is the starting curve
         - `P_A` and `Q_A` are the generators for Alice's secret key
         - `P_B` and `Q_B` are the generators for Bob's secret key
-        - TODO: Check terminology for P_A, Q_A, P_B, Q_B
         """
-        return (self._p, self._E, self._P_A, self._P_B, self._Q_A, self._Q_B)
+        return (self._p, self._E, self._P_A, self._Q_A, self._P_B, self._Q_B)
 
     def alice_secret_key(self) -> Integer:
         r"""
@@ -184,47 +201,47 @@ class SIDH(KeyExchangeBase):
         """
         return Integer(random.randint(0, self._e_B))
 
-    def alice_public_key(self, alice_secret_key: Integer | int) -> PublicKeySIDH:
+    def alice_public_key(self, alice_secret_key: SecretKeySIDH) -> PublicKeySIDH:
         phi_A = self.alice_first_secret_isogeny(alice_secret_key)[0]
         E_A = phi_A.codomain()
         P_B1 = phi_A(self._P_B)
         Q_B1 = phi_A(self._Q_B)
         return (E_A, P_B1, Q_B1)
 
-    def bob_public_key(self, bob_secret_key: Integer | int) -> PublicKeySIDH:
+    def bob_public_key(self, bob_secret_key: SecretKeySIDH) -> PublicKeySIDH:
         phi_B = self.bob_first_secret_isogeny(bob_secret_key)[0]
         E_B = phi_B.codomain()
         P_A1 = phi_B(self._P_A)
         Q_A1 = phi_B(self._Q_A)
         return (E_B, P_A1, Q_A1)
 
-    def alice_compute_shared_secret(self, alice_secret_key: Integer | int, bob_public_key: PublicKeySIDH) -> Integer:
+    def alice_compute_shared_secret(self, alice_secret_key: SecretKeySIDH, bob_public_key: PublicKeySIDH) -> Integer:
         phi_A1 = self.alice_second_secret_isogeny(alice_secret_key, bob_public_key)[0]
         E_AB = phi_A1.codomain()
         return E_AB.j_invariant()
 
-    def bob_compute_shared_secret(self, bob_secret_key: Integer | int, alice_public_key: PublicKeySIDH) -> Integer:
+    def bob_compute_shared_secret(self, bob_secret_key: SecretKeySIDH, alice_public_key: PublicKeySIDH) -> Integer:
         phi_B1 = self.bob_second_secret_isogeny(bob_secret_key, alice_public_key)[0]
         E_BA = phi_B1.codomain()
         return E_BA.j_invariant()
 
-    def alice_first_secret_isogeny(self, alice_secret_key: Integer | int) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
+    def alice_first_secret_isogeny(self, alice_secret_key: SecretKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
         return self.secret_isogeny_path(self._E, alice_secret_key, self._P_A, self._Q_A)
 
-    def alice_second_secret_isogeny(self, alice_secret_key: Integer | int, bob_public_key: PublicKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
+    def alice_second_secret_isogeny(self, alice_secret_key: SecretKeySIDH, bob_public_key: PublicKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
         E_B, P_A1, Q_A1 = bob_public_key
         return self.secret_isogeny_path(E_B, alice_secret_key, P_A1, Q_A1)
 
-    def bob_first_secret_isogeny(self, bob_secret_key: Integer | int) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
+    def bob_first_secret_isogeny(self, bob_secret_key: SecretKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
         return self.secret_isogeny_path(self._E, bob_secret_key, self._P_B, self._Q_B)
 
-    def bob_second_secret_isogeny(self, bob_secret_key: Integer | int, alice_public_key: PublicKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
+    def bob_second_secret_isogeny(self, bob_secret_key: SecretKeySIDH, alice_public_key: PublicKeySIDH) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:
         E_A, P_B1, Q_B1 = alice_public_key
         return self.secret_isogeny_path(E_A, bob_secret_key, P_B1, Q_B1)
 
     def secret_isogeny_path(self,
                             start_curve: EllipticCurve_finite_field,
-                            secret_key: Integer | int,
+                            secret_key: SecretKeySIDH,
                             P: EllipticCurvePoint_finite_field,
                             Q: EllipticCurvePoint_finite_field,
                             ) -> tuple[EllipticCurveHom_composite, tuple[Integer, ...]]:

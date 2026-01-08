@@ -195,7 +195,8 @@ class KeyExchangeBase(SageObject):
         alice_sk, alice_pk = self.alice_key_pair()
         bob_sk, bob_pk = self.bob_key_pair()
         alice_shared_secret = self.alice_compute_shared_secret(alice_sk, bob_pk)
-        assert alice_shared_secret == self.bob_compute_shared_secret(bob_sk, alice_pk)
+        if alice_shared_secret != self.bob_compute_shared_secret(bob_sk, alice_pk):
+            raise RuntimeError('Alice and Bob did not arrive at the same shared secret')
         return (alice_sk, alice_pk, bob_sk, bob_pk, alice_shared_secret)
 
     @classmethod
