@@ -13,16 +13,15 @@ rather than :class:`CommutativeKeyExchangeBase`.
 """
 
 from __future__ import annotations
-from typing import Self, TYPE_CHECKING
+
 import random
+from typing import TYPE_CHECKING, Self
 
 from sage.rings.finite_rings.finite_field_constructor import FiniteField
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
-from sage.schemes.elliptic_curves.ell_curve_isogeny import EllipticCurveIsogeny
 from sage.schemes.elliptic_curves.hom_composite import EllipticCurveHom_composite
-
 
 from .key_exchange_base import KeyExchangeBase
 
