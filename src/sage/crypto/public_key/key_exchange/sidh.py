@@ -58,10 +58,10 @@ class SIDH(KeyExchangeBase):
     def __init__(
         self,
         E: EllipticCurve_finite_field,
-        P_A: EllipticCurvePoint_finite_field | None = None,
-        Q_A: EllipticCurvePoint_finite_field | None = None,
-        P_B: EllipticCurvePoint_finite_field | None = None,
-        Q_B: EllipticCurvePoint_finite_field | None = None,
+        P_A: EllipticCurvePoint_finite_field,
+        Q_A: EllipticCurvePoint_finite_field,
+        P_B: EllipticCurvePoint_finite_field,
+        Q_B: EllipticCurvePoint_finite_field,
     ) -> None:
         K = E.base_field()
         self._p: Integer = K.characteristic()
@@ -72,45 +72,18 @@ class SIDH(KeyExchangeBase):
         # TODO: Test if anything breaks if we have a cofactor
         self._E = E
 
-        # TODO: Generate basis points method described on page 13 of SIKE spec
-        def full_order_point():
-            while True:
-                P = self._E.random_point()
-                if self._p + 1 == P.order():
-                    return P
-
         def validate_point(P):
             if P not in self._E:
                 raise ValueError(f'{P} is not on {self._E}')
 
-        if P_A is None:
-            self._P_A = (3 ** self._e_B) * full_order_point()
-        else:
-            validate_point(P_A)
-            self._P_A = P_A
-
-        if Q_A is None:
-            self._Q_A = (3 ** self._e_B) * full_order_point()
-        else:
-            validate_point(Q_A)
-            self._Q_A = Q_A
-
-        if P_B is None:
-            self._P_B = (2 ** self._e_A) * full_order_point()
-        else:
-            validate_point(P_B)
-            self._P_B = P_B
-
-        if Q_B is None:
-            self._Q_B = (2 ** self._e_A) * full_order_point()
-        else:
-            validate_point(Q_B)
-            self._Q_B = Q_B
-
-        assert self._P_A.order() == 2 ** self._e_A
-        assert self._Q_A.order() == 2 ** self._e_A
-        assert self._P_B.order() == 3 ** self._e_B
-        assert self._Q_B.order() == 3 ** self._e_B
+        validate_point(P_A)
+        self._P_A = P_A
+        validate_point(Q_A)
+        self._Q_A = Q_A
+        validate_point(P_B)
+        self._P_B = P_B
+        validate_point(Q_B)
+        self._Q_B = Q_B
 
     @classmethod
     def named_parameter_set(cls, name: str) -> Self:
@@ -137,21 +110,6 @@ class SIDH(KeyExchangeBase):
             toy = cls(E, P_A, Q_A, P_B, Q_B)
             toy.rename('sidh-toy')
             return toy
-        elif name == 'p434':
-            R = ZZ['x']
-            x = R.gen()
-            p = 2**216 * 3**137 - 1
-            K = FiniteField(p**2, name='i', modulus=x**2 + 1)
-            i = K.gen()
-            E = EllipticCurve(K, [0, 6, 0, 1, 0])
-            #P_A = E(100 * i + 248, 304 * i + 199)
-            #Q_A = E(426 * i + 394, 51 * i + 79)
-            #P_B = E(358 * i + 275, 410 * i + 104)
-            #Q_B = E(20 * i + 185, 281 * i + 239)
-            #p434 = cls(E, P_A, Q_A, P_B, Q_B)
-            p434 = cls(E)
-            p434.rename('sidh-p434')
-            return p434
         return super().named_parameter_set()
 
     def parameters(self) -> tuple[
@@ -201,6 +159,18 @@ class SIDH(KeyExchangeBase):
         return Integer(random.randint(0, self._e_B))
 
     def alice_public_key(self, alice_secret_key: SecretKeySIDH) -> PublicKeySIDH:
+        r"""
+        Generate a valid public key for Alice.
+
+        INPUT:
+
+        - ``alice_secret_key`` -- Alice's secret key that will be used to generate
+            the public key
+
+        OUTPUT:
+
+        Alice's public key as a tuple `(E_A, P'_B, Q'_B)`.
+        """
         phi_A = self.alice_first_secret_isogeny(alice_secret_key)[0]
         E_A = phi_A.codomain()
         P_B1 = phi_A(self._P_B)
@@ -208,6 +178,18 @@ class SIDH(KeyExchangeBase):
         return (E_A, P_B1, Q_B1)
 
     def bob_public_key(self, bob_secret_key: SecretKeySIDH) -> PublicKeySIDH:
+        r"""
+        Generate a valid public key for Alice.
+
+        INPUT:
+
+        - ``alice_secret_key`` -- Alice's secret key that will be used to generate
+            the public key
+
+        OUTPUT:
+
+        Bob's public key as a tuple `(E_B, P'_A, Q'_A)`.
+        """
         phi_B = self.bob_first_secret_isogeny(bob_secret_key)[0]
         E_B = phi_B.codomain()
         P_A1 = phi_B(self._P_A)
