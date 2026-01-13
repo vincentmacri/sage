@@ -139,7 +139,7 @@ class KeyExchangeBase(SageObject):
         works over an elliptic curve over a finite field may wish to return the
         characteristic of the finite field in addition to the elliptic curve, even
         though the finite field can be accessed via methods on elliptic curve objects.
-        
+
         The default implementations of ``_eq_`` and ``__hash__`` for
         :class:`KeyExchangeBase` are implementing using :meth:`parameters`.
         Hence two key exchange instances ``a`` and ``b`` compare as equal
