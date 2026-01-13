@@ -10,7 +10,23 @@ rather than :class:`CommutativeKeyExchangeBase`.
     This is a toy implementation of a broken cryptographic scheme for educational
     use only! Do not use this implementation, or any cryptographic features of
     Sage, in any setting where security is needed!
+
+AUTHORS:
+
+- Taha Hedayat (2025-12-09): initial version
+- Vincent Macri (2026-01-13): parameter set generation and cleanup
 """
+
+# ****************************************************************************
+#       Copyright (C) 2025 Taha Hedayat <tahah22121001@gmail.com>
+#       Copyright (C) 2026 Vincent Macri <vincent.macri@ucalgary.ca>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#                  https://www.gnu.org/licenses/
+# ****************************************************************************
 
 from __future__ import annotations
 
@@ -35,7 +51,7 @@ if TYPE_CHECKING:
 
 
 class SIDH(KeyExchangeBase):
-    """
+    r"""
     Supersingular isogeny Diffie-Hellman key exchange.
 
     This implementation uses the notation of [Cos2020]_.

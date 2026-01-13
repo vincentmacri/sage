@@ -13,10 +13,12 @@ and the other party's public key.
 AUTHORS:
 
 - Brian Heckel (2025-11-26): initial version
+- Vincent Macri (2025-12-18): add named_parameter_set method
 """
 
 # ****************************************************************************
 #       Copyright (C) 2025 Brian Heckel <heckelbri@gmail.com>
+#       Copyright (C) 2025 Vincent Macri <vincent.macri@ucalgary.ca>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
