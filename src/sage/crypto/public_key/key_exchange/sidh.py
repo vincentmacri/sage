@@ -21,11 +21,11 @@ from sage.rings.finite_rings.finite_field_constructor import FiniteField
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
-from sage.schemes.elliptic_curves.hom_composite import EllipticCurveHom_composite
 
 from .key_exchange_base import KeyExchangeBase
 
 if TYPE_CHECKING:
+    from sage.schemes.elliptic_curves.hom_composite import EllipticCurveHom_composite
     from sage.schemes.elliptic_curves.ell_finite_field import EllipticCurve_finite_field
     from sage.schemes.elliptic_curves.ell_point import EllipticCurvePoint_finite_field
     from sage.rings.finite_rings.element_base import FinitePolyExtElement
