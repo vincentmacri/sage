@@ -61,7 +61,7 @@ class SIDH(KeyExchangeBase):
 
     EXAMPLES:
 
-        This example comes from [Cos2020]_. ::
+    This example comes from [Cos2020]_.::
 
         sage: e_A = 4
         sage: e_B = 3
@@ -222,7 +222,7 @@ class SIDH(KeyExchangeBase):
 
         TESTS:
 
-            Test that p434 gives the same public basis points as the SIKE specification ::
+        Test that p434 gives the same public basis points as the SIKE specification::
 
             sage: p434 = key_exchange.SIDH.named_parameter_set('p434')
             sage: p, E, P2, Q2, P3, Q3 = p434.parameters()
