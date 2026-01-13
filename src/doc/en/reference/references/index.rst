@@ -1704,8 +1704,12 @@ REFERENCES:
 .. [Conr] Keith Conrad, *Artin-Hasse-Type Series and Roots of Unity*,
           http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/AHrootofunity.pdf
 
-.. [Coron2023] Basile Coron *Supersolvability of built lattices and Koszulness
+.. [Coron2023] Basile Coron. *Supersolvability of built lattices and Koszulness
                of generalized Chow rings*. Preprint, :arxiv:`2302.13072` (2023).
+
+.. [Cos2020] Craig Costello. *Supersingular Isogeny Key Exchange for Beginners*,
+             Selected Areas in Cryptography -- SAC 2019. Lecture Notes in Computer
+             Science, vol 11959. Springer, Cham. :doi:`10.1007/978-3-030-38471-5_2`.
 
 .. [CGMRV16] \A. Conte, R. Grossi, A. Marino, R. Rizzi, L. Versari,
              *Directing Road Networks by Listing Strong Orientations*,
@@ -3797,6 +3801,9 @@ REFERENCES:
 
 .. [Ja1971] \N. Jacobson. *Exceptional Lie Algebras*. Marcel Dekker,
             Inc. New York. 1971. IBSN No. 0-8247-1326-5.
+
+.. [Jao2022] David Jao, et al. *Supersingular Isogeny Key Encapsulation*.
+             https://sike.org/files/SIDH-spec.pdf
 
 .. [Jer2006] Mark Jerrum. *Two remarks concerning balanced matroids*.
              Combinatorica 26, no. 6 (2006): 733-742.
