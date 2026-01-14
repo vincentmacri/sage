@@ -1,6 +1,7 @@
 from sage.structure.sage_object import SageObject
 
 class Element(SageObject):
+
     def __add__(self, other): ...
 
     def __sub__(self, other): ...
