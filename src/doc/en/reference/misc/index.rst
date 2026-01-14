@@ -265,7 +265,6 @@ Miscellaneous Inspection and Development Tools
    sage/misc/classgraph
    sage/misc/dev_tools
    sage/misc/function_mangling
-   sage/misc/types
 
 Low-Level Utilities
 -------------------

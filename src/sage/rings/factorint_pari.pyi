@@ -1,5 +1,5 @@
 from typing import overload, Literal
-from sage.misc.typing import Int
+from sage.rings.integer import Int
 
 @overload
 def factor_using_pari(n: Int, int_: Literal[True], debug_level: int = 0, proof: bool | None = None) -> list[tuple[int, int]]:

@@ -5,7 +5,8 @@ from sage.libs.gmp.mpz import mpz_set
 
 from sage.structure.element import EuclideanDomainElement, RingElement
 from sage.categories.morphism import Morphism
-from sage.misc.types import Int
+
+Int = Integer | int
 
 class Integer(EuclideanDomainElement):
     value: __mpz_struct[1]

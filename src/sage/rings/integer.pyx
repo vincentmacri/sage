@@ -8002,6 +8002,9 @@ cdef double mpz_get_d_nearest(mpz_t x) except? -648555075988944.5:
 import numbers
 numbers.Integral.register(Integer)
 
+# Define a type alias that can be used in type annotations and at runtime
+Int = Integer | int
+
 # Free the memory used by the integer pool when sage exits. This is
 # not strictly necessary because the OS should immediately reclaim
 # these resources when sage terminates. However, it may aid valgrind
