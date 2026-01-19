@@ -51,4 +51,5 @@ class Integer(EuclideanDomainElement):
     @overload
     def __pow__(self, other: object, modulo: object | None) -> object: ...
 
-Int = Integer | int  # noqa: PYI026 this is not a TypeAlias because it should be usable in isinstance checks
+# This type alias is not available at runtime
+type Int = Integer | int
