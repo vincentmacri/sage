@@ -110,7 +110,6 @@ py.install_sources(
   'test_nested_class.py',
   'timing.py',
   'trace.py',
-  'types.py',
   'unknown.py',
   'verbose.py',
   'viewer.py',
