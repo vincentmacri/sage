@@ -4580,6 +4580,8 @@ cdef class Integer(sage.structure.element.EuclideanDomainElement):
             sage: a.divide_knowing_divisible_by(11) # way off and possibly random
             43215361478743422388970455040
         """
+        if not isinstance(right, Integer):
+            right = Integer(right)
         return self._divide_knowing_divisible_by(right)
 
     def _lcm(self, Integer n):
@@ -5206,7 +5208,7 @@ cdef class Integer(sage.structure.element.EuclideanDomainElement):
             else:
                 return 0
 
-    def is_power_of(Integer self, n):
+    def is_power_of(self, n) -> bool:
         r"""
         Return ``True`` if there is an integer `b` with
         `\mathtt{self} = n^b`.
