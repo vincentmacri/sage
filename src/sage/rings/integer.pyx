@@ -4578,10 +4578,15 @@ cdef class Integer(sage.structure.element.EuclideanDomainElement):
             107326510974310118493
             sage: a.divide_knowing_divisible_by(11) # way off and possibly random
             43215361478743422388970455040
+
+        TESTS:
+
+        Make sure the methods works for Python ints::
+
+            sage: 10.divide_knowing_divisible_by(5r)
+            2
         """
-        if not isinstance(right, Integer):
-            right = Integer(right)
-        return self._divide_knowing_divisible_by(right)
+        return self._divide_knowing_divisible_by(as_Integer(right))
 
     def _lcm(self, Integer n):
         """
