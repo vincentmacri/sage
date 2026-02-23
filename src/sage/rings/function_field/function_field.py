@@ -1470,6 +1470,8 @@ class FunctionField(Field):
 
         - ``unique_hess``: ideal-based arithmetic; requires base place of degree `1`
 
+        - ``unique_hess_bs``: ideal-based arithmetic; requires base place of degree `1`
+
         - ``km_large``: Khuri-Makdisi's large model; requires base divisor of
           degree at least `2g + 1`
 
@@ -1501,7 +1503,7 @@ class FunctionField(Field):
         """
         from .place import FunctionFieldPlace
 
-        if model != 'unique_hess':
+        if model != 'unique_hess' and model != 'unique_hess_bs':
             if base_div is None:
                 try:
                     base_place = self.get_place(1)
@@ -1546,14 +1548,19 @@ class FunctionField(Field):
             if base_div.degree() != g:
                 raise ValueError("Hess model requires base divisor of degree g for genus g")
             return JacobianHess(self, base_div, curve=curve)
-        elif model == 'unique_hess':
-            from .jacobian_unique_hess import Jacobian as JacobianUniqueHess
+        elif model == 'unique_hess' or model == 'unique_hess_bs':
             if base_div is None:
                 base_div = self.get_infinite_place(1)
             if base_div is None:
                 base_div = self.get_finite_place(1)
             if base_div is None:
                 raise ValueError('the function field has no degree 1 place')
-            return JacobianUniqueHess(self, base_div, cache_infinite_ideals=extra_caching, curve=curve)
+
+            if model == 'unique_hess':
+                from .jacobian_unique_hess import Jacobian as JacobianUniqueHess
+                return JacobianUniqueHess(self, base_div, cache_infinite_ideals=extra_caching, curve=curve)
+            elif model == 'unique_hess_bs':
+                from .jacobian_unique_hess_bs import Jacobian as JacobianUniqueHessBS
+                return JacobianUniqueHessBS(self, base_div, cache_infinite_ideals=extra_caching, curve=curve)
 
         raise ValueError("unknown model")

@@ -24,6 +24,7 @@ py.install_sources(
   'jacobian_hess.py',
   'jacobian_khuri_makdisi.py',
   'jacobian_unique_hess.py',
+  'jacobian_unique_hess_bs.py',
   'khuri_makdisi.pyx',
   'maps.py',
   'order.py',
