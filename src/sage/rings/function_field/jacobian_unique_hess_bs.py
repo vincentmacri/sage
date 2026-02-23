@@ -206,8 +206,8 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         self._A = self._A_inv.inverse()
 
         self._A_pows = [self._A ** 0]
-        for n in range(1, self.genus() + 1):
-            self._A_pows[n] = self._A_pows[n - 1] * self._A
+        for n in range(1, self._genus + 1):
+            self._A_pows.append(self._A_pows[n - 1] * self._A)
 
         # For faster/more convenient access from the JacobianPoint class
         self._vector_space, self._from_vector_space, self._to_vector_space = self._function_field.free_module(map=True)
