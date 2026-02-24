@@ -165,8 +165,8 @@ if __name__ == '__main__':
                     logger.error('Found same curve twice! This should not be allowed to happen!')
         if len(function_fields) > 0:
             if K.cardinality() not in all_function_fields:
-                all_function_fields[p] = []
-            all_function_fields[p].append((expected_genus, n, m, tuple(str(F.polynomial()).replace('y', 't') for F in function_fields)))
+                all_function_fields[(p, expected_genus)] = []
+            all_function_fields[(p, expected_genus)].append((n, m, tuple(str(F.polynomial()).replace('y', 't') for F in function_fields)))
         else:
             logger.warning('Failed to find any curves for input {(K, n, m)}')
         generation_time = time.time() - generation_start_time
