@@ -152,7 +152,8 @@ def time_implementations(prime, g, chains, chain_length):
                         if len(starting_points) >= 2 * chains:
                             break
 
-            starting_pairs = list(itertools.batched(starting_points, 2, strict=True))
+            starting_pairs = list(itertools.batched(starting_points, 2))
+            assert len(starting_pairs[-1]) == 2
             assert len(starting_pairs) == chains
             logger.info('Done')
             setup_end = time.process_time_ns()
