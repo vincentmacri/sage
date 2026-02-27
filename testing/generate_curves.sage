@@ -4,6 +4,8 @@ import logging
 import os
 import time
 
+load(f'{os.path.dirname(os.path.realpath(__file__))}/magma_patches.sage')
+
 logger = logging.getLogger(__name__)
 
 # Curve generation based on Theorem 3.4.1 of Adrian Tang's thesis
@@ -56,23 +58,26 @@ def random_curve_over_finite_field(K, n, m, attempts=0, already_found=None):
 
             logger.debug('Checking if C is singular')
             if C.is_singular():
-                logger.debug('Curve is singular, trying again.', K, n, m)
+                logger.debug(f'Curve is singular, trying again. {K}, {n}, {m}')
                 return random_curve_over_finite_field(K, n, m, attempts=attempts+1, already_found=already_found)
             
-            logger.debug('Checking exact constant field of F')
-            if F.constant_field() is not K:
-                logger.debug('Exact constant field is not base field, trying again.', K, n, m)
-                return random_curve_over_finite_field(K, n, m, attempts=attempts+1, already_found=already_found)
-
+            #logger.debug('Checking exact constant field of F')
+            #if F.constant_field() is not K:
+            #    logger.debug('Exact constant field is not base field, trying again.', K, n, m)
+            #    return random_curve_over_finite_field(K, n, m, attempts=attempts+1, already_found=already_found)
 
             assert F.degree() == n
 
             logger.debug('Created F, computing genus')
+
+            if genus_estimate(n, m) > 15:  # Switch to Magma past genus 15 for speed
+                magma_genus(F)
             g = F.genus()
-            logger.debug('Genus is', g)
+
+            logger.debug(f'Genus is {g}')
             if g < 2:
                 logger.error(F)
-                logger.error('Genus is only', F.genus(), 'failing. Input was', n, m)
+                logger.error('Genus is only {F.genus()} failing. Input was {n}, {m}')
                 return None
             logger.debug('Computed g, setting finite and infinite maximal order bases')
 
@@ -81,11 +86,6 @@ def random_curve_over_finite_field(K, n, m, attempts=0, already_found=None):
             infinite_places = F.places_above(Kx.place_infinite())
             assert len(infinite_places) == 2
             infty1, infty2 = infinite_places
-            assert infty1.degree() == 1
-            assert infty2.degree() == 1
-
-            infty1 = infty1.divisor()
-            infty2 = infty2.divisor()
             assert infty1.degree() == 1
             assert infty2.degree() == 1
             return F
@@ -110,17 +110,19 @@ def generation_params_for_finite_field(K, min_genus, max_genus):
     return params
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     # Process command line parameters
     parser = argparse.ArgumentParser(prog='Function field generator')
     parser.add_argument('--repeat', default=3, type=int, help='Number of function fields to generate per parameter set (default: 3)')
+    parser.add_argument('--prime-sizes', default=(0, 1, 3, 10, 15), type=int, nargs='*', help='Prime sizes (default: [0, 1, 3, 10, 15])')
     parser.add_argument('--min-g', default=3, type=int, help='Minimum genus (default: 3)')
     parser.add_argument('--max-g', default=10, type=int, help='Maximum genus (default: 10)')
 
     args, unknown = parser.parse_known_args()
     min_genus = Integer(args.min_g)
     max_genus = Integer(args.max_g)
+    prime_exponent_range = args.prime_sizes
     repeat = args.repeat
     assert min_genus <= max_genus
     assert min_genus >= 3
@@ -129,8 +131,8 @@ if __name__ == '__main__':
 
     params = []
 
-    prime_exponent_range = (0, 1, 3, 10, 15)
     primes = [next_prime(2 ** i) for i in prime_exponent_range]
+    print(primes)
     for p in primes:
         params.extend(generation_params_for_finite_field(GF(p), min_genus, max_genus))
 
