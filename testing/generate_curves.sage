@@ -93,14 +93,14 @@ def random_curve_over_finite_field(K, n, m, attempts=0, already_found=None):
         logger.debug('zeta was not irreducible, trying again')
         return random_curve_over_finite_field(K, n, m, already_found=already_found)
 
-def generation_params_for_finite_field(K, min_genus, max_genus):
+def generation_params_for_finite_field(K, min_genus, max_genus, max_n=oo):
     params = []
 
     # If n is 2 it definitely has a degree 2 subfield, making it hyperelliptic.
     # If n is odd it doesn't have a degree 2 subfield
     # I don't know of an easy way to determine whether or not a degree 2 subfield exists if n is even
     n = 3
-    while genus_estimate(n, 1) <= max_genus:
+    while genus_estimate(n, 1) <= max_genus and n <= max_n:
         m = 1 if n > 3 else 2  # n = 3, m = 1 seems to always give a genus 1 (elliptic) curve
         while genus_estimate(n, m) <= max_genus:
             if genus_estimate(n, m) >= min_genus:
@@ -118,11 +118,13 @@ if __name__ == '__main__':
     parser.add_argument('--prime-sizes', default=(0, 1, 3, 10, 15), type=int, nargs='*', help='Prime sizes (default: [0, 1, 3, 10, 15])')
     parser.add_argument('--min-g', default=3, type=int, help='Minimum genus (default: 3)')
     parser.add_argument('--max-g', default=10, type=int, help='Maximum genus (default: 10)')
+    parser.add_argument('--max-n', default=oo, type=int, help='Maximum degree (default: ∞)')
 
     args, unknown = parser.parse_known_args()
     min_genus = Integer(args.min_g)
     max_genus = Integer(args.max_g)
     prime_exponent_range = args.prime_sizes
+    max_n = args.max_n
     repeat = args.repeat
     assert min_genus <= max_genus
     assert min_genus >= 3
@@ -134,11 +136,11 @@ if __name__ == '__main__':
     primes = [next_prime(2 ** i) for i in prime_exponent_range]
     print(primes)
     for p in primes:
-        params.extend(generation_params_for_finite_field(GF(p), min_genus, max_genus))
+        params.extend(generation_params_for_finite_field(GF(p), min_genus, max_genus, max_n))
 
     params.sort(key=lambda param : (genus_estimate(param[1], param[2]), param[0].cardinality()))
 
-    logger.info(f'Generating {len(params) * repeat} across {len(params)} parameter sets')
+    logger.info(f'Generating {len(params) * repeat} curves across {len(params)} parameter sets')
 
     all_function_fields = dict()
     for i, param in enumerate(params):
