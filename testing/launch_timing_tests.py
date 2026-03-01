@@ -36,24 +36,27 @@ if __name__ == '__main__':
     parser.add_argument('--threads', default=4, type=int, help='Number of extra processes to launch (default: 4)')
     parser.add_argument('--chains', default=5, type=int, help='Number of addition chains to time per implementation (default: 5)')
     parser.add_argument('--chain-length', default=100, type=int, help='Length of each addition chain (default: 100)')
+    parser.add_argument('--min-g', default=3, type=int, help='Minimum genus to test (default: 3)')
 
     args, unknown = parser.parse_known_args()
     max_threads = args.threads
     chains = args.chains
     chain_length = args.chain_length
+    min_genus = args.min_g
 
     process_args = []
 
     for p, g in FUNCTION_FIELDS:
-        process_args.append([
-            sage_path,
-            timing_tests_path,
-            '--prime', str(p),
-            '--genus', str(g),
-            '--chains', str(chains),
-            '--chain-length', str(chain_length),
-            '--save',
-            ])
+        if g >= min_genus:
+            process_args.append([
+                sage_path,
+                timing_tests_path,
+                '--prime', str(p),
+                '--genus', str(g),
+                '--chains', str(chains),
+                '--chain-length', str(chain_length),
+                '--save',
+                ])
     total_processes = len(process_args)
 
     print('Launching', total_processes, 'processes')

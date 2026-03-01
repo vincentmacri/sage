@@ -9,6 +9,8 @@ from typing import Any
 
 from curves import FUNCTION_FIELDS
 
+load(f'{os.path.dirname(os.path.realpath(__file__))}/magma_patches.sage')
+
 logger = logging.getLogger(__name__)
 
 
@@ -131,6 +133,8 @@ def time_implementations(prime, g, chains, chain_length):
             Oinf = F.maximal_order_infinite()
             O.unit_ideal()
             Oinf.unit_ideal()
+            if g > 15:  # Switch to Magma past genus 15 for speed
+                magma_genus(F)
             assert g == F.genus()
             assert F.constant_field() == GF(prime)
             A = P2
