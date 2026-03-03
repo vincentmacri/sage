@@ -338,7 +338,7 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
             True
         """
         if not self._cache_infinite_ideals:
-            pass
+            return
 
         if caching:
             self._infinite_ideal_mult = self._cached_ideal_mult

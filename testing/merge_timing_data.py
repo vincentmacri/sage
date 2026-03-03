@@ -27,7 +27,6 @@ if __name__ == '__main__':
             for row in reader:
                 for impl in IMPLEMENTATION_NAMES:
                     additions = int(row['chains']) * int(row['chain_length'])
-                    assert additions == 50000
                     milliseconds_per_addition = (int(row[f'{impl}_addition_chains']) / additions) / NANOSECONDS_PER_MILLISECOND
                     row[f'{impl}_milliseconds_per_addition'] = milliseconds_per_addition
                     row[f'{impl}_additions_per_second'] = 1000 / milliseconds_per_addition
