@@ -214,6 +214,8 @@ if __name__ == '__main__':
     save_results = args.save
     overwrite = args.overwrite
 
+    logger.basicConfig(name=f'{prime}_{genus}')
+
     output_folder = f'{os.path.dirname(os.path.realpath(__file__))}/timing_data'
     os.makedirs(output_folder, exist_ok=True)
     output_file = f'{output_folder}/timing_{prime}_{genus}.csv'
