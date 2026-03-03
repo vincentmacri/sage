@@ -313,25 +313,38 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
             sage: F.<y> = Kx.extension(t^3 + (x^2 + x + 1)*t^2 + (x^3 + x + 1)*t + x^5 + x^4)
             sage: J = F.jacobian(model='unique_hess', extra_caching=True)
             sage: G = J.group()
-            sage: len(G._infinite_ideal_mult.cache)
+            sage: len(G._cached_ideal_mult.cache)
             0
-            sage: len(G._inverse_infinite_matrix.cache)
+            sage: len(G._cached_inverse_infinite_matrix.cache)
             0
             sage: zero = J(0)
-            sage: len(G._infinite_ideal_mult.cache)
+            sage: len(G._cached_ideal_mult.cache)
             0
-            sage: len(G._inverse_infinite_matrix.cache)
+            sage: len(G._cached_inverse_infinite_matrix.cache)
             0
             sage: D1, D2, D3 = G.get_points(3)
-            sage: len(G._infinite_ideal_mult.cache)
+            sage: len(G._cached_ideal_mult.cache)
             0
-            sage: len(G._inverse_infinite_matrix.cache)
+            sage: len(G._cached_inverse_infinite_matrix.cache)
             0
             sage: _ = D2 + D3
-            sage: len(G._infinite_ideal_mult.cache) > 0
+            sage: len(G._cached_ideal_mult.cache) > 0
             True
-            sage: len(G._inverse_infinite_matrix.cache) > 0
+            sage: len(G._cached_inverse_infinite_matrix.cache) > 0
             True
+
+            sage: K = GF(2)
+            sage: Kx.<x> = FunctionField(K)
+            sage: t = polygen(Kx)
+            sage: F.<y> = Kx.extension(t^3 + (x^2 + x + 1)*t^2 + (x^3 + x + 1)*t + x^5 + x^4)
+            sage: J = F.jacobian(model='unique_hess', extra_caching=False)
+            sage: G = J.group()
+            sage: G.zero() + G.zero()
+            0
+            sage: len(G._cached_ideal_mult.cache)
+            0
+            sage: len(G._cached_inverse_infinite_matrix.cache)
+            0
         """
         if not self._cache_infinite_ideals:
             return
