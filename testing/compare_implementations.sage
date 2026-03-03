@@ -212,7 +212,7 @@ if __name__ == '__main__':
     save_results = args.save
     overwrite = args.overwrite
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger(f'{prime}_{genus}')
 
     output_folder = f'{os.path.dirname(os.path.realpath(__file__))}/timing_data'
     os.makedirs(output_folder, exist_ok=True)
