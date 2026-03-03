@@ -11,8 +11,6 @@ from curves import FUNCTION_FIELDS
 
 load(f'{os.path.dirname(os.path.realpath(__file__))}/magma_patches.sage')
 
-logger = logging.getLogger(__name__)
-
 
 @dataclass
 class ImplementationTimingResults:
@@ -214,7 +212,7 @@ if __name__ == '__main__':
     save_results = args.save
     overwrite = args.overwrite
 
-    logger.basicConfig(name=f'{prime}_{genus}')
+    logger = logging.getLogger(__name__)
 
     output_folder = f'{os.path.dirname(os.path.realpath(__file__))}/timing_data'
     os.makedirs(output_folder, exist_ok=True)
