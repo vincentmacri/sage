@@ -196,14 +196,15 @@ def time_implementations(prime, g, chains, chain_length):
     return all_timing_results
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=logging.DEBUG)
     # Process command line parameters
     parser = argparse.ArgumentParser(prog='Jacobian implementation timing comparison')
     parser.add_argument('--prime', default=11, type=int, help='Prime to test for, there must be curves over this prime field in curves.py (default: 11)')
     parser.add_argument('--genus', default=3, type=int, help='Genus to test over (default: 3)')
     parser.add_argument('--chains', default=5, type=int, help='Number of addition chains to time per implementation (default: 5)')
     parser.add_argument('--chain-length', default=100, type=int, help='Length of each addition chain (default: 100)')
-    parser.add_argument('--save', action=argparse.BooleanOptionalAction, default=False, help='Whether or not to save timing results to a CSV file')
+    parser.add_argument('--save', action=argparse.BooleanOptionalAction, default=False, help='Whether or not to save timing results to a CSV file (default: no)')
+    parser.add_argument('--overwrite', action=argparse.BooleanOptionalAction, default=False, help='Whether or not to overwrite existing timing results (default: no)')
 
     args, unknown = parser.parse_known_args()
     prime = Integer(args.prime)
@@ -211,6 +212,16 @@ if __name__ == '__main__':
     chain_length = args.chain_length
     genus = args.genus
     save_results = args.save
+    overwrite = args.overwrite
+
+    output_folder = f'{os.path.dirname(os.path.realpath(__file__))}/timing_data'
+    os.makedirs(output_folder, exist_ok=True)
+    output_file = f'{output_folder}/timing_{prime}_{genus}.csv'
+
+    if save_results and not overwrite:
+        if os.path.isfile(output_file):
+            logger.warn(f'{output_file} already exists, skipping!')
+            exit()
 
     results = time_implementations(prime, genus, chains, chain_length)
 
@@ -221,9 +232,6 @@ if __name__ == '__main__':
         print('=' * 80)
         exit()
 
-    output_folder = f'{os.path.dirname(os.path.realpath(__file__))}/timing_data'
-    os.makedirs(output_folder, exist_ok=True)
-    output_file = f'{output_folder}/timing_{prime}_{genus}.csv'
     logger.info(f'Done timing, saving results to {output_file}...')
 
     field_names = list(results[0].csv_row())
