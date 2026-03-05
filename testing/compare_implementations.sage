@@ -11,6 +11,11 @@ from curves import FUNCTION_FIELDS
 
 load(f'{os.path.dirname(os.path.realpath(__file__))}/magma_patches.sage')
 
+USE_MAGMA = True
+try:
+    magma('1')
+except TypeError:
+    USE_MAGMA = False
 
 @dataclass
 class ImplementationTimingResults:
@@ -124,18 +129,25 @@ def time_implementations(prime, g, chains, chain_length):
             # Some of them are also sanity tests, as our generate_curves.sage script specifically generates
             # curves where all these tests should pass.
             setup_start = time.process_time_ns()
-            P1, P2 = F.places_infinite(degree=None)
-            assert P1.degree() == 1
-            assert P2.degree() == 1
+
+            infinite_places = F.places_infinite(degree=None)
+            P2 = infinite_places[-1]
+            if P2.degree() == 1:
+                A = P2
+            else:
+                for P in infinite_places:
+                    if P.degree() == 1:
+                        A = P
+                        break
+            assert A.degree() == 1
             O = F.maximal_order()
             Oinf = F.maximal_order_infinite()
             O.unit_ideal()
             Oinf.unit_ideal()
-            if g > 15:  # Switch to Magma past genus 15 for speed
+            if USE_MAGMA:
                 magma_genus(F)
             assert g == F.genus()
             assert F.constant_field() == GF(prime)
-            A = P2
 
             logger.info('Creating starting points...')
             # Create some starting points to use for the addition chains
