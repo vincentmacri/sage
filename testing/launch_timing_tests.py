@@ -60,7 +60,6 @@ if __name__ == '__main__':
     total_processes = len(process_args)
 
     print('Launching', total_processes, 'processes')
-    exit()
     running_processes = []
     while len(process_args) > 0:
         if len(running_processes) < max_threads:
