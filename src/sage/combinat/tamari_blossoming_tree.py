@@ -2501,7 +2501,7 @@ class ModernBlossomingTreeFactory(SageObject, UniqueRepresentation):
             if not dtree:  # empty tree, should not happen!
                 raise ValueError('internal error on genA')
             # first part: same as B, and there is already a separating bud
-            treelist = [x for x in genB(dtree[0])]
+            treelist = list(genB(dtree[0]))
             # second part: a sequence from C
             treelist.extend(genC(OrderedTree(dtree[1:])))
             return OrderedTree(treelist)

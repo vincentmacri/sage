@@ -299,6 +299,7 @@ select = [
 
   # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
   "C414",
+  "C416",
   "C417",
   "C420",
 
