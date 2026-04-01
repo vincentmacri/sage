@@ -534,7 +534,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         # get the bracket vector (lower) and the dual bracket vector (higher)
         bvec, dvec = [], []
         for i, eoi in enumerate(eorder):
-            idx = sorted(tuple(map(lambda x: norder.index(x), eoi)))
+            idx = sorted(tuple(norder.index(x) for x in eoi))
             bvec.append(idx[1] - 1 - i)
             dvec.append(i - idx[0])
 
