@@ -534,7 +534,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         # get the bracket vector (lower) and the dual bracket vector (higher)
         bvec, dvec = [], []
         for i, eoi in enumerate(eorder):
-            idx = sorted(tuple(norder.index(x) for x in eoi))
+            idx = sorted(norder.index(x) for x in eoi)
             bvec.append(idx[1] - 1 - i)
             dvec.append(i - idx[0])
 
@@ -707,7 +707,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             # current point
             points.append(((a + b) / 2, (b - a) / 2))
             # recursive calls
-            lt, rt = tuple(list(t))
+            lt, rt = tuple(t)
             lsize = lt.node_number()
             aux(lt, a, a + lsize, points)
             aux(rt, a + lsize + 1, b, points)
