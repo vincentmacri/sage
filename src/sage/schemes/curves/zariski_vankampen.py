@@ -876,7 +876,7 @@ def braid_in_segment(glist, x0, x1, precision={}):
     x, y = g.parent().gens()
     intervals = {}
     if not precision1:
-        precision1 = {f: 53 for f in glist}
+        precision1 = dict.fromkeys(glist, 53)
     y0s = []
     for f in glist:
         if f.variables() == (y,):

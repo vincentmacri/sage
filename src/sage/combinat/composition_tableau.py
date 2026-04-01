@@ -195,7 +195,7 @@ class CompositionTableau(CombinatorialElement, metaclass=ClasscallMetaclass):
             sage: CompositionTableau([[1],[3,2],[4,4]]).weight()
             [1, 1, 1, 2, 0]
         """
-        w = {i: 0 for i in range(1, self.size() + 1)}
+        w = dict.fromkeys(range(1, self.size() + 1), 0)
         for row in self:
             for i in row:
                 w[i] += 1

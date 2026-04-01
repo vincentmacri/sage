@@ -1996,7 +1996,7 @@ class KR_type_box(KirillovReshetikhinGenericCrystal, AffineCrystalFromClassical)
             {1: 2, 2: 2, 3: 2, 4: 1}
         """
         C = self.cartan_type().classical()
-        p = {i: 2 for i in C.index_set()}
+        p = dict.fromkeys(C.index_set(), 2)
         if C.type() == 'B':
             p[C.rank()] = 1
         return p
@@ -2283,7 +2283,7 @@ class KR_type_Bn(KirillovReshetikhinGenericCrystal):
             {1: 2, 2: 2, 3: 1}
         """
         C = self.cartan_type().classical()
-        p = {i: 2 for i in C.index_set()}
+        p = dict.fromkeys(C.index_set(), 2)
         p[C.rank()] = 1
         return p
 
@@ -4045,7 +4045,7 @@ class AmbientRetractMap(Map):
         Map.__init__(self, Hom(ambient, base, SetsWithPartialMaps()))
 
         if similarity_factor_domain is None:
-            similarity_factor_domain = {i: 1 for i in index_set}
+            similarity_factor_domain = dict.fromkeys(index_set, 1)
         if automorphism is None:
             automorphism = lambda i: i
 

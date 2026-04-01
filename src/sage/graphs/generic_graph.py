@@ -21708,7 +21708,7 @@ class GenericGraph(GenericGraph_pyx):
             children = {root: self.neighbors(root)}
         else:
             children = {root: emb[root]}
-        parent = {u: root for u in children[root]}
+        parent = dict.fromkeys(children[root], root)
 
         # stack[i] is the list of children of stick[i] which have not been given
         # a position yet.

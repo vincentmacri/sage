@@ -1271,7 +1271,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             m = self.realization_of().m()
             one = self.base_ring().one()
-            return m._from_dict({B: one for B in A.coarsenings()}, remove_zeros=False)
+            return m._from_dict(dict.fromkeys(A.coarsenings(), one), remove_zeros=False)
 
         @cached_method
         def _p_to_e_on_basis(self, A):
@@ -1346,7 +1346,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             x = self.realization_of().x()
             one = self.base_ring().one()
-            return x._from_dict({B: one for B in A.refinements()}, remove_zeros=False)
+            return x._from_dict(dict.fromkeys(A.refinements(), one), remove_zeros=False)
 
         # Note that this is the same as the monomial coproduct_on_basis
         def coproduct_on_basis(self, A):
@@ -1663,7 +1663,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             m = self.realization_of().m()
             one = self.base_ring().one()
-            return m._from_dict({B: one for B in A.strict_coarsenings()},
+            return m._from_dict(dict.fromkeys(A.strict_coarsenings(), one),
                                 remove_zeros=False)
 
     cp = coarse_powersum

@@ -907,7 +907,7 @@ class IncidenceStructure(SageObject):
             return {p: d[i] for i, p in enumerate(self._points)}
         else:
             from itertools import combinations
-            d = {t: 0 for t in combinations(range(self.n_points()), size)}
+            d = dict.fromkeys(combinations(range(self.n_points()), size), 0)
             for b in self._blocks:
                 for s in combinations(b, size):
                     d[s] += 1
