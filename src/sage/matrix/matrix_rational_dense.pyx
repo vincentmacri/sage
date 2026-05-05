@@ -2902,8 +2902,8 @@ cdef class Matrix_rational_dense(Matrix_dense):
             []
         """
         if self._ncols != right._nrows:
-            raise ArithmeticError("self must be a square matrix")
-        if not self._ncols*self._nrows or not right._ncols*right._nrows:
+            raise ArithmeticError("self must be a square matrix")  # TODO: This error message doesn't make sense
+        if not self._ncols*self._nrows or not right._ncols*right._nrows:  # TODO: Unnecessary multiplication?
             # pari doesn't work in case of 0 rows or columns
             # This case is easy, since the answer must be the 0 matrix.
             return self.matrix_space(self._nrows, right._ncols).zero_matrix().__copy__()

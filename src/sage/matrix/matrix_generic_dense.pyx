@@ -342,6 +342,10 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
         cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
         cdef Matrix_generic_dense right = _right
 
+        #print('_multiply_classical in matrix_generic_dense.pyx')
+        #print('Types:', type(left), type(right))
+        #print('Parents:', left.parent(), right.parent())
+
         if left._ncols != right._nrows:
             raise IndexError("Number of columns of left must equal number of rows of other.")
 
