@@ -425,8 +425,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
 
             This function is very slow. Use ``*`` operator instead.
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_gf2e_dense ans
 
@@ -529,8 +528,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             sage: A._multiply_newton_john(B) == A._multiply_classical(B)
             True
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_gf2e_dense ans
 
@@ -577,8 +575,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             sage: A._multiply_karatsuba(B) == A._multiply_classical(B)
             True
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_gf2e_dense ans
 
@@ -628,8 +625,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             sage: A._multiply_strassen(B) == A._multiply_classical(B)
             True
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_gf2e_dense ans
 

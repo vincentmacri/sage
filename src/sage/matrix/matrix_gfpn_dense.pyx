@@ -1,6 +1,8 @@
 # distutils: libraries = mtx
 # sage.doctest: optional - meataxe
 
+assert False
+
 r"""
 Dense Matrices over `\mathbb F_q`, with `q<255`.
 
@@ -1341,7 +1343,7 @@ cdef class Matrix_gfpn_dense(Matrix_dense):
         # asymptotically faster. So, we used it by default.
         return 0
 
-    cpdef Matrix_gfpn_dense _multiply_classical(Matrix_gfpn_dense self, Matrix_gfpn_dense right) noexcept:
+    cpdef Matrix_gfpn_dense _multiply_classical(Matrix_gfpn_dense self, Matrix_gfpn_dense right):
         """
         Multiplication using the cubic school book multiplication algorithm.
 
@@ -1356,11 +1358,10 @@ cdef class Matrix_gfpn_dense(Matrix_dense):
             sage: M*N == M._multiply_classical(N)
             True
         """
-        # multiply two meataxe matrices by the school book algorithm"
+        # multiply two meataxe matrices by the school book algorithm
         if self.Data == NULL or right.Data == NULL:
             raise ValueError("The matrices must not be empty")
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
         sig_on()
         try:
             mat = MatDup(self.Data)
@@ -1369,7 +1370,7 @@ cdef class Matrix_gfpn_dense(Matrix_dense):
             sig_off()
         return new_mtx(mat, self)
 
-    cpdef Matrix_gfpn_dense _multiply_strassen(Matrix_gfpn_dense self, Matrix_gfpn_dense right, cutoff=0) noexcept:
+    cpdef Matrix_gfpn_dense _multiply_strassen(Matrix_gfpn_dense self, Matrix_gfpn_dense right, cutoff=0):
         """
         Matrix multiplication using the asymptotically fast Strassen-Winograd algorithm.
 
@@ -1406,7 +1407,7 @@ cdef class Matrix_gfpn_dense(Matrix_dense):
             sig_off()
         return new_mtx(mat, self)
 
-    cdef _mul_long(self, long n) noexcept:
+    cdef _mul_long(self, long n):
         """
         Multiply an MTX matrix with a field element represented by an integer.
 

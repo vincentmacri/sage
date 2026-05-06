@@ -9421,8 +9421,7 @@ cdef class Matrix(Matrix1):
             [248 286 324 362]
             [344 398 452 506]
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("Number of columns of self must equal number of rows of right.")
+        self._check_matrix_multiplication_sizes(right)
         if self._base_ring is not right.base_ring():
             raise TypeError("Base rings must be the same.")
 

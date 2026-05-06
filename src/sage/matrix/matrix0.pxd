@@ -24,6 +24,8 @@ cdef class Matrix(sage.structure.element.Matrix):
     cpdef _add_(self, other)
     cpdef _sub_(self, other)
 
+    cdef inline void _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except *
+
     cdef bint _will_use_strassen(self, Matrix right) except -2
     cdef bint _will_use_strassen_echelon(self) except -2
     cdef int _strassen_default_cutoff(self, Matrix right) except -2

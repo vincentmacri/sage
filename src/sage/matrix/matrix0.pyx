@@ -5566,6 +5566,10 @@ cdef class Matrix(sage.structure.element.Matrix):
                 ans.set_unsafe(r, c, self.get_unsafe(r, c) * x)
         return ans
 
+    cdef inline void _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except *:
+        if self._ncols != right._nrows:
+            raise ArithmeticError("number of columns of self must equal number of rows of right")
+
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         r"""
         Return the product of two matrices.

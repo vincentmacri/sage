@@ -1,15 +1,15 @@
 `matrix2.pyx:9402:    def _multiply_strassen(self, Matrix right, int cutoff=0):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_dense.pyx:300:    def _multiply_classical(left, matrix.Matrix right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_generic_dense.pyx:298:    def _multiply_classical(left, matrix.Matrix _right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
     - Also allocates list of `None` for intermediate computations
@@ -20,22 +20,22 @@
 ~~`matrix_gf2e_dense.pxd:13:    cpdef Matrix_gf2e_dense _multiply_strassen(Matrix_gf2e_dense self, Matrix_gf2e_dense right, cutoff=*)`~~
 
 `matrix_gf2e_dense.pyx:394:    def _multiply_classical(self, Matrix right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_gf2e_dense.pyx:484:    cpdef Matrix_gf2e_dense _multiply_newton_john(Matrix_gf2e_dense self, Matrix_gf2e_dense right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_gf2e_dense.pyx:546:    cpdef Matrix_gf2e_dense _multiply_karatsuba(Matrix_gf2e_dense self, Matrix_gf2e_dense right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_gf2e_dense.pyx:594:    cpdef Matrix_gf2e_dense _multiply_strassen(Matrix_gf2e_dense self, Matrix_gf2e_dense right, cutoff=0):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
@@ -43,27 +43,29 @@
 ~~`matrix_gfpn_dense.pxd:34:    cpdef Matrix_gfpn_dense _multiply_strassen(Matrix_gfpn_dense self, Matrix_gfpn_dense right, cutoff=*) noexcept`~~
 
 `matrix_gfpn_dense.pyx:1344:    cpdef Matrix_gfpn_dense _multiply_classical(Matrix_gfpn_dense self, Matrix_gfpn_dense right) noexcept:`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Does in-place multiplication on a copy 
 
 `matrix_gfpn_dense.pyx:1372:    cpdef Matrix_gfpn_dense _multiply_strassen(Matrix_gfpn_dense self, Matrix_gfpn_dense right, cutoff=0) noexcept:`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - **Not sure if this function exists in meataxe??? I added a print statement**
 
 `matrix_integer_dense.pyx:757:    def _multiply_linbox(self, Matrix_integer_dense right):`
     - **Does not checks bounds!!!**
+        - Added bounds check
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_integer_dense.pyx:796:    def _multiply_classical(self, Matrix_integer_dense right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_integer_dense.pyx:1565:    def _multiply_multi_modular(self, Matrix_integer_dense right):`
     - **Does not check bounds!!!**
+        - Bounds are checked by another function this calls
     - Allows rectangular
     - Allocates new matrix and sets it to product
     
@@ -132,7 +134,6 @@
     - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
     - Allocates matrix and sets to product
 
-
 `matrix_gf2e_dense.pyx:441:    cdef _matrix_times_matrix_(self, Matrix right):`
     - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
     - Allocates matrix and sets to product
@@ -144,7 +145,6 @@
 
 `matrix_integer_sparse.pyx:277:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
     - Allocates matrix and sets to product
-
 
 `matrix_mod2_dense.pyx:763:    cdef _matrix_times_matrix_(self, Matrix right):`
     - Just calls `_multiply_strassen`

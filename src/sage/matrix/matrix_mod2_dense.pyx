@@ -897,7 +897,9 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         """
         cdef Matrix_mod2_dense A
         A = self.new_matrix(nrows = self._nrows, ncols = right._ncols)
-        if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
+        # Why don't we check the sizes of the matrices here?
+        # It doesn't segfault when there is a size mismatch, so we leave it as-is.
+        if self._nrows == 0 or self._ncols == 0 or right._ncols == 0 or right._nrows == 0:
             return A
         A._entries = mzd_mul_naive(A._entries, self._entries,(<Matrix_mod2_dense>right)._entries)
         return A
