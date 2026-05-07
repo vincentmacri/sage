@@ -325,7 +325,7 @@ cdef class Matrix_dense(matrix.Matrix):
             sage: Matrix_dense._multiply_classical(matrix(2, 1), matrix(2, 0))
             Traceback (most recent call last):
             ...
-            ArithmeticError: number of columns of left must equal number of rows of right
+            ArithmeticError: number of columns of self must equal number of rows of right
         """
         self._check_matrix_multiplication_sizes(right)
         cdef Py_ssize_t i, j, k

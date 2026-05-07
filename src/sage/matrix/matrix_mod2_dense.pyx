@@ -844,6 +844,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
 
         ans = self.new_matrix(nrows = self._nrows, ncols = right._ncols)
         if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
+            # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
             return ans
         sig_on()
         ans._entries = mzd_mul_m4rm(ans._entries, self._entries, right._entries, k)
@@ -973,7 +974,8 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         #ans = self.new_matrix(nrows = self._nrows, ncols = right._ncols)
         # The following is a little faster:
         ans = self.matrix_space(self._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
-        if self._nrows == 0 or self._ncols == 0 or right._nrows == 0 or right._ncols:
+        if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
+            # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
             return ans
 
         sig_on()

@@ -1392,7 +1392,6 @@ cdef class Matrix_gfpn_dense(Matrix_dense):
             sage: M._multiply_strassen(N) == M._multiply_strassen(N,80) == M._multiply_strassen(N,2)
             True
         """
-        print('_multiply_strassen in matrix_gfpn_dense.pyx: does this even work?')
         assert False
         if self.Data == NULL or right.Data == NULL:
             raise ValueError("The matrices must not be empty")

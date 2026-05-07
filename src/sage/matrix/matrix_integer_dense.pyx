@@ -864,8 +864,6 @@ cdef class Matrix_integer_dense(Matrix_dense):
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         cdef Matrix_integer_dense M
 
-        print('_matrix_times_matrix_ in matrix_integer_dense.pyx')
-
         self._check_matrix_multiplication_sizes(right)
 
         M = self._new(self._nrows, right._ncols)
