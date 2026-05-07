@@ -53,8 +53,8 @@
     - **Not sure if this function exists in meataxe??? I added a print statement**
 
 `matrix_integer_dense.pyx:757:    def _multiply_linbox(self, Matrix_integer_dense right):`
-    - **Does not checks bounds!!!**
-        - Added bounds check
+    - ~~**Does not checks bounds!!!**
+        - Added bounds check~~
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
@@ -73,74 +73,81 @@
 ~~`matrix_mod2_dense.pxd:10:    cpdef Matrix_mod2_dense _multiply_strassen(Matrix_mod2_dense self, Matrix_mod2_dense right, int cutoff)`~~
 
 `matrix_mod2_dense.pyx:776:    cpdef Matrix_mod2_dense _multiply_m4rm(Matrix_mod2_dense self, Matrix_mod2_dense right, int k):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_mod2_dense.pyx:854:    def _multiply_classical(Matrix_mod2_dense self, Matrix_mod2_dense right):`
     - **Does not check bounds!!!**
+    	- This is okay somehow?
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_mod2_dense.pyx:905:    cpdef Matrix_mod2_dense _multiply_strassen(Matrix_mod2_dense self, Matrix_mod2_dense right, int cutoff):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_rational_dense.pyx:1187:    def _multiply_flint(self, Matrix_rational_dense right):`
     - **Does not check bounds!!!**
+    	- Does not error when bounds don't match
     - Allows rectangular
     - Allocates new matrix and sets it to product
 
 `matrix_rational_dense.pyx:1218:    def _multiply_over_integers(self, Matrix_rational_dense right, algorithm='default'):`
     - **Does not check bounds!!!**
+    	- Bounds are checked elsewhere
     - Allows rectangular
     - Allocates new matrix and sets it to product
     - Also does stuff to handle denominators
         - Does this allocate yet another matrix? **Need to check**
 
 `matrix_rational_dense.pyx:2886:    def _multiply_pari(self, Matrix_rational_dense right):`
-    - Checks bounds **with weird error message, test this**
-    - Weird handling of size zero matrices
+    - ~~Checks bounds **with weird error message, test this**~~
     - I do not really understand how the allocation here works
 
 `matrix_sparse.pyx:174:    def _multiply_classical(Matrix_sparse left, Matrix_sparse right):`
+    - Doesn't check bounds
+    	- "Works" anyway
     - Sparse multiplication
     - I don't see how to improve this given the nature of sparse matrix arithmetic
 
 `matrix_sparse.pyx:230:    def _multiply_classical_with_cache(Matrix_sparse left, Matrix_sparse right):`
+    - Doesn't check bounds
+    	- "Works" anyway
     - Sparse multiplication
     - A bit weird, we can probably leave it alone though
 
 `matrix0.pyx:5569:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
     - **Does not check bounds!!!**
+    	- The functions it calls can check the bounds (should they?)
     - Assumes bounds are satisfied in the docstring!
     - Calls `self._multiply_strassen(right)` or `self._multiply_classical(right)`
 
 `matrix_complex_ball_dense.pyx:499:    cdef _matrix_times_matrix_(self, Matrix other):`
-    - **Does not check bounds!!!**
+    - **Does not check bounds!!!** (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
     - Allocates new matrix and sets to product
     - Simple
 
 `matrix_cyclo_dense.pyx:638:    cdef _matrix_times_matrix_(self, baseMatrix right):`
-    - **Does not check bounds!!!**
+    - **Does not check bounds!!!** (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates new matrix and sets to product
 
 `matrix_double_dense.pyx:223:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
-    - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
+    - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
 
 `matrix_gap.pyx:350:    cdef Matrix _matrix_times_matrix_(left, Matrix right):`
-    - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
+    - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
 
 `matrix_gf2e_dense.pyx:441:    cdef _matrix_times_matrix_(self, Matrix right):`
-    - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
+    - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
         - **Check how this works**
 
 `matrix_integer_dense.pyx:863:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
-    - Checks bounds (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
+    - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
 
 `matrix_integer_sparse.pyx:277:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
@@ -150,7 +157,7 @@
     - Just calls `_multiply_strassen`
 
 `matrix_modn_dense_template.pxi:1044:    cdef _matrix_times_matrix_(self, Matrix right):`
-    - Checks bounds
+    - ~~Checks bounds~~
     - Allocates new matrix and sets to product
 
 `matrix_modn_sparse.pyx:287:    cdef Matrix _matrix_times_matrix_(self, Matrix _right):`

@@ -437,6 +437,9 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         sig_off()
         return ans
 
+    def test_mul(self, Matrix right):
+        return self._matrix_times_matrix_(right)
+
     cdef _matrix_times_matrix_(self, Matrix right):
         r"""
         Return ``A*B``.
@@ -467,13 +470,13 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             sage: A*B == A._multiply_classical(B)
             True
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("left ncols must match right nrows")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_gf2e_dense ans
 
         ans = self.new_matrix(nrows = self.nrows(), ncols = right.ncols())
         if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
+            # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
             return ans
         sig_on()
         ans._entries = mzed_mul(ans._entries, self._entries, (<Matrix_gf2e_dense>right)._entries)

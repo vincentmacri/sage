@@ -2901,9 +2901,10 @@ cdef class Matrix_rational_dense(Matrix_dense):
             sage: matrix(ZZ, 0, 0) * matrix(QQ, 0, 5)
             []
         """
-        if self._ncols != right._nrows:
-            raise ArithmeticError("self must be a square matrix")  # TODO: This error message doesn't make sense
-        if not self._ncols*self._nrows or not right._ncols*right._nrows:  # TODO: Unnecessary multiplication?
+        self._check_matrix_multiplication_sizes(right)
+        if self._ncols == 0 or self._nrows == 0 or right._ncols == 0:
+            # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
+
             # pari doesn't work in case of 0 rows or columns
             # This case is easy, since the answer must be the 0 matrix.
             return self.matrix_space(self._nrows, right._ncols).zero_matrix().__copy__()

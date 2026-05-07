@@ -248,8 +248,7 @@ cdef class Matrix_double_dense(Matrix_numpy_dense):
             [0.0 0.0 0.0]
             [0.0 0.0 0.0]
         """
-        if self._ncols != right._nrows:
-            raise IndexError("Number of columns of self must equal number of rows of right")
+        self._check_matrix_multiplication_sizes(right)
 
         cdef Matrix_double_dense M, _right, _left
 
