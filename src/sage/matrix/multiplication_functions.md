@@ -13,7 +13,7 @@
     - Allows rectangular
     - Allocates zero matrix and sets it to product
     - Also allocates list of `None` for intermediate computations
-    - **This is weird, I added a print statement**
+    - ~~**This is weird, I added a print statement*~~
 
 ~~`matrix_gf2e_dense.pxd:11:    cpdef Matrix_gf2e_dense _multiply_newton_john(Matrix_gf2e_dense self, Matrix_gf2e_dense right)`~~
 ~~`matrix_gf2e_dense.pxd:12:    cpdef Matrix_gf2e_dense _multiply_karatsuba(Matrix_gf2e_dense self, Matrix_gf2e_dense right)`~~

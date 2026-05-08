@@ -5566,9 +5566,22 @@ cdef class Matrix(sage.structure.element.Matrix):
                 ans.set_unsafe(r, c, self.get_unsafe(r, c) * x)
         return ans
 
-    cdef inline void _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except *:
+    cdef bint _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except 0:
         if self._ncols != right._nrows:
             raise ArithmeticError("number of columns of self must equal number of rows of right")
+        return 1
+
+    cdef bint _check_set_to_matrix_product(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right) except 0:
+        if self._nrows != left._nrows or self._ncols != right._ncols:
+            raise ArithmeticError("size of self is not equal to size of left * right")
+        if left._ncols != right._nrows:
+            # We don't call _check_matrix_multiplication_sizes because we want to avoid function-call overhead
+            raise ArithmeticError("number of columns of self must equal number of rows of right")
+        if self._is_immutable:
+            raise ValueError("cannot set the value of an immutable matrix")
+        if self is left or self is right:
+            raise ValueError("cannot set matrix to product involving itself")
+        return 1
 
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         r"""

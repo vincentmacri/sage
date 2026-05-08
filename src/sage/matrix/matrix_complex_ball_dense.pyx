@@ -496,7 +496,7 @@ cdef class Matrix_complex_ball_dense(Matrix_dense):
         """
         return self._lmul_(a)
 
-    cdef _matrix_times_matrix_(self, Matrix other):
+    cdef Matrix _matrix_times_matrix_(self, Matrix other):
         r"""
         TESTS::
 

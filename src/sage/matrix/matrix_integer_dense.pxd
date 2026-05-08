@@ -30,5 +30,7 @@ cdef class Matrix_integer_dense(Matrix_dense):
 
     cdef Matrix_integer_dense _new(self, Py_ssize_t nrows, Py_ssize_t ncols)
 
+    cdef void set_to_matrix_product_unsafe(Matrix_integer_dense self, Matrix_integer_dense left, Matrix_integer_dense right) noexcept
+
 
 cpdef _lift_crt(Matrix_integer_dense M, residues, moduli=*)

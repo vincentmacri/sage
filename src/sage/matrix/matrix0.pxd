@@ -24,7 +24,10 @@ cdef class Matrix(sage.structure.element.Matrix):
     cpdef _add_(self, other)
     cpdef _sub_(self, other)
 
-    cdef inline void _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except *
+    # These are bint instead of void because exception handling is faster for methods that return int than void methods
+    # TODO: Check if that is actually true. We only care about performance in the happy path.
+    cdef bint _check_matrix_multiplication_sizes(self, sage.structure.element.Matrix right) except 0
+    cdef bint _check_set_to_matrix_product(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right) except 0
 
     cdef bint _will_use_strassen(self, Matrix right) except -2
     cdef bint _will_use_strassen_echelon(self) except -2

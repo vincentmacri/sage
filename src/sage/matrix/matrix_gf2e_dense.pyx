@@ -437,10 +437,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         sig_off()
         return ans
 
-    def test_mul(self, Matrix right):
-        return self._matrix_times_matrix_(right)
-
-    cdef _matrix_times_matrix_(self, Matrix right):
+    cdef Matrix _matrix_times_matrix_(self, Matrix right):
         r"""
         Return ``A*B``.
 

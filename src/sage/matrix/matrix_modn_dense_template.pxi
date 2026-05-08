@@ -1041,7 +1041,19 @@ cdef class Matrix_modn_dense_template(Matrix_dense):
         sig_off()
         return rich_to_bool(op, 0)
 
-    cdef _matrix_times_matrix_(self, Matrix right):
+    cdef set_to_matrix_product_unsafe(self, Matrix_modn_dense_template left, Matrix_modn_dense_template right):
+        if get_verbose() >= 2:
+            verbose('mod-p multiply of %s x %s matrix by %s x %s matrix modulo %s' % (
+                    left._nrows, left._ncols, right._nrows, right._ncols, left.p))
+
+        linbox_matrix_matrix_multiply(left.p, self._entries, left._entries,
+                                      right._entries, left._nrows, right._ncols, right._nrows)
+
+    def set_to_matrix_product(self, Matrix_dense left, Matrix_dense right):
+        self._check_set_to_matrix_product(left, right)
+        self.set_to_matrix_product_unsafe(left, right)
+
+    cdef Matrix_modn_dense_template _matrix_times_matrix_(Matrix_modn_dense_template self, Matrix right):
         """
         Return ``self*right``.
 

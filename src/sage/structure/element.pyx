@@ -3614,7 +3614,7 @@ cdef class Matrix(ModuleElement):
     cdef bint is_dense_c(self) noexcept:
         raise NotImplementedError
 
-    def __mul__(left, right):
+    def __mul__(self, other):
         """
         Multiplication of matrix by matrix, vector, or scalar.
 
@@ -3919,30 +3919,30 @@ cdef class Matrix(ModuleElement):
             [33 36] [39 42]
             [45 48]]
         """
-        cdef int cl = classify_elements(left, right)
+        cdef int cl = classify_elements(self, other)
         if HAVE_SAME_PARENT(cl):
             # If they are matrices with the same parent, they had
             # better be square for the product to be defined.
-            if (<Matrix>left)._nrows == (<Matrix>left)._ncols:
-                return (<Matrix>left)._matrix_times_matrix_(<Matrix>right)
+            if (<Matrix>self)._nrows == (<Matrix>self)._ncols:
+                return (<Matrix>self)._matrix_times_matrix_(<Matrix>other)
             else:
-                parent = (<Matrix>left)._parent
+                parent = (<Matrix>self)._parent
                 raise TypeError("unsupported operand parent(s) for *: '{}' and '{}'".format(parent, parent))
 
         if BOTH_ARE_ELEMENT(cl):
-            return coercion_model.bin_op(left, right, mul)
+            return coercion_model.bin_op(self, other, mul)
 
         cdef long value
         cdef int err = -1
         try:
             # Special case multiplication with C long
-            integer_check_long_py(right, &value, &err)
+            integer_check_long_py(other, &value, &err)
             if not err:
-                return (<Element>left)._mul_long(value)
-            integer_check_long_py(left, &value, &err)
+                return (<Element>self)._mul_long(value)
+            integer_check_long_py(self, &value, &err)
             if not err:
-                return (<Element>right)._mul_long(value)
-            return coercion_model.bin_op(left, right, mul)
+                return (<Element>other)._mul_long(value)
+            return coercion_model.bin_op(self, other, mul)
         except TypeError:
             return NotImplemented
 
@@ -3993,7 +3993,7 @@ cdef class Matrix(ModuleElement):
     cdef _matrix_times_vector_(matrix_left, Vector vector_right):
         raise TypeError
 
-    cdef _matrix_times_matrix_(left, Matrix right):
+    cdef Matrix _matrix_times_matrix_(self, Matrix right):
         raise TypeError
 
 

@@ -861,6 +861,15 @@ cdef class Matrix_integer_dense(Matrix_dense):
         fmpz_clear(s)
         return M
 
+    cdef void set_to_matrix_product_unsafe(self, Matrix_integer_dense left, Matrix_integer_dense right) noexcept:
+        sig_on()
+        fmpz_mat_mul(self._matrix, left._matrix, right._matrix)
+        sig_off()
+
+    def set_to_matrix_product(self, Matrix_integer_dense left, Matrix_integer_dense right):
+        left._check_matrix_multiplication_sizes(right)
+        self.set_to_matrix_product_unsafe(left, right)
+
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         cdef Matrix_integer_dense M
 

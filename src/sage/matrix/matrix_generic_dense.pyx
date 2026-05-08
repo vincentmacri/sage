@@ -295,6 +295,36 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.overflowcheck(False)
+    cdef void set_to_matrix_product_classical_unsafe(self, Matrix_generic_dense left, Matrix_generic_dense right) noexcept:
+        cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
+
+        left._check_matrix_multiplication_sizes(right)
+
+        nr = left._nrows
+        nc = right._ncols
+        snc = left._ncols
+
+        R = left.base_ring()
+        cdef list v = [None] * (left._nrows * right._ncols)
+        zero = R.zero()
+        p = 0
+        for i in range(nr):
+            for j in range(nc):
+                #z = zero
+                self._entries[p] = zero
+                m = i*snc
+                for k in range(snc):
+                    self._entries[p] += left._entries[m+k]._mul_(right._entries[k*nc+j])
+                #self._entries[p] = z
+                p += 1
+
+    def set_to_matrix_product(self, matrix.Matrix left, matrix.Matrix right):
+        self._check_set_to_matrix_product(left, right)
+        self.set_to_matrix_product_classical_unsafe(left, right)
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.overflowcheck(False)
     def _multiply_classical(self, matrix.Matrix _right):
         """
         Multiply the matrices self and right using the classical

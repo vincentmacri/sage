@@ -760,7 +760,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         sig_off()
         return c
 
-    cdef _matrix_times_matrix_(self, Matrix right):
+    cdef Matrix_mod2_dense _matrix_times_matrix_(self, Matrix right):
         """
         Matrix multiplication.
 

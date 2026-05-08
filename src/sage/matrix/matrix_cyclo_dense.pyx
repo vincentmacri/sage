@@ -635,7 +635,7 @@ cdef class Matrix_cyclo_dense(Matrix_dense):
             A._matrix = T * self._matrix
         return A
 
-    cdef _matrix_times_matrix_(self, baseMatrix right):
+    cdef Matrix_cyclo_dense _matrix_times_matrix_(self, baseMatrix right):
         """
         Return the product of two cyclotomic dense matrices.
 
