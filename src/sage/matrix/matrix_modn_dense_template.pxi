@@ -1042,10 +1042,6 @@ cdef class Matrix_modn_dense_template(Matrix_dense):
         return rich_to_bool(op, 0)
 
     cdef set_to_matrix_product_unsafe(self, Matrix_modn_dense_template left, Matrix_modn_dense_template right):
-        if get_verbose() >= 2:
-            verbose('mod-p multiply of %s x %s matrix by %s x %s matrix modulo %s' % (
-                    left._nrows, left._ncols, right._nrows, right._ncols, left.p))
-
         linbox_matrix_matrix_multiply(left.p, self._entries, left._entries,
                                       right._entries, left._nrows, right._ncols, right._nrows)
 
@@ -1191,13 +1187,8 @@ cdef class Matrix_modn_dense_template(Matrix_dense):
             sage: E == F
             True
         """
-        if get_verbose() >= 2:
-            verbose('mod-p multiply of %s x %s matrix by %s x %s matrix modulo %s' % (
-                    self._nrows, self._ncols, right._nrows, right._ncols, self.p))
-
         self._check_matrix_multiplication_sizes(right)
 
-        cdef int e
         cdef Matrix_modn_dense_template ans, B
 
         ans = self.new_matrix(nrows = self.nrows(), ncols = right.ncols())
