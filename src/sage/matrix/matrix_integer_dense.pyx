@@ -79,6 +79,7 @@ from sage.misc.verbose import verbose, get_verbose
 from sage.arith.misc import previous_prime
 from sage.arith.long cimport integer_check_long_py
 from sage.arith.power cimport generic_power
+cimport sage.structure.element
 from sage.structure.element cimport Element
 from sage.structure.proof.proof import get_flag as get_proof_flag
 from sage.structure.richcmp cimport rich_to_bool
@@ -111,7 +112,6 @@ from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.polynomial.polynomial_integer_dense_flint cimport Polynomial_integer_dense_flint
 from sage.structure.element cimport Element, Vector
-from sage.structure.element import Vector
 
 from sage.matrix.matrix_modn_dense_float cimport Matrix_modn_dense_template
 from sage.matrix.matrix_modn_dense_float cimport Matrix_modn_dense_float
@@ -795,7 +795,7 @@ cdef class Matrix_integer_dense(Matrix_dense):
 
         return ans
 
-    def _multiply_classical(self, Matrix_integer_dense right):
+    def _set_multiply_classical(self, Matrix_integer_dense left, Matrix_integer_dense right):
         """
         EXAMPLES::
 
@@ -825,28 +825,21 @@ cdef class Matrix_integer_dense(Matrix_dense):
             ....:         raise RuntimeError("ERROR\nm1=\n{}\nm2=\n{}\nans_flint=\n{}\nans_linbox=\n{}".format(
             ....:                 m1.str(), m2.str(), ans_flint.str(), ans_linbox.str()))
         """
-        self._check_matrix_multiplication_sizes(right)
-
         cdef Py_ssize_t i, j, k, nr, nc, snc
         cdef object parent
 
-        nr = self._nrows
+        nr = left._nrows
         nc = right._ncols
-        snc = self._ncols
+        snc = left._ncols
 
-        if self._nrows == right._nrows:
-            # self acts on the space of right
+        if left._nrows == right._nrows:
+            # left acts on the space of right
             parent = right.parent()
-        if self._ncols == right._ncols:
-            # right acts on the space of self
-            parent = self.parent()
+        if left._ncols == right._ncols:
+            # right acts on the space of left
+            parent = left.parent()
         else:
-            parent = self.matrix_space(nr, nc)
-
-        cdef Matrix_integer_dense M, _right
-        _right = right
-
-        M = self._new(parent.nrows(),parent.ncols())
+            parent = left.matrix_space(nr, nc)
 
         cdef fmpz_t s
         fmpz_init(s)
@@ -855,22 +848,15 @@ cdef class Matrix_integer_dense(Matrix_dense):
             for j from 0 <= j < nc:
                 fmpz_set_si(s,0)   # set s = 0
                 for k from 0 <= k < snc:
-                    fmpz_addmul(s, fmpz_mat_entry(self._matrix,i,k), fmpz_mat_entry(_right._matrix,k,j))
-                fmpz_set(fmpz_mat_entry(M._matrix,i,j),s)
+                    fmpz_addmul(s, fmpz_mat_entry(left._matrix,i,k), fmpz_mat_entry(right._matrix,k,j))
+                fmpz_set(fmpz_mat_entry(self._matrix,i,j),s)
         sig_off()
         fmpz_clear(s)
-        return M
 
-    cdef void set_to_matrix_product_unsafe(self, Matrix_integer_dense left, Matrix_integer_dense right) noexcept:
-        sig_on()
-        fmpz_mat_mul(self._matrix, left._matrix, right._matrix)
-        sig_off()
+    cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
+        fmpz_mat_mul(self._matrix, (<Matrix_integer_dense> left)._matrix, (<Matrix_integer_dense> right)._matrix)
 
-    def set_to_matrix_product(self, Matrix_integer_dense left, Matrix_integer_dense right):
-        left._check_matrix_multiplication_sizes(right)
-        self.set_to_matrix_product_unsafe(left, right)
-
-    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
+    cdef Matrix_integer_dense _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         cdef Matrix_integer_dense M
 
         self._check_matrix_multiplication_sizes(right)
@@ -878,7 +864,7 @@ cdef class Matrix_integer_dense(Matrix_dense):
         M = self._new(self._nrows, right._ncols)
 
         sig_on()
-        fmpz_mat_mul(M._matrix, self._matrix, (<Matrix_integer_dense>right)._matrix)
+        M._set_matrix_times_matrix_(self, right)
         sig_off()
         return M
 

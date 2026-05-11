@@ -760,6 +760,9 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         sig_off()
         return c
 
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        pass
+
     cdef Matrix_mod2_dense _matrix_times_matrix_(self, Matrix right):
         """
         Matrix multiplication.
@@ -978,7 +981,9 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
             # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
             return ans
 
+        #print('_multiply_strassen in matrix_mod2_dense.pyx')
         sig_on()
+        #mzd_mul(ans._entries, self._entries, right._entries, cutoff)
         ans._entries = mzd_mul(ans._entries, self._entries, right._entries, cutoff)
         sig_off()
         return ans

@@ -437,6 +437,12 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         sig_off()
         return ans
 
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        self._entries = mzed_mul(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries)
+        # TODO: Does this work?
+        #print('Testing gf2e_dense')
+        #mzed_mul(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries)
+
     cdef Matrix _matrix_times_matrix_(self, Matrix right):
         r"""
         Return ``A*B``.
@@ -476,7 +482,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
             return ans
         sig_on()
-        ans._entries = mzed_mul(ans._entries, self._entries, (<Matrix_gf2e_dense>right)._entries)
+        ans._set_matrix_times_matrix_(self, right)
         sig_off()
         return ans
 

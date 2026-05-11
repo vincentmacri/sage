@@ -347,7 +347,10 @@ cdef class Matrix_gap(Matrix_dense):
         ans._libgap = left._libgap - (<Matrix_gap> right)._libgap
         return ans
 
-    cdef Matrix _matrix_times_matrix_(self, Matrix right):
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        self._libgap = <Matrix_gap> ((<Matrix_gap> left)._libgap * (<Matrix_gap> right)._libgap)
+
+    cdef Matrix_gap _matrix_times_matrix_(self, Matrix right):
         r"""
         TESTS::
 
@@ -360,7 +363,8 @@ cdef class Matrix_gap(Matrix_dense):
         """
         self._check_matrix_multiplication_sizes(right)
         cdef Matrix_gap M = self._new(self._nrows, right._ncols)
-        M._libgap = <Matrix_gap> ((<Matrix_gap> self)._libgap * (<Matrix_gap> right)._libgap)
+        M._set_matrix_times_matrix_(self, right)
+        #M._libgap = <Matrix_gap> ((<Matrix_gap> self)._libgap * (<Matrix_gap> right)._libgap)
         return M
 
     def transpose(self):

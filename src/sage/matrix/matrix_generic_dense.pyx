@@ -12,6 +12,7 @@ from sage.matrix import matrix_dense
 from sage.matrix.args cimport MatrixArgs_init
 
 cimport sage.matrix.matrix as matrix
+cimport sage.structure.element
 
 
 cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
@@ -292,20 +293,22 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
             res._entries[k] = self._entries[k] - other._entries[k]
         return res
 
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    @cython.overflowcheck(False)
-    cdef void set_to_matrix_product_classical_unsafe(self, Matrix_generic_dense left, Matrix_generic_dense right) noexcept:
+    #@cython.boundscheck(False)
+    #@cython.wraparound(False)
+    #@cython.overflowcheck(False)
+    cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
         cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
 
-        left._check_matrix_multiplication_sizes(right)
+        cdef Matrix_generic_dense _left, _right
+        _left = left
+        _right = right
 
-        nr = left._nrows
-        nc = right._ncols
-        snc = left._ncols
+        nr = _left._nrows
+        nc = _right._ncols
+        snc = _left._ncols
 
-        R = left.base_ring()
-        cdef list v = [None] * (left._nrows * right._ncols)
+        R = _left.base_ring()
+        cdef list v = [None] * (_left._nrows * _right._ncols)
         zero = R.zero()
         p = 0
         for i in range(nr):
@@ -314,13 +317,9 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
                 self._entries[p] = zero
                 m = i*snc
                 for k in range(snc):
-                    self._entries[p] += left._entries[m+k]._mul_(right._entries[k*nc+j])
+                    self._entries[p] += _left._entries[m+k]._mul_(_right._entries[k*nc+j])
                 #self._entries[p] = z
                 p += 1
-
-    def set_to_matrix_product(self, matrix.Matrix left, matrix.Matrix right):
-        self._check_set_to_matrix_product(left, right)
-        self.set_to_matrix_product_classical_unsafe(left, right)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

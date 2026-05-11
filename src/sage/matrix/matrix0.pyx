@@ -5581,7 +5581,15 @@ cdef class Matrix(sage.structure.element.Matrix):
             raise ValueError("cannot set the value of an immutable matrix")
         if self is left or self is right:
             raise ValueError("cannot set matrix to product involving itself")
+
         return 1
+
+    cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
+        # Both self and right are matrices with compatible dimensions and base ring.
+        if (<Matrix> left)._will_use_strassen(right):
+            self._set_multiply_strassen(left, right)
+        else:
+            self._set_multiply_classical(left, right)
 
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         r"""
@@ -5751,11 +5759,9 @@ cdef class Matrix(sage.structure.element.Matrix):
             [             0     -x*y + y*x]
             [             0 -x*y^2 + y^2*x]
         """
-        # Both self and right are matrices with compatible dimensions and base ring.
-        if self._will_use_strassen(right):
-            return self._multiply_strassen(right)
-        else:
-            return self._multiply_classical(right)
+        cdef Matrix output = self.new_matrix(self._nrows, right._ncols)
+        output._set_matrix_times_matrix_(self, right)
+        return output
 
     cdef bint _will_use_strassen(self, Matrix right) except -2:
         """

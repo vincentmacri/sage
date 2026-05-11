@@ -22,3 +22,4 @@ cdef class Matrix(Matrix1):
     cpdef _echelon(self, str algorithm)
     cpdef _echelon_in_place(self, str algorithm)
     cpdef matrix_window(self, Py_ssize_t row=*, Py_ssize_t col=*, Py_ssize_t nrows=*, Py_ssize_t ncols=*, bint check=*)
+    cpdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=*)

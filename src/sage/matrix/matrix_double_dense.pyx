@@ -220,7 +220,19 @@ cdef class Matrix_double_dense(Matrix_numpy_dense):
     # def _pickle(self):                        #unsure how to implement
     # def _unpickle(self, data, int version):   # use version >= 0 #unsure how to implement
     ######################################################################
-    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
+
+    cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
+        if left._nrows == 0 or left._ncols == 0 or right._nrows == 0 or right._ncols == 0:  # TODO: Do we even need this check?
+            self._matrix_numpy.fill(0)
+            return
+
+        global numpy
+        if numpy is None:
+            import numpy
+
+        self._matrix_numpy = numpy.dot((<Matrix_double_dense> left)._matrix_numpy, (<Matrix_double_dense> right)._matrix_numpy)
+
+    cdef Matrix_double_dense _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         r"""
         Multiply ``self * right`` as matrices.
 
@@ -249,22 +261,8 @@ cdef class Matrix_double_dense(Matrix_numpy_dense):
             [0.0 0.0 0.0]
         """
         self._check_matrix_multiplication_sizes(right)
-
-        cdef Matrix_double_dense M, _right, _left
-
-        if self._nrows == 0 or self._ncols == 0 or right._nrows == 0 or right._ncols == 0:
-            M = self._new(self._nrows, right._ncols)
-            M._matrix_numpy.fill(0)
-            return M
-
         M = self._new(self._nrows, right._ncols)
-        _right = right
-        _left = self
-        global numpy
-        if numpy is None:
-            import numpy
-
-        M._matrix_numpy = numpy.dot(_left._matrix_numpy, _right._matrix_numpy)
+        M._set_matrix_times_matrix_(self, right)
         return M
 
     def __invert__(self):

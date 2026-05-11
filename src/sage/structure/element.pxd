@@ -261,9 +261,10 @@ cdef class Matrix(ModuleElement):
     cdef Py_ssize_t _nrows
     cdef Py_ssize_t _ncols
 
-    cdef _vector_times_matrix_(matrix_right, Vector vector_left)    # OK to override, AND call directly
-    cdef _matrix_times_vector_(matrix_left, Vector vector_right)    # OK to override, AND call directly
-    cdef Matrix _matrix_times_matrix_(self, Matrix right)                  # OK to override, AND call directly
+    cdef _vector_times_matrix_(matrix_right, Vector vector_left)  # OK to override, AND call directly
+    cdef _matrix_times_vector_(matrix_left, Vector vector_right)  # OK to override, AND call directly
+    cdef Matrix _matrix_times_matrix_(self, Matrix right)  # OK to override, AND call directly
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right) # OK to override, AND call directly
 
     cdef bint is_sparse_c(self) noexcept
     cdef bint is_dense_c(self) noexcept

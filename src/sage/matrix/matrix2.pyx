@@ -9399,13 +9399,17 @@ cdef class Matrix(Matrix1):
     # Precise algorithms invented and implemented by David Harvey and Robert Bradshaw
     # at William Stein's MSRI 2006 Summer Workshop on Modular Forms.
     #####################################################################################
-    def _multiply_strassen(self, Matrix right, int cutoff=0):
+    cpdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=0):
         """
         Multiply ``self`` by the matrix right using a Strassen-based
         asymptotically fast arithmetic algorithm.
 
         ALGORITHM: Custom algorithm for arbitrary size matrices designed by
         David Harvey and Robert Bradshaw, based on Strassen's algorithm.
+
+        .. WARNING::
+
+        ``self``, ``left``, and ``right`` must be the appropriate sizes over the same base ring.
 
         INPUT:
 
@@ -9414,38 +9418,36 @@ cdef class Matrix(Matrix1):
 
         EXAMPLES::
 
-            sage: a = matrix(ZZ, 4,4, range(16))
-            sage: a._multiply_strassen(a,2)
+            sage: a = matrix(ZZ, 4, 4, range(16))
+            sage: b = matrix(ZZ, 4, 4)
+            sage: b._set_multiply_strassen(a, a, 2); b
             [ 56  62  68  74]
             [152 174 196 218]
             [248 286 324 362]
             [344 398 452 506]
         """
-        self._check_matrix_multiplication_sizes(right)
-        if self._base_ring is not right.base_ring():
-            raise TypeError("Base rings must be the same.")
-
         if cutoff == 0:
-            cutoff = self._strassen_default_cutoff(right)
+            cutoff = left._strassen_default_cutoff(right)
 
         if cutoff <= 0:
             raise ValueError("cutoff must be at least 1")
 
-        output = self.new_matrix(self._nrows, right._ncols)
-        # The following used to be a little faster, but meanwhile
-        # the previous line is faster.
-        # if self.is_sparse():
-        #    output = self.matrix_space(self._nrows, right._ncols, sparse = True)(0)
-        # else:
-        #    output = self.matrix_space(self._nrows, right._ncols, sparse = False).zero_matrix().__copy__()
-
-        self_window = self.matrix_window()
-        right_window = right.matrix_window()
-        output_window = output.matrix_window()
+        cdef left_window = left.matrix_window()
+        cdef right_window = right.matrix_window()
+        cdef self_window = self.matrix_window()
 
         from sage.matrix import strassen
-        strassen.strassen_window_multiply(output_window, self_window, right_window, cutoff)
-        return output
+        strassen.strassen_window_multiply(self_window, left_window, right_window, cutoff)
+
+    def _multiply_classical(self, Matrix right):  # TODO: Refactor
+        M = self.new_matrix(self._nrows, right._ncols)
+        M._set_multiply_classical(self, right)
+        return M
+
+    def _multiply_strassen(self, Matrix right, int cutoff=0):  # TODO: Refactor
+        M = self.new_matrix(self._nrows, right._ncols)
+        M._set_multiply_strassen(self, right, cutoff)
+        return M
 
     def _echelon_strassen(self, int cutoff=0):
         """

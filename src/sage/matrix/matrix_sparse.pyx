@@ -171,7 +171,7 @@ cdef class Matrix_sparse(matrix.Matrix):
             return -2
         return h
 
-    def _multiply_classical(Matrix_sparse left, Matrix_sparse right):
+    def _set_multiply_classical(self, Matrix_sparse left, Matrix_sparse right):
         """
         EXAMPLES::
 
@@ -225,7 +225,9 @@ cdef class Matrix_sparse(matrix.Matrix):
                     k2 += 1
             while k1 < len_left and get_ij(left_nonzero, k1, 0) == row:
                 k1 += 1
-        return left.new_matrix(left._nrows, right._ncols, entries=e, coerce=False, copy=False)
+        # TODO: This doesn't actually help with memory
+        new = left.new_matrix(left._nrows, right._ncols, entries=e, coerce=False, copy=False)
+        self.set_block(0, 0, new)
 
     def _multiply_classical_with_cache(Matrix_sparse left, Matrix_sparse right):
         """

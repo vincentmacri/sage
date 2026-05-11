@@ -118,43 +118,45 @@
     - Sparse multiplication
     - A bit weird, we can probably leave it alone though
 
-`matrix0.pyx:5569:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
+~~`matrix0.pyx:5569:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
     - **Does not check bounds!!!**
     	- The functions it calls can check the bounds (should they?)
     - Assumes bounds are satisfied in the docstring!
     - Calls `self._multiply_strassen(right)` or `self._multiply_classical(right)`
 
-`matrix_complex_ball_dense.pyx:499:    cdef _matrix_times_matrix_(self, Matrix other):`
+~~`matrix_complex_ball_dense.pyx:499:    cdef _matrix_times_matrix_(self, Matrix other):`
     - **Does not check bounds!!!** (**should it? The base class version of `_matrix_times_matrix_` require this by assumption**)
     - Allocates new matrix and sets to product
     - Simple
 
-`matrix_cyclo_dense.pyx:638:    cdef _matrix_times_matrix_(self, baseMatrix right):`
+~~`matrix_cyclo_dense.pyx:638:    cdef _matrix_times_matrix_(self, baseMatrix right):`
     - **Does not check bounds!!!** (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates new matrix and sets to product
 
-`matrix_double_dense.pyx:223:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
+~~`matrix_double_dense.pyx:223:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
     - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
 
-`matrix_gap.pyx:350:    cdef Matrix _matrix_times_matrix_(left, Matrix right):`
+~~`matrix_gap.pyx:350:    cdef Matrix _matrix_times_matrix_(left, Matrix right):`
     - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
     - Allocates matrix and sets to product
 
-`matrix_gf2e_dense.pyx:441:    cdef _matrix_times_matrix_(self, Matrix right):`
+~~`matrix_gf2e_dense.pyx:441:    cdef _matrix_times_matrix_(self, Matrix right):`
     - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
-    - Allocates matrix and sets to product
+    ~~- Allocates matrix and sets to product
         - **Check how this works**
 
-`matrix_integer_dense.pyx:863:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
+~~`matrix_integer_dense.pyx:863:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
     - ~~Checks bounds~~ (**should it? The base class version of `_matrix_times_matrix_` requires this by assumption**)
-    - Allocates matrix and sets to product
+    ~~- Allocates matrix and sets to product
 
-`matrix_integer_sparse.pyx:277:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
+~~`matrix_integer_sparse.pyx:277:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
     - Allocates matrix and sets to product
 
 `matrix_mod2_dense.pyx:763:    cdef _matrix_times_matrix_(self, Matrix right):`
     - Just calls `_multiply_strassen`
+    - `_multiply_strassen` is just a call to M4RIE (which uses Strassen internally)
+    - Need to understand how this behaves better
 
 `matrix_modn_dense_template.pxi:1044:    cdef _matrix_times_matrix_(self, Matrix right):`
     - ~~Checks bounds~~

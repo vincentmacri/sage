@@ -496,6 +496,17 @@ cdef class Matrix_complex_ball_dense(Matrix_dense):
         """
         return self._lmul_(a)
 
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix other):
+        r"""
+        TESTS::
+
+            sage: matrix(CBF, [[1,2]])*matrix([[3], [4]]) # indirect doctest
+            [11.00000000000000]
+        """
+        sig_on()
+        acb_mat_mul(self.value, (<Matrix_complex_ball_dense> left).value, (<Matrix_complex_ball_dense> other).value, prec(left))
+        sig_off()
+
     cdef Matrix _matrix_times_matrix_(self, Matrix other):
         r"""
         TESTS::
@@ -504,9 +515,7 @@ cdef class Matrix_complex_ball_dense(Matrix_dense):
             [11.00000000000000]
         """
         cdef Matrix_complex_ball_dense res = self._new(self._nrows, other._ncols)
-        sig_on()
-        acb_mat_mul(res.value, self.value, (<Matrix_complex_ball_dense> other).value, prec(self))
-        sig_off()
+        res._set_matrix_times_matrix_(self, other)
         return res
 
     cpdef _pow_int(self, n):

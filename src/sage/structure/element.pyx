@@ -3996,6 +3996,9 @@ cdef class Matrix(ModuleElement):
     cdef Matrix _matrix_times_matrix_(self, Matrix right):
         raise TypeError
 
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        raise TypeError
+
 
 def is_Matrix(x):
     from sage.misc.superseded import deprecation_cython

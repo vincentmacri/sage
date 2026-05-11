@@ -635,7 +635,7 @@ cdef class Matrix_cyclo_dense(Matrix_dense):
             A._matrix = T * self._matrix
         return A
 
-    cdef Matrix_cyclo_dense _matrix_times_matrix_(self, baseMatrix right):
+    cdef _set_matrix_times_matrix_(self, baseMatrix left, baseMatrix right):
         """
         Return the product of two cyclotomic dense matrices.
 
@@ -694,40 +694,43 @@ cdef class Matrix_cyclo_dense(Matrix_dense):
             sage: (-m)*n
             [-23250]
         """
-        A, denom_self = self._matrix._clear_denom()
-        B, denom_right = (<Matrix_cyclo_dense>right)._matrix._clear_denom()
+        A, denom_left = (<Matrix_cyclo_dense> left)._matrix._clear_denom()
+        B, denom_right = (<Matrix_cyclo_dense> right)._matrix._clear_denom()
 
         # conservative but correct estimate: 2 is there to account for the
         # sign of the entries
-        bound = 1 + 2 * A.height() * B.height() * self._ncols
+        bound = 1 + 2 * A.height() * B.height() * left._ncols
 
-        n = self._base_ring._n()
+        n = left._base_ring._n()
         p = previous_prime(MAX_MODULUS)
         prod = 1
         v = []
         while prod <= bound:
-            while (n >= 2 and p % n != 1) or denom_self % p == 0 or denom_right % p == 0:
+            while (n >= 2 and p % n != 1) or denom_left % p == 0 or denom_right % p == 0:
                 if p == 2:
-                    raise RuntimeError("we ran out of primes in matrix multiplication.")
+                    raise RuntimeError("we ran out of primes in matrix multiplication")
                 p = previous_prime(p)
             prod *= p
-            Amodp, _ = self._reductions(p)
+            Amodp, _ = left._reductions(p)
             Bmodp, _ = right._reductions(p)
-            _, S = self._reduction_matrix(p)
+            _, S = left._reduction_matrix(p)
             X = Amodp[0]._matrix_from_rows_of_matrices([Amodp[i] * Bmodp[i] for i in range(len(Amodp))])
             v.append(S*X)
             p = previous_prime(p)
-        M = matrix(ZZ, self._base_ring.degree(), self._nrows*right.ncols())
+        M = matrix(ZZ, left._base_ring.degree(), left._nrows*right.ncols())
         _lift_crt(M, v)
-        d = denom_self * denom_right
+        d = denom_left * denom_right
         if d == 1:
             M = M.change_ring(QQ)
         else:
             M = (1/d)*M
+        self._matrix = M
+
+    cdef Matrix_cyclo_dense _matrix_times_matrix_(self, baseMatrix right):
         cdef Matrix_cyclo_dense C = Matrix_cyclo_dense.__new__(Matrix_cyclo_dense,
-                    MatrixSpace(self._base_ring, self._nrows, right.ncols()),
+                                                               MatrixSpace(self._base_ring, self._nrows, right.ncols()),
                                                                None, None, None)
-        C._matrix = M
+        C._set_matrix_times_matrix_(self, right)
         return C
 
     cdef Py_hash_t _hash_(self) except -1:
