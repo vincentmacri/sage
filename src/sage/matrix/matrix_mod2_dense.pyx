@@ -108,6 +108,7 @@ from cysignals.memory cimport check_malloc, sig_free
 from cysignals.signals cimport sig_on, sig_str, sig_off
 
 cimport sage.matrix.matrix_dense as matrix_dense
+from sage.matrix.matrix cimport Matrix as Matrix2
 from sage.matrix.args cimport SparseEntry, MatrixArgs_init, MA_ENTRIES_NDARRAY
 from libc.stdio cimport *
 from sage.structure.element cimport (Matrix, Vector)
@@ -761,7 +762,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         return c
 
     cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
-        pass
+        self._set_multiply_strassen(left, right, 0)
 
     cdef Matrix_mod2_dense _matrix_times_matrix_(self, Matrix right):
         """
@@ -774,7 +775,11 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
             verbose('matrix multiply of %s x %s matrix by %s x %s matrix' % (
                 self._nrows, self._ncols, right._nrows, right._ncols))
 
-        return self._multiply_strassen(right, 0)
+        #ans = left.new_matrix(nrows = left._nrows, ncols = right._ncols)
+        # The following is a little faster:
+        cdef Matrix_mod2_dense ans = self.matrix_space(self._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
+        ans._set_matrix_times_matrix_(self, right)
+        return ans
 
     cpdef Matrix_mod2_dense _multiply_m4rm(Matrix_mod2_dense self, Matrix_mod2_dense right, int k):
         """
@@ -907,7 +912,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         A._entries = mzd_mul_naive(A._entries, self._entries, (<Matrix_mod2_dense>right)._entries)
         return A
 
-    cpdef Matrix_mod2_dense _multiply_strassen(Matrix_mod2_dense self, Matrix_mod2_dense right, int cutoff):
+    cpdef _set_multiply_strassen(self, Matrix2 left, Matrix2 right, int cutoff=0):
         r"""
         Strassen-Winograd `O(n^{2.807})` multiplication [Str1969]_.
 
@@ -971,22 +976,19 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         ALGORITHM: Uses Strassen-Winograd matrix multiplication with
         M4RM as base case as implemented in the M4RI library.
         """
-        self._check_matrix_multiplication_sizes(right)
-
         cdef Matrix_mod2_dense ans
-        #ans = self.new_matrix(nrows = self._nrows, ncols = right._ncols)
+        #ans = left.new_matrix(nrows = left._nrows, ncols = right._ncols)
         # The following is a little faster:
-        ans = self.matrix_space(self._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
-        if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
-            # We know right._nrows == self._ncols because _check_matrix_multiplication_sizes passed
-            return ans
+        #ans = left.matrix_space(left._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
+        #if left._nrows == 0 or left._ncols == 0 or right._ncols == 0:
+        #    # We know right._nrows == left._ncols because _check_matrix_multiplication_sizes passed
+        #    return ans
 
         #print('_multiply_strassen in matrix_mod2_dense.pyx')
         sig_on()
-        #mzd_mul(ans._entries, self._entries, right._entries, cutoff)
-        ans._entries = mzd_mul(ans._entries, self._entries, right._entries, cutoff)
+        #mzd_mul(ans._entries, left._entries, right._entries, cutoff)
+        self._entries = mzd_mul(self._entries, (<Matrix_mod2_dense> left)._entries, (<Matrix_mod2_dense> right)._entries, cutoff)
         sig_off()
-        return ans
 
     def __neg__(self):
         """
