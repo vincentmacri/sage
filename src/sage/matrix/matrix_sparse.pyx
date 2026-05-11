@@ -16,7 +16,7 @@ from cysignals.signals cimport sig_check
 cimport sage.matrix.matrix as matrix
 cimport sage.matrix.matrix0 as matrix0
 from sage.categories.rings import Rings
-from sage.structure.element cimport Element, Vector
+from sage.structure.element cimport Element, Matrix, Vector
 from sage.structure.richcmp cimport richcmp_item, rich_to_bool
 
 from cpython cimport *
@@ -1126,6 +1126,17 @@ cdef class Matrix_sparse(matrix.Matrix):
         if subdivide:
             Z._subdivide_on_augment(self, other)
         return Z
+
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        # For sparse matrices, the multiplication code sometimes assumes that we are setting
+        # the value of a zero matrix. This means we can't just pass `self` to the multiplication
+        # function. Instead, we just allocate a new matrix, perform multiplication, and use `.set_block`.
+        # This means that `_set_matrix_times_matrix_` does not help with speed. This method
+        # is only implemented so that the method exists and user code will work.
+        # The ability to set a matrix to the product of other matrices is most useful
+        # in the context of a series of matrix multiplications, which is unlikely to be sparse anyway.
+        cdef Matrix ans = left._multiply_classical(right)
+        self.set_block(0, 0, ans)
 
     cdef _vector_times_matrix_(self, Vector v):
         """
