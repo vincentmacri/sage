@@ -1041,13 +1041,11 @@ cdef class Matrix_modn_dense_template(Matrix_dense):
         sig_off()
         return rich_to_bool(op, 0)
 
-    cdef set_to_matrix_product_unsafe(self, Matrix_modn_dense_template left, Matrix_modn_dense_template right):
-        linbox_matrix_matrix_multiply(left.p, self._entries, left._entries,
-                                      right._entries, left._nrows, right._ncols, right._nrows)
-
-    def set_to_matrix_product(self, Matrix_dense left, Matrix_dense right):
-        self._check_set_to_matrix_product(left, right)
-        self.set_to_matrix_product_unsafe(left, right)
+    cdef _set_matrix_times_matrix_(Matrix_modn_dense_template self, Matrix left, Matrix right):
+        cdef Matrix_modn_dense_template _left = left
+        cdef Matrix_modn_dense_template _right = right
+        linbox_matrix_matrix_multiply(self.p, self._entries, _left._entries,
+                                      _right._entries, _left._nrows, _right._ncols, _right._nrows)
 
     cdef Matrix_modn_dense_template _matrix_times_matrix_(Matrix_modn_dense_template self, Matrix right):
         """
@@ -1189,15 +1187,8 @@ cdef class Matrix_modn_dense_template(Matrix_dense):
         """
         self._check_matrix_multiplication_sizes(right)
 
-        cdef Matrix_modn_dense_template ans, B
-
-        ans = self.new_matrix(nrows = self.nrows(), ncols = right.ncols())
-
-        B = right
-
-        linbox_matrix_matrix_multiply(self.p, ans._entries, self._entries,
-                                      B._entries, self._nrows, B._ncols, B._nrows)
-
+        cdef Matrix_modn_dense_template ans = self.new_matrix(nrows = self.nrows(), ncols = right.ncols())
+        ans._set_matrix_times_matrix_(self, right)
         return ans
 
     cdef _vector_times_matrix_(self, Vector v):

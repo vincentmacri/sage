@@ -171,6 +171,9 @@ cdef class Matrix_sparse(matrix.Matrix):
             return -2
         return h
 
+    cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
+        cdef 
+
     def _set_multiply_classical(self, Matrix_sparse left, Matrix_sparse right):
         """
         EXAMPLES::

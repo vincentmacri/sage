@@ -976,15 +976,12 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         ALGORITHM: Uses Strassen-Winograd matrix multiplication with
         M4RM as base case as implemented in the M4RI library.
         """
-        cdef Matrix_mod2_dense ans
         #ans = left.new_matrix(nrows = left._nrows, ncols = right._ncols)
         # The following is a little faster:
         #ans = left.matrix_space(left._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
-        #if left._nrows == 0 or left._ncols == 0 or right._ncols == 0:
-        #    # We know right._nrows == left._ncols because _check_matrix_multiplication_sizes passed
-        #    return ans
-
-        #print('_multiply_strassen in matrix_mod2_dense.pyx')
+        if left._nrows == 0 or left._ncols == 0 or right._ncols == 0:
+            # We know right._nrows == left._ncols because _check_matrix_multiplication_sizes passed
+            return
         sig_on()
         #mzd_mul(ans._entries, left._entries, right._entries, cutoff)
         self._entries = mzd_mul(self._entries, (<Matrix_mod2_dense> left)._entries, (<Matrix_mod2_dense> right)._entries, cutoff)

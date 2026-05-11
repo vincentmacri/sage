@@ -4,8 +4,7 @@
     - Allocates zero matrix and sets it to product
 
 `matrix_dense.pyx:300:    def _multiply_classical(left, matrix.Matrix right):`
-    - ~~Checks bounds~~
-    - Allows rectangular
+    - ~~Checks bounds~~ - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_generic_dense.pyx:298:    def _multiply_classical(left, matrix.Matrix _right):`
@@ -153,12 +152,12 @@
 ~~`matrix_integer_sparse.pyx:277:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
     - Allocates matrix and sets to product
 
-`matrix_mod2_dense.pyx:763:    cdef _matrix_times_matrix_(self, Matrix right):`
+~~`matrix_mod2_dense.pyx:763:    cdef _matrix_times_matrix_(self, Matrix right):`
     - Just calls `_multiply_strassen`
     - `_multiply_strassen` is just a call to M4RIE (which uses Strassen internally)
     - Need to understand how this behaves better
 
-`matrix_modn_dense_template.pxi:1044:    cdef _matrix_times_matrix_(self, Matrix right):`
+~~`matrix_modn_dense_template.pxi:1044:    cdef _matrix_times_matrix_(self, Matrix right):`
     - ~~Checks bounds~~
     - Allocates new matrix and sets to product
 

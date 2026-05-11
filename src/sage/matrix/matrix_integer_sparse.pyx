@@ -274,9 +274,23 @@ cdef class Matrix_integer_sparse(Matrix_sparse):
         self.cache('dict', d)
         return d
 
-    cdef Matrix_integer_sparse _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
-        cdef Matrix_integer_sparse _left = left
-        cdef Matrix_integer_sparse _right = right
+    cdef Matrix_integer_sparse _matrix_times_matrix_(self, sage.structure.element.Matrix right):
+        """
+        Return the product of the sparse integer matrices
+        ``self`` and ``_right``.
+
+       EXAMPLES::
+
+            sage: a = matrix(ZZ, 2, [1,2,3,4], sparse=True)
+            sage: b = matrix(ZZ, 2, 3, [1..6], sparse=True)
+            sage: a * b
+            [ 9 12 15]
+            [19 26 33]
+        """
+        cdef Matrix_integer_sparse ans, _right
+
+        ans = self.new_matrix(self._nrows, right._ncols)
+        _right = right
 
         cdef mpz_vector* v
 
@@ -299,8 +313,8 @@ cdef class Matrix_integer_sparse(Matrix_sparse):
         mpz_init(x)
         mpz_init(y)
         mpz_init(s)
-        for i in range(_left._nrows):
-            v = &(_left._matrix[i])
+        for i in range(self._nrows):
+            v = &(self._matrix[i])
             if not v.num_nonzero:
                 continue
             for j in right_indices:
@@ -311,27 +325,12 @@ cdef class Matrix_integer_sparse(Matrix_sparse):
                         mpz_vector_get_entry(y, &_right._matrix[v.positions[k]], j)
                         mpz_mul(x, v.entries[k], y)
                         mpz_add(s, s, x)
-                mpz_vector_set_entry(&self._matrix[i], j, s)
+                mpz_vector_set_entry(&ans._matrix[i], j, s)
 
         mpz_clear(x)
         mpz_clear(y)
         mpz_clear(s)
 
-    cdef Matrix_integer_sparse _matrix_times_matrix_(self, sage.structure.element.Matrix right):
-        """
-        Return the product of the sparse integer matrices
-        ``self`` and ``_right``.
-
-       EXAMPLES::
-
-            sage: a = matrix(ZZ, 2, [1,2,3,4], sparse=True)
-            sage: b = matrix(ZZ, 2, 3, [1..6], sparse=True)
-            sage: a * b
-            [ 9 12 15]
-            [19 26 33]
-        """
-        cdef Matrix_integer_sparse ans = self.new_matrix(self._nrows, right._ncols)
-        ans._set_matrix_times_matrix_(self, right)
         return ans
 
     ########################################################################
