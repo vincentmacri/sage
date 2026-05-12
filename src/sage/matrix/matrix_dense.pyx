@@ -338,3 +338,17 @@ cdef class Matrix_dense(matrix.Matrix):
                     dotp += self.get_unsafe(i, k) * right.get_unsafe(k, j)
                 res.set_unsafe(i, j, dotp)
         return res
+
+    cdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=0):
+        if cutoff == 0:
+            cutoff = self._strassen_default_cutoff(right)
+
+        if cutoff <= 0:
+            raise ValueError("cutoff must be at least 1")
+
+        self_window = self.matrix_window()
+        left_window = left.matrix_window()
+        right_window = right.matrix_window()
+
+        from sage.matrix import strassen
+        strassen.strassen_window_multiply(self_window, left_window, right_window, cutoff)
