@@ -781,6 +781,11 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         ans._set_matrix_times_matrix_(self, right)
         return ans
 
+    def _multiply_strassen(self, Matrix2 right, int cutoff=0):
+        cdef Matrix_mod2_dense ans = self.matrix_space(self._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
+        ans._set_multiply_strassen(self, right, cutoff)
+        return ans
+
     cpdef Matrix_mod2_dense _multiply_m4rm(Matrix_mod2_dense self, Matrix_mod2_dense right, int k):
         """
         Multiply matrices using the 'Method of the Four Russians
@@ -982,6 +987,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         if left._nrows == 0 or left._ncols == 0 or right._ncols == 0:
             # We know right._nrows == left._ncols because _check_matrix_multiplication_sizes passed
             return
+
         sig_on()
         #mzd_mul(ans._entries, left._entries, right._entries, cutoff)
         self._entries = mzd_mul(self._entries, (<Matrix_mod2_dense> left)._entries, (<Matrix_mod2_dense> right)._entries, cutoff)
