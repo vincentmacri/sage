@@ -1166,6 +1166,9 @@ cdef class Matrix_rational_dense(Matrix_dense):
         self.cache('minpoly', g)
         return g
 
+    cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
+        fmpq_mat_mul(self._matrix, (<Matrix_rational_dense> left)._matrix, (<Matrix_rational_dense> right)._matrix)
+
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         """
         EXAMPLES::
@@ -1211,7 +1214,7 @@ cdef class Matrix_rational_dense(Matrix_dense):
         ans = Matrix_rational_dense.__new__(Matrix_rational_dense, parent, None, None, None)
 
         sig_on()
-        fmpq_mat_mul(ans._matrix, self._matrix, (<Matrix_rational_dense> right)._matrix)
+        ans._set_matrix_times_matrix_(self, right)
         sig_off()
         return ans
 

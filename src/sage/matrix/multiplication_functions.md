@@ -161,17 +161,17 @@
     - ~~Checks bounds~~
     - Allocates new matrix and sets to product
 
-`matrix_modn_sparse.pyx:287:    cdef Matrix _matrix_times_matrix_(self, Matrix _right):`
+~~`matrix_modn_sparse.pyx:287:    cdef Matrix _matrix_times_matrix_(self, Matrix _right):`
     - Allocates new matrix and sets to product
 
-`matrix_modn_sparse.pyx:362:    def _matrix_times_matrix_dense(self, Matrix _right):`
+~~`matrix_modn_sparse.pyx:362:    def _matrix_times_matrix_dense(self, Matrix _right):`
     - Allocates new matrix and sets to product
 
 `matrix_rational_dense.pyx:1169:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
     - Wrapper around `_multiply_flint`
 
-`matrix_rational_sparse.pyx:217:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
+~~`matrix_rational_sparse.pyx:217:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix _right):`
     - Allocates new matrix and sets to product
 
-`matrix_rational_sparse.pyx:262:    def _matrix_times_matrix_dense(self, sage.structure.element.Matrix _right):`
+~~`matrix_rational_sparse.pyx:262:    def _matrix_times_matrix_dense(self, sage.structure.element.Matrix _right):`
     - Allocates new matrix and sets to product
