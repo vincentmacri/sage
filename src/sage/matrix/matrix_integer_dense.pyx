@@ -795,7 +795,7 @@ cdef class Matrix_integer_dense(Matrix_dense):
 
         return ans
 
-    def _set_multiply_classical(self, Matrix_integer_dense left, Matrix_integer_dense right):
+    cdef _set_multiply_classical(self, Matrix left, Matrix right):
         """
         EXAMPLES::
 
@@ -846,10 +846,10 @@ cdef class Matrix_integer_dense(Matrix_dense):
         sig_on()
         for i from 0 <= i < nr:
             for j from 0 <= j < nc:
-                fmpz_set_si(s,0)   # set s = 0
+                fmpz_set_si(s, 0)   # set s = 0
                 for k from 0 <= k < snc:
-                    fmpz_addmul(s, fmpz_mat_entry(left._matrix,i,k), fmpz_mat_entry(right._matrix,k,j))
-                fmpz_set(fmpz_mat_entry(self._matrix,i,j),s)
+                    fmpz_addmul(s, fmpz_mat_entry((<Matrix_integer_dense> left)._matrix,i,k), fmpz_mat_entry((<Matrix_integer_dense> right)._matrix,k,j))
+                fmpz_set(fmpz_mat_entry(self._matrix, i, j), s)
         sig_off()
         fmpz_clear(s)
 

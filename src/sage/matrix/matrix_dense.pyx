@@ -350,7 +350,6 @@ cdef class Matrix_dense(Matrix):
         return output
 
     cdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=0):
-        print('_set_multiply_classical in matrix_dense.pyx')
         if cutoff == 0:
             cutoff = self._strassen_default_cutoff(right)
 
