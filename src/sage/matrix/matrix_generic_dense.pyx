@@ -293,9 +293,9 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
             res._entries[k] = self._entries[k] - other._entries[k]
         return res
 
-    #@cython.boundscheck(False)
-    #@cython.wraparound(False)
-    #@cython.overflowcheck(False)
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.overflowcheck(False)
     cdef _set_matrix_times_matrix_(self, sage.structure.element.Matrix left, sage.structure.element.Matrix right):
         cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
 
@@ -313,12 +313,11 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
         p = 0
         for i in range(nr):
             for j in range(nc):
-                #z = zero
-                self._entries[p] = zero
+                z = zero
                 m = i*snc
                 for k in range(snc):
-                    self._entries[p] += _left._entries[m+k]._mul_(_right._entries[k*nc+j])
-                #self._entries[p] = z
+                    z += _left._entries[m+k]._mul_(_right._entries[k*nc+j])
+                self._entries[p] = z
                 p += 1
 
     @cython.boundscheck(False)

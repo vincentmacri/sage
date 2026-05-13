@@ -9423,7 +9423,7 @@ cdef class Matrix(Matrix1):
         """
         self._check_matrix_multiplication_sizes(right)
         if self._base_ring is not right.base_ring():
-            raise TypeError("Base rings must be the same.")
+            raise TypeError("base rings must be the same")
 
         if cutoff == 0:
             cutoff = self._strassen_default_cutoff(right)

@@ -8,14 +8,12 @@ TESTS::
     sage: TestSuite(m).run(skip='_test_minpoly')
 """
 
-cimport sage.matrix.matrix as matrix
-
 from sage.structure.richcmp cimport richcmp_item, rich_to_bool
 import sage.matrix.matrix_space
 import sage.structure.sequence
 
 
-cdef class Matrix_dense(matrix.Matrix):
+cdef class Matrix_dense(Matrix):
     cdef bint is_sparse_c(self) noexcept:
         return 0
 
@@ -297,7 +295,13 @@ cdef class Matrix_dense(matrix.Matrix):
             image.subdivide(*self.subdivisions())
         return image
 
-    def _multiply_classical(self, matrix.Matrix right):
+    def _multiply_classical(self, Matrix right):
+        self._check_matrix_multiplication_sizes(right)
+        cdef Matrix res = self.new_matrix(nrows=self._nrows, ncols=right._ncols)
+        res._set_multiply_classical(self, right)
+        return res
+
+    cdef _set_multiply_classical(self, Matrix left, Matrix right):
         """
         Multiply the matrices self and right using the classical `O(n^3)`
         algorithm.
@@ -327,17 +331,23 @@ cdef class Matrix_dense(matrix.Matrix):
             ...
             ArithmeticError: number of columns of self must equal number of rows of right
         """
-        self._check_matrix_multiplication_sizes(right)
         cdef Py_ssize_t i, j, k
         zero = self.base_ring().zero()
-        cdef matrix.Matrix res = self.new_matrix(nrows=self._nrows, ncols=right._ncols)
         for i in range(self._nrows):
             for j in range(right._ncols):
                 dotp = zero
                 for k in range(self._ncols):
                     dotp += self.get_unsafe(i, k) * right.get_unsafe(k, j)
-                res.set_unsafe(i, j, dotp)
-        return res
+                self.set_unsafe(i, j, dotp)
+
+    def _multiply_strassen(self, Matrix right, int cutoff=0):
+        self._check_matrix_multiplication_sizes(right)
+        if self._base_ring is not right.base_ring():
+            raise TypeError("base rings must be the same")
+
+        cdef Matrix_dense output = self.new_matrix(self._nrows, right._ncols)
+        output._set_multiply_strassen(self, right, cutoff)
+        return output
 
     cdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=0):
         if cutoff == 0:

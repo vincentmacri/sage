@@ -1,9 +1,9 @@
-`matrix2.pyx:9402:    def _multiply_strassen(self, Matrix right, int cutoff=0):`
+~~`matrix2.pyx:9402:    def _multiply_strassen(self, Matrix right, int cutoff=0):`
     - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
-`matrix_dense.pyx:300:    def _multiply_classical(left, matrix.Matrix right):`
+~~`matrix_dense.pyx:300:    def _multiply_classical(left, matrix.Matrix right):`
     - ~~Checks bounds~~ - Allows rectangular
     - Allocates zero matrix and sets it to product
 
