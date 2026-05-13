@@ -308,7 +308,7 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
         snc = _left._ncols
 
         R = _left.base_ring()
-        cdef list v = [None] * (_left._nrows * _right._ncols)
+        self._entries = [None] * (_left._nrows * _right._ncols)
         zero = R.zero()
         p = 0
         for i in range(nr):

@@ -797,7 +797,6 @@ class CubicHeckeMatrixSpace(MatrixSpace):
         """
         from sage.algebras.hecke_algebras.cubic_hecke_algebra import CubicHeckeAlgebra
         if entries is None:
-            print(self, entries, coerce, copy)
             return super().__call__(entries=entries, coerce=coerce, copy=copy)
         if not hasattr(entries, 'parent'):
             return super().__call__(entries=entries, coerce=coerce, copy=copy)
