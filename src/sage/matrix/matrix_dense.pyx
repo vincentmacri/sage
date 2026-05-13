@@ -340,7 +340,7 @@ cdef class Matrix_dense(Matrix):
                     dotp += self.get_unsafe(i, k) * right.get_unsafe(k, j)
                 self.set_unsafe(i, j, dotp)
 
-    def _multiply_strassen(self, Matrix right, int cutoff=0):
+    cpdef _multiply_strassen(self, Matrix right, int cutoff=0):
         self._check_matrix_multiplication_sizes(right)
         if self._base_ring is not right.base_ring():
             raise TypeError("base rings must be the same")

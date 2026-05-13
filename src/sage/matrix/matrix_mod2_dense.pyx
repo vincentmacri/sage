@@ -864,7 +864,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         sig_off()
         return ans
 
-    cpdef _multiply_classical(Matrix_mod2_dense self, Matrix_mod2_dense right):
+    cpdef _multiply_classical(Matrix_mod2_dense self, Matrix2 right):
         """
         Classical `O(n^3)` multiplication.
 

@@ -108,7 +108,6 @@ from sage.matrix.matrix_misc import permanental_minor_polynomial
 
 from sage.misc.misc_c import prod
 
-
 SymbolicRing = LazyImport('sage.symbolic.ring', 'SymbolicRing')
 
 

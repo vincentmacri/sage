@@ -92,6 +92,7 @@ from sage.rings.finite_rings.element_base cimport Cache_base
 from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
 from sage.misc.randstate cimport randstate, current_randstate
 
+from sage.matrix.matrix cimport Matrix as Matrix2
 from sage.matrix.matrix_mod2_dense cimport Matrix_mod2_dense
 from sage.matrix.args cimport SparseEntry, MatrixArgs_init
 
@@ -391,7 +392,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         """
         return self._add_(right)
 
-    def _set_multiply_classical(self, Matrix left, Matrix right):
+    cdef _set_multiply_classical(self, Matrix2 left, Matrix2 right):
         """
         Classical cubic matrix multiplication.
 
@@ -585,10 +586,10 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         sig_off()
         return ans
 
-    cdef Matrix_gf2e_dense _set_multiply_strassen(self, Matrix_gf2e_dense left, Matrix_gf2e_dense right, int cutoff=0):
-        self._entries = mzed_mul_strassen(ans._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries, cutoff)
+    cdef Matrix_gf2e_dense _set_multiply_strassen(self, Matrix2 left, Matrix2 right, int cutoff=0):
+        self._entries = mzed_mul_strassen(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries, cutoff)
 
-    cpdef Matrix_gf2e_dense _multiply_strassen(self, Matrix right, int cutoff=0):
+    cpdef Matrix_gf2e_dense _multiply_strassen(self, Matrix2 right, int cutoff=0):
         """
         Winograd-Strassen matrix multiplication with Newton-John
         multiplication as base case.
