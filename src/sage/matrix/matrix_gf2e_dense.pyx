@@ -391,7 +391,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         """
         return self._add_(right)
 
-    def _multiply_classical(self, Matrix right):
+    def _set_multiply_classical(self, Matrix left, Matrix right):
         """
         Classical cubic matrix multiplication.
 
@@ -425,23 +425,14 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
 
             This function is very slow. Use ``*`` operator instead.
         """
-        self._check_matrix_multiplication_sizes(right)
-
-        cdef Matrix_gf2e_dense ans
-
-        ans = self.new_matrix(nrows = self.nrows(), ncols = right.ncols())
-        if self._nrows == 0 or self._ncols == 0 or right._ncols == 0:
-            return ans
+        if self._nrows == 0 or self._ncols == 0:
+            return
         sig_on()
-        ans._entries = mzed_mul_naive(ans._entries, self._entries, (<Matrix_gf2e_dense>right)._entries)
+        self._entries = mzed_mul_naive(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries)
         sig_off()
-        return ans
 
     cdef _set_matrix_times_matrix_(self, Matrix left, Matrix right):
         self._entries = mzed_mul(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries)
-        # TODO: Does this work?
-        #print('Testing gf2e_dense')
-        #mzed_mul(self._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries)
 
     cdef Matrix _matrix_times_matrix_(self, Matrix right):
         r"""
@@ -594,7 +585,10 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
         sig_off()
         return ans
 
-    cpdef Matrix_gf2e_dense _multiply_strassen(Matrix_gf2e_dense self, Matrix_gf2e_dense right, cutoff=0):
+    cdef Matrix_gf2e_dense _set_multiply_strassen(self, Matrix_gf2e_dense left, Matrix_gf2e_dense right, int cutoff=0):
+        self._entries = mzed_mul_strassen(ans._entries, (<Matrix_gf2e_dense> left)._entries, (<Matrix_gf2e_dense> right)._entries, cutoff)
+
+    cpdef Matrix_gf2e_dense _multiply_strassen(self, Matrix right, int cutoff=0):
         """
         Winograd-Strassen matrix multiplication with Newton-John
         multiplication as base case.
@@ -643,7 +637,7 @@ cdef class Matrix_gf2e_dense(matrix_dense.Matrix_dense):
             cutoff = _mzed_strassen_cutoff(ans._entries, self._entries, (<Matrix_gf2e_dense>right)._entries)
 
         sig_on()
-        ans._entries = mzed_mul_strassen(ans._entries, self._entries, (<Matrix_gf2e_dense>right)._entries, cutoff)
+        ans._set_multiply_strassen(self, right, cutoff)
         sig_off()
         return ans
 

@@ -18,17 +18,19 @@
 ~~`matrix_gf2e_dense.pxd:12:    cpdef Matrix_gf2e_dense _multiply_karatsuba(Matrix_gf2e_dense self, Matrix_gf2e_dense right)`~~
 ~~`matrix_gf2e_dense.pxd:13:    cpdef Matrix_gf2e_dense _multiply_strassen(Matrix_gf2e_dense self, Matrix_gf2e_dense right, cutoff=*)`~~
 
-`matrix_gf2e_dense.pyx:394:    def _multiply_classical(self, Matrix right):`
+~~`matrix_gf2e_dense.pyx:394:    def _multiply_classical(self, Matrix right):`
     - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_gf2e_dense.pyx:484:    cpdef Matrix_gf2e_dense _multiply_newton_john(Matrix_gf2e_dense self, Matrix_gf2e_dense right):`
+    - *I don't think we need a set version of this*
     - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product
 
 `matrix_gf2e_dense.pyx:546:    cpdef Matrix_gf2e_dense _multiply_karatsuba(Matrix_gf2e_dense self, Matrix_gf2e_dense right):`
+    - *I don't think we need a set version of this*
     - ~~Checks bounds~~
     - Allows rectangular
     - Allocates zero matrix and sets it to product

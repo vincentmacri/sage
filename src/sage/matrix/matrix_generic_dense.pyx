@@ -328,7 +328,7 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.overflowcheck(False)
-    def _multiply_classical(self, matrix.Matrix _right):
+    cpdef _multiply_classical(self, matrix.Matrix _right):
         """
         Multiply the matrices self and right using the classical
         `O(n^3)` algorithm.

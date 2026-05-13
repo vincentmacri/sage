@@ -323,7 +323,7 @@ cdef class Matrix_rational_sparse(Matrix_sparse):
     # def __neg__(self):
     # def __invert__(self):
     # def __copy__(self):
-    # def _multiply_classical(left, matrix.Matrix _right):
+    # cpdef _multiply_classical(left, matrix.Matrix _right):
     # def _list(self):
 
     # TODO

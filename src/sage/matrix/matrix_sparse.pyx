@@ -171,7 +171,7 @@ cdef class Matrix_sparse(matrix.Matrix):
             return -2
         return h
 
-    def _multiply_classical(Matrix_sparse left, Matrix_sparse right):
+    cpdef _multiply_classical(self, matrix.Matrix right):
         """
         EXAMPLES::
 
@@ -187,7 +187,7 @@ cdef class Matrix_sparse(matrix.Matrix):
             [-4  6]
         """
         cdef Py_ssize_t row, col, row_start, k1, k2, len_left, len_right, a, b
-        cdef list left_nonzero = <list> left.nonzero_positions(copy=False, column_order=False)
+        cdef list left_nonzero = <list> self.nonzero_positions(copy=False, column_order=False)
         cdef list right_nonzero = <list> right.nonzero_positions(copy=False, column_order=True)
         len_left = len(left_nonzero)
         len_right = len(right_nonzero)
@@ -210,9 +210,9 @@ cdef class Matrix_sparse(matrix.Matrix):
                     b = get_ij(right_nonzero, k2, 0)
                     if a == b:
                         if s is None:
-                            s = left.get_unsafe(row,a) * right.get_unsafe(a,col)
+                            s = self.get_unsafe(row,a) * right.get_unsafe(a,col)
                         else:
-                            s += left.get_unsafe(row,a) * right.get_unsafe(a,col)
+                            s += self.get_unsafe(row,a) * right.get_unsafe(a,col)
                         k1 += 1
                         k2 += 1
                     elif a < b:
@@ -225,7 +225,7 @@ cdef class Matrix_sparse(matrix.Matrix):
                     k2 += 1
             while k1 < len_left and get_ij(left_nonzero, k1, 0) == row:
                 k1 += 1
-        return left.new_matrix(left._nrows, right._ncols, entries=e, coerce=False, copy=False)
+        return self.new_matrix(self._nrows, right._ncols, entries=e, coerce=False, copy=False)
 
     def _multiply_classical_with_cache(Matrix_sparse left, Matrix_sparse right):
         """

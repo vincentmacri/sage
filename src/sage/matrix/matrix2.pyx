@@ -9399,7 +9399,7 @@ cdef class Matrix(Matrix1):
     # Precise algorithms invented and implemented by David Harvey and Robert Bradshaw
     # at William Stein's MSRI 2006 Summer Workshop on Modular Forms.
     #####################################################################################
-    def _multiply_strassen(self, Matrix right, int cutoff=0):
+    cpdef _multiply_strassen(self, Matrix right, int cutoff=0):
         """
         Multiply ``self`` by the matrix right using a Strassen-based
         asymptotically fast arithmetic algorithm.

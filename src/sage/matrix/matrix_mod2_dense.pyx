@@ -781,7 +781,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         ans._set_matrix_times_matrix_(self, right)
         return ans
 
-    def _multiply_strassen(self, Matrix2 right, int cutoff=0):
+    cpdef _multiply_strassen(self, Matrix2 right, int cutoff=0):
         cdef Matrix_mod2_dense ans = self.matrix_space(self._nrows, right._ncols, sparse=False).zero_matrix().__copy__()
         ans._set_multiply_strassen(self, right, cutoff)
         return ans
@@ -864,7 +864,7 @@ cdef class Matrix_mod2_dense(matrix_dense.Matrix_dense):   # dense or sparse
         sig_off()
         return ans
 
-    def _multiply_classical(Matrix_mod2_dense self, Matrix_mod2_dense right):
+    cpdef _multiply_classical(Matrix_mod2_dense self, Matrix_mod2_dense right):
         """
         Classical `O(n^3)` multiplication.
 

@@ -295,7 +295,7 @@ cdef class Matrix_dense(Matrix):
             image.subdivide(*self.subdivisions())
         return image
 
-    def _multiply_classical(self, Matrix right):
+    cpdef _multiply_classical(self, Matrix right):
         self._check_matrix_multiplication_sizes(right)
         cdef Matrix_dense res = self.new_matrix(nrows=self._nrows, ncols=right._ncols)
         res._set_multiply_classical(self, right)
