@@ -297,7 +297,7 @@ cdef class Matrix_dense(Matrix):
 
     def _multiply_classical(self, Matrix right):
         self._check_matrix_multiplication_sizes(right)
-        cdef Matrix res = self.new_matrix(nrows=self._nrows, ncols=right._ncols)
+        cdef Matrix_dense res = self.new_matrix(nrows=self._nrows, ncols=right._ncols)
         res._set_multiply_classical(self, right)
         return res
 
@@ -350,6 +350,7 @@ cdef class Matrix_dense(Matrix):
         return output
 
     cdef _set_multiply_strassen(self, Matrix left, Matrix right, int cutoff=0):
+        print('_set_multiply_classical in matrix_dense.pyx')
         if cutoff == 0:
             cutoff = self._strassen_default_cutoff(right)
 

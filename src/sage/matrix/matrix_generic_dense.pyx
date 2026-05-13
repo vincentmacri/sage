@@ -320,6 +320,11 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
                 self._entries[p] = z
                 p += 1
 
+    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
+        cdef Matrix_generic_dense output = self._new(self._nrows, right._ncols)
+        output._set_matrix_times_matrix_(self, right)
+        return output
+
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.overflowcheck(False)
