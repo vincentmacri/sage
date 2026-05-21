@@ -12,7 +12,7 @@ from sage.matrix import matrix_dense
 from sage.matrix.args cimport MatrixArgs_init
 
 cimport sage.matrix.matrix as matrix
-from sage.matrix.matrix_utils cimport check_matrix_multiplication_sizes
+from sage.matrix.matrix_utils cimport check_matrix_multiplication_sizes, check_set_matrix_product_sizes
 
 
 cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
@@ -292,6 +292,33 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
         for k in range(self._nrows*self._ncols):
             res._entries[k] = self._entries[k] - other._entries[k]
         return res
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.overflowcheck(False)
+    def _set_matrix_times_matrix_(self, Matrix_generic_dense left, Matrix_generic_dense right):
+        check_set_matrix_product_sizes(self, left, right)
+        cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
+
+        nr = left._nrows
+        nc = right._ncols
+        snc = left._ncols
+
+        R = self.base_ring()
+        zero = R.zero()
+        p = 0
+        for i in range(nr):
+            for j in range(nc):
+                z = zero
+                m = i*snc
+                for k in range(snc):
+                    z += left._entries[m+k]._mul_(right._entries[k*nc+j])
+                self._entries[p] = z
+                p += 1
+
+    def set_to_matrix_product(self, Matrix_generic_dense left, Matrix_generic_dense right):
+        check_set_matrix_product_sizes(self, left, right)
+        self._set_matrix_times_matrix_(left, right)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
