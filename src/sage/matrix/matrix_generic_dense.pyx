@@ -296,8 +296,7 @@ cdef class Matrix_generic_dense(matrix_dense.Matrix_dense):
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.overflowcheck(False)
-    def _set_matrix_times_matrix_(self, Matrix_generic_dense left, Matrix_generic_dense right):
-        check_set_matrix_product_sizes(self, left, right)
+    cdef _set_matrix_times_matrix_(self, Matrix_generic_dense left, Matrix_generic_dense right):
         cdef Py_ssize_t i, j, k, m, nr, nc, snc, p
 
         nr = left._nrows
