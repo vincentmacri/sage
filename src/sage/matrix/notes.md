@@ -9,7 +9,7 @@
 `./matrix_complex_ball_dense.pyx:499:    cdef _matrix_times_matrix_(self, Matrix other):`
 `./matrix_mod2_dense.pyx:764:    cdef _matrix_times_matrix_(self, Matrix right):`
 `./matrix_double_dense.pyx:224:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
-`./matrix_integer_dense.pyx:863:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`
+~~`./matrix_integer_dense.pyx:863:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`~~
 `./matrix_cyclo_dense.pyx:638:    cdef _matrix_times_matrix_(self, baseMatrix right):`
 `./matrix_gf2e_dense.pyx:441:    cdef _matrix_times_matrix_(self, Matrix right):`
 `./matrix_rational_dense.pyx:1170:    cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):`

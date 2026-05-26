@@ -13,7 +13,7 @@ cimport sage.matrix.matrix as matrix
 from sage.structure.richcmp cimport richcmp_item, rich_to_bool
 import sage.matrix.matrix_space
 import sage.structure.sequence
-from sage.matrix.matrix_utils cimport check_matrix_multiplication_sizes
+from sage.matrix.matrix_utils cimport check_matrix_multiplication_sizes, check_set_matrix_product_sizes
 
 
 cdef class Matrix_dense(matrix.Matrix):
@@ -339,3 +339,10 @@ cdef class Matrix_dense(matrix.Matrix):
                     dotp += self.get_unsafe(i, k) * right.get_unsafe(k, j)
                 res.set_unsafe(i, j, dotp)
         return res
+
+    def _set_matrix_times_matrix_(self, Matrix_dense left, Matrix_dense right):
+        raise NotImplementedError
+
+    def set_to_matrix_product(self, Matrix_dense left, Matrix_dense right):
+        check_set_matrix_product_sizes(self, left, right)
+        self._set_matrix_times_matrix_(left, right)

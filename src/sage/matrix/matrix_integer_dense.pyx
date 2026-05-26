@@ -860,8 +860,8 @@ cdef class Matrix_integer_dense(Matrix_dense):
         fmpz_clear(s)
         return M
 
-    cdef _set_matrix_times_matrix_(self, Matrix_generic_dense left, Matrix_generic_dense right):
-        fmpz_mat_mul(self._matrix, (<Matrix_integer_dense> left)._matrix, (<Matrix_integer_dense> right)._matrix)
+    def _set_matrix_times_matrix_(self, Matrix_integer_dense left, Matrix_integer_dense right):
+        fmpz_mat_mul(self._matrix, left._matrix, right._matrix)
 
     cdef sage.structure.element.Matrix _matrix_times_matrix_(self, sage.structure.element.Matrix right):
         cdef Matrix_integer_dense M
