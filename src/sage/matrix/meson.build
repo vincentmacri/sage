@@ -61,6 +61,8 @@ py.install_sources(
   'matrix_mod2_dense.pyx',
   'matrix_modn_dense_double.pxd',
   'matrix_modn_dense_double.pyx',
+  'matrix_modn_dense_flint.pxd',
+  'matrix_modn_dense_flint.pyx',
   'matrix_modn_dense_float.pxd',
   'matrix_modn_dense_float.pyx',
   'matrix_modn_sparse.pxd',
@@ -135,6 +137,7 @@ extension_data = {
   'misc_flint': files('misc_flint.pyx'),
   'misc_mpfr': files('misc_mpfr.pyx'),
   'strassen': files('strassen.pyx'),
+  'matrix_modn_dense_flint': files('matrix_modn_dense_flint.pyx'),
 }
 
 foreach name, pyx : extension_data

@@ -63,7 +63,6 @@ from sage.libs.flint.ulong_extras cimport (
     n_pow,
     n_addmod,
     n_submod,
-    n_negmod,
     n_invmod,
     n_mod2_preinv,
     n_mulmod2_preinv,
@@ -134,7 +133,7 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
         nmod_mat_clear(self._matrix)
         sig_off()
 
-    cdef set_unsafe_int(self, Py_ssize_t i, Py_ssize_t j, int value):
+    cdef void set_unsafe_int(self, Py_ssize_t i, Py_ssize_t j, int value) noexcept:
         nmod_mat_set_entry(self._matrix, i, j, value)
 
     cdef void set_unsafe_ui(self, Py_ssize_t i, Py_ssize_t j, unsigned long value):
@@ -1951,7 +1950,7 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
                     #v[pivot[l]] = -s / x
                     nmod_mat_set_entry(
                         ans._matrix, cur_row, pivl,
-                        n_div2_preinv(n_negmod(s, N), x, xinv))
+                        n_div2_preinv(N_submod(0, s, N), x, xinv))
                 cur_row += 1
             return "pivot-nmod-ring", ans
 
