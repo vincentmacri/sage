@@ -238,7 +238,7 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
         sig_off()
         return M
 
-    cdef Matrix _matrix_times_matrix_(left, Matrix _right):
+    cdef Matrix _matrix_times_matrix_(self, Matrix _right):
         """
         Multiplication
 
@@ -250,13 +250,13 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
             [10 13]
             [28  4]
         """
-        if left._ncols != _right._nrows:
+        if self._ncols != _right._nrows:
             raise IndexError("Number of columns of self must equal number of rows of right.")
         cdef Matrix_modn_dense_flint right = _right
         cdef Py_ssize_t i, j
-        cdef Matrix_modn_dense_flint M = left._new(left._nrows, right._ncols)
+        cdef Matrix_modn_dense_flint M = self._new(self._nrows, right._ncols)
         sig_on()
-        nmod_mat_mul(M._matrix, left._matrix, right._matrix)
+        nmod_mat_mul(M._matrix, self._matrix, right._matrix)
         sig_off()
         return M
 
@@ -510,14 +510,14 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
                     nmod_mat_init(tmp, n, n, 1)
                 for pz, ez in F:
                     p = pz
-                    _nmod_mat_set_mod(A, p)
+                    nmod_mat_set_mod(A, p)
                     for i in range(n):
                         for j in range(n):
                             nmod_mat_set_entry(A, i, j, nmod_mat_get_entry(self._matrix, i, j) % p)
                     ok = nmod_mat_inv(A, A)
                     if not ok:
                         raise ZeroDivisionError("input matrix must be nonsingular")
-                    _nmod_mat_set_mod(inv, N*p)
+                    nmod_mat_set_mod(inv, N*p)
                     for i in range(n):
                         for j in range(n):
                             nmod_mat_set_entry(inv, i, j, n_CRT(nmod_mat_get_entry(inv, i, j), N, nmod_mat_get_entry(A, i, j), p))
@@ -532,9 +532,9 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
                 if lift_required:
                     for k in range(nlifts):
                         N = lift_mods[k]
-                        _nmod_mat_set_mod(tmp, N)
-                        _nmod_mat_set_mod(inv, N)
-                        _nmod_mat_set_mod(A, N)
+                        nmod_mat_set_mod(tmp, N)
+                        nmod_mat_set_mod(inv, N)
+                        nmod_mat_set_mod(A, N)
                         for i in range(n):
                             for j in range(n):
                                 nmod_mat_set_entry(A, i, j, nmod_mat_get_entry(self._matrix, i, j) % N)
@@ -785,7 +785,7 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
                             x = n_mod2_preinv(x, pe, prepe)
                             nmod_mat_set_entry(A._matrix, i, j, x)
                     A.hessenbergize()
-                    _nmod_mat_set_mod(H, N*pe)
+                    nmod_mat_set_mod(H, N*pe)
                     for i in range(n):
                         jstart = i - 1
                         if i == 0:
