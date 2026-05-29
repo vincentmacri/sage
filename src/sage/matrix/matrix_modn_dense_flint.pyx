@@ -49,6 +49,7 @@ from sage.rings.finite_rings.integer_mod cimport (
 from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from .args cimport SparseEntry, MatrixArgs_init
+from .matrix_utils cimport check_matrix_multiplication_sizes
 
 from sage.libs.flint.nmod_mat cimport *
 from sage.libs.flint.nmod_poly cimport (
@@ -250,9 +251,8 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
             [10 13]
             [28  4]
         """
-        if self._ncols != _right._nrows:
-            raise IndexError("Number of columns of self must equal number of rows of right.")
         cdef Matrix_modn_dense_flint right = _right
+        check_matrix_multiplication_sizes(self, right)
         cdef Py_ssize_t i, j
         cdef Matrix_modn_dense_flint M = self._new(self._nrows, right._ncols)
         sig_on()
@@ -1950,7 +1950,7 @@ cdef class Matrix_modn_dense_flint(Matrix_dense):
                     #v[pivot[l]] = -s / x
                     nmod_mat_set_entry(
                         ans._matrix, cur_row, pivl,
-                        n_div2_preinv(N_submod(0, s, N), x, xinv))
+                        n_div2_preinv(n_submod(0, s, N), x, xinv))
                 cur_row += 1
             return "pivot-nmod-ring", ans
 
