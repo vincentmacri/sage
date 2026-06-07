@@ -1294,7 +1294,8 @@ def implementation_reports(
         print('=' * 80)
         print('Implementation:', impl)
         for R in rings:
-            print('Ring:', R)
+            print('-' * 70)
+            print(R)
             for size in sizes:
                 print(f'{size} × {size}')
                 if impl is None:
@@ -1343,7 +1344,10 @@ def implementation_reports(
                             raise ValueError(msg)
 
                         average_time = time / trials
-                        print(f'{operation}: {average_time}')
+                        if operation in ('*', '+'):
+                            print(f'  {operation}\t\t| {average_time}')
+                        else:
+                            print(f'  {operation}\t| {average_time}')
                     except NotImplementedError:
                         # Silently skip operations that are not defined for the implementation
                         pass
