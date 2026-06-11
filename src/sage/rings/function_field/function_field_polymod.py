@@ -2405,8 +2405,45 @@ class FunctionField_integral(FunctionField_simple):
             sage: F.maximal_order_infinite().basis()
             (1, 1/x*y, 1/x^2*y^2, 1/x^3*y^3, 1/x^4*y^4)
         """
-        from sage.modules.free_module_element import vector
+
+        def expand_basis(M):
+            # Cohen Algorithm 2.3.6 (Supplement a basis)
+            n = M.nrows()
+            k = M.ncols()
+            assert k <= n
+
+            # Step 1: Initialize
+            s = 0
+            B = matrix(M.base_ring().fraction_field(), n, n, 1)
+
+            while True:
+                # Step 2: Finished?
+                if s == k - 1:
+                    return B
+
+                # Step 3: Search for non-zero
+                s += 1
+                t = None
+                for j in range(s, n):
+                    if M[j, s] != 0:
+                        t = j
+                        d = ~M[t, s]
+                if t is None:
+                    raise ValueError('M is of rank less than k')
+
+                # Step 4: Modify basis and eliminate
+                B.set_column(t, B.column(s))
+                B.set_column(s, M.column(s))
+                for j in range(s + 1, k):
+                    M[s, j] = d * M[t, j]
+                    M[t, j] = M[s, j]
+                    for i in range(n):
+                        if i == s or i == t:
+                            continue
+                        M[i, j] = M[i, j] - M[i, s] * M[t, j]
+
         from sage.matrix.constructor import matrix
+        from sage.modules.free_module_element import vector
         Fq = self.constant_base_field()
         Fqx = Fq.polynomial_ring()
         T = self._polynomial.change_ring(Fqx)
@@ -2500,26 +2537,34 @@ class FunctionField_integral(FunctionField_simple):
                 continue
 
             # Step 7: Compute radical
-            SP = matrix(Fqx, n, n, lambda i, j: (omega[i] * omega[j]).trace())
-            lkm = SP.left_kernel_matrix()
-            return SP, p, Fqx_mod_p, omega, g, theta
+            Mp = matrix(Fqx_mod_p, n, n, lambda i, j: (omega[i] * omega[j]).trace())
+            ker = Mp.right_kernel_matrix().transpose()
+            ker = matrix([lift(a) for a in r] for r in ker)
 
-            #q = p
-            #while q.degree() < n:
-            #    q *= p
-            q = self.characteristic()
+            # Step 8: Compute new basis mod p
+            l = ker.ncols()
+            beta_matrix = expand_basis(ker)
+            beta_matrix_lift = matrix([lift(a) for a in r] for r in beta_matrix)
+            #beta = [c.dot_product(vector(omega)) for c in beta_matrix_lift.columns()]  # TODO: Should this be power basis?
+            beta = [vector(c.dot_product(vector(omega)).list()) for c in beta_matrix_lift.columns()]  # TODO: Should this be power basis?
 
-            A = matrix(Fqx_mod_p, n)
-            suborder = self.order_with_basis(omega)
-            print()
-            print()
-            for j in range(n):
-                coord_vec = suborder.coordinate_vector(omega[j]**q)
-                print(f'{coord_vec=}')
-                A.set_row(j, coord_vec)
-                print(j, A)
-                print()
-            return omega, q, Fqx, Fqx_mod_p, A, p
+            # Step 9: Compute big matrix
+            alpha = [beta[i] for i in range(l)]
+            alpha.extend(p * beta[i] for i in range(l, n))
+
+            print(f'{alpha=}')
+            print(f'{beta=}')
+
+            B = matrix([o * a for a in alpha for o in omega]).transpose()
+            print(f'{B=}')
+            A = matrix(alpha).transpose()
+            print(f'{A=}')
+
+            return A, B, omega, alpha, Fqx_mod_p
+            #C = A.solve_left(B)
+
+            return omega, alpha, Fqx_mod_p, C
+
 
 
         return tuple(omega)
