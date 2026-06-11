@@ -231,6 +231,9 @@ cdef class FunctionFieldElement_polymod(FunctionFieldElement):
         P = self._parent
         return P(self._x.xgcd(P._polynomial)[1])
 
+    def __iter__(self):
+        yield from self.list()
+
     cpdef list list(self):
         """
         Return the list of the coefficients representing the element.

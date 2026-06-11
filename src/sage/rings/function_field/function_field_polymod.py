@@ -2405,6 +2405,8 @@ class FunctionField_integral(FunctionField_simple):
             sage: F.maximal_order_infinite().basis()
             (1, 1/x*y, 1/x^2*y^2, 1/x^3*y^3, 1/x^4*y^4)
         """
+        from sage.modules.free_module_element import vector
+        from sage.matrix.constructor import matrix
         Fq = self.constant_base_field()
         Fqx = Fq.polynomial_ring()
         T = self._polynomial.change_ring(Fqx)
@@ -2433,6 +2435,7 @@ class FunctionField_integral(FunctionField_simple):
 
         # Step 2: Initialize
         omega = [theta**i for i in range(n)]
+        power_basis = vector(omega)
 
         print(F_factors)
 
@@ -2455,7 +2458,10 @@ class FunctionField_integral(FunctionField_simple):
 
             lift = Fqx_quotient_p.lifting_map()
             g_bar = prod(t_bar)
-            g = g_bar.change_ring(lift)
+            #g = g_bar.change_ring(lift)
+            #print('g1', g)
+            #print('g2', prod(ti_bar.change_ring(lift) for ti_bar in t_bar))
+            g = prod(ti_bar.change_ring(lift) for ti_bar in t_bar)
             h_bar = T_bar // g_bar
             h = h_bar.change_ring(lift)
             f = (g * h - T) // p
@@ -2474,18 +2480,18 @@ class FunctionField_integral(FunctionField_simple):
                 continue
 
             v = [(omega[i] * U(theta)).list() for i in range(m)]
+            print(f'{U=}')
+            print(f'{v=}')
             v.extend((p * omega[j]).list() for j in range(n))
-            from sage.matrix.constructor import matrix
-            M = matrix(v)
+            M = matrix(Fqx, v)
             assert M.nrows() == n + m
             assert M.ncols() == n
-            print(M)
             H = M.hermite_form(include_zero_rows=False)
-            print()
-            print(H)
+
+            assert H.det().divides(D)
 
             for i in range(n):
-                omega[i] = H.row(i) / p
+                omega[i] = (H.row(i) / p).dot_product(power_basis)
 
             # Step 6: Is the new order p-maximal?
             if not (p**(m + 1)).divides(F):
@@ -2494,11 +2500,26 @@ class FunctionField_integral(FunctionField_simple):
                 continue
 
             # Step 7: Compute radical
-            q = p.degree()
-            return omega, Fqx_quotient_p
-            while q < n:
-                q *= p.degree()
-                print(q, p.degree())
+            SP = matrix(Fqx, n, n, lambda i, j: (omega[i] * omega[j]).trace())
+            return SP, Fqx_quotient_p
+
+            #q = p
+            #while q.degree() < n:
+            #    q *= p
+            q = self.characteristic()
+
+            A = matrix(Fqx_quotient_p, n)
+            suborder = self.order_with_basis(omega)
+            print()
+            print()
+            for j in range(n):
+                coord_vec = suborder.coordinate_vector(omega[j]**q)
+                print(f'{coord_vec=}')
+                A.set_row(j, coord_vec)
+                print(j, A)
+                print()
+            return omega, q, Fqx, Fqx_quotient_p, A, p
+
 
         return tuple(omega)
 

@@ -1,6 +1,6 @@
+from collections.abc import Iterable
 from typing import Any
-from sage.structure.richcmp import richcmp
-from sage.structure.element import FieldElement
+
 from sage.rings.function_field.element import FunctionFieldElement
 
 class FunctionFieldElement_polymod(FunctionFieldElement):
@@ -35,6 +35,9 @@ class FunctionFieldElement_polymod(FunctionFieldElement):
         ...
 
     def __invert__(self) -> Any:
+        ...
+
+    def __iter__(self) -> Iterable:
         ...
 
     def list(self) -> list:
