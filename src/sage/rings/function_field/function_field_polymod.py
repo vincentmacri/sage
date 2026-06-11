@@ -2446,17 +2446,17 @@ class FunctionField_integral(FunctionField_simple):
             print('Step 3:', F_factors, p, pm)
 
             # Step 4: Factor modulo p
-            Fqx_quotient_p = Fqx.quotient(p)
-            T_bar = T.change_ring(Fqx_quotient_p)
+            Fqx_mod_p = Fqx.quotient(p)
+            T_bar = T.change_ring(Fqx_mod_p)
 
             t_bar = []
             e = []
             for ti_bar, ei in T_bar.factor():
                 t_bar.append(ti_bar)
                 e.append(ei)
-                assert ti_bar.base_ring() == Fqx_quotient_p
+                assert ti_bar.base_ring() == Fqx_mod_p
 
-            lift = Fqx_quotient_p.lifting_map()
+            lift = Fqx_mod_p.lifting_map()
             g_bar = prod(t_bar)
             #g = g_bar.change_ring(lift)
             #print('g1', g)
@@ -2465,7 +2465,7 @@ class FunctionField_integral(FunctionField_simple):
             h_bar = T_bar // g_bar
             h = h_bar.change_ring(lift)
             f = (g * h - T) // p
-            f_bar = f.change_ring(Fqx_quotient_p)
+            f_bar = f.change_ring(Fqx_mod_p)
             Z_bar = f_bar.gcd(g_bar).gcd(h_bar)
             U_bar = T_bar // Z_bar
             U = U_bar.change_ring(lift)
@@ -2501,14 +2501,15 @@ class FunctionField_integral(FunctionField_simple):
 
             # Step 7: Compute radical
             SP = matrix(Fqx, n, n, lambda i, j: (omega[i] * omega[j]).trace())
-            return SP, Fqx_quotient_p
+            lkm = SP.left_kernel_matrix()
+            return SP, p, Fqx_mod_p, omega, g, theta
 
             #q = p
             #while q.degree() < n:
             #    q *= p
             q = self.characteristic()
 
-            A = matrix(Fqx_quotient_p, n)
+            A = matrix(Fqx_mod_p, n)
             suborder = self.order_with_basis(omega)
             print()
             print()
@@ -2518,7 +2519,7 @@ class FunctionField_integral(FunctionField_simple):
                 A.set_row(j, coord_vec)
                 print(j, A)
                 print()
-            return omega, q, Fqx, Fqx_quotient_p, A, p
+            return omega, q, Fqx, Fqx_mod_p, A, p
 
 
         return tuple(omega)
