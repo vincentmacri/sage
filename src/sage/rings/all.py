@@ -38,6 +38,8 @@ from sage.rings.infinity import infinity, Infinity, InfinityRing, unsigned_infin
 from sage.rings.integer_ring import IntegerRing, ZZ, crt_basis
 from sage.rings.integer import Integer
 
+from sage.rings.flint_integer import FlintInt
+
 # Rational numbers
 from sage.rings.rational_field import RationalField, QQ
 from sage.rings.rational import Rational

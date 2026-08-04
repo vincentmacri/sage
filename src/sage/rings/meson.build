@@ -45,6 +45,8 @@ py.install_sources(
   'fast_arith.pxd',
   'fast_arith.pyi',
   'fast_arith.pyx',
+  'flint_integer.pxd',
+  'flint_integer.pyx',
   'fraction_field.py',
   'fraction_field_FpT.pxd',
   'fraction_field_FpT.pyi',
@@ -179,6 +181,7 @@ extension_data = {
   'sum_of_squares': files('sum_of_squares.pyx'),
   'tate_algebra_element': files('tate_algebra_element.pyx'),
   'tate_algebra_ideal': files('tate_algebra_ideal.pyx'),
+  'flint_integer': files('flint_integer.pyx'),
 }
 
 foreach name, pyx : extension_data
@@ -204,6 +207,8 @@ foreach name, pyx : extension_data
     deps += [flint]
   elif name == 'integer'
     deps += [gmpy2]
+  elif name == 'flint_integer'
+    deps += [flint]
   elif name == 'power_series_pari'
     deps += [cypari2]
   elif name == 'real_arb'
