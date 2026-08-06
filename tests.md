@@ -1,0 +1,3 @@
+- Size of `build/cp312/src/sage`:
+    - Before: 1,040,677,345  bytes
+    - After:  1,039,818,480 bytes

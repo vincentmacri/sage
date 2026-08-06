@@ -2403,7 +2403,7 @@ cdef class Matrix(sage.structure.element.Matrix):
     ## Basic Properties
     ###################################################
 
-    def ncols(self):
+    cpdef unsigned long ncols(self) noexcept:
         """
         Return the number of columns of this matrix.
 
@@ -2425,7 +2425,7 @@ cdef class Matrix(sage.structure.element.Matrix):
         """
         return self._ncols
 
-    def nrows(self):
+    cpdef unsigned long nrows(self) noexcept:
         r"""
         Return the number of rows of this matrix.
 
@@ -2530,7 +2530,7 @@ cdef class Matrix(sage.structure.element.Matrix):
             [125 625]
         """
         from sage.matrix.constructor import matrix
-        return matrix(self.nrows(), self.ncols(), [e(*args, **kwargs) for e in self.list()])
+        return matrix(self._nrows, self._ncols, [e(*args, **kwargs) for e in self.list()])
 
     ###################################################
     # Arithmetic
@@ -3706,7 +3706,7 @@ cdef class Matrix(sage.structure.element.Matrix):
             [ 3  4  5]
         """
         self.check_row_bounds_and_mutability(i, i)
-        if r < 0 or r >= A.nrows():
+        if r < 0 or r >= A._nrows:
             raise IndexError("invalid row")
         # this function exists just because it is useful for modular symbols presentations.
         cdef Py_ssize_t l
@@ -4852,7 +4852,7 @@ cdef class Matrix(sage.structure.element.Matrix):
         x = self.fetch('pivots')
         if x is None:
             print(self)
-            print(self.nrows())
+            print(self._nrows)
             print(self.dict())
             raise RuntimeError("BUG: matrix pivots should have been set but weren't, matrix parent = '%s'" % self.parent())
         return tuple(x)
@@ -4925,7 +4925,7 @@ cdef class Matrix(sage.structure.element.Matrix):
 
         X = set(self.pivots())
         np = []
-        for j in range(self.ncols()):
+        for j in range(self._ncols):
             if j not in X:
                 np.append(j)
         np = tuple(np)
@@ -5194,7 +5194,7 @@ cdef class Matrix(sage.structure.element.Matrix):
         from sage.rings.integer_ring import ZZ
         from sage.categories.fields import Fields
 
-        n = self.ncols()
+        n = self._ncols
         if not n:
             return Integer(1)
 
@@ -5399,11 +5399,11 @@ cdef class Matrix(sage.structure.element.Matrix):
             [  0   6  69 936]
         """
         n = int(n)
-        if n >= 2 and self.nrows() != self.ncols():
+        if n >= 2 and not self.is_square():
             raise ArithmeticError("matrix must be square if n >= 2.")
         if n == 0:
-            return self.matrix_space(n, self.ncols())(0)
-        m = self.nrows()
+            return self.matrix_space(n, self._ncols)(0)
+        m = self._nrows
         M = sage.modules.free_module.FreeModule(self._base_ring, m, sparse=self.is_sparse())
         v = M(v)
         X = [v]
@@ -5931,7 +5931,7 @@ cdef class Matrix(sage.structure.element.Matrix):
         """
         if not self.is_square():
             raise ArithmeticError("self must be a square matrix")
-        if not self.nrows():
+        if not self._nrows:
             return self
 
         R = self.base_ring()
@@ -6038,8 +6038,7 @@ cdef class Matrix(sage.structure.element.Matrix):
             sage: mi.parent()
             Full MatrixSpace of 1 by 1 sparse matrices over Ring of integers modulo 4
         """
-        n = self.nrows()
-        if n != self.ncols():
+        if not self.is_square():
             raise ArithmeticError("self must be a square matrix")
 
         R = self.base_ring()
