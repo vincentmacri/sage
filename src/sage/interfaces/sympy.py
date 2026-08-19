@@ -1226,7 +1226,7 @@ def check_expression(expr, var_symbols, only_from_sympy=False):
 
     # Sympy func may have specific _sage_ method
     if is_different:
-        _sage_method = getattr(e_sympy.func, "_sage_")
+        _sage_method = e_sympy.func._sage_
         e_sage = _sage_method(S(e_sympy))
 
     # Do the actual checks:

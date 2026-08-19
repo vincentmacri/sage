@@ -340,7 +340,7 @@ def doctest_run(
 
     # Display warnings in doctests
     warnings.showwarning = showwarning_with_traceback
-    setattr(sys, "__displayhook__", get_display_manager().displayhook)
+    sys.__displayhook__ = get_display_manager().displayhook
 
     # Ensure that injecting globals works as expected in doctests
     set_globals(test.globs)
