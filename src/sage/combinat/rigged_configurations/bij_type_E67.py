@@ -36,8 +36,12 @@ TESTS::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.combinat.rigged_configurations.bij_abstract_class import KRTToRCBijectionAbstract
-from sage.combinat.rigged_configurations.bij_abstract_class import RCToKRTBijectionAbstract
+from sage.combinat.rigged_configurations.bij_abstract_class import (
+    KRTToRCBijectionAbstract,
+)
+from sage.combinat.rigged_configurations.bij_abstract_class import (
+    RCToKRTBijectionAbstract,
+)
 from sage.combinat.crystals.letters import CrystalOfLetters
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.cachefunc import cached_method
@@ -63,6 +67,7 @@ class KRTToRCBijectionTypeE67(KRTToRCBijectionAbstract):
             sage: bijection.cur_path[0].insert(0, [(-3,4)])
             sage: bijection.next_state((-3,4))
         """
+
         def find_singular_string(p, max_width):
             max_pos = -1
             if max_width > 0:
@@ -87,23 +92,26 @@ class KRTToRCBijectionTypeE67(KRTToRCBijectionAbstract):
         found = True
         while found:
             found = False
-            data = [(-a, find_singular_string(self.ret_rig_con[-a-1], max_width))
-                    for a in b.value if a < 0]
+            data = [
+                (-a, find_singular_string(self.ret_rig_con[-a - 1], max_width))
+                for a in b.value
+                if a < 0
+            ]
             if not data:
                 break
 
             max_val = max(l for a, l in data)
             for a, l in data:
                 if l == max_val:
-                    self.ret_rig_con[a-1].insert_cell(max_width)
+                    self.ret_rig_con[a - 1].insert_cell(max_width)
                     max_width = l
                     b = b.e(a)
-                    found = (b != self._top)
+                    found = b != self._top
                     break
 
         for a in end.to_highest_weight()[1]:
-            p = self.ret_rig_con[a-1]
-            for i in range(len(p)-1, -1, -1):
+            p = self.ret_rig_con[a - 1]
+            for i in range(len(p) - 1, -1, -1):
                 if p.rigging[i] is None:
                     assert p[i] == 1
                     p._list.pop(i)
@@ -236,10 +244,16 @@ class RCToKRTBijectionTypeE67(RCToKRTBijectionAbstract):
         b = self._endpoint(r)
         while found:
             found = False
-            data = [(a, self._find_singular_string(self.cur_partitions[a-1], last_size))
-                    for a in b.value if a > 0]
-            data = [(val, a, self.cur_partitions[a-1][val])
-                    for a, val in data if val is not None]
+            data = [
+                (a, self._find_singular_string(self.cur_partitions[a - 1], last_size))
+                for a in b.value
+                if a > 0
+            ]
+            data = [
+                (val, a, self.cur_partitions[a - 1][val])
+                for a, val in data
+                if val is not None
+            ]
             if not data:
                 break
 
@@ -248,7 +262,7 @@ class RCToKRTBijectionTypeE67(RCToKRTBijectionAbstract):
                 if l == min_val:
                     found = True
                     last_size = l
-                    self.cur_partitions[a-1].remove_cell(i)
+                    self.cur_partitions[a - 1].remove_cell(i)
                     b = b.f(a)
                     break
 

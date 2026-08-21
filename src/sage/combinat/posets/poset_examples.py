@@ -86,6 +86,7 @@ The infinite set of all posets can be used to find minimal examples::
 Constructions
 -------------
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Peter Jipsen <jipsen@chapman.edu>,
 #                          Franco Saliola <saliola@gmail.com>
@@ -110,8 +111,12 @@ from sage.combinat.posets.posets import Poset, FinitePoset, FinitePosets_n
 from sage.combinat.posets import bubble_shuffle, hochschild_lattice, sashes, chute_move
 from sage.combinat.posets.d_complete import DCompletePoset
 from sage.combinat.posets.mobile import MobilePoset as Mobile
-from sage.combinat.posets.lattices import (LatticePoset, MeetSemilattice,
-                                           JoinSemilattice, FiniteLatticePoset)
+from sage.combinat.posets.lattices import (
+    LatticePoset,
+    MeetSemilattice,
+    JoinSemilattice,
+    FiniteLatticePoset,
+)
 from sage.categories.finite_posets import FinitePosets
 from sage.categories.finite_lattice_posets import FiniteLatticePosets
 from sage.graphs.digraph import DiGraph
@@ -198,6 +203,7 @@ class Posets(metaclass=ClasscallMetaclass):
         sage: P = Posets
         sage: TestSuite(P).run()
     """
+
     @staticmethod
     def __classcall__(cls, n=None):
         r"""
@@ -261,17 +267,20 @@ class Posets(metaclass=ClasscallMetaclass):
         if n == 0:
             if use_subsets:
                 from sage.sets.set import Set
+
                 return LatticePoset(([Set()], []), facade=facade)
             return LatticePoset(([0], []), facade=facade)
         if n == 1:
             if use_subsets:
                 from sage.sets.set import Set
+
                 V = [Set(), Set([1])]
                 return LatticePoset((V, [V]), facade=facade)
             return LatticePoset(([0, 1], [[0, 1]]), facade=facade)
 
         if use_subsets:
             from sage.sets.set import Set
+
             cur_level = [frozenset(range(1, n + 1))]
             D = DiGraph()
             D.add_vertex(Set(cur_level[0]))
@@ -283,15 +292,17 @@ class Posets(metaclass=ClasscallMetaclass):
                         D.add_edge(Set(Y), Set(X))
                         next_level.add(Y)
                 cur_level = next_level
-            return FiniteLatticePoset(D, category=FiniteLatticePosets(),
-                                      facade=facade)
+            return FiniteLatticePoset(D, category=FiniteLatticePosets(), facade=facade)
 
-        D = DiGraph({v: [Integer(v | (1 << y))
-                         for y in range(n) if v & (1 << y) == 0]
-                     for v in range(2**n)})
-        return FiniteLatticePoset(hasse_diagram=D,
-                                  category=FiniteLatticePosets().Stone(),
-                                  facade=facade)
+        D = DiGraph(
+            {
+                v: [Integer(v | (1 << y)) for y in range(n) if v & (1 << y) == 0]
+                for v in range(2**n)
+            }
+        )
+        return FiniteLatticePoset(
+            hasse_diagram=D, category=FiniteLatticePosets().Stone(), facade=facade
+        )
 
     BubblePoset = staticmethod(bubble_shuffle.BubblePoset)
 
@@ -357,11 +368,12 @@ class Posets(metaclass=ClasscallMetaclass):
             [[0, 1]]
         """
         n = check_int(n)
-        D = DiGraph([range(n), [[x, x + 1] for x in range(n - 1)]],
-                    format='vertices_and_edges')
-        return FiniteLatticePoset(hasse_diagram=D,
-                                  category=FiniteLatticePosets().Stone(),
-                                  facade=facade)
+        D = DiGraph(
+            [range(n), [[x, x + 1] for x in range(n - 1)]], format='vertices_and_edges'
+        )
+        return FiniteLatticePoset(
+            hasse_diagram=D, category=FiniteLatticePosets().Stone(), facade=facade
+        )
 
     @staticmethod
     def AntichainPoset(n, facade=None):
@@ -441,8 +453,11 @@ class Posets(metaclass=ClasscallMetaclass):
             sage: posets.DiamondPoset(5).is_distributive()
             False
         """
-        return LatticePoset([[1, 2], [4], [3], [4], []], facade=facade,
-                            category=FiniteLatticePosets().CongruenceUniform())
+        return LatticePoset(
+            [[1, 2], [4], [3], [4], []],
+            facade=facade,
+            category=FiniteLatticePosets().CongruenceUniform(),
+        )
 
     @staticmethod
     def DiamondPoset(n, facade=None):
@@ -471,8 +486,7 @@ class Posets(metaclass=ClasscallMetaclass):
         cat = FiniteLatticePosets().ChainGraded()
         if n <= 4:
             cat = cat.Stone()
-        return FiniteLatticePoset(hasse_diagram=D, category=cat,
-                                  facade=facade)
+        return FiniteLatticePoset(hasse_diagram=D, category=cat, facade=facade)
 
     @staticmethod
     def Crown(n, facade=None):
@@ -500,8 +514,9 @@ class Posets(metaclass=ClasscallMetaclass):
         n = check_int(n, 2)
         D = {i: [i + n, i + n + 1] for i in range(n - 1)}
         D[n - 1] = [n, n + n - 1]
-        return FinitePoset(hasse_diagram=DiGraph(D), category=FinitePosets(),
-                           facade=facade)
+        return FinitePoset(
+            hasse_diagram=DiGraph(D), category=FinitePosets(), facade=facade
+        )
 
     @staticmethod
     def DivisorLattice(n, facade=None):
@@ -535,11 +550,13 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite lattice containing 1 elements with distinguished linear extension
         """
         from sage.arith.misc import divisors, is_prime
+
         n = check_int(n, 1)
         Div_n = divisors(n)
         hasse = DiGraph([Div_n, lambda a, b: b % a == 0 and is_prime(b // a)])
-        return FiniteLatticePoset(hasse, elements=Div_n, facade=facade,
-                                  category=FiniteLatticePosets().Stone())
+        return FiniteLatticePoset(
+            hasse, elements=Div_n, facade=facade, category=FiniteLatticePosets().Stone()
+        )
 
     @staticmethod
     def HessenbergPoset(H):
@@ -597,10 +614,14 @@ class Posets(metaclass=ClasscallMetaclass):
             192
         """
         from sage.combinat.composition import Compositions
+
         C = Compositions(n)
         cat = FiniteLatticePosets().ChainGraded()
-        return Poset((C, [[c, d] for c in C for d in C if d.is_finer(c)]),
-                     cover_relations=False, category=cat)
+        return Poset(
+            (C, [[c, d] for c in C for d in C if d.is_finer(c)]),
+            cover_relations=False,
+            category=cat,
+        )
 
     @staticmethod
     def IntegerPartitions(n):
@@ -620,6 +641,7 @@ class Posets(metaclass=ClasscallMetaclass):
             sage: len(P.cover_relations())
             28
         """
+
         def lower_covers(partition):
             r"""
             Nested function for computing the lower covers
@@ -637,7 +659,9 @@ class Posets(metaclass=ClasscallMetaclass):
                     if tup not in lc:
                         lc.append(tup)
             return lc
+
         from sage.combinat.partition import Partitions
+
         H = DiGraph({tuple(p): lower_covers(p) for p in Partitions(n)})
         cat = FiniteLatticePosets().ChainGraded()
         return Poset(H.reverse(), cover_relations=True, category=cat)
@@ -659,6 +683,7 @@ class Posets(metaclass=ClasscallMetaclass):
             sage: len(P.cover_relations())
             17
         """
+
         def lower_covers(partition):
             r"""
             Nested function for computing the lower covers of elements in the
@@ -677,7 +702,9 @@ class Posets(metaclass=ClasscallMetaclass):
                         if tup not in lc:
                             lc.append(tup)
             return lc
+
         from sage.combinat.partition import Partitions
+
         H = DiGraph({tuple(p): lower_covers(p) for p in Partitions(n)})
         return Poset(H.reverse(), cover_relations=True)
 
@@ -715,6 +742,7 @@ class Posets(metaclass=ClasscallMetaclass):
         """
         n = check_int(n)
         from sage.combinat.partition import Partitions, Partition
+
         return LatticePoset((Partitions(n), Partition.dominates)).dual()
 
     @staticmethod
@@ -758,9 +786,14 @@ class Posets(metaclass=ClasscallMetaclass):
             for r in Permutations(P):
                 all_pos_n.add(P.relabel(list(r)))
 
-        return MeetSemilattice((all_pos_n,
-                                lambda A, B: all(B.is_lequal(x, y)
-                                                 for x, y in A.cover_relations_iterator())))
+        return MeetSemilattice(
+            (
+                all_pos_n,
+                lambda A, B: all(
+                    B.is_lequal(x, y) for x, y in A.cover_relations_iterator()
+                ),
+            )
+        )
 
     @staticmethod
     def ProductOfChains(chain_lengths, facade=None):
@@ -798,20 +831,33 @@ class Posets(metaclass=ClasscallMetaclass):
         try:
             l = [Integer(x) for x in chain_lengths]
         except TypeError:
-            raise TypeError("parameter chain_lengths must be a list of integers, not {}".format(chain_lengths))
+            raise TypeError(
+                "parameter chain_lengths must be a list of integers, not {}".format(
+                    chain_lengths
+                )
+            )
         if any(x < 0 for x in l):
-            raise TypeError("parameter chain_lengths must be a list of nonnegative integers, not {}".format(l))
+            raise TypeError(
+                "parameter chain_lengths must be a list of nonnegative integers, not {}".format(
+                    l
+                )
+            )
 
         # given the empty list, we expect the empty poset.
         if not chain_lengths:
             return LatticePoset(facade=facade)
         from sage.categories.cartesian_product import cartesian_product
+
         elements = cartesian_product([range(i) for i in l])
 
         def compare(a, b):
             return all(x <= y for x, y in zip(a, b))
-        return LatticePoset([elements, compare], facade=facade,
-                            category=FiniteLatticePosets().Distributive())
+
+        return LatticePoset(
+            [elements, compare],
+            facade=facade,
+            category=FiniteLatticePosets().Distributive(),
+        )
 
     @staticmethod
     def RandomPoset(n, p):
@@ -857,6 +903,7 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite poset containing 0 elements
         """
         from sage.misc.prandom import random
+
         n = check_int(n)
         try:
             p = float(p)
@@ -958,7 +1005,11 @@ class Posets(metaclass=ClasscallMetaclass):
         except Exception:
             raise TypeError(f"probability must be a real number, not {p}")
         if p < 0 or p >= 1:
-            raise ValueError("probability must be a positive real number and below 1, not {}".format(p))
+            raise ValueError(
+                "probability must be a positive real number and below 1, not {}".format(
+                    p
+                )
+            )
 
         if properties is None:
             # Basic case, no special properties for lattice asked.
@@ -992,9 +1043,13 @@ class Posets(metaclass=ClasscallMetaclass):
 
         # Test property combinations that are not implemented.
         if 'distributive' in properties and len(properties) > 1:
-            raise NotImplementedError("combining 'distributive' with other properties is not implemented")
+            raise NotImplementedError(
+                "combining 'distributive' with other properties is not implemented"
+            )
         if 'stone' in properties and len(properties) > 1:
-            raise NotImplementedError("combining 'stone' with other properties is not implemented")
+            raise NotImplementedError(
+                "combining 'stone' with other properties is not implemented"
+            )
 
         if properties == {'planar'}:
             D = _random_planar_lattice(n)
@@ -1012,7 +1067,9 @@ class Posets(metaclass=ClasscallMetaclass):
             return LatticePoset(D)
 
         if properties == {'distributive'}:
-            tmp = Poset(_random_distributive_lattice(n)).order_ideals_lattice(as_ideals=False)
+            tmp = Poset(_random_distributive_lattice(n)).order_ideals_lattice(
+                as_ideals=False
+            )
             D = copy(tmp._hasse_diagram)
             D.relabel([i - 1 for i in Permutations(n).random_element()])
             return LatticePoset(D)
@@ -1035,6 +1092,7 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite lattice containing 15 elements
         """
         from sage.combinat.set_partition import SetPartitions
+
         n = check_int(n)
         S = SetPartitions(n)
 
@@ -1047,8 +1105,9 @@ class Posets(metaclass=ClasscallMetaclass):
                     yield S(L)
 
         cat = FiniteLatticePosets().ChainGraded()
-        return LatticePoset({x: list(covers(x)) for x in S},
-                            cover_relations=True, category=cat)
+        return LatticePoset(
+            {x: list(covers(x)) for x in S}, cover_relations=True, category=cat
+        )
 
     @staticmethod
     def SSTPoset(s, f=None):
@@ -1142,9 +1201,10 @@ class Posets(metaclass=ClasscallMetaclass):
             (False, False)
         """
         n = check_int(n, 2)
-        return Poset((range(2 * n), [[i, j + n] for i in range(n)
-                                     for j in range(n) if i != j]),
-                     facade=facade)
+        return Poset(
+            (range(2 * n), [[i, j + n] for i in range(n) for j in range(n) if i != j]),
+            facade=facade,
+        )
 
     @staticmethod
     def SymmetricGroupBruhatOrderPoset(n):
@@ -1157,12 +1217,12 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite poset containing 24 elements
         """
         if n < 10:
-            element_labels = {s: "".join(str(x) for x in s)
-                              for s in Permutations(n)}
+            element_labels = {s: "".join(str(x) for x in s) for s in Permutations(n)}
 
         cat = FiniteLatticePosets().ChainGraded()
-        return Poset({s: s.bruhat_succ() for s in Permutations(n)},
-                     element_labels, category=cat)
+        return Poset(
+            {s: s.bruhat_succ() for s in Permutations(n)}, element_labels, category=cat
+        )
 
     @staticmethod
     def SymmetricGroupBruhatIntervalPoset(start, end):
@@ -1203,10 +1263,14 @@ class Posets(metaclass=ClasscallMetaclass):
         nodes = {}
         while unseen:
             perm = unseen.pop(0)
-            nodes[perm] = [succ_perm for succ_perm in perm.bruhat_succ()
-                           if succ_perm.bruhat_lequal(end)]
-            unseen.extend(succ_perm for succ_perm in nodes[perm]
-                          if succ_perm not in nodes)
+            nodes[perm] = [
+                succ_perm
+                for succ_perm in perm.bruhat_succ()
+                if succ_perm.bruhat_lequal(end)
+            ]
+            unseen.extend(
+                succ_perm for succ_perm in nodes[perm] if succ_perm not in nodes
+            )
         cat = FiniteLatticePosets().ChainGraded()
         return Poset(nodes, category=cat)
 
@@ -1228,11 +1292,11 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite lattice containing 24 elements
         """
         if n < 10 and labels == "permutations":
-            element_labels = {s: "".join(map(str, s))
-                              for s in Permutations(n)}
+            element_labels = {s: "".join(map(str, s)) for s in Permutations(n)}
         if n < 10 and labels == "reduced_words":
-            element_labels = {s: "".join(map(str, s.reduced_word_lexmin()))
-                              for s in Permutations(n)}
+            element_labels = {
+                s: "".join(map(str, s.reduced_word_lexmin())) for s in Permutations(n)
+            }
         if side == "left":
 
             def weak_covers(s):
@@ -1240,8 +1304,12 @@ class Posets(metaclass=ClasscallMetaclass):
                 Nested function for computing the covers of elements in the
                 poset of left weak order for the symmetric group.
                 """
-                return [v for v in s.bruhat_succ() if
-                        s.length() + (s.inverse().right_action_product(v)).length() == v.length()]
+                return [
+                    v
+                    for v in s.bruhat_succ()
+                    if s.length() + (s.inverse().right_action_product(v)).length()
+                    == v.length()
+                ]
         else:
 
             def weak_covers(s):
@@ -1249,12 +1317,18 @@ class Posets(metaclass=ClasscallMetaclass):
                 Nested function for computing the covers of elements in the
                 poset of right weak order for the symmetric group.
                 """
-                return [v for v in s.bruhat_succ() if
-                        s.length() + (s.inverse().left_action_product(v)).length() == v.length()]
+                return [
+                    v
+                    for v in s.bruhat_succ()
+                    if s.length() + (s.inverse().left_action_product(v)).length()
+                    == v.length()
+                ]
+
         return LatticePoset(
             {s: weak_covers(s) for s in Permutations(n)},
-            element_labels, check=False,
-            category=FiniteLatticePosets().ChainGraded().Semidistributive()
+            element_labels,
+            check=False,
+            category=FiniteLatticePosets().ChainGraded().Semidistributive(),
         )
 
     @staticmethod
@@ -1317,14 +1391,19 @@ class Posets(metaclass=ClasscallMetaclass):
         n = n - 1
         for c in colors:
             if c not in ('green', 'red', 'yellow', 'orange', 'silver', 'blue'):
-                raise ValueError("color input must be among: 'green', 'red', 'yellow', 'orange', 'silver', and 'blue'")
-        elem = [(i, j, k) for i in range(n)
-                for j in range(n - i) for k in range(n - i - j)]
+                raise ValueError(
+                    "color input must be among: 'green', 'red', 'yellow', 'orange', 'silver', and 'blue'"
+                )
+        elem = [
+            (i, j, k) for i in range(n) for j in range(n - i) for k in range(n - i - j)
+        ]
         rels = []
         elem_labels = {}
         if 'labels' in labels:
             if labels['labels'] == 'integers':
-                elem_labels.update({ijk: labelcount for labelcount, ijk in enumerate(elem)})
+                elem_labels.update(
+                    {ijk: labelcount for labelcount, ijk in enumerate(elem)}
+                )
         for c in colors:
             for i, j, k in elem:
                 if i + j + k < n - 1:
@@ -1347,6 +1426,7 @@ class Posets(metaclass=ClasscallMetaclass):
 
     # shard intersection order
     import sage.combinat.shard_order
+
     @staticmethod
     def ShardPoset(n):
         r"""
@@ -1359,7 +1439,10 @@ class Posets(metaclass=ClasscallMetaclass):
     # Tamari lattices
     import sage.combinat.nu_tamari_lattice
     import sage.combinat.tamari_lattices
-    AltNuTamariLattice = staticmethod(sage.combinat.nu_tamari_lattice.AltNuTamariLattice)
+
+    AltNuTamariLattice = staticmethod(
+        sage.combinat.nu_tamari_lattice.AltNuTamariLattice
+    )
     NuTamariLattice = staticmethod(sage.combinat.nu_tamari_lattice.NuTamariLattice)
     TamariLattice = staticmethod(sage.combinat.tamari_lattices.TamariLattice)
     DexterSemilattice = staticmethod(sage.combinat.tamari_lattices.DexterSemilattice)
@@ -1442,14 +1525,16 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite poset containing 6 elements
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         W = SymmetricGroup(n)
         if labels == "permutations":
             element_labels = {s: s.tuple() for s in W}
         if labels == "reduced_words":
             element_labels = {s: tuple(s.reduced_word()) for s in W}
         if labels == "cycles":
-            element_labels = {s: "".join(x for x in s.cycle_string() if x != ',')
-                              for s in W}
+            element_labels = {
+                s: "".join(x for x in s.cycle_string() if x != ',') for s in W
+            }
 
         return Poset({s: list(s.absolute_covers()) for s in W}, element_labels)
 
@@ -1499,8 +1584,7 @@ class Posets(metaclass=ClasscallMetaclass):
         if m < 1:
             raise ValueError(f"parameter m must be positive, not {m}")
 
-        covers = [[i, i + 1] if (i + 1) % (m + 1) else [i + 1, i]
-                  for i in range(n - 1)]
+        covers = [[i, i + 1] if (i + 1) % (m + 1) else [i + 1, i] for i in range(n - 1)]
         return Poset((range(n), covers), cover_relations=True)
 
     @staticmethod
@@ -1527,15 +1611,19 @@ class Posets(metaclass=ClasscallMetaclass):
             Finite join-semilattice containing 5 elements
         """
         from sage.combinat.partition import Partition
+
         lam = Partition(lam)
         if dual:
+
             def cell_geq(a, b):
                 """
                 Nested function that returns ``True`` if the cell `a` is to the
                 right or below the cell `b` in the (English) Young diagram.
                 """
-                return ((a[0] == b[0] + 1 and a[1] == b[1]) or
-                        (a[1] == b[1] + 1 and a[0] == b[0]))
+                return (a[0] == b[0] + 1 and a[1] == b[1]) or (
+                    a[1] == b[1] + 1 and a[0] == b[0]
+                )
+
             return JoinSemilattice((lam.cells(), cell_geq), cover_relations=True)
 
         def cell_leq(a, b):
@@ -1544,8 +1632,10 @@ class Posets(metaclass=ClasscallMetaclass):
             to the left or above
             the cell `b` in the (English) Young diagram.
             """
-            return ((a[0] == b[0] - 1 and a[1] == b[1]) or
-                    (a[1] == b[1] - 1 and a[0] == b[0]))
+            return (a[0] == b[0] - 1 and a[1] == b[1]) or (
+                a[1] == b[1] - 1 and a[0] == b[0]
+            )
+
         return MeetSemilattice((lam.cells(), cell_leq), cover_relations=True)
 
     @staticmethod
@@ -1575,6 +1665,7 @@ class Posets(metaclass=ClasscallMetaclass):
         """
         from sage.combinat.partition import Partitions, Partition
         from sage.misc.flatten import flatten
+
         partitions = flatten([list(Partitions(i)) for i in range(n + 1)])
         return JoinSemilattice((partitions, Partition.contains)).dual()
 
@@ -1657,7 +1748,7 @@ class Posets(metaclass=ClasscallMetaclass):
             for low in current_level:
                 ind = low.find('1')
                 if ind != -1:  # = found a '1' -> change first '1' to '2'
-                    up = low[:ind] + '2' + low[ind + 1:]
+                    up = low[:ind] + '2' + low[ind + 1 :]
                     new_level.add(up)
                     covers.append((low, up))
                 else:  # no '1' in low
@@ -1665,7 +1756,7 @@ class Posets(metaclass=ClasscallMetaclass):
 
                 # add '1' to every position not after first existing '1'
                 for j in range(ind + 1):
-                    up = '2' * j + '1' + low[j:len(low)]
+                    up = '2' * j + '1' + low[j : len(low)]
                     new_level.add(up)
                     covers.append((low, up))
 
@@ -1786,8 +1877,10 @@ class Posets(metaclass=ClasscallMetaclass):
         # Make a list of lists of elements in the interval divided by rank.
         # List will be flattened at the end
         elem = [[top]]
-        level = 0    # Consider the top element to be level 0, and then go down from there.
-        rel = []     # List of covering relations to be fed into poset constructor.
+        level = (
+            0  # Consider the top element to be level 0, and then go down from there.
+        )
+        rel = []  # List of covering relations to be fed into poset constructor.
         while len(top) - len(bottom) >= level + 1:
             elem.append([])  # Add a new empty level
             for upper in elem[level]:
@@ -1802,7 +1895,9 @@ class Posets(metaclass=ClasscallMetaclass):
                         if lower[k] > j:
                             lower[k] = lower[k] - 1
                     lower_perm = P(lower)
-                    if lower_perm.has_pattern(bottom):  # Check to see if result is in interval
+                    if lower_perm.has_pattern(
+                        bottom
+                    ):  # Check to see if result is in interval
                         rel += [[lower_perm, upper_perm]]
                         if lower not in elem[level + 1]:
                             elem[level + 1].append(lower_perm)
@@ -1866,8 +1961,9 @@ class Posets(metaclass=ClasscallMetaclass):
                     for f in range(len(upper[1])):
                         if upper[1][f] > i:
                             lower_pos[f] = upper[1][f] - 1
-                    rel += [[(P(lower_perm), tuple(lower_pos)),
-                             (P(upper[0]), upper[1])]]
+                    rel += [
+                        [(P(lower_perm), tuple(lower_pos)), (P(upper[0]), upper[1])]
+                    ]
                     if (P(lower_perm), tuple(lower_pos)) not in elem[level + 1]:
                         elem[level + 1].append((P(lower_perm), tuple(lower_pos)))
             level += 1
@@ -1891,9 +1987,14 @@ class Posets(metaclass=ClasscallMetaclass):
             [[0, 1], [2, 1], [3, 2], [3, 4]]
         """
         n = check_int(n)
-        return Mobile(DiGraph([list(range(n)),
-                               [(i + 1, i) if i in descents else (i, i + 1)
-                                for i in range(n - 1)]]))
+        return Mobile(
+            DiGraph(
+                [
+                    list(range(n)),
+                    [(i + 1, i) if i in descents else (i, i + 1) for i in range(n - 1)],
+                ]
+            )
+        )
 
     @staticmethod
     def MobilePoset(ribbon, hangers, anchor=None):
@@ -1934,8 +2035,10 @@ class Posets(metaclass=ClasscallMetaclass):
         elements.extend(ribbon._elements)
 
         if anchor:
-            cover_relations.extend(((anchor[0], cr[0]), (anchor[0], cr[1]))
-                                   for cr in anchor[2].cover_relations())
+            cover_relations.extend(
+                ((anchor[0], cr[0]), (anchor[0], cr[1]))
+                for cr in anchor[2].cover_relations()
+            )
             cover_relations.append((anchor[0], (anchor[0], anchor[1])))
 
             elements.extend((anchor[0], elmt) for elmt in anchor[2]._elements)
@@ -1943,8 +2046,9 @@ class Posets(metaclass=ClasscallMetaclass):
         for r, hangs in hangers.items():
             for i, h in enumerate(hangs):
                 elements.extend((r, i, v) for v in h._elements)
-                cover_relations.extend(((r, i, cr[0]), (r, i, cr[1]))
-                                       for cr in h.cover_relations())
+                cover_relations.extend(
+                    ((r, i, cr[0]), (r, i, cr[1])) for cr in h.cover_relations()
+                )
                 cover_relations.append(((r, i, h.top()), r))
 
         return Mobile(DiGraph([elements, cover_relations]))
@@ -1999,7 +2103,6 @@ def _random_lattice(n, p):
     lc_all = [[]]  # No lower covers for the bottom element.
 
     for i in range(1, n):
-
         # Look for an admissible lower cover for the next element i
         while True:
             # Generate a random antichain
@@ -2010,7 +2113,17 @@ def _random_lattice(n, p):
                     continue
                 lc_list.append(new)
             # Check whether it is admissible as a new lower cover
-            if all(any(all(meets[m][meets[a][a1]] == meets[m][a1] for a1 in lc_list if a1 != a) for a in lc_list) for m in maxs):
+            if all(
+                any(
+                    all(
+                        meets[m][meets[a][a1]] == meets[m][a1]
+                        for a1 in lc_list
+                        if a1 != a
+                    )
+                    for a in lc_list
+                )
+                for m in maxs
+            ):
                 break
 
         # We've found a suitable lower cover for i

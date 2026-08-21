@@ -1,12 +1,12 @@
 r"""
 Filtered Hopf algebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.tensor import tensor
@@ -46,6 +46,7 @@ class FilteredHopfAlgebrasWithBasis(FilteredModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class WithRealizations(WithRealizationsCategory):
         @cached_method
         def super_categories(self):
@@ -62,6 +63,7 @@ class FilteredHopfAlgebrasWithBasis(FilteredModulesCategory):
                 sage: TestSuite(HopfAlgebrasWithBasis(QQ).Filtered().WithRealizations()).run()
             """
             from sage.categories.hopf_algebras import HopfAlgebras
+
             R = self.base_category().base_ring()
             return [HopfAlgebras(R).Filtered()]
 
@@ -104,12 +106,12 @@ class FilteredHopfAlgebrasWithBasis(FilteredModulesCategory):
 
                 S = self.antipode_on_basis
                 x__S_Id = tensor([self, self]).module_morphism(
-                    lambda ab: S(ab[0]) * self.monomial(ab[1]),
-                    codomain=self)
+                    lambda ab: S(ab[0]) * self.monomial(ab[1]), codomain=self
+                )
                 smi = self.monomial(index)
-                return -x__S_Id(smi.coproduct()
-                                - tensor([smi, self.one()])
-                               ) + smi.counit()
+                return (
+                    -x__S_Id(smi.coproduct() - tensor([smi, self.one()])) + smi.counit()
+                )
 
             def antipode(self, elem):
                 r"""

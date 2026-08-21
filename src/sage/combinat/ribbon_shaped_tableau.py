@@ -73,6 +73,7 @@ class RibbonShapedTableau(SkewTableau):
         sage: RibbonShapedTableau([[1,2],[3,4]]).evaluation()
         [1, 1, 1, 1]
     """
+
     @staticmethod
     def __classcall_private__(cls, rows):
         r"""
@@ -101,8 +102,9 @@ class RibbonShapedTableau(SkewTableau):
             raise TypeError("rows must be lists of positive integers")
         if not r:
             return StandardRibbonShapedTableaux()(r)
-        if all(j is None or (isinstance(j, (int, Integer)) and j > 0)
-               for i in r for j in i):
+        if all(
+            j is None or (isinstance(j, (int, Integer)) and j > 0) for i in r for j in i
+        ):
             return StandardRibbonShapedTableaux()(r)
         raise TypeError("r must be a list of positive integers")
 
@@ -175,6 +177,7 @@ class RibbonShapedTableaux(SkewTableaux):
     """
     The set of all ribbon shaped tableaux.
     """
+
     @staticmethod
     def __classcall_private__(cls, shape=None, **kwds):
         """
@@ -235,7 +238,7 @@ class RibbonShapedTableaux(SkewTableaux):
         pos = 0
         r = []
         for l in shape:
-            r.append(word[pos:pos + l])
+            r.append(word[pos : pos + l])
             pos += l
         return self.element_class(self, r)
 
@@ -248,6 +251,7 @@ class StandardRibbonShapedTableaux(StandardSkewTableaux):
 
     - ``shape`` -- (optional) the composition shape of the rows
     """
+
     @staticmethod
     def __classcall_private__(cls, shape=None, **kwds):
         """
@@ -263,6 +267,7 @@ class StandardRibbonShapedTableaux(StandardSkewTableaux):
         """
         if shape is not None:
             from sage.combinat.partition import Partition
+
             return StandardRibbonShapedTableaux_shape(Partition(shape))
 
         # Otherwise arg0 takes the place of the category in pickling
@@ -313,6 +318,7 @@ class StandardRibbonShapedTableaux(StandardSkewTableaux):
              [[None, None, 1], [2, 3, 4]]]
         """
         from sage.combinat.partition import _Partitions
+
         for p in _Partitions:
             for r in StandardRibbonShapedTableaux_shape(p):
                 yield self.element_class(self, r)
@@ -332,7 +338,7 @@ class StandardRibbonShapedTableaux(StandardSkewTableaux):
         pos = 0
         r = []
         for l in shape:
-            r.append(word[pos:pos + l])
+            r.append(word[pos : pos + l])
             pos += l
         return self.element_class(self, r)
 
@@ -363,8 +369,9 @@ class StandardRibbonShapedTableaux(StandardSkewTableaux):
             return self.element_class(self, [p[:]])
 
         r = [[p[j] for j in range(comp[0])]]
-        r.extend([p[j] for j in range(comp[i], comp[i + 1])]
-                 for i in range(len(comp) - 1))
+        r.extend(
+            [p[j] for j in range(comp[i], comp[i + 1])] for i in range(len(comp) - 1)
+        )
         r.append([p[j] for j in range(comp[-1], len(p))])
         r.reverse()
         return self.element_class(self, r)
@@ -395,6 +402,7 @@ class StandardRibbonShapedTableaux_shape(StandardRibbonShapedTableaux):
         sage: StandardRibbonShapedTableaux([3,2,2]).cardinality()
         155
     """
+
     @staticmethod
     def __classcall_private__(cls, shape):
         """
@@ -469,4 +477,6 @@ class StandardRibbonShapedTableaux_shape(StandardRibbonShapedTableaux):
 
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.ribbon', 'StandardRibbons_shape', StandardRibbonShapedTableaux)
+register_unpickle_override(
+    'sage.combinat.ribbon', 'StandardRibbons_shape', StandardRibbonShapedTableaux
+)

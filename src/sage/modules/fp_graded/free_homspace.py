@@ -49,4 +49,5 @@ class FreeGradedModuleHomspace(FPModuleHomspace):
     """
     Homspace between two free graded modules.
     """
+
     Element = FreeGradedModuleMorphism

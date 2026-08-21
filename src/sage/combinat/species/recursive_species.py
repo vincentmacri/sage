@@ -1,6 +1,7 @@
 """
 Recursive species
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
@@ -235,7 +236,9 @@ class CombinatorialSpecies(GenericCombinatorialSpecies):
             Uninitialized Lazy Series
         """
         if base_ring not in self._generating_series:
-            self._generating_series[base_ring] = series_ring.undefined(valuation=(0 if self._min is None else self._min))
+            self._generating_series[base_ring] = series_ring.undefined(
+                valuation=(0 if self._min is None else self._min)
+            )
 
         res = self._generating_series[base_ring]
         if hasattr(self, "_reference") and not hasattr(res, "_reference"):
@@ -252,7 +255,9 @@ class CombinatorialSpecies(GenericCombinatorialSpecies):
             Uninitialized Lazy Series
         """
         if base_ring not in self._isotype_generating_series:
-            self._isotype_generating_series[base_ring] = series_ring.undefined(valuation=(0 if self._min is None else self._min))
+            self._isotype_generating_series[base_ring] = series_ring.undefined(
+                valuation=(0 if self._min is None else self._min)
+            )
 
         res = self._isotype_generating_series[base_ring]
         if hasattr(self, "_reference") and not hasattr(res, "_reference"):
@@ -269,7 +274,9 @@ class CombinatorialSpecies(GenericCombinatorialSpecies):
             Uninitialized Lazy Series
         """
         if base_ring not in self._cycle_index_series:
-            self._cycle_index_series[base_ring] = series_ring.undefined(valuation=(0 if self._min is None else self._min))
+            self._cycle_index_series[base_ring] = series_ring.undefined(
+                valuation=(0 if self._min is None else self._min)
+            )
 
         res = self._cycle_index_series[base_ring]
         if hasattr(self, "_reference") and not hasattr(res, "_reference"):

@@ -33,7 +33,7 @@ class CycleSpeciesStructure(GenericSpeciesStructure):
             ('a', 'b', 'c')
         """
         s = GenericSpeciesStructure.__repr__(self)
-        return "("+s[1:-1]+")"
+        return "(" + s[1:-1] + ")"
 
     def canonical_label(self):
         """
@@ -44,7 +44,7 @@ class CycleSpeciesStructure(GenericSpeciesStructure):
             ('a', 'b', 'c')
         """
         n = len(self._labels)
-        return CycleSpeciesStructure(self.parent(), self._labels, range(1, n+1))
+        return CycleSpeciesStructure(self.parent(), self._labels, range(1, n + 1))
 
     def permutation_group_element(self):
         """
@@ -59,6 +59,7 @@ class CycleSpeciesStructure(GenericSpeciesStructure):
             (1,2,3)
         """
         from sage.groups.perm_gps.constructor import PermutationGroupElement
+
         return PermutationGroupElement(tuple(self._list))
 
     def transport(self, perm):
@@ -101,6 +102,7 @@ class CycleSpeciesStructure(GenericSpeciesStructure):
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         S = SymmetricGroup(len(self._labels))
         p = self.permutation_group_element()
         return PermutationGroup(S.centralizer(p).gens())
@@ -165,7 +167,8 @@ class CycleSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [(1, 2, 3), (1, 3, 2)]
         """
         from sage.combinat.permutation import CyclicPermutations
-        for c in CyclicPermutations(range(1, len(labels)+1)):
+
+        for c in CyclicPermutations(range(1, len(labels) + 1)):
             yield structure_class(self, labels, c)
 
     def _isotypes(self, structure_class, labels):
@@ -177,7 +180,7 @@ class CycleSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [(1, 2, 3)]
         """
         if len(labels) != 0:
-            yield structure_class(self, labels, range(1, len(labels)+1))
+            yield structure_class(self, labels, range(1, len(labels) + 1))
 
     def _gs_callable(self, base_ring, n):
         r"""
@@ -269,6 +272,7 @@ class CycleSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
              1/6*p[1, 1, 1, 1, 1, 1] + 1/6*p[2, 2, 2] + 1/3*p[3, 3] + 1/3*p[6]]
         """
         from sage.combinat.sf.sf import SymmetricFunctions
+
         p = SymmetricFunctions(base_ring).power()
 
         zero = base_ring.zero()
@@ -277,10 +281,10 @@ class CycleSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             return zero
         res = zero
         for k in divisors(n):
-            res += euler_phi(k)*p([k])**(n//k)
+            res += euler_phi(k) * p([k]) ** (n // k)
         res /= n
         return self._weight * res
 
 
-#Backward compatibility
+# Backward compatibility
 CycleSpecies_class = CycleSpecies

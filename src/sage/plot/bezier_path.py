@@ -1,7 +1,8 @@
 r"""
 Bezier paths
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
 #                     2008 Mike Hansen <mhansen@gmail.com>,
@@ -17,7 +18,7 @@ Bezier paths
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.plot.primitive import GraphicPrimitive_xydata
 from sage.misc.decorators import options, rename_keyword
 from sage.plot.colors import to_mpl_color
@@ -46,6 +47,7 @@ class BezierPath(GraphicPrimitive_xydata):
          P = bezier_path([[(0,0),(.5,.5),(1,0)],[(.5,1),(0,0)]], linestyle='dashed')
          sphinx_plot(P)
     """
+
     def __init__(self, path, options):
         """
         Return a graphics primitive of a path of Bezier curves.
@@ -89,9 +91,9 @@ class BezierPath(GraphicPrimitive_xydata):
             code = len(curve) + (i > 0)
             if code < 2 or code > 4:
                 raise ValueError('invalid input for BezierPath')
-            codes[k:k+len(curve)] = code
+            codes[k : k + len(curve)] = code
             k += len(curve)
-        codes[0] = 1 # MOVETO
+        codes[0] = 1  # MOVETO
         self.codes = codes
         GraphicPrimitive_xydata.__init__(self, options)
 
@@ -112,14 +114,16 @@ class BezierPath(GraphicPrimitive_xydata):
             ('thickness', 'How thick the border of the polygon is.'),
             ('zorder', 'The layer level in which to draw')]
         """
-        return {'alpha': 'How transparent the line is.',
-                'fill': 'Whether or not to fill the polygon.',
-                'thickness': 'How thick the border of the polygon is.',
-                'rgbcolor': 'The color as an RGB tuple.',
-                'zorder': 'The layer level in which to draw',
-                'linestyle': "The style of the line, which is one of 'dashed',"
-                " 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.',"
-                " respectively."}
+        return {
+            'alpha': 'How transparent the line is.',
+            'fill': 'Whether or not to fill the polygon.',
+            'thickness': 'How thick the border of the polygon is.',
+            'rgbcolor': 'The color as an RGB tuple.',
+            'zorder': 'The layer level in which to draw',
+            'linestyle': "The style of the line, which is one of 'dashed',"
+            " 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.',"
+            " respectively.",
+        }
 
     def _plot3d_options(self, options=None):
         """
@@ -145,12 +149,15 @@ class BezierPath(GraphicPrimitive_xydata):
             del options['thickness']
         if 'fill' in options:
             if options['fill']:
-                raise NotImplementedError("invalid 3d fill style; must set fill to False")
+                raise NotImplementedError(
+                    "invalid 3d fill style; must set fill to False"
+                )
             del options['fill']
         if 'linestyle' in options:
             if options['linestyle'] not in ('solid', '-'):
-                raise NotImplementedError("invalid 3d line style: '%s'" %
-                                          (options['linestyle']))
+                raise NotImplementedError(
+                    "invalid 3d line style: '%s'" % (options['linestyle'])
+                )
             del options['linestyle']
         options_3d.update(GraphicPrimitive_xydata._plot3d_options(self, options))
         return options_3d
@@ -189,9 +196,13 @@ class BezierPath(GraphicPrimitive_xydata):
             sphinx_plot(bezier3d([[(0,0,0),(1,0,0),(0,1,0),(0,1,1)]]))
         """
         from sage.plot.plot3d.shapes2 import bezier3d
+
         options = self._plot3d_options()
         options.update(kwds)
-        return bezier3d([[(x,y,0) for x,y in self.path[i]] for i in range(len(self.path))], **options)
+        return bezier3d(
+            [[(x, y, 0) for x, y in self.path[i]] for i in range(len(self.path))],
+            **options,
+        )
 
     def _repr_(self):
         """
@@ -248,7 +259,9 @@ class BezierPath(GraphicPrimitive_xydata):
         c = to_mpl_color(options['rgbcolor'])
         bpatch.set_edgecolor(c)
         bpatch.set_facecolor(c)
-        bpatch.set_linestyle(get_matplotlib_linestyle(options['linestyle'], return_type='long'))
+        bpatch.set_linestyle(
+            get_matplotlib_linestyle(options['linestyle'], return_type='long')
+        )
         subplot.add_patch(bpatch)
 
     def get_minmax_data(self):
@@ -264,14 +277,18 @@ class BezierPath(GraphicPrimitive_xydata):
             sage: d['xmax']
             1.0
         """
-        return {'xmin': self.vertices[:,0].min(),
-                'xmax': self.vertices[:,0].max(),
-                'ymin': self.vertices[:,1].min(),
-                'ymax': self.vertices[:,1].max()}
+        return {
+            'xmin': self.vertices[:, 0].min(),
+            'xmax': self.vertices[:, 0].max(),
+            'ymin': self.vertices[:, 1].min(),
+            'ymax': self.vertices[:, 1].max(),
+        }
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, fill=False, thickness=1, rgbcolor=(0,0,0), zorder=2, linestyle='solid')
+@options(
+    alpha=1, fill=False, thickness=1, rgbcolor=(0, 0, 0), zorder=2, linestyle='solid'
+)
 def bezier_path(path, **options):
     """
     Return a Graphics object of a Bezier path corresponding to the
@@ -393,6 +410,7 @@ def bezier_path(path, **options):
         [[(1, 1), (2, 3), (3, 3)], [(4, 4), (5, 5)]]
     """
     from sage.plot.graphics import Graphics
+
     g = Graphics()
     g._set_extra_kwds(g._extract_kwds_for_show(options))
     g.add_primitive(BezierPath(path, options))

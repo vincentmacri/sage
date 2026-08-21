@@ -67,6 +67,7 @@ class Interface(WithEqualityById, Parent):
         representations of objects in interfaces works
         correctly). Otherwise they are never equal.
     """
+
     def __init__(self, name):
         """
         Initialize ``self``.
@@ -128,12 +129,15 @@ class Interface(WithEqualityById, Parent):
             365260051
         """
         import sage.doctest
+
         if sage.doctest.DOCTEST_MODE:
             # set the random seed through the current randstate
             from sage.misc.randstate import current_randstate
+
             seed = current_randstate().seed()
         else:
             from sage.misc.randstate import randstate
+
             seed = randstate().seed()
 
         return seed & 0x1FFFFFFF
@@ -163,7 +167,9 @@ class Interface(WithEqualityById, Parent):
             ...
             NotImplementedError: This interpreter did not implement a set_seed function
         """
-        raise NotImplementedError("This interpreter did not implement a set_seed function")
+        raise NotImplementedError(
+            "This interpreter did not implement a set_seed function"
+        )
 
     def interact(self):
         r"""
@@ -183,6 +189,7 @@ class Interface(WithEqualityById, Parent):
            in from sage to the interpreter.
         """
         from sage.repl.interpreter import interface_shell_embed
+
         shell = interface_shell_embed(self)
         try:
             ipython = get_ipython()
@@ -381,12 +388,15 @@ class Interface(WithEqualityById, Parent):
             return self(self._true_symbol() if x else self._false_symbol())
         if isinstance(x, int):
             from sage.rings.integer import Integer
+
             return self(Integer(x))
         if isinstance(x, float):
             from sage.rings.real_double import RDF
+
             return self(RDF(x))
         if isinstance(x, complex):
             from sage.rings.complex_double import CDF
+
             return self(CDF(x))
         if use_special:
             try:
@@ -407,8 +417,10 @@ class Interface(WithEqualityById, Parent):
                     A.append(w.name())
                     z.append(w)
             X = ','.join(A)
-            r = self.new('%s%s%s' % (self._left_list_delim(), X, self._right_list_delim()))
-            r.__sage_list = z   # do this to avoid having the entries of the list be garbage collected
+            r = self.new(
+                '%s%s%s' % (self._left_list_delim(), X, self._right_list_delim())
+            )
+            r.__sage_list = z  # do this to avoid having the entries of the list be garbage collected
             return r
 
         raise TypeError("unable to coerce element into %s" % self.name())
@@ -475,12 +487,14 @@ class Interface(WithEqualityById, Parent):
             sage: symbols[operator.eq]
             '=='
         """
-        return {operator.eq: self._equality_symbol(),
-                operator.ne: self._inequality_symbol(),
-                operator.lt: self._lessthan_symbol(),
-                operator.le: "<=",
-                operator.gt: self._greaterthan_symbol(),
-                operator.ge: ">="}
+        return {
+            operator.eq: self._equality_symbol(),
+            operator.ne: self._inequality_symbol(),
+            operator.lt: self._lessthan_symbol(),
+            operator.le: "<=",
+            operator.gt: self._greaterthan_symbol(),
+            operator.ge: ">=",
+        }
 
     def _exponent_symbol(self) -> str:
         """
@@ -646,9 +660,11 @@ class Interface(WithEqualityById, Parent):
         """
         args, kwds = self._convert_args_kwds(args, kwds)
         self._check_valid_function_name(function)
-        s = self._function_call_string(function,
-                                       [s.name() for s in args],
-                                       ['%s=%s' % (key, value.name()) for key, value in kwds.items()])
+        s = self._function_call_string(
+            function,
+            [s.name() for s in args],
+            ['%s=%s' % (key, value.name()) for key, value in kwds.items()],
+        )
         return self.new(s)
 
     def _function_call_string(self, function, args, kwds):
@@ -697,6 +713,7 @@ class InterfaceFunction(SageObject):
     """
     Interface function.
     """
+
     def __init__(self, parent, name):
         self._parent = parent
         self._name = name
@@ -723,6 +740,7 @@ class InterfaceFunctionElement(SageObject):
     """
     Interface function element.
     """
+
     def __init__(self, obj, name):
         self._obj = obj
         self._name = name
@@ -731,7 +749,9 @@ class InterfaceFunctionElement(SageObject):
         return "%s" % self._name
 
     def __call__(self, *args, **kwds):
-        return self._obj.parent().function_call(self._name, [self._obj] + list(args), kwds)
+        return self._obj.parent().function_call(
+            self._name, [self._obj] + list(args), kwds
+        )
 
     def help(self):
         print(self.__doc__)
@@ -752,11 +772,12 @@ class InterfaceElement(Element):
     """
     Interface element.
     """
+
     def __init__(self, parent, value, is_name=False, name=None):
         Element.__init__(self, parent)
         self._create = value
         if parent is None:
-            return     # means "invalid element"
+            return  # means "invalid element"
         # idea: Joe Wetherell -- try to find out if the output
         # is too long and if so get it using file, otherwise
         # don't.
@@ -982,18 +1003,28 @@ class InterfaceElement(Element):
         """
         P = self._check_valid()
         try:
-            if P.eval("%s %s %s" % (self.name(), P._equality_symbol(),
-                                     other.name())) == P._true_symbol():
+            if (
+                P.eval("%s %s %s" % (self.name(), P._equality_symbol(), other.name()))
+                == P._true_symbol()
+            ):
                 return rich_to_bool(op, 0)
         except RuntimeError:
             pass
         try:
-            if P.eval("%s %s %s" % (self.name(), P._lessthan_symbol(), other.name())) == P._true_symbol():
+            if (
+                P.eval("%s %s %s" % (self.name(), P._lessthan_symbol(), other.name()))
+                == P._true_symbol()
+            ):
                 return rich_to_bool(op, -1)
         except RuntimeError:
             pass
         try:
-            if P.eval("%s %s %s" % (self.name(), P._greaterthan_symbol(), other.name())) == P._true_symbol():
+            if (
+                P.eval(
+                    "%s %s %s" % (self.name(), P._greaterthan_symbol(), other.name())
+                )
+                == P._true_symbol()
+            ):
                 return rich_to_bool(op, 1)
         except Exception:
             pass
@@ -1024,9 +1055,14 @@ class InterfaceElement(Element):
         try:
             P = self.parent()
             if P is None:
-                raise ValueError("The %s session in which this object was defined is no longer running." % P.name())
+                raise ValueError(
+                    "The %s session in which this object was defined is no longer running."
+                    % P.name()
+                )
         except AttributeError:
-            raise ValueError("The session in which this object was defined is no longer running.")
+            raise ValueError(
+                "The session in which this object was defined is no longer running."
+            )
         return P
 
     def __del__(self):
@@ -1283,7 +1319,9 @@ class InterfaceElement(Element):
             sage: m.hasattr('gcd')
             False
         """
-        return not isinstance(getattr(self, attrname), (InterfaceFunctionElement, InterfaceElement))
+        return not isinstance(
+            getattr(self, attrname), (InterfaceFunctionElement, InterfaceElement)
+        )
 
     def attribute(self, attrname):
         """
@@ -1366,8 +1404,7 @@ class InterfaceElement(Element):
             True
         """
         P = self._check_valid()
-        cmd = '%s %s %s' % (self._name, P._equality_symbol(),
-                            P._false_symbol())
+        cmd = '%s %s %s' % (self._name, P._equality_symbol(), P._false_symbol())
         return P.eval(cmd) != P._true_symbol()
 
     def __float__(self):
@@ -1397,6 +1434,7 @@ class InterfaceElement(Element):
             1
         """
         from sage.rings.integer import Integer
+
         return Integer(repr(self))
 
     def _rational_(self):
@@ -1413,6 +1451,7 @@ class InterfaceElement(Element):
             1/2
         """
         from sage.rings.rational import Rational
+
         return Rational(repr(self))
 
     def name(self, new_name=None):

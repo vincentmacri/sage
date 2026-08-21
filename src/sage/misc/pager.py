@@ -17,4 +17,5 @@ Any code in sage that uses a pager should use this pager.
 
 def pager():
     import IPython.core.page
+
     return IPython.core.page.page

@@ -2,7 +2,7 @@
 Category of chain complexes
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2007 Robert Bradshaw
 #                2009 Mike Hansen
 #                2013 Volker Braun
@@ -11,7 +11,7 @@ Category of chain complexes
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_types import Category_module
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
@@ -48,6 +48,7 @@ class ChainComplexes(Category_module):
         from sage.categories.fields import Fields
         from sage.categories.modules import Modules
         from sage.categories.vector_spaces import VectorSpaces
+
         base_ring = self.base_ring()
         if base_ring in Fields():
             return [VectorSpaces(base_ring)]
@@ -206,6 +207,7 @@ class HomologyFunctor(Functor):
           From: Z
           To:   Z
     """
+
     def __init__(self, domain, n=None):
         r"""
         Construct the homology functor.
@@ -261,7 +263,11 @@ class HomologyFunctor(Functor):
         lift = domain.lift_from_homology
         reduce = codomain.reduce_to_homology
         apply_f_star = lambda x: reduce(f(lift(x)), self._n)
-        return SetMorphism(Hom(domain.homology(self._n),
-                               codomain.homology(self._n),
-                               CommutativeAdditiveGroups()),
-                           apply_f_star)
+        return SetMorphism(
+            Hom(
+                domain.homology(self._n),
+                codomain.homology(self._n),
+                CommutativeAdditiveGroups(),
+            ),
+            apply_f_star,
+        )

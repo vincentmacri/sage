@@ -329,6 +329,7 @@ class CharacteristicCohomologyClassRingElement(IndexedFreeModuleElement):
         sage: A == 1 - p1/24 + (7*p1^2-4*p2)/5760 + (44*p1*p2-31*p1^3-16*p3)/967680
         True
     """
+
     def __init__(self, parent, x, name=None, latex_name=None):
         r"""
         Construct a characteristic cohomology class.
@@ -346,7 +347,7 @@ class CharacteristicCohomologyClassRingElement(IndexedFreeModuleElement):
         else:
             self._latex_name = latex_name
         self._mixed_forms = {}  # dict. of characteristic forms of self
-                                # (key: bundle connection)
+        # (key: bundle connection)
         super().__init__(parent, x)
 
     def _repr_(self):
@@ -475,12 +476,12 @@ class CharacteristicCohomologyClassRingElement(IndexedFreeModuleElement):
                 algorithm = parent._algorithm
 
                 grading = parent.print_options()['sorting_key']
-                res = [dom.diff_form_module(i).zero()
-                       for i in range(dom._dim + 1)]
+                res = [dom.diff_form_module(i).zero() for i in range(dom._dim + 1)]
                 for ind, c in self:
                     deg = grading(ind)
-                    gen_pow = [algorithm.get_gen_pow(nab, i, ind[i])
-                               for i in range(len(ind))]
+                    gen_pow = [
+                        algorithm.get_gen_pow(nab, i, ind[i]) for i in range(len(ind))
+                    ]
                     res[deg] += c * reduce(lambda x, y: x.wedge(y), gen_pow)
 
                 res = A(res)  # convert result into mixed form
@@ -509,8 +510,7 @@ class CharacteristicCohomologyClassRingElement(IndexedFreeModuleElement):
                     comp_name = name + f'_{i}' + append_name
                     comp_latex_name = latex_name + r'_{' + str(i) + '}'
                     comp_latex_name += append_latex_name
-                    res[step * i].set_name(name=comp_name,
-                                           latex_name=comp_latex_name)
+                    res[step * i].set_name(name=comp_name, latex_name=comp_latex_name)
 
                 # set global names
                 res._name = name + append_name
@@ -732,6 +732,7 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
          over the 2-sphere S^2 of radius 1 smoothly embedded in the Euclidean
          space E^3,)
     """
+
     Element = CharacteristicCohomologyClassRingElement
 
     def __init__(self, base, vbundle):
@@ -767,18 +768,25 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
                 self._algorithm = PontryaginEulerAlgorithm()
                 # TODO: add relation e^2=p_k for dim=2*k
         else:
-            raise TypeError(f'Characteristic cohomology classes not supported '
-                            f'for vector bundles with '
-                            f'field type {vbundle._field_type}')
+            raise TypeError(
+                f'Characteristic cohomology classes not supported '
+                f'for vector bundles with '
+                f'field type {vbundle._field_type}'
+            )
 
         if not names or not degrees:
             raise ValueError('cannot find any generators')
 
         names = tuple(names)  # hashable
         degrees = tuple(degrees)  # hashable
-        super().__init__(base=base, names=names, degrees=degrees,
-                         max_degree=dim, mul_symbol='⌣',
-                         mul_latex_symbol=r'\smile')
+        super().__init__(
+            base=base,
+            names=names,
+            degrees=degrees,
+            max_degree=dim,
+            mul_symbol='⌣',
+            mul_latex_symbol=r'\smile',
+        )
 
     def _element_constructor_(self, x, **kwargs):
         r"""
@@ -808,16 +816,18 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
             d = x._monomial_coefficients
         # x is an element of the basis enumerated set;
         # This is a very ugly way of testing this
-        elif ((hasattr(self._indices, 'element_class') and
-               isinstance(self._indices.element_class, type) and
-               isinstance(x, self._indices.element_class)) or
-              self.parent()(x) == self._indices):
+        elif (
+            hasattr(self._indices, 'element_class')
+            and isinstance(self._indices.element_class, type)
+            and isinstance(x, self._indices.element_class)
+        ) or self.parent()(x) == self._indices:
             d = {x: R.one()}
         elif x in self._indices:
             d = {self._indices(x): R.one()}
         else:
-            raise TypeError(f"do not know how to make x (= {x}) "
-                            f"an element of self (={self})")
+            raise TypeError(
+                f"do not know how to make x (= {x}) an element of self (={self})"
+            )
         name, latex_name = kwargs.get('name'), kwargs.get('latex_name')
         return self.element_class(self, d, name=name, latex_name=latex_name)
 
@@ -921,8 +931,7 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
                 if latex_name is None:
                     latex_name = r'\mathrm{ch}'
                 class_type = 'additive'
-                coeff = [1 / factorial(k) for k in
-                         range(dim // 2 + 1)]  # exp(x)
+                coeff = [1 / factorial(k) for k in range(dim // 2 + 1)]  # exp(x)
                 val = P(coeff)
             elif val == 'Todd':
                 if vbundle._field_type != 'complex':
@@ -934,8 +943,12 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
                 class_type = 'multiplicative'
                 val = 1 + x / 2
                 for k in range(1, dim // 2 + 1):
-                    val += (-1) ** (k + 1) / factorial(2 * k) * bernoulli(
-                        2 * k) * x ** (2 * k)
+                    val += (
+                        (-1) ** (k + 1)
+                        / factorial(2 * k)
+                        * bernoulli(2 * k)
+                        * x ** (2 * k)
+                    )
             elif val == 'Hirzebruch':
                 if vbundle._field_type != 'real':
                     raise ValueError(f'Hirzebruch class not defined on {vbundle}')
@@ -944,8 +957,10 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
                 if latex_name is None:
                     latex_name = 'L'
                 class_type = 'multiplicative'
-                coeff = [2 ** (2 * k) * bernoulli(2 * k) / factorial(2 * k)
-                         for k in range(dim // 4 + 1)]
+                coeff = [
+                    2 ** (2 * k) * bernoulli(2 * k) / factorial(2 * k)
+                    for k in range(dim // 4 + 1)
+                ]
                 val = P(coeff)
             elif val == 'AHat':
                 if vbundle._field_type != 'real':
@@ -955,9 +970,13 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
                 if latex_name is None:
                     latex_name = r'\hat{A}'
                 class_type = 'multiplicative'
-                coeff = [- (2 ** (2 * k) - 2) / 2 ** (2 * k) * bernoulli(
-                    2 * k) / factorial(2 * k)
-                         for k in range(dim // 4 + 1)]
+                coeff = [
+                    -(2 ** (2 * k) - 2)
+                    / 2 ** (2 * k)
+                    * bernoulli(2 * k)
+                    / factorial(2 * k)
+                    for k in range(dim // 4 + 1)
+                ]
                 val = P(coeff)
             elif val == 'Euler':
                 if vbundle._field_type != 'real' or not vbundle.has_orientation():
@@ -986,8 +1005,7 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
         # turn polynomial into a characteristic cohomology class via sequences
         if isinstance(val, Polynomial):
             if class_type is None:
-                raise TypeError(f'class_type must be stated if {val} '
-                                f'is a polynomial')
+                raise TypeError(f'class_type must be stated if {val} is a polynomial')
             n = self.ngens()
             s = 0  # shift; important in case of Euler class generator
             if self._algorithm is PontryaginEulerAlgorithm():
@@ -1049,6 +1067,7 @@ class CharacteristicCohomologyClassRing(FiniteGCAlgebra):
 # ALGORITHMS
 # *****************************************************************************
 
+
 def multiplicative_sequence(q, n=None):
     r"""
     Turn the polynomial ``q`` into its multiplicative sequence.
@@ -1098,9 +1117,9 @@ def multiplicative_sequence(q, n=None):
     m = Sym.m()
 
     # Get the multiplicative sequence in the monomial basis:
-    mon_pol = m._from_dict({p: prod(q[i] for i in p)
-                            for k in range(n + 1)
-                            for p in Partitions(k)})
+    mon_pol = m._from_dict(
+        {p: prod(q[i] for i in p) for k in range(n + 1) for p in Partitions(k)}
+    )
     return Sym.e()(mon_pol)
 
 
@@ -1223,6 +1242,7 @@ class Algorithm_generic(SageObject):
         sage: algorithm.get_gen_pow
         Cached version of <function Algorithm_generic.get_gen_pow at 0x...>
     """
+
     @cached_method
     def get(self, nab):
         r"""
@@ -1263,13 +1283,14 @@ class Algorithm_generic(SageObject):
         dom = nab._domain
         res = []  # will be specified within first iteration
         for frame in dom._get_min_covering(nab._coefficients):
-            cmat = [[nab.curvature_form(i, j, frame) for j in vbundle.irange()]
-                    for i in vbundle.irange()]
+            cmat = [
+                [nab.curvature_form(i, j, frame) for j in vbundle.irange()]
+                for i in vbundle.irange()
+            ]
             res_loc = self.get_local(cmat)
             if not res:
                 # until now, degrees of generators were unknown
-                res = [dom.diff_form(loc_form.degree())
-                       for loc_form in res_loc]
+                res = [dom.diff_form(loc_form.degree()) for loc_form in res_loc]
             for form, loc_form in zip(res, res_loc):
                 form.set_restriction(loc_form)
             # TODO: make `res` immutable?
@@ -1386,6 +1407,7 @@ class ChernAlgorithm(Singleton, Algorithm_generic):
         sage: algorithm.get_gen_pow(nab, 0, 1) == algorithm.get(nab)[0]
         True
     """
+
     def get_local(self, cmat):
         r"""
         Return the local Chern forms w.r.t. a given curvature form matrix.
@@ -1445,8 +1467,10 @@ class ChernAlgorithm(Singleton, Algorithm_generic):
             for i in range(rk):
                 m[i][i] += c
             fac *= I / (2 * pi)
-            m = [[sum(cmat[i][l].wedge(m[l][j]) for l in range(rk))
-                  for j in range(rk)] for i in range(rk)]
+            m = [
+                [sum(cmat[i][l].wedge(m[l][j]) for l in range(rk)) for j in range(rk)]
+                for i in range(rk)
+            ]
         res.append(-fac * sum(m[i][i] for i in range(rk)) / ran)
         return res
 
@@ -1472,6 +1496,7 @@ class PontryaginAlgorithm(Singleton, Algorithm_generic):
         sage: p1.display() # long time
         0
     """
+
     def get_local(self, cmat):
         r"""
         Return the local Pontryagin forms w.r.t. a given curvature form matrix.
@@ -1514,17 +1539,20 @@ class PontryaginAlgorithm(Singleton, Algorithm_generic):
             return []  # nothing to compute
         fac = 1 / (2 * pi) ** 2
         res = []
-        m = cmat2 = [[sum(cmat[i][l].wedge(cmat[l][j])
-                          for l in range(rk))
-                      for j in range(rk)] for i in range(rk)]
+        m = cmat2 = [
+            [sum(cmat[i][l].wedge(cmat[l][j]) for l in range(rk)) for j in range(rk)]
+            for i in range(rk)
+        ]
         for k in range(1, ran):
             c = -sum(m[i][i] for i in range(rk)) / (2 * k)
             res.append(fac * c)
             for i in range(rk):
                 m[i][i] += c
             fac *= 1 / (2 * pi) ** 2
-            m = [[sum(cmat2[i][l].wedge(m[l][j]) for l in range(rk))
-                  for j in range(rk)] for i in range(rk)]
+            m = [
+                [sum(cmat2[i][l].wedge(m[l][j]) for l in range(rk)) for j in range(rk)]
+                for i in range(rk)
+            ]
         res.append(-fac * sum(m[i][i] for i in range(rk)) / (2 * ran))
         return res
 
@@ -1551,6 +1579,7 @@ class EulerAlgorithm(Singleton, Algorithm_generic):
         sage: algorithm.get(nab)[0].display()
         0
     """
+
     @cached_method
     def get(self, nab):
         r"""
@@ -1609,24 +1638,35 @@ class EulerAlgorithm(Singleton, Algorithm_generic):
         - [Baer2020]_
         """
         if not isinstance(nab, LeviCivitaConnection):
-            raise TypeError('Euler forms are currently only supported for '
-                            'Levi-Civita connections')
+            raise TypeError(
+                'Euler forms are currently only supported for Levi-Civita connections'
+            )
         dom = nab._domain
         vbundle = dom.tangent_bundle()
         rk = vbundle._rank
         if not vbundle.has_orientation():
-            raise ValueError('Euler forms can only be defined for orientable '
-                             'vector bundles')
+            raise ValueError(
+                'Euler forms can only be defined for orientable vector bundles'
+            )
         if rk % 2 != 0:
-            raise ValueError('Euler forms are currently only supported for '
-                             'vector bundles with even rank')
+            raise ValueError(
+                'Euler forms are currently only supported for '
+                'vector bundles with even rank'
+            )
         res = dom.diff_form(rk)
         g = nab._metric
         for frame in dom._get_min_covering(vbundle.orientation()):
             # (G_s * Ω_s)_ij = g(R(.,.)s_i, s_j)
-            gcmat = [[sum(g[[frame, i, j]] * nab.curvature_form(j, k, frame)
-                          for j in vbundle.irange())
-                      for k in vbundle.irange()] for i in vbundle.irange()]
+            gcmat = [
+                [
+                    sum(
+                        g[[frame, i, j]] * nab.curvature_form(j, k, frame)
+                        for j in vbundle.irange()
+                    )
+                    for k in vbundle.irange()
+                ]
+                for i in vbundle.irange()
+            ]
             [res_loc] = self.get_local(gcmat)  # Pf(G_s * Ω_s) mod const.
             # e = 1 / sqrt(|det(G_s)|) * Pf(G_s * Ω_s) mod const.
             det = g.det(frame)
@@ -1699,8 +1739,10 @@ class EulerAlgorithm(Singleton, Algorithm_generic):
             e = -sum(m[i][i] for i in range(rk)) / (2 * k)
             for i in range(rk):
                 m[i][i] += e
-            m = [[sum(a[i][l].wedge(m[l][j]) for l in range(rk))
-                  for j in range(rk)] for i in range(rk)]
+            m = [
+                [sum(a[i][l].wedge(m[l][j]) for l in range(rk)) for j in range(rk)]
+                for i in range(rk)
+            ]
         e = -sum(m[i][i] for i in range(rk)) / (2 * ran)  # Pfaffian mod sign
         e *= (-1 / (2 * pi)) ** ran  # normalize
         return [e]

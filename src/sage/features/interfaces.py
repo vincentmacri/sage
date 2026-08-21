@@ -36,6 +36,7 @@ class InterfaceFeature(Feature):
         sage: _.reason
         "Interface also_broken_interface cannot be imported: module 'sage.interfaces.interface' has no attribute 'also_broken_interface'"
     """
+
     @staticmethod
     def __classcall__(cls, name, module, description=None):
         """
@@ -80,14 +81,20 @@ class InterfaceFeature(Feature):
         try:
             interface = getattr(m, self.name)
         except Exception as exception:
-            return FeatureTestResult(self, False,
-                                     reason=f"Interface {self.name} cannot be imported: {exception}")
+            return FeatureTestResult(
+                self,
+                False,
+                reason=f"Interface {self.name} cannot be imported: {exception}",
+            )
         try:
             interface('2+3')
             return FeatureTestResult(self, True)
         except Exception as exception:
-            return FeatureTestResult(self, False,
-                                     reason=f"Interface {interface} is not functional: {exception}")
+            return FeatureTestResult(
+                self,
+                False,
+                reason=f"Interface {interface} is not functional: {exception}",
+            )
 
     def is_external(self):
         r"""
@@ -109,6 +116,7 @@ class InternalInterfaceFeature(InterfaceFeature):
     r"""
     Class to distinguish between interfaces based on internal (Python package) and external software.
     """
+
     pass
 
 
@@ -158,6 +166,7 @@ class Regina(InternalInterfaceFeature):
             sage: F.module.unhide()
         """
         from sage.features.join_feature import JoinFeature
+
         interface = 'sage.interfaces.regina'
         mod = JoinFeature(interface, (PythonModule('regina'), PythonModule(interface)))
         return InterfaceFeature.__classcall__(cls, 'regina', mod)
@@ -192,12 +201,14 @@ class SnapPy(InternalInterfaceFeature):
             sage: F.module.unhide()
         """
         from sage.features.join_feature import JoinFeature
+
         interface = 'sage.interfaces.snappy'
         mod = JoinFeature(interface, (PythonModule('snappy'), PythonModule(interface)))
         return InterfaceFeature.__classcall__(cls, 'snappy', mod)
 
 
 # The following are provided by external software only (no SPKG)
+
 
 class Magma(InterfaceFeature):
     r"""
@@ -247,7 +258,9 @@ class Mathematica(InterfaceFeature):
 
     @staticmethod
     def __classcall__(cls):
-        return InterfaceFeature.__classcall__(cls, 'mathematica', 'sage.interfaces.mathematica')
+        return InterfaceFeature.__classcall__(
+            cls, 'mathematica', 'sage.interfaces.mathematica'
+        )
 
 
 class Maple(InterfaceFeature):
@@ -281,7 +294,9 @@ class Macaulay2(InterfaceFeature):
 
     @staticmethod
     def __classcall__(cls):
-        return InterfaceFeature.__classcall__(cls, 'macaulay2', 'sage.interfaces.macaulay2')
+        return InterfaceFeature.__classcall__(
+            cls, 'macaulay2', 'sage.interfaces.macaulay2'
+        )
 
 
 class Octave(InterfaceFeature):
@@ -337,13 +352,15 @@ def all_features():
          Feature('snappy'),
          Feature('scilab')]
     """
-    return [Magma(),
-            Matlab(),
-            Mathematica(),
-            Mathics(),
-            Maple(),
-            Macaulay2(),
-            Octave(),
-            Regina(),
-            SnapPy(),
-            Scilab()]
+    return [
+        Magma(),
+        Matlab(),
+        Mathematica(),
+        Mathics(),
+        Maple(),
+        Macaulay2(),
+        Octave(),
+        Regina(),
+        SnapPy(),
+        Scilab(),
+    ]

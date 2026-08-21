@@ -81,6 +81,7 @@ class CurveClosedPoint(SchemeTopologicalPoint_prime_ideal):
     """
     Base class of closed points of curves.
     """
+
     pass
 
 
@@ -112,6 +113,7 @@ class IntegralCurveClosedPoint(CurveClosedPoint):
          Point (x + 1, y + a),
          Point (x + 1, y + (a + 1))]
     """
+
     def __init__(self, curve, prime_ideal, degree):
         """
         Initialize.
@@ -169,7 +171,9 @@ class IntegralCurveClosedPoint(CurveClosedPoint):
             sage: pts[0] == pts[1]
             False
         """
-        return richcmp((self._curve, self.prime_ideal()), (other._curve, other.prime_ideal()), op)
+        return richcmp(
+            (self._curve, self.prime_ideal()), (other._curve, other.prime_ideal()), op
+        )
 
     def _repr_(self):
         """
@@ -185,7 +189,9 @@ class IntegralCurveClosedPoint(CurveClosedPoint):
             sage: pts[0]
             Point (x, y)
         """
-        return "Point ({})".format(', '.join(repr(g) for g in self.prime_ideal().gens()))
+        return "Point ({})".format(
+            ', '.join(repr(g) for g in self.prime_ideal().gens())
+        )
 
     def curve(self):
         """
@@ -262,6 +268,7 @@ class IntegralAffineCurveClosedPoint(IntegralCurveClosedPoint):
     """
     Closed points of affine curves.
     """
+
     def rational_point(self):
         """
         Return the rational point if this closed point is of degree `1`.
@@ -352,6 +359,7 @@ class IntegralProjectiveCurveClosedPoint(IntegralCurveClosedPoint):
     """
     Closed points of projective plane curves.
     """
+
     def rational_point(self):
         """
         Return the rational point if this closed point is of degree `1`.
@@ -427,7 +435,9 @@ class IntegralProjectiveCurveClosedPoint(IntegralCurveClosedPoint):
         A = P.affine_patch(i)
         phi = A.projective_embedding(i, P)
 
-        prime = A.coordinate_ring().ideal(ideal.subs(dict(zip(P.gens(), phi.defining_polynomials()))))
+        prime = A.coordinate_ring().ideal(
+            ideal.subs(dict(zip(P.gens(), phi.defining_polynomials())))
+        )
 
         Ca = C.affine_patch(i)
         return Ca._closed_point(Ca, prime, self.degree())

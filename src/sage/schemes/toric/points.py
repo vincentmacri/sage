@@ -45,7 +45,6 @@ from sage.parallel.decorate import Parallel
 
 
 class InfinitePointEnumerator:
-
     def __init__(self, fan, ring):
         """
         Point enumerator for infinite fields.
@@ -105,7 +104,6 @@ class InfinitePointEnumerator:
 
 
 class NaiveFinitePointEnumerator:
-
     def __init__(self, fan, ring):
         """
         The naive point enumerator.
@@ -216,8 +214,10 @@ class NaiveFinitePointEnumerator:
         result = []
         ker = self.rays().matrix().integer_kernel().matrix()
         for phases in itertools.product(units, repeat=ker.nrows()):
-            phases = tuple(prod(mu**exponent for mu, exponent in zip(phases, column))
-                           for column in ker.columns())
+            phases = tuple(
+                prod(mu**exponent for mu, exponent in zip(phases, column))
+                for column in ker.columns()
+            )
             result.append(phases)
         return tuple(sorted(result))
 
@@ -426,7 +426,6 @@ class NaiveFinitePointEnumerator:
 
 
 class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
-
     @cached_method
     def multiplicative_generator(self):
         """
@@ -509,8 +508,9 @@ class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
         result = []
         null_space = self.rays().matrix().integer_kernel()
         for ker in null_space.basis():
-            phases = tuple(self.multiplicative_generator()**exponent
-                           for exponent in ker)
+            phases = tuple(
+                self.multiplicative_generator() ** exponent for exponent in ker
+            )
             result.append(phases)
         return tuple(sorted(result))
 
@@ -547,7 +547,9 @@ class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
                 continue
             phases = tuple(root**exponent for exponent in t_lift)
             result.add(phases)
-        assert tuple(self.ring.one() for r in self.rays()) not in result  # because we excluded 1 as root
+        assert (
+            tuple(self.ring.one() for r in self.rays()) not in result
+        )  # because we excluded 1 as root
         return tuple(sorted(result))
 
     def log(self, z):
@@ -613,7 +615,7 @@ class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
             True
         """
         base = self.multiplicative_generator()
-        return tuple(base ** i for i in powers)
+        return tuple(base**i for i in powers)
 
     @cached_method
     def rescaling_log_generators(self):
@@ -675,19 +677,28 @@ class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
         """
         from sage.matrix.constructor import matrix, block_matrix, identity_matrix
         from sage.rings.integer_ring import ZZ
+
         nrays = len(self.rays())
         N = self.multiplicative_group_order()
         # Want cokernel of the log rescalings in (ZZ/N)^(#rays). But
         # ZZ/N is not a integral domain. Instead: work over ZZ
         log_generators = self.rescaling_log_generators()
-        log_relations = block_matrix(2, 1, [
-            matrix(ZZ, len(log_generators), nrays, log_generators),
-            N * identity_matrix(ZZ, nrays)])
+        log_relations = block_matrix(
+            2,
+            1,
+            [
+                matrix(ZZ, len(log_generators), nrays, log_generators),
+                N * identity_matrix(ZZ, nrays),
+            ],
+        )
         for cone in self.cone_iter():
             nrays = self.fan().nrays() + len(self.fan().virtual_rays())
-            nonzero_coordinates = [i for i in range(nrays)
-                                   if i not in cone.ambient_ray_indices()]
-            log_relations_nonzero = log_relations.matrix_from_columns(nonzero_coordinates)
+            nonzero_coordinates = [
+                i for i in range(nrays) if i not in cone.ambient_ray_indices()
+            ]
+            log_relations_nonzero = log_relations.matrix_from_columns(
+                nonzero_coordinates
+            )
             image = log_relations_nonzero.image()
             cokernel = image.ambient_module().quotient(image)
             yield cone, nonzero_coordinates, cokernel
@@ -754,7 +765,6 @@ class FiniteFieldPointEnumerator(NaiveFinitePointEnumerator):
 
 
 class NaiveSubschemePointEnumerator:
-
     def __init__(self, polynomials, ambient):
         """
         Point enumerator for algebraic subschemes of toric varieties.
@@ -806,7 +816,6 @@ class NaiveSubschemePointEnumerator:
 
 
 class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
-
     def inhomogeneous_equations(self, ring, nonzero_coordinates, cokernel):
         """
         Inhomogenize the defining polynomials.
@@ -878,6 +887,7 @@ class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
             [(0,), (3,)]
         """
         from itertools import product
+
         for log_t in product(*log_range):
             t = self.ambient.exp(log_t)
             if all(poly(t) == 0 for poly in inhomogeneous_equations):
@@ -916,6 +926,7 @@ class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
 
         def partial_solution(work_range):
             return list(self.solutions_serial(inhomogeneous_equations, work_range))
+
         for partial_result in parallel(partial_solution)(work):
             for log_t in partial_result[-1]:
                 yield log_t
@@ -955,7 +966,8 @@ class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
         """
         z = [self.ambient.ring.zero()] * len(self.ambient.rays())
         z_nonzero = self.ambient.exp(
-            cokernel.linear_combination_of_smith_form_gens(log_t).lift())
+            cokernel.linear_combination_of_smith_form_gens(log_t).lift()
+        )
         for i, value in enumerate(z_nonzero):
             z[nonzero_coordinates[i]] = value
         return tuple(z)
@@ -984,11 +996,12 @@ class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
         """
         for cone, nonzero_coordinates, cokernel in self.ambient.cone_points_iter():
             R = PolynomialRing(self.ambient.ring, cokernel.ngens(), 't')
-            inhomogeneous = self.inhomogeneous_equations(R, nonzero_coordinates, cokernel)
+            inhomogeneous = self.inhomogeneous_equations(
+                R, nonzero_coordinates, cokernel
+            )
             log_range = [range(I) for I in cokernel.invariants()]
             for log_t in self.solutions(inhomogeneous, log_range):
-                yield self.homogeneous_coordinates(log_t, nonzero_coordinates,
-                                                   cokernel)
+                yield self.homogeneous_coordinates(log_t, nonzero_coordinates, cokernel)
 
     def cardinality(self):
         """
@@ -1017,7 +1030,9 @@ class FiniteFieldSubschemePointEnumerator(NaiveSubschemePointEnumerator):
         n = 0
         for cone, nonzero_coordinates, cokernel in self.ambient.cone_points_iter():
             R = PolynomialRing(self.ambient.ring, cokernel.ngens(), 't')
-            inhomogeneous = self.inhomogeneous_equations(R, nonzero_coordinates, cokernel)
+            inhomogeneous = self.inhomogeneous_equations(
+                R, nonzero_coordinates, cokernel
+            )
             log_range = [range(I) for I in cokernel.invariants()]
             for log_t in self.solutions(inhomogeneous, log_range):
                 n += 1

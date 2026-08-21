@@ -30,14 +30,16 @@ from sage.categories.rings import Rings
 from sage.matrix.constructor import matrix, identity_matrix
 from sage.misc.prandom import randint
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.quadratic_forms.ternary import (_basic_lemma,
-                                          _find_a_ternary_qf_by_level_disc,
-                                          _find_all_ternary_qf_by_level_disc,
-                                          _find_p_neighbor_from_vec,
-                                          _find_zeros_mod_p_2,
-                                          _find_zeros_mod_p_odd,
-                                          _reduced_ternary_form_eisenstein_with_matrix,
-                                          _reduced_ternary_form_eisenstein_without_matrix)
+from sage.quadratic_forms.ternary import (
+    _basic_lemma,
+    _find_a_ternary_qf_by_level_disc,
+    _find_all_ternary_qf_by_level_disc,
+    _find_p_neighbor_from_vec,
+    _find_zeros_mod_p_2,
+    _find_zeros_mod_p_odd,
+    _reduced_ternary_form_eisenstein_with_matrix,
+    _reduced_ternary_form_eisenstein_without_matrix,
+)
 
 from sage.rings.finite_rings.integer_mod import mod
 from sage.rings.integer_ring import ZZ
@@ -70,8 +72,16 @@ class TernaryQF(SageObject):
         sage: TestSuite(TernaryQF).run()
     """
 
-    __slots__ = ['_a', '_b', '_c', '_r', '_s', '_t',
-                 '_automorphisms', '_number_of_automorphisms']
+    __slots__ = [
+        '_a',
+        '_b',
+        '_c',
+        '_r',
+        '_s',
+        '_t',
+        '_automorphisms',
+        '_number_of_automorphisms',
+    ]
 
     possible_automorphisms = None
 
@@ -93,7 +103,9 @@ class TernaryQF(SageObject):
         """
         if len(v) != 6:
             # Check we have six coefficients
-            raise ValueError("Ternary quadratic form must be given by a list of six coefficients")
+            raise ValueError(
+                "Ternary quadratic form must be given by a list of six coefficients"
+            )
         self._a, self._b, self._c, self._r, self._s, self._t = (ZZ(x) for x in v)
         self._automorphisms = None
         self._number_of_automorphisms = None
@@ -164,7 +176,14 @@ class TernaryQF(SageObject):
             Multivariate Polynomial Ring in x, y, z over Integer Ring
         """
         x, y, z = polygens(ZZ, names)
-        return self._a * x**2 + self._b * y**2 + self._c * z**2 + self._t * x*y + self._s * x*z + self._r * y*z
+        return (
+            self._a * x**2
+            + self._b * y**2
+            + self._c * z**2
+            + self._t * x * y
+            + self._s * x * z
+            + self._r * y * z
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -230,8 +249,16 @@ class TernaryQF(SageObject):
             # Check if v has 3 cols
             if v.ncols() == 3:
                 M = v.transpose() * self.matrix() * v
-                return TernaryQF([M[0, 0] // 2, M[1, 1] // 2, M[2, 2] // 2,
-                                  M[1, 2], M[0, 2], M[0, 1]])
+                return TernaryQF(
+                    [
+                        M[0, 0] // 2,
+                        M[1, 1] // 2,
+                        M[2, 2] // 2,
+                        M[1, 2],
+                        M[0, 2],
+                        M[0, 1],
+                    ]
+                )
 
             return QuadraticForm(ZZ, v.transpose() * self.matrix() * v)
         if isinstance(v, (Vector, list, tuple)):
@@ -240,9 +267,18 @@ class TernaryQF(SageObject):
                 raise TypeError("your vector needs to have length 3")
             v0, v1, v2 = v
             a, b, c, r, s, t = self.coefficients()
-            return a*v0**2 + b*v1**2 + c*v2**2 + r*v1*v2 + s*v0*v2 + t*v0*v1
+            return (
+                a * v0**2
+                + b * v1**2
+                + c * v2**2
+                + r * v1 * v2
+                + s * v0 * v2
+                + t * v0 * v1
+            )
 
-        raise TypeError("presently we can only evaluate a quadratic form on a list, tuple, vector or matrix")
+        raise TypeError(
+            "presently we can only evaluate a quadratic form on a list, tuple, vector or matrix"
+        )
 
     def quadratic_form(self):
         r"""
@@ -260,8 +296,9 @@ class TernaryQF(SageObject):
             sage: bool(QF1 == QF2)
             True
         """
-        return QuadraticForm(ZZ, 3, [self._a, self._t, self._s,
-                                     self._b, self._r, self._c])
+        return QuadraticForm(
+            ZZ, 3, [self._a, self._t, self._s, self._b, self._r, self._c]
+        )
 
     def matrix(self):
         r"""
@@ -291,9 +328,22 @@ class TernaryQF(SageObject):
             sage: (v*M*v.column())[0]//2
             28
         """
-        return matrix(ZZ, 3, 3, [2 * self._a, self._t, self._s,
-                                 self._t, 2 * self._b, self._r,
-                                 self._s, self._r, 2 * self._c])
+        return matrix(
+            ZZ,
+            3,
+            3,
+            [
+                2 * self._a,
+                self._t,
+                self._s,
+                self._t,
+                2 * self._b,
+                self._r,
+                self._s,
+                self._r,
+                2 * self._c,
+            ],
+        )
 
     def disc(self):
         r"""
@@ -309,8 +359,13 @@ class TernaryQF(SageObject):
             sage: Q.matrix().det()
             -50
         """
-        return (4*self._a*self._b*self._c + self._r*self._s*self._t
-                - self._a*self._r**2 - self._b*self._s**2 - self._c*self._t**2)
+        return (
+            4 * self._a * self._b * self._c
+            + self._r * self._s * self._t
+            - self._a * self._r**2
+            - self._b * self._s**2
+            - self._c * self._t**2
+        )
 
     def is_definite(self) -> bool:
         """
@@ -493,15 +548,33 @@ class TernaryQF(SageObject):
             [ * * 4/3 ]
         """
         if k * self.content() in ZZ:
-            return TernaryQF([ZZ(k*self._a), ZZ(k*self._b), ZZ(k*self._c),
-                              ZZ(k*self._r), ZZ(k*self._s), ZZ(k*self._t)])
+            return TernaryQF(
+                [
+                    ZZ(k * self._a),
+                    ZZ(k * self._b),
+                    ZZ(k * self._c),
+                    ZZ(k * self._r),
+                    ZZ(k * self._s),
+                    ZZ(k * self._t),
+                ]
+            )
 
         R = k.parent()
         if R not in Rings():
             raise TypeError(f"{k} does not belong to a ring")
 
-        return QuadraticForm(R, 3, [k * self._a, k * self._t, k * self._s,
-                                    k * self._b, k * self._r, k * self._c])
+        return QuadraticForm(
+            R,
+            3,
+            [
+                k * self._a,
+                k * self._t,
+                k * self._s,
+                k * self._b,
+                k * self._r,
+                k * self._c,
+            ],
+        )
 
     def reciprocal(self):
         """
@@ -555,13 +628,13 @@ class TernaryQF(SageObject):
             sage: Q.divisor()
             4
         """
-        A11 = 4*self._b*self._c - self._r**2
-        A22 = 4*self._a*self._c - self._s**2
-        A33 = 4*self._a*self._b - self._t**2
-        A23 = self._s*self._t - 2*self._a*self._r
-        A13 = self._r*self._t - 2*self._b*self._s
-        A12 = self._r*self._s - 2*self._c*self._t
-        m = gcd([A11, A22, A33, 2*A12, 2*A13, 2*A23])
+        A11 = 4 * self._b * self._c - self._r**2
+        A22 = 4 * self._a * self._c - self._s**2
+        A33 = 4 * self._a * self._b - self._t**2
+        A23 = self._s * self._t - 2 * self._a * self._r
+        A13 = self._r * self._t - 2 * self._b * self._s
+        A12 = self._r * self._s - 2 * self._c * self._t
+        m = gcd([A11, A22, A33, 2 * A12, 2 * A13, 2 * A23])
         return m
 
     def __eq__(self, right) -> bool:
@@ -599,13 +672,13 @@ class TernaryQF(SageObject):
             sage: Q.adjoint().matrix() == 2*Q.matrix().adjoint_classical()
             True
         """
-        A11 = 4*self._b*self._c - self._r**2
-        A22 = 4*self._a*self._c - self._s**2
-        A33 = 4*self._a*self._b - self._t**2
-        A23 = self._s*self._t - 2*self._a*self._r
-        A13 = self._r*self._t - 2*self._b*self._s
-        A12 = self._r*self._s - 2*self._c*self._t
-        return TernaryQF([A11, A22, A33, 2*A23, 2*A13, 2*A12])
+        A11 = 4 * self._b * self._c - self._r**2
+        A22 = 4 * self._a * self._c - self._s**2
+        A33 = 4 * self._a * self._b - self._t**2
+        A23 = self._s * self._t - 2 * self._a * self._r
+        A13 = self._r * self._t - 2 * self._b * self._s
+        A12 = self._r * self._s - 2 * self._c * self._t
+        return TernaryQF([A11, A22, A33, 2 * A23, 2 * A13, 2 * A12])
 
     def content(self):
         """
@@ -703,8 +776,7 @@ class TernaryQF(SageObject):
             sage: Q.is_eisenstein_reduced()
             False
         """
-        a, b, c, r, s, t = [self._a, self._b, self._c,
-                            self._r, self._s, self._t]
+        a, b, c, r, s, t = [self._a, self._b, self._c, self._r, self._s, self._t]
 
         # cond 2
         if not (r > 0 and t > 0 and s > 0):
@@ -712,7 +784,7 @@ class TernaryQF(SageObject):
                 return False
 
         # cond 1 & 4
-        if not (a <= b <= c and 0 <= a+b+r+s+t):
+        if not (a <= b <= c and 0 <= a + b + r + s + t):
             return False
 
         # cond 3
@@ -724,7 +796,7 @@ class TernaryQF(SageObject):
             return False
         if b == c and abs(s) > abs(t):
             return False
-        if a+b+r+s+t == 0 and 2*a+2*s+t > 0:
+        if a + b + r + s + t == 0 and 2 * a + 2 * s + t > 0:
             return False
 
         # cond 6
@@ -739,9 +811,9 @@ class TernaryQF(SageObject):
 
         # cond 7
         # r, s, t > 0
-        if a == t and s > 2*r:
+        if a == t and s > 2 * r:
             return False
-        if a == s and t > 2*r:
+        if a == s and t > 2 * r:
             return False
         return not (b == r and t > 2 * s)
 
@@ -775,10 +847,14 @@ class TernaryQF(SageObject):
             [3 2 1]
         """
         if matrix:
-            v, M = _reduced_ternary_form_eisenstein_with_matrix(self._a, self._b, self._c, self._r, self._s, self._t)
+            v, M = _reduced_ternary_form_eisenstein_with_matrix(
+                self._a, self._b, self._c, self._r, self._s, self._t
+            )
             return TernaryQF(v), M
 
-        v = _reduced_ternary_form_eisenstein_without_matrix(self._a, self._b, self._c, self._r, self._s, self._t)
+        v = _reduced_ternary_form_eisenstein_without_matrix(
+            self._a, self._b, self._c, self._r, self._s, self._t
+        )
         return TernaryQF(v)
 
     def pseudorandom_primitive_zero_mod_p(self, p):
@@ -803,20 +879,19 @@ class TernaryQF(SageObject):
         """
         a, b, c, r, s, t = self.coefficients()
         while True:
-
-            r1 = randint(0, p-1)
-            r2 = randint(0, p-1)
-            alpha = (b*r1**2+t*r1+a) % p
+            r1 = randint(0, p - 1)
+            r2 = randint(0, p - 1)
+            alpha = (b * r1**2 + t * r1 + a) % p
             if alpha != 0:
-
-                beta = (2*b*r1*r2+t*r2+r*r1+s) % p
-                gamma = (b*r2**2+r*r2+c) % p
-                disc = beta**2-4*alpha*gamma
+                beta = (2 * b * r1 * r2 + t * r2 + r * r1 + s) % p
+                gamma = (b * r2**2 + r * r2 + c) % p
+                disc = beta**2 - 4 * alpha * gamma
                 if mod(disc, p).is_square():
-
-                    z = (-beta+mod(disc, p).sqrt().lift())*(2*alpha).inverse_mod(p)
+                    z = (-beta + mod(disc, p).sqrt().lift()) * (2 * alpha).inverse_mod(
+                        p
+                    )
                     # return vector((z,r1*z+r2,1))%p
-                    return z % p, (r1*z+r2) % p, 1
+                    return z % p, (r1 * z + r2) % p, 1
 
     def find_zeros_mod_p(self, p):
         """
@@ -838,8 +913,9 @@ class TernaryQF(SageObject):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         """
         if p == 2:
-            return _find_zeros_mod_p_2(self._a, self._b, self._c,
-                                       self._r, self._s, self._t)
+            return _find_zeros_mod_p_2(
+                self._a, self._b, self._c, self._r, self._s, self._t
+            )
 
         v = self.pseudorandom_primitive_zero_mod_p(p)
         a, b, c, r, s, t = self.coefficients()
@@ -890,10 +966,16 @@ class TernaryQF(SageObject):
             [-2 0 -1]
         """
         if mat:
-            q, M = _find_p_neighbor_from_vec(self._a, self._b, self._c, self._r, self._s, self._t, p, v, mat)
+            q, M = _find_p_neighbor_from_vec(
+                self._a, self._b, self._c, self._r, self._s, self._t, p, v, mat
+            )
             M = matrix(3, M)
-            return TernaryQF(q), M*M.det()
-        return TernaryQF(_find_p_neighbor_from_vec(self._a, self._b, self._c, self._r, self._s, self._t, p, v, mat))
+            return TernaryQF(q), M * M.det()
+        return TernaryQF(
+            _find_p_neighbor_from_vec(
+                self._a, self._b, self._c, self._r, self._s, self._t, p, v, mat
+            )
+        )
 
     def find_p_neighbors(self, p, mat=False):
         """
@@ -1020,7 +1102,7 @@ class TernaryQF(SageObject):
             True
         """
 
-        return identity_matrix(3) - v.column()*matrix(v)*self.matrix()/self(v)
+        return identity_matrix(3) - v.column() * matrix(v) * self.matrix() / self(v)
 
     def automorphism_symmetries(self, A) -> list:
         """
@@ -1161,19 +1243,19 @@ class TernaryQF(SageObject):
         """
         a, b, c, r, s, t = self.coefficients()
         if n == 1:
-            return (a == t) and (s == 2*r)
+            return (a == t) and (s == 2 * r)
         if n == 2:
-            return (a == s) and (t == 2*r)
+            return (a == s) and (t == 2 * r)
         if n == 3:
-            return (b == r) and (t == 2*s)
+            return (b == r) and (t == 2 * s)
         if n == 4:
-            return (a == -t)
+            return a == -t
         if n == 5:
-            return (a == -s)
+            return a == -s
         if n == 6:
-            return (b == -r)
+            return b == -r
         if n == 7:
-            return (a + b + r + s + t == 0) and (2*a + 2*s + t == 0)
+            return (a + b + r + s + t == 0) and (2 * a + 2 * s + t == 0)
         if n == 8:
             return (a == b) and (r == s)
         if n == 9:
@@ -1276,58 +1358,62 @@ class TernaryQF(SageObject):
                 if self._border(14):
                     if self._border(9):
                         # borders 1, 2, 9, 14
-                        return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                                (-1, -1, -1, 0, 0, 1, 0, 1, 0),
-                                (-1, -1, 0, 0, 1, 0, 0, 0, -1),
-                                (-1, 0, -1, 0, -1, 0, 0, 0, 1),
-                                (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                                (1, 0, 1, 0, 0, -1, 0, 1, 0),
-                                (1, 1, 0, 0, 0, 1, 0, -1, 0),
-                                (1, 1, 1, 0, -1, 0, 0, 0, -1)]
-                    # borders 1, 2, 14
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        return [
+                            (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                            (-1, -1, -1, 0, 0, 1, 0, 1, 0),
                             (-1, -1, 0, 0, 1, 0, 0, 0, -1),
                             (-1, 0, -1, 0, -1, 0, 0, 0, 1),
-                            (1, 1, 1, 0, -1, 0, 0, 0, -1)]
+                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                            (1, 0, 1, 0, 0, -1, 0, 1, 0),
+                            (1, 1, 0, 0, 0, 1, 0, -1, 0),
+                            (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                        ]
+                    # borders 1, 2, 14
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, -1, 0, 0, 1, 0, 0, 0, -1),
+                        (-1, 0, -1, 0, -1, 0, 0, 0, 1),
+                        (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                    ]
             else:
                 # borders 1
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, -1, 0, 0, 1, 0, 0, 0, -1)]
+                return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, -1, 0, 0, 1, 0, 0, 0, -1)]
 
         if self._border(2):
             # borders 2
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, -1, 0, -1, 0, 0, 0, 1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, -1, 0, -1, 0, 0, 0, 1)]
 
         if self._border(3):
             # borders 3
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 0, 0, -1, -1, 0, 0, 1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 0, 0, -1, -1, 0, 0, 1)]
 
         if self._border(4):
             if self._border(10):
                 if self._border(8):
                     # borders 4, 8, 10
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, 0, 0, -1, 1, 0, 0, 0, -1),
-                            (-1, 0, 0, 0, -1, 0, 0, 0, 1),
-                            (-1, 1, 0, -1, 0, 0, 0, 0, 1),
-                            (-1, 1, 0, 0, 1, 0, 0, 0, -1),
-                            (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                            (0, -1, 0, 1, -1, 0, 0, 0, 1),
-                            (0, 1, 0, -1, 1, 0, 0, 0, 1),
-                            (0, 1, 0, 1, 0, 0, 0, 0, -1),
-                            (1, -1, 0, 0, -1, 0, 0, 0, -1),
-                            (1, -1, 0, 1, 0, 0, 0, 0, 1),
-                            (1, 0, 0, 1, -1, 0, 0, 0, -1)]
-                # borders 4, 10
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, 0, 0, -1, 1, 0, 0, 0, -1),
                         (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                        (-1, 1, 0, -1, 0, 0, 0, 0, 1),
                         (-1, 1, 0, 0, 1, 0, 0, 0, -1),
-                        (1, -1, 0, 0, -1, 0, 0, 0, -1)]
+                        (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                        (0, -1, 0, 1, -1, 0, 0, 0, 1),
+                        (0, 1, 0, -1, 1, 0, 0, 0, 1),
+                        (0, 1, 0, 1, 0, 0, 0, 0, -1),
+                        (1, -1, 0, 0, -1, 0, 0, 0, -1),
+                        (1, -1, 0, 1, 0, 0, 0, 0, 1),
+                        (1, 0, 0, 1, -1, 0, 0, 0, -1),
+                    ]
+                # borders 4, 10
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                    (-1, 1, 0, 0, 1, 0, 0, 0, -1),
+                    (1, -1, 0, 0, -1, 0, 0, 0, -1),
+                ]
             # borders 4
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (1, -1, 0, 0, -1, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (1, -1, 0, 0, -1, 0, 0, 0, -1)]
 
         if self._border(5):
             if self._border(6):
@@ -1335,284 +1421,317 @@ class TernaryQF(SageObject):
                     if self._border(8):
                         if self._border(15):
                             # borders 5, 6, 7, 8, 15
-                            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                                    (-1, 0, 0, 0, 1, -1, 0, 0, -1),
-                                    (-1, 0, 1, 0, -1, 1, 0, 0, 1),
-                                    (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                                    (0, -1, 1, 1, 0, 0, 0, 0, 1),
-                                    (0, 1, -1, 1, 0, -1, 0, 0, -1),
-                                    (0, 1, 0, -1, 0, 1, 0, 0, 1),
-                                    (1, 0, -1, 0, -1, 0, 0, 0, -1)]
-                    else:
-                        # borders 5, 6, 7
-                        return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                            return [
+                                (1, 0, 0, 0, 1, 0, 0, 0, 1),
                                 (-1, 0, 0, 0, 1, -1, 0, 0, -1),
                                 (-1, 0, 1, 0, -1, 1, 0, 0, 1),
-                                (1, 0, -1, 0, -1, 0, 0, 0, -1)]
+                                (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                                (0, -1, 1, 1, 0, 0, 0, 0, 1),
+                                (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                                (0, 1, 0, -1, 0, 1, 0, 0, 1),
+                                (1, 0, -1, 0, -1, 0, 0, 0, -1),
+                            ]
+                    else:
+                        # borders 5, 6, 7
+                        return [
+                            (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                            (-1, 0, 0, 0, 1, -1, 0, 0, -1),
+                            (-1, 0, 1, 0, -1, 1, 0, 0, 1),
+                            (1, 0, -1, 0, -1, 0, 0, 0, -1),
+                        ]
             elif self._border(11):
                 # borders 5, 11
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, 0, 0, 0, 1, 0, 0, 0, -1),
-                        (-1, 0, 1, 0, -1, 0, 0, 0, 1),
-                        (1, 0, -1, 0, -1, 0, 0, 0, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, 1, 0, 0, 0, -1),
+                    (-1, 0, 1, 0, -1, 0, 0, 0, 1),
+                    (1, 0, -1, 0, -1, 0, 0, 0, -1),
+                ]
             else:
                 # borders 5
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (1, 0, -1, 0, -1, 0, 0, 0, -1)]
+                return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (1, 0, -1, 0, -1, 0, 0, 0, -1)]
 
         if self._border(6):
             if self._border(12):
                 if self._border(9):
                     # borders 6, 9, 12
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, -1, 0, 0, -1, 1),
-                            (-1, 0, 0, 0, -1, 1, 0, 0, 1),
-                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                            (-1, 0, 0, 0, 0, 1, 0, 1, 0),
-                            (-1, 0, 0, 0, 1, -1, 0, 0, -1),
-                            (-1, 0, 0, 0, 1, 0, 0, 1, -1),
-                            (1, 0, 0, 0, -1, 0, 0, 0, -1),
-                            (1, 0, 0, 0, -1, 1, 0, -1, 0),
-                            (1, 0, 0, 0, 0, -1, 0, 1, -1),
-                            (1, 0, 0, 0, 0, 1, 0, -1, 1),
-                            (1, 0, 0, 0, 1, -1, 0, 1, 0)]
-                # borders 6, 12
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, -1, 0, 0, -1, 1),
                         (-1, 0, 0, 0, -1, 1, 0, 0, 1),
+                        (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                        (-1, 0, 0, 0, 0, 1, 0, 1, 0),
                         (-1, 0, 0, 0, 1, -1, 0, 0, -1),
-                        (1, 0, 0, 0, -1, 0, 0, 0, -1)]
+                        (-1, 0, 0, 0, 1, 0, 0, 1, -1),
+                        (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                        (1, 0, 0, 0, -1, 1, 0, -1, 0),
+                        (1, 0, 0, 0, 0, -1, 0, 1, -1),
+                        (1, 0, 0, 0, 0, 1, 0, -1, 1),
+                        (1, 0, 0, 0, 1, -1, 0, 1, 0),
+                    ]
+                # borders 6, 12
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, -1, 1, 0, 0, 1),
+                    (-1, 0, 0, 0, 1, -1, 0, 0, -1),
+                    (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                ]
             # borders 6
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 0, 0, 1, -1, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 0, 0, 1, -1, 0, 0, -1)]
 
         if self._border(7):
             if self._border(8) and self._border(15):
                 if self._border(16):
                     if self._border(9):
                         # borders 7, 8, 9, 15, 16
-                        return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                                (-1, 0, 0, -1, 0, 1, -1, 1, 0),
-                                (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                                (-1, 0, 1, -1, 1, 0, -1, 0, 0),
-                                (-1, 0, 1, 0, -1, 1, 0, 0, 1),
-                                (-1, 1, 0, -1, 0, 0, -1, 0, 1),
-                                (-1, 1, 0, 0, 1, 0, 0, 1, -1),
-                                (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                                (0, -1, 0, 1, -1, 0, 0, -1, 1),
-                                (0, -1, 1, 0, -1, 0, 1, -1, 0),
-                                (0, -1, 1, 0, 0, 1, -1, 0, 1),
-                                (0, 0, -1, 0, -1, 0, -1, 0, 0),
-                                (0, 0, -1, 0, 1, -1, 1, 0, -1),
-                                (0, 0, 1, -1, 0, 1, 0, -1, 1),
-                                (0, 0, 1, 1, 0, 0, 0, 1, 0),
-                                (0, 1, -1, -1, 1, 0, 0, 1, 0),
-                                (0, 1, -1, 1, 0, -1, 0, 0, -1),
-                                (0, 1, 0, 0, 0, 1, 1, 0, 0),
-                                (0, 1, 0, 0, 1, -1, -1, 1, 0),
-                                (1, -1, 0, 0, -1, 1, 0, -1, 0),
-                                (1, -1, 0, 1, 0, -1, 1, 0, 0),
-                                (1, 0, -1, 0, 0, -1, 0, 1, -1),
-                                (1, 0, -1, 1, 0, 0, 1, -1, 0),
-                                (1, 0, 0, 1, -1, 0, 1, 0, -1)]
-                    # borders 7, 8, 15, 16
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        return [
+                            (1, 0, 0, 0, 1, 0, 0, 0, 1),
                             (-1, 0, 0, -1, 0, 1, -1, 1, 0),
+                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                            (-1, 0, 1, -1, 1, 0, -1, 0, 0),
                             (-1, 0, 1, 0, -1, 1, 0, 0, 1),
+                            (-1, 1, 0, -1, 0, 0, -1, 0, 1),
+                            (-1, 1, 0, 0, 1, 0, 0, 1, -1),
                             (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                            (0, -1, 0, 1, -1, 0, 0, -1, 1),
                             (0, -1, 1, 0, -1, 0, 1, -1, 0),
+                            (0, -1, 1, 0, 0, 1, -1, 0, 1),
+                            (0, 0, -1, 0, -1, 0, -1, 0, 0),
+                            (0, 0, -1, 0, 1, -1, 1, 0, -1),
+                            (0, 0, 1, -1, 0, 1, 0, -1, 1),
+                            (0, 0, 1, 1, 0, 0, 0, 1, 0),
+                            (0, 1, -1, -1, 1, 0, 0, 1, 0),
                             (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                            (0, 1, 0, 0, 0, 1, 1, 0, 0),
                             (0, 1, 0, 0, 1, -1, -1, 1, 0),
-                            (1, 0, -1, 1, 0, 0, 1, -1, 0)]
-                # borders 7, 8, 15
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                            (1, -1, 0, 0, -1, 1, 0, -1, 0),
+                            (1, -1, 0, 1, 0, -1, 1, 0, 0),
+                            (1, 0, -1, 0, 0, -1, 0, 1, -1),
+                            (1, 0, -1, 1, 0, 0, 1, -1, 0),
+                            (1, 0, 0, 1, -1, 0, 1, 0, -1),
+                        ]
+                    # borders 7, 8, 15, 16
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, 0, 0, -1, 0, 1, -1, 1, 0),
                         (-1, 0, 1, 0, -1, 1, 0, 0, 1),
                         (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                        (0, 1, -1, 1, 0, -1, 0, 0, -1)]
+                        (0, -1, 1, 0, -1, 0, 1, -1, 0),
+                        (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                        (0, 1, 0, 0, 1, -1, -1, 1, 0),
+                        (1, 0, -1, 1, 0, 0, 1, -1, 0),
+                    ]
+                # borders 7, 8, 15
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 1, 0, -1, 1, 0, 0, 1),
+                    (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                    (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                ]
             if self._border(9):
                 # borders 7, 9
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                        (-1, 0, 1, 0, -1, 1, 0, 0, 1),
-                        (-1, 1, 0, 0, 1, 0, 0, 1, -1),
-                        (1, -1, 0, 0, -1, 1, 0, -1, 0),
-                        (1, 0, -1, 0, 0, -1, 0, 1, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                    (-1, 0, 1, 0, -1, 1, 0, 0, 1),
+                    (-1, 1, 0, 0, 1, 0, 0, 1, -1),
+                    (1, -1, 0, 0, -1, 1, 0, -1, 0),
+                    (1, 0, -1, 0, 0, -1, 0, 1, -1),
+                ]
             # borders 7
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 1, 0, -1, 1, 0, 0, 1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 1, 0, -1, 1, 0, 0, 1)]
 
         if self._border(8):
             if self._border(9):
                 if self._border(10) and self._border(11) and self._border(12):
                     # borders 8, 9, 10, 11, 12
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, -1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                            (-1, 0, 0, 0, 0, 1, 0, 1, 0),
-                            (-1, 0, 0, 0, 1, 0, 0, 0, -1),
-                            (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                            (0, -1, 0, 0, 0, -1, 1, 0, 0),
-                            (0, -1, 0, 0, 0, 1, -1, 0, 0),
-                            (0, -1, 0, 1, 0, 0, 0, 0, 1),
-                            (0, 0, -1, -1, 0, 0, 0, 1, 0),
-                            (0, 0, -1, 0, -1, 0, -1, 0, 0),
-                            (0, 0, -1, 0, 1, 0, 1, 0, 0),
-                            (0, 0, -1, 1, 0, 0, 0, -1, 0),
-                            (0, 0, 1, -1, 0, 0, 0, -1, 0),
-                            (0, 0, 1, 0, -1, 0, 1, 0, 0),
-                            (0, 0, 1, 0, 1, 0, -1, 0, 0),
-                            (0, 0, 1, 1, 0, 0, 0, 1, 0),
-                            (0, 1, 0, -1, 0, 0, 0, 0, 1),
-                            (0, 1, 0, 0, 0, -1, -1, 0, 0),
-                            (0, 1, 0, 0, 0, 1, 1, 0, 0),
-                            (0, 1, 0, 1, 0, 0, 0, 0, -1),
-                            (1, 0, 0, 0, -1, 0, 0, 0, -1),
-                            (1, 0, 0, 0, 0, -1, 0, 1, 0),
-                            (1, 0, 0, 0, 0, 1, 0, -1, 0)]
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                        (-1, 0, 0, 0, 0, 1, 0, 1, 0),
+                        (-1, 0, 0, 0, 1, 0, 0, 0, -1),
+                        (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                        (0, -1, 0, 0, 0, -1, 1, 0, 0),
+                        (0, -1, 0, 0, 0, 1, -1, 0, 0),
+                        (0, -1, 0, 1, 0, 0, 0, 0, 1),
+                        (0, 0, -1, -1, 0, 0, 0, 1, 0),
+                        (0, 0, -1, 0, -1, 0, -1, 0, 0),
+                        (0, 0, -1, 0, 1, 0, 1, 0, 0),
+                        (0, 0, -1, 1, 0, 0, 0, -1, 0),
+                        (0, 0, 1, -1, 0, 0, 0, -1, 0),
+                        (0, 0, 1, 0, -1, 0, 1, 0, 0),
+                        (0, 0, 1, 0, 1, 0, -1, 0, 0),
+                        (0, 0, 1, 1, 0, 0, 0, 1, 0),
+                        (0, 1, 0, -1, 0, 0, 0, 0, 1),
+                        (0, 1, 0, 0, 0, -1, -1, 0, 0),
+                        (0, 1, 0, 0, 0, 1, 1, 0, 0),
+                        (0, 1, 0, 1, 0, 0, 0, 0, -1),
+                        (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                        (1, 0, 0, 0, 0, -1, 0, 1, 0),
+                        (1, 0, 0, 0, 0, 1, 0, -1, 0),
+                    ]
                 if self._border(13) and self._border(14):
                     # borders 8, 9, 13, 14
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, -1, -1, 0, 0, 1, 0, 1, 0),
-                            (-1, -1, -1, 0, 1, 0, 1, 0, 0),
-                            (-1, -1, -1, 1, 0, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, -1, 0, 1, 1, 1),
-                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                            (-1, 0, 0, 1, 1, 1, 0, 0, -1),
-                            (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                            (0, -1, 0, 0, 0, -1, 1, 1, 1),
-                            (0, -1, 0, 1, 1, 1, -1, 0, 0),
-                            (0, 0, -1, -1, 0, 0, 1, 1, 1),
-                            (0, 0, -1, 0, -1, 0, -1, 0, 0),
-                            (0, 0, -1, 1, 1, 1, 0, -1, 0),
-                            (0, 0, 1, -1, -1, -1, 1, 0, 0),
-                            (0, 0, 1, 0, 1, 0, -1, -1, -1),
-                            (0, 0, 1, 1, 0, 0, 0, 1, 0),
-                            (0, 1, 0, -1, -1, -1, 0, 0, 1),
-                            (0, 1, 0, 0, 0, 1, 1, 0, 0),
-                            (0, 1, 0, 1, 0, 0, -1, -1, -1),
-                            (1, 0, 0, -1, -1, -1, 0, 1, 0),
-                            (1, 0, 0, 0, 0, 1, -1, -1, -1),
-                            (1, 1, 1, -1, 0, 0, 0, -1, 0),
-                            (1, 1, 1, 0, -1, 0, 0, 0, -1),
-                            (1, 1, 1, 0, 0, -1, -1, 0, 0)]
-                # borders 8, 9
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, -1, -1, 0, 0, 1, 0, 1, 0),
+                        (-1, -1, -1, 0, 1, 0, 1, 0, 0),
+                        (-1, -1, -1, 1, 0, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, -1, 0, 1, 1, 1),
                         (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                        (-1, 0, 0, 1, 1, 1, 0, 0, -1),
                         (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                        (0, -1, 0, 0, 0, -1, 1, 1, 1),
+                        (0, -1, 0, 1, 1, 1, -1, 0, 0),
+                        (0, 0, -1, -1, 0, 0, 1, 1, 1),
                         (0, 0, -1, 0, -1, 0, -1, 0, 0),
+                        (0, 0, -1, 1, 1, 1, 0, -1, 0),
+                        (0, 0, 1, -1, -1, -1, 1, 0, 0),
+                        (0, 0, 1, 0, 1, 0, -1, -1, -1),
                         (0, 0, 1, 1, 0, 0, 0, 1, 0),
-                        (0, 1, 0, 0, 0, 1, 1, 0, 0)]
+                        (0, 1, 0, -1, -1, -1, 0, 0, 1),
+                        (0, 1, 0, 0, 0, 1, 1, 0, 0),
+                        (0, 1, 0, 1, 0, 0, -1, -1, -1),
+                        (1, 0, 0, -1, -1, -1, 0, 1, 0),
+                        (1, 0, 0, 0, 0, 1, -1, -1, -1),
+                        (1, 1, 1, -1, 0, 0, 0, -1, 0),
+                        (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                        (1, 1, 1, 0, 0, -1, -1, 0, 0),
+                    ]
+                # borders 8, 9
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                    (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                    (0, 0, -1, 0, -1, 0, -1, 0, 0),
+                    (0, 0, 1, 1, 0, 0, 0, 1, 0),
+                    (0, 1, 0, 0, 0, 1, 1, 0, 0),
+                ]
             if self._border(10):
                 if self._border(11) and self._border(12):
                     # borders 8, 10, 11, 12
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, -1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, 1, 0, 0, 0, -1),
-                            (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                            (0, -1, 0, 1, 0, 0, 0, 0, 1),
-                            (0, 1, 0, -1, 0, 0, 0, 0, 1),
-                            (0, 1, 0, 1, 0, 0, 0, 0, -1),
-                            (1, 0, 0, 0, -1, 0, 0, 0, -1)]
-                # borders 8, 10
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
                         (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, 1, 0, 0, 0, -1),
                         (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                        (0, 1, 0, 1, 0, 0, 0, 0, -1)]
+                        (0, -1, 0, 1, 0, 0, 0, 0, 1),
+                        (0, 1, 0, -1, 0, 0, 0, 0, 1),
+                        (0, 1, 0, 1, 0, 0, 0, 0, -1),
+                        (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                    ]
+                # borders 8, 10
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                    (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                    (0, 1, 0, 1, 0, 0, 0, 0, -1),
+                ]
             if self._border(14):
                 # borders 8, 13, 14
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, -1, -1, 1, 0, 0, 0, 0, 1),
-                        (-1, 0, 0, 1, 1, 1, 0, 0, -1),
-                        (0, -1, 0, -1, 0, 0, 0, 0, -1),
-                        (0, 1, 0, -1, -1, -1, 0, 0, 1),
-                        (1, 1, 1, 0, -1, 0, 0, 0, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, -1, -1, 1, 0, 0, 0, 0, 1),
+                    (-1, 0, 0, 1, 1, 1, 0, 0, -1),
+                    (0, -1, 0, -1, 0, 0, 0, 0, -1),
+                    (0, 1, 0, -1, -1, -1, 0, 0, 1),
+                    (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                ]
             # borders 8
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (0, -1, 0, -1, 0, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (0, -1, 0, -1, 0, 0, 0, 0, -1)]
 
         if self._border(9):
             if self._border(12):
                 if self._border(10) and self._border(11):
                     # borders 9, 10, 11, 12
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, -1, 0, 0, 0, 1),
-                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                            (-1, 0, 0, 0, 0, 1, 0, 1, 0),
-                            (-1, 0, 0, 0, 1, 0, 0, 0, -1),
-                            (1, 0, 0, 0, -1, 0, 0, 0, -1),
-                            (1, 0, 0, 0, 0, -1, 0, 1, 0),
-                            (1, 0, 0, 0, 0, 1, 0, -1, 0)]
-                # borders 9, 12
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                        (-1, 0, 0, 0, -1, 0, 0, 0, 1),
                         (-1, 0, 0, 0, 0, -1, 0, -1, 0),
                         (-1, 0, 0, 0, 0, 1, 0, 1, 0),
-                        (1, 0, 0, 0, -1, 0, 0, 0, -1)]
+                        (-1, 0, 0, 0, 1, 0, 0, 0, -1),
+                        (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                        (1, 0, 0, 0, 0, -1, 0, 1, 0),
+                        (1, 0, 0, 0, 0, 1, 0, -1, 0),
+                    ]
+                # borders 9, 12
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                    (-1, 0, 0, 0, 0, 1, 0, 1, 0),
+                    (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                ]
             if self._border(14):
                 if self._border(13):
                     # borders 9, 13, 14
-                    return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                            (-1, -1, -1, 0, 0, 1, 0, 1, 0),
-                            (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                            (1, 1, 1, 0, -1, 0, 0, 0, -1)]
-                # borders 9, 14
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    return [
+                        (1, 0, 0, 0, 1, 0, 0, 0, 1),
                         (-1, -1, -1, 0, 0, 1, 0, 1, 0),
                         (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                        (1, 1, 1, 0, -1, 0, 0, 0, -1)]
+                        (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                    ]
+                # borders 9, 14
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, -1, -1, 0, 0, 1, 0, 1, 0),
+                    (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                    (1, 1, 1, 0, -1, 0, 0, 0, -1),
+                ]
             if self._border(15):
                 # borders 9, 15, 16
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, 0, 0, -1, 0, 1, -1, 1, 0),
-                        (-1, 0, 0, 0, 0, -1, 0, -1, 0),
-                        (0, -1, 1, 0, -1, 0, 1, -1, 0),
-                        (0, -1, 1, 0, 0, 1, -1, 0, 1),
-                        (0, 1, -1, -1, 1, 0, 0, 1, 0),
-                        (0, 1, -1, 1, 0, -1, 0, 0, -1),
-                        (1, 0, 0, 1, -1, 0, 1, 0, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, -1, 0, 1, -1, 1, 0),
+                    (-1, 0, 0, 0, 0, -1, 0, -1, 0),
+                    (0, -1, 1, 0, -1, 0, 1, -1, 0),
+                    (0, -1, 1, 0, 0, 1, -1, 0, 1),
+                    (0, 1, -1, -1, 1, 0, 0, 1, 0),
+                    (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                    (1, 0, 0, 1, -1, 0, 1, 0, -1),
+                ]
             # borders 9
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 0, 0, 0, -1, 0, -1, 0)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 0, 0, 0, -1, 0, -1, 0)]
 
         if self._border(10):
             if self._border(11) and self._border(12):
                 # borders 10, 11, 12
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, 0, 0, 0, -1, 0, 0, 0, 1),
-                        (-1, 0, 0, 0, 1, 0, 0, 0, -1),
-                        (1, 0, 0, 0, -1, 0, 0, 0, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, -1, 0, 0, 0, 1),
+                    (-1, 0, 0, 0, 1, 0, 0, 0, -1),
+                    (1, 0, 0, 0, -1, 0, 0, 0, -1),
+                ]
             # borders 10
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 0, 0, -1, 0, 0, 0, 1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 0, 0, -1, 0, 0, 0, 1)]
 
         if self._border(11):
             # borders 11
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (-1, 0, 0, 0, 1, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (-1, 0, 0, 0, 1, 0, 0, 0, -1)]
 
         if self._border(12):
             # border 12
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (1, 0, 0, 0, -1, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (1, 0, 0, 0, -1, 0, 0, 0, -1)]
 
         if self._border(13) and self._border(14):
             # border 13, 14
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (1, 1, 1, 0, -1, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (1, 1, 1, 0, -1, 0, 0, 0, -1)]
 
         if self._border(14):
             # border 14
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (1, 1, 1, 0, -1, 0, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (1, 1, 1, 0, -1, 0, 0, 0, -1)]
 
         if self._border(15):
             if self._border(16):
                 # borders 15, 16
-                return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                        (-1, 0, 0, -1, 0, 1, -1, 1, 0),
-                        (0, -1, 1, 0, -1, 0, 1, -1, 0),
-                        (0, 1, -1, 1, 0, -1, 0, 0, -1)]
+                return [
+                    (1, 0, 0, 0, 1, 0, 0, 0, 1),
+                    (-1, 0, 0, -1, 0, 1, -1, 1, 0),
+                    (0, -1, 1, 0, -1, 0, 1, -1, 0),
+                    (0, 1, -1, 1, 0, -1, 0, 0, -1),
+                ]
             # borders 15
-            return [(1, 0, 0, 0, 1, 0, 0, 0, 1),
-                    (0, 1, -1, 1, 0, -1, 0, 0, -1)]
+            return [(1, 0, 0, 0, 1, 0, 0, 0, 1), (0, 1, -1, 1, 0, -1, 0, 0, -1)]
 
         return [(1, 0, 0, 0, 1, 0, 0, 0, 1)]
 
@@ -1646,6 +1765,7 @@ class TernaryQF(SageObject):
             ]
         """
         from itertools import product
+
         if TernaryQF.possible_automorphisms is None:
             auts = (matrix(ZZ, 3, 3, m) for m in product([-1, 0, 1], repeat=9))
             auts = [m for m in auts if m.det() == 1]
@@ -1716,7 +1836,7 @@ class TernaryQF(SageObject):
                 Qr, M = self.reduced_form_eisenstein()
                 auts = Qr.automorphisms(slow)
                 M_inv = M.inverse()
-                self._automorphisms = [M*m*M_inv for m in auts]
+                self._automorphisms = [M * m * M_inv for m in auts]
         else:
             self._automorphisms = (-self).automorphisms()
         return self._automorphisms
@@ -1914,9 +2034,15 @@ class TernaryQF(SageObject):
             self._number_of_automorphisms = len(self.automorphisms())
         else:
             if self.is_negative_definite():
-                self._number_of_automorphisms = (-self).reduced_form_eisenstein(False)._number_of_automorphisms_reduced()
+                self._number_of_automorphisms = (
+                    (-self)
+                    .reduced_form_eisenstein(False)
+                    ._number_of_automorphisms_reduced()
+                )
             else:
-                self._number_of_automorphisms = self.reduced_form_eisenstein(False)._number_of_automorphisms_reduced()
+                self._number_of_automorphisms = self.reduced_form_eisenstein(
+                    False
+                )._number_of_automorphisms_reduced()
 
         return self._number_of_automorphisms
 

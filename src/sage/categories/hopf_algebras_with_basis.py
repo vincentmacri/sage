@@ -135,36 +135,42 @@ class HopfAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         """
         from sage.categories.examples.hopf_algebras_with_basis import MyGroupAlgebra
         from sage.groups.perm_gps.permgroup_named import DihedralGroup
+
         if G is None:
             G = DihedralGroup(3)
         return MyGroupAlgebra(self.base_ring(), G)
 
-#     This is only correct in the finite dimensional / graded case
-#     def dual(self):
-#         """
-#         Returns the dual category
+    #     This is only correct in the finite dimensional / graded case
+    #     def dual(self):
+    #         """
+    #         Returns the dual category
 
-#         EXAMPLES:
+    #         EXAMPLES:
 
-#         The category of Hopf algebras over any field is self dual::
+    #         The category of Hopf algebras over any field is self dual::
 
-#             sage: C = HopfAlgebrasWithBasis(QQ)
-#             sage: C.dual()
-#             Category of Hopf algebras with basis over Rational Field
-#         """
-#         return self
+    #             sage: C = HopfAlgebrasWithBasis(QQ)
+    #             sage: C.dual()
+    #             Category of Hopf algebras with basis over Rational Field
+    #         """
+    #         return self
 
-    FiniteDimensional = LazyImport('sage.categories.finite_dimensional_hopf_algebras_with_basis',
-                                   'FiniteDimensionalHopfAlgebrasWithBasis')
-    Filtered = LazyImport('sage.categories.filtered_hopf_algebras_with_basis',
-                          'FilteredHopfAlgebrasWithBasis')
-    Graded = LazyImport('sage.categories.graded_hopf_algebras_with_basis',
-                        'GradedHopfAlgebrasWithBasis')
-    Super = LazyImport('sage.categories.super_hopf_algebras_with_basis',
-                       'SuperHopfAlgebrasWithBasis')
+    FiniteDimensional = LazyImport(
+        'sage.categories.finite_dimensional_hopf_algebras_with_basis',
+        'FiniteDimensionalHopfAlgebrasWithBasis',
+    )
+    Filtered = LazyImport(
+        'sage.categories.filtered_hopf_algebras_with_basis',
+        'FilteredHopfAlgebrasWithBasis',
+    )
+    Graded = LazyImport(
+        'sage.categories.graded_hopf_algebras_with_basis', 'GradedHopfAlgebrasWithBasis'
+    )
+    Super = LazyImport(
+        'sage.categories.super_hopf_algebras_with_basis', 'SuperHopfAlgebrasWithBasis'
+    )
 
     class ParentMethods:
-
         @abstract_method(optional=True)
         def antipode_on_basis(self, x):
             """
@@ -222,8 +228,7 @@ class HopfAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             """
             if self.antipode_on_basis is not NotImplemented:
                 # Should give the information that this is an anti-morphism of algebra
-                return self._module_morphism(self.antipode_on_basis,
-                                             codomain=self)
+                return self._module_morphism(self.antipode_on_basis, codomain=self)
             if hasattr(self, "antipode_by_coercion"):
                 return self.antipode_by_coercion
 
@@ -261,14 +266,17 @@ class HopfAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             S = self.antipode
 
-            IS = lambda x: self.sum(c * self.monomial(t1) * S(self.monomial(t2))
-                                for ((t1, t2), c) in x.coproduct())
+            IS = lambda x: self.sum(
+                c * self.monomial(t1) * S(self.monomial(t2))
+                for ((t1, t2), c) in x.coproduct()
+            )
 
-            SI = lambda x: self.sum(c * S(self.monomial(t1)) * self.monomial(t2)
-                                for ((t1, t2), c) in x.coproduct())
+            SI = lambda x: self.sum(
+                c * S(self.monomial(t1)) * self.monomial(t2)
+                for ((t1, t2), c) in x.coproduct()
+            )
 
             for x in tester.some_elements():
-
                 # antipode is an anti-homomorphism
                 for y in tester.some_elements():
                     tester.assertEqual(S(x) * S(y), S(y * x))

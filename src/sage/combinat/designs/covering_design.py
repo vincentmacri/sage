@@ -146,8 +146,7 @@ def trivial_covering_design(v, k, t):
         return CoveringDesign(v, k, t, 1, range(v), [blk], 1, "Trivial")
     if t == 1:  # blocks [0, ..., k-1], [k, ..., 2k-1], ...
         size = Rational((v, k)).ceil()
-        blocks = [list(range(i * k, (i + 1) * k))
-                  for i in range(size - 1)]
+        blocks = [list(range(i * k, (i + 1) * k)) for i in range(size - 1)]
         # last block: if k does not divide v, wrap around
         blk = list(range((size - 1) * k, v))
         for j in range(k - len(blk)):
@@ -156,9 +155,16 @@ def trivial_covering_design(v, k, t):
         blocks.append(blk)
         return CoveringDesign(v, k, t, size, range(v), blocks, size, "Trivial")
     # default case, all k-subsets
-    return CoveringDesign(v, k, t, binomial(v, k), range(v),
-                          Combinations(range(v), k), schonheim(v, k, t),
-                          "Trivial")
+    return CoveringDesign(
+        v,
+        k,
+        t,
+        binomial(v, k),
+        range(v),
+        Combinations(range(v), k),
+        schonheim(v, k, t),
+        "Trivial",
+    )
 
 
 class CoveringDesign(SageObject):
@@ -180,8 +186,19 @@ class CoveringDesign(SageObject):
     - ``method``, ``creator``, ``timestamp`` -- database information
     """
 
-    def __init__(self, v=0, k=0, t=0, size=0, points=None, blocks=None,
-                 low_bd=0, method='', creator='', timestamp=''):
+    def __init__(
+        self,
+        v=0,
+        k=0,
+        t=0,
+        size=0,
+        points=None,
+        blocks=None,
+        low_bd=0,
+        method='',
+        creator='',
+        timestamp='',
+    ):
         """
         EXAMPLES::
 
@@ -229,8 +246,12 @@ class CoveringDesign(SageObject):
             Lower bound: 7
             Method: Projective Plane
         """
-        repr = ('(%d, %d, %d)-covering design of size %d\n'
-                % (self.__v, self.__k, self.__t, self.__size))
+        repr = '(%d, %d, %d)-covering design of size %d\n' % (
+            self.__v,
+            self.__k,
+            self.__t,
+            self.__size,
+        )
         repr += 'Lower bound: %d\n' % (self.__low_bd)
         if self.__creator:
             repr += 'Created by: %s\n' % (self.__creator)
@@ -263,19 +284,25 @@ class CoveringDesign(SageObject):
             2   4   5
         """
         if self.__size == self.__low_bd:  # check if covering is optimal
-            repr = ('C(%d, %d, %d) = %d\n' %
-                    (self.__v, self.__k, self.__t, self.__size))
+            repr = 'C(%d, %d, %d) = %d\n' % (self.__v, self.__k, self.__t, self.__size)
         else:
-            repr = ('%d <= C(%d, %d, %d) <= %d\n' % (self.__low_bd,
-                    self.__v, self.__k, self.__t, self.__size))
+            repr = '%d <= C(%d, %d, %d) <= %d\n' % (
+                self.__low_bd,
+                self.__v,
+                self.__k,
+                self.__t,
+                self.__size,
+            )
         if self.__creator:
             repr += 'Created by: %s\n' % (self.__creator)
         if self.__method:
             repr += 'Method: %s\n' % (self.__method)
         if self.__timestamp:
             repr += 'Submitted on: %s\n' % (self.__timestamp)
-        return repr + '\n'.join('  '.join(str(k) for k in block) for block in
-                                self.__incidence_structure.blocks())
+        return repr + '\n'.join(
+            '  '.join(str(k) for k in block)
+            for block in self.__incidence_structure.blocks()
+        )
 
     def is_covering(self):
         """
@@ -311,7 +338,7 @@ class CoveringDesign(SageObject):
             for z in Skt:
                 y = (a[x] for x in z)
                 tset[tuple(y)] = True
-        return all(tset[tuple(i)] for i in Svt)                 # everything was covered
+        return all(tset[tuple(i)] for i in Svt)  # everything was covered
 
     def v(self):
         """

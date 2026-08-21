@@ -132,9 +132,12 @@ def enum_projective_rational_field(X, B):
     - John Cremona and Charlie Turner (06-2010)
     """
     from sage.schemes.projective.projective_space import ProjectiveSpace_ring
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProjectiveSpace_ring):
-            raise TypeError("ambient space must be projective space over the rational field")
+            raise TypeError(
+                "ambient space must be projective space over the rational field"
+            )
         X = X(X.base_ring())
     elif not isinstance(X.codomain().ambient_space(), ProjectiveSpace_ring):
         raise TypeError("codomain must be projective space over the rational field")
@@ -208,9 +211,12 @@ def enum_projective_number_field(X, **kwds):
     tol = kwds.pop('tolerance', 1e-2)
     prec = kwds.pop('precision', 53)
     from sage.schemes.projective.projective_space import ProjectiveSpace_ring
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProjectiveSpace_ring):
-            raise TypeError("ambient space must be projective space over a number field")
+            raise TypeError(
+                "ambient space must be projective space over a number field"
+            )
         X = X(X.base_ring())
     else:
         if not isinstance(X.codomain().ambient_space(), ProjectiveSpace_ring):
@@ -289,6 +295,7 @@ def enum_projective_finite_field(X):
     - John Cremona and Charlie Turner (06-2010).
     """
     from sage.schemes.projective.projective_space import ProjectiveSpace_ring
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProjectiveSpace_ring):
             raise TypeError("ambient space must be projective space over a finite")
@@ -379,12 +386,12 @@ def sieve(X, bound):
         [(-1 : -2 : 1), (-1/2 : -1 : 1), (-1/3 : -2/3 : 1), (0 : 0 : 1),
          (1/3 : 2/3 : 1), (1/2 : 1 : 0), (1/2 : 1 : 1), (1 : 2 : 1)]
     """
-    if bound < 1: # no projective rational point with height less than 1
+    if bound < 1:  # no projective rational point with height less than 1
         return []
 
-    modulo_points = [] # list to store point modulo primes
-    len_modulo_points = [] # stores number of points with respect to each prime
-    primes_list = [] # list of good primes
+    modulo_points = []  # list to store point modulo primes
+    len_modulo_points = []  # stores number of points with respect to each prime
+    primes_list = []  # list of good primes
 
     X.normalize_defining_polynomials()
 
@@ -393,7 +400,7 @@ def sieve(X, bound):
     dim_scheme = X.dimension()
 
     # bound as per preposition - 4, in preperiodic points paper
-    B = RR(2**(N/4+1)*bound**2*(N+1).sqrt())
+    B = RR(2 ** (N / 4 + 1) * bound**2 * (N + 1).sqrt())
 
     m = [0 for _ in range(N + 1)]
 
@@ -401,7 +408,7 @@ def sieve(X, bound):
         r"""
         Return a list of primes whose product is > `x`.
         """
-        small_primes = [2,3]
+        small_primes = [2, 3]
         prod_primes = 6
 
         while prod_primes < x:
@@ -428,11 +435,11 @@ def sieve(X, bound):
         current_count = max_length - 1
 
         while current_count > 1:
-            current_list = [] # stores prime which are bigger than least
+            current_list = []  # stores prime which are bigger than least
             updated_list = []
             best_list = []
 
-            least = (RR(B)**(1.00/current_count)).floor()
+            least = (RR(B) ** (1.00 / current_count)).floor()
             for i in range(current_count):
                 current_list.append(next_prime(least))
                 least = current_list[-1]
@@ -441,7 +448,9 @@ def sieve(X, bound):
             prod_prime = prod(current_list)
             least = current_list[0]
             while least != 2 and prod_prime > B and len(updated_list) < current_count:
-                best_list = updated_list + current_list[:current_count - len(updated_list)]
+                best_list = (
+                    updated_list + current_list[: current_count - len(updated_list)]
+                )
                 updated_list.append(previous_prime(least))
                 least = updated_list[-1]
 
@@ -452,9 +461,13 @@ def sieve(X, bound):
             current_count = current_count - 1
 
         best_size = 2
-        best_time = (N**2)*M[2][-1]**(N) + (N**5 * RR(prod(M[2])**dim_scheme / M[2][-1]) )
+        best_time = (N**2) * M[2][-1] ** (N) + (
+            N**5 * RR(prod(M[2]) ** dim_scheme / M[2][-1])
+        )
         for i in range(2, max_length + 1):
-            current_time = (N**2)*M[i][-1]**(N) + (N**5 * RR(prod(M[i])**dim_scheme / M[i][-1]) )
+            current_time = (N**2) * M[i][-1] ** (N) + (
+                N**5 * RR(prod(M[i]) ** dim_scheme / M[i][-1])
+            )
             if current_time < best_time:
                 best_size = i
                 best_time = current_time
@@ -474,7 +487,16 @@ def sieve(X, bound):
         Return a list of rational points modulo all `p` in primes,
         computed parallelly.
         """
-        normalized_input = [((X, p, ), {}) for p in primes_list]
+        normalized_input = [
+            (
+                (
+                    X,
+                    p,
+                ),
+                {},
+            )
+            for p in primes_list
+        ]
         p_iter = p_iter_fork(ncpus())
 
         points_pair = list(p_iter(parallel_function, normalized_input))
@@ -493,12 +515,12 @@ def sieve(X, bound):
                 # lift all coordinates of given point using chinese remainder theorem
                 L = [modulo_points[j][tupl[j]][k].lift() for j in range(len_primes - 1)]
                 L.append(point_p_max[k].lift())
-                point.append( crt(L, primes_list) )
+                point.append(crt(L, primes_list))
 
-            for i in range(N+1):
+            for i in range(N + 1):
                 m[i] = point[i]
 
-            M = matrix(ZZ, N+2, N+1, m)
+            M = matrix(ZZ, N + 2, N + 1, m)
             A = M.LLL()
             point = list(A[1])
 
@@ -524,13 +546,17 @@ def sieve(X, bound):
         r"""
         Return list of all rational points lifted parallelly.
         """
-        points = modulo_points.pop()  # remove the list of points corresponding to largest prime
+        points = (
+            modulo_points.pop()
+        )  # remove the list of points corresponding to largest prime
         len_modulo_points.pop()
 
-        normalized_input = [((point, ), {}) for point in points]
+        normalized_input = [((point,), {}) for point in points]
 
         p_iter = p_iter_fork(ncpus())
-        points_satisfying = list(p_iter(parallel_function_combination, normalized_input))
+        points_satisfying = list(
+            p_iter(parallel_function_combination, normalized_input)
+        )
 
         lifted_points = set()
         for pair in points_satisfying:

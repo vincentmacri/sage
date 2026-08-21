@@ -223,6 +223,7 @@ class UnitGroup(AbelianGroupWithValues_class):
         sage: SUK.log(21*z)
         (25, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
     """
+
     # This structure is not a parent in the usual sense. The
     # "elements" are NumberFieldElement_absolute. Instead, they should
     # derive from AbelianGroupElement and coerce into
@@ -347,22 +348,27 @@ class UnitGroup(AbelianGroupWithValues_class):
             self.__S_unit_data = pK.bnfunits(pS)
             # TODO: converting the factored matrix representation of bnfunits into polynomial
             # form is a *big* waste of time
-            su = [pK.nfbasistoalg(pK.nffactorback(z)) for z in self.__S_unit_data[0][0:len(S)]]
+            su = [
+                pK.nfbasistoalg(pK.nffactorback(z))
+                for z in self.__S_unit_data[0][0 : len(S)]
+            ]
             su = [K(u, check=False) for u in su]
         else:
             su = []
 
-        self.__nfu = len(fu)            # number of fundamental units
-        self.__nsu = len(su)            # number of S-units
-        self.__ntu = pK.bnf_get_tu()[0] # order of torsion
+        self.__nfu = len(fu)  # number of fundamental units
+        self.__nsu = len(su)  # number of S-units
+        self.__ntu = pK.bnf_get_tu()[0]  # order of torsion
         self.__rank = self.__nfu + self.__nsu
 
         # Put the torsion unit first, then fundamental units then S-units
         gens = [K(pK.bnf_get_tu()[1], check=False)] + fu + su
 
         # Construct the abstract group:
-        gens_orders = tuple([ZZ(self.__ntu)]+[ZZ(0)]*(self.__rank))
-        AbelianGroupWithValues_class.__init__(self, gens_orders, 'u', gens, number_field)
+        gens_orders = tuple([ZZ(self.__ntu)] + [ZZ(0)] * (self.__rank))
+        AbelianGroupWithValues_class.__init__(
+            self, gens_orders, 'u', gens, number_field
+        )
 
     def _element_constructor_(self, u):
         """
@@ -404,7 +410,7 @@ class UnitGroup(AbelianGroupWithValues_class):
         try:
             u = K(u)
         except TypeError:
-            raise ValueError("%s is not an element of %s" % (u,K))
+            raise ValueError("%s is not an element of %s" % (u, K))
         if self.__S:
             m = pK.bnfisunit(pari(u), self.__S_unit_data).mattranspose()
             if m.ncols() == 0:
@@ -415,10 +421,10 @@ class UnitGroup(AbelianGroupWithValues_class):
             m = pK.bnfisunit(pari(u)).mattranspose()
 
         # convert column matrix to a list:
-        m = [ZZ(m[0,i].sage()) for i in range(m.ncols())]
+        m = [ZZ(m[0, i].sage()) for i in range(m.ncols())]
 
         # NOTE: pari ordering for the units is (S-units, fundamental units, torsion unit)
-        m = [m[-1]] + m[self.__nsu:-1] + m[:self.__nsu]
+        m = [m[-1]] + m[self.__nsu : -1] + m[: self.__nsu]
 
         return self.element_class(self, m)
 
@@ -434,7 +440,7 @@ class UnitGroup(AbelianGroupWithValues_class):
             sage: SUK = UnitGroup(K, S=2); SUK.rank()
             6
         """
-        return self.ngens()-1
+        return self.ngens() - 1
 
     def _repr_(self):
         """
@@ -457,10 +463,12 @@ class UnitGroup(AbelianGroupWithValues_class):
             return 'S-unit group with structure %s of %s with S = %s' % (
                 self._group_notation(self.gens_orders()),
                 self.number_field(),
-                self.primes())
+                self.primes(),
+            )
         return 'Unit group with structure %s of %s' % (
             self._group_notation(self.gens_orders()),
-            self.number_field())
+            self.number_field(),
+        )
 
     def fundamental_units(self):
         """
@@ -576,7 +584,7 @@ class UnitGroup(AbelianGroupWithValues_class):
                 return [K(-1)]
             return K(-1)
         if n.divides(N):
-            z = self.torsion_generator().value() ** (N//n)
+            z = self.torsion_generator().value() ** (N // n)
             if all:
                 return [z**i for i in n.coprime_integers(n)]
             return z
@@ -709,5 +717,7 @@ class UnitGroup(AbelianGroupWithValues_class):
            sage: SUK.log(u) == v
            True
         """
-        return prod((u**e for u, e in zip(self.gens_values(), exponents)),
-                    self.number_field().one())
+        return prod(
+            (u**e for u, e in zip(self.gens_values(), exponents)),
+            self.number_field().one(),
+        )

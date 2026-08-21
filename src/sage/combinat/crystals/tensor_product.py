@@ -15,7 +15,7 @@ AUTHORS:
   the regularity
 - Travis Scrimshaw (2020): added queer crystal
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 Anne Schilling <anne at math.ucdavis.edu>
 #                          Nicolas Thiery <nthiery at users.sf.net>
 #                     2020 Travis Scrimshaw <tcscrims at gmail.com>
@@ -31,7 +31,7 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 import operator
 from sage.misc.cachefunc import cached_method
@@ -47,9 +47,13 @@ from sage.combinat.root_system.cartan_type import CartanType, SuperCartanType_st
 from sage.combinat.partition import _Partitions
 from .letters import CrystalOfLetters
 from .spins import CrystalOfSpins, CrystalOfSpinsMinus, CrystalOfSpinsPlus
-from sage.combinat.crystals.tensor_product_element import (TensorProductOfCrystalsElement,
-        TensorProductOfRegularCrystalsElement, CrystalOfTableauxElement,
-        TensorProductOfSuperCrystalsElement, TensorProductOfQueerSuperCrystalsElement)
+from sage.combinat.crystals.tensor_product_element import (
+    TensorProductOfCrystalsElement,
+    TensorProductOfRegularCrystalsElement,
+    CrystalOfTableauxElement,
+    TensorProductOfSuperCrystalsElement,
+    TensorProductOfQueerSuperCrystalsElement,
+)
 from sage.misc.flatten import flatten
 from sage.structure.element import get_coercion_model
 from sage.rings.semirings.non_negative_integer_semiring import NN
@@ -59,6 +63,7 @@ from sage.arith.misc import integer_trunc as trunc
 ##############################################################################
 # Support classes
 ##############################################################################
+
 
 class CrystalOfWords(UniqueRepresentation, Parent):
     """
@@ -321,6 +326,7 @@ class TensorProductOfCrystals(CrystalOfWords):
         [2, 1]
         sage: crystals.TensorProduct.options._reset()
     """
+
     @staticmethod
     def __classcall_private__(cls, *crystals, **options):
         """
@@ -378,7 +384,9 @@ class TensorProductOfCrystals(CrystalOfWords):
             cartan_type = CartanType(options.pop("cartan_type"))
         else:
             if not crystals:
-                raise ValueError("you need to specify the Cartan type if the tensor product list is empty")
+                raise ValueError(
+                    "you need to specify the Cartan type if the tensor product list is empty"
+                )
             else:
                 cartan_type = crystals[0].cartan_type()
 
@@ -391,15 +399,26 @@ class TensorProductOfCrystals(CrystalOfWords):
             return FullTensorProductOfSuperCrystals(crystals, **options)
 
         if "generators" in options:
-            generators = tuple(tuple(x) if isinstance(x, list) else x for x in options["generators"])
+            generators = tuple(
+                tuple(x) if isinstance(x, list) else x for x in options["generators"]
+            )
 
             if all(c in RegularCrystals() for c in crystals):
-                return TensorProductOfRegularCrystalsWithGenerators(crystals, generators, cartan_type)
-            return TensorProductOfCrystalsWithGenerators(crystals, generators, cartan_type)
+                return TensorProductOfRegularCrystalsWithGenerators(
+                    crystals, generators, cartan_type
+                )
+            return TensorProductOfCrystalsWithGenerators(
+                crystals, generators, cartan_type
+            )
 
         # Flatten out tensor products
-        tp = sum([B.crystals if isinstance(B, FullTensorProductOfCrystals) else (B,)
-                  for B in crystals], ())
+        tp = sum(
+            [
+                B.crystals if isinstance(B, FullTensorProductOfCrystals) else (B,)
+                for B in crystals
+            ],
+            (),
+        )
 
         if all(c in RegularCrystals() for c in crystals):
             return FullTensorProductOfRegularCrystals(tp, cartan_type=cartan_type)
@@ -445,14 +464,19 @@ class TensorProductOfCrystals(CrystalOfWords):
             True
             sage: crystals.TensorProduct.options._reset()
         """
+
         NAME = 'TensorProductOfCrystals'
         module = 'sage.combinat.crystals'
-        convention = dict(default='antiKashiwara',
-                        description='Sets the convention used for displaying/inputting tensor product of crystals',
-                        values=dict(antiKashiwara='use the anti-Kashiwara convention',
-                                    Kashiwara='use the Kashiwara convention'),
-                            alias=dict(anti='antiKashiwara', opposite='antiKashiwara'),
-                            case_sensitive=False)
+        convention = dict(
+            default='antiKashiwara',
+            description='Sets the convention used for displaying/inputting tensor product of crystals',
+            values=dict(
+                antiKashiwara='use the anti-Kashiwara convention',
+                Kashiwara='use the Kashiwara convention',
+            ),
+            alias=dict(anti='antiKashiwara', opposite='antiKashiwara'),
+            case_sensitive=False,
+        )
 
     def _element_constructor_(self, *crystalElements):
         """
@@ -546,7 +570,9 @@ class FullTensorProductOfCrystals(TensorProductOfCrystals):
             self._cartan_type = CartanType(options['cartan_type'])
         else:
             if not crystals:
-                raise ValueError("you need to specify the Cartan type if the tensor product list is empty")
+                raise ValueError(
+                    "you need to specify the Cartan type if the tensor product list is empty"
+                )
             else:
                 self._cartan_type = crystals[0].cartan_type()
         self.cartesian_product = cartesian_product(self.crystals)
@@ -618,22 +644,27 @@ class FullTensorProductOfCrystals(TensorProductOfCrystals):
             Ambient space of the Root system of type ['A', 4]
         """
         cm = get_coercion_model()
-        return cm.common_parent(*[crystal.weight_lattice_realization()
-                                  for crystal in self.crystals])
+        return cm.common_parent(
+            *[crystal.weight_lattice_realization() for crystal in self.crystals]
+        )
 
 
 class FullTensorProductOfRegularCrystals(FullTensorProductOfCrystals):
     """
     Full tensor product of regular crystals.
     """
+
     class Element(TensorProductOfRegularCrystalsElement):
         pass
 
 
-class TensorProductOfRegularCrystalsWithGenerators(TensorProductOfCrystalsWithGenerators):
+class TensorProductOfRegularCrystalsWithGenerators(
+    TensorProductOfCrystalsWithGenerators
+):
     """
     Tensor product of regular crystals with a generating set.
     """
+
     class Element(TensorProductOfRegularCrystalsElement):
         pass
 
@@ -649,6 +680,7 @@ class FullTensorProductOfSuperCrystals(FullTensorProductOfCrystals):
         sage: T.cardinality()
         64
     """
+
     class Element(TensorProductOfSuperCrystalsElement):
         pass
 
@@ -657,6 +689,7 @@ class QueerSuperCrystalsMixin:
     """
     Mixin class with methods for a finite queer supercrystal.
     """
+
     @cached_method
     def index_set(self):
         """
@@ -670,7 +703,7 @@ class QueerSuperCrystalsMixin:
             (-4, -3, -2, -1, 1, 2)
         """
         n = self.cartan_type().n
-        return tuple(range(-2*n, 0)) + tuple(range(1, n+1))
+        return tuple(range(-2 * n, 0)) + tuple(range(1, n + 1))
 
     @cached_method
     def _long_element(self):
@@ -688,20 +721,25 @@ class QueerSuperCrystalsMixin:
             (3, 2, 1, 3, 2, 3)
         """
         from sage.combinat.permutation import Permutations
+
         n = self.cartan_type().n
-        return tuple(Permutations(n+1).long_element().reduced_word())
+        return tuple(Permutations(n + 1).long_element().reduced_word())
 
 
-class FullTensorProductOfQueerSuperCrystals(FullTensorProductOfCrystals, QueerSuperCrystalsMixin):
+class FullTensorProductOfQueerSuperCrystals(
+    FullTensorProductOfCrystals, QueerSuperCrystalsMixin
+):
     r"""
     Tensor product of queer super crystals.
     """
+
     class Element(TensorProductOfQueerSuperCrystalsElement):
         pass
 
 
 #########################################################
 ## Crystal of tableaux
+
 
 class CrystalOfTableaux(CrystalOfWords):
     r"""
@@ -910,14 +948,17 @@ class CrystalOfTableaux(CrystalOfWords):
             True
         """
         cartan_type = CartanType(cartan_type)
-        if cartan_type.letter == 'A' and isinstance(cartan_type, SuperCartanType_standard):
+        if cartan_type.letter == 'A' and isinstance(
+            cartan_type, SuperCartanType_standard
+        ):
             if shape is None:
                 shape = shapes
             shape = _Partitions(shape)
             from sage.combinat.crystals.bkk_crystals import CrystalOfBKKTableaux
+
             return CrystalOfBKKTableaux(cartan_type, shape=shape)
         if cartan_type.letter == 'Q':
-            if any(shape[i] == shape[i+1] for i in range(len(shape)-1)):
+            if any(shape[i] == shape[i + 1] for i in range(len(shape) - 1)):
                 raise ValueError("not a strict partition")
             shape = _Partitions(shape)
             return CrystalOfQueerTableaux(cartan_type, shape=shape)
@@ -932,14 +973,22 @@ class CrystalOfTableaux(CrystalOfWords):
         else:
             n1 = n
         if not all(i == 0 for shape in shapes for i in shape[n1:]):
-            raise ValueError("shapes should all have length at most equal to the rank or the rank + 1 in type A")
-        spin_shapes = tuple((tuple(shape) + (0,)*(n1-len(shape)))[:n1] for shape in shapes)
+            raise ValueError(
+                "shapes should all have length at most equal to the rank or the rank + 1 in type A"
+            )
+        spin_shapes = tuple(
+            (tuple(shape) + (0,) * (n1 - len(shape)))[:n1] for shape in shapes
+        )
         try:
             shapes = tuple(tuple(trunc(i) for i in shape) for shape in spin_shapes)
         except Exception:
-            raise ValueError("shapes should all be partitions or half-integer partitions")
+            raise ValueError(
+                "shapes should all be partitions or half-integer partitions"
+            )
         if spin_shapes == shapes:
-            shapes = tuple(_Partitions(shape) if shape[n1-1] in NN else shape for shape in shapes)
+            shapes = tuple(
+                _Partitions(shape) if shape[n1 - 1] in NN else shape for shape in shapes
+            )
             return super().__classcall__(cls, cartan_type, shapes)
 
         # Handle the construction of a crystals of spin tableaux
@@ -948,10 +997,17 @@ class CrystalOfTableaux(CrystalOfWords):
         # particular, for type D, the spins all have to be plus or all
         # minus spins
         if any(len(sh) != n for sh in shapes):
-            raise ValueError("the length of all half-integer partition shapes should be the rank")
-        if any(2*i % 2 != 1 for shape in spin_shapes for i in shape):
-            raise ValueError("shapes should be either all partitions or all half-integer partitions")
-        if any(any(i < j for i, j in zip(shape, shape[1:-1] + (abs(shape[-1]),))) for shape in spin_shapes):
+            raise ValueError(
+                "the length of all half-integer partition shapes should be the rank"
+            )
+        if any(2 * i % 2 != 1 for shape in spin_shapes for i in shape):
+            raise ValueError(
+                "shapes should be either all partitions or all half-integer partitions"
+            )
+        if any(
+            any(i < j for i, j in zip(shape, shape[1:-1] + (abs(shape[-1]),)))
+            for shape in spin_shapes
+        ):
             raise ValueError("entries of each shape must be weakly decreasing")
         if cartan_type.type() == 'D':
             if all(i >= 0 for shape in spin_shapes for i in shape):
@@ -965,9 +1021,13 @@ class CrystalOfTableaux(CrystalOfWords):
                 raise ValueError("shapes should all be partitions")
             S = CrystalOfSpins(cartan_type)
         B = CrystalOfTableaux(cartan_type, shapes=shapes)
-        T = TensorProductOfCrystals(S, B, generators=[[S.module_generators[0], x] for x in B.module_generators])
-        T.rename("The crystal of tableaux of type %s and shape(s) %s" %
-                 (cartan_type, [list(shape) for shape in spin_shapes]))
+        T = TensorProductOfCrystals(
+            S, B, generators=[[S.module_generators[0], x] for x in B.module_generators]
+        )
+        T.rename(
+            "The crystal of tableaux of type %s and shape(s) %s"
+            % (cartan_type, [list(shape) for shape in spin_shapes])
+        )
         T.shapes = spin_shapes
         return T
 
@@ -992,10 +1052,11 @@ class CrystalOfTableaux(CrystalOfWords):
         Parent.__init__(self, category=ClassicalCrystals())
         self.letters = CrystalOfLetters(cartan_type)
         self.shapes = shapes
-        self.module_generators = tuple(self.module_generator(la)
-                                       for la in shapes)
-        self.rename("The crystal of tableaux of type %s and shape(s) %s"
-                    % (cartan_type, [list(shape) for shape in shapes]))
+        self.module_generators = tuple(self.module_generator(la) for la in shapes)
+        self.rename(
+            "The crystal of tableaux of type %s and shape(s) %s"
+            % (cartan_type, [list(shape) for shape in shapes])
+        )
 
     def cartan_type(self):
         """
@@ -1033,14 +1094,14 @@ class CrystalOfTableaux(CrystalOfWords):
             294
         """
         type = self.cartan_type()
-        if type[0] == 'D' and len(shape) == type[1] and shape[type[1]-1] < 0:
+        if type[0] == 'D' and len(shape) == type[1] and shape[type[1] - 1] < 0:
             invert = True
-            shape = shape[:-1] + (-shape[type[1]-1],)
+            shape = shape[:-1] + (-shape[type[1] - 1],)
         else:
             invert = False
         p = _Partitions(shape).conjugate()
         # The column canonical tableau, read by columns
-        module_generator = flatten([[val-i for i in range(val)] for val in p])
+        module_generator = flatten([[val - i for i in range(val)] for val in p])
         if invert:
             module_generator = [(-x if x == type[1] else x) for x in module_generator]
         return self(list=[self.letters(x) for x in module_generator])
@@ -1087,12 +1148,15 @@ class CrystalOfQueerTableaux(CrystalOfWords, QueerSuperCrystalsMixin):
         """
         from sage.categories.regular_supercrystals import RegularSuperCrystals
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
         Parent.__init__(self, category=(RegularSuperCrystals(), FiniteEnumeratedSets()))
         self.shape = shape
         self._cartan_type = cartan_type
         self.letters = CrystalOfLetters(cartan_type)
         n = cartan_type.rank() + 1
-        data = sum(([self.letters(n-i)] * row_len for i,row_len in enumerate(shape)), [])
+        data = sum(
+            ([self.letters(n - i)] * row_len for i, row_len in enumerate(shape)), []
+        )
         mg = self.element_class(self, list=data)
         self.module_generators = (mg,)
 
@@ -1105,7 +1169,9 @@ class CrystalOfQueerTableaux(CrystalOfWords, QueerSuperCrystalsMixin):
             sage: crystals.Tableaux(['Q',3], shape=[4,2])
             The crystal of tableaux of type ['Q', 3] and shape [4, 2]
         """
-        return "The crystal of tableaux of type {} and shape {}".format(self._cartan_type, self.shape)
+        return "The crystal of tableaux of type {} and shape {}".format(
+            self._cartan_type, self.shape
+        )
 
     class Element(TensorProductOfQueerSuperCrystalsElement):
         def _repr_(self):
@@ -1134,8 +1200,11 @@ class CrystalOfQueerTableaux(CrystalOfWords, QueerSuperCrystalsMixin):
                         1
             """
             from sage.typeset.ascii_art import AsciiArt
-            ret = [" "*(3*i) + "".join("%3s" % str(x) for x in reversed(row))
-                   for i, row in enumerate(self.rows())]
+
+            ret = [
+                " " * (3 * i) + "".join("%3s" % str(x) for x in reversed(row))
+                for i, row in enumerate(self.rows())
+            ]
             return AsciiArt(ret)
 
         def _latex_(self):
@@ -1156,8 +1225,10 @@ class CrystalOfQueerTableaux(CrystalOfWords, QueerSuperCrystalsMixin):
                 }
             """
             from sage.combinat.output import tex_from_array
-            return tex_from_array([[None]*i + list(reversed(row))
-                                  for i, row in enumerate(self.rows())])
+
+            return tex_from_array(
+                [[None] * i + list(reversed(row)) for i, row in enumerate(self.rows())]
+            )
 
         def rows(self):
             """
@@ -1173,6 +1244,6 @@ class CrystalOfQueerTableaux(CrystalOfWords, QueerSuperCrystalsMixin):
             ret = []
             pos = 0
             for l in self.parent().shape:
-                ret.append(self[pos:pos+l])
+                ret.append(self[pos : pos + l])
                 pos += l
             return ret

@@ -44,7 +44,7 @@ def polynomial_to_list(p, len):
         sage: polynomial_to_list(p, 4)
         [37, 8, 9, 0]
     """
-    return list(p) + [0]*max(0, len-p.degree()-1)
+    return list(p) + [0] * max(0, len - p.degree() - 1)
 
 
 def johnson_radius(n, d):
@@ -63,7 +63,7 @@ def johnson_radius(n, d):
         sage: sage.coding.guruswami_sudan.utils.johnson_radius(250, 181)                # needs sage.symbolic
         -5*sqrt(690) + 250
     """
-    return n - sqrt(n*(n-d))
+    return n - sqrt(n * (n - d))
 
 
 def ligt(x):
@@ -129,15 +129,15 @@ def solve_degree2_to_integer_range(a, b, c):
         sage: solve_degree2_to_integer_range(50, 5, 42)
         (-2, -1)
     """
-    D = b**2 - 4*a*c
+    D = b**2 - 4 * a * c
     if D < 0:
-        return (-2,-1)
+        return (-2, -1)
     sD = float(sqrt(D))
-    minx, maxx = (-b-sD)/2.0/a , (-b+sD)/2.0/a
+    minx, maxx = (-b - sD) / 2.0 / a, (-b + sD) / 2.0 / a
     mini, maxi = (ligt(minx), gilt(maxx))
     if mini > maxi:
-        return (-2,-1)
-    return (mini,maxi)
+        return (-2, -1)
+    return (mini, maxi)
 
 
 def _degree_of_vector(v, shifts=None):
@@ -168,5 +168,6 @@ def _degree_of_vector(v, shifts=None):
         return max(vi.degree() for vi in v)
     if v.is_zero():
         return -1
-    return max(degi + si for (degi, si) in zip([vi.degree() for vi in v ], shifts)
-               if degi > -1)
+    return max(
+        degi + si for (degi, si) in zip([vi.degree() for vi in v], shifts) if degi > -1
+    )

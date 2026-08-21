@@ -20,7 +20,7 @@ REFERENCES:
 - [ONe1983]_
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #
@@ -28,7 +28,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.manifolds.differentiable.scalarfield import DiffScalarField
 from sage.manifolds.scalarfield_algebra import ScalarFieldAlgebra
@@ -421,9 +421,9 @@ class DiffScalarFieldAlgebra(ScalarFieldAlgebra):
 
         if isinstance(other, SymbolicRing):
             return True  # coercion from the base ring (multiplication by the
-                         # algebra unit, i.e. self.one())
-                         # cf. ScalarField._lmul_() for the implementation of
-                         # the coercion map
+            # algebra unit, i.e. self.one())
+            # cf. ScalarField._lmul_() for the implementation of
+            # the coercion map
         if isinstance(other, DiffScalarFieldAlgebra):
             return self._domain.is_subset(other._domain)
         if isinstance(other, ChartFunctionRing):
@@ -445,8 +445,9 @@ class DiffScalarFieldAlgebra(ScalarFieldAlgebra):
             sage: repr(CM)  # indirect doctest
             'Algebra of differentiable scalar fields on the 2-dimensional differentiable manifold M'
         """
-        return "Algebra of differentiable scalar fields on " + \
-               "the {}".format(self._domain)
+        return "Algebra of differentiable scalar fields on " + "the {}".format(
+            self._domain
+        )
 
     def _latex_(self):
         r"""
@@ -466,5 +467,4 @@ class DiffScalarFieldAlgebra(ScalarFieldAlgebra):
             latex_degree = r"\infty"  # to skip the "+" in latex(infinity)
         else:
             latex_degree = "{}".format(degree)
-        return r"C^{" + latex_degree + r"}\left(" + self._domain._latex_() + \
-               r"\right)"
+        return r"C^{" + latex_degree + r"}\left(" + self._domain._latex_() + r"\right)"

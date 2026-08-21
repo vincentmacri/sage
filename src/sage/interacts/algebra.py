@@ -16,5 +16,4 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from .library import polar_prime_spiral

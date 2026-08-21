@@ -21,6 +21,7 @@ but can be easily converted from and to permutations::
     A general implementation for all finite Coxeter groups is available as
     :meth:`~sage.categories.finite_coxeter_groups.FiniteCoxeterGroups.ParentMethods.shard_poset`
 """
+
 from sage.combinat.posets.posets import Poset
 from sage.graphs.digraph import DiGraph
 from sage.combinat.permutation import Permutations
@@ -47,6 +48,7 @@ class ShardPosetElement(tuple):
         sage: Permutation(list(e0)) == p0
         True
     """
+
     def __new__(cls, p):
         r"""
         Initialization of the underlying tuple.
@@ -184,9 +186,12 @@ def shard_preorder_graph(runs):
     """
     N = len(runs)
     dg = DiGraph(N)
-    dg.add_edges((i, j) for i in range(N - 1)
-                 for j in range(i + 1, N)
-                 if runs[i][-1] < runs[j][0] and runs[j][-1] < runs[i][0])
+    dg.add_edges(
+        (i, j)
+        for i in range(N - 1)
+        for j in range(i + 1, N)
+        if runs[i][-1] < runs[j][0] and runs[j][-1] < runs[i][0]
+    )
     return dg
 
 
@@ -223,5 +228,6 @@ def shard_poset(n):
         False
     """
     import operator
+
     Sn = [ShardPosetElement(s) for s in Permutations(n)]
     return Poset([Sn, operator.le], cover_relations=False, facade=True)

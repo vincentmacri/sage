@@ -55,21 +55,25 @@ def mul_vararg(first, *rest):
     return first
 
 
-arithmetic_operators = {add_vararg: '+',
-                        mul_vararg: '*',
-                        operator.add: '+',
-                        operator.sub: '-',
-                        operator.mul: '*',
-                        operator.truediv: '/',
-                        operator.floordiv: '//',
-                        operator.pow: '^'}
+arithmetic_operators = {
+    add_vararg: '+',
+    mul_vararg: '*',
+    operator.add: '+',
+    operator.sub: '-',
+    operator.mul: '*',
+    operator.truediv: '/',
+    operator.floordiv: '//',
+    operator.pow: '^',
+}
 
-relation_operators = {operator.eq: '==',
-                      operator.lt: '<',
-                      operator.gt: '>',
-                      operator.ne: '!=',
-                      operator.le: '<=',
-                      operator.ge: '>='}
+relation_operators = {
+    operator.eq: '==',
+    operator.lt: '<',
+    operator.gt: '>',
+    operator.ne: '!=',
+    operator.le: '<=',
+    operator.ge: '>=',
+}
 
 
 class FDerivativeOperator:
@@ -83,6 +87,7 @@ class FDerivativeOperator:
     a list recording the indices of the variables with respect
     to which the partial derivative is taken.
     """
+
     def __init__(self, function, parameter_set):
         r"""
         Initialize this function derivative operator.
@@ -124,8 +129,9 @@ class FDerivativeOperator:
            sage: op(1)
            D[0](f)(1)
         """
-        if (not all(isinstance(x, Expression) and x.is_symbol() for x in args) or
-                len(args) != len(set(args))):
+        if not all(isinstance(x, Expression) and x.is_symbol() for x in args) or len(
+            args
+        ) != len(set(args)):
             # An evaluated derivative of the form f'(1) is not a
             # symbolic variable, yet we would like to treat it
             # like one. So, we replace the argument `1` with a
@@ -226,6 +232,7 @@ class DerivativeOperator:
         sage: D[0, 1](f)(x, x^2)
         D[0, 1](f)(x, x^2)
     """
+
     class DerivativeOperatorWithParameters:
         def __init__(self, parameter_set):
             self._parameter_set = parameter_set

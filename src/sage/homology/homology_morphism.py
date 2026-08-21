@@ -130,6 +130,7 @@ class InducedHomologyMorphism(Morphism):
         sage: diag_c(c)
         h^{1,0}
     """
+
     def __init__(self, map, base_ring=None, cohomology=False) -> None:
         """
         INPUT:
@@ -165,8 +166,9 @@ class InducedHomologyMorphism(Morphism):
             sage: g = Hom(S1, S1).identity()
             sage: h = g.induced_homology_morphism(QQ)
         """
-        if (isinstance(map.domain(), SimplicialComplex)
-                and (map.domain().is_mutable() or map.codomain().is_mutable())):
+        if isinstance(map.domain(), SimplicialComplex) and (
+            map.domain().is_mutable() or map.codomain().is_mutable()
+        ):
             raise ValueError('the domain and codomain complexes must be immutable')
         if base_ring is None:
             base_ring = QQ
@@ -179,13 +181,19 @@ class InducedHomologyMorphism(Morphism):
         if cohomology:
             domain = map.codomain().cohomology_ring(base_ring=base_ring)
             codomain = map.domain().cohomology_ring(base_ring=base_ring)
-            Morphism.__init__(self, Hom(domain, codomain,
-                                        category=GradedAlgebrasWithBasis(base_ring)))
+            Morphism.__init__(
+                self, Hom(domain, codomain, category=GradedAlgebrasWithBasis(base_ring))
+            )
         else:
-            domain = map.domain().homology_with_basis(base_ring=base_ring, cohomology=cohomology)
-            codomain = map.codomain().homology_with_basis(base_ring=base_ring, cohomology=cohomology)
-            Morphism.__init__(self, Hom(domain, codomain,
-                                        category=GradedModulesWithBasis(base_ring)))
+            domain = map.domain().homology_with_basis(
+                base_ring=base_ring, cohomology=cohomology
+            )
+            codomain = map.codomain().homology_with_basis(
+                base_ring=base_ring, cohomology=cohomology
+            )
+            Morphism.__init__(
+                self, Hom(domain, codomain, category=GradedModulesWithBasis(base_ring))
+            )
 
     def base_ring(self):
         """
@@ -236,17 +244,23 @@ class InducedHomologyMorphism(Morphism):
         codomain = self._map.codomain()
         phi_codomain, H_codomain = codomain.algebraic_topological_model(base_ring)
         phi_domain, H_domain = domain.algebraic_topological_model(base_ring)
-        mat = (phi_codomain.pi().to_matrix(deg)
-               * self._map.associated_chain_complex_morphism(self.base_ring()).to_matrix(deg)
-               * phi_domain.iota().to_matrix(deg))
+        mat = (
+            phi_codomain.pi().to_matrix(deg)
+            * self._map.associated_chain_complex_morphism(self.base_ring()).to_matrix(
+                deg
+            )
+            * phi_domain.iota().to_matrix(deg)
+        )
         if self._cohomology:
             mat = mat.transpose()
             H_domain, H_codomain = H_codomain, H_domain
         if deg is None:
-            betti_domain = [H_domain.free_module_rank(n)
-                            for n in range(domain.dimension() + 1)]
-            betti_codomain = [H_codomain.free_module_rank(n)
-                              for n in range(codomain.dimension() + 1)]
+            betti_domain = [
+                H_domain.free_module_rank(n) for n in range(domain.dimension() + 1)
+            ]
+            betti_codomain = [
+                H_codomain.free_module_rank(n) for n in range(codomain.dimension() + 1)
+            ]
             # Compute cumulative sums of Betti numbers to get subdivisions:
             row_subdivs = list(itertools.accumulate(betti_codomain[:-1]))
             col_subdivs = list(itertools.accumulate(betti_domain[:-1]))
@@ -278,13 +292,19 @@ class InducedHomologyMorphism(Morphism):
         """
         base_ring = self.base_ring()
         if self._cohomology:
-            codomain = self._map.domain().homology_with_basis(base_ring, cohomology=True)
+            codomain = self._map.domain().homology_with_basis(
+                base_ring, cohomology=True
+            )
             if elt.parent().complex() != self._map.codomain():
-                raise ValueError('element is not a cohomology class for the correct complex')
+                raise ValueError(
+                    'element is not a cohomology class for the correct complex'
+                )
         else:
             codomain = self._map.codomain().homology_with_basis(base_ring)
             if elt.parent().complex() != self._map.domain():
-                raise ValueError('element is not a homology class for the correct complex')
+                raise ValueError(
+                    'element is not a homology class for the correct complex'
+                )
 
         return codomain.from_vector(self.to_matrix() * elt.to_vector())
 
@@ -318,10 +338,12 @@ class InducedHomologyMorphism(Morphism):
             sage: f.induced_homology_morphism(QQ) == id.induced_homology_morphism(QQ)
             False
         """
-        if (self._map.domain() != other._map.domain()
-                or self._map.codomain() != other._map.codomain()
-                or self.base_ring() != other.base_ring()
-                or self._cohomology != other._cohomology):
+        if (
+            self._map.domain() != other._map.domain()
+            or self._map.codomain() != other._map.codomain()
+            or self.base_ring() != other.base_ring()
+            or self._cohomology != other._cohomology
+        ):
             return False
         dim = min(self._map.domain().dimension(), self._map.codomain().dimension())
         return all(self.to_matrix(d) == other.to_matrix(d) for d in range(dim + 1))

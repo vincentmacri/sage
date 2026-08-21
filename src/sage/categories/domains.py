@@ -1,13 +1,13 @@
 r"""
 Domains
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2012 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.lazy_import import LazyImport
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -46,7 +46,9 @@ class Domains(CategoryWithAxiom):
         """
         return [Rings()]
 
-    Commutative = LazyImport('sage.categories.integral_domains', 'IntegralDomains', at_startup=True)
+    Commutative = LazyImport(
+        'sage.categories.integral_domains', 'IntegralDomains', at_startup=True
+    )
 
     class ParentMethods:
         def _test_zero_divisors(self, **options):
@@ -78,7 +80,7 @@ class Domains(CategoryWithAxiom):
                 sage: ZpFM(5)._test_zero_divisors()                                     # needs sage.rings.padics
             """
             if not self.is_exact():
-                return # Can't check on inexact rings
+                return  # Can't check on inexact rings
 
             tester = self._tester(**options)
 
@@ -86,7 +88,8 @@ class Domains(CategoryWithAxiom):
             S = [s for s in tester.some_elements() if not s.is_zero()]
 
             from sage.misc.misc import some_tuples
-            for a,b in some_tuples(S, 2, tester._max_runs):
+
+            for a, b in some_tuples(S, 2, tester._max_runs):
                 p = a * b
                 tester.assertFalse(p.is_zero())
 

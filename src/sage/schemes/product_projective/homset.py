@@ -8,7 +8,7 @@ AUTHORS:
 - Raghukul Raman (2018): code cleanup and added support for rational field
 """
 
-#*****************************************************************************
+# *****************************************************************************
 # Copyright (C) 2014 Volker Braun <vbraun.name@gmail.com>
 #                    Ben Hutz <bn4941@gmail.com>
 #
@@ -16,7 +16,7 @@ AUTHORS:
 # as published by the Free Software Foundation; either version 2 of
 # the License, or (at your option) any later version.
 # http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.fields import Fields
 from sage.categories.number_fields import NumberFields
@@ -65,7 +65,9 @@ class SchemeHomset_points_product_projective_spaces_ring(SchemeHomset_points):
         return self.codomain()._point(self, v, **kwds)
 
 
-class SchemeHomset_points_product_projective_spaces_field(SchemeHomset_points_product_projective_spaces_ring):
+class SchemeHomset_points_product_projective_spaces_field(
+    SchemeHomset_points_product_projective_spaces_ring
+):
     def points(self, **kwds):
         r"""
         Return some or all rational points of a projective scheme.
@@ -186,7 +188,11 @@ class SchemeHomset_points_product_projective_spaces_field(SchemeHomset_points_pr
         X = self.codomain()
 
         from sage.schemes.product_projective.space import ProductProjectiveSpaces_ring
-        if not isinstance(X, ProductProjectiveSpaces_ring) and X.base_ring() in Fields():
+
+        if (
+            not isinstance(X, ProductProjectiveSpaces_ring)
+            and X.base_ring() in Fields()
+        ):
             # no points
             if X.dimension() == -1:
                 return []
@@ -194,7 +200,9 @@ class SchemeHomset_points_product_projective_spaces_field(SchemeHomset_points_pr
             if X.dimension() == 0:
                 points = set()
                 # find points from all possible affine patches
-                for I in xmrange([n + 1 for n in X.ambient_space().dimension_relative_components()]):
+                for I in xmrange(
+                    [n + 1 for n in X.ambient_space().dimension_relative_components()]
+                ):
                     Y, phi = X.affine_patch(I, True)
                     aff_points = Y.rational_points()
                     for PP in aff_points:
@@ -208,26 +216,42 @@ class SchemeHomset_points_product_projective_spaces_field(SchemeHomset_points_pr
             alg = kwds.pop('algorithm', None)
             if alg is None:
                 # sieve should only be called for subschemes and if the bound is not very small
-                N = prod([k+1 for k in X.ambient_space().dimension_relative_components()])
+                N = prod(
+                    [k + 1 for k in X.ambient_space().dimension_relative_components()]
+                )
                 if isinstance(X, AlgebraicScheme_subscheme) and B**N > 5000:
                     from sage.schemes.product_projective.rational_point import sieve
+
                     return sieve(X, B)
-                from sage.schemes.product_projective.rational_point import enum_product_projective_rational_field
+                from sage.schemes.product_projective.rational_point import (
+                    enum_product_projective_rational_field,
+                )
+
                 return enum_product_projective_rational_field(self, B)
             if alg == 'sieve':
                 from sage.schemes.product_projective.rational_point import sieve
+
                 return sieve(X, B)
             if alg == 'enumerate':
-                from sage.schemes.product_projective.rational_point import enum_product_projective_rational_field
+                from sage.schemes.product_projective.rational_point import (
+                    enum_product_projective_rational_field,
+                )
+
                 return enum_product_projective_rational_field(self, B)
             raise ValueError("algorithm must be 'sieve' or 'enumerate'")
         elif R in NumberFields():
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            from sage.schemes.product_projective.rational_point import enum_product_projective_number_field
+            from sage.schemes.product_projective.rational_point import (
+                enum_product_projective_number_field,
+            )
+
             return enum_product_projective_number_field(self, bound=B)
         elif isinstance(R, FiniteField):
-            from sage.schemes.product_projective.rational_point import enum_product_projective_finite_field
+            from sage.schemes.product_projective.rational_point import (
+                enum_product_projective_finite_field,
+            )
+
             return enum_product_projective_finite_field(self)
         else:
             raise TypeError("unable to enumerate points over %s" % R)

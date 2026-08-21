@@ -73,7 +73,6 @@ class AdditiveMagmas(Category_singleton):
         return [Sets()]
 
     class SubcategoryMethods:
-
         @cached_method
         def AdditiveAssociative(self):
             r"""
@@ -164,10 +163,11 @@ class AdditiveMagmas(Category_singleton):
             """
             return self._with_axiom("AdditiveUnital")
 
-    AdditiveAssociative = LazyImport('sage.categories.additive_semigroups', 'AdditiveSemigroups', at_startup=True)
+    AdditiveAssociative = LazyImport(
+        'sage.categories.additive_semigroups', 'AdditiveSemigroups', at_startup=True
+    )
 
     class ParentMethods:
-
         def summation(self, x, y):
             r"""
             Return the sum of ``x`` and ``y``.
@@ -222,7 +222,11 @@ class AdditiveMagmas(Category_singleton):
             """
             # This should instead register the summation to the coercion model
             # But this is not yet implemented in the coercion model
-            if (self.summation != self.summation_from_element_class_add) and hasattr(self, "element_class") and hasattr(self.element_class, "_add_parent"):
+            if (
+                (self.summation != self.summation_from_element_class_add)
+                and hasattr(self, "element_class")
+                and hasattr(self.element_class, "_add_parent")
+            ):
                 self.element_class._add_ = self.element_class._add_parent
 
         def addition_table(self, names='letters', elements=None):
@@ -388,11 +392,12 @@ class AdditiveMagmas(Category_singleton):
             import operator
 
             from sage.matrix.operation_table import OperationTable
-            return OperationTable(self, operation=operator.add,
-                                  names=names, elements=elements)
+
+            return OperationTable(
+                self, operation=operator.add, names=names, elements=elements
+            )
 
     class ElementMethods:
-
         @abstract_method(optional=True)
         def _add_(self, right):
             """
@@ -486,11 +491,11 @@ class AdditiveMagmas(Category_singleton):
                     (4, 0)
                 """
                 return self.parent()._cartesian_product_of_elements(
-                    x + y for x, y in zip(self.cartesian_factors(),
-                                          right.cartesian_factors()))
+                    x + y
+                    for x, y in zip(self.cartesian_factors(), right.cartesian_factors())
+                )
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             """
             EXAMPLES::
@@ -503,10 +508,10 @@ class AdditiveMagmas(Category_singleton):
                  Category of set algebras over Rational Field]
             """
             from sage.categories.magmatic_algebras import MagmaticAlgebras
+
             return [MagmaticAlgebras(self.base_ring()).WithBasis()]
 
         class ParentMethods:
-
             @cached_method
             def algebra_generators(self):
                 r"""
@@ -531,7 +536,12 @@ class AdditiveMagmas(Category_singleton):
                     but rather the method of the same name for
                     ``AdditiveSemigroups``. Find a better doctest!
                 """
-                return self.basis().keys().additive_semigroup_generators().map(self.monomial)
+                return (
+                    self.basis()
+                    .keys()
+                    .additive_semigroup_generators()
+                    .map(self.monomial)
+                )
 
             def product_on_basis(self, g1, g2):
                 r"""
@@ -594,10 +604,10 @@ class AdditiveMagmas(Category_singleton):
                      Category of commutative magmas]
                 """
                 from sage.categories.magmas import Magmas
+
                 return [Magmas().Commutative()]
 
     class AdditiveUnital(CategoryWithAxiom):
-
         def additional_structure(self) -> Self:
             r"""
             Return whether ``self`` is a structure category.
@@ -616,7 +626,6 @@ class AdditiveMagmas(Category_singleton):
             return self
 
         class SubcategoryMethods:
-
             @cached_method
             def AdditiveInverse(self):
                 r"""
@@ -650,7 +659,6 @@ class AdditiveMagmas(Category_singleton):
                 return self._with_axiom("AdditiveInverse")
 
         class ParentMethods:
-
             def _test_zero(self, **options):
                 r"""
                 Test that ``self.zero()`` is an element of ``self`` and
@@ -870,7 +878,6 @@ class AdditiveMagmas(Category_singleton):
                 return [AdditiveMagmas().AdditiveUnital()]
 
             class ParentMethods:
-
                 @cached_method
                 def zero(self):
                     """
@@ -893,6 +900,7 @@ class AdditiveMagmas(Category_singleton):
                         sage: TestSuite(f).run()
                     """
                     from sage.misc.constant_function import ConstantFunction
+
                     return self(ConstantFunction(self.codomain().zero()))
 
         class AdditiveInverse(CategoryWithAxiom):
@@ -931,7 +939,8 @@ class AdditiveMagmas(Category_singleton):
                            True
                         """
                         return self.parent()._cartesian_product_of_elements(
-                            [-x for x in self.cartesian_factors()])
+                            [-x for x in self.cartesian_factors()]
+                        )
 
         class CartesianProducts(CartesianProductsCategory):
             def extra_super_categories(self):
@@ -960,10 +969,10 @@ class AdditiveMagmas(Category_singleton):
                         (0, 0)
                     """
                     return self._cartesian_product_of_elements(
-                        _.zero() for _ in self.cartesian_factors())
+                        _.zero() for _ in self.cartesian_factors()
+                    )
 
         class Algebras(AlgebrasCategory):
-
             def extra_super_categories(self):
                 """
                 EXAMPLES::
@@ -977,10 +986,10 @@ class AdditiveMagmas(Category_singleton):
                      Category of unital algebras with basis over Rational Field]
                 """
                 from sage.categories.magmas import Magmas
+
                 return [Magmas().Unital()]
 
             class ParentMethods:
-
                 @cached_method
                 def one_basis(self):
                     """
@@ -1005,9 +1014,7 @@ class AdditiveMagmas(Category_singleton):
                     return self.basis().keys().zero()
 
         class WithRealizations(WithRealizationsCategory):
-
             class ParentMethods:
-
                 def zero(self):
                     r"""
                     Return the zero of this unital additive magma.

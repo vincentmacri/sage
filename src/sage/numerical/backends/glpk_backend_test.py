@@ -6,7 +6,6 @@ from sage.numerical.mip import MixedIntegerLinearProgram
 
 
 class TestGLPKBackend(GenericBackendTests):
-
     @pytest.fixture
     def backend(self) -> GenericBackend:
         return MixedIntegerLinearProgram(solver='GLPK').get_backend()

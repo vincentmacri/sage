@@ -59,7 +59,6 @@ See [SV2013]_, [BMS2006]_, and [SS1983]_.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.sage_object import SageObject
 from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.rings.finite_rings.finite_field_constructor import GF
@@ -139,7 +138,16 @@ class BinaryRecurrenceSequence(SageObject):
             Binary recurrence sequence defined by: u_n = 3 * u_{n-1} + 3 * u_{n-2};
             With initial conditions: u_0 = 2, and u_1 = 1
         """
-        return 'Binary recurrence sequence defined by: u_n = ' + str(self.b) + ' * u_{n-1} + ' + str(self.c) + ' * u_{n-2};\nWith initial conditions: u_0 = ' + str(self.u0) + ', and u_1 = ' + str(self.u1)
+        return (
+            'Binary recurrence sequence defined by: u_n = '
+            + str(self.b)
+            + ' * u_{n-1} + '
+            + str(self.c)
+            + ' * u_{n-2};\nWith initial conditions: u_0 = '
+            + str(self.u0)
+            + ', and u_1 = '
+            + str(self.u1)
+        )
 
     def __eq__(self, other) -> bool:
         """
@@ -156,7 +164,12 @@ class BinaryRecurrenceSequence(SageObject):
             sage: R == T
             False
         """
-        return (self.u0 == other.u0) and (self.u1 == other.u1) and (self.b == other.b) and (self.c == other.c)
+        return (
+            (self.u0 == other.u0)
+            and (self.u1 == other.u1)
+            and (self.b == other.b)
+            and (self.c == other.c)
+        )
 
     def __call__(self, n, modulus=0):
         """
@@ -246,18 +259,18 @@ class BinaryRecurrenceSequence(SageObject):
             else:
                 A = QuadraticField(D, 'x').gen()
 
-            aa = (self.u1 - self.u0 * (self.b + A)/2)/(A)     # called `a` in Docstring
-            bb = (self.u1 - self.u0 * (self.b - A)/2)/(A)     # called `b` in Docstring
+            aa = (self.u1 - self.u0 * (self.b + A) / 2) / (A)  # called `a` in Docstring
+            bb = (self.u1 - self.u0 * (self.b - A) / 2) / (A)  # called `b` in Docstring
 
             # (b+A)/2 is called alpha in Docstring, (b-A)/2 is called beta in Docstring
 
             if self.b != A:
-                if ((self.b+A)/(self.b-A))**6 == 1:
+                if ((self.b + A) / (self.b - A)) ** 6 == 1:
                     return True
             else:
                 return True
 
-            return aa*bb*(self.b + A)*(self.b - A) == 0
+            return aa * bb * (self.b + A) * (self.b - A) == 0
 
         return True
 
@@ -284,7 +297,7 @@ class BinaryRecurrenceSequence(SageObject):
 
         # We decide if u0, u1, u2 = b*u1+c*u0 are in geometric progression by whether u1^2 = (b*u1+c*u0)*u0
 
-        return (self.u1)**2 == (self.b*self.u1 + self.c*self.u0)*self.u0
+        return (self.u1) ** 2 == (self.b * self.u1 + self.c * self.u0) * self.u0
 
     def is_quasigeometric(self) -> bool:
         """
@@ -319,12 +332,12 @@ class BinaryRecurrenceSequence(SageObject):
 
         # Otherwise test if alpha/beta is a root of unity that is not 1
         D = self.b**2 + 4 * self.c
-        if D != 0:    # thus alpha/beta != 1
+        if D != 0:  # thus alpha/beta != 1
             if D.is_square():
                 A = sqrt(D)
             else:
                 A = QuadraticField(D, 'x').gen()
-            if ((self.b+A)/(self.b-A))**6 == 1:
+            if ((self.b + A) / (self.b - A)) ** 6 == 1:
                 return True
 
         return False
@@ -446,9 +459,10 @@ class BinaryRecurrenceSequence(SageObject):
             # m^2 must be in periodic part of the sequence. Hence, the
             # sequence starting with the terms numbered m^2 and m^2 + 1 must
             # be purely periodic.
-            an = (A**(m**2)) * w
-            return BinaryRecurrenceSequence(self.b, self.c,
-                an[0], an[1]).period(m, eventual=False)
+            an = (A ** (m**2)) * w
+            return BinaryRecurrenceSequence(self.b, self.c, an[0], an[1]).period(
+                m, eventual=False
+            )
 
         # To compute the period mod m, we compute the least integer n such that A^n*w == w.  This necessarily
         # divides the order of A as a matrix in GL_2(Z/mZ).
@@ -466,8 +480,8 @@ class BinaryRecurrenceSequence(SageObject):
             else:
                 F = A.change_ring(GF(p))
                 v = w.change_ring(GF(p))
-                FF = F**(p-1)
-                p1fac = list((p-1).factor())
+                FF = F ** (p - 1)
+                p1fac = list((p - 1).factor())
 
                 # The order of any matrix in GL_2(F_p) either divides p(p-1) or (p-1)(p+1).
                 # The order divides p-1 if it is diagonalizable.  In any case, det(F^(p-1))=1,
@@ -478,20 +492,24 @@ class BinaryRecurrenceSequence(SageObject):
                 # these conditions hold for the period as well.
 
                 # check if the order divides (p-1)
-                if FF*v == v:
-                    M = p-1
+                if FF * v == v:
+                    M = p - 1
                     Mfac = p1fac
 
                 # check if the trace is 2, then the order is a multiple of p dividing p*(p-1)
                 elif FF.trace() == 2:
-                    M = p-1
+                    M = p - 1
                     Mfac = p1fac
-                    F = F**p        # replace F by F^p as now we only need to determine the factor dividing (p-1)
+                    F = (
+                        F**p
+                    )  # replace F by F^p as now we only need to determine the factor dividing (p-1)
 
                 # otherwise it will divide (p+1)(p-1)
                 else:
-                    M = (p+1)*(p-1)
-                    p2fac = list((p+1).factor())        # factor the (p+1) and (p-1) terms separately and then combine for speed
+                    M = (p + 1) * (p - 1)
+                    p2fac = list(
+                        (p + 1).factor()
+                    )  # factor the (p+1) and (p-1) terms separately and then combine for speed
                     Mfac_dic = {}
                     for i0, i1 in list(p1fac + p2fac):
                         if i0 not in Mfac_dic:
@@ -522,26 +540,28 @@ class BinaryRecurrenceSequence(SageObject):
             F = A.change_ring(Integers(p**e))
             v = w.change_ring(Integers(p**e))
             FF = F**perp
-            if FF*v == v:
+            if FF * v == v:
                 perpe = perp
             else:
                 tries = 0
                 while True:
                     tries += 1
                     FF = FF**p
-                    if FF*v == v:
-                        perpe = perp*p**tries
+                    if FF * v == v:
+                        perpe = perp * p**tries
                         break
                     if tries > e:
-                        raise ValueError("Binary recurrence sequence " +
-                                         f"modulo {m} is not a purely " +
-                                         "periodic sequence.")
+                        raise ValueError(
+                            "Binary recurrence sequence "
+                            + f"modulo {m} is not a purely "
+                            + "periodic sequence."
+                        )
             Periods[p] = perpe
 
         # take the lcm of the periods mod all distinct primes dividing m
         period = lcm(Periods.values())
 
-        self._period_dict[m] = period        # cache the period mod m
+        self._period_dict[m] = period  # cache the period mod m
         return period
 
     def pthpowers(self, p, Bound):
@@ -622,7 +642,7 @@ class BinaryRecurrenceSequence(SageObject):
 
         if self.is_geometric() or self.is_quasigeometric():
             no_powers = True
-            for i in range(1, 6*p+1):
+            for i in range(1, 6 * p + 1):
                 if _is_p_power(self(i), p):
                     no_powers = False
                     break
@@ -630,16 +650,17 @@ class BinaryRecurrenceSequence(SageObject):
                 if _is_p_power(self.u0, p):
                     return [0]
                 return []
-            raise ValueError("the degenerate binary recurrence sequence is geometric or quasigeometric and has many pth powers")
+            raise ValueError(
+                "the degenerate binary recurrence sequence is geometric or quasigeometric and has many pth powers"
+            )
 
         # If the sequence is degenerate without being geometric or quasigeometric, there
         # may be many ``p`` th powers or no ``p`` th powers.
 
-        elif (self.b**2+4*self.c) == 0:
-
+        elif (self.b**2 + 4 * self.c) == 0:
             # This is the case if the matrix F is not diagonalizable, ie b^2 +4c = 0, and alpha/beta = 1.
 
-            alpha = self.b/2
+            alpha = self.b / 2
 
             # In this case, u_n = u_0*alpha^n + (u_1 - u_0*alpha)*n*alpha^(n-1) = alpha^(n-1)*(u_0 +n*(u_1 - u_0*alpha)),
             # that is, it is a geometric term (alpha^(n-1)) times an arithmetic term (u_0 + n*(u_1-u_0*alpha)).
@@ -647,17 +668,20 @@ class BinaryRecurrenceSequence(SageObject):
             # Look at classes n = k mod p, for k = 1,...,p.
 
             for k in range(1, p + 1):
-
                 # The linear equation alpha^(k-1)*u_0 + (k+pm)*(alpha^(k-1)*u1 - u0*alpha^k)
                 # must thus be a pth power.  This is a linear equation in m, namely, A + B*m, where
 
-                A = (alpha**(k-1)*self.u0 + k*(alpha**(k-1)*self.u1 - self.u0*alpha**k))
-                B = p*(alpha**(k-1)*self.u1 - self.u0*alpha**k)
+                A = alpha ** (k - 1) * self.u0 + k * (
+                    alpha ** (k - 1) * self.u1 - self.u0 * alpha**k
+                )
+                B = p * (alpha ** (k - 1) * self.u1 - self.u0 * alpha**k)
 
                 # This linear equation represents a pth power iff A is a pth power mod B.
 
                 if _is_p_power_mod(A, p, B):
-                    raise ValueError("the degenerate binary recurrence sequence has many pth powers")
+                    raise ValueError(
+                        "the degenerate binary recurrence sequence has many pth powers"
+                    )
             return []
 
         # We find ``p`` th powers using an elementary sieve.  Term `u_n` is a ``p`` th
@@ -678,9 +702,7 @@ class BinaryRecurrenceSequence(SageObject):
         # the list of known indices corresponding to ``p`` th powers is complete.
 
         else:
-
             if Bound < 3 * p:
-
                 powers = []
                 ell = p + 1
 
@@ -693,67 +715,66 @@ class BinaryRecurrenceSequence(SageObject):
                 bf, cf = F(self.b), F(self.c)
 
                 for n in range(Bound):  # n is the index of the a0
-
                     # Check whether a0 is a perfect power mod ell
                     if _is_p_power_mod(a0, p, ell):
                         # if a0 is a perfect power mod ell, check if nth term is ppower
                         if _is_p_power(self(n), p):
                             powers.append(n)
 
-                    a0, a1 = a1, bf*a1 + cf*a0      # step up the variables
+                    a0, a1 = a1, bf * a1 + cf * a0  # step up the variables
 
             else:
-
-                powers = []      # documents the indices of the sequence that provably correspond to pth powers
-                cong = [0]       # list of necessary congruences on the index for it to correspond to pth powers
-                Possible_count = {}   # keeps track of the number of rounds a congruence lasts in cong
+                powers = []  # documents the indices of the sequence that provably correspond to pth powers
+                cong = [
+                    0
+                ]  # list of necessary congruences on the index for it to correspond to pth powers
+                Possible_count = {}  # keeps track of the number of rounds a congruence lasts in cong
 
                 # These parameters are involved in how we choose primes to increase the modulus
-                qqold = 1        # we believe that we know complete information coming from primes good by qqold
-                M1 = 1            # we have congruences modulo M1, this may not be the tightest list
-                M2 = p            # we want to move to have congruences mod M2
-                qq = 1            # the largest prime power divisor of M1 is qq
+                qqold = 1  # we believe that we know complete information coming from primes good by qqold
+                M1 = 1  # we have congruences modulo M1, this may not be the tightest list
+                M2 = p  # we want to move to have congruences mod M2
+                qq = 1  # the largest prime power divisor of M1 is qq
 
                 # This loop ups the modulus.
                 while True:
-
                     # Try to get good data mod M2
 
                     # patience of how long we should search for a "good prime"
-                    patience = 0.01 * _estimated_time(lcm(M2, p * next_prime_power(qq)),
-                                                      M1, len(cong), p)
+                    patience = 0.01 * _estimated_time(
+                        lcm(M2, p * next_prime_power(qq)), M1, len(cong), p
+                    )
                     tries = 0
 
                     # This loop uses primes to get a small set of congruences mod M2.
                     while True:
-
                         # only proceed if took less than patience time to find the next good prime
                         ell = _next_good_prime(p, self, qq, patience, qqold)
                         if ell:
-
                             # gather congruence data for the sequence mod ell, which will be mod period(ell) = modu
                             cong1, modu = _find_cong1(p, self, ell)
 
                             # makes a new list from cong that is now mod M = lcm(M1, modu) instead of M1
                             M = lcm(M1, modu)
-                            CongNew = [k * M1 + i for k in range(M // M1)
-                                       for i in cong]
+                            CongNew = [k * M1 + i for k in range(M // M1) for i in cong]
                             cong = set(CongNew)
 
                             M1 = M
 
-                            killed_something = False        # keeps track of when cong1 can rule out a congruence in cong
+                            killed_something = False  # keeps track of when cong1 can rule out a congruence in cong
 
                             # CRT by hand to gain speed
                             for i in list(cong):
-                                if i % modu not in cong1:     # congruence in cong is inconsistent with any in cong1
-                                    cong.remove(i)            # remove that congruence
+                                if (
+                                    i % modu not in cong1
+                                ):  # congruence in cong is inconsistent with any in cong1
+                                    cong.remove(i)  # remove that congruence
                                     killed_something = True
 
                             if M1 == M2:
                                 if not killed_something:
                                     tries += 1
-                                    if tries == 2:            # try twice to rule out congruences
+                                    if tries == 2:  # try twice to rule out congruences
                                         cong = list(cong)
                                         qqold = qq
                                         qq = next_prime_power(qq)
@@ -918,14 +939,17 @@ def _next_good_prime(p, R, qq, patience, qqold):
 
     # Possible_Primes keeps track of possible primes satisfying our goodness requirements we might return
     # check to see if anything in R._PGoodness fits our goodness requirements
-    Possible_Primes = [item[0] for j, item in R._PGoodness.items()
-                       if qqold < j <= qq and item]
+    Possible_Primes = [
+        item[0] for j, item in R._PGoodness.items() if qqold < j <= qq and item
+    ]
 
     # If we found good primes, we take the smallest
     if Possible_Primes:
         q = min(Possible_Primes)
         n = _goodness(q, R, p)
-        del R._PGoodness[n][0]   # if we are going to use it, then we delete it from R._PGoodness
+        del R._PGoodness[n][
+            0
+        ]  # if we are going to use it, then we delete it from R._PGoodness
         return q
 
     # If nothing is already stored in R._PGoodness, we start (from where we left off at R._ell) checking
@@ -938,11 +962,9 @@ def _next_good_prime(p, R, qq, patience, qqold):
         # we require that R._ell is 1 mod p, so that p divides the order of the multiplicative
         # group mod R._ell, so that not all elements of GF(R._ell) are pth powers.
         if R._ell % p == 1:
-
             # requiring that b^2 + 4c is a square in GF(R._ell) ensures that the period mod R._ell
             # divides R._ell - 1
-            if legendre_symbol(R.b**2 + 4*R.c, R._ell) == 1:
-
+            if legendre_symbol(R.b**2 + 4 * R.c, R._ell) == 1:
                 N = _goodness(R._ell, R, p)
 
                 # proceed only if R._ell satisfies the goodness requirements
@@ -987,7 +1009,6 @@ def _is_p_power_mod(a, p, N):
     # a is a pth power mod q^e, for all distinct prime powers q^e dividing N.
 
     for q, e in N.factor():
-
         # If a = q^v*x, with
 
         v = a.valuation(q)
@@ -1015,30 +1036,26 @@ def _is_p_power_mod(a, p, N):
         # mod q^2, etc.
 
         if q != p:
-
             # aa is necessarily a pth power mod q if p does not divide the order of the multiplicative
             # group mod q, ie if q is not 1 mod p.
 
             if q % p == 1:
-
                 # otherwise aa if a pth power mod q iff aa^(q-1)/p == 1
 
-                if GF(q)(aa)**((q - 1) / p) != 1:
+                if GF(q)(aa) ** ((q - 1) / p) != 1:
                     return False
 
         # If q = p and ee = 1, then everything is a pth power p by Fermat's little theorem.
 
         elif ee > 1:
-
             # We use the strong statement of Hensel's lemma, which implies that if p is odd
             # and aa is a pth power mod p^2, then aa is a pth power mod any higher power of p
 
             if p % 2:
-
                 # ZZ/(p^2)ZZ^\times is abstractly isomorphic to ZZ/(p)ZZ cross ZZ/(p-1)ZZ. then
                 # aa is a pth power mod p^2 if (aa)^(p*(p-1)/p) == 1, ie if aa^(p-1) == 1.
 
-                if Integers(p**2)(aa)**(p - 1) != 1:
+                if Integers(p**2)(aa) ** (p - 1) != 1:
                     return False
 
             # Otherwise, p=2.  By the strong statement of Hensel's lemma, if aa is a pth power
@@ -1046,7 +1063,6 @@ def _is_p_power_mod(a, p, N):
             # is a pth power mod p^2 and p^3.
 
             elif ee == 2:
-
                 # all odd squares a 1 mod 4
 
                 if aa % 4 != 1:
@@ -1089,7 +1105,7 @@ def _estimated_time(M2, M1, length, p):
     Q = p * log(M2)  # Size of our primes.
     NPrimes = log(M2 / M1) / log(Q)  # The number of primes
 
-    return (length * (Q / p)**NPrimes).n()
+    return (length * (Q / p) ** NPrimes).n()
 
 
 # Find the list of necessary congruences for the index n of binary recurrence
@@ -1121,7 +1137,7 @@ def _find_cong1(p, R, ell):
     u1 = F(R.u1)
     bf, cf = F(R.b), F(R.c)
     a0 = u0
-    a1 = u1      # a0 and a1 are variables for terms in sequence
+    a1 = u1  # a0 and a1 are variables for terms in sequence
 
     # The set of pth powers mod ell
     PPowers = set(i**p for i in F)
@@ -1133,14 +1149,13 @@ def _find_cong1(p, R, ell):
     cong1 = []
 
     for n in range(modu):  # n is the index of the a0
-
         # Check whether a0 is a perfect power mod ell
         if a0 in PPowers:
             # if a0 is a perfect power mod ell, add the index
             # to the list of necessary congruences
             cong1.append(n)
 
-        a0, a1 = a1, bf * a1 + cf * a0      # step up the variables
+        a0, a1 = a1, bf * a1 + cf * a0  # step up the variables
 
     cong1.sort()
 

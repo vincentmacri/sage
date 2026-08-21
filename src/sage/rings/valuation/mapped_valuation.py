@@ -51,6 +51,7 @@ class MappedValuation_base(DiscretePseudoValuation):
 
         sage: TestSuite(w).run()                # long time                             # needs sage.rings.function_field
     """
+
     def __init__(self, parent, base_valuation):
         r"""
         .. TODO::
@@ -186,7 +187,9 @@ class MappedValuation_base(DiscretePseudoValuation):
             sage: w.reduce(y)
             u1
         """
-        return self._from_base_residue_ring(self._base_valuation.reduce(self._to_base_domain(f)))
+        return self._from_base_residue_ring(
+            self._base_valuation.reduce(self._to_base_domain(f))
+        )
 
     def lift(self, F):
         r"""
@@ -239,7 +242,11 @@ class MappedValuation_base(DiscretePseudoValuation):
             sage: w.simplify(y + x^32, force=True)                                      # needs sage.rings.function_field
             y
         """
-        return self._from_base_domain(self._base_valuation.simplify(self._to_base_domain(x), error=error, force=force))
+        return self._from_base_domain(
+            self._base_valuation.simplify(
+                self._to_base_domain(x), error=error, force=force
+            )
+        )
 
     def _relative_size(self, x):
         r"""
@@ -356,9 +363,15 @@ class MappedValuation_base(DiscretePseudoValuation):
         tester = self._tester(**options)
 
         for x in tester.some_elements(self.residue_ring().some_elements()):
-            tester.assertEqual(x, self._from_base_residue_ring(self._to_base_residue_ring(x)))
-        for x in tester.some_elements(self._base_valuation.residue_ring().some_elements()):
-            tester.assertEqual(x, self._to_base_residue_ring(self._from_base_residue_ring(x)))
+            tester.assertEqual(
+                x, self._from_base_residue_ring(self._to_base_residue_ring(x))
+            )
+        for x in tester.some_elements(
+            self._base_valuation.residue_ring().some_elements()
+        ):
+            tester.assertEqual(
+                x, self._to_base_residue_ring(self._from_base_residue_ring(x))
+            )
 
 
 class FiniteExtensionFromInfiniteValuation(MappedValuation_base, DiscreteValuation):
@@ -384,6 +397,7 @@ class FiniteExtensionFromInfiniteValuation(MappedValuation_base, DiscreteValuati
         sage: w = v.extension(L); w
         (x)-adic valuation
     """
+
     def __init__(self, parent, base_valuation):
         r"""
         TESTS::
@@ -416,8 +430,10 @@ class FiniteExtensionFromInfiniteValuation(MappedValuation_base, DiscreteValuati
             sage: w == ww # indirect doctest
             True
         """
-        return (isinstance(other, FiniteExtensionFromInfiniteValuation)
-                and self._base_valuation == other._base_valuation)
+        return (
+            isinstance(other, FiniteExtensionFromInfiniteValuation)
+            and self._base_valuation == other._base_valuation
+        )
 
     def restriction(self, ring):
         r"""
@@ -457,7 +473,9 @@ class FiniteExtensionFromInfiniteValuation(MappedValuation_base, DiscreteValuati
             1/20*t + 7/20
         """
         if isinstance(other, FiniteExtensionFromInfiniteValuation):
-            return self.domain()(self._base_valuation._weakly_separating_element(other._base_valuation))
+            return self.domain()(
+                self._base_valuation._weakly_separating_element(other._base_valuation)
+            )
         super()._weakly_separating_element(other)
 
     def _relative_size(self, x):
@@ -508,7 +526,9 @@ class FiniteExtensionFromInfiniteValuation(MappedValuation_base, DiscreteValuati
         if error is None:
             error = self.upper_bound(x)
 
-        return self._from_base_domain(self._base_valuation.simplify(self._to_base_domain(x), error, force=force))
+        return self._from_base_domain(
+            self._base_valuation.simplify(self._to_base_domain(x), error, force=force)
+        )
 
     def lower_bound(self, x):
         r"""
@@ -571,6 +591,7 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
          [ (x - 1)-adic valuation, v(y - 1) = 1 ]-adic valuation]
 
     """
+
     def __init__(self, parent, approximant, G, approximants):
         r"""
         EXAMPLES:
@@ -593,6 +614,7 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
         self._approximants = approximants
 
         from .limit_valuation import LimitValuation
+
         limit = LimitValuation(approximant, G)
         FiniteExtensionFromInfiniteValuation.__init__(self, parent, limit)
 
@@ -606,21 +628,46 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
             2-adic valuation
         """
         from .limit_valuation import MacLaneLimitValuation
+
         if isinstance(self._base_valuation, MacLaneLimitValuation):
             # print the minimal information that singles out this valuation from all approximants
-            assert (self._base_valuation._initial_approximation in self._approximants)
+            assert self._base_valuation._initial_approximation in self._approximants
             approximants = [v.augmentation_chain()[::-1] for v in self._approximants]
-            augmentations = self._base_valuation._initial_approximation.augmentation_chain()[::-1]
+            augmentations = (
+                self._base_valuation._initial_approximation.augmentation_chain()[::-1]
+            )
             unique_approximant = None
             for l in range(len(augmentations)):
-                if len([a for a in approximants if a[:l + 1] == augmentations[:l + 1]]) == 1:
-                    unique_approximant = augmentations[:l + 1]
+                if (
+                    len(
+                        [
+                            a
+                            for a in approximants
+                            if a[: l + 1] == augmentations[: l + 1]
+                        ]
+                    )
+                    == 1
+                ):
+                    unique_approximant = augmentations[: l + 1]
                     break
-            assert (unique_approximant is not None)
+            assert unique_approximant is not None
             if unique_approximant[0].is_gauss_valuation():
-                unique_approximant[0] = unique_approximant[0].restriction(unique_approximant[0].domain().base_ring())
+                unique_approximant[0] = unique_approximant[0].restriction(
+                    unique_approximant[0].domain().base_ring()
+                )
             if len(unique_approximant) == 1:
                 return repr(unique_approximant[0])
             from .augmented_valuation import AugmentedValuation_base
-            return "[ %s ]-adic valuation" % (", ".join("v(%r) = %r" % (v._phi, v._mu) if (isinstance(v, AugmentedValuation_base) and v.domain() == self._base_valuation.domain()) else repr(v) for v in unique_approximant))
+
+            return "[ %s ]-adic valuation" % (
+                ", ".join(
+                    "v(%r) = %r" % (v._phi, v._mu)
+                    if (
+                        isinstance(v, AugmentedValuation_base)
+                        and v.domain() == self._base_valuation.domain()
+                    )
+                    else repr(v)
+                    for v in unique_approximant
+                )
+            )
         return "%s-adic valuation" % (self._base_valuation)

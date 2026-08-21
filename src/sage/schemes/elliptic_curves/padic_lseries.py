@@ -64,10 +64,12 @@ from sage.matrix.constructor import matrix
 import sage.schemes.hyperelliptic_curves.monsky_washnitzer
 
 from sage.arith.functions import lcm as LCM
-from sage.arith.misc import (GCD as gcd,
-                             prime_divisors,
-                             kronecker as kronecker_symbol,
-                             valuation)
+from sage.arith.misc import (
+    GCD as gcd,
+    prime_divisors,
+    kronecker as kronecker_symbol,
+    valuation,
+)
 from sage.misc.cachefunc import cached_method
 from sage.misc.functional import denominator
 from sage.misc.lazy_import import lazy_import
@@ -149,6 +151,7 @@ class pAdicLseries(SageObject):
         sage: lp == loads(dumps(lp))
         True
     """
+
     def __init__(self, E, p, implementation='eclib', normalize='L_ratio'):
         r"""
         INPUT:
@@ -178,18 +181,22 @@ class pAdicLseries(SageObject):
         self._implementation = implementation
         if not self._p.is_prime():
             raise ValueError("p (=%s) must be a prime" % p)
-        if E.conductor() % (self._p)**2 == 0:
-            raise NotImplementedError("p (=%s) must be a prime of semi-stable reduction" % p)
+        if E.conductor() % (self._p) ** 2 == 0:
+            raise NotImplementedError(
+                "p (=%s) must be a prime of semi-stable reduction" % p
+            )
 
         try:
             E.label()
         except LookupError:
             if implementation != 'num':
-                print("Warning : Curve outside Cremona's table. Computations of modular symbol space might take very long !")
+                print(
+                    "Warning : Curve outside Cremona's table. Computations of modular symbol space might take very long !"
+                )
 
-        self._modular_symbol = E.modular_symbol(sign=+1,
-                                                implementation=implementation,
-                                                normalize=normalize)
+        self._modular_symbol = E.modular_symbol(
+            sign=+1, implementation=implementation, normalize=normalize
+        )
 
     def __add_negative_space(self):
         r"""
@@ -205,7 +212,9 @@ class pAdicLseries(SageObject):
             sage: lp.modular_symbol(1/7,sign=-1)  #indirect doctest
             -1/2
         """
-        self._negative_modular_symbol = self._E.modular_symbol(sign=-1, implementation='sage', normalize=self._normalize)
+        self._negative_modular_symbol = self._E.modular_symbol(
+            sign=-1, implementation='sage', normalize=self._normalize
+        )
 
     def __richcmp__(self, other, op):
         r"""
@@ -326,11 +335,14 @@ class pAdicLseries(SageObject):
         else:
             D = quadratic_twist
             if sign == -1:
-                raise NotImplementedError("Quadratic twists for negative modular symbols are not yet implemented.")
+                raise NotImplementedError(
+                    "Quadratic twists for negative modular symbols are not yet implemented."
+                )
             if D > 0:
                 m = self._modular_symbol
-                return sum([kronecker_symbol(D, u) * m(r + ZZ(u) / D)
-                            for u in range(1, D)])
+                return sum(
+                    [kronecker_symbol(D, u) * m(r + ZZ(u) / D) for u in range(1, D)]
+                )
 
             try:
                 m = self._negative_modular_symbol
@@ -338,8 +350,9 @@ class pAdicLseries(SageObject):
                 if not hasattr(self, '_modular_symbol_negative'):
                     self.__add_negative_space()
                     m = self._negative_modular_symbol
-            return -sum([kronecker_symbol(D, u) * m(r + ZZ(u) / D)
-                         for u in range(1, -D)])
+            return -sum(
+                [kronecker_symbol(D, u) * m(r + ZZ(u) / D) for u in range(1, -D)]
+            )
 
     def measure(self, a, n, prec, quadratic_twist=+1, sign=+1):
         r"""
@@ -416,8 +429,8 @@ class pAdicLseries(SageObject):
                 self.__measure_data = {}
             p = self._p
             alpha = self.alpha(prec=prec)
-            z = 1/(alpha**n)
-            w = p**(n-1)
+            z = 1 / (alpha**n)
+            w = p ** (n - 1)
             if s == +1:
                 f = self._modular_symbol
             else:
@@ -431,18 +444,40 @@ class pAdicLseries(SageObject):
 
         if quadratic_twist == 1:
             if self._E.conductor() % p == 0:
-                return z * f(a/(p*w))
-            return z * ( f(a/(p*w)) - f(a/w) / alpha)
+                return z * f(a / (p * w))
+            return z * (f(a / (p * w)) - f(a / w) / alpha)
         D = quadratic_twist
         if self.is_ordinary():
-            chip = kronecker_symbol(D,p)
+            chip = kronecker_symbol(D, p)
         else:
-            chip = 1 # alpha is +- sqrt(-p) anyway
+            chip = 1  # alpha is +- sqrt(-p) anyway
         if self._E.conductor() % p == 0:
-            mu = chip**n * z * sum([kronecker_symbol(D,u) * f(a/(p*w)+ZZ(u)/D) for u in range(1,D.abs())])
+            mu = (
+                chip**n
+                * z
+                * sum(
+                    [
+                        kronecker_symbol(D, u) * f(a / (p * w) + ZZ(u) / D)
+                        for u in range(1, D.abs())
+                    ]
+                )
+            )
         else:
-            mu = chip**n * z * sum([kronecker_symbol(D,u) * ( f(a/(p*w)+ZZ(u)/D) - chip / alpha * f(a/w+ZZ(u)/D) ) for u in range(1,D.abs())])
-        return s*mu
+            mu = (
+                chip**n
+                * z
+                * sum(
+                    [
+                        kronecker_symbol(D, u)
+                        * (
+                            f(a / (p * w) + ZZ(u) / D)
+                            - chip / alpha * f(a / w + ZZ(u) / D)
+                        )
+                        for u in range(1, D.abs())
+                    ]
+                )
+            )
+        return s * mu
 
     def alpha(self, prec=20):
         r"""
@@ -507,7 +542,7 @@ class pAdicLseries(SageObject):
                     self._alpha[prec] = K(a)
                     return K(a)
             raise RuntimeError("bug in p-adic L-function alpha")
-        else: # supersingular case
+        else:  # supersingular case
             f = f.change_ring(K)
             A = K.extension(f, names='alpha')
             a = A.gen()
@@ -572,7 +607,10 @@ class pAdicLseries(SageObject):
             f = self.series(n)
             v = f.valuation()
             if v < n and v < r:
-                raise RuntimeError("while computing p-adic order of vanishing, got a contradiction: the curve is %s, the curve has rank %s, but the p-adic L-series vanishes to order <= %s" % (E, r, v))
+                raise RuntimeError(
+                    "while computing p-adic order of vanishing, got a contradiction: the curve is %s, the curve has rank %s, but the p-adic L-series vanishes to order <= %s"
+                    % (E, r, v)
+                )
             if v == r:
                 self.__ord = v
                 return v
@@ -598,8 +636,7 @@ class pAdicLseries(SageObject):
         """
         p = self._p
         K = Qp(p, prec, print_mode='series')
-        return [Integer(0)] + \
-               [a.residue(prec).lift() for a in K.teichmuller_system()]
+        return [Integer(0)] + [a.residue(prec).lift() for a in K.teichmuller_system()]
 
     def _e_bounds(self, n, prec):
         r"""
@@ -656,13 +693,13 @@ class pAdicLseries(SageObject):
             5 + 4*5^2 + 4*5^3 + O(5^4) + O(5)*T + O(5)*T^2 + O(5)*T^3 + O(5)*T^4 + O(T^5)
         """
         try:
-            return self.__series[(n,prec,D,eta)]
+            return self.__series[(n, prec, D, eta)]
         except AttributeError:
             self.__series = {}
         except KeyError:
             for _n, _prec, _D, _eta in self.__series:
                 if _n == n and _D == D and _eta == eta and _prec >= prec:
-                    return self.__series[(_n,_prec,_D,_eta)].add_bigoh(prec)
+                    return self.__series[(_n, _prec, _D, _eta)].add_bigoh(prec)
         return None
 
     def _set_series_in_cache(self, n, prec, D, eta, f):
@@ -732,7 +769,10 @@ class pAdicLseries(SageObject):
             qt = Et.period_lattice().basis()[0] / self._E.period_lattice().basis()[0]
             qt *= qt.parent()(D).sqrt()
         else:
-            qt = Et.period_lattice().basis()[1].imag() / self._E.period_lattice().basis()[0]
+            qt = (
+                Et.period_lattice().basis()[1].imag()
+                / self._E.period_lattice().basis()[0]
+            )
             if Et.real_components() == 1:
                 qt *= 2
             qt *= qt.parent()(-D).sqrt()
@@ -874,22 +914,35 @@ class pAdicLseriesOrdinary(pAdicLseries):
         D = ZZ(quadratic_twist)
         if D != 1:
             if eta != 0:
-                raise NotImplementedError("quadratic twists only implemented for the 0th Teichmueller component")
+                raise NotImplementedError(
+                    "quadratic twists only implemented for the 0th Teichmueller component"
+                )
             if D % 4 == 0:
-                d = D//4
+                d = D // 4
                 if not d.is_squarefree() or d % 4 == 1:
-                    raise ValueError("quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field" % D)
+                    raise ValueError(
+                        "quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field"
+                        % D
+                    )
             else:
                 if not D.is_squarefree() or D % 4 != 1:
-                    raise ValueError("quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field" % D)
-            if gcd(D,self._p) != 1:
-                raise ValueError("quadratic twist (=%s) must be coprime to p (=%s) " % (D,self._p))
+                    raise ValueError(
+                        "quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field"
+                        % D
+                    )
+            if gcd(D, self._p) != 1:
+                raise ValueError(
+                    "quadratic twist (=%s) must be coprime to p (=%s) " % (D, self._p)
+                )
             if gcd(D, self._E.conductor()) != 1:
                 for ell in prime_divisors(D):
                     if valuation(self._E.conductor(), ell) > valuation(D, ell):
-                        raise ValueError("cannot twist a curve of conductor (=%s) by the quadratic twist (=%s)." % (self._E.conductor(),D))
+                        raise ValueError(
+                            "cannot twist a curve of conductor (=%s) by the quadratic twist (=%s)."
+                            % (self._E.conductor(), D)
+                        )
         p = self._p
-        si = 1-2*(eta % 2)
+        si = 1 - 2 * (eta % 2)
 
         # verbose("computing L-series for p=%s, n=%s, and prec=%s" % (p,n,prec))
 
@@ -899,39 +952,39 @@ class pAdicLseriesOrdinary(pAdicLseries):
                 # need to do any sum as L_p(E,0) = (1-1/alpha)^2 * m(0) (good case)
                 # set prec arbitrary to 20.
                 K = Qp(p, 20, print_mode='series')
-                R = PowerSeriesRing(K,'T',1)
+                R = PowerSeriesRing(K, 'T', 1)
                 L = self.modular_symbol(0, sign=+1, quadratic_twist=D)
-                chip = kronecker_symbol(D,p)
+                chip = kronecker_symbol(D, p)
                 if self._E.conductor() % p == 0:
-                    L *= 1 - chip/self.alpha()
+                    L *= 1 - chip / self.alpha()
                 else:
-                    L *= (1-chip/self.alpha())**2
-                L /= self._quotient_of_periods_to_twist(D)*self._E.real_components()
+                    L *= (1 - chip / self.alpha()) ** 2
+                L /= self._quotient_of_periods_to_twist(D) * self._E.real_components()
                 L = R(L, 1)
                 return L
             # here we need some sums anyway
-            bounds = self._prec_bounds(n,prec,sign=si)
+            bounds = self._prec_bounds(n, prec, sign=si)
             padic_prec = 20
         else:
-            bounds = self._prec_bounds(n,prec,sign=si)
+            bounds = self._prec_bounds(n, prec, sign=si)
             padic_prec = max(bounds[1:]) + 5
 
         verbose("using p-adic precision of %s" % padic_prec)
 
         if p == 2:
-            res_series_prec = min(p**(n-2), prec)
+            res_series_prec = min(p ** (n - 2), prec)
         else:
-            res_series_prec = min(p**(n-1), prec)
+            res_series_prec = min(p ** (n - 1), prec)
         verbose("using series precision of %s" % res_series_prec)
 
-        ans = self._get_series_from_cache(n, res_series_prec,D,eta)
+        ans = self._get_series_from_cache(n, res_series_prec, D, eta)
         if ans is not None:
             verbose("found series in cache")
             return ans
 
         K = QQ
-        R = PowerSeriesRing(K,'T',res_series_prec)
-        T = R(R.gen(),res_series_prec )
+        R = PowerSeriesRing(K, 'T', res_series_prec)
+        T = R(R.gen(), res_series_prec)
         L = R(0)
         one_plus_T_factor = R(1)
         gamma_power = K(1)
@@ -939,40 +992,44 @@ class pAdicLseriesOrdinary(pAdicLseries):
         if p == 2:
             teich = [0, 1, -1]
             gamma = K(5)
-            p_power = 2**(n-2)
+            p_power = 2 ** (n - 2)
             a_range = 3
         else:
             teich = self.teichmuller(padic_prec)
             gamma = K(1 + p)
-            p_power = p**(n-1)
+            p_power = p ** (n - 1)
             a_range = p
 
-        verbose("Now iterating over %s summands" % ((p-1)*p_power))
+        verbose("Now iterating over %s summands" % ((p - 1) * p_power))
         verbose_level = get_verbose()
         count_verb = 0
         for j in range(p_power):
             s = K(0)
-            if verbose_level >= 2 and j/p_power*100 > count_verb + 3:
-                verbose("%.2f percent done" % (float(j)/p_power*100))
+            if verbose_level >= 2 and j / p_power * 100 > count_verb + 3:
+                verbose("%.2f percent done" % (float(j) / p_power * 100))
                 count_verb += 3
-            for a in range(1,a_range):
+            for a in range(1, a_range):
                 b = teich[a] * gamma_power
-                s += teich[a]**eta * self.measure(b, n, padic_prec, quadratic_twist=D, sign=si).lift()
+                s += (
+                    teich[a] ** eta
+                    * self.measure(b, n, padic_prec, quadratic_twist=D, sign=si).lift()
+                )
             L += s * one_plus_T_factor
-            one_plus_T_factor *= 1+T
+            one_plus_T_factor *= 1 + T
             gamma_power *= gamma
 
         verbose("the series before adjusting the precision is %s" % L)
         # Now create series but with each coefficient truncated
         # so it is proven correct:
         K = Qp(p, padic_prec, print_mode='series')
-        R = PowerSeriesRing(K,'T',res_series_prec)
-        L = R(L,res_series_prec)
+        R = PowerSeriesRing(K, 'T', res_series_prec)
+        L = R(L, res_series_prec)
         aj = L.list()
         if aj:
-            aj = [aj[0].add_bigoh(padic_prec-2)] + \
-                 [aj[j].add_bigoh(bounds[j]) for j in range(1,len(aj))]
-        L = R(aj,res_series_prec )
+            aj = [aj[0].add_bigoh(padic_prec - 2)] + [
+                aj[j].add_bigoh(bounds[j]) for j in range(1, len(aj))
+            ]
+        L = R(aj, res_series_prec)
 
         L /= self._quotient_of_periods_to_twist(D)
         if si == +1:
@@ -1058,7 +1115,9 @@ class pAdicLseriesOrdinary(pAdicLseries):
             b = m.boundary_map().codomain()
             C = b._known_cusps()  # all known, since computed the boundary map
             if sign == +1:
-                return max([valuation(self.modular_symbol(a).denominator(), p) for a in C])
+                return max(
+                    [valuation(self.modular_symbol(a).denominator(), p) for a in C]
+                )
             try:
                 m = self._negative_modular_symbol
             except (KeyError, AttributeError):
@@ -1070,6 +1129,7 @@ class pAdicLseriesOrdinary(pAdicLseries):
         # else the same reasoning as in _set_denom in numerical
         # modular symbol. We rely on the fact that p is semistable
         from sage.databases.cremona import CremonaDatabase
+
         isog = E.isogeny_class()
         t = 0
         if N <= CremonaDatabase().largest_conductor():
@@ -1112,9 +1172,9 @@ class pAdicLseriesOrdinary(pAdicLseries):
             if E0.real_components() == 1:
                 om0 *= 2
         m = max(isog.matrix().list())
-        q = (om/om0 * m).round()/m
-        t += valuation(q,p)
-        return max(t,0)
+        q = (om / om0 * m).round() / m
+        t += valuation(q, p)
+        return max(t, 0)
 
     def _prec_bounds(self, n, prec, sign=+1):
         r"""
@@ -1223,18 +1283,29 @@ class pAdicLseriesSupersingular(pAdicLseries):
         D = ZZ(quadratic_twist)
         if D != 1:
             if eta != 0:
-                raise NotImplementedError("quadratic twists only implemented for the 0th Teichmueller component")
+                raise NotImplementedError(
+                    "quadratic twists only implemented for the 0th Teichmueller component"
+                )
             if D % 4 == 0:
-                d = D//4
+                d = D // 4
                 if not d.is_squarefree() or d % 4 == 1:
-                    raise ValueError("quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field" % D)
+                    raise ValueError(
+                        "quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field"
+                        % D
+                    )
             else:
                 if not D.is_squarefree() or D % 4 != 1:
-                    raise ValueError("quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field" % D)
+                    raise ValueError(
+                        "quadratic_twist (=%s) must be a fundamental discriminant of a quadratic field"
+                        % D
+                    )
             if gcd(D, self._E.conductor()) != 1:
                 for ell in prime_divisors(D):
                     if valuation(self._E.conductor(), ell) > valuation(D, ell):
-                        raise ValueError("cannot twist a curve of conductor (=%s) by the quadratic twist (=%s)." % (self._E.conductor(), D))
+                        raise ValueError(
+                            "cannot twist a curve of conductor (=%s) by the quadratic twist (=%s)."
+                            % (self._E.conductor(), D)
+                        )
 
         p = self._p
         eta = ZZ(eta) % (p - 1) if p != 2 else ZZ(eta) % 2
@@ -1246,72 +1317,74 @@ class pAdicLseriesSupersingular(pAdicLseries):
                 # set prec arbitrary to 20.
                 alpha = self.alpha(prec=20)
                 K = alpha.parent()
-                R = PowerSeriesRing(K,'T',1)
+                R = PowerSeriesRing(K, 'T', 1)
                 L = self.modular_symbol(0, sign=+1, quadratic_twist=D)
-                L *= (1-1/self.alpha())**2
-                L /= self._quotient_of_periods_to_twist(D)*self._E.real_components()
+                L *= (1 - 1 / self.alpha()) ** 2
+                L /= self._quotient_of_periods_to_twist(D) * self._E.real_components()
                 L = R(L, 1)
                 return L
             # here we need some sums anyway
-            bounds = self._prec_bounds(n,prec)
+            bounds = self._prec_bounds(n, prec)
             alphaadic_prec = 20
         else:
-            prec = min(p**(n-1), prec)
-            bounds = self._prec_bounds(n,prec)
+            prec = min(p ** (n - 1), prec)
+            bounds = self._prec_bounds(n, prec)
             alphaadic_prec = max(bounds[1:]) + 5
 
-        padic_prec = alphaadic_prec//2+1
+        padic_prec = alphaadic_prec // 2 + 1
         verbose("using alpha-adic precision of %s" % padic_prec)
-        ans = self._get_series_from_cache(n, prec, quadratic_twist,eta)
+        ans = self._get_series_from_cache(n, prec, quadratic_twist, eta)
         if ans is not None:
             verbose("found series in cache")
             return ans
 
         alpha = self.alpha(prec=padic_prec)
         K = alpha.parent()
-        R = PowerSeriesRing(K,'T',prec)
+        R = PowerSeriesRing(K, 'T', prec)
         T = R(R.gen(), prec)
         L = R(0)
         one_plus_T_factor = R(1)
         gamma_power = 1
         teich = self.teichmuller(padic_prec)
         if p == 2:
-            teich = [0, 1,-1]
+            teich = [0, 1, -1]
             gamma = 5
-            p_power = 2**(n-2)
+            p_power = 2 ** (n - 2)
             a_range = 3
         else:
             teich = self.teichmuller(padic_prec)
             gamma = 1 + p
-            p_power = p**(n-1)
+            p_power = p ** (n - 1)
             a_range = p
-        si = 1-2*(eta % 2)
+        si = 1 - 2 * (eta % 2)
 
-        verbose("Now iterating over %s summands" % ((p-1)*p_power))
+        verbose("Now iterating over %s summands" % ((p - 1) * p_power))
         verbose_level = get_verbose()
         count_verb = 0
         for j in range(p_power):
             s = K(0)
-            if verbose_level >= 2 and j/p_power*100 > count_verb + 3:
-                verbose("%.2f percent done" % (float(j)/p_power*100))
+            if verbose_level >= 2 and j / p_power * 100 > count_verb + 3:
+                verbose("%.2f percent done" % (float(j) / p_power * 100))
                 count_verb += 3
-            for a in range(1,a_range):
+            for a in range(1, a_range):
                 b = teich[a] * gamma_power
-                s += teich[a]**eta * self.measure(b, n, padic_prec, quadratic_twist=D, sign=si)
+                s += teich[a] ** eta * self.measure(
+                    b, n, padic_prec, quadratic_twist=D, sign=si
+                )
             L += s * one_plus_T_factor
-            one_plus_T_factor *= 1+T
+            one_plus_T_factor *= 1 + T
             gamma_power *= gamma
 
         # Now create series but with each coefficient truncated
         # so it is proven correct:
         # the coefficients are now treated as alpha-adic numbers (trac 20254)
-        L = R(L,prec)
+        L = R(L, prec)
         aj = L.list()
         if aj:
-            bj = [aj[0].add_bigoh(2*(padic_prec-2))]
+            bj = [aj[0].add_bigoh(2 * (padic_prec - 2))]
             j = 1
             while j < len(aj):
-                bj.append( aj[j].add_bigoh(bounds[j]) )
+                bj.append(aj[j].add_bigoh(bounds[j]))
                 j += 1
             L = R(bj, prec)
         L /= self._quotient_of_periods_to_twist(D)
@@ -1449,8 +1522,8 @@ class pAdicLseriesSupersingular(pAdicLseries):
 
         # now compute phi
         phi = matrix([[0, -1 / p], [1, E.ap(p) / p]])
-        lpv = vector([G + (E.ap(p)) * H, - R(p) * H])  # this is L_p
-        eps = (1 - phi)**(-2)
+        lpv = vector([G + (E.ap(p)) * H, -R(p) * H])  # this is L_p
+        eps = (1 - phi) ** (-2)
         resu = lpv * eps.transpose()
         return resu
 
@@ -1490,14 +1563,18 @@ class pAdicLseriesSupersingular(pAdicLseries):
         if p < 4 and algorithm == "mw":
             print("Warning: If this fails try again using algorithm=\"approx\"")
         Ew = E.integral_short_weierstrass_model()
-        adjusted_prec = sage.schemes.hyperelliptic_curves.monsky_washnitzer.adjusted_prec(p, prec)
+        adjusted_prec = (
+            sage.schemes.hyperelliptic_curves.monsky_washnitzer.adjusted_prec(p, prec)
+        )
         modprecring = Integers(p**adjusted_prec)
         output_ring = Qp(p, prec)
         R, x = PolynomialRing(modprecring, 'x').objgen()
         Q = x**3 + modprecring(Ew.a4()) * x + modprecring(Ew.a6())
         trace = Ew.ap(p)
-        fr = sage.schemes.hyperelliptic_curves.monsky_washnitzer.matrix_of_frobenius(Q, p, adjusted_prec, trace)
-        fr = matrix(output_ring,2,2,fr)
+        fr = sage.schemes.hyperelliptic_curves.monsky_washnitzer.matrix_of_frobenius(
+            Q, p, adjusted_prec, trace
+        )
+        fr = matrix(output_ring, 2, 2, fr)
 
         # return a vector for PARI's ellchangecurve to pass from e1 to e2
         def isom(e1, e2):
@@ -1506,8 +1583,8 @@ class pAdicLseriesSupersingular(pAdicLseries):
             usq = (e1.discriminant() / e2.discriminant()).nth_root(6)
             u = usq.sqrt()
             s = (u * e2.a1() - e1.a1()) / ZZ(2)
-            r = (usq * e2.a2() - e1.a2() + s**2 + e1.a1()*s) / ZZ(3)
-            t = (u**3 * e2.a3() - e1.a3() - e1.a1()*r) / ZZ(2)
+            r = (usq * e2.a2() - e1.a2() + s**2 + e1.a1() * s) / ZZ(3)
+            t = (u**3 * e2.a3() - e1.a3() - e1.a1() * r) / ZZ(2)
             return [u, r, s, t]
 
         v = isom(E, Ew)
@@ -1515,9 +1592,9 @@ class pAdicLseriesSupersingular(pAdicLseries):
         r = v[1]
 
         # change basis
-        A = matrix([[u, -r/u], [0, 1/u]])
-        frn = A * fr * A**(-1)
-        return 1 / p*frn
+        A = matrix([[u, -r / u], [0, 1 / u]])
+        frn = A * fr * A ** (-1)
+        return 1 / p * frn
 
     def __phi_bpr(self, prec=0):
         r"""
@@ -1553,63 +1630,80 @@ class pAdicLseriesSupersingular(pAdicLseries):
         if prec > 10:
             print("Warning: Very large value for the precision.")
         if prec == 0:
-            prec = floor(log(10000)/log(p))
+            prec = floor(log(10000) / log(p))
             verbose("prec set to %s" % prec)
         eh = E.formal()
-        om = eh.differential(prec=p**prec+3)
+        om = eh.differential(prec=p**prec + 3)
         verbose("differential computed")
         xt = eh.x(prec=p**prec + 3)
-        et = xt*om
+        et = xt * om
         # c_(p^k) = cs[k] d...
-        cs = [om[p**k-1] for k in range(prec + 1)]
-        ds = [et[p**k-1] for k in range(prec + 1)]
+        cs = [om[p**k - 1] for k in range(prec + 1)]
+        ds = [et[p**k - 1] for k in range(prec + 1)]
         delta = 0
         dpr = 0
         gamma = 0
         dga = 0
-        for k in range(1,prec+1):
+        for k in range(1, prec + 1):
             # this is the equation eq[0]*x+eq[1]*y+eq[2] == 0
             # such that delta_ = delta + d^dpr*x ...
-            eq = [(p**dpr*cs[k]) % p**k,
-                  (-p**dga*ds[k]) % p**k,
-                  (delta*cs[k]-gamma*ds[k]-cs[k-1]) % p**k]
+            eq = [
+                (p**dpr * cs[k]) % p**k,
+                (-(p**dga) * ds[k]) % p**k,
+                (delta * cs[k] - gamma * ds[k] - cs[k - 1]) % p**k,
+            ]
             verbose("valuations : %s" % ([x.valuation(p) for x in eq]))
             v = min(x.valuation(p) for x in eq)
             if v == infinity:
                 verbose("no new information at step k=%s" % k)
             else:
-                eq = [ZZ(x/p**v) for x in eq]
-                verbose("renormalised eq mod p^%s is now %s" % (k-v,eq))
+                eq = [ZZ(x / p**v) for x in eq]
+                verbose("renormalised eq mod p^%s is now %s" % (k - v, eq))
                 if eq[0].valuation(p) == 0:
-                    l = min(eq[1].valuation(p),k-v)
+                    l = min(eq[1].valuation(p), k - v)
                     if l == 0:
                         verbose("not uniquely determined at step k=%s" % k)
                     else:
                         ainv = eq[0].inverse_mod(p**l)
-                        delta = delta - eq[2]*ainv*p**dpr
+                        delta = delta - eq[2] * ainv * p**dpr
                         dpr = dpr + l
                         delta = delta % p**dpr
-                        verbose("delta_prec increased to %s\n delta is now %s" % (dpr,delta))
+                        verbose(
+                            "delta_prec increased to %s\n delta is now %s"
+                            % (dpr, delta)
+                        )
                 elif eq[1].valuation(p) == 0:
-                    l = min(eq[0].valuation(p),k-v)
+                    l = min(eq[0].valuation(p), k - v)
                     ainv = eq[1].inverse_mod(p**l)
-                    gamma = gamma - eq[2]*ainv*p**dga
+                    gamma = gamma - eq[2] * ainv * p**dga
                     dga = dga + l
                     gamma = gamma % p**dga
-                    verbose("gamma_prec increased to %s\n gamma is now %s" % (dga,gamma))
+                    verbose(
+                        "gamma_prec increased to %s\n gamma is now %s" % (dga, gamma)
+                    )
                 else:
                     raise RuntimeError("Bug: no delta or gamma can exist")
 
         # end of approximation of delta and gamma
-        R = Qp(p,max(dpr,dga)+1)
-        delta = R(delta,absprec=dpr)
-        gamma = R(gamma,absprec=dga)
-        verbose("result delta = %s\n      gamma = %s\n check : %s" % (delta,gamma, [Qp(p,k)(delta * cs[k] - gamma * ds[k] - cs[k-1]) for k in range(1,prec+1)] ))
+        R = Qp(p, max(dpr, dga) + 1)
+        delta = R(delta, absprec=dpr)
+        gamma = R(gamma, absprec=dga)
+        verbose(
+            "result delta = %s\n      gamma = %s\n check : %s"
+            % (
+                delta,
+                gamma,
+                [
+                    Qp(p, k)(delta * cs[k] - gamma * ds[k] - cs[k - 1])
+                    for k in range(1, prec + 1)
+                ],
+            )
+        )
         a = delta
         c = -gamma
         d = E.ap(p) - a
-        b = (-1/p+a*d)/c
-        phi = matrix([[a,b],[c,d]])
+        b = (-1 / p + a * d) / c
+        phi = matrix([[a, b], [c, d]])
         return phi
 
     def bernardi_sigma_function(self, prec=20):
@@ -1631,12 +1725,12 @@ class pAdicLseriesSupersingular(pAdicLseries):
         lo = Eh.log(prec + 5)
         F = lo.revert()
 
-        S = LaurentSeriesRing(QQ,'z')
+        S = LaurentSeriesRing(QQ, 'z')
         z = S.gen()
         F = F(z)
         xofF = Eh.x(prec + 2)(F)
-        #r =  ( E.a1()**2 + 4*E.a2() ) / ZZ(12)
-        g = (1/z**2 - xofF ).power_series()
+        # r =  ( E.a1()**2 + 4*E.a2() ) / ZZ(12)
+        g = (1 / z**2 - xofF).power_series()
         h = g.integral().integral()
         sigma_of_z = z.power_series() * h.exp()
 
@@ -1673,26 +1767,29 @@ class pAdicLseriesSupersingular(pAdicLseries):
         # we will have to do it properly with David Harvey's _multiply_point()
         # import here to avoid circular import
         from sage.schemes.elliptic_curves.padics import _multiple_to_make_good_reduction
+
         n = _multiple_to_make_good_reduction(E)
-        n = LCM(n, E.Np(p)) # allowed here because E has good reduction at p
+        n = LCM(n, E.Np(p))  # allowed here because E has good reduction at p
 
         def height(P, check=True):
             if P.is_finite_order():
-                return Qp(p,prec)(0)
+                return Qp(p, prec)(0)
             if check:
-                assert P.curve() == E, 'the point P must lie on the curve from which the height function was created'
+                assert P.curve() == E, (
+                    'the point P must lie on the curve from which the height function was created'
+                )
 
             Q = n * P
-            tt = - Q[0]/Q[1]
-            R = Qp(p,prec+5)
+            tt = -Q[0] / Q[1]
+            R = Qp(p, prec + 5)
             tt = R(tt)
             zz = elog(tt)
 
-            homega = -zz**2 / n**2
+            homega = -(zz**2) / n**2
 
             eQ = denominator(Q[1]) / denominator(Q[0])
-            si = self.bernardi_sigma_function(prec=prec+4)
-            heta = 2 * log(si(zz)/eQ) / n**2
+            si = self.bernardi_sigma_function(prec=prec + 4)
+            heta = 2 * log(si(zz) / eQ) / n**2
 
             R = Qp(p, prec)
 
@@ -1728,7 +1825,7 @@ class pAdicLseriesSupersingular(pAdicLseries):
         # this is the height_{v} (P) for a v in D_p
         def hv(vec, P):
             hP = h(P)
-            return - vec[0]*hP[1] + vec[1]*hP[0]
+            return -vec[0] * hP[1] + vec[1] * hP[0]
 
         #    def hvpairing(vec,P,Q):
         #        return (hv(vec,    P+Q) - hv(vec,P)-hv(vec,Q))/2
@@ -1750,26 +1847,28 @@ class pAdicLseriesSupersingular(pAdicLseries):
             M = matrix(K, rk, rk, 0)
             point_height = [hv(vec, P) for P in basis]
             for i in range(rk):
-                for j in range(i+1, rk):
-                    M[i, j] = M[j, i] = (hv(vec,basis[i] + basis[j]) - point_height[i] - point_height[j] )/2
+                for j in range(i + 1, rk):
+                    M[i, j] = M[j, i] = (
+                        hv(vec, basis[i] + basis[j]) - point_height[i] - point_height[j]
+                    ) / 2
             for i in range(rk):
                 M[i, i] = point_height[i]
 
             return M.determinant()
 
         def Dp_pairing(vec1, vec2):
-            return (vec1[0]*vec2[1]-vec1[1]*vec2[0])
+            return vec1[0] * vec2[1] - vec1[1] * vec2[0]
 
-        omega_vec = vector([K(1),K(0)])
+        omega_vec = vector([K(1), K(0)])
 
         # note the correction here with respect to Perrin-Riou's definition.
         # only this way the result will be independent of the choice of v1 and v2.
-        reg1 = regv(v1) / Dp_pairing(omega_vec, v1)**(rk - 1)
+        reg1 = regv(v1) / Dp_pairing(omega_vec, v1) ** (rk - 1)
 
-        reg2 = regv(v2) / Dp_pairing(omega_vec, v2)**(rk - 1)
+        reg2 = regv(v2) / Dp_pairing(omega_vec, v2) ** (rk - 1)
 
         # the regulator in the basis omega,eta
-        reg_oe = (reg1 * v2 - reg2 * v1 ) / Dp_pairing(v2, v1)
+        reg_oe = (reg1 * v2 - reg2 * v1) / Dp_pairing(v2, v1)
 
         if p < 5:
             phi = self.frobenius(min(6, prec), algorithm='approx')
@@ -1779,4 +1878,4 @@ class pAdicLseriesSupersingular(pAdicLseries):
         c = phi[1, 0]  # this is the 'period' [omega,phi(omega)]
         a = phi[0, 0]
 
-        return vector([reg_oe[0] - a/c*reg_oe[1],reg_oe[1]/c])
+        return vector([reg_oe[0] - a / c * reg_oe[1], reg_oe[1] / c])

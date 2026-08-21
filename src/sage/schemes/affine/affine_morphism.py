@@ -89,6 +89,7 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
           To:   Projective Space of dimension 2 over Rational Field
           Defn: Defined on coordinates by sending (x, y) to (x : y : 1)
     """
+
     def __init__(self, parent, polys, check=True):
         r"""
         Initialize.
@@ -203,13 +204,22 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
                     # rational functions for quotient rings
                     source_field = source_ring.base_ring().fraction_field()
                     try:
-                        if not all(p.base_ring().fraction_field() == source_field for p in polys):
-                            raise TypeError("polys (=%s) must be rational functions in %s" % (polys, source_ring))
+                        if not all(
+                            p.base_ring().fraction_field() == source_field
+                            for p in polys
+                        ):
+                            raise TypeError(
+                                "polys (=%s) must be rational functions in %s"
+                                % (polys, source_ring)
+                            )
                         K = FractionField(source_ring)
                         polys = [K(p) for p in polys]
                         # polys = [source_ring(poly.numerator())/source_ring(poly.denominator()) for poly in polys]
                     except TypeError:  # can't seem to coerce
-                        raise TypeError("polys (=%s) must be rational functions in %s" % (polys, source_ring))
+                        raise TypeError(
+                            "polys (=%s) must be rational functions in %s"
+                            % (polys, source_ring)
+                        )
             check = False
 
         SchemeMorphism_polynomial.__init__(self, parent, polys, check)
@@ -254,12 +264,19 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
             (a + 1, a)
         """
         from sage.schemes.affine.affine_point import SchemeMorphism_point_affine
+
         if check:
-            if not isinstance(x, SchemeMorphism_point_affine) or self.domain() != x.codomain():
+            if (
+                not isinstance(x, SchemeMorphism_point_affine)
+                or self.domain() != x.codomain()
+            ):
                 try:
                     x = self.domain()(x)
                 except (TypeError, NotImplementedError):
-                    raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (x, self.domain()))
+                    raise TypeError(
+                        "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                        % (x, self.domain())
+                    )
 
         R = x.domain().coordinate_ring()
         if R is self.base_ring():
@@ -373,24 +390,30 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
             if self._is_prime_finite_field:
                 prime = polys[0].base_ring().characteristic()
                 degree = max(poly_numerator.degree(), poly_denominator.degree())
-                height = max([abs(c.lift())
-                              for c in poly_numerator.coefficients()]
-                             + [abs(c.lift())
-                                for c in poly_denominator.coefficients()])
-                num_terms = max(len(poly_numerator.coefficients()),
-                                len(poly_denominator.coefficients()))
+                height = max(
+                    [abs(c.lift()) for c in poly_numerator.coefficients()]
+                    + [abs(c.lift()) for c in poly_denominator.coefficients()]
+                )
+                num_terms = max(
+                    len(poly_numerator.coefficients()),
+                    len(poly_denominator.coefficients()),
+                )
                 largest_value = num_terms * height * (prime - 1) ** degree
                 # If the calculations will not overflow the float data type use domain float
                 # Else use domain integer
-                if largest_value < (2 ** sys.float_info.mant_dig):
+                if largest_value < (2**sys.float_info.mant_dig):
                     fastpolys[0].append(fast_callable(poly_numerator, domain=float))
                     fastpolys[1].append(fast_callable(poly_denominator, domain=float))
                 else:
                     fastpolys[0].append(fast_callable(poly_numerator, domain=ZZ))
                     fastpolys[1].append(fast_callable(poly_denominator, domain=ZZ))
             else:
-                fastpolys[0].append(fast_callable(poly_numerator, domain=poly.base_ring()))
-                fastpolys[1].append(fast_callable(poly_denominator, domain=poly.base_ring()))
+                fastpolys[0].append(
+                    fast_callable(poly_numerator, domain=poly.base_ring())
+                )
+                fastpolys[1].append(
+                    fast_callable(poly_denominator, domain=poly.base_ring())
+                )
         return fastpolys
 
     def _fast_eval(self, x):
@@ -601,12 +624,12 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
 
         if self.codomain().is_projective():
             L = [self[i].denominator() for i in range(M + 1)]
-            l = [prod(L[:j] + L[j + 1:M + 1]) for j in range(M + 1)]
+            l = [prod(L[:j] + L[j + 1 : M + 1]) for j in range(M + 1)]
             F = [S(R(self[i].numerator() * l[i]).subs(D)) for i in range(M + 1)]
         else:
             # clear the denominators if a rational function
             L = [self[i].denominator() for i in range(M)]
-            l = [prod(L[:j] + L[j + 1:M]) for j in range(M)]
+            l = [prod(L[:j] + L[j + 1 : M]) for j in range(M)]
             F = [S(R(self[i].numerator() * l[i]).subs(D)) for i in range(M)]
             F.insert(ind[1], S(R(prod(L)).subs(D)))  # coerce in case l is a constant
 
@@ -617,12 +640,21 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
             # remove possible gcd of coefficients
             gc = gcd([f.content() for f in F])
             F = [S(f / gc) for f in F]
-        except (AttributeError, ValueError, NotImplementedError, TypeError, ArithmeticError):  # no gcd
+        except (
+            AttributeError,
+            ValueError,
+            NotImplementedError,
+            TypeError,
+            ArithmeticError,
+        ):  # no gcd
             pass
 
         # homogenize
         d = max([F[i].degree() for i in range(M + 1)])
-        F = [F[i].homogenize(str(newvar)) * newvar**(d - F[i].degree()) for i in range(M + 1)]
+        F = [
+            F[i].homogenize(str(newvar)) * newvar ** (d - F[i].degree())
+            for i in range(M + 1)
+        ]
 
         return H(F)
 
@@ -665,13 +697,19 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
             True
         """
         from sage.dynamics.arithmetic_dynamics.generic_ds import DynamicalSystem
+
         if isinstance(self, DynamicalSystem):
             return self
         if not self.domain() == self.codomain():
             raise TypeError("must be an endomorphism")
         from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine
-        from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine_field
-        from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine_finite_field
+        from sage.dynamics.arithmetic_dynamics.affine_ds import (
+            DynamicalSystem_affine_field,
+        )
+        from sage.dynamics.arithmetic_dynamics.affine_ds import (
+            DynamicalSystem_affine_finite_field,
+        )
+
         R = self.base_ring()
         if R not in _Fields:
             return DynamicalSystem_affine(list(self), self.domain())
@@ -790,7 +828,9 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
         K = FractionField(self.domain().base_ring())
         if K not in _NumberFields:
             raise TypeError("must be over a number field or a number field order")
-        return max([K(c).local_height(v, prec=prec) for f in self for c in f.coefficients()])
+        return max(
+            [K(c).local_height(v, prec=prec) for f in self for c in f.coefficients()]
+        )
 
     def local_height_arch(self, i, prec=None):
         """
@@ -838,8 +878,20 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
             raise TypeError("must be over a number field or a number field order")
 
         if K == QQ:
-            return max([K(c).local_height_arch(prec=prec) for f in self for c in f.coefficients()])
-        return max([K(c).local_height_arch(i, prec=prec) for f in self for c in f.coefficients()])
+            return max(
+                [
+                    K(c).local_height_arch(prec=prec)
+                    for f in self
+                    for c in f.coefficients()
+                ]
+            )
+        return max(
+            [
+                K(c).local_height_arch(i, prec=prec)
+                for f in self
+                for c in f.coefficients()
+            ]
+        )
 
     def jacobian(self):
         r"""
@@ -922,7 +974,9 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
         if not mat.is_square():
             raise TypeError("matrix must be square")
         if mat.ncols() != self.codomain().ngens() + 1:
-            raise TypeError("the size of the matrix must be n + 1, where n is the dimension of the codomain")
+            raise TypeError(
+                "the size of the matrix must be n + 1, where n is the dimension of the codomain"
+            )
         if self.is_endomorphism():
             d = self.domain().ngens()
         else:
@@ -980,7 +1034,9 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
         if not mat.is_square():
             raise TypeError("matrix must be square")
         if mat.nrows() != self.domain().ngens() + 1:
-            raise TypeError("the size of the matrix must be n + 1, where n is the dimension of the domain")
+            raise TypeError(
+                "the size of the matrix must be n + 1, where n is the dimension of the domain"
+            )
         if self.is_endomorphism():
             d = self.domain().ngens()
         else:
@@ -1023,8 +1079,9 @@ class SchemeMorphism_polynomial_affine_space(SchemeMorphism_polynomial):
         return max_degree
 
 
-class SchemeMorphism_polynomial_affine_space_field(SchemeMorphism_polynomial_affine_space):
-
+class SchemeMorphism_polynomial_affine_space_field(
+    SchemeMorphism_polynomial_affine_space
+):
     @cached_method
     def weil_restriction(self):
         r"""
@@ -1206,12 +1263,17 @@ class SchemeMorphism_polynomial_affine_space_field(SchemeMorphism_polynomial_aff
         """
         g = self.homogenize(0).reduce_base_field().dehomogenize(0)
         from sage.schemes.affine.affine_space import AffineSpace
-        new_domain = AffineSpace(g.domain().base_ring(),
-                                 self.domain().dimension_relative(),
-                                 self.domain().variable_names())
-        new_codomain = AffineSpace(g.codomain().base_ring(),
-                                   self.codomain().dimension_relative(),
-                                   self.codomain().variable_names())
+
+        new_domain = AffineSpace(
+            g.domain().base_ring(),
+            self.domain().dimension_relative(),
+            self.domain().variable_names(),
+        )
+        new_codomain = AffineSpace(
+            g.codomain().base_ring(),
+            self.codomain().dimension_relative(),
+            self.codomain().variable_names(),
+        )
         R = new_domain.coordinate_ring()
         H = Hom(new_domain, new_codomain)
         if isinstance(g[0], FractionFieldElement):
@@ -1280,7 +1342,9 @@ class SchemeMorphism_polynomial_affine_space_field(SchemeMorphism_polynomial_aff
             fcn = self
         else:
             if not F.is_field():
-                raise NotImplementedError("indeterminacy points only implemented for fields")
+                raise NotImplementedError(
+                    "indeterminacy points only implemented for fields"
+                )
             fcn = self.change_ring(F)
 
         indScheme = fcn.indeterminacy_locus()
@@ -1324,8 +1388,9 @@ class SchemeMorphism_polynomial_affine_space_field(SchemeMorphism_polynomial_aff
         return (self * e).image()
 
 
-class SchemeMorphism_polynomial_affine_space_finite_field(SchemeMorphism_polynomial_affine_space_field):
-
+class SchemeMorphism_polynomial_affine_space_finite_field(
+    SchemeMorphism_polynomial_affine_space_field
+):
     def _fast_eval(self, x):
         """
         Evaluate affine morphism at point described by ``x``.
@@ -1365,10 +1430,13 @@ class SchemeMorphism_polynomial_affine_space_finite_field(SchemeMorphism_polynom
         return P
 
 
-class SchemeMorphism_polynomial_affine_subscheme_field(SchemeMorphism_polynomial_affine_space_field):
+class SchemeMorphism_polynomial_affine_subscheme_field(
+    SchemeMorphism_polynomial_affine_space_field
+):
     """
     Morphisms from subschemes of affine spaces defined over fields.
     """
+
     @cached_method
     def representatives(self):
         """

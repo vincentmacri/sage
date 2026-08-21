@@ -43,6 +43,7 @@ class HammingCode(AbstractLinearCode):
         sage: C
         [57, 54] Hamming Code over GF(7)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -70,7 +71,7 @@ class HammingCode(AbstractLinearCode):
             raise ValueError("order has to be a Sage Integer or a Python int")
 
         q = base_field.order()
-        length = Integer((q ** order - 1) / (q - 1))
+        length = Integer((q**order - 1) / (q - 1))
         super().__init__(base_field, length, "Systematic", "Syndrome")
         self._dimension = length - order
 
@@ -85,9 +86,11 @@ class HammingCode(AbstractLinearCode):
             sage: C1 == C2
             True
         """
-        return isinstance(other, HammingCode)\
-                and self.length() == other.length()\
-                and self.dimension() == other.dimension()
+        return (
+            isinstance(other, HammingCode)
+            and self.length() == other.length()
+            and self.dimension() == other.dimension()
+        )
 
     def __hash__(self):
         """
@@ -112,8 +115,11 @@ class HammingCode(AbstractLinearCode):
             sage: C
             [57, 54] Hamming Code over GF(7)
         """
-        return "[%s, %s] Hamming Code over GF(%s)"\
-                % (self.length(), self.dimension(), self.base_field().cardinality())
+        return "[%s, %s] Hamming Code over GF(%s)" % (
+            self.length(),
+            self.dimension(),
+            self.base_field().cardinality(),
+        )
 
     def _latex_(self):
         r"""
@@ -125,8 +131,11 @@ class HammingCode(AbstractLinearCode):
             sage: latex(C)
             [57, 54] \textnormal{ Hamming Code over }\Bold{F}_{7}
         """
-        return "[%s, %s] \\textnormal{ Hamming Code over }%s"\
-                % (self.length(), self.dimension(), self.base_field()._latex_())
+        return "[%s, %s] \\textnormal{ Hamming Code over }%s" % (
+            self.length(),
+            self.dimension(),
+            self.base_field()._latex_(),
+        )
 
     @cached_method
     def parity_check_matrix(self):

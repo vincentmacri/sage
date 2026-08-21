@@ -226,6 +226,7 @@ from sage.matrix.constructor import matrix
 
 import sage.misc.weak_dict
 from functools import reduce
+
 _fgp_module = sage.misc.weak_dict.WeakValueDictionary()
 
 
@@ -441,9 +442,11 @@ class FGP_Module_class(Module):
             Finitely generated module V/W over Integer Ring with invariants (2, 4)
         """
         if other in self.base_ring():
-            return self._module_constructor(other*self.V() + self.W(), self.W())
-        raise ValueError("Scalar multiplication of a module is only " +
-                         "defined for an element of the base ring.")
+            return self._module_constructor(other * self.V() + self.W(), self.W())
+        raise ValueError(
+            "Scalar multiplication of a module is only "
+            + "defined for an element of the base ring."
+        )
 
     def _repr_(self) -> str:
         """
@@ -457,7 +460,10 @@ class FGP_Module_class(Module):
             'Finitely generated module V/W over Integer Ring with invariants (4, 12)'
         """
         I = str(self.invariants()).replace(',)', ')')
-        return "Finitely generated module V/W over %s with invariants %s" % (self.base_ring(), I)
+        return "Finitely generated module V/W over %s with invariants %s" % (
+            self.base_ring(),
+            I,
+        )
 
     def __truediv__(self, other):
         """
@@ -981,7 +987,7 @@ class FGP_Module_class(Module):
         """
         D, _, _ = self._smith_form()
 
-        v = [D[i, i] for i in range(D.nrows())] + [Integer(0)] * (D.ncols()-D.nrows())
+        v = [D[i, i] for i in range(D.nrows())] + [Integer(0)] * (D.ncols() - D.nrows())
         w = tuple([x for x in v if x != 1])
         v = tuple(v)
         self.invariants.set_cache(v, True)
@@ -1031,11 +1037,11 @@ class FGP_Module_class(Module):
         _, _, X = self._smith_form()
         # Invert it to get a matrix whose rows (in terms of the basis for V)
         # are the gi (including 1 invariants).
-        Y = X**(-1)
+        Y = X ** (-1)
         # Get the basis matrix for V
         B = self._V.basis_matrix()
         # Multiply to express the gi in terms of the ambient vector space.
-        Z = Y*B
+        Z = Y * B
         # Make gens out of the rows of Z that correspond to non-1 invariants.
         v = self.invariants(include_ones=True)
         non1 = [i for i in range(Z.nrows()) if v[i] != 1]
@@ -1086,8 +1092,7 @@ class FGP_Module_class(Module):
             [0 0 0 1 0]
             [0 0 0 0 1]
         """
-        gens_to_smith = matrix(self.base_ring(),
-                               [t.vector() for t in self.gens()])
+        gens_to_smith = matrix(self.base_ring(), [t.vector() for t in self.gens()])
         gens_to_smith.set_immutable()
         return gens_to_smith
 
@@ -1211,11 +1216,15 @@ class FGP_Module_class(Module):
         x = self(x)
         v = x.vector() * self.smith_to_gens()
         from sage.rings.infinity import infinity
+
         if reduce and self.base_ring() == ZZ:
             orders = [g.order() for g in self.gens()]
-            v = v.parent()([v[i] if orders[i] == infinity
-                            else v[i] % orders[i]
-                            for i in range(len(self.gens()))])
+            v = v.parent()(
+                [
+                    v[i] if orders[i] == infinity else v[i] % orders[i]
+                    for i in range(len(self.gens()))
+                ]
+            )
         return v
 
     def coordinate_vector(self, x, reduce=False):
@@ -1308,10 +1317,10 @@ class FGP_Module_class(Module):
         c = self._V.coordinate_vector(x.lift())
         b = (c * T).change_ring(self.base_ring())
         if reduce and self.base_ring() == ZZ:
-
             I = self.invariants()
-            return b.parent()([b[i] if I[i] == 0 else b[i] % I[i]
-                               for i in range(len(I))])
+            return b.parent()(
+                [b[i] if I[i] == 0 else b[i] % I[i] for i in range(len(I))]
+            )
 
         # Don't know (or not requested) canonical way to reduce
         # each entry yet, or how to compute invariants.
@@ -1438,7 +1447,7 @@ class FGP_Module_class(Module):
         A = V.basis_matrix().stack(self._W.basis_matrix())
         B, d = A._clear_denom()
         H, U = B.hermite_form(transformation=True)
-        Y = H.solve_left(d*self._V.basis_matrix())
+        Y = H.solve_left(d * self._V.basis_matrix())
         T = Y * U.matrix_from_columns(range(V.rank()))
         self.__T = T
 
@@ -1618,7 +1627,9 @@ class FGP_Module_class(Module):
         if check:
             if not r(B).is_submodule(N.W()):
                 raise ValueError("Images do not determine a valid homomorphism")
-        smith_images = Sequence([N(r(q.lift(x.lift()))) for x in self.smith_form_gens()])
+        smith_images = Sequence(
+            [N(r(q.lift(x.lift()))) for x in self.smith_form_gens()]
+        )
         return self._hom_from_smith(smith_images, check=DEBUG)
 
     def _hom_from_smith(self, im_smith_gens, check=True):
@@ -1648,7 +1659,9 @@ class FGP_Module_class(Module):
               that sends the generators to [(1), (1)]
         """
         if len(im_smith_gens) != len(self.smith_form_gens()):
-            raise ValueError("im_gens must have length the same as self.smith_form_gens()")
+            raise ValueError(
+                "im_gens must have length the same as self.smith_form_gens()"
+            )
 
         # replace self by representation in which smith-gens g_i are a basis for V.
         M, _ = self.optimized()
@@ -1753,6 +1766,7 @@ class FGP_Module_class(Module):
             pass
         from sage.rings.infinity import infinity
         from sage.misc.misc_c import prod
+
         v = self.invariants()
         self.__cardinality = infinity if 0 in v else prod(v)
         return self.__cardinality
@@ -1796,7 +1810,7 @@ class FGP_Module_class(Module):
         if 0 in v:
             raise NotImplementedError("currently self must be finite to iterate over")
         B = self.optimized()[0].V().basis_matrix()
-        V = self.base_ring()**B.nrows()
+        V = self.base_ring() ** B.nrows()
         for a in product(*[range(k) for k in v]):
             b = V(a) * B
             yield self(b)
@@ -1834,6 +1848,7 @@ class FGP_Module_class(Module):
             (1, 1)
         """
         from sage.modules.module_functors import QuotientModuleFunctor
+
         return (QuotientModuleFunctor(self._W), self._V)
 
     def is_finite(self) -> bool:
@@ -1941,6 +1956,7 @@ class FGP_Module_class(Module):
         """
         return self.coerce_map_from(self._V)
 
+
 ##############################################################
 # Useful for testing
 ##############################################################
@@ -1986,7 +2002,7 @@ def random_fgp_module(n, R=ZZ, finite=False):
     i = ZZ.random_element(max(n, 1))
     A = V.span([V.random_element() for _ in range(i)], R)
     if not finite:
-        i = ZZ.random_element(i+1)
+        i = ZZ.random_element(i + 1)
     while True:
         B = A.span([A.random_element() for _ in range(i)], R)
         # Q = A/B
@@ -2041,6 +2057,7 @@ def _test_morphism_0(*args, **kwds):
     K = phi.kernel()
     I = phi.image()
     from sage.misc.misc_c import prod
+
     if prod(K.invariants()):
         assert prod(phi.domain().invariants()) % prod(K.invariants()) == 0
     assert I.is_submodule(phi.codomain())

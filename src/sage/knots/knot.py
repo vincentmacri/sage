@@ -40,11 +40,13 @@ class SymmetryType(Enum):
     :meth:`~sage.knots.knot.Knot.symmetry_type`
     and :meth:`~sage.knots.knotinfo.KnotInfoBase.symmetry_type`.
     """
+
     chiral = 'chiral'
     reversible = 'reversible'
     pos_amphicheiral = 'positive amphicheiral'
     neg_amphicheiral = 'negative amphicheiral'
     ful_amphicheiral = 'fully amphicheiral'
+
 
 # We need Link to be first in the MRO in order to use its equality, hash, etc.
 
@@ -100,6 +102,7 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
 
     - :wikipedia:`Knot_(mathematics)`
     """
+
     @staticmethod
     def __classcall_private__(self, data, check=True):
         """
@@ -141,8 +144,7 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
         Link.__init__(self, data)
         if check:
             if self.number_of_components() != 1:
-                raise ValueError("the input has more than 1 connected "
-                                 "component")
+                raise ValueError("the input has more than 1 connected component")
 
     def _repr_(self):
         """
@@ -255,6 +257,7 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
             M[x][y] = V
 
         from sage.typeset.unicode_art import UnicodeArt
+
         return UnicodeArt([''.join(ligne) for ligne in M])
 
     def dt_code(self):
@@ -398,8 +401,9 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
             sage: K.colored_jones_polynomial(2, t+1)
             (t^3 + 3*t^2 + 4*t + 1)/(t^4 + 4*t^3 + 6*t^2 + 4*t + 1)
         """
-        return self.braid().colored_jones_polynomial(N=N, variab=variab,
-                                                     try_inverse=try_inverse)
+        return self.braid().colored_jones_polynomial(
+            N=N, variab=variab, try_inverse=try_inverse
+        )
 
     def connected_sum(self, other):
         r"""
@@ -478,6 +482,7 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
         - :wikipedia:`Connected_sum`
         """
         from sage.functions.generalized import sign
+
         ogc1 = self.oriented_gauss_code()
         ogc2 = other.oriented_gauss_code()
         if not ogc1[0]:
@@ -521,12 +526,15 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
             True
         """
         from sage.interfaces.snappy import snappy
+
         sK = snappy(self)
         eK = sK.exterior()
         try:
             iso = eK.is_isometric_to(eK, return_isometries=True)
         except RuntimeError:
-            raise NotImplementedError('the symmetry type cannot be calculated for %s' % self)
+            raise NotImplementedError(
+                'the symmetry type cannot be calculated for %s' % self
+            )
         s = []
         for i in iso:
             for M in i.cusp_maps().sage():
@@ -574,8 +582,10 @@ class Knot(Link, Element, metaclass=InheritComparisonClasscallMetaclass):
             KnotInfo['K3_1']^2*KnotInfo['K3_1m']
         """
         from sage.interfaces.snappy import snappy
+
         Ks = snappy(self)
         from sage.knots.link import sort
+
         return sorted([k.sage_link() for k in Ks.deconnect_sum()], key=sort)
 
 
@@ -583,6 +593,7 @@ class Knots(Singleton, Parent):
     """
     The set for all knots, as a monoid for the connected sum.
     """
+
     def __init__(self):
         """
         TESTS::

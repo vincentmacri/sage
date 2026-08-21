@@ -63,7 +63,6 @@ VERIFY_RESULT = True
 
 
 class PivotedInequalities(SageObject):
-
     def __init__(self, base_ring, dim):
         """
         Base class for inequalities that may contain linear subspaces.
@@ -145,7 +144,6 @@ class PivotedInequalities(SageObject):
 
 
 class Hrep2Vrep(PivotedInequalities):
-
     def __init__(self, base_ring, dim, inequalities, equations):
         """
         Convert H-representation to a minimal V-representation.
@@ -334,6 +332,7 @@ class Hrep2Vrep(PivotedInequalities):
 
         def make_matrix(rows):
             return matrix(self.base_ring, len(rows), self.dim, rows).transpose()
+
         V = make_matrix(self.vertices)
         R = make_matrix(self.rays)
         L = make_matrix(self.lines)
@@ -358,23 +357,36 @@ class Hrep2Vrep(PivotedInequalities):
         """
         from sage.rings.rational_field import QQ
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         if self.base_ring is not QQ:
             return
-        P = Polyhedron(vertices=self.vertices, rays=self.rays, lines=self.lines,
-                       base_ring=QQ, ambient_dim=self.dim, backend='ppl')
-        Q = Polyhedron(ieqs=inequalities, eqns=equations,
-                       base_ring=QQ, ambient_dim=self.dim, backend='ppl')
-        if (P != Q) or \
-           (len(self.vertices) != P.n_vertices()) or \
-           (len(self.rays) != P.n_rays()) or \
-           (len(self.lines) != P.n_lines()):
+        P = Polyhedron(
+            vertices=self.vertices,
+            rays=self.rays,
+            lines=self.lines,
+            base_ring=QQ,
+            ambient_dim=self.dim,
+            backend='ppl',
+        )
+        Q = Polyhedron(
+            ieqs=inequalities,
+            eqns=equations,
+            base_ring=QQ,
+            ambient_dim=self.dim,
+            backend='ppl',
+        )
+        if (
+            (P != Q)
+            or (len(self.vertices) != P.n_vertices())
+            or (len(self.rays) != P.n_rays())
+            or (len(self.lines) != P.n_lines())
+        ):
             print('incorrect!', end="")
             print(Q.Vrepresentation())
             print(P.Hrepresentation())
 
 
 class Vrep2Hrep(PivotedInequalities):
-
     def __init__(self, base_ring, dim, vertices, rays, lines):
         """
         Convert V-representation to a minimal H-representation.
@@ -443,7 +455,7 @@ class Vrep2Hrep(PivotedInequalities):
             # Manually setting a single equality in this case.
             one = self.base_ring.one()
             zero = self.base_ring.zero()
-            self.equations = [[one] + [zero]*self.dim]
+            self.equations = [[one] + [zero] * self.dim]
             self.inequalities = []
         else:
             A = self._init_Vrep(vertices, rays, lines)
@@ -473,11 +485,12 @@ class Vrep2Hrep(PivotedInequalities):
         """
         one = self.base_ring.one()
         zero = self.base_ring.zero()
-        homogeneous = \
-            [[one] + list(v) for v in vertices] + \
-            [[zero] + list(r) for r in rays] + \
-            [[zero] + list(l) for l in lines] + \
-            [[zero] + [-x for x in l] for l in lines]
+        homogeneous = (
+            [[one] + list(v) for v in vertices]
+            + [[zero] + list(r) for r in rays]
+            + [[zero] + list(l) for l in lines]
+            + [[zero] + [-x for x in l] for l in lines]
+        )
         A = matrix(self.base_ring, homogeneous)
         return self._pivot_inequalities(A)
 
@@ -503,6 +516,7 @@ class Vrep2Hrep(PivotedInequalities):
         def is_trivial(ray):
             # trivial Hrep output 1 >= 0
             return ray[0] > zero and all(r == zero for r in ray[1:])
+
         ieqs = (self._unpivot_ray(ra) for ra in DD.R)
         self.inequalities = [r for r in ieqs if not is_trivial(r)]
         self.equations = self._linear_subspace.matrix().rows()
@@ -524,6 +538,7 @@ class Vrep2Hrep(PivotedInequalities):
 
         def make_matrix(cols):
             return matrix(self.base_ring, len(cols), self.dim + 1, cols)
+
         I = make_matrix(self.inequalities)
         E = make_matrix(self.equations)
         return str(block_matrix([[I], [E]]))
@@ -550,12 +565,22 @@ class Vrep2Hrep(PivotedInequalities):
         """
         from sage.rings.rational_field import QQ
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         if self.base_ring is not QQ:
             return
-        P = Polyhedron(vertices=vertices, rays=rays, lines=lines,
-                       base_ring=QQ, ambient_dim=self.dim)
-        Q = Polyhedron(ieqs=self.inequalities, eqns=self.equations,
-                       base_ring=QQ, ambient_dim=self.dim)
+        P = Polyhedron(
+            vertices=vertices,
+            rays=rays,
+            lines=lines,
+            base_ring=QQ,
+            ambient_dim=self.dim,
+        )
+        Q = Polyhedron(
+            ieqs=self.inequalities,
+            eqns=self.equations,
+            base_ring=QQ,
+            ambient_dim=self.dim,
+        )
         if not P == Q:
             print('incorrect!', P, Q)
             print(Q.Vrepresentation())

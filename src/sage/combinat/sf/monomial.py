@@ -46,7 +46,9 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
             sage: TestSuite(m).run(skip=['_test_associativity', '_test_distributivity', '_test_prod'])
             sage: TestSuite(m).run(elements = [m[1,1]+m[2], m[1]+2*m[1,1]])
         """
-        classical.SymmetricFunctionAlgebra_classical.__init__(self, Sym, "monomial", 'm')
+        classical.SymmetricFunctionAlgebra_classical.__init__(
+            self, Sym, "monomial", 'm'
+        )
 
     def _dual_basis_default(self):
         """
@@ -119,15 +121,15 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
         z_elt = {}
         for left_m, left_c in left._monomial_coefficients.items():
             for right_m, right_c in right._monomial_coefficients.items():
-
                 # Hack due to symmetrica crashing when both of the
                 # partitions are the empty partition
                 if not left_m and not right_m:
                     z_elt[left_m] = left_c * right_c
                     continue
 
-                d = symmetrica.mult_monomial_monomial({left_m: Integer(1)},
-                                                      {right_m: Integer(1)}).monomial_coefficients()
+                d = symmetrica.mult_monomial_monomial(
+                    {left_m: Integer(1)}, {right_m: Integer(1)}
+                ).monomial_coefficients()
                 for m in d:
                     if m in z_elt:
                         z_elt[m] += left_c * right_c * d[m]
@@ -183,10 +185,14 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
         assert self.base_ring() == f.base_ring()
         if check and not f.is_symmetric():
             raise ValueError("%s is not a symmetric polynomial" % f)
-        out = self._from_dict({_Partitions.element_class(_Partitions, list(e)): c
-                               for e, c in f.monomial_coefficients().items()
-                               if all(e[i+1] <= e[i] for i in range(len(e)-1))},
-                              remove_zeros=False)
+        out = self._from_dict(
+            {
+                _Partitions.element_class(_Partitions, list(e)): c
+                for e, c in f.monomial_coefficients().items()
+                if all(e[i + 1] <= e[i] for i in range(len(e) - 1))
+            },
+            remove_zeros=False,
+        )
         return out
 
     def from_polynomial_exp(self, p):
@@ -236,6 +242,7 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
         """
         assert self.base_ring() == p.parent().base_ring()
         from sage.combinat.sf.sfa import _from_polynomial
+
         return _from_polynomial(p, self)
 
     def antipode_by_coercion(self, element):
@@ -270,6 +277,7 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
             to work over any ring, not just one with coercion from `\QQ`?
         """
         from sage.rings.rational_field import RationalField
+
         if self.has_coerce_map_from(RationalField()):
             p = self.realization_of().powersum()
             return self(p.antipode(p(element)))
@@ -331,6 +339,7 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
 
             def condition(part):
                 return len(part) > n
+
             return self._expand(condition, n, alphabet)
 
         def principal_specialization(self, n=infinity, q=None):
@@ -401,19 +410,27 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
             if n == 1:
                 R = self.base_ring()
                 mc = self.monomial_coefficients(copy=False).items()
-                return R.sum(c for partition, c in mc
-                             if len(partition) <= 1)
+                return R.sum(c for partition, c in mc if len(partition) <= 1)
 
             if q == 1:
                 if n == infinity:
-                    raise ValueError("the stable principal specialization at q=1 is not defined")
-                f = lambda partition: binomial(n, len(partition))*multinomial(partition.to_exp())
+                    raise ValueError(
+                        "the stable principal specialization at q=1 is not defined"
+                    )
+                f = lambda partition: (
+                    binomial(n, len(partition)) * multinomial(partition.to_exp())
+                )
                 return self.parent()._apply_module_morphism(self, f, q.parent())
 
             # heuristically, it seems fastest to fall back to the
             # elementary basis - using the powersum basis would
             # introduce singularities, because it is not a Z-basis
-            return self.parent().realization_of().elementary()(self).principal_specialization(n=n, q=q)
+            return (
+                self.parent()
+                .realization_of()
+                .elementary()(self)
+                .principal_specialization(n=n, q=q)
+            )
 
         def exponential_specialization(self, t=None, q=1):
             r"""
@@ -489,6 +506,7 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
                 sage: m.zero().exponential_specialization()
                 0
             """
+
             def get_variable(ring, name):
                 try:
                     ring(name)
@@ -496,9 +514,12 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q == 1:
                 if t is None:
@@ -517,10 +538,19 @@ class SymmetricFunctionAlgebra_monomial(classical.SymmetricFunctionAlgebra_class
             # heuristically, it seems fastest to fall back to the
             # elementary basis - using the powersum basis would
             # introduce singularities, because it is not a Z-basis
-            return self.parent().realization_of().elementary()(self).exponential_specialization(t=t, q=q)
+            return (
+                self.parent()
+                .realization_of()
+                .elementary()(self)
+                .exponential_specialization(t=t, q=q)
+            )
 
 
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.monomial', 'SymmetricFunctionAlgebraElement_monomial', SymmetricFunctionAlgebra_monomial.Element)
+register_unpickle_override(
+    'sage.combinat.sf.monomial',
+    'SymmetricFunctionAlgebraElement_monomial',
+    SymmetricFunctionAlgebra_monomial.Element,
+)

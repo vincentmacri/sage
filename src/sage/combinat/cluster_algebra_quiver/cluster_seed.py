@@ -50,7 +50,10 @@ from sage.rings.fraction_field import FractionField
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.fraction_field_element import FractionFieldElement
 from sage.sets.set import Set
-from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import QuiverMutationType_Irreducible, QuiverMutationType_Reducible
+from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import (
+    QuiverMutationType_Irreducible,
+    QuiverMutationType_Reducible,
+)
 from sage.combinat.cluster_algebra_quiver.mutation_type import is_mutation_finite
 from random import randint
 from sage.misc.lazy_import import lazy_import
@@ -142,7 +145,14 @@ class ClusterSeed(SageObject):
         A seed for a cluster algebra of rank 4 of type ['D', 4]
     """
 
-    def __init__(self, data, frozen=None, is_principal=False, user_labels=None, user_labels_prefix='x'):
+    def __init__(
+        self,
+        data,
+        frozen=None,
+        is_principal=False,
+        user_labels=None,
+        user_labels_prefix='x',
+    ):
         r"""
         Initialize the ClusterSeed ``self`` with the following range of possible attributes:
 
@@ -249,14 +259,19 @@ class ClusterSeed(SageObject):
         if isinstance(user_labels, list):
             user_labels = [tuple(x) if isinstance(x, list) else x for x in user_labels]
         elif isinstance(user_labels, dict):
-            values = [tuple(user_labels[x]) if isinstance(user_labels[x], list) else user_labels[x] for x in user_labels]
+            values = [
+                tuple(user_labels[x])
+                if isinstance(user_labels[x], list)
+                else user_labels[x]
+                for x in user_labels
+            ]
             keys = list(user_labels)
             user_labels = {keys[i]: v for i, v in enumerate(values)}
 
         # constructs a cluster seed from a cluster seed
         if isinstance(data, ClusterSeed):
             if frozen:
-                print("The input \'frozen\' is ignored")
+                print("The input 'frozen' is ignored")
 
             # Copy the following attributes from data
             self._M = copy(data._M)
@@ -268,11 +283,23 @@ class ClusterSeed(SageObject):
             self._mlist = list(data._mlist)
 
             # initialize matrix of g-vectors if desired and possible
-            if data._use_g_vec and (data._G or data._cluster or (data._B.is_skew_symmetric() and data._C) or data._track_mut):
+            if data._use_g_vec and (
+                data._G
+                or data._cluster
+                or (data._B.is_skew_symmetric() and data._C)
+                or data._track_mut
+            ):
                 self._G = data.g_matrix()
 
             # initialize matrix of c-vectors if desired and possible
-            if data._use_c_vec and (data._C or (data._B.is_skew_symmetric() and (data._cluster or (data._use_g_vec and data._G)) or data._track_mut)):
+            if data._use_c_vec and (
+                data._C
+                or (
+                    data._B.is_skew_symmetric()
+                    and (data._cluster or (data._use_g_vec and data._G))
+                    or data._track_mut
+                )
+            ):
                 self._C = data.c_matrix()
                 self._BC = copy(self._M).stack(copy(self._C))
             else:
@@ -315,13 +342,13 @@ class ClusterSeed(SageObject):
         elif isinstance(data, ClusterQuiver):
             quiver = ClusterQuiver(data)
 
-            self._M = copy(quiver._M)    # B-tilde exchange matrix
+            self._M = copy(quiver._M)  # B-tilde exchange matrix
             self._M.set_immutable()
             self._n = quiver._n
             self._m = quiver._m
             self._nlist = copy(quiver._nlist)
             self._mlist = copy(quiver._mlist)
-            self._B = copy(self._M[:self._n, :self._n])  # Square Part of the B_matrix
+            self._B = copy(self._M[: self._n, : self._n])  # Square Part of the B_matrix
 
             # If initializing from a ClusterQuiver rather than a ClusterSeed, the initial B-matrix is reset to be the input B-matrix.
             self._b_initial = copy(self._M)
@@ -330,7 +357,9 @@ class ClusterSeed(SageObject):
             self._quiver = quiver
 
             # Sets ``user_labels`` to existing vertex labels
-            if not user_labels and set(self._nlist + self._mlist) != set(range(self._n + self._m)):
+            if not user_labels and set(self._nlist + self._mlist) != set(
+                range(self._n + self._m)
+            ):
                 user_labels = self._nlist + self._mlist
             if user_labels:
                 if isinstance(user_labels, dict):
@@ -339,9 +368,13 @@ class ClusterSeed(SageObject):
                     labelset = set(user_labels)
                     # Sanitizes our ``user_labels`` to use Integers instead of ints
                     user_labels = [Integer(x) if x in ZZ else x for x in user_labels]
-                if labelset != set(self._nlist + self._mlist) and labelset != set(range(self._n + self._m)):
-                    raise ValueError('user_labels conflict with both the given'
-                                     ' vertex labels and the default labels')
+                if labelset != set(self._nlist + self._mlist) and labelset != set(
+                    range(self._n + self._m)
+                ):
+                    raise ValueError(
+                        'user_labels conflict with both the given'
+                        ' vertex labels and the default labels'
+                    )
 
             # We are now updating labels from user's most recent choice.
             self._is_principal = is_principal
@@ -377,19 +410,33 @@ class ClusterSeed(SageObject):
             self._U = PolynomialRing(QQ, [f'y{i}' for i in range(self._n)])
             self._F = {i: self._U(1) for i in self._init_exch.values()}
             self._R = PolynomialRing(QQ, list(self._init_vars.values()))
-            self._y = {self._U.gen(j): prod([self._R.gen(i)**self._M[i, j] for i in range(self._n, self._n + self._m)])
-                       for j in range(self._n)}
-            self._yhat = {self._U.gen(j): prod([self._R.gen(i)**self._M[i, j] for i in range(self._n + self._m)])
-                          for j in range(self._n)}
+            self._y = {
+                self._U.gen(j): prod(
+                    [
+                        self._R.gen(i) ** self._M[i, j]
+                        for i in range(self._n, self._n + self._m)
+                    ]
+                )
+                for j in range(self._n)
+            }
+            self._yhat = {
+                self._U.gen(j): prod(
+                    [self._R.gen(i) ** self._M[i, j] for i in range(self._n + self._m)]
+                )
+                for j in range(self._n)
+            }
             self._use_fpolys = True
 
         # in all other cases, we construct the corresponding ClusterQuiver first
         else:
             quiver = ClusterQuiver(data, frozen=frozen, user_labels=user_labels)
-            self.__init__(quiver, frozen=frozen,
-                          is_principal=is_principal,
-                          user_labels=user_labels,
-                          user_labels_prefix=user_labels_prefix)
+            self.__init__(
+                quiver,
+                frozen=frozen,
+                is_principal=is_principal,
+                user_labels=user_labels,
+                user_labels_prefix=user_labels_prefix,
+            )
 
     def use_c_vectors(self, use=True, bot_is_c=False, force=False):
         r"""
@@ -440,20 +487,26 @@ class ClusterSeed(SageObject):
             if self._use_c_vec:
                 # self._C = matrix.identity(self._n)
                 try:
-                    self._use_c_vec = False   # temporarily turns off c-vectors to see if they can be recovered.
-                    self._C = self.c_matrix()    # if not just sets it to be identity matrix, i.e. reinitialized.
+                    self._use_c_vec = False  # temporarily turns off c-vectors to see if they can be recovered.
+                    self._C = (
+                        self.c_matrix()
+                    )  # if not just sets it to be identity matrix, i.e. reinitialized.
                     self._BC = copy(self._M).stack(self.c_matrix())
                     self._use_c_vec = True
                 except ValueError:
                     if not force:
-                        print("Warning: Initializing c-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing c-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_c_vec = True
                         self._C = matrix.identity(self._n)
                         self._BC = copy(self._M).stack(self.c_matrix())
                 except AttributeError:
                     if not force:
-                        print("Warning: Initializing c-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing c-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_c_vec = True
                         self._C = matrix.identity(self._n)
@@ -461,18 +514,24 @@ class ClusterSeed(SageObject):
             else:
                 self._C = None
                 self._BC = copy(self._M)
-        if self._bot_is_c != bot_is_c:  # If we need to do this. It overrides the previous designations.
+        if (
+            self._bot_is_c != bot_is_c
+        ):  # If we need to do this. It overrides the previous designations.
             self._bot_is_c = bot_is_c
             if self._bot_is_c:
                 self._use_c_vec = True
-                if self._m == self._n:  # in this case, the second half of a 2n x n matrix is a c-matrix.
-                    self._C = copy(self._M[self._n:(self._n + self._m), :self._n])
+                if (
+                    self._m == self._n
+                ):  # in this case, the second half of a 2n x n matrix is a c-matrix.
+                    self._C = copy(self._M[self._n : (self._n + self._m), : self._n])
                     self._BC = copy(self._M)
                 else:  # self._n != self._m
-                    raise ValueError('There are immutable elements not in the c-matrix. Storing the c-matrix separately.')
-                    self._C = copy(self._M[self._m:(self._n + self._m), :self._n])
+                    raise ValueError(
+                        'There are immutable elements not in the c-matrix. Storing the c-matrix separately.'
+                    )
+                    self._C = copy(self._M[self._m : (self._n + self._m), : self._n])
                     self._BC = copy(self._M)
-                    self._M = self._M[:self._m:self._n]
+                    self._M = self._M[: self._m : self._n]
                     self._M.set_immutable()
                     self._bot_is_c = False
 
@@ -540,18 +599,24 @@ class ClusterSeed(SageObject):
             if self._use_g_vec:
                 # self._G = matrix.identity(self._n) if self._use_g_vec else None
                 try:
-                    self._use_g_vec = False   # temporarily turns off g-vectors to see if they can be recovered.
-                    self._G = self.g_matrix()    # if not just sets it to be identity matrix, i.e. reinitialized.
+                    self._use_g_vec = False  # temporarily turns off g-vectors to see if they can be recovered.
+                    self._G = (
+                        self.g_matrix()
+                    )  # if not just sets it to be identity matrix, i.e. reinitialized.
                     self._use_g_vec = True
                 except ValueError:
                     if not force:
-                        print("Warning: Initializing g-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing g-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_g_vec = True
                         self._G = matrix.identity(self._n)
                 except AttributeError:
                     if not force:
-                        print("Warning: Initializing g-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing g-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_g_vec = True
                         self._G = matrix.identity(self._n)
@@ -637,13 +702,17 @@ class ClusterSeed(SageObject):
                     self._use_d_vec = True
                 except ValueError:
                     if not force:
-                        print("Warning: Initializing d-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing d-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_d_vec = True  # if not just sets it to be negative identity matrix, i.e. reinitialized.
                         self._D = -matrix.identity(self._n)
                 except AttributeError:
                     if not force:
-                        print("Warning: Initializing d-vectors at this point could lead to inconsistent seed data.")
+                        print(
+                            "Warning: Initializing d-vectors at this point could lead to inconsistent seed data."
+                        )
                     else:
                         self._use_d_vec = True  # if not just sets it to be negative identity matrix, i.e. reinitialized.
                         self._D = -matrix.identity(self._n)
@@ -693,7 +762,6 @@ class ClusterSeed(SageObject):
             self._use_fpolys = use
 
             if self._use_fpolys:
-
                 if user_labels:
                     self._sanitize_init_vars(user_labels, user_labels_prefix)
                 else:
@@ -709,16 +777,38 @@ class ClusterSeed(SageObject):
                     self._U = PolynomialRing(QQ, [f'y{i}' for i in range(self._n)])
                     self._F = {i: self._U(1) for i in self._init_exch.values()}
                     self._R = PolynomialRing(QQ, list(self._init_vars.values()))
-                    self._y = {self._U.gen(j): prod([self._R.gen(i)**self._M[i, j] for i in range(self._n, self._n + self._m)])
-                               for j in range(self._n)}
-                    self._yhat = {self._U.gen(j): prod([self._R.gen(i)**self._M[i, j] for i in range(self._n + self._m)])
-                                  for j in range(self._n)}
+                    self._y = {
+                        self._U.gen(j): prod(
+                            [
+                                self._R.gen(i) ** self._M[i, j]
+                                for i in range(self._n, self._n + self._m)
+                            ]
+                        )
+                        for j in range(self._n)
+                    }
+                    self._yhat = {
+                        self._U.gen(j): prod(
+                            [
+                                self._R.gen(i) ** self._M[i, j]
+                                for i in range(self._n + self._m)
+                            ]
+                        )
+                        for j in range(self._n)
+                    }
                 elif self._cluster:
-                    raise ValueError("should not be possible to have cluster variables without f-polynomials")    # added this as a sanity check.  This error should never appear however.
-                elif self._track_mut:  # If we can navigate from the root to where we are
+                    raise ValueError(
+                        "should not be possible to have cluster variables without f-polynomials"
+                    )  # added this as a sanity check.  This error should never appear however.
+                elif (
+                    self._track_mut
+                ):  # If we can navigate from the root to where we are
                     if not self._use_g_vec:
                         self.use_g_vectors(True)
-                    catchup = ClusterSeed(self._b_initial, user_labels=user_labels, user_labels_prefix=user_labels_prefix)
+                    catchup = ClusterSeed(
+                        self._b_initial,
+                        user_labels=user_labels,
+                        user_labels_prefix=user_labels_prefix,
+                    )
                     catchup.use_c_vectors(use=self._use_c_vec, bot_is_c=self._bot_is_c)
                     catchup.mutate(self.mutations())
 
@@ -731,14 +821,18 @@ class ClusterSeed(SageObject):
                 else:
                     self._use_fpolys = False
                     self._cluster = None
-                    raise ValueError("F-polynomials and Cluster Variables cannot be reconstructed from given data.")
+                    raise ValueError(
+                        "F-polynomials and Cluster Variables cannot be reconstructed from given data."
+                    )
 
                 # since we have F polynomials, set up clusters properly
                 self._cluster = None
                 self.cluster()
             else:
                 if user_labels:
-                    print("Warning: since 'use_fpolys' is False, the parameter 'user_labels' is ignored.")
+                    print(
+                        "Warning: since 'use_fpolys' is False, the parameter 'user_labels' is ignored."
+                    )
                 self._init_vars = None
                 self._init_exch = None
                 self._U = None
@@ -840,7 +934,9 @@ class ClusterSeed(SageObject):
                     if user_labels[i] >= 0:
                         self._init_vars[i] = user_labels_prefix + user_labels[i].str()
                     else:
-                        self._init_vars[i] = user_labels_prefix + 'neg' + (-user_labels[i]).str()
+                        self._init_vars[i] = (
+                            user_labels_prefix + 'neg' + (-user_labels[i]).str()
+                        )
                 elif isinstance(user_labels[i], (list, tuple)):
                     self._user_labels_prefix = user_labels_prefix
                     strng = self._user_labels_prefix
@@ -875,8 +971,10 @@ class ClusterSeed(SageObject):
             raise ValueError("the input 'user_labels' must be a dictionary or a list")
 
         if len(self._init_vars) != self._n + self._m:
-            raise ValueError("the number of user-defined labels is not the"
-                             " number of exchangeable and frozen variables")
+            raise ValueError(
+                "the number of user-defined labels is not the"
+                " number of exchangeable and frozen variables"
+            )
 
     def set_c_matrix(self, data):
         r"""
@@ -915,7 +1013,9 @@ class ClusterSeed(SageObject):
             data = data.b_matrix()
 
         if data.determinant() == 0:
-            print("C matrix does not look to be valid - not a linearly independent set.")
+            print(
+                "C matrix does not look to be valid - not a linearly independent set."
+            )
             print("Continuing...")
 
         # Do a quick check to make sure that each column is either all
@@ -924,7 +1024,9 @@ class ClusterSeed(SageObject):
         greens = Set(get_green_vertices(data))
         reds = Set(get_red_vertices(data))
         if greens.intersection(reds) or greens.union(reds).cardinality() < data.ncols():
-            print("C matrix does not look to be valid - there exists a column containing positive and negative entries.")
+            print(
+                "C matrix does not look to be valid - there exists a column containing positive and negative entries."
+            )
             print("Continuing...")
 
         self._C = data
@@ -972,7 +1074,10 @@ class ClusterSeed(SageObject):
         clusters = True
         ExMat = self._M == other._M
         if self._use_fpolys and other._use_fpolys:
-            clusters = self.cluster() == other.cluster() and self.ground_field() == other.ground_field()
+            clusters = (
+                self.cluster() == other.cluster()
+                and self.ground_field() == other.ground_field()
+            )
         elif self._use_g_vec and other._use_g_vec:
             g_vec = self.g_matrix() == other.g_matrix()
         if self._use_c_vec and other._use_c_vec:
@@ -1020,8 +1125,10 @@ class ClusterSeed(SageObject):
         """
         name = self._description
         if self._mutation_type:
-            if isinstance(self._mutation_type, (QuiverMutationType_Irreducible,
-                                                QuiverMutationType_Reducible)):
+            if isinstance(
+                self._mutation_type,
+                (QuiverMutationType_Irreducible, QuiverMutationType_Reducible),
+            ):
                 name += ' of type ' + str(self._mutation_type)
             # the following case allows description of 'undetermined finite mutation type'
             else:
@@ -1034,7 +1141,15 @@ class ClusterSeed(SageObject):
             name += ' with %s frozen variables' % self._m
         return name
 
-    def plot(self, circular=False, mark=None, save_pos=False, force_c=False, with_greens=False, add_labels=False):
+    def plot(
+        self,
+        circular=False,
+        mark=None,
+        save_pos=False,
+        force_c=False,
+        with_greens=False,
+        add_labels=False,
+    ):
         r"""
         Return the plot of the quiver of ``self``.
 
@@ -1075,10 +1190,20 @@ class ClusterSeed(SageObject):
         else:
             quiver = self.quiver()
 
-        return quiver.plot(circular=circular, mark=mark, save_pos=save_pos,
-                           greens=greens)
+        return quiver.plot(
+            circular=circular, mark=mark, save_pos=save_pos, greens=greens
+        )
 
-    def show(self, fig_size=1, circular=False, mark=None, save_pos=False, force_c=False, with_greens=False, add_labels=False):
+    def show(
+        self,
+        fig_size=1,
+        circular=False,
+        mark=None,
+        save_pos=False,
+        force_c=False,
+        with_greens=False,
+        add_labels=False,
+    ):
         r"""
         Shows the plot of the quiver of ``self``.
 
@@ -1116,8 +1241,13 @@ class ClusterSeed(SageObject):
         else:
             quiver = self.quiver()
 
-        quiver.show(fig_size=fig_size, circular=circular, mark=mark,
-                    save_pos=save_pos, greens=greens)
+        quiver.show(
+            fig_size=fig_size,
+            circular=circular,
+            mark=mark,
+            save_pos=save_pos,
+            greens=greens,
+        )
 
     def interact(self, fig_size=1, circular=True):
         r"""
@@ -1240,11 +1370,14 @@ class ClusterSeed(SageObject):
             elif k in self._nlist:
                 x = self._R.gens()[self._nlist.index(k)]
 
-            return ClusterVariable(FractionField(self._R),
-                                   x.numerator(), x.denominator(),
-                                   mutation_type=self._mutation_type,
-                                   variable_type='cluster variable',
-                                   xdim=self._n)
+            return ClusterVariable(
+                FractionField(self._R),
+                x.numerator(),
+                x.denominator(),
+                mutation_type=self._mutation_type,
+                variable_type='cluster variable',
+                xdim=self._n,
+            )
         raise ValueError("the input is not in an index of a cluster variable")
 
     def y(self, k):
@@ -1278,11 +1411,14 @@ class ClusterSeed(SageObject):
                 x = self._R.gens()[self._n + k]
             elif k in self._mlist:
                 x = self._R.gens()[self._mlist.index(k) + self._n]
-            return ClusterVariable(FractionField(self._R),
-                                   x.numerator(), x.denominator(),
-                                   mutation_type=self._mutation_type,
-                                   variable_type='frozen variable',
-                                   xdim=self._n)
+            return ClusterVariable(
+                FractionField(self._R),
+                x.numerator(),
+                x.denominator(),
+                mutation_type=self._mutation_type,
+                variable_type='frozen variable',
+                xdim=self._n,
+            )
         raise ValueError("the input is not in an index of a frozen variable")
 
     def n(self):
@@ -1391,15 +1527,26 @@ class ClusterSeed(SageObject):
                 elif k in IE:
                     k = IE.index(k)
 
-                g_mon = prod([self._R.gen(i)**self._G[i, k] for i in range(self._n)])
+                g_mon = prod([self._R.gen(i) ** self._G[i, k] for i in range(self._n)])
                 F_num = self._F[IE[k]].subs(self._yhat)
                 F_den = self._R(self._F[IE[k]].subs(self._y).denominator())
                 cluster_variable = g_mon * F_num * F_den
 
-                return ClusterVariable(FractionField(self._R), cluster_variable.numerator(), cluster_variable.denominator(), mutation_type=self._mutation_type, variable_type='cluster variable', xdim=self._n)
+                return ClusterVariable(
+                    FractionField(self._R),
+                    cluster_variable.numerator(),
+                    cluster_variable.denominator(),
+                    mutation_type=self._mutation_type,
+                    variable_type='cluster variable',
+                    xdim=self._n,
+                )
             raise ValueError('No cluster variable with index or label ' + str(k) + '.')
         elif self._track_mut:  # if we can recreate the clusters
-            catchup = ClusterSeed(self._b_initial, user_labels=self._user_labels, user_labels_prefix=self._user_labels_prefix)
+            catchup = ClusterSeed(
+                self._b_initial,
+                user_labels=self._user_labels,
+                user_labels_prefix=self._user_labels_prefix,
+            )
             catchup.use_c_vectors(use=self._use_c_vec, bot_is_c=self._bot_is_c)
             catchup.mutate(self.mutations())
             return catchup.cluster_variable(k)
@@ -1431,7 +1578,11 @@ class ClusterSeed(SageObject):
 
         if not self._use_fpolys:
             if self._track_mut:  # if we can recreate the clusters
-                catchup = ClusterSeed(self._b_initial, user_labels=self._user_labels, user_labels_prefix=self._user_labels_prefix)
+                catchup = ClusterSeed(
+                    self._b_initial,
+                    user_labels=self._user_labels,
+                    user_labels_prefix=self._user_labels_prefix,
+                )
                 catchup.use_c_vectors(use=self._use_c_vec, bot_is_c=self._bot_is_c)
                 catchup.mutate(self.mutations())
                 return catchup.cluster()
@@ -1468,13 +1619,13 @@ class ClusterSeed(SageObject):
 
         for j in range(self._n):
             if C[j, k] > 0:
-                pos *= self._U.gen(j)**C[j, k]
+                pos *= self._U.gen(j) ** C[j, k]
             else:
-                neg *= self._U.gen(j)**(-C[j, k])
+                neg *= self._U.gen(j) ** (-C[j, k])
             if B[j, k] > 0:
-                pos *= F[IE[j]]**B[j, k]
+                pos *= F[IE[j]] ** B[j, k]
             else:
-                neg *= F[IE[j]]**(-B[j, k])
+                neg *= F[IE[j]] ** (-B[j, k])
 
         # can the following be improved?
         self._F[IE[k]] = (pos + neg) // F[IE[k]]
@@ -1516,11 +1667,17 @@ class ClusterSeed(SageObject):
             elif k in IE:
                 k = IE.index(k)
             else:
-                raise ValueError("The cluster seed does not have a cluster variable of index %s." % k)
+                raise ValueError(
+                    "The cluster seed does not have a cluster variable of index %s." % k
+                )
 
             return self._F[IE[k]]
         if self._track_mut:
-            catchup = ClusterSeed(self._b_initial, user_labels=self._user_labels, user_labels_prefix=self._user_labels_prefix)
+            catchup = ClusterSeed(
+                self._b_initial,
+                user_labels=self._user_labels,
+                user_labels_prefix=self._user_labels_prefix,
+            )
             catchup.use_c_vectors(use=self._use_c_vec, bot_is_c=self._bot_is_c)
             catchup.mutate(self.mutations())
 
@@ -1566,10 +1723,16 @@ class ClusterSeed(SageObject):
             sage: [S.g_vector(k) for k in range(3)]
             [(1, 0, 0), (0, 0, -1), (0, -1, 0)]
         """
-        if not (self._is_principal or self._use_g_vec or (self._use_fpolys and self._cluster)):
+        if not (
+            self._is_principal
+            or self._use_g_vec
+            or (self._use_fpolys and self._cluster)
+        ):
             raise ValueError("Unable to calculate g-vectors. Need to use g vectors.")
         if k not in range(self._n):
-            raise ValueError("The cluster seed does not have a cluster variable of index %s." % k)
+            raise ValueError(
+                "The cluster seed does not have a cluster variable of index %s." % k
+            )
 
         if self._use_g_vec:  # This implies the g-matrix is maintained by the mutate function and will always be up to date
             return copy(self._G.column(k))
@@ -1630,21 +1793,24 @@ class ClusterSeed(SageObject):
         """
 
         from sage.matrix.constructor import matrix
+
         if self._use_g_vec:
             return copy(self._G)
-        if self._use_fpolys and self._cluster:  # This only calls g_vector when it will not create a loop.
+        if (
+            self._use_fpolys and self._cluster
+        ):  # This only calls g_vector when it will not create a loop.
             return matrix([self.g_vector(k) for k in range(self._n)]).transpose()
         if self._use_c_vec:
             if self.b_matrix().is_skew_symmetric():
                 return copy(self._C).inverse().transpose()
             if self._track_mut:
-                BC1 = copy(self._b_initial[0:self._n])
+                BC1 = copy(self._b_initial[0 : self._n])
                 BC1 = -BC1.transpose()
                 BC1 = BC1.stack(matrix.identity(self._n))
                 seq = iter(self.mutations())
                 for k in seq:
                     BC1.mutate(k)
-                return copy(BC1[self._n:2 * self._n]).inverse().transpose()
+                return copy(BC1[self._n : 2 * self._n]).inverse().transpose()
             raise ValueError("Unable to calculate g-vectors. Need to use g vectors.")
         elif self._track_mut:
             catchup = ClusterSeed(self._b_initial)
@@ -1720,7 +1886,9 @@ class ClusterSeed(SageObject):
             (1, -1)
         """
         if k not in range(self._n):
-            raise ValueError("The cluster seed does not have a c-vector of index %s." % k)
+            raise ValueError(
+                "The cluster seed does not have a c-vector of index %s." % k
+            )
         if not (self._is_principal or self._use_c_vec):
             raise ValueError("Requires C vectors to use.")
         if self._use_c_vec:
@@ -1756,27 +1924,29 @@ class ClusterSeed(SageObject):
         """
 
         if self._bot_is_c:
-            return copy(self._M[self._m:(self._n + self._m), :self._n])
+            return copy(self._M[self._m : (self._n + self._m), : self._n])
         if self._use_c_vec:
             return copy(self._C)
-        if self._use_g_vec or self._use_fpolys:  # both of these will populate g_matrix() successfully
+        if (
+            self._use_g_vec or self._use_fpolys
+        ):  # both of these will populate g_matrix() successfully
             if self.b_matrix().is_skew_symmetric():
                 return self.g_matrix().inverse().transpose()
             if self._track_mut:
-                BC1 = copy(self._b_initial[0:self._n])
+                BC1 = copy(self._b_initial[0 : self._n])
                 BC1 = BC1.stack(matrix.identity(self._n))
                 seq = iter(self.mutations())
                 for k in seq:
                     BC1.mutate(k)
-                return copy(BC1[self._n:2 * self._n])
+                return copy(BC1[self._n : 2 * self._n])
             raise ValueError("Unable to calculate c-vectors. Need to use c vectors.")
         elif self._track_mut:
-            BC1 = copy(self._b_initial[0:self._n])
+            BC1 = copy(self._b_initial[0 : self._n])
             BC1 = BC1.stack(matrix.identity(self._n))
             seq = iter(self.mutations())
             for k in seq:
                 BC1.mutate(k)
-            return copy(BC1[self._n:2 * self._n])
+            return copy(BC1[self._n : 2 * self._n])
         elif show_warnings:
             raise ValueError("Unable to calculate c-vectors. Need to use c vectors.")
         else:
@@ -1801,8 +1971,8 @@ class ClusterSeed(SageObject):
         if self._use_fpolys:
             f = self.cluster_variable(k)
             if f in self._R.gens():
-                return -vector(f.numerator().monomials()[0].exponents()[0][:self._n])
-            return vector(f.denominator().monomials()[0].exponents()[0][:self._n])
+                return -vector(f.numerator().monomials()[0].exponents()[0][: self._n])
+            return vector(f.denominator().monomials()[0].exponents()[0][: self._n])
         if self._track_mut:
             catchup = ClusterSeed(self._b_initial)
             catchup.use_fpolys(False)
@@ -1899,15 +2069,17 @@ class ClusterSeed(SageObject):
         if k in self._nlist:
             k = self._nlist.index(k)
         if k not in range(self._n):
-            raise ValueError("The cluster seed does not have a coefficient of index %s." % k)
+            raise ValueError(
+                "The cluster seed does not have a coefficient of index %s." % k
+            )
         if self._m == 0:
-            return self.x(0)**0
-        try:    # are c vectors being tracked?
+            return self.x(0) ** 0
+        try:  # are c vectors being tracked?
             exp = self.c_vector(k)
-        except Exception:    # if not try and reconstruct them
+        except Exception:  # if not try and reconstruct them
             exp = self.c_matrix().column(k)
 
-        return prod(self.y(i)**exp[i] for i in range(self._m))
+        return prod(self.y(i) ** exp[i] for i in range(self._m))
 
     def coefficients(self):
         r"""
@@ -1934,9 +2106,9 @@ class ClusterSeed(SageObject):
             Quiver on 3 vertices of type ['A', 3]
         """
         from sage.combinat.cluster_algebra_quiver.quiver import ClusterQuiver
+
         if self._quiver is None:
-            self._quiver = ClusterQuiver(self._M,
-                                         user_labels=self._nlist + self._mlist)
+            self._quiver = ClusterQuiver(self._M, user_labels=self._nlist + self._mlist)
         return self._quiver
 
     def is_acyclic(self) -> bool:
@@ -2104,7 +2276,10 @@ class ClusterSeed(SageObject):
         """
         vertices = []
         for i in range(self._n):
-            if self.quiver().digraph().in_degree(i) == 2 and self.quiver().digraph().out_degree(i) == 2:
+            if (
+                self.quiver().digraph().in_degree(i) == 2
+                and self.quiver().digraph().out_degree(i) == 2
+            ):
                 if return_first:
                     return i
                 vertices.append(i)
@@ -2481,8 +2656,10 @@ class ClusterSeed(SageObject):
 
         # check for sanitizable data
         if not isinstance(inplace, bool):
-            raise ValueError("the second parameter must be boolean; to mutate"
-                             " at a sequence of length 2, input it as a list")
+            raise ValueError(
+                "the second parameter must be boolean; to mutate"
+                " at a sequence of length 2, input it as a list"
+            )
 
         if inplace:
             seed = self
@@ -2507,6 +2684,7 @@ class ClusterSeed(SageObject):
             elif sequence[0] == '[' and sequence[-1] == ']':
                 # convert to list
                 from ast import literal_eval
+
                 temp_list = literal_eval(sequence)
 
                 sequence = self._user_labels_prefix
@@ -2533,8 +2711,12 @@ class ClusterSeed(SageObject):
 
         n, m = seed.n(), seed.m()
 
-        if (sequence in range(n) or sequence in IE
-                or isinstance(sequence, str) or sequence in seed._nlist):
+        if (
+            sequence in range(n)
+            or sequence in IE
+            or isinstance(sequence, str)
+            or sequence in seed._nlist
+        ):
             seqq = [sequence]
         else:
             seqq = sequence
@@ -2542,8 +2724,10 @@ class ClusterSeed(SageObject):
         if isinstance(seqq, tuple):
             seqq = list(seqq)
         if not isinstance(seqq, list):
-            raise ValueError("the quiver can only be mutated at a vertex"
-                             " or at a sequence of vertices")
+            raise ValueError(
+                "the quiver can only be mutated at a vertex"
+                " or at a sequence of vertices"
+            )
 
         # These boolean variables classify the input type
         is_vertices = set(seqq).issubset(set(seed._nlist))
@@ -2556,39 +2740,53 @@ class ClusterSeed(SageObject):
         # Ensures the sequence has elements of type input_type.
         if input_type:
             if input_type == "vertices" and not is_vertices:
-                raise ValueError('input_type set to "vertices" but not everything'
-                                 ' in the mutation sequence is a vertex.')
+                raise ValueError(
+                    'input_type set to "vertices" but not everything'
+                    ' in the mutation sequence is a vertex.'
+                )
 
             elif input_type == "indices" and not is_indices:
-                raise ValueError('input_type set to "indices" but not everything'
-                                 ' in the mutation sequence is an index.')
+                raise ValueError(
+                    'input_type set to "indices" but not everything'
+                    ' in the mutation sequence is an index.'
+                )
 
             elif input_type == "cluster_vars" and not is_cluster_vars:
-                raise ValueError('input_type set to "cluster_vars" but not'
-                                 ' everything in the mutation sequence is a'
-                                 ' cluster variable.')
+                raise ValueError(
+                    'input_type set to "cluster_vars" but not'
+                    ' everything in the mutation sequence is a'
+                    ' cluster variable.'
+                )
 
             elif input_type not in ["vertices", "indices", "cluster_vars"]:
-                raise ValueError('input_type must be either "vertices",'
-                                 ' "indices", or "cluster_vars"')
+                raise ValueError(
+                    'input_type must be either "vertices", "indices", or "cluster_vars"'
+                )
 
         # Classifies the input_type.  Raises warnings if the input is ambiguous, and errors if the input is not all of the same type.
         elif is_vertices:
             input_type = "vertices"
             for x in seqq:
                 if is_indices and seed._nlist[x] != x:
-                    print("Input can be ambiguously interpreted as both"
-                          " vertices and indices."
-                          " Mutating at vertices by default.")
+                    print(
+                        "Input can be ambiguously interpreted as both"
+                        " vertices and indices."
+                        " Mutating at vertices by default."
+                    )
                     break
 
                 elif is_cluster_vars:
                     cluster_var_index = seed.cluster_index(x)
                     vertex_index = seed._nlist.index(x)
-                    if isinstance(cluster_var_index, int) and cluster_var_index != vertex_index:
-                        print("Input can be ambiguously interpreted as"
-                              " both vertices and cluster variables."
-                              " Mutating at vertices by default.")
+                    if (
+                        isinstance(cluster_var_index, int)
+                        and cluster_var_index != vertex_index
+                    ):
+                        print(
+                            "Input can be ambiguously interpreted as"
+                            " both vertices and cluster variables."
+                            " Mutating at vertices by default."
+                        )
                         break
 
         # It should be impossible to interpret an index as a cluster variable.
@@ -2597,8 +2795,10 @@ class ClusterSeed(SageObject):
         elif is_cluster_vars:
             input_type = "cluster_vars"
         else:
-            raise ValueError('mutation sequences must consist of exactly'
-                             ' one of vertices, indices, or cluster variables')
+            raise ValueError(
+                'mutation sequences must consist of exactly'
+                ' one of vertices, indices, or cluster variables'
+            )
 
         if input_type == "cluster_vars" and len(seqq) > 1:
             mutation_seed = deepcopy(seed)
@@ -2609,9 +2809,11 @@ class ClusterSeed(SageObject):
                     mutation_seed.mutate(new_index, input_type='indices')
                     index_list.append(new_index)
             except (ValueError, TypeError):
-                raise ValueError('input interpreted as cluster variables,'
-                                 ' but the input sequence did not consist'
-                                 ' of cluster variables')
+                raise ValueError(
+                    'input interpreted as cluster variables,'
+                    ' but the input sequence did not consist'
+                    ' of cluster variables'
+                )
 
             input_type = "indices"
             seqq = index_list
@@ -2635,7 +2837,9 @@ class ClusterSeed(SageObject):
                 if k is None:
                     raise ValueError("variable provided is not in our cluster")
             else:
-                raise ValueError('Should not happen. Cannot mutate in direction ' + str(k) + '.')
+                raise ValueError(
+                    'Should not happen. Cannot mutate in direction ' + str(k) + '.'
+                )
 
             if seed._use_fpolys:
                 seed._f_mutate(k)
@@ -2647,15 +2851,18 @@ class ClusterSeed(SageObject):
                 seed._d_mutate(k)
 
             seed._BC.mutate(k)
-            seed._M = copy(seed._BC[:n + m, :n])
+            seed._M = copy(seed._BC[: n + m, :n])
             self._M.set_immutable()
 
             if seed._use_c_vec:
-                seed._C = seed._BC[n + m:2 * n + m, :n + m]
+                seed._C = seed._BC[n + m : 2 * n + m, : n + m]
 
             if seed._track_mut:
                 # delete involutive mutations
-                if len(seed._mut_path) == 0 or seed._mut_path[len(self._mut_path) - 1] != k:
+                if (
+                    len(seed._mut_path) == 0
+                    or seed._mut_path[len(self._mut_path) - 1] != k
+                ):
                     seed._mut_path.append(k)
                 else:
                     seed._mut_path.pop()
@@ -2686,18 +2893,22 @@ class ClusterSeed(SageObject):
         """
         if self._use_fpolys and isinstance(cluster_str, str):
             c = FractionField(self._R)(cluster_str)
-            cluster_str = ClusterVariable(FractionField(self._R),
-                                          c.numerator(), c.denominator(),
-                                          mutation_type=self._mutation_type,
-                                          variable_type='cluster variable',
-                                          xdim=self._n)
+            cluster_str = ClusterVariable(
+                FractionField(self._R),
+                c.numerator(),
+                c.denominator(),
+                mutation_type=self._mutation_type,
+                variable_type='cluster variable',
+                xdim=self._n,
+            )
             if cluster_str in self.cluster():
                 return self.cluster().index(cluster_str)
 
         return None
 
-    def mutation_sequence(self, sequence, show_sequence=False,
-                          fig_size=1.2, return_output='seed'):
+    def mutation_sequence(
+        self, sequence, show_sequence=False, fig_size=1.2, return_output='seed'
+    ):
         r"""
         Return the seeds obtained by mutating ``self`` at all vertices
         in ``sequence``.
@@ -2758,7 +2969,9 @@ class ClusterSeed(SageObject):
             seed_sequence.append(seed)
 
         if show_sequence:
-            self.quiver().mutation_sequence(sequence=sequence, show_sequence=True, fig_size=fig_size)
+            self.quiver().mutation_sequence(
+                sequence=sequence, show_sequence=True, fig_size=fig_size
+            )
 
         if return_output == 'seed':
             return seed_sequence
@@ -2766,7 +2979,9 @@ class ClusterSeed(SageObject):
             return [s._M for s in seed_sequence]
         if return_output == 'var':
             return new_clust_var
-        raise ValueError('The parameter `return_output` can only be `seed`, `matrix`, or `var`.')
+        raise ValueError(
+            'The parameter `return_output` can only be `seed`, `matrix`, or `var`.'
+        )
 
     def mutation_analysis(self, options=['all'], filter=None):
         r"""
@@ -2958,55 +3173,83 @@ class ClusterSeed(SageObject):
 
             if ('edges' in options or 'all' in options) and self._M.is_skew_symmetric():
                 analysis[i]['edges'] = current_mutation.quiver().number_of_edges()
-            if ('edge_diff' in options or 'all' in options) and self._M.is_skew_symmetric():
-                analysis[i]['edge_diff'] = current_mutation.quiver().number_of_edges() - initial_edges
+            if (
+                'edge_diff' in options or 'all' in options
+            ) and self._M.is_skew_symmetric():
+                analysis[i]['edge_diff'] = (
+                    current_mutation.quiver().number_of_edges() - initial_edges
+                )
 
             if ('green_vertices' in options or 'all' in options) and self._use_c_vec:
                 analysis[i]['green_vertices'] = current_mutation.green_vertices()
-            if ('green_vertices_diff' in options or 'all' in options) and self._use_c_vec:
+            if (
+                'green_vertices_diff' in options or 'all' in options
+            ) and self._use_c_vec:
                 analysis[i]['green_vertices_diff'] = {}
                 new_green_vertices = current_mutation.green_vertices()
-                analysis[i]['green_vertices_diff']['added'] = list(set(new_green_vertices) - set(initial_green_vertices))
-                analysis[i]['green_vertices_diff']['removed'] = list(set(initial_green_vertices) - set(new_green_vertices))
+                analysis[i]['green_vertices_diff']['added'] = list(
+                    set(new_green_vertices) - set(initial_green_vertices)
+                )
+                analysis[i]['green_vertices_diff']['removed'] = list(
+                    set(initial_green_vertices) - set(new_green_vertices)
+                )
 
             if ('red_vertices' in options or 'all' in options) and self._use_c_vec:
                 analysis[i]['red_vertices'] = current_mutation.red_vertices()
             if ('red_vertices_diff' in options or 'all' in options) and self._use_c_vec:
                 analysis[i]['red_vertices_diff'] = {}
                 new_red_vertices = current_mutation.red_vertices()
-                analysis[i]['red_vertices_diff']['added'] = list(set(new_red_vertices) - set(initial_red_vertices))
-                analysis[i]['red_vertices_diff']['removed'] = list(set(initial_red_vertices) - set(new_red_vertices))
+                analysis[i]['red_vertices_diff']['added'] = list(
+                    set(new_red_vertices) - set(initial_red_vertices)
+                )
+                analysis[i]['red_vertices_diff']['removed'] = list(
+                    set(initial_red_vertices) - set(new_red_vertices)
+                )
 
             if 'urban_renewals' in options or 'all' in options:
                 analysis[i]['urban_renewals'] = current_mutation.urban_renewals()
             if 'urban_renewals_diff' in options or 'all' in options:
                 analysis[i]['urban_renewals_diff'] = {}
                 new_urban_renewals = current_mutation.urban_renewals()
-                analysis[i]['urban_renewals_diff']['added'] = list(set(new_urban_renewals) - set(initial_urban_renewals))
-                analysis[i]['urban_renewals_diff']['removed'] = list(set(initial_urban_renewals) - set(new_urban_renewals))
+                analysis[i]['urban_renewals_diff']['added'] = list(
+                    set(new_urban_renewals) - set(initial_urban_renewals)
+                )
+                analysis[i]['urban_renewals_diff']['removed'] = list(
+                    set(initial_urban_renewals) - set(new_urban_renewals)
+                )
 
             if 'sources' in options or 'all' in options:
                 analysis[i]['sources'] = current_mutation.quiver().sources()
             if 'sources_diff' in options or 'all' in options:
                 analysis[i]['sources_diff'] = {}
                 new_sources = current_mutation.quiver().sources()
-                analysis[i]['sources_diff']['added'] = list(set(new_sources) - set(initial_sources))
-                analysis[i]['sources_diff']['removed'] = list(set(initial_sources) - set(new_sources))
+                analysis[i]['sources_diff']['added'] = list(
+                    set(new_sources) - set(initial_sources)
+                )
+                analysis[i]['sources_diff']['removed'] = list(
+                    set(initial_sources) - set(new_sources)
+                )
 
             if 'sinks' in options or 'all' in options:
                 analysis[i]['sinks'] = current_mutation.quiver().sinks()
             if 'sinks_diff' in options or 'all' in options:
                 analysis[i]['sinks_diff'] = {}
                 new_sinks = current_mutation.quiver().sinks()
-                analysis[i]['sinks_diff']['added'] = list(set(new_sinks) - set(initial_sinks))
-                analysis[i]['sinks_diff']['removed'] = list(set(initial_sinks) - set(new_sinks))
+                analysis[i]['sinks_diff']['added'] = list(
+                    set(new_sinks) - set(initial_sinks)
+                )
+                analysis[i]['sinks_diff']['removed'] = list(
+                    set(initial_sinks) - set(new_sinks)
+                )
 
             if ('denominators' in options or 'all' in options) and self._use_fpolys:
                 analysis[i]['denominators'] = []
                 for vari in current_mutation.cluster():
                     analysis[i]['denominators'].append(vari.denominator())
 
-            if ('d_matrix' in options or 'all' in options) and (self._use_d_vec or self._use_fpolys):
+            if ('d_matrix' in options or 'all' in options) and (
+                self._use_d_vec or self._use_fpolys
+            ):
                 analysis[i]['d_matrix'] = current_mutation.d_matrix()
 
         return analysis
@@ -3027,11 +3270,15 @@ class ClusterSeed(SageObject):
             [(0, 1, (1, -1)), (2, 1, (1, -1))]
         """
         from sage.combinat.cluster_algebra_quiver.mutation_class import _principal_part
+
         eval_dict = {self.y(i): 1 for i in range(self._m)}
-        seed = ClusterSeed(_principal_part(self._M), is_principal=True,
-                           user_labels=self._nlist,
-                           user_labels_prefix=self._user_labels_prefix,
-                           frozen=None)
+        seed = ClusterSeed(
+            _principal_part(self._M),
+            is_principal=True,
+            user_labels=self._nlist,
+            user_labels_prefix=self._user_labels_prefix,
+            frozen=None,
+        )
         seed.use_c_vectors(self._use_c_vec)
         seed.use_fpolys(self._use_fpolys)
         seed.use_g_vectors(self._use_g_vec)
@@ -3039,8 +3286,7 @@ class ClusterSeed(SageObject):
         seed.track_mutations(self._track_mut)
         if self._use_fpolys:
             self.cluster()
-            seed._cluster = [self._cluster[k].subs(eval_dict)
-                             for k in range(self._n)]
+            seed._cluster = [self._cluster[k].subs(eval_dict) for k in range(self._n)]
         seed._mutation_type = self._mutation_type
         return seed
 
@@ -3107,12 +3353,16 @@ class ClusterSeed(SageObject):
             True
         """
         if self._m != 0:
-            raise ValueError("To have universal coefficients we need "
-                             "to start from a coefficient-free seed")
+            raise ValueError(
+                "To have universal coefficients we need "
+                "to start from a coefficient-free seed"
+            )
         if not self.is_bipartite() or not self.is_finite():
-            raise ValueError("Universal coefficients are defined only "
-                             "for finite type cluster algebras at a "
-                             "bipartite initial cluster")
+            raise ValueError(
+                "Universal coefficients are defined only "
+                "for finite type cluster algebras at a "
+                "bipartite initial cluster"
+            )
 
         from sage.matrix.constructor import matrix
         from sage.combinat.root_system.cartan_matrix import CartanMatrix
@@ -3123,10 +3373,15 @@ class ClusterSeed(SageObject):
         rs = CartanMatrix(A, index_set=list(range(1, A.ncols() + 1))).root_space()
         almost_positive_coroots = rs.almost_positive_roots()
 
-        sign = [-1 if all(x <= 0 for x in self.b_matrix()[i]) else 1
-                for i in range(self._n)]
-        C = matrix([[sign[j] * alpha[j + 1] for j in range(self._n)]
-                    for alpha in almost_positive_coroots])
+        sign = [
+            -1 if all(x <= 0 for x in self.b_matrix()[i]) else 1 for i in range(self._n)
+        ]
+        C = matrix(
+            [
+                [sign[j] * alpha[j + 1] for j in range(self._n)]
+                for alpha in almost_positive_coroots
+            ]
+        )
 
         M = self._M.stack(C)
         n = C.nrows()
@@ -3137,9 +3392,13 @@ class ClusterSeed(SageObject):
             elif isinstance(self._user_labels, dict):
                 new_labels = copy(self._user_labels)
                 new_labels.update({(i + self._n): f'y{i}' for i in range(n)})
-        seed = ClusterSeed(M, is_principal=False, user_labels=new_labels,
-                           user_labels_prefix=self._user_labels_prefix,
-                           frozen=None)
+        seed = ClusterSeed(
+            M,
+            is_principal=False,
+            user_labels=new_labels,
+            user_labels_prefix=self._user_labels_prefix,
+            frozen=None,
+        )
         seed.use_c_vectors(self._use_c_vec)
         seed.use_fpolys(self._use_fpolys)
         seed.use_g_vectors(self._use_g_vec)
@@ -3193,10 +3452,11 @@ class ClusterSeed(SageObject):
             True
         """
         from sage.matrix.special import identity_matrix
+
         if self._m != 0:
             raise ValueError("the b-matrix is not square")
         M = self._M.stack(identity_matrix(self._n))
-        is_principal = (self._m == 0)
+        is_principal = self._m == 0
         new_labels = None
         if self._user_labels:
             if isinstance(self._user_labels, list):
@@ -3204,8 +3464,13 @@ class ClusterSeed(SageObject):
             elif isinstance(self._user_labels, dict):
                 new_labels = copy(self._user_labels)
                 new_labels.update({(i + self._n): f'y{i}' for i in range(self._n)})
-        seed = ClusterSeed(M, is_principal=is_principal, user_labels=new_labels,
-                           user_labels_prefix=self._user_labels_prefix, frozen=None)
+        seed = ClusterSeed(
+            M,
+            is_principal=is_principal,
+            user_labels=new_labels,
+            user_labels_prefix=self._user_labels_prefix,
+            frozen=None,
+        )
         seed.use_c_vectors(self._use_c_vec)
         seed.use_fpolys(self._use_fpolys)
         seed.use_g_vectors(self._use_g_vec)
@@ -3298,12 +3563,18 @@ class ClusterSeed(SageObject):
             raise ValueError('The number of given cluster variables is wrong')
         if self._use_fpolys:
             if any(c not in FractionField(self._R) for c in cluster):
-                raise ValueError('The cluster variables are not all contained in %s' % FractionField(self._R))
+                raise ValueError(
+                    'The cluster variables are not all contained in %s'
+                    % FractionField(self._R)
+                )
             if not force:  # if already have f_polynomials, using set_cluster might yield data inconsistent with them.
-                print("Warning: using set_cluster at this point could lead to inconsistent seed data.")
+                print(
+                    "Warning: using set_cluster at this point could lead to inconsistent seed data."
+                )
             else:
-                self._cluster = [FractionField(self._R)(x)
-                                 for x in cluster][0:self._n]
+                self._cluster = [FractionField(self._R)(x) for x in cluster][
+                    0 : self._n
+                ]
                 self._is_principal = None
         else:
             print("Warning: clusters not being tracked so this command is ignored.")
@@ -3398,8 +3669,10 @@ class ClusterSeed(SageObject):
         """
         n, m = self._n, self._m
         if not n == m:
-            raise ValueError("The numbers of cluster variables "
-                             "and of frozen variables do not coincide.")
+            raise ValueError(
+                "The numbers of cluster variables "
+                "and of frozen variables do not coincide."
+            )
         newM = copy(self._M)
         for i in range(m):
             for j in range(n):
@@ -3412,9 +3685,14 @@ class ClusterSeed(SageObject):
         self._quiver = None
         self._is_principal = None
 
-    def mutation_class_iter(self, depth=infinity, show_depth=False,
-                            return_paths=False, up_to_equivalence=True,
-                            only_sink_source=False):
+    def mutation_class_iter(
+        self,
+        depth=infinity,
+        show_depth=False,
+        return_paths=False,
+        up_to_equivalence=True,
+        only_sink_source=False,
+    ):
         r"""
         Return an iterator for the mutation class of ``self`` with
         respect to certain constraints.
@@ -3578,7 +3856,11 @@ class ClusterSeed(SageObject):
                     i = sd[1].pop()
 
                     # If we aren't only sinking the source
-                    if not only_sink_source or all(entry >= 0 for entry in sd[0]._M.row(i)) or all(entry <= 0 for entry in sd[0]._M.row(i)):
+                    if (
+                        not only_sink_source
+                        or all(entry >= 0 for entry in sd[0]._M.row(i))
+                        or all(entry <= 0 for entry in sd[0]._M.row(i))
+                    ):
                         # do an inplace mutation on our cluster (sd[0])
                         sd2 = sd[0].mutate(i, inplace=False, input_type='indices')
 
@@ -3595,7 +3877,11 @@ class ClusterSeed(SageObject):
                             if only_sink_source:
                                 orbits = list(range(n))
                             else:
-                                orbits = [index for index in range(n) if index > i or sd2._M[index, i] != 0]
+                                orbits = [
+                                    index
+                                    for index in range(n)
+                                    if index > i or sd2._M[index, i] != 0
+                                ]
 
                             clusters[cl2] = [sd2, orbits, clusters[key][2] + [i]]
                             if return_paths:
@@ -3611,8 +3897,14 @@ class ClusterSeed(SageObject):
                 nr += ' ' * (10 - len(nr))
                 print(f"Depth: {dc} found: {nr} Time: {timer2 - timer:.2f} s")
 
-    def mutation_class(self, depth=infinity, show_depth=False, return_paths=False,
-                       up_to_equivalence=True, only_sink_source=False):
+    def mutation_class(
+        self,
+        depth=infinity,
+        show_depth=False,
+        return_paths=False,
+        up_to_equivalence=True,
+        only_sink_source=False,
+    ):
         r"""
         Return the mutation class of ``self`` with respect to
         certain constraints.
@@ -3648,10 +3940,22 @@ class ClusterSeed(SageObject):
             sage: A = ClusterSeed(['A',3]).mutation_class()
         """
         if depth is infinity and not self.is_finite():
-            raise ValueError('The mutation class can - for infinite types - only be computed up to a given depth')
-        return list(self.mutation_class_iter(depth=depth, show_depth=show_depth, return_paths=return_paths, up_to_equivalence=up_to_equivalence, only_sink_source=only_sink_source))
+            raise ValueError(
+                'The mutation class can - for infinite types - only be computed up to a given depth'
+            )
+        return list(
+            self.mutation_class_iter(
+                depth=depth,
+                show_depth=show_depth,
+                return_paths=return_paths,
+                up_to_equivalence=up_to_equivalence,
+                only_sink_source=only_sink_source,
+            )
+        )
 
-    def cluster_class_iter(self, depth=infinity, show_depth=False, up_to_equivalence=True):
+    def cluster_class_iter(
+        self, depth=infinity, show_depth=False, up_to_equivalence=True
+    ):
         r"""
         Return an iterator through all clusters in the mutation class of ``self``.
 
@@ -3748,7 +4052,9 @@ class ClusterSeed(SageObject):
             sage: S2.cluster_class()[0]
             [a, b, c]
         """
-        mc_iter = self.mutation_class_iter(depth=depth, show_depth=show_depth, up_to_equivalence=up_to_equivalence)
+        mc_iter = self.mutation_class_iter(
+            depth=depth, show_depth=show_depth, up_to_equivalence=up_to_equivalence
+        )
         for c in mc_iter:
             yield c.cluster()
 
@@ -3775,9 +4081,15 @@ class ClusterSeed(SageObject):
             sage: A = ClusterSeed(['A',3]).cluster_class()
         """
         if depth is infinity and not self.is_finite():
-            raise ValueError('The variable class can - for infinite types - only be computed up to a given depth')
+            raise ValueError(
+                'The variable class can - for infinite types - only be computed up to a given depth'
+            )
 
-        return list(self.cluster_class_iter(depth=depth, show_depth=show_depth, up_to_equivalence=up_to_equivalence))
+        return list(
+            self.cluster_class_iter(
+                depth=depth, show_depth=show_depth, up_to_equivalence=up_to_equivalence
+            )
+        )
 
     def b_matrix_class_iter(self, depth=infinity, up_to_equivalence=True):
         r"""
@@ -3883,7 +4195,9 @@ class ClusterSeed(SageObject):
             ]
         """
         Q = self.quiver()
-        yield from Q.mutation_class_iter(depth=depth, up_to_equivalence=up_to_equivalence, data_type='matrix')
+        yield from Q.mutation_class_iter(
+            depth=depth, up_to_equivalence=up_to_equivalence, data_type='matrix'
+        )
 
     def b_matrix_class(self, depth=infinity, up_to_equivalence=True):
         r"""
@@ -3906,9 +4220,13 @@ class ClusterSeed(SageObject):
             sage: A = ClusterSeed(['A',[2,1],1]).b_matrix_class()
         """
         if depth is infinity and not self.is_mutation_finite():
-            raise ValueError('The B-matrix class can - for infinite mutation types - only be computed up to a given depth')
+            raise ValueError(
+                'The B-matrix class can - for infinite mutation types - only be computed up to a given depth'
+            )
 
-        return list(self.b_matrix_class_iter(depth=depth, up_to_equivalence=up_to_equivalence))
+        return list(
+            self.b_matrix_class_iter(depth=depth, up_to_equivalence=up_to_equivalence)
+        )
 
     def variable_class_iter(self, depth=infinity, ignore_bipartite_belt=False):
         r"""
@@ -4005,13 +4323,22 @@ class ClusterSeed(SageObject):
                 bipartition = seed.is_bipartite(return_bipartition=True)
                 bipartition = (list(bipartition[0]), list(bipartition[1]))
                 if depth is not infinity:
-                    print("Found a bipartite seed - restarting the depth counter at zero and constructing the variable class using its bipartite belt.")
+                    print(
+                        "Found a bipartite seed - restarting the depth counter at zero and constructing the variable class using its bipartite belt."
+                    )
                 depth_counter = 0
                 end = False
                 seed2 = ClusterSeed(seed)
                 for c in seed.cluster():
                     if c not in var_class:
-                        yield ClusterVariable(FractionField(seed._R), c.numerator(), c.denominator(), mutation_type=self._mutation_type, variable_type='cluster variable', xdim=seed._n)
+                        yield ClusterVariable(
+                            FractionField(seed._R),
+                            c.numerator(),
+                            c.denominator(),
+                            mutation_type=self._mutation_type,
+                            variable_type='cluster variable',
+                            xdim=seed._n,
+                        )
                 var_class = var_class.union(seed.cluster())
 
                 init_cluster = set(seed.cluster())
@@ -4024,7 +4351,14 @@ class ClusterSeed(SageObject):
                     if not end:
                         for c in seed.cluster():
                             if c not in var_class:
-                                yield ClusterVariable(FractionField(seed._R), c.numerator(), c.denominator(), mutation_type=self._mutation_type, variable_type='cluster variable', xdim=seed._n)
+                                yield ClusterVariable(
+                                    FractionField(seed._R),
+                                    c.numerator(),
+                                    c.denominator(),
+                                    mutation_type=self._mutation_type,
+                                    variable_type='cluster variable',
+                                    xdim=seed._n,
+                                )
                         var_class = var_class.union(seed.cluster())
                         seed2.mutate(bipartition[1])
                         seed2.mutate(bipartition[0])
@@ -4033,13 +4367,27 @@ class ClusterSeed(SageObject):
                         if not end:
                             for c in seed2.cluster():
                                 if c not in var_class:
-                                    yield ClusterVariable(FractionField(seed._R), c.numerator(), c.denominator(), mutation_type=self._mutation_type, variable_type='cluster variable', xdim=seed._n)
+                                    yield ClusterVariable(
+                                        FractionField(seed._R),
+                                        c.numerator(),
+                                        c.denominator(),
+                                        mutation_type=self._mutation_type,
+                                        variable_type='cluster variable',
+                                        xdim=seed._n,
+                                    )
                             var_class = var_class.union(seed2.cluster())
                 return
             else:
                 for c in seed.cluster():
                     if c not in var_class:
-                        yield ClusterVariable(FractionField(seed._R), c.numerator(), c.denominator(), mutation_type=self._mutation_type, variable_type='cluster variable', xdim=seed._n)
+                        yield ClusterVariable(
+                            FractionField(seed._R),
+                            c.numerator(),
+                            c.denominator(),
+                            mutation_type=self._mutation_type,
+                            variable_type='cluster variable',
+                            xdim=seed._n,
+                        )
                 var_class = var_class.union(seed.cluster())
 
     def variable_class(self, depth=infinity, ignore_bipartite_belt=False):
@@ -4062,9 +4410,13 @@ class ClusterSeed(SageObject):
             sage: A = ClusterSeed(['A',3]).variable_class()
         """
         if depth is infinity and not self.is_finite():
-            raise ValueError('The variable class can - for infinite types - only be computed up to a given depth')
+            raise ValueError(
+                'The variable class can - for infinite types - only be computed up to a given depth'
+            )
 
-        var_iter = self.variable_class_iter(depth=depth, ignore_bipartite_belt=ignore_bipartite_belt)
+        var_iter = self.variable_class_iter(
+            depth=depth, ignore_bipartite_belt=ignore_bipartite_belt
+        )
         return sorted(var_iter)
 
     def is_finite(self) -> bool:
@@ -4245,11 +4597,15 @@ class ClusterSeed(SageObject):
             b = abs(self.b_matrix()[0, 1])
             c = abs(self.b_matrix()[1, 0])
             if algorithm == 'by_recursion':
-                ans = self.x(0)**(-a1)*self.x(1)**(-a2)
-                for p in range(max(a2, 0)+1):
-                    for q in range(max(a1, 0)+1):
+                ans = self.x(0) ** (-a1) * self.x(1) ** (-a2)
+                for p in range(max(a2, 0) + 1):
+                    for q in range(max(a1, 0) + 1):
                         if p != 0 or q != 0:
-                            ans += self._R(coeff_recurs(p, q, a1, a2, b, c))*self.x(0)**(b*p-a1)*self.x(1)**(c*q-a2)
+                            ans += (
+                                self._R(coeff_recurs(p, q, a1, a2, b, c))
+                                * self.x(0) ** (b * p - a1)
+                                * self.x(1) ** (c * q - a2)
+                            )
                 return ans
             if algorithm == 'by_combinatorics':
                 if b == 0:
@@ -4262,30 +4618,39 @@ class ClusterSeed(SageObject):
                 else:
                     PS = PathSubset(a2, a1)
                 from sage.combinat.subset import Subsets
+
                 for T in Subsets(PS):
                     if a1 >= a2:
                         if is_LeeLiZel_allowable(T, a1, a2, b, c):
                             oddT = set(T).intersection(PathSubset(a1, 0))
                             evenT = set(T).symmetric_difference(oddT)
-                            ans = ans + S.x(0)**(b*len(evenT)) * S.x(1)**(c*len(oddT))
+                            ans = ans + S.x(0) ** (b * len(evenT)) * S.x(1) ** (
+                                c * len(oddT)
+                            )
                     elif is_LeeLiZel_allowable(T, a2, a1, c, b):
                         oddT = set(T).intersection(PathSubset(a2, 0))
                         evenT = set(T).symmetric_difference(oddT)
-                        ans = ans + S.x(0)**(b*len(oddT)) * S.x(1)**(c*len(evenT))
-                ans = ans*S.x(0)**(-a1)*S.x(1)**(-a2)
+                        ans = ans + S.x(0) ** (b * len(oddT)) * S.x(1) ** (
+                            c * len(evenT)
+                        )
+                ans = ans * S.x(0) ** (-a1) * S.x(1) ** (-a2)
                 return ans
             if algorithm == 'just_numbers':
                 ans = 1
-                for p in range(max(a2, 0)+1):
-                    for q in range(max(a1, 0)+1):
+                for p in range(max(a2, 0) + 1):
+                    for q in range(max(a1, 0) + 1):
                         if p != 0 or q != 0:
                             ans += coeff_recurs(p, q, a1, a2, b, c)
                 return ans
-            raise ValueError("The third input should be 'by_recursion', "
-                             "'by_combinatorics', or 'just_numbers'.")
+            raise ValueError(
+                "The third input should be 'by_recursion', "
+                "'by_combinatorics', or 'just_numbers'."
+            )
         else:
-            raise ValueError("Greedy elements are only currently "
-                             "defined for cluster seeds of rank two.")
+            raise ValueError(
+                "Greedy elements are only currently "
+                "defined for cluster seeds of rank two."
+            )
 
     def oriented_exchange_graph(self):
         """
@@ -4416,12 +4781,15 @@ class ClusterSeed(SageObject):
 
         deep_gens = [initial_product]
         for t in range(rank):
-            neighbor_product = '*'.join(xpvars[s] if s == t else xvars[s]
-                                        for s in range(rank))
+            neighbor_product = '*'.join(
+                xpvars[s] if s == t else xvars[s] for s in range(rank)
+            )
             deep_gens += [neighbor_product]
 
-        rels = [f"-{gens[t]}*{gens[t + rank]}+{lower_var[t + rank].numerator()}"
-                for t in range(rank)]
+        rels = [
+            f"-{gens[t]}*{gens[t + rank]}+{lower_var[t + rank].numerator()}"
+            for t in range(rank)
+        ]
 
         while True:
             R = PolynomialRing(QQ, gens, order='invlex')
@@ -4455,7 +4823,15 @@ class ClusterSeed(SageObject):
             while not new_gen_found and i < len(M_gens):
                 f = initial_product_ideal.reduce(M_gens[i])
                 if f != 0:
-                    rels.append('z' + str(len(gens) - 2 * rank - 1) + '*' + initial_product + '-(' + str(f) + ')')
+                    rels.append(
+                        'z'
+                        + str(len(gens) - 2 * rank - 1)
+                        + '*'
+                        + initial_product
+                        + '-('
+                        + str(f)
+                        + ')'
+                    )
                     new_gen_found = True
                     if verbose:
                         print('Found a new element in', spend, 'seconds!')
@@ -4507,7 +4883,9 @@ class ClusterSeed(SageObject):
         B = self.b_matrix()
         # Checks if the length of the
         if len(a) != B.ncols():
-            raise ValueError('The length of the input vector must be the same as the number of columns of B.')
+            raise ValueError(
+                'The length of the input vector must be the same as the number of columns of B.'
+            )
         # Runs helper functions.
         v = _vector_decomposition(a, B.nrows())
         c = self._compute_compatible_vectors(v)
@@ -4542,6 +4920,7 @@ class ClusterSeed(SageObject):
         """
         from sage.modules.free_module import VectorSpace
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         B = self.b_matrix()
         aSet = VectorSpace(GF(2), B.ncols()).list()
         genSet = []
@@ -4705,7 +5084,9 @@ class ClusterSeed(SageObject):
                         expn = 0
                         # The exponent is determined by the vectors a,s, and the matrix B.
                         for k in range(num_cols):
-                            expn += (vdi[0][k]-s[k])*max(0, B[j][k])+s[k]*max(0, -B[j][k])
+                            expn += (vdi[0][k] - s[k]) * max(0, B[j][k]) + s[k] * max(
+                                0, -B[j][k]
+                            )
                         term *= x**expn
                     numerator += term
             # Gives a numerator for the negative vector, or else the product would be zero.
@@ -4716,9 +5097,9 @@ class ClusterSeed(SageObject):
             denominator = 1
             powers = vdi[0]
             for ell in range(num_cols):
-                denominator = denominator * R.gen(ell)**powers[ell]
+                denominator = denominator * R.gen(ell) ** powers[ell]
             # Each copy of a vector in vd contributes a factor of the Laurent polynomial calculated from it.
-            final = (numerator / denominator)**vdi[1]
+            final = (numerator / denominator) ** vdi[1]
             finalP.append(final)
         laurentP = 1
         # The UCA element for the vector a is the product of the elements produced from the vectors in its decomposition.
@@ -4759,12 +5140,18 @@ def coeff_recurs(p, q, a1, a2, b, c):
     if p < 0 or q < 0:
         return 0
     if c * a1 * q <= b * a2 * p:
-        return sum((-1)**(k - 1) * coeff_recurs(p - k, q, a1, a2, b, c)
-                   * _bino(a2 - c * q + k - 1, k)
-                   for k in range(1, p + 1))
-    return sum((-1)**(k - 1) * coeff_recurs(p, q - k, a1, a2, b, c)
-               * _bino(a1 - b * p + k - 1, k)
-               for k in range(1, q + 1))
+        return sum(
+            (-1) ** (k - 1)
+            * coeff_recurs(p - k, q, a1, a2, b, c)
+            * _bino(a2 - c * q + k - 1, k)
+            for k in range(1, p + 1)
+        )
+    return sum(
+        (-1) ** (k - 1)
+        * coeff_recurs(p, q - k, a1, a2, b, c)
+        * _bino(a1 - b * p + k - 1, k)
+        for k in range(1, q + 1)
+    )
 
 
 def PathSubset(n, m):
@@ -4793,7 +5180,7 @@ def PathSubset(n, m):
     S = {2 * i + 1 for i in range(n)}
     if m > 0:
         for j in range(n):
-            if ((j+1)*m) // n - (j*m) // n == 1:
+            if ((j + 1) * m) // n - (j * m) // n == 1:
                 S.add(2 * j)
     return set(S)
 
@@ -4817,14 +5204,14 @@ def SetToPath(T):
         sage: SetToPath(PathSubset(4,4))
         [1, 0, 3, 2, 5, 4, 7, 6]
     """
-    n = (max(T)+1) // 2
+    n = (max(T) + 1) // 2
     ans = [1]
-    for i in range(n-1):
-        if 2*i in T:
-            ans.append(2*i)
-        ans.append(2*i+3)
-    if 2*n-2 in T:
-        ans.append(2*n-2)
+    for i in range(n - 1):
+        if 2 * i in T:
+            ans.append(2 * i)
+        ans.append(2 * i + 3)
+    if 2 * n - 2 in T:
+        ans.append(2 * n - 2)
     return ans
 
 
@@ -4853,6 +5240,7 @@ def is_LeeLiZel_allowable(T, n, m, b, c) -> bool:
     for u in horiz:
         from sage.combinat.words.word import Word
         from sage.modules.free_module_element import vector
+
         WW = Word(Latt)
         LattCycled = vector(WW.conjugate(Latt.index(u))).list()
         for v in vert:
@@ -5139,7 +5527,18 @@ class ClusterVariable(FractionFieldElement):
         (x0*x2 + 1)/x1 alpha[2]
         (x0*x2 + x1 + 1)/(x1*x2) alpha[2] + alpha[3]
     """
-    def __init__(self, parent, numerator, denominator, coerce=True, reduce=True, mutation_type=None, variable_type=None, xdim=0):
+
+    def __init__(
+        self,
+        parent,
+        numerator,
+        denominator,
+        coerce=True,
+        reduce=True,
+        mutation_type=None,
+        variable_type=None,
+        xdim=0,
+    ):
         r"""
         Initialize a cluster variable in the same way that elements in the field of rational functions are initialized.
 
@@ -5156,7 +5555,9 @@ class ClusterVariable(FractionFieldElement):
             sage: S.variable_class()
             [(x0 + x1 + 1)/(x0*x1), (x1 + 1)/x0, (x0 + 1)/x1, x1, x0]
         """
-        FractionFieldElement.__init__(self, parent, numerator, denominator, coerce=coerce, reduce=reduce)
+        FractionFieldElement.__init__(
+            self, parent, numerator, denominator, coerce=coerce, reduce=reduce
+        )
         self._n = xdim
         self._mutation_type = mutation_type
         self._variable_type = variable_type
@@ -5183,20 +5584,25 @@ class ClusterVariable(FractionFieldElement):
         if self._variable_type == 'frozen variable':
             raise ValueError('The variable is frozen.')
         if isinstance(self._mutation_type, str):
-            raise ValueError('The cluster algebra for %s is not of finite type.' % self._repr_())
+            raise ValueError(
+                'The cluster algebra for %s is not of finite type.' % self._repr_()
+            )
         if self._mutation_type is None:
             self._mutation_type = self.parent().mutation_type()
         if self._mutation_type.is_finite():
             from sage.combinat.root_system.root_system import RootSystem
+
             # the import above is used in the line below
             mt = self._mutation_type._repr_()
             # mt is a string of the shape "['A', 15]"
             # where A is a single letter and 15 is an integer
-            Phi = RootSystem([mt[2: 3], Integer(mt[6: -1])])
+            Phi = RootSystem([mt[2:3], Integer(mt[6:-1])])
             Phiplus = Phi.root_lattice().simple_roots()
 
             if self.denominator() == 1:
                 return -Phiplus[self.numerator().degrees().index(1) + 1]
             root = self.denominator().degrees()
             return sum([root[i] * Phiplus[i + 1] for i in range(self._n)])
-        raise ValueError('The cluster algebra for %s is not of finite type.' % self._repr_())
+        raise ValueError(
+            'The cluster algebra for %s is not of finite type.' % self._repr_()
+        )

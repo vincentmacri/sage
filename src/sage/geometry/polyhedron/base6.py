@@ -141,12 +141,18 @@ class Polyhedron_base6(Polyhedron_base5):
         sage: Polyhedron_base6.affine_hull_projection(R)
         A 5-dimensional polyhedron in ZZ^5 defined as the convex hull of 6 vertices
     """
-    def plot(self,
-             point=None, line=None, polygon=None,  # None means unspecified by the user
-             wireframe='blue', fill='green',
-             position=None,
-             orthonormal=True,  # whether to use orthonormal projections
-             **kwds):
+
+    def plot(
+        self,
+        point=None,
+        line=None,
+        polygon=None,  # None means unspecified by the user
+        wireframe='blue',
+        fill='green',
+        position=None,
+        orthonormal=True,  # whether to use orthonormal projections
+        **kwds,
+    ):
         r"""
         Return a graphical representation.
 
@@ -407,6 +413,7 @@ class Polyhedron_base6(Polyhedron_base5):
             sage: quarter.plot(fill='rainbow')  # check it is not all black nor with too many colors                    # needs sage.plot
             Graphics3d Object
         """
+
         def merge_options(*opts):
             merged = dict()
             for i in range(len(opts)):
@@ -422,17 +429,21 @@ class Polyhedron_base6(Polyhedron_base5):
             return merged
 
         d = min(self.dim(), 2)
-        opts = [wireframe] * d + [fill] + [False] * (2-d)
+        opts = [wireframe] * d + [fill] + [False] * (2 - d)
         # The point/line/polygon options take precedence over wireframe/fill
-        opts = [merge_options(opt1, opt2, kwds)
-                for opt1, opt2 in zip(opts, [point, line, polygon])]
+        opts = [
+            merge_options(opt1, opt2, kwds)
+            for opt1, opt2 in zip(opts, [point, line, polygon])
+        ]
 
         def project(polyhedron, ortho):
             if polyhedron.ambient_dim() <= 3:
                 return polyhedron.projection()
             if polyhedron.dim() <= 3:
                 if ortho:
-                    return polyhedron.affine_hull_projection(orthonormal=True, extend=True).projection()
+                    return polyhedron.affine_hull_projection(
+                        orthonormal=True, extend=True
+                    ).projection()
                 return polyhedron.affine_hull_projection().projection()
             if polyhedron.dimension() == 4:
                 # For 4d-polyhedron, we can use schlegel projections:
@@ -443,8 +454,11 @@ class Polyhedron_base6(Polyhedron_base5):
         try:
             plot_method = projection.plot
         except AttributeError:
-            raise NotImplementedError('plotting of {0}-dimensional polyhedra not implemented'
-                                          .format(self.ambient_dim()))
+            raise NotImplementedError(
+                'plotting of {0}-dimensional polyhedra not implemented'.format(
+                    self.ambient_dim()
+                )
+            )
         return plot_method(*opts)
 
     def show(self, **kwds):
@@ -475,10 +489,18 @@ class Polyhedron_base6(Polyhedron_base5):
         """
         self.plot(**kwds).show()
 
-    def tikz(self, view=[0, 0, 1], angle=0, scale=1,
-             edge_color='blue!95!black', facet_color='blue!95!black',
-             opacity=0.8, vertex_color='green', axis=False,
-             output_type=None):
+    def tikz(
+        self,
+        view=[0, 0, 1],
+        angle=0,
+        scale=1,
+        edge_color='blue!95!black',
+        facet_color='blue!95!black',
+        opacity=0.8,
+        vertex_color='green',
+        axis=False,
+        output_type=None,
+    ):
         r"""
         Return a tikz picture of ``self`` as a string or as a
         :class:`~sage.misc.latex_standalone.TikzPicture`
@@ -599,10 +621,17 @@ class Polyhedron_base6(Polyhedron_base5):
             \end{document}
             sage: path_to_file = t.pdf()        # not tested
         """
-        return self.projection().tikz(view, angle, scale,
-                                      edge_color, facet_color,
-                                      opacity, vertex_color, axis,
-                                      output_type=output_type)
+        return self.projection().tikz(
+            view,
+            angle,
+            scale,
+            edge_color,
+            facet_color,
+            opacity,
+            vertex_color,
+            axis,
+            output_type=output_type,
+        )
 
     def _rich_repr_(self, display_manager, **kwds):
         r"""
@@ -628,8 +657,8 @@ class Polyhedron_base6(Polyhedron_base5):
             sage: dm.preferences.supplemental_plot = 'never'
         """
         prefs = display_manager.preferences
-        is_small = (self.ambient_dim() <= 2)
-        can_plot = (prefs.supplemental_plot != 'never')
+        is_small = self.ambient_dim() <= 2
+        can_plot = prefs.supplemental_plot != 'never'
         plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
         # Under certain circumstances we display the plot as graphics
         if plot_graph:
@@ -645,7 +674,10 @@ class Polyhedron_base6(Polyhedron_base5):
             text = repr(self)
         # latex() produces huge tikz environment, override
         tp = display_manager.types
-        if (prefs.text == 'latex' and tp.OutputLatex in display_manager.supported_output()):
+        if (
+            prefs.text == 'latex'
+            and tp.OutputLatex in display_manager.supported_output()
+        ):
             return tp.OutputLatex(r'\text{{{0}}}'.format(text))
         return tp.OutputPlainText(text)
 
@@ -695,8 +727,7 @@ class Polyhedron_base6(Polyhedron_base5):
         if not self.is_compact():
             raise ValueError('not a polytope')
 
-        A = matrix(self.n_vertices(),
-                   [[1]+x for x in self.vertex_generator()])
+        A = matrix(self.n_vertices(), [[1] + x for x in self.vertex_generator()])
         A = A.transpose()
         A_ker = A.right_kernel_matrix(basis='computed')
         return tuple(A_ker.columns())
@@ -721,7 +752,9 @@ class Polyhedron_base6(Polyhedron_base5):
         # Check :issue:`29073`.
         if not self.base_ring().is_exact() and self.ambient_dim() > 0:
             g = self.gale_transform()
-            tester.assertTrue(sum(g).norm() < 1e-10 or sum(g).norm()/matrix(g).norm() < 1e-13)
+            tester.assertTrue(
+                sum(g).norm() < 1e-10 or sum(g).norm() / matrix(g).norm() < 1e-13
+            )
             return
 
         # Prevent very long doctests.
@@ -731,11 +764,15 @@ class Polyhedron_base6(Polyhedron_base5):
         if not self.is_empty():
             # ``gale_transform_to_polytope`` needs at least one vertex to work.
             from sage.geometry.polyhedron.library import gale_transform_to_polytope
+
             g = self.gale_transform()
-            P = gale_transform_to_polytope(g, base_ring=self.base_ring(), backend=self.backend())
+            P = gale_transform_to_polytope(
+                g, base_ring=self.base_ring(), backend=self.backend()
+            )
 
             try:
                 import sage.graphs.graph
+
                 assert sage.graphs.graph  # to muffle pyflakes
             except ImportError:
                 pass
@@ -767,6 +804,7 @@ class Polyhedron_base6(Polyhedron_base5):
             The projection of a polyhedron into 3 dimensions
         """
         from .plot import Projection
+
         if projection is not None:
             self.projection = Projection(self, projection)
         else:
@@ -789,7 +827,9 @@ class Polyhedron_base6(Polyhedron_base5):
             return proj.render_solid_3d(**kwds)
         if self.ambient_dim() == 2:
             return proj.render_fill_2d(**kwds)
-        raise ValueError("render_solid is only defined for 2 and 3 dimensional polyhedra")
+        raise ValueError(
+            "render_solid is only defined for 2 and 3 dimensional polyhedra"
+        )
 
     def render_wireframe(self, **kwds):
         r"""
@@ -808,7 +848,9 @@ class Polyhedron_base6(Polyhedron_base5):
             return proj.render_wireframe_3d(**kwds)
         if self.ambient_dim() == 2:
             return proj.render_outline_2d(**kwds)
-        raise ValueError("render_wireframe is only defined for 2 and 3 dimensional polyhedra")
+        raise ValueError(
+            "render_wireframe is only defined for 2 and 3 dimensional polyhedra"
+        )
 
     def schlegel_projection(self, facet=None, position=None):
         r"""
@@ -892,17 +934,26 @@ class Polyhedron_base6(Polyhedron_base5):
             True
         """
         if args or kwds:
-            raise TypeError("the method 'affine_hull' does not take any parameters; perhaps you meant 'affine_hull_projection'")
+            raise TypeError(
+                "the method 'affine_hull' does not take any parameters; perhaps you meant 'affine_hull_projection'"
+            )
         if not self.inequalities():
             return self
         self_as_face = self.faces(self.dimension())[0]
         return self_as_face.affine_tangent_cone()
 
     @cached_method
-    def _affine_hull_projection(self, *,
-                                as_convex_set=True, as_affine_map=True, as_section_map=True,
-                                orthogonal=False, orthonormal=False,
-                                extend=False, minimal=False):
+    def _affine_hull_projection(
+        self,
+        *,
+        as_convex_set=True,
+        as_affine_map=True,
+        as_section_map=True,
+        orthogonal=False,
+        orthonormal=False,
+        extend=False,
+        minimal=False,
+    ):
         r"""
         Return ``self`` projected into its affine hull.
 
@@ -970,23 +1021,30 @@ class Polyhedron_base6(Polyhedron_base5):
         result = AffineHullProjectionData()
 
         if self.is_empty():
-            raise ValueError('affine hull projection of an empty polyhedron is undefined')
+            raise ValueError(
+                'affine hull projection of an empty polyhedron is undefined'
+            )
 
         # handle trivial full-dimensional case
         if self.ambient_dim() == self.dim():
             if as_convex_set:
                 result.image = self
             if as_affine_map:
-                identity = linear_transformation(matrix(self.base_ring(),
-                                                        self.dim(),
-                                                        self.dim(),
-                                                        self.base_ring().one()))
+                identity = linear_transformation(
+                    matrix(
+                        self.base_ring(), self.dim(), self.dim(), self.base_ring().one()
+                    )
+                )
                 result.projection_linear_map = result.section_linear_map = identity
-                result.projection_translation = result.section_translation = self.ambient_space().zero()
+                result.projection_translation = result.section_translation = (
+                    self.ambient_space().zero()
+                )
         elif orthogonal or orthonormal:
             # see TODO
             if not self.is_compact():
-                raise NotImplementedError('"orthogonal=True" and "orthonormal=True" work only for compact polyhedra')
+                raise NotImplementedError(
+                    '"orthogonal=True" and "orthonormal=True" work only for compact polyhedra'
+                )
             affine_basis = self.an_affine_basis()
             v0 = affine_basis[0].vector()
             # We implicitly translate the first vertex of the affine basis to zero.
@@ -1001,13 +1059,19 @@ class Polyhedron_base6(Polyhedron_base5):
                 A, G = M.gram_schmidt(orthonormal=orthonormal)
             except TypeError:
                 if not extend:
-                    raise ValueError('the base ring needs to be extended; try with "extend=True"')
+                    raise ValueError(
+                        'the base ring needs to be extended; try with "extend=True"'
+                    )
                 from sage.rings.qqbar import AA
+
                 M = matrix(AA, M)
                 A = M.gram_schmidt(orthonormal=orthonormal)[0]
                 if minimal:
                     from sage.rings.qqbar import number_field_elements_from_algebraics
-                    new_ring = number_field_elements_from_algebraics(A.list(), embedded=True, minimal=True)[0]
+
+                    new_ring = number_field_elements_from_algebraics(
+                        A.list(), embedded=True, minimal=True
+                    )[0]
                     A = A.change_ring(new_ring)
             L = linear_transformation(A, side='right')
             ambient_translation = -vector(A.base_ring(), affine_basis[0])
@@ -1017,12 +1081,17 @@ class Polyhedron_base6(Polyhedron_base5):
             # Also, if the new base ring is ``AA``, we want to avoid computing the incidence matrix in that ring.
             # ``convert=True`` takes care of the case, where there might be no coercion (``AA`` and quadratic field).
             if as_convex_set:
-                result.image = self.linear_transformation(A, new_base_ring=A.base_ring()) + image_translation
+                result.image = (
+                    self.linear_transformation(A, new_base_ring=A.base_ring())
+                    + image_translation
+                )
             if as_affine_map:
                 result.projection_linear_map = L
                 result.projection_translation = image_translation
             if as_section_map:
-                L_dagger = linear_transformation(A.transpose() * (A * A.transpose()).inverse(), side='right')
+                L_dagger = linear_transformation(
+                    A.transpose() * (A * A.transpose()).inverse(), side='right'
+                )
                 result.section_linear_map = L_dagger
                 result.section_translation = v0.change_ring(A.base_ring())
         else:
@@ -1040,18 +1109,25 @@ class Polyhedron_base6(Polyhedron_base5):
             M = matrix(gens)
             pivots = M.pivots()
 
-            A = matrix(self.base_ring(), len(pivots), self.ambient_dim(),
-                       [[1 if j == i else 0 for j in range(self.ambient_dim())] for i in pivots])
+            A = matrix(
+                self.base_ring(),
+                len(pivots),
+                self.ambient_dim(),
+                [
+                    [1 if j == i else 0 for j in range(self.ambient_dim())]
+                    for i in pivots
+                ],
+            )
             if as_affine_map:
                 image_translation = vector(self.base_ring(), self.dim())
                 L = linear_transformation(A, side='right')
                 result.projection_linear_map = L
                 result.projection_translation = image_translation
             if as_convex_set:
-                result.image = A*self
+                result.image = A * self
             if as_section_map:
                 if self.dim():
-                    B = M.transpose()/(A*M.transpose())
+                    B = M.transpose() / (A * M.transpose())
                 else:
                     B = matrix(self.ambient_dim(), 0)
                 L_section = linear_transformation(B, side='right')
@@ -1060,12 +1136,18 @@ class Polyhedron_base6(Polyhedron_base5):
 
         return result
 
-    def affine_hull_projection(self,
-                               as_polyhedron=None, as_affine_map=False,
-                               orthogonal=False, orthonormal=False,
-                               extend=False, minimal=False,
-                               return_all_data=False,
-                               *, as_convex_set=None):
+    def affine_hull_projection(
+        self,
+        as_polyhedron=None,
+        as_affine_map=False,
+        orthogonal=False,
+        orthonormal=False,
+        extend=False,
+        minimal=False,
+        return_all_data=False,
+        *,
+        as_convex_set=None,
+    ):
         r"""
         Return the polyhedron projected into its affine hull.
 
@@ -1487,10 +1569,14 @@ class Polyhedron_base6(Polyhedron_base5):
         if as_polyhedron is not None:
             as_convex_set = as_polyhedron
         return super().affine_hull_projection(
-            as_convex_set=as_convex_set, as_affine_map=as_affine_map,
-            orthogonal=orthogonal, orthonormal=orthonormal,
-            extend=extend, minimal=minimal,
-            return_all_data=return_all_data)
+            as_convex_set=as_convex_set,
+            as_affine_map=as_affine_map,
+            orthogonal=orthogonal,
+            orthonormal=orthonormal,
+            extend=extend,
+            minimal=minimal,
+            return_all_data=return_all_data,
+        )
 
     def _test_affine_hull_projection(self, tester=None, verbose=False, **options):
         r"""
@@ -1520,18 +1606,26 @@ class Polyhedron_base6(Polyhedron_base5):
         data_sets = []
         data_sets.append(self.affine_hull_projection(return_all_data=True))
         if self.is_compact():
-            data_sets.append(self.affine_hull_projection(return_all_data=True,
-                                                         orthogonal=True,
-                                                         extend=True))
+            data_sets.append(
+                self.affine_hull_projection(
+                    return_all_data=True, orthogonal=True, extend=True
+                )
+            )
             if AA is not None:
                 try:
-                    data_sets.append(self.affine_hull_projection(return_all_data=True,
-                                                                 orthonormal=True,
-                                                                 extend=True))
-                    data_sets.append(self.affine_hull_projection(return_all_data=True,
-                                                                 orthonormal=True,
-                                                                 extend=True,
-                                                                 minimal=True))
+                    data_sets.append(
+                        self.affine_hull_projection(
+                            return_all_data=True, orthonormal=True, extend=True
+                        )
+                    )
+                    data_sets.append(
+                        self.affine_hull_projection(
+                            return_all_data=True,
+                            orthonormal=True,
+                            extend=True,
+                            minimal=True,
+                        )
+                    )
                 except ModuleNotFoundError:
                     pass
 
@@ -1539,18 +1633,21 @@ class Polyhedron_base6(Polyhedron_base5):
             if verbose:
                 print("Running test number {}".format(i))
             M = data.projection_linear_map.matrix().transpose()
-            tester.assertEqual(self.linear_transformation(M, new_base_ring=M.base_ring())
-                               + data.projection_translation,
-                               data.image)
+            tester.assertEqual(
+                self.linear_transformation(M, new_base_ring=M.base_ring())
+                + data.projection_translation,
+                data.image,
+            )
 
             M = data.section_linear_map.matrix().transpose()
             if M.base_ring() is AA:
                 self_extend = self.change_ring(AA)
             else:
                 self_extend = self
-            tester.assertEqual(data.image.linear_transformation(M)
-                               + data.section_translation,
-                               self_extend)
+            tester.assertEqual(
+                data.image.linear_transformation(M) + data.section_translation,
+                self_extend,
+            )
             if i == 0:
                 tester.assertEqual(data.image.base_ring(), self.base_ring())
             else:
@@ -1565,8 +1662,16 @@ class Polyhedron_base6(Polyhedron_base5):
                 if self.base_ring() is not AA:
                     tester.assertIsNot(data.image.base_ring(), AA)
 
-    def affine_hull_manifold(self, name=None, latex_name=None, start_index=0, ambient_space=None,
-                             ambient_chart=None, names=None, **kwds):
+    def affine_hull_manifold(
+        self,
+        name=None,
+        latex_name=None,
+        start_index=0,
+        ambient_space=None,
+        ambient_chart=None,
+        names=None,
+        **kwds,
+    ):
         r"""
         Return the affine hull of ``self`` as a manifold.
 
@@ -1648,10 +1753,17 @@ class Polyhedron_base6(Polyhedron_base5):
             if ambient_chart is not None:
                 ambient_space = ambient_chart.manifold()
             else:
-                from sage.manifolds.differentiable.examples.euclidean import EuclideanSpace
-                ambient_space = EuclideanSpace(self.ambient_dim(), start_index=start_index)
+                from sage.manifolds.differentiable.examples.euclidean import (
+                    EuclideanSpace,
+                )
+
+                ambient_space = EuclideanSpace(
+                    self.ambient_dim(), start_index=start_index
+                )
         if ambient_space.dimension() != self.ambient_dim():
-            raise ValueError('ambient_space and ambient_chart must match the ambient dimension')
+            raise ValueError(
+                'ambient_space and ambient_chart must match the ambient dimension'
+            )
 
         if self.is_full_dimensional():
             return ambient_space
@@ -1661,10 +1773,17 @@ class Polyhedron_base6(Polyhedron_base5):
         CE = ambient_chart
 
         from sage.manifolds.manifold import Manifold
+
         if name is None:
             name, latex_name = self._affine_hull_name_latex_name()
-        H = Manifold(self.dim(), name, ambient=ambient_space, structure='Riemannian',
-                     latex_name=latex_name, start_index=start_index)
+        H = Manifold(
+            self.dim(),
+            name,
+            ambient=ambient_space,
+            structure='Riemannian',
+            latex_name=latex_name,
+            start_index=start_index,
+        )
         if names is None:
             names = tuple(f'x{i}' for i in range(self.dim()))
         CH = H.chart(names=names)
@@ -1676,23 +1795,51 @@ class Polyhedron_base6(Polyhedron_base5):
         section_translation_vector = data.section_translation
 
         from sage.symbolic.ring import SR
+
         # We use the slacks of the (linear independent) equations as the foliation parameters
-        foliation_parameters = vector(SR.var(f't{i}') for i in range(self.ambient_dim() - self.dim()))
-        normal_matrix = matrix(equation.A() for equation in self.equation_generator()).transpose()
+        foliation_parameters = vector(
+            SR.var(f't{i}') for i in range(self.ambient_dim() - self.dim())
+        )
+        normal_matrix = matrix(
+            equation.A() for equation in self.equation_generator()
+        ).transpose()
         slack_matrix = normal_matrix.pseudoinverse()
 
-        phi = H.diff_map(ambient_space, {(CH, CE):
-                                         (section_matrix * vector(CH._xx) + section_translation_vector
-                                          + normal_matrix * foliation_parameters).list()})
-        phi_inv = ambient_space.diff_map(H, {(CE, CH):
-                                             (projection_matrix * vector(CE._xx) + projection_translation_vector).list()})
+        phi = H.diff_map(
+            ambient_space,
+            {
+                (CH, CE): (
+                    section_matrix * vector(CH._xx)
+                    + section_translation_vector
+                    + normal_matrix * foliation_parameters
+                ).list()
+            },
+        )
+        phi_inv = ambient_space.diff_map(
+            H,
+            {
+                (CE, CH): (
+                    projection_matrix * vector(CE._xx) + projection_translation_vector
+                ).list()
+            },
+        )
 
-        foliation_scalar_fields = {parameter:
-                                   ambient_space.scalar_field({CE: slack_matrix.row(i) * (vector(CE._xx) - section_translation_vector)})
-                                   for i, parameter in enumerate(foliation_parameters)}
+        foliation_scalar_fields = {
+            parameter: ambient_space.scalar_field(
+                {
+                    CE: slack_matrix.row(i)
+                    * (vector(CE._xx) - section_translation_vector)
+                }
+            )
+            for i, parameter in enumerate(foliation_parameters)
+        }
 
-        H.set_embedding(phi, inverse=phi_inv,
-                        var=list(foliation_parameters), t_inverse=foliation_scalar_fields)
+        H.set_embedding(
+            phi,
+            inverse=phi_inv,
+            var=list(foliation_parameters),
+            t_inverse=foliation_scalar_fields,
+        )
         return H
 
     def _affine_hull_name_latex_name(self, name=None, latex_name=None):

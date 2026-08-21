@@ -376,7 +376,10 @@ Methods
 """
 
 from sage.structure.sage_object import SageObject
-from sage.structure.unique_representation import CachedRepresentation, UniqueRepresentation
+from sage.structure.unique_representation import (
+    CachedRepresentation,
+    UniqueRepresentation,
+)
 from sage.misc.unknown import Unknown
 from sage.features.databases import DatabaseGraphs
 from sage.misc.cachefunc import cached_method
@@ -420,6 +423,7 @@ class GraphClass(SageObject, CachedRepresentation):
         sage: Chordal >= Trees
         True
     """
+
     def __init__(self, name, gc_id, recognition_function=None):
         r"""
         Class constructor.
@@ -599,8 +603,9 @@ class GraphClass(SageObject, CachedRepresentation):
         excluded = self.forbidden_subgraphs()
 
         if excluded is None:
-            raise NotImplementedError("No recognition algorithm is available "
-                                      "for this class.")
+            raise NotImplementedError(
+                "No recognition algorithm is available for this class."
+            )
 
         return not any(g.subgraph_search(gg, induced=True) for gg in excluded)
 
@@ -681,9 +686,11 @@ class GraphClasses(UniqueRepresentation):
                 name = "class " + str(id)
 
             return GraphClass(name, id)
-        raise ValueError("The given class id does not exist in the ISGCI "
-                         "database. Is the db too old ? You can update it "
-                         "with graph_classes.update_db().")
+        raise ValueError(
+            "The given class id does not exist in the ISGCI "
+            "database. Is the db too old ? You can update it "
+            "with graph_classes.update_db()."
+        )
 
     @cached_method
     def classes(self):
@@ -769,6 +776,7 @@ class GraphClasses(UniqueRepresentation):
         inclusions = self.inclusions()
 
         from sage.graphs.digraph import DiGraph
+
         inclusion_digraph = DiGraph()
         inclusion_digraph.add_vertices(classes.keys())
 
@@ -788,9 +796,9 @@ class GraphClasses(UniqueRepresentation):
             sage: graph_classes._download_db()  # optional - internet
         """
         import tempfile
+
         data_dir = os.path.dirname(DatabaseGraphs().absolute_filename())
-        u = urlopen('https://www.graphclasses.org/data.zip',
-                    context=default_context())
+        u = urlopen('https://www.graphclasses.org/data.zip', context=default_context())
         with tempfile.NamedTemporaryFile(suffix='.zip') as f:
             f.write(u.read())
             z = zipfile.ZipFile(f.name)
@@ -908,12 +916,7 @@ class GraphClasses(UniqueRepresentation):
 
         # We want to print the different fields, and this dictionary stores the
         # maximal number of characters of each field.
-        MAX = {
-            "id": 0,
-            "type": 0,
-            "smallgraph": 0,
-            "name": 0
-            }
+        MAX = {"id": 0, "type": 0, "smallgraph": 0, "name": 0}
 
         # We sort the classes alphabetically, though we would like to display
         # the meaningful classes at the top of the list
@@ -940,7 +943,7 @@ class GraphClasses(UniqueRepresentation):
         st += (" | {:" + str(MAX["type"]) + "}").format("type")
         st += (" | {:" + str(MAX["smallgraph"]) + "}").format("smallgraph")
         print(st)
-        print("-" * (sum(MAX.values())+9))
+        print("-" * (sum(MAX.values()) + 9))
 
         # Entries
         for entry in classes_list:
@@ -993,33 +996,81 @@ def _XML_to_dict(root):
 graph_classes = GraphClasses()
 
 # Any object added to this list should also appear in the class' documentation, at the top of the file.
-graph_classes.Apex = GraphClass("Apex", "gc_1181", recognition_function=lambda x: x.is_apex())
-graph_classes.AT_free = GraphClass("AT-free", "gc_61", recognition_function=lambda x: x.is_asteroidal_triple_free())
-graph_classes.Biconnected = GraphClass("Biconnected", "gc_771", recognition_function=lambda x: x.is_biconnected())
+graph_classes.Apex = GraphClass(
+    "Apex", "gc_1181", recognition_function=lambda x: x.is_apex()
+)
+graph_classes.AT_free = GraphClass(
+    "AT-free", "gc_61", recognition_function=lambda x: x.is_asteroidal_triple_free()
+)
+graph_classes.Biconnected = GraphClass(
+    "Biconnected", "gc_771", recognition_function=lambda x: x.is_biconnected()
+)
 graph_classes.BinaryTrees = GraphClass("BinaryTrees", "gc_847")
-graph_classes.Bipartite = GraphClass("Bipartite", "gc_69", recognition_function=lambda x: x.is_bipartite())
-graph_classes.Block = GraphClass("Block", "gc_93", recognition_function=lambda x: x.is_block_graph())
-graph_classes.Cactus = GraphClass("Cactus", "gc_108", recognition_function=lambda x: x.is_cactus())
-graph_classes.Chordal = GraphClass("Chordal", "gc_32", recognition_function=lambda x: x.is_chordal())
+graph_classes.Bipartite = GraphClass(
+    "Bipartite", "gc_69", recognition_function=lambda x: x.is_bipartite()
+)
+graph_classes.Block = GraphClass(
+    "Block", "gc_93", recognition_function=lambda x: x.is_block_graph()
+)
+graph_classes.Cactus = GraphClass(
+    "Cactus", "gc_108", recognition_function=lambda x: x.is_cactus()
+)
+graph_classes.Chordal = GraphClass(
+    "Chordal", "gc_32", recognition_function=lambda x: x.is_chordal()
+)
 graph_classes.ClawFree = GraphClass("Claw-free", "gc_62")
-graph_classes.CoGraph = GraphClass("CoGraph", "gc_151", recognition_function=lambda x: x.is_cograph())
-graph_classes.Comparability = GraphClass("Comparability", "gc_72", recognition_function=lambda x: x.is_comparability())
-graph_classes.DistanceRegular = GraphClass("Distance Regular", "gc_1148", recognition_function=lambda x: x.is_distance_regular())
+graph_classes.CoGraph = GraphClass(
+    "CoGraph", "gc_151", recognition_function=lambda x: x.is_cograph()
+)
+graph_classes.Comparability = GraphClass(
+    "Comparability", "gc_72", recognition_function=lambda x: x.is_comparability()
+)
+graph_classes.DistanceRegular = GraphClass(
+    "Distance Regular",
+    "gc_1148",
+    recognition_function=lambda x: x.is_distance_regular(),
+)
 graph_classes.Gallai = GraphClass("Gallai", "gc_73")
 graph_classes.Grid = GraphClass("Grid", "gc_464")
-graph_classes.Hamiltonian = GraphClass("Hamiltonian", "gc_1092", recognition_function=lambda x: x.is_hamiltonian())
-graph_classes.Interval = GraphClass("Interval", "gc_234", recognition_function=lambda x: x.is_interval())
-graph_classes.Line = GraphClass("Line", "gc_249", recognition_function=lambda x: x.is_line_graph())
+graph_classes.Hamiltonian = GraphClass(
+    "Hamiltonian", "gc_1092", recognition_function=lambda x: x.is_hamiltonian()
+)
+graph_classes.Interval = GraphClass(
+    "Interval", "gc_234", recognition_function=lambda x: x.is_interval()
+)
+graph_classes.Line = GraphClass(
+    "Line", "gc_249", recognition_function=lambda x: x.is_line_graph()
+)
 graph_classes.Modular = GraphClass("Modular", "gc_50")
 graph_classes.Outerplanar = GraphClass("Outerplanar", "gc_110")
-graph_classes.Perfect = GraphClass("Perfect", "gc_56", recognition_function=lambda x: x.is_perfect())
-graph_classes.Permutation = GraphClass("Permutation", "gc_23", recognition_function=lambda x: x.is_permutation())
-graph_classes.Planar = GraphClass("Planar", "gc_43", recognition_function=lambda x: x.is_planar())
-graph_classes.Polyhedral = GraphClass("Polyhedral", "gc_986", recognition_function=lambda x: x.is_polyhedral())
-graph_classes.Split = GraphClass("Split", "gc_39", recognition_function=lambda x: x.is_split())
-graph_classes.StronglyRegular = GraphClass("Strongly Regular", "gc_1185", recognition_function=lambda x: x.is_strongly_regular())
-graph_classes.Tree = GraphClass("Tree", "gc_342", recognition_function=lambda x: x.is_tree())
-graph_classes.TriangleFree = GraphClass("Triangle Free", "gc_371", recognition_function=lambda x: x.is_triangle_free())
+graph_classes.Perfect = GraphClass(
+    "Perfect", "gc_56", recognition_function=lambda x: x.is_perfect()
+)
+graph_classes.Permutation = GraphClass(
+    "Permutation", "gc_23", recognition_function=lambda x: x.is_permutation()
+)
+graph_classes.Planar = GraphClass(
+    "Planar", "gc_43", recognition_function=lambda x: x.is_planar()
+)
+graph_classes.Polyhedral = GraphClass(
+    "Polyhedral", "gc_986", recognition_function=lambda x: x.is_polyhedral()
+)
+graph_classes.Split = GraphClass(
+    "Split", "gc_39", recognition_function=lambda x: x.is_split()
+)
+graph_classes.StronglyRegular = GraphClass(
+    "Strongly Regular",
+    "gc_1185",
+    recognition_function=lambda x: x.is_strongly_regular(),
+)
+graph_classes.Tree = GraphClass(
+    "Tree", "gc_342", recognition_function=lambda x: x.is_tree()
+)
+graph_classes.TriangleFree = GraphClass(
+    "Triangle Free", "gc_371", recognition_function=lambda x: x.is_triangle_free()
+)
 graph_classes.UnitDisk = GraphClass("UnitDisk", "gc_389")
 graph_classes.UnitInterval = GraphClass("UnitInterval", "gc_299")
-graph_classes.WeaklyChordal = GraphClass("Weakly Chordal", "gc_14", recognition_function=lambda x: x.is_weakly_chordal())
+graph_classes.WeaklyChordal = GraphClass(
+    "Weakly Chordal", "gc_14", recognition_function=lambda x: x.is_weakly_chordal()
+)

@@ -613,8 +613,16 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         sage: h.display()
         h = (t + 1) ∂/∂x⊗∂/∂x + t^2 ∂/∂x⊗∂/∂y + sin(t) ∂/∂z⊗∂/∂x
     """
-    def __init__(self, vector_field_module, tensor_type, name=None,
-                 latex_name=None, sym=None, antisym=None):
+
+    def __init__(
+        self,
+        vector_field_module,
+        tensor_type,
+        name=None,
+        latex_name=None,
+        sym=None,
+        antisym=None,
+    ):
         r"""
         Construct a tensor field.
 
@@ -638,9 +646,15 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
              2-dimensional differentiable manifold M
             sage: TestSuite(t).run()
         """
-        FreeModuleTensor.__init__(self, vector_field_module, tensor_type,
-                                  name=name, latex_name=latex_name,
-                                  sym=sym, antisym=antisym)
+        FreeModuleTensor.__init__(
+            self,
+            vector_field_module,
+            tensor_type,
+            name=name,
+            latex_name=latex_name,
+            sym=sym,
+            antisym=antisym,
+        )
         # TensorField attributes:
         self._vmodule = vector_field_module
         self._domain = vector_field_module._domain
@@ -689,8 +703,9 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             sage: type(t._new_instance()) is type(t)
             True
         """
-        return type(self)(self._fmodule, self._tensor_type, sym=self._sym,
-                          antisym=self._antisym)
+        return type(self)(
+            self._fmodule, self._tensor_type, sym=self._sym, antisym=self._antisym
+        )
 
     def _init_derived(self):
         r"""
@@ -705,8 +720,8 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         """
         FreeModuleTensor._init_derived(self)
         TensorField._init_derived(self)
-        self._restrictions = {} # dict. of restrictions of self on subdomains
-                                # of self._domain, with the subdomains as keys
+        self._restrictions = {}  # dict. of restrictions of self on subdomains
+        # of self._domain, with the subdomains as keys
         self._extensions_graph = {self._domain: self}
         self._restrictions_graph = {self._domain: self}
 
@@ -916,8 +931,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
              in the Vector frame (M, (e_0,e_1))
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._fmodule._def_basis
 
@@ -1092,8 +1106,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             t = x e_0⊗e^1
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._fmodule._def_basis
 
@@ -1164,8 +1177,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
 
         if basis._domain == self._domain:
             # components on the tensor field domain:
-            return FreeModuleTensor.comp(self, basis=basis,
-                                         from_basis=from_basis)
+            return FreeModuleTensor.comp(self, basis=basis, from_basis=from_basis)
 
         # components on a subdomain:
         rst = self.restrict(basis._domain, dest_map=basis._dest_map)
@@ -1231,6 +1243,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
              + (-1/2*x^2 + 1/2*y^2 + 1/2*x + 1/2*y + 1/2) ∂/∂y
         """
         from sage.manifolds.differentiable.vectorframe import CoordFrame
+
         # Compatibility checks:
         if not isinstance(other, TensorFieldParal):
             raise TypeError("the argument must be of type TensorFieldParal")
@@ -1241,10 +1254,12 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         #    without performing any component transformation.
         #    -------------------------------------------------------------
         # 1a/ Direct search
-        if (def_frame in self._components
-                and def_frame in other._components
-                and isinstance(dom._def_frame, CoordFrame)):
-            return def_frame # the domain's default frame is privileged
+        if (
+            def_frame in self._components
+            and def_frame in other._components
+            and isinstance(dom._def_frame, CoordFrame)
+        ):
+            return def_frame  # the domain's default frame is privileged
         for frame1 in self._components:
             if frame1 in other._components and isinstance(frame1, CoordFrame):
                 return frame1
@@ -1298,16 +1313,20 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         # two component transformations to get a common frame
         for sframe in self._components:
             for oframe in other._components:
-                if ((sframe, def_frame) in dom._frame_changes
-                        and (oframe, def_frame) in dom._frame_changes
-                        and isinstance(def_frame, CoordFrame)):
+                if (
+                    (sframe, def_frame) in dom._frame_changes
+                    and (oframe, def_frame) in dom._frame_changes
+                    and isinstance(def_frame, CoordFrame)
+                ):
                     self.comp(def_frame, from_basis=sframe)
                     other.comp(def_frame, from_basis=oframe)
                     return def_frame
                 for frame in dom._frames:
-                    if ((sframe, frame) in dom._frame_changes
-                            and (oframe, frame) in dom._frame_changes
-                            and isinstance(frame, CoordFrame)):
+                    if (
+                        (sframe, frame) in dom._frame_changes
+                        and (oframe, frame) in dom._frame_changes
+                        and isinstance(frame, CoordFrame)
+                    ):
                         self.comp(frame, from_basis=sframe)
                         other.comp(frame, from_basis=oframe)
                         return frame
@@ -1392,7 +1411,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             ....:                   + om(v).exterior_derivative())
             True
         """
-        if vector._tensor_type != (1,0):
+        if vector._tensor_type != (1, 0):
             raise TypeError("the argument must be a vector field")
 
         # The Lie derivative is stored in the dictionary
@@ -1415,17 +1434,19 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             # get n processes
             nproc = Parallelism().get('tensor')
             if nproc != 1:
-
                 # Parallel computation
-                lol = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
+                lol = lambda lst, sz: [lst[i : i + sz] for i in range(0, len(lst), sz)]
                 ind_list = list(resc.non_redundant_index_generator())
                 ind_step = max(1, len(ind_list) // nproc)
                 local_list = lol(ind_list, ind_step)
                 # list of input parameters:
-                listParalInput = [(self, vector, coord_frame, chart, ind_part) for ind_part in local_list]
+                listParalInput = [
+                    (self, vector, coord_frame, chart, ind_part)
+                    for ind_part in local_list
+                ]
 
-                @parallel(p_iter='multiprocessing',ncpus=nproc)
-                def paral_lie_deriv(a, b , coord_frame, chart_cp, local_list_ind):
+                @parallel(p_iter='multiprocessing', ncpus=nproc)
+                def paral_lie_deriv(a, b, coord_frame, chart_cp, local_list_ind):
                     #
                     # 2/ Component computation:
                     tc = a._components[coord_frame]
@@ -1438,33 +1459,36 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
                     for ind in local_list_ind:
                         rsum = 0
                         for i in vf_module.irange():
-                            rsum += vc[[i]].coord_function(chart_cp) * \
-                                   tc[[ind]].coord_function(chart_cp).diff(i)
+                            rsum += vc[[i]].coord_function(chart_cp) * tc[
+                                [ind]
+                            ].coord_function(chart_cp).diff(i)
                         # loop on contravariant indices:
                         for k in range(n_con):
                             for i in vf_module.irange():
                                 indk = list(ind)
                                 indk[k] = i
-                                rsum -= tc[[indk]].coord_function(chart_cp) * \
-                                        vc[[ind[k]]].coord_function(chart_cp).diff(i)
+                                rsum -= tc[[indk]].coord_function(chart_cp) * vc[
+                                    [ind[k]]
+                                ].coord_function(chart_cp).diff(i)
                         # loop on covariant indices:
                         for k in range(n_con, a._tensor_rank):
                             for i in vf_module.irange():
                                 indk = list(ind)
                                 indk[k] = i
-                                rsum += tc[[indk]].coord_function(chart_cp) * \
-                                        vc[[i]].coord_function(chart_cp).diff(ind[k])
+                                rsum += tc[[indk]].coord_function(chart_cp) * vc[
+                                    [i]
+                                ].coord_function(chart_cp).diff(ind[k])
 
                         local_res.append([ind, rsum.scalar_field()])
 
                     return local_res
 
                 # call to parallel lie derivative
-                for ii,val in paral_lie_deriv(listParalInput):
+                for ii, val in paral_lie_deriv(listParalInput):
                     for jj in val:
                         resc[[jj[0]]] = jj[1]
 
-            else :
+            else:
                 # Sequential computation
                 #
                 # 2/ Component computation:
@@ -1476,22 +1500,25 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
                 for ind in resc.non_redundant_index_generator():
                     rsum = 0
                     for i in vf_module.irange():
-                        rsum += vc[[i]].coord_function(chart) * \
-                               tc[[ind]].coord_function(chart).diff(i)
+                        rsum += vc[[i]].coord_function(chart) * tc[
+                            [ind]
+                        ].coord_function(chart).diff(i)
                     # loop on contravariant indices:
                     for k in range(n_con):
                         for i in vf_module.irange():
                             indk = list(ind)
                             indk[k] = i
-                            rsum -= tc[[indk]].coord_function(chart) * \
-                                    vc[[ind[k]]].coord_function(chart).diff(i)
+                            rsum -= tc[[indk]].coord_function(chart) * vc[
+                                [ind[k]]
+                            ].coord_function(chart).diff(i)
                     # loop on covariant indices:
                     for k in range(n_con, self._tensor_rank):
                         for i in vf_module.irange():
                             indk = list(ind)
                             indk[k] = i
-                            rsum += tc[[indk]].coord_function(chart) * \
-                                    vc[[i]].coord_function(chart).diff(ind[k])
+                            rsum += tc[[indk]].coord_function(chart) * vc[
+                                [i]
+                            ].coord_function(chart).diff(ind[k])
                     resc[[ind]] = rsum.scalar_field()
 
             #
@@ -1503,7 +1530,9 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
 
     lie_der = lie_derivative
 
-    def restrict(self, subdomain: DifferentiableManifold, dest_map: Optional[DiffMap] = None):
+    def restrict(
+        self, subdomain: DifferentiableManifold, dest_map: Optional[DiffMap] = None
+    ):
         r"""
         Return the restriction of ``self`` to some subdomain.
 
@@ -1564,8 +1593,9 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             sage: v.restrict(M) is v
             True
         """
-        if (subdomain == self._domain
-                and (dest_map is None or dest_map == self._vmodule._dest_map)):
+        if subdomain == self._domain and (
+            dest_map is None or dest_map == self._vmodule._dest_map
+        ):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
@@ -1575,9 +1605,11 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             if dest_map is None:
                 dest_map = self._fmodule._dest_map.restrict(subdomain)
             elif not dest_map._codomain.is_subset(self._ambient_domain):
-                raise ValueError("the argument 'dest_map' is not compatible " +
-                                 "with the ambient domain of " +
-                                 "the {}".format(self))
+                raise ValueError(
+                    "the argument 'dest_map' is not compatible "
+                    + "with the ambient domain of "
+                    + "the {}".format(self)
+                )
             # First one tries to derive the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
                 if subdomain.is_subset(dom) and subdomain in rst._restrictions:
@@ -1611,16 +1643,22 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
 
             # If this fails, the restriction is created from scratch:
             smodule = subdomain.vector_field_module(dest_map=dest_map)
-            res = smodule.tensor(self._tensor_type, name=self._name,
-                                  latex_name=self._latex_name, sym=self._sym,
-                                  antisym=self._antisym,
-                                  specific_type=type(self))
+            res = smodule.tensor(
+                self._tensor_type,
+                name=self._name,
+                latex_name=self._latex_name,
+                sym=self._sym,
+                antisym=self._antisym,
+                specific_type=type(self),
+            )
 
             for frame in self._components:
                 for sframe in subdomain._frames:
-                    if (sframe.domain() is subdomain and
-                            sframe.destination_map() is dest_map and
-                            sframe in frame._subframes):
+                    if (
+                        sframe.domain() is subdomain
+                        and sframe.destination_map() is dest_map
+                        and sframe in frame._subframes
+                    ):
                         comp_store = self._components[frame]._comp
                         scomp = res._new_comp(sframe)
                         scomp_store = scomp._comp
@@ -1704,11 +1742,12 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             True
         """
         from sage.categories.homset import End
+
         p = len(args)
-        if p == 1 and self._tensor_type == (1,1):
+        if p == 1 and self._tensor_type == (1, 1):
             # type-(1,1) tensor acting as an endomorphism:
             vector = args[0]
-            if vector._tensor_type != (1,0):
+            if vector._tensor_type != (1, 0):
                 raise TypeError("the argument must be a vector field")
             dom = self._domain.intersection(vector._domain)
             sd = self.restrict(dom)
@@ -1717,8 +1756,9 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             return endom(vd)
         # Generic case
         if p != self._tensor_rank:
-            raise TypeError("{} arguments must be ".format(self._tensor_rank) +
-                            "provided")
+            raise TypeError(
+                "{} arguments must be ".format(self._tensor_rank) + "provided"
+            )
         # Domain of the result
         dom_resu = self._domain
         for arg in args:
@@ -1857,8 +1897,14 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         # the FreeModuleTensor one
         return TensorField.__mul__(self, other)
 
-    def display_comp(self, frame=None, chart=None, coordinate_labels=True,
-                     only_nonzero=True, only_nonredundant=False):
+    def display_comp(
+        self,
+        frame=None,
+        chart=None,
+        coordinate_labels=True,
+        only_nonzero=True,
+        only_nonredundant=False,
+    ):
         r"""
         Display the tensor components with respect to a given frame,
         one per line.
@@ -1977,6 +2023,7 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         """
         from sage.manifolds.differentiable.vectorframe import CoordFrame
         from sage.misc.latex import latex
+
         if frame is None:
             if chart is not None:
                 frame = chart.frame()
@@ -1990,11 +2037,15 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             ch = frame.chart()
             index_labels = list(map(str, ch[:]))
             index_latex_labels = list(map(latex, ch[:]))
-        return FreeModuleTensor.display_comp(self, basis=frame,
-                                  format_spec=chart, index_labels=index_labels,
-                                  index_latex_labels=index_latex_labels,
-                                  only_nonzero=only_nonzero,
-                                  only_nonredundant=only_nonredundant)
+        return FreeModuleTensor.display_comp(
+            self,
+            basis=frame,
+            format_spec=chart,
+            index_labels=index_labels,
+            index_latex_labels=index_latex_labels,
+            only_nonzero=only_nonzero,
+            only_nonredundant=only_nonredundant,
+        )
 
     def at(self, point):
         r"""
@@ -2112,17 +2163,22 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             v = (1/6*pi + 1) ∂/∂x + 1/36*pi^2 ∂/∂y
         """
         if point not in self._domain:
-            raise ValueError("the {} is not in the domain of ".format(point) +
-                             "the {}".format(self))
+            raise ValueError(
+                "the {} is not in the domain of ".format(point) + "the {}".format(self)
+            )
         dest_map = self._fmodule._dest_map
         if dest_map.is_identity():
             amb_point = point
         else:
             amb_point = dest_map(point)  # "ambient" point
         ts = amb_point._manifold.tangent_space(amb_point)
-        resu = ts.tensor(self._tensor_type, name=self._name,
-                         latex_name=self._latex_name, sym=self._sym,
-                         antisym=self._antisym)
+        resu = ts.tensor(
+            self._tensor_type,
+            name=self._name,
+            latex_name=self._latex_name,
+            sym=self._sym,
+            antisym=self._antisym,
+        )
         for frame, comp in self._components.items():
             comp_resu = resu.add_comp(frame.at(point))
             for ind, val in comp._comp.items():
@@ -2204,8 +2260,10 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
         """
         dom = self._domain
         if self._ambient_domain is not dom:
-            raise ValueError("{} is not a tensor field ".format(self) +
-                             "with values in the {}".format(dom))
+            raise ValueError(
+                "{} is not a tensor field ".format(self)
+                + "with values in the {}".format(dom)
+            )
         if mapping.codomain().is_subset(dom):
             rmapping = mapping
         else:
@@ -2215,13 +2273,19 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
                     rmapping = rest
                     break
             else:
-                raise ValueError("the codomain of {} is not ".format(mapping) +
-                                 "included in the domain of {}".format(self))
+                raise ValueError(
+                    "the codomain of {} is not ".format(mapping)
+                    + "included in the domain of {}".format(self)
+                )
         dom_resu = rmapping.domain()
         vmodule = dom_resu.vector_field_module(dest_map=rmapping)
-        resu = vmodule.tensor(self._tensor_type, name=self._name,
-                              latex_name=self._latex_name, sym=self._sym,
-                              antisym=self._antisym)
+        resu = vmodule.tensor(
+            self._tensor_type,
+            name=self._name,
+            latex_name=self._latex_name,
+            sym=self._sym,
+            antisym=self._antisym,
+        )
         for frame, comp in self._components.items():
             comp_resu = resu.add_comp(frame.along(rmapping))
             for ind, val in comp._comp.items():
@@ -2235,13 +2299,17 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
                             coord2_1 = phi(*(chart1._xx))
                             val_resu.add_expr(func2(*coord2_1), chart=chart1)
                 if not val_resu._express:
-                    raise ValueError("no pair of charts has been found to " +
-                                     "set the value of the component " +
-                                     "{} in the {}".format(ind, frame))
+                    raise ValueError(
+                        "no pair of charts has been found to "
+                        + "set the value of the component "
+                        + "{} in the {}".format(ind, frame)
+                    )
                 comp_resu._comp[ind] = val_resu
         return resu
 
-    def series_expansion(self, symbol: Expression, order: int) -> list[TensorFieldParal]:
+    def series_expansion(
+        self, symbol: Expression, order: int
+    ) -> list[TensorFieldParal]:
         r"""
         Expand the tensor field in power series with respect to a small
         parameter.
@@ -2305,25 +2373,36 @@ class TensorFieldParal(FreeModuleTensor, TensorField):
             True
         """
         from sage.tensor.modules.comp import Components
+
         orderp1 = order + 1
         res = [0] * orderp1
         for k in range(orderp1):
-            res[k] = self.domain().tensor_field(*self.tensor_type(),
-                                                dest_map=self._fmodule._dest_map,
-                                                sym=self._sym,
-                                                antisym=self._antisym)
+            res[k] = self.domain().tensor_field(
+                *self.tensor_type(),
+                dest_map=self._fmodule._dest_map,
+                sym=self._sym,
+                antisym=self._antisym,
+            )
         for frame in self._components:
             decompo = {}
             comp = self.comp(frame)
             res_comp = [0] * orderp1
             for inds in comp.index_generator():
-                decompo[inds] = comp[inds].expr().series(symbol,
-                                                         orderp1).truncate().coefficients(symbol)
+                decompo[inds] = (
+                    comp[inds]
+                    .expr()
+                    .series(symbol, orderp1)
+                    .truncate()
+                    .coefficients(symbol)
+                )
             for k in range(orderp1):
                 res_comp[k] = Components(SR, frame, self.tensor_rank())
                 for inds in comp.index_generator():
-                    res_comp_k = [decompo[inds][l][0] for l in range(len(decompo[inds]))
-                                  if decompo[inds][l][1] == k]
+                    res_comp_k = [
+                        decompo[inds][l][0]
+                        for l in range(len(decompo[inds]))
+                        if decompo[inds][l][1] == k
+                    ]
                     res_comp[k][inds] = res_comp_k[0] if len(res_comp_k) >= 1 else 0
                 res[k].add_comp(frame)[:] = res_comp[k][:]
         return res

@@ -26,7 +26,6 @@ class A:
 
 
 class UniqueFactoryTester(UniqueFactory):
-
     def create_key(self, *args, **kwds):
         """
         EXAMPLES::

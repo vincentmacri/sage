@@ -25,8 +25,10 @@ from sage.sets.set import Set
 from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
 from sage.structure.indexed_generators import IndexedGenerators
 from sage.algebras.lie_algebras.lie_algebra_element import LieAlgebraElement
-from sage.algebras.lie_algebras.lie_algebra import (InfinitelyGeneratedLieAlgebra,
-                                                    FinitelyGeneratedLieAlgebra)
+from sage.algebras.lie_algebras.lie_algebra import (
+    InfinitelyGeneratedLieAlgebra,
+    FinitelyGeneratedLieAlgebra,
+)
 from sage.combinat.free_module import CombinatorialFreeModule
 
 
@@ -56,6 +58,7 @@ class LieAlgebraRegularVectorFields(InfinitelyGeneratedLieAlgebra, IndexedGenera
 
         :class:`WittLieAlgebra_charp`
     """
+
     def __init__(self, R):
         """
         Initialize ``self``.
@@ -78,7 +81,9 @@ class LieAlgebraRegularVectorFields(InfinitelyGeneratedLieAlgebra, IndexedGenera
             sage: lie_algebras.regular_vector_fields(QQ)
             The Lie algebra of regular vector fields over Rational Field
         """
-        return "The Lie algebra of regular vector fields over {}".format(self.base_ring())
+        return "The Lie algebra of regular vector fields over {}".format(
+            self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -91,6 +96,7 @@ class LieAlgebraRegularVectorFields(InfinitelyGeneratedLieAlgebra, IndexedGenera
             \mathcal{W}_{\Bold{Q}}
         """
         from sage.misc.latex import latex
+
         return r"\mathcal{{W}}_{{{}}}".format(latex(self.base_ring()))
 
     # For compatibility with CombinatorialFreeModuleElement
@@ -153,7 +159,7 @@ class LieAlgebraRegularVectorFields(InfinitelyGeneratedLieAlgebra, IndexedGenera
             sage: L.an_element()
             d[-1] + d[0] - 3*d[1]
         """
-        return self.monomial(0) - 3*self.monomial(1) + self.monomial(-1)
+        return self.monomial(0) - 3 * self.monomial(1) + self.monomial(-1)
 
     def some_elements(self):
         """
@@ -165,7 +171,12 @@ class LieAlgebraRegularVectorFields(InfinitelyGeneratedLieAlgebra, IndexedGenera
             sage: L.some_elements()
             [d[0], d[2], d[-2], d[-1] + d[0] - 3*d[1]]
         """
-        return [self.monomial(0), self.monomial(2), self.monomial(-2), self.an_element()]
+        return [
+            self.monomial(0),
+            self.monomial(2),
+            self.monomial(-2),
+            self.an_element(),
+        ]
 
     class Element(LieAlgebraElement):
         pass
@@ -192,6 +203,7 @@ class WittLieAlgebra_charp(FinitelyGeneratedLieAlgebra, IndexedGenerators):
 
         :class:`LieAlgebraRegularVectorFields`
     """
+
     def __init__(self, R, p):
         """
         Initialize ``self``.
@@ -211,10 +223,10 @@ class WittLieAlgebra_charp(FinitelyGeneratedLieAlgebra, IndexedGenerators):
         if R(p) != 0:
             raise ValueError("{} is not 0 in {}".format(p, R))
         cat = LieAlgebras(R).FiniteDimensional().WithBasis().Graded()
-        FinitelyGeneratedLieAlgebra.__init__(self, R, index_set=list(range(p)),
-                                             category=cat)
-        IndexedGenerators.__init__(self, list(range(p)), prefix='d',
-                                   bracket='[')
+        FinitelyGeneratedLieAlgebra.__init__(
+            self, R, index_set=list(range(p)), category=cat
+        )
+        IndexedGenerators.__init__(self, list(range(p)), prefix='d', bracket='[')
         self._p = p
 
     def _repr_(self):
@@ -241,7 +253,10 @@ class WittLieAlgebra_charp(FinitelyGeneratedLieAlgebra, IndexedGenerators):
             \mathcal{W}(15)_{\Bold{F}_{3}}
         """
         from sage.misc.latex import latex
-        return r"\mathcal{{W}}({})_{{{}}}".format(latex(self._p), latex(self.base_ring()))
+
+        return r"\mathcal{{W}}({})_{{{}}}".format(
+            latex(self._p), latex(self.base_ring())
+        )
 
     # For compatibility with CombinatorialFreeModuleElement
     _repr_term = IndexedGenerators._repr_generator
@@ -292,7 +307,11 @@ class WittLieAlgebra_charp(FinitelyGeneratedLieAlgebra, IndexedGenerators):
             sage: L.an_element()
             d[0] + 2*d[1] + d[4]
         """
-        return self.monomial(0) - 3*self.monomial(1 % self._p) + self.monomial((-1) % self._p)
+        return (
+            self.monomial(0)
+            - 3 * self.monomial(1 % self._p)
+            + self.monomial((-1) % self._p)
+        )
 
     def some_elements(self):
         """
@@ -304,9 +323,12 @@ class WittLieAlgebra_charp(FinitelyGeneratedLieAlgebra, IndexedGenerators):
             sage: L.some_elements()
             [d[0], d[2], d[3], d[0] + 2*d[1] + d[4]]
         """
-        return [self.monomial(0), self.monomial(2 % self._p),
-                self.monomial((-2) % self._p),
-                self.an_element()]
+        return [
+            self.monomial(0),
+            self.monomial(2 % self._p),
+            self.monomial((-2) % self._p),
+            self.an_element(),
+        ]
 
     def degree_on_basis(self, i):
         r"""
@@ -342,6 +364,7 @@ def _basis_key(x):
     """
     if x == 'c':
         from sage.rings.infinity import infinity
+
         return infinity
     return x
 
@@ -378,6 +401,7 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
 
     - :wikipedia:`Virasoro_algebra`
     """
+
     def __init__(self, R):
         """
         Initialize ``self``.
@@ -389,8 +413,9 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
         """
         cat = LieAlgebras(R).WithBasis().Graded()
         InfinitelyGeneratedLieAlgebra.__init__(self, R, index_set=ZZ, category=cat)
-        IndexedGenerators.__init__(self, ZZ, prefix='d', bracket='[',
-                                   sorting_key=_basis_key)
+        IndexedGenerators.__init__(
+            self, ZZ, prefix='d', bracket='[', sorting_key=_basis_key
+        )
 
     def _basis_key(self, m):
         """
@@ -457,6 +482,7 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             d₋₁₃
         """
         from sage.typeset.unicode_art import unicode_art, unicode_subscript
+
         if isinstance(m, str):
             return unicode_art(m)
         return unicode_art('d' + unicode_subscript(m))
@@ -483,6 +509,7 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             \mathcal{V}_{\Bold{Q}}
         """
         from sage.misc.latex import latex
+
         return r"\mathcal{{V}}_{{{}}}".format(latex(self.base_ring()))
 
     @cached_method
@@ -561,10 +588,10 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
         """
         if i == 'c' or j == 'c':
             return self.zero()
-        ret = self._from_dict({i + j: i-j})
+        ret = self._from_dict({i + j: i - j})
         R = self.base_ring()
         if i == -j:
-            ret += R(i ** 3 - i) / R(12) * self.c()
+            ret += R(i**3 - i) / R(12) * self.c()
         return ret
 
     def degree_on_basis(self, i):
@@ -597,7 +624,7 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             d[-1] + d[0] - 1/2*d[1] + c
         """
         d = self.monomial
-        return d(0) - self.base_ring().an_element()*d(1) + d(-1) + d('c')
+        return d(0) - self.base_ring().an_element() * d(1) + d(-1) + d('c')
 
     def some_elements(self):
         """
@@ -650,6 +677,7 @@ class VirasoroAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
 
     class Element(LieAlgebraElement):
         pass
+
 
 #####################################################################
 # Representations
@@ -729,6 +757,7 @@ class ChargelessRepresentation(CombinatorialFreeModule):
     - [Mat1992]_
     - [IK2010]_
     """
+
     def __init__(self, V, a, b):
         """
         Initialize ``self``.
@@ -760,7 +789,8 @@ class ChargelessRepresentation(CombinatorialFreeModule):
              The Virasoro algebra over Rational Field
         """
         return "Chargeless representation ({}, {}) of {}".format(
-                    self._a, self._b, self._V)
+            self._a, self._b, self._V
+        )
 
     def parameters(self):
         """
@@ -826,10 +856,15 @@ class ChargelessRepresentation(CombinatorialFreeModule):
             # We implement only a left action
             if not self_on_left and scalar in P._V:
                 scalar = P._V(scalar)
-                return P.sum_of_terms((n+k, (P._a * n + P._b - k) * cv * cm)
-                                      for n,cv in scalar.monomial_coefficients(copy=False).items() if n != 'c'
-                                      for k,cm in self.monomial_coefficients(copy=False).items())
-            return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+                return P.sum_of_terms(
+                    (n + k, (P._a * n + P._b - k) * cv * cm)
+                    for n, cv in scalar.monomial_coefficients(copy=False).items()
+                    if n != 'c'
+                    for k, cm in self.monomial_coefficients(copy=False).items()
+                )
+            return CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
 
         _rmul_ = _lmul_ = _acted_upon_
 
@@ -904,6 +939,7 @@ class VermaModule(CombinatorialFreeModule):
 
     - :wikipedia:`Virasoro_algebra#Representation_theory`
     """
+
     @staticmethod
     def __classcall_private__(cls, V, c, h):
         """
@@ -950,6 +986,7 @@ class VermaModule(CombinatorialFreeModule):
         self._h = h
         self._V = V
         from sage.combinat.partition import _Partitions
+
         indices = _Partitions.map(VermaModule._partition_to_neg_tuple)
         R = V.base_ring()
         cat = Modules(R).WithBasis().Graded()
@@ -986,6 +1023,7 @@ class VermaModule(CombinatorialFreeModule):
             return 'v'
         d = self._V.basis()
         from sage.misc.latex import latex
+
         return ' '.join(latex(d[i]) for i in k) + ' v'
 
     def _repr_(self):
@@ -1001,7 +1039,8 @@ class VermaModule(CombinatorialFreeModule):
              The Virasoro algebra over Rational Field
         """
         return "Verma module with charge {} and conformal weight {} of {}".format(
-                    self._c, self._h, self._V)
+            self._c, self._h, self._V
+        )
 
     def _monomial(self, index):
         """
@@ -1124,8 +1163,9 @@ class VermaModule(CombinatorialFreeModule):
         k = k[1:]
         # We need to explicitly call the action as this method is
         #   used in discovering the action
-        return (self._d_action_on_basis(n, k)._acted_upon_(d[m], False)
-                + self.monomial(k)._acted_upon_(d[n].bracket(d[m]), False))
+        return self._d_action_on_basis(n, k)._acted_upon_(d[m], False) + self.monomial(
+            k
+        )._acted_upon_(d[n].bracket(d[m]), False)
 
     def degree_on_basis(self, d):
         r"""
@@ -1173,12 +1213,18 @@ class VermaModule(CombinatorialFreeModule):
                 R = P.base_ring()
                 if S is R or scalar in R:
                     scalar = R(scalar)
-                    return P._from_dict({k: scalar*c for k,c in self._monomial_coefficients.items()})
+                    return P._from_dict(
+                        {k: scalar * c for k, c in self._monomial_coefficients.items()}
+                    )
                 if S is P._V or scalar in P._V:
                     scalar = P._V(scalar)
-                    return P.linear_combination((P._d_action_on_basis(n, k), cv * cm)
-                                                for n,cv in scalar.monomial_coefficients(copy=False).items()
-                                                for k,cm in self._monomial_coefficients.items())
-            return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+                    return P.linear_combination(
+                        (P._d_action_on_basis(n, k), cv * cm)
+                        for n, cv in scalar.monomial_coefficients(copy=False).items()
+                        for k, cm in self._monomial_coefficients.items()
+                    )
+            return CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
 
         _rmul_ = _lmul_ = _acted_upon_

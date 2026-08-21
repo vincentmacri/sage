@@ -1,6 +1,7 @@
 """
 Root system data for type D
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
@@ -37,8 +38,8 @@ class AmbientSpace(ambient_space.AmbientSpace):
             (-1, 0, 0)
         """
         if i != j:
-            return (-1)**p1 * self.monomial(i) + (-1)**p2 * self.monomial(j)
-        return (-1)**p1 * self.monomial(i)
+            return (-1) ** p1 * self.monomial(i) + (-1) ** p2 * self.monomial(j)
+        return (-1) ** p1 * self.monomial(i)
 
     def simple_root(self, i):
         """
@@ -49,7 +50,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         if i not in self.index_set():
             raise ValueError("{} is not in the index set".format(i))
-        return self.root(i-1, i, 0, 1) if i < self.n else self.root(self.n-2, self.n-1, 0, 0)
+        return (
+            self.root(i - 1, i, 0, 1)
+            if i < self.n
+            else self.root(self.n - 2, self.n - 1, 0, 0)
+        )
 
     def positive_roots(self):
         """
@@ -112,12 +117,18 @@ class AmbientSpace(ambient_space.AmbientSpace):
         if i == n:
             return self.sum(self.monomial(j) for j in range(n)) / 2
         if i == n - 1:
-            return (self.sum(self.monomial(j) for j in range(n-1)) - self.monomial(n-1)) / 2
+            return (
+                self.sum(self.monomial(j) for j in range(n - 1)) - self.monomial(n - 1)
+            ) / 2
         return self.sum(self.monomial(j) for j in range(i))
 
 
 from sage.misc.cachefunc import cached_method
-from .cartan_type import CartanType_standard_finite, CartanType_simply_laced, CartanType_simple
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simply_laced,
+    CartanType_simple,
+)
 
 
 class CartanType(CartanType_standard_finite, CartanType_simply_laced):
@@ -202,7 +213,7 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced):
             sage: CartanType(['D',4]).coxeter_number()
             6
         """
-        return 2*self.n - 2
+        return 2 * self.n - 2
 
     def dual_coxeter_number(self):
         """
@@ -213,7 +224,7 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced):
             sage: CartanType(['D',4]).dual_coxeter_number()
             6
         """
-        return 2*self.n - 2
+        return 2 * self.n - 2
 
     @cached_method
     def dynkin_diagram(self):
@@ -262,12 +273,13 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced):
             []
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
         n = self.n
         if n >= 3:
-            for i in range(1, n-1):
-                g.add_edge(i, i+1)
-            g.add_edge(n-2, n)
+            for i in range(1, n - 1):
+                g.add_edge(i, i + 1)
+            g.add_edge(n - 2, n)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2):
@@ -294,15 +306,15 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced):
             ret = node(0, 0, label(1))
             ret += node(node_dist, 0, label(2))
             return ret
-        rt_most = (self.n-2) * node_dist
+        rt_most = (self.n - 2) * node_dist
         center_point = rt_most - node_dist
         ret = "\\draw (0 cm,0) -- (%s cm,0);\n" % center_point
         ret += "\\draw (%s cm,0) -- (%s cm,0.7 cm);\n" % (center_point, rt_most)
         ret += "\\draw (%s cm,0) -- (%s cm,-0.7 cm);\n" % (center_point, rt_most)
-        for i in range(self.n-2):
-            ret += node(i*node_dist, 0, label(i+1))
+        for i in range(self.n - 2):
+            ret += node(i * node_dist, 0, label(i + 1))
         ret += node(rt_most, 0.7, label(self.n), 'right=3pt')
-        ret += node(rt_most, -0.7, label(self.n-1), 'right=3pt')
+        ret += node(rt_most, -0.7, label(self.n - 1), 'right=3pt')
         return ret
 
     def ascii_art(self, label=None, node=None):
@@ -344,13 +356,14 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced):
         if n == 2:
             ret = "{}   {}\n".format(node(label(1)), node(label(2)))
             return ret + "{!s:4}{!s:4}".format(label(1), label(2))
-        ret = (4*(n-3))*" "+"{} {}\n".format(node(label(n)), label(n))
-        ret += ((4*(n-3))*" " + "|\n")*2
+        ret = (4 * (n - 3)) * " " + "{} {}\n".format(node(label(n)), label(n))
+        ret += ((4 * (n - 3)) * " " + "|\n") * 2
         ret += "---".join(node(label(i)) for i in range(1, n)) + "\n"
         ret += "".join("{!s:4}".format(label(i)) for i in range(1, n))
         return ret
 
 
 # For unpickling backward compatibility (Sage <= 4.1)
-register_unpickle_override('sage.combinat.root_system.type_D',
-                           'ambient_space', AmbientSpace)
+register_unpickle_override(
+    'sage.combinat.root_system.type_D', 'ambient_space', AmbientSpace
+)

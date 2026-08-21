@@ -31,6 +31,7 @@ class Representation_abstract:
 
     - ``lie_algebra`` -- a Lie algebra
     """
+
     def __init__(self, lie_algebra):
         r"""
         Initialize ``self``.
@@ -89,6 +90,7 @@ class Representation_abstract:
         if elts.cardinality() == float('inf'):
             elts = list(elts.some_elements())
         from sage.misc.misc import some_tuples
+
         for x, y in some_tuples(elts, 2, tester._max_runs):
             for v in S:
                 tester.assertEqual(x.bracket(y) * v, x * (y * v) - y * (x * v))
@@ -207,8 +209,11 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
         R[1] + 5*R[2] - 3*R[3]
         sage: R._test_representation()  # verify that it is a representation
     """
+
     @staticmethod
-    def __classcall_private__(cls, lie_algebra, f=None, index_set=None, on_basis=False, **kwargs):
+    def __classcall_private__(
+        cls, lie_algebra, f=None, index_set=None, on_basis=False, **kwargs
+    ):
         r"""
         Normalize inpute to ensure a unique representation.
 
@@ -247,6 +252,7 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
             ValueError: the index set needs to be specified
         """
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         base = lie_algebra.base_ring()
         C = Modules(base).WithBasis().FiniteDimensional()
         C = C.or_subcategory(kwargs.pop('category', C))
@@ -269,7 +275,9 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
                 if dim is None:
                     dim = mat.nrows()
                 elif mat.nrows() != dim or mat.ncols() != dim:
-                    raise ValueError("all matrices must be square of size {}".format(dim))
+                    raise ValueError(
+                        "all matrices must be square of size {}".format(dim)
+                    )
                 data[k] = mat.change_ring(base)
                 data[k].set_immutable()
 
@@ -285,8 +293,9 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
 
         index_set = FiniteEnumeratedSet(index_set)
 
-        return super(cls, RepresentationByMorphism).__classcall__(cls, lie_algebra,
-             f, index_set, on_basis, category=C, **kwargs)
+        return super(cls, RepresentationByMorphism).__classcall__(
+            cls, lie_algebra, f, index_set, on_basis, category=C, **kwargs
+        )
 
     def __init__(self, lie_algebra, f, index_set, on_basis, category, **kwargs):
         r"""
@@ -308,8 +317,14 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
         self._on_basis = on_basis
 
         Representation_abstract.__init__(self, lie_algebra)
-        CombinatorialFreeModule.__init__(self, lie_algebra.base_ring(), index_set,
-                                         category=category, prefix=prefix, **kwargs)
+        CombinatorialFreeModule.__init__(
+            self,
+            lie_algebra.base_ring(),
+            index_set,
+            category=category,
+            prefix=prefix,
+            **kwargs,
+        )
 
     def _repr_(self):
         r"""
@@ -338,11 +353,14 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
         """
         ret = "Representation of {} defined by:".format(self._lie_algebra)
         from sage.typeset.ascii_art import ascii_art
+
         if self._on_basis:
             B = self._lie_algebra.basis()
             if B.cardinality() < float('inf'):
                 for k in B.keys():
-                    ret += '\n' + repr(ascii_art(B[k], self._f(k), sep=" |--> ", sep_baseline=0))
+                    ret += '\n' + repr(
+                        ascii_art(B[k], self._f(k), sep=" |--> ", sep_baseline=0)
+                    )
             else:
                 ret += '\n' + repr(self._family)
         else:
@@ -395,7 +413,10 @@ class RepresentationByMorphism(CombinatorialFreeModule, Representation_abstract)
                 if not scalar:  # we are acting by zero
                     return P.zero()
                 if P._on_basis:
-                    mat = sum(c * P._f(k) for k, c in scalar.monomial_coefficients(copy=False).items())
+                    mat = sum(
+                        c * P._f(k)
+                        for k, c in scalar.monomial_coefficients(copy=False).items()
+                    )
                 else:
                     mat = P._f(scalar)
                 return P.from_vector(mat * self.to_vector())
@@ -419,6 +440,7 @@ class TrivialRepresentation(CombinatorialFreeModule, Representation_abstract):
 
     - :wikipedia:`Trivial_representation`
     """
+
     def __init__(self, lie_algebra, **kwargs):
         r"""
         Initialize ``self``.
@@ -432,7 +454,9 @@ class TrivialRepresentation(CombinatorialFreeModule, Representation_abstract):
         R = lie_algebra.base_ring()
         cat = Modules(R).WithBasis().FiniteDimensional()
         Representation_abstract.__init__(self, lie_algebra)
-        CombinatorialFreeModule.__init__(self, R, ['v'], prefix='T', category=cat, **kwargs)
+        CombinatorialFreeModule.__init__(
+            self, R, ['v'], prefix='T', category=cat, **kwargs
+        )
 
     def _repr_(self):
         r"""
@@ -472,7 +496,9 @@ class TrivialRepresentation(CombinatorialFreeModule, Representation_abstract):
             return super()._acted_upon_(scalar, self_on_left)
 
 
-class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation_abstract):
+class FaithfulRepresentationNilpotentPBW(
+    CombinatorialFreeModule, Representation_abstract
+):
     r"""
     Return a faithful representation of a nilpotent Lie algebra
     constructed using the PBW basis.
@@ -540,6 +566,7 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
 
     - [BEdG2009]_
     """
+
     def __init__(self, L, minimal=False):
         r"""
         Initialize ``self``.
@@ -579,7 +606,9 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
                         cur.append(z)
                 k = self._step - len(basis_by_deg)
                 basis_by_deg[k] = cur
-                temp = [bred for b in D.basis() if (bred := Z.reduce(prev.reduce(L(b))))]
+                temp = [
+                    bred for b in D.basis() if (bred := Z.reduce(prev.reduce(L(b))))
+                ]
                 basis_by_deg[k].extend(L.echelon_form(temp))
                 prev = D
         else:
@@ -598,19 +627,24 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
             self._invcob = cob.inverse()
             scoeffs = {}
             for i, b in enumerate(L_basis):
-                for j, bp in enumerate(L_basis[i+1:], start=i + 1):
+                for j, bp in enumerate(L_basis[i + 1 :], start=i + 1):
                     scoeffs[i, j] = (self._invcob * b.bracket(bp)._vector_()).dict()
             index_set = tuple(range(L.dimension()))
             from sage.algebras.lie_algebras.lie_algebra import LieAlgebra
+
             self._Lp = LieAlgebra(L.base_ring(), scoeffs, index_set=index_set)
 
         self._pbw = self._Lp.pbw_basis()
-        self._degrees = tuple(sum(([deg] * len(B) for deg, B in sorted(basis_by_deg.items())), []))
+        self._degrees = tuple(
+            sum(([deg] * len(B) for deg, B in sorted(basis_by_deg.items())), [])
+        )
 
         from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
         from sage.combinat.integer_vector_weighted import WeightedIntegerVectors
-        indices = DisjointUnionEnumeratedSets([WeightedIntegerVectors(n, self._degrees)
-                                               for n in range(self._step+1)])
+
+        indices = DisjointUnionEnumeratedSets(
+            [WeightedIntegerVectors(n, self._degrees) for n in range(self._step + 1)]
+        )
 
         if self._minimal:
             X = {tuple(index) for index in indices}
@@ -650,7 +684,9 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
             indices = sorted(X)
 
         Representation_abstract.__init__(self, L)
-        CombinatorialFreeModule.__init__(self, L.base_ring(), indices, prefix='F', bracket=False)
+        CombinatorialFreeModule.__init__(
+            self, L.base_ring(), indices, prefix='F', bracket=False
+        )
 
     def _repr_(self):
         r"""
@@ -665,7 +701,9 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
         """
         if self._minimal:
             return "Minimal faithful representation of {}".format(self._lie_algebra)
-        return "Faithful {} dimensional representation of {}".format(self.dimension(), self._lie_algebra)
+        return "Faithful {} dimensional representation of {}".format(
+            self.dimension(), self._lie_algebra
+        )
 
     def _latex_(self):
         r"""
@@ -678,6 +716,7 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
             U(\text{\texttt{Heisenberg...}}) / U(\text{\texttt{Heisenberg...}})^{3}
         """
         from sage.misc.latex import latex
+
         g = latex(self._lie_algebra)
         ret = "U({0}) / U({0})^{{{1}}}".format(g, self._step + 1)
         if self._minimal:
@@ -757,8 +796,13 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
             P = self.parent()
             monoid = P._pbw._indices
             I = monoid._indices
-            return P._pbw.element_class(P._pbw, {monoid(list(zip(I, m))): coeff
-                                                 for m, coeff in self._monomial_coefficients.items()})
+            return P._pbw.element_class(
+                P._pbw,
+                {
+                    monoid(list(zip(I, m))): coeff
+                    for m, coeff in self._monomial_coefficients.items()
+                },
+            )
 
         def _acted_upon_(self, scalar, self_on_left=False):
             r"""
@@ -789,7 +833,9 @@ class FaithfulRepresentationNilpotentPBW(CombinatorialFreeModule, Representation
             return super()._acted_upon_(scalar, self_on_left)
 
 
-class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_abstract):
+class FaithfulRepresentationPBWPosChar(
+    CombinatorialFreeModule, Representation_abstract
+):
     r"""
     A faithful representation of a finite dimensional Lie algebra
     in positive characteristic.
@@ -820,6 +866,7 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
         sage: F.dimension()
         243
     """
+
     def __init__(self, L):
         r"""
         Initialize ``self``.
@@ -833,7 +880,9 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
         R = L.base_ring()
         self._p = R.characteristic()
         if self._p == 0:
-            raise ValueError("the Lie algebra must be over a ring of positive characteristic")
+            raise ValueError(
+                "the Lie algebra must be over a ring of positive characteristic"
+            )
 
         self._pbw = L.pbw_basis()
         self._key_order = tuple(self._pbw.algebra_generators().keys())
@@ -849,22 +898,30 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
             d = g.degree()
             # TODO: Use the sparse polynomial ring?
             x = g.parent().gen()
-            r = [x**(self._p**i) % g for i in range(d+1)]
+            r = [x ** (self._p**i) % g for i in range(d + 1)]
             deg = max(ri.degree() for ri in r)
-            mat = matrix(R, [[ri[j] for ri in r] for j in range(deg+1)])
+            mat = matrix(R, [[ri[j] for ri in r] for j in range(deg + 1)])
             la = mat.right_kernel_matrix()[0]
             if la:
                 mongen = self._pbw._indices.monoid_generators()[k]
-                gb.append(self._pbw._from_dict({mongen ** (self._p ** i): val
-                                                for i, val in enumerate(la) if val},
-                                               remove_zeros=False))
+                gb.append(
+                    self._pbw._from_dict(
+                        {
+                            mongen ** (self._p**i): val
+                            for i, val in enumerate(la)
+                            if val
+                        },
+                        remove_zeros=False,
+                    )
+                )
                 p_exp.append(max(la.support()))
 
         self._groebner_basis = gb
         self._p_exp = tuple(p_exp)
-        self._degrees = [self._p ** m for m in self._p_exp]
+        self._degrees = [self._p**m for m in self._p_exp]
 
         from sage.groups.abelian_gps.abelian_group import AbelianGroup
+
         indices = AbelianGroup(self._degrees)
 
         Representation_abstract.__init__(self, L)
@@ -881,7 +938,9 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
             Faithful representation with p-multiplicities (1, 1, 1, 3, 3, 1, 1, 1)
              of Lie algebra of ['A', 2] in the Chevalley basis
         """
-        return "Faithful representation with p-multiplicities {} of {}".format(self.p_exponents(), self._lie_algebra)
+        return "Faithful representation with p-multiplicities {} of {}".format(
+            self.p_exponents(), self._lie_algebra
+        )
 
     def _latex_(self):
         r"""
@@ -896,6 +955,7 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
              PBW_{-\alpha_{1}}^{3} \rangle
         """
         from sage.misc.latex import latex
+
         g = latex(self._lie_algebra)
         data = ', '.join(latex(f) for f in self._groebner_basis)
         return "U({}) / \\langle {} \\rangle".format(g, data)
@@ -976,7 +1036,9 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
             mc = x._monomial_coefficients
             for m, c in mc.items():
                 d = m.dict()
-                for k, e, g in zip(self._key_order, self._degrees, self._groebner_basis):
+                for k, e, g in zip(
+                    self._key_order, self._degrees, self._groebner_basis
+                ):
                     if k not in d:
                         continue
                     if d[k] >= e:
@@ -1022,8 +1084,13 @@ class FaithfulRepresentationPBWPosChar(CombinatorialFreeModule, Representation_a
                 scalar = P._pbw(scalar)
                 monoid = P._pbw._indices
                 I = P._key_order
-                lift = P._pbw.element_class(P._pbw, {monoid(list(zip(I, m.exponents()))): coeff
-                                                     for m, coeff in self._monomial_coefficients.items()})
+                lift = P._pbw.element_class(
+                    P._pbw,
+                    {
+                        monoid(list(zip(I, m.exponents()))): coeff
+                        for m, coeff in self._monomial_coefficients.items()
+                    },
+                )
                 return P._project(scalar * lift)
 
             return super()._acted_upon_(scalar, self_on_left)

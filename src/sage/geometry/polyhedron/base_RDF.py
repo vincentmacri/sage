@@ -16,6 +16,7 @@ class Polyhedron_RDF(Polyhedron_base):
         A 0-dimensional polyhedron in RDF^2 defined as the convex hull of 1 vertex
         sage: TestSuite(p).run()
     """
+
     # 1e-6 is the cddf+ default fuzzy zero cutoff
 
     def _is_zero(self, x):

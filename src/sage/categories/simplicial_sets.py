@@ -59,6 +59,7 @@ class SimplicialSets(Category_singleton):
 
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -147,11 +148,11 @@ class SimplicialSets(Category_singleton):
                 ValueError: the point is not a simplex in this simplicial set
             """
             from sage.topology.simplicial_set import SimplicialSet
+
             if point.dimension() != 0:
                 raise ValueError('the "point" is not a zero-simplex')
             if point not in self._simplices:
-                raise ValueError('the point is not a simplex in this '
-                                 'simplicial set')
+                raise ValueError('the point is not a simplex in this simplicial set')
             return SimplicialSet(self.face_data(), base_point=point)
 
     class Homsets(HomsetsCategory):
@@ -168,10 +169,13 @@ class SimplicialSets(Category_singleton):
                         Simplicial set endomorphism of Torus
                           Defn: Identity map
                     """
-                    from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
-                    return SimplicialSetMorphism(domain=self.domain(),
-                                                 codomain=self.codomain(),
-                                                 identity=True)
+                    from sage.topology.simplicial_set_morphism import (
+                        SimplicialSetMorphism,
+                    )
+
+                    return SimplicialSetMorphism(
+                        domain=self.domain(), codomain=self.codomain(), identity=True
+                    )
 
     class Finite(CategoryWithAxiom):
         """
@@ -180,6 +184,7 @@ class SimplicialSets(Category_singleton):
         The objects are simplicial sets with finitely many
         non-degenerate simplices.
         """
+
         pass
 
     class SubcategoryMethods:
@@ -263,11 +268,14 @@ class SimplicialSets(Category_singleton):
                       Defn: Constant map at 1
                 """
                 from sage.topology.simplicial_set_examples import Point
+
                 if domain is None:
                     domain = Point()
                 else:
                     if len(domain._simplices) > 1:
-                        raise ValueError('domain has more than one nondegenerate simplex')
+                        raise ValueError(
+                            'domain has more than one nondegenerate simplex'
+                        )
                 target = self.base_point()
                 return domain.Hom(self).constant_map(point=target)
 
@@ -345,6 +353,7 @@ class SimplicialSets(Category_singleton):
                 """
                 # Import this here to prevent importing libgap upon startup.
                 from sage.groups.free_group import FreeGroup
+
                 if not self.n_cells(1):
                     return FreeGroup([]).quotient([])
                 FG = self._universal_cover_dict()[0]
@@ -366,6 +375,7 @@ class SimplicialSets(Category_singleton):
                     [1, f, f * f]
                 """
                 from sage.groups.free_group import FreeGroup
+
                 graph = self.graph()
                 if not self.is_connected():
                     graph = graph.subgraph(self.base_point())
@@ -388,7 +398,7 @@ class SimplicialSets(Category_singleton):
                         else:
                             # sigma is not in the correct connected component.
                             z[i] = FG.one()
-                    rels.append(z[0]*z[1].inverse()*z[2])
+                    rels.append(z[0] * z[1].inverse() * z[2])
                 G = FG.quotient(rels)
                 char = {g: G.gen(i) for i, g in enumerate(gens)}
                 for e in edges:
@@ -470,10 +480,13 @@ class SimplicialSets(Category_singleton):
                 """
                 from sage.topology.simplicial_set import AbstractSimplex, SimplicialSet
                 from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
+
                 char = dict(character.items())
                 G = list(char.values())[0].parent()
                 if not G.is_finite():
-                    raise NotImplementedError("can only compute universal covers of spaces with finite fundamental group")
+                    raise NotImplementedError(
+                        "can only compute universal covers of spaces with finite fundamental group"
+                    )
                 cells_dict = {}
                 faces_dict = {}
 
@@ -502,15 +515,28 @@ class SimplicialSets(Category_singleton):
                                 faces = self.faces(s)
                                 f0 = faces[0]
                                 for h in G:
-                                    if h == g*char[s]:
+                                    if h == g * char[s]:
                                         lifted = h
                                         break
-                                grelems = [cells_dict[(f0.nondegenerate(), lifted)].apply_degeneracies(*f0.degeneracies())]
-                                grelems.extend(cells_dict[(f.nondegenerate(), g)].apply_degeneracies(*f.degeneracies()) for f in faces[1:])
+                                grelems = [
+                                    cells_dict[
+                                        (f0.nondegenerate(), lifted)
+                                    ].apply_degeneracies(*f0.degeneracies())
+                                ]
+                                grelems.extend(
+                                    cells_dict[
+                                        (f.nondegenerate(), g)
+                                    ].apply_degeneracies(*f.degeneracies())
+                                    for f in faces[1:]
+                                )
                                 faces_dict[cell] = grelems
-                cover = SimplicialSet(faces_dict, base_point=cells_dict[(self.base_point(), G.one())])
+                cover = SimplicialSet(
+                    faces_dict, base_point=cells_dict[(self.base_point(), G.one())]
+                )
                 cover_map_data = {c: s[0] for (s, c) in cells_dict.items()}
-                return SimplicialSetMorphism(data=cover_map_data, domain=cover, codomain=self)
+                return SimplicialSetMorphism(
+                    data=cover_map_data, domain=cover, codomain=self
+                )
 
             def cover(self, character):
                 r"""
@@ -612,12 +638,21 @@ class SimplicialSets(Category_singleton):
                 QRP = R.quotient_ring(I)
                 res = {}
                 for s, el in d.items():
-                    res[s] = QRP(prod(images[abs(a)-1]**sign(a) for a in el.Tietze()))
+                    res[s] = QRP(
+                        prod(images[abs(a) - 1] ** sign(a) for a in el.Tietze())
+                    )
                 return res
 
-            def twisted_chain_complex(self, twisting_operator=None, dimensions=None, augmented=False,
-                                      cochain=False, verbose=False, subcomplex=None,
-                                      check=False):
+            def twisted_chain_complex(
+                self,
+                twisting_operator=None,
+                dimensions=None,
+                augmented=False,
+                cochain=False,
+                verbose=False,
+                subcomplex=None,
+                check=False,
+            ):
                 r"""
                 Return the normalized chain complex twisted by some operator.
 
@@ -701,6 +736,7 @@ class SimplicialSets(Category_singleton):
                 """
                 from sage.homology.chain_complex import ChainComplex
                 from sage.structure.element import get_coercion_model
+
                 cm = get_coercion_model()
 
                 if twisting_operator:
@@ -718,15 +754,18 @@ class SimplicialSets(Category_singleton):
                     if s.dimension() > 1:
                         return twist(self.face(s, s.dimension()))
                     return 1
+
                 base_ring = cm.common_parent(*twop.values())
 
                 if dimensions is None:
                     if not self.cells():  # Empty
                         if cochain:
-                            return ChainComplex({-1: matrix(base_ring, 0, 0)},
-                                                degree_of_differential=1)
-                        return ChainComplex({0: matrix(base_ring, 0, 0)},
-                                            degree_of_differential=-1)
+                            return ChainComplex(
+                                {-1: matrix(base_ring, 0, 0)}, degree_of_differential=1
+                            )
+                        return ChainComplex(
+                            {0: matrix(base_ring, 0, 0)}, degree_of_differential=-1
+                        )
                     dimensions = list(range(self.dimension() + 1))
                 else:
                     if not isinstance(dimensions, (list, tuple, range)):
@@ -765,9 +804,8 @@ class SimplicialSets(Category_singleton):
                     rank = 0
                     current = []
                 if augmented and first == 0:
-                    differentials[first-1] = matrix(base_ring, 0, 1)
-                    differentials[first] = matrix(base_ring, 1, rank,
-                                                  [1] * rank)
+                    differentials[first - 1] = matrix(base_ring, 0, 1)
+                    differentials[first] = matrix(base_ring, 1, rank, [1] * rank)
                 else:
                     differentials[first] = matrix(base_ring, 0, rank)
 
@@ -789,30 +827,36 @@ class SimplicialSets(Category_singleton):
                                 sign = 1
                                 twists = len(face_data[sigma]) * [1]
                                 twists[0] = twist(sigma)
-                                for (ch, tau) in zip(twists, face_data[sigma]):
+                                for ch, tau in zip(twists, face_data[sigma]):
                                     if tau.is_nondegenerate():
                                         row = faces[tau]
                                         if (row, col) in matrix_data:
-                                            matrix_data[(row, col)] += sign*ch
+                                            matrix_data[(row, col)] += sign * ch
                                         else:
-                                            matrix_data[(row, col)] = sign*ch
+                                            matrix_data[(row, col)] = sign * ch
                                     sign *= -1
 
-                            differentials[d] = matrix(base_ring, old_rank,
-                                                      rank, matrix_data, sparse=False)
+                            differentials[d] = matrix(
+                                base_ring, old_rank, rank, matrix_data, sparse=False
+                            )
 
                     else:
                         rank = 0
                         current = []
-                        differentials[d] = matrix(base_ring, old_rank, rank, sparse=False)
+                        differentials[d] = matrix(
+                            base_ring, old_rank, rank, sparse=False
+                        )
 
                 if cochain:
-                    new_diffs = {d - 1: diff_d.transpose()
-                                 for d, diff_d in differentials.items()}
-                    return ChainComplex(new_diffs, degree_of_differential=1,
-                                        check=check)
-                return ChainComplex(differentials, degree_of_differential=-1,
-                                    check=check)
+                    new_diffs = {
+                        d - 1: diff_d.transpose() for d, diff_d in differentials.items()
+                    }
+                    return ChainComplex(
+                        new_diffs, degree_of_differential=1, check=check
+                    )
+                return ChainComplex(
+                    differentials, degree_of_differential=-1, check=check
+                )
 
             def twisted_homology(self, n, reduced=False):
                 r"""
@@ -895,6 +939,7 @@ class SimplicialSets(Category_singleton):
                 """
                 from sage.libs.singular.function import singular_function
                 from sage.libs.singular.option import opt_verb
+
                 opt_verb['not_warn_sb'] = True
                 singstd = singular_function("std")
                 singsyz = singular_function("syz")
@@ -910,12 +955,13 @@ class SimplicialSets(Category_singleton):
                     if hasattr(p, "lift"):
                         return p.lift()._as_extended_polynomial()
                     return p._as_extended_polynomial()
+
                 M1 = M1.apply_map(convert_to_polynomial)
                 M2 = M2.apply_map(convert_to_polynomial)
                 RP = R._extended_ring
                 IP = RP.ideal([convert_to_polynomial(g) for g in I])
                 JP = R._extended_ring_ideal
-                GB = (IP+JP).groebner_basis()
+                GB = (IP + JP).groebner_basis()
                 GBI = RP.ideal(GB)
 
                 def reduce_laurent(a):
@@ -925,9 +971,9 @@ class SimplicialSets(Category_singleton):
                     res = RP.one()
                     for a in el.Tietze():
                         if a > 0:
-                            res *= RP.gen(2*a-2)
+                            res *= RP.gen(2 * a - 2)
                         else:
-                            res *= RP.gen(-2*a-1)
+                            res *= RP.gen(-2 * a - 1)
                     return res
 
                 def mkernel(M):
@@ -937,8 +983,8 @@ class SimplicialSets(Category_singleton):
                         return M.T
                     res = M
                     n = res.ncols()
-                    for g in (IP+JP).gens():
-                        res = res.stack(g*identity_matrix(n))
+                    for g in (IP + JP).gens():
+                        res = res.stack(g * identity_matrix(n))
                     syz = matrix(singsyz(res.T, ring=res.base_ring())).T
                     trimmed = syz.T.submatrix(0, 0, syz.ncols(), M.nrows())
                     trimmed = trimmed.apply_map(reduce_laurent)
@@ -950,7 +996,7 @@ class SimplicialSets(Category_singleton):
                         return S
                     res = M
                     for g in GB:
-                        res = res.stack(g*identity_matrix(M.ncols()))
+                        res = res.stack(g * identity_matrix(M.ncols()))
                     singres = matrix(singlift(res.T, S.T, ring=res.base_ring()))
                     return singres.submatrix(0, 0, M.nrows(), S.nrows())
 
@@ -959,9 +1005,11 @@ class SimplicialSets(Category_singleton):
                         return M
                     res = M
                     for g in GB:
-                        res = res.stack(g*identity_matrix(M.ncols()))
+                        res = res.stack(g * identity_matrix(M.ncols()))
                     sres = matrix(singstd(res.T, ring=RP))
-                    to_delete = [i for i, r in enumerate(sres.apply_map(reduce_laurent)) if not r]
+                    to_delete = [
+                        i for i, r in enumerate(sres.apply_map(reduce_laurent)) if not r
+                    ]
                     return sres.delete_rows(to_delete)
 
                 if M1.nrows() == 0:
@@ -983,7 +1031,7 @@ class SimplicialSets(Category_singleton):
                     SM = AM.submodule([])
                     opt_verb.reset_default()
                     return AM.quotient_module(SM)
-                for g in (IP+JP).gens():
+                for g in (IP + JP).gens():
                     resmat = resmat.stack(g * identity_matrix(resmat.ncols()))
                 if reduced:
                     resmat = matrix(singstd(resmat.T, ring=RP))
@@ -1045,8 +1093,9 @@ class SimplicialSets(Category_singleton):
                         # code reaches this point, but there are certainly
                         # groups for which these errors are raised. 'IsTrivial'
                         # works for all of the examples I've seen, though.
-                        raise ValueError('unable to determine if the fundamental '
-                                         'group is trivial')
+                        raise ValueError(
+                            'unable to determine if the fundamental group is trivial'
+                        )
 
             def connectivity(self, max_dim=None):
                 """
@@ -1099,19 +1148,20 @@ class SimplicialSets(Category_singleton):
                         # Note: at the moment, this will never be reached,
                         # because our only examples (so far) of infinite
                         # simplicial sets are not simply connected.
-                        raise ValueError('this simplicial set may be infinite, '
-                                         'so specify a maximum dimension through '
-                                         'which to check')
+                        raise ValueError(
+                            'this simplicial set may be infinite, '
+                            'so specify a maximum dimension through '
+                            'which to check'
+                        )
 
                 H = self.homology(range(2, max_dim + 1))
                 for i in range(2, max_dim + 1):
                     if i in H and H[i].order() != 1:
-                        return i-1
+                        return i - 1
                 return Infinity
 
         class Finite(CategoryWithAxiom):
             class ParentMethods:
-
                 def unset_base_point(self):
                     """
                     Return a copy of this simplicial set in which the base point has
@@ -1134,6 +1184,7 @@ class SimplicialSets(Category_singleton):
                         False
                     """
                     from sage.topology.simplicial_set import SimplicialSet
+
                     return SimplicialSet(self.face_data())
 
                 def fat_wedge(self, n):
@@ -1161,11 +1212,12 @@ class SimplicialSets(Category_singleton):
                         {0: 0, 1: Z x Z x Z x Z, 2: Z^6, 3: Z x Z x Z x Z}
                     """
                     from sage.topology.simplicial_set_examples import Point
+
                     if n == 0:
                         return Point()
                     if n == 1:
                         return self
-                    return self.product(*[self]*(n-1)).fat_wedge_as_subset()
+                    return self.product(*[self] * (n - 1)).fat_wedge_as_subset()
 
                 def smash_product(self, *others):
                     """
@@ -1192,5 +1244,8 @@ class SimplicialSets(Category_singleton):
                         sage: X.homology(reduced=False)                                 # needs sage.graphs sage.groups sage.modules
                         {0: Z, 1: 0, 2: Z x Z, 3: Z}
                     """
-                    from sage.topology.simplicial_set_constructions import SmashProductOfSimplicialSets_finite
+                    from sage.topology.simplicial_set_constructions import (
+                        SmashProductOfSimplicialSets_finite,
+                    )
+
                     return SmashProductOfSimplicialSets_finite((self,) + others)

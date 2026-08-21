@@ -1,7 +1,8 @@
 """
 Sum species
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -14,7 +15,7 @@ Sum species
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from .species import GenericCombinatorialSpecies
 from .structure import SpeciesStructureWrapper
 from sage.structure.unique_representation import UniqueRepresentation
@@ -105,8 +106,7 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: F._name()
             'Sum of (Permutation species) and (Permutation species)'
         """
-        return "Sum of (%s) and (%s)" % (self.left_summand(),
-                                         self.right_summand())
+        return "Sum of (%s) and (%s)" % (self.left_summand(), self.right_summand())
 
     def _structures(self, structure_class, labels):
         """
@@ -149,8 +149,9 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: F.generating_series()[:5]
             [2, 2, 2, 2, 2]
         """
-        return (self.left_summand().generating_series(base_ring) +
-                self.right_summand().generating_series(base_ring))
+        return self.left_summand().generating_series(
+            base_ring
+        ) + self.right_summand().generating_series(base_ring)
 
     def _itgs(self, series_ring, base_ring):
         """
@@ -163,8 +164,9 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: F.isotype_generating_series()[:5]                                     # needs sage.libs.flint
             [2, 2, 4, 6, 10]
         """
-        return (self.left_summand().isotype_generating_series(base_ring) +
-                self.right_summand().isotype_generating_series(base_ring))
+        return self.left_summand().isotype_generating_series(
+            base_ring
+        ) + self.right_summand().isotype_generating_series(base_ring)
 
     def _cis(self, series_ring, base_ring):
         """
@@ -181,8 +183,9 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
              2*p[1, 1, 1] + 2*p[2, 1] + 2*p[3],
              2*p[1, 1, 1, 1] + 2*p[2, 1, 1] + 2*p[2, 2] + 2*p[3, 1] + 2*p[4]]
         """
-        return (self.left_summand().cycle_index_series(base_ring) +
-                self.right_summand().cycle_index_series(base_ring))
+        return self.left_summand().cycle_index_series(
+            base_ring
+        ) + self.right_summand().cycle_index_series(base_ring)
 
     def weight_ring(self):
         """
@@ -204,8 +207,9 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: C.weight_ring()
             Univariate Polynomial Ring in t over Rational Field
         """
-        return self._common_parent([self.left_summand().weight_ring(),
-                                    self.right_summand().weight_ring()])
+        return self._common_parent(
+            [self.left_summand().weight_ring(), self.right_summand().weight_ring()]
+        )
 
     def _equation(self, var_mapping):
         """
@@ -223,5 +227,5 @@ class SumSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
         return sum(var_mapping[operand] for operand in self._state_info)
 
 
-#Backward compatibility
+# Backward compatibility
 SumSpecies_class = SumSpecies

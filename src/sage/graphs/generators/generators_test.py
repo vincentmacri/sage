@@ -12,7 +12,7 @@ def test_shortened_000_111_extended_binary_Golay_code_graph():
     from sage.coding import codes_catalog
     from sage.coding.linear_code import LinearCode
     from sage.graphs.generators.distance_regular import (
-        shortened_000_111_extended_binary_Golay_code_graph
+        shortened_000_111_extended_binary_Golay_code_graph,
     )
     from sage.matrix.constructor import matrix
     from sage.rings.finite_rings.finite_field_constructor import FiniteField

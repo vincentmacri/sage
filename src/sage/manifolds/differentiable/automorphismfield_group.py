@@ -28,7 +28,7 @@ REFERENCES:
 - Chap. 15 of [God1968]_
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2016 Travis Scrimshaw <tscrimsh@umn.edu>
 #
@@ -36,7 +36,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.groups import Groups
 from sage.manifolds.differentiable.automorphismfield import (
@@ -172,15 +172,15 @@ class AutomorphismFieldGroup(UniqueRepresentation, Parent):
         :class:`sage.manifolds.differentiable.tensorfield.TensorField`.
         """
         if not isinstance(vector_field_module, VectorFieldModule):
-            raise TypeError("{} is not a module of vector fields".format(
-                            vector_field_module))
+            raise TypeError(
+                "{} is not a module of vector fields".format(vector_field_module)
+            )
         Parent.__init__(self, category=Groups())
         self._vmodule = vector_field_module
 
     #### Parent methods ####
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct a field of tangent-space automorphisms.
 
@@ -212,11 +212,12 @@ class AutomorphismFieldGroup(UniqueRepresentation, Parent):
         elif comp == 1:
             return self.one()
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._vmodule, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(self._vmodule, name=name, latex_name=latex_name)
         if comp:
             resu.set_comp(frame)[:] = comp
         return resu
@@ -306,8 +307,9 @@ class AutomorphismFieldGroup(UniqueRepresentation, Parent):
         for dom in resu._domain._subsets:
             if dom.is_manifestly_parallelizable():
                 fmodule = dom.vector_field_module()
-                resu._restrictions[dom] = fmodule.identity_map(name='Id',
-                                                     latex_name=r'\mathrm{Id}')
+                resu._restrictions[dom] = fmodule.identity_map(
+                    name='Id', latex_name=r'\mathrm{Id}'
+                )
         resu._is_identity = True
         resu.set_immutable()
         return resu
@@ -348,6 +350,7 @@ class AutomorphismFieldGroup(UniqueRepresentation, Parent):
             \mathrm{GL}\left( \mathfrak{X}\left(M\right) \right)
         """
         from sage.misc.latex import latex
+
         return r"\mathrm{GL}\left(" + latex(self._vmodule) + r"\right)"
 
     def base_module(self):
@@ -382,7 +385,8 @@ class AutomorphismFieldGroup(UniqueRepresentation, Parent):
         return self._vmodule
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class AutomorphismFieldParalGroup(FreeModuleLinearGroup):
     r"""
@@ -598,6 +602,7 @@ class AutomorphismFieldParalGroup(FreeModuleLinearGroup):
             sage: TestSuite(G).run()
         """
         if not isinstance(vector_field_module, VectorFieldFreeModule):
-            raise TypeError("{} is not a free module of vector fields".format(
-                            vector_field_module))
+            raise TypeError(
+                "{} is not a free module of vector fields".format(vector_field_module)
+            )
         FreeModuleLinearGroup.__init__(self, vector_field_module)

@@ -19,9 +19,12 @@ AUTHORS:
 from sage.categories.hopf_algebras import HopfAlgebras
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.words.alphabet import Alphabet
-from sage.combinat.rooted_tree import (RootedTrees, RootedTree,
-                                       LabelledRootedTrees,
-                                       LabelledRootedTree)
+from sage.combinat.rooted_tree import (
+    RootedTrees,
+    RootedTree,
+    LabelledRootedTrees,
+    LabelledRootedTree,
+)
 from sage.categories.rings import Rings
 from sage.sets.family import Family
 from sage.rings.integer_ring import ZZ
@@ -140,6 +143,7 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
 
     - [GroLar1]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None):
         """
@@ -200,10 +204,9 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
         # so that one can restrict the labels to some fixed set
 
         cat = HopfAlgebras(R).WithBasis().Graded()
-        CombinatorialFreeModule.__init__(self, R, Trees,
-                                         latex_prefix='',
-                                         sorting_key=key,
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, Trees, latex_prefix='', sorting_key=key, category=cat
+        )
 
     def variable_names(self):
         r"""
@@ -310,8 +313,9 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
             (B[[[]]],)
         """
         Trees = self.basis().keys()
-        return tuple(Family(self._alphabet,
-                            lambda a: self.monomial(Trees([Trees([], a)], ROOT))))
+        return tuple(
+            Family(self._alphabet, lambda a: self.monomial(Trees([Trees([], a)], ROOT)))
+        )
 
     def _first_ngens(self, n):
         """
@@ -424,9 +428,10 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
             sage: A.product_on_basis(Tu, Tv)
             B[#[u[v[]]]] + B[#[u[], v[]]]
         """
-        return self.sum(self.basis()[x.single_graft(y, graftingFunction)]
-                        for graftingFunction in
-                        product(list(x.paths()), repeat=len(y)))
+        return self.sum(
+            self.basis()[x.single_graft(y, graftingFunction)]
+            for graftingFunction in product(list(x.paths()), repeat=len(y))
+        )
 
     def one_basis(self):
         """
@@ -487,10 +492,13 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
         subtrees = list(x)
         num_subtrees = len(subtrees)
         indx = list(range(num_subtrees))
-        return sum(B[Trees([subtrees[i] for i in S], ROOT)].tensor(
-                   B[Trees([subtrees[i] for i in indx if i not in S], ROOT)])
-                   for k in range(num_subtrees + 1)
-                   for S in combinations(indx, k))
+        return sum(
+            B[Trees([subtrees[i] for i in S], ROOT)].tensor(
+                B[Trees([subtrees[i] for i in indx if i not in S], ROOT)]
+            )
+            for k in range(num_subtrees + 1)
+            for S in combinations(indx, k)
+        )
 
     def counit_on_basis(self, x):
         """
@@ -533,10 +541,12 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
             return self.one()
         num_subtrees = len(subtrees)
         indx = list(range(num_subtrees))
-        return sum(- self.antipode_on_basis(Trees([subtrees[i] for i in S], ROOT))
-                   * B[Trees([subtrees[i] for i in indx if i not in S], ROOT)]
-                   for k in range(num_subtrees)
-                   for S in combinations(indx, k))
+        return sum(
+            -self.antipode_on_basis(Trees([subtrees[i] for i in S], ROOT))
+            * B[Trees([subtrees[i] for i in indx if i not in S], ROOT)]
+            for k in range(num_subtrees)
+            for S in combinations(indx, k)
+        )
 
     def _element_constructor_(self, x):
         r"""
@@ -577,8 +587,7 @@ class GrossmanLarsonAlgebra(CombinatorialFreeModule):
             ...
             TypeError: not able to convert this to this algebra
         """
-        if (isinstance(x, (RootedTree, LabelledRootedTree))
-                and x in self.basis().keys()):
+        if isinstance(x, (RootedTree, LabelledRootedTree)) and x in self.basis().keys():
             if hasattr(x, 'label') and x.label() != ROOT:
                 raise ValueError('incorrect root label')
             return self.monomial(x)

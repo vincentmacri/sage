@@ -132,8 +132,9 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
             sage: s[2,1]^2
             s[2, 2, 1, 1] + s[2, 2, 2] + s[3, 1, 1, 1] + s[3, 3] + s[4, 1, 1] + s[4, 2]
         """
-        return self.element_class(self, convert_remove_zeroes(lrcalc.mult(left, right),
-                                                              self.base_ring()))
+        return self.element_class(
+            self, convert_remove_zeroes(lrcalc.mult(left, right), self.base_ring())
+        )
 
     def coproduct_on_basis(self, mu):
         r"""
@@ -166,8 +167,9 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
             1/2*s[] # s[2] + 1/2*s[1] # s[1] + 1/2*s[2] # s[]
         """
         T = self.tensor_square()
-        return T.element_class(T, convert_remove_zeroes(lrcalc.coprod(mu, all=1),
-                                                        self.base_ring()))
+        return T.element_class(
+            T, convert_remove_zeroes(lrcalc.coprod(mu, all=1), self.base_ring())
+        )
 
     def _element_constructor_(self, x):
         """
@@ -219,10 +221,11 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
         r = len(nu) + len(la)
         ga = [a - b for a, b in zip(nu + la.to_list(), range(-r, 0))]
         if r == len(set(ga)) and min(ga) > 0:
-            m = sum(1 for i in range(len(ga)) for j in range(i, len(ga))
-                    if ga[i] < ga[j])
+            m = sum(
+                1 for i in range(len(ga)) for j in range(i, len(ga)) if ga[i] < ga[j]
+            )
             ga.sort(reverse=True)
-            return (-1)**m * self([a + b for a, b in zip(ga, range(-r, 0))])
+            return (-1) ** m * self([a + b for a, b in zip(ga, range(-r, 0))])
         return self.zero()
 
     def _magma_init_(self, magma):
@@ -538,19 +541,20 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
             s_coords_of_self = self.monomial_coefficients().items()
             result = parent.zero()
             from sage.combinat.permutation import Permutation
-            for (lam, coeff) in s_coords_of_self:
+
+            for lam, coeff in s_coords_of_self:
                 if len(lam.core(n)) == 0:
                     quotient = lam.quotient(n)
-                    quotient_prod = parent.prod(parent(part)
-                                                for part in quotient)
+                    quotient_prod = parent.prod(parent(part) for part in quotient)
                     # Now, compute the sign of quotient_prod in the
                     # n-th Verschiebung of lam.
                     len_lam = len(lam)
-                    ns = len_lam + ((- len_lam) % n)
-                    s = ns // n   # This is actually ns / n, as we have n | ns.
+                    ns = len_lam + ((-len_lam) % n)
+                    s = ns // n  # This is actually ns / n, as we have n | ns.
                     beta_list = lam.beta_numbers(ns)
-                    zipped_beta_list = sorted(zip(beta_list, range(1, ns + 1)),
-                                              key=lambda a: (-1 - a[0]) % n)
+                    zipped_beta_list = sorted(
+                        zip(beta_list, range(1, ns + 1)), key=lambda a: (-1 - a[0]) % n
+                    )
                     # We are using the fact that sort is a stable sort.
                     perm_list = [a[1] for a in zipped_beta_list]
                     if Permutation(perm_list).sign() == 1:
@@ -687,8 +691,7 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
             if n == 1:
                 R = self.base_ring()
                 mc = self.monomial_coefficients(copy=False).items()
-                return R.sum(c for partition, c in mc
-                             if len(partition) <= 1)
+                return R.sum(c for partition, c in mc if len(partition) <= 1)
 
             def get_variable(ring, name):
                 try:
@@ -697,43 +700,60 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q is None:
                 q = get_variable(self.base_ring(), 'q')
             if q == 1:
                 if n == infinity:
-                    raise ValueError("the stable principal specialization at q=1 is not defined")
-                f = lambda partition: (prod(n+j-i for (i, j) in partition.cells())
-                                       // prod(h for h in partition.hooks()))
+                    raise ValueError(
+                        "the stable principal specialization at q=1 is not defined"
+                    )
+                f = lambda partition: (
+                    prod(n + j - i for (i, j) in partition.cells())
+                    // prod(h for h in partition.hooks())
+                )
             elif n == infinity:
-                f = lambda partition: (q**sum(i*part for i, part in enumerate(partition))
-                                       / prod(1-q**h for h in partition.hooks()))
+                f = lambda partition: (
+                    q ** sum(i * part for i, part in enumerate(partition))
+                    / prod(1 - q**h for h in partition.hooks())
+                )
             else:
                 from sage.rings.integer_ring import ZZ
+
                 ZZq = PolynomialRing(ZZ, "q")
                 q_lim = ZZq.gen()
 
                 def f(partition):
                     if n < len(partition):
                         return 0
-                    power = q**sum(i * part for i, part in enumerate(partition))
+                    power = q ** sum(i * part for i, part in enumerate(partition))
                     denom = prod(1 - q**h for h in partition.hooks())
                     try:
                         ~denom
-                        rational = (power
-                                    * prod(1-q**(n+j-i)
-                                           for (i, j) in partition.cells())
-                                    / denom)
+                        rational = (
+                            power
+                            * prod(1 - q ** (n + j - i) for (i, j) in partition.cells())
+                            / denom
+                        )
                         return q.parent()(rational)
                     except (ZeroDivisionError, NotImplementedError, TypeError):
                         # If denom is not invertible, we need to do the
                         # computation with universal coefficients instead:
-                        quotient = ZZq((prod(1-q_lim**(n+j-i)
-                                             for (i, j) in partition.cells()))
-                                       / prod(1-q_lim**h for h in partition.hooks()))
+                        quotient = ZZq(
+                            (
+                                prod(
+                                    1 - q_lim ** (n + j - i)
+                                    for (i, j) in partition.cells()
+                                )
+                            )
+                            / prod(1 - q_lim**h for h in partition.hooks())
+                        )
                         return power * quotient.subs({q_lim: q})
 
             return self.parent()._apply_module_morphism(self, f, q.parent())
@@ -832,6 +852,7 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
                 sage: s.zero().exponential_specialization()
                 0
             """
+
             def get_variable(ring, name):
                 try:
                     ring(name)
@@ -839,9 +860,12 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q == 1:
                 if t is None:
@@ -849,8 +873,9 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
 
                 def f(partition):
                     n = partition.size()
-                    return (StandardTableaux(partition).cardinality()
-                            * t**n / factorial(n))
+                    return (
+                        StandardTableaux(partition).cardinality() * t**n / factorial(n)
+                    )
 
                 return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -862,9 +887,11 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
             elif t is None:
                 t = get_variable(q.parent(), 't')
 
-            f = lambda partition: (t**partition.size()
-                                   * q**sum(i*part for i, part in enumerate(partition))
-                                   / prod(sum(q**i for i in range(h)) for h in partition.hooks()))
+            f = lambda partition: (
+                t ** partition.size()
+                * q ** sum(i * part for i, part in enumerate(partition))
+                / prod(sum(q**i for i in range(h)) for h in partition.hooks())
+            )
 
             return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -872,6 +899,8 @@ class SymmetricFunctionAlgebra_schur(classical.SymmetricFunctionAlgebra_classica
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.schur',
-                           'SymmetricFunctionAlgebraElement_schur',
-                           SymmetricFunctionAlgebra_schur.Element)
+register_unpickle_override(
+    'sage.combinat.sf.schur',
+    'SymmetricFunctionAlgebraElement_schur',
+    SymmetricFunctionAlgebra_schur.Element,
+)

@@ -177,8 +177,10 @@ def bch_iterator(X=None, Y=None):
 
     R = L.base_ring()
     if not R.has_coerce_map_from(QQ):
-        raise TypeError("the BCH formula is not well defined since %s "
-                        "has no coercion from %s" % (R, QQ))
+        raise TypeError(
+            "the BCH formula is not well defined since %s "
+            "has no coercion from %s" % (R, QQ)
+        )
 
     xdif = X - Y
     Z = [0, X + Y]  # 1-based indexing for convenience
@@ -201,7 +203,7 @@ def bch_iterator(X=None, Y=None):
             if p <= len(norm_ber):
                 norm_ber.append(bernoulli(2 * p) / QQ(factorial(2 * p)))
             coeff = norm_ber[p] / QQ(m)
-            partitions = IntegerListsLex(m-1, length=2*p, min_part=1)
+            partitions = IntegerListsLex(m - 1, length=2 * p, min_part=1)
             temp = L.zero()
             for kvec in partitions:
                 W = Z[1]

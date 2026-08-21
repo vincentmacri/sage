@@ -79,7 +79,6 @@ lazy_import('matplotlib.figure', 'Figure')
 
 
 class SageDisplayFormatter(DisplayFormatter):
-
     def __init__(self, *args, **kwds):
         """
         This is where the Sage rich objects are translated to IPython.
@@ -99,13 +98,16 @@ class SageDisplayFormatter(DisplayFormatter):
         """
         super().__init__(*args, **kwds)
         from sage.repl.rich_output.display_manager import get_display_manager
+
         self.dm = get_display_manager()
         from sage.repl.rich_output.backend_ipython import BackendIPython
+
         self.dm.check_backend_class(BackendIPython)
 
         pt_formatter = self.formatters[PLAIN_TEXT]
-        pt_formatter.observe(self._ipython_float_precision_changed,
-                             names=['float_precision'])
+        pt_formatter.observe(
+            self._ipython_float_precision_changed, names=['float_precision']
+        )
 
     def format(self, obj, include=None, exclude=None):
         r"""
@@ -187,9 +189,11 @@ class SageDisplayFormatter(DisplayFormatter):
 
         # use Sage rich output for any except those native to IPython, but only
         # if it is not plain and dull
-        if (not isinstance(obj, IPYTHON_NATIVE_TYPES) and
-            not set(sage_format.keys()).issubset([PLAIN_TEXT]) and
-                not isinstance(obj, Figure)):
+        if (
+            not isinstance(obj, IPYTHON_NATIVE_TYPES)
+            and not set(sage_format.keys()).issubset([PLAIN_TEXT])
+            and not isinstance(obj, Figure)
+        ):
             return sage_format, sage_metadata
 
         if self.ipython_display_formatter(obj):
@@ -250,7 +254,6 @@ class SageDisplayFormatter(DisplayFormatter):
 
 
 class SagePlainTextFormatter(PlainTextFormatter):
-
     def __init__(self, *args, **kwds):
         r"""
         Improved plain text IPython formatter.
@@ -305,12 +308,12 @@ class SagePlainTextFormatter(PlainTextFormatter):
             '[\n[1 0]  [1 0]\n[0 1], [0 1]\n]'
         """
         from sage.doctest import DOCTEST_MODE
+
         if DOCTEST_MODE:
             # Just to show that this is never executed in any other doctests in the Sage library
             print('---- calling ipython formatter ----')
         stream = StringIO()
-        printer = SagePrettyPrinter(
-            stream, self.max_width, self.newline)
+        printer = SagePrettyPrinter(stream, self.max_width, self.newline)
         printer.pretty(obj)
         printer.flush()
         return stream.getvalue()

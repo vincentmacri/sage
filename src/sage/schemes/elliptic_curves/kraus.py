@@ -96,7 +96,7 @@ def c4c6_nonsingular(c4, c6):
     """
     if not (c4.is_integral() and c6.is_integral()):
         return False
-    D = (c4**3-c6**2)/1728
+    D = (c4**3 - c6**2) / 1728
     return not D.is_zero() and D.is_integral()
 
 
@@ -132,9 +132,10 @@ def c4c6_model(c4, c6, assume_nonsingular=False):
         Elliptic Curve defined by y^2 = x^3 - 7/3*x + 107/108 over Rational Field
     """
     if not assume_nonsingular:
-        if not c4c6_nonsingular(c4,c6):
+        if not c4c6_nonsingular(c4, c6):
             return None
-    return EllipticCurve([0,0,0,-c4/48,-c6/864])
+    return EllipticCurve([0, 0, 0, -c4 / 48, -c6 / 864])
+
 
 # Arithmetic utility functions
 
@@ -184,7 +185,7 @@ def make_integral(a, P, e):
         ArithmeticError: Cannot lift 1/10*a to O_K mod (Fractional ideal (2, a))^2
     """
     for b in (P**e).residues():
-        if (a-b).valuation(P) >= e:
+        if (a - b).valuation(P) >= e:
             return b
     raise ArithmeticError("Cannot lift %s to O_K mod (%s)^%s" % (a, P, e))
 
@@ -225,9 +226,10 @@ def sqrt_mod_4(x, P):
     e = P.ramification_index()
     P2 = P**e
     for r in P2.residues():
-        if (r*r-x).valuation(P) >= 2*e:
+        if (r * r - x).valuation(P) >= 2 * e:
             return True, r
     return False, 0
+
 
 # Kraus test and check for primes dividing 3:
 
@@ -293,8 +295,8 @@ def check_b2_local(c4, c6, P, b2, debug=False):
          by y^2 = x^3 + (1/4*a+1/4)*x^2 + (10091/8*a-128595/16)*x + (4097171/64*a-19392359/64)
          over Number Field in a with defining polynomial x^2 - 10
     """
-    E = c4c6_model(c4,c6).rst_transform(b2/12,0,0)
-    if not (c4,c6) == E.c_invariants():
+    E = c4c6_model(c4, c6).rst_transform(b2 / 12, 0, 0)
+    if not (c4, c6) == E.c_invariants():
         if debug:
             print("check_b2_local: wrong c-invariants at P=%s" % P)
         return False
@@ -341,13 +343,12 @@ def check_b2_global(c4, c6, b2, debug=False):
         check_b2_global: not integral at all primes dividing 3
         False
     """
-    E = c4c6_model(c4,c6).rst_transform(b2/12,0,0)
-    if not (c4,c6) == E.c_invariants():
+    E = c4c6_model(c4, c6).rst_transform(b2 / 12, 0, 0)
+    if not (c4, c6) == E.c_invariants():
         if debug:
             print("check_b2_global: wrong c-invariants")
         return False
-    if not all(E.is_local_integral_model(P)
-               for P in c4.parent().primes_above(3)):
+    if not all(E.is_local_integral_model(P) for P in c4.parent().primes_above(3)):
         if debug:
             print("check_b2_global: not integral at all primes dividing 3")
         return False
@@ -398,31 +399,32 @@ def check_Kraus_local_3(c4, c6, P, assume_nonsingular=False, debug=False):
         (True, a)
     """
     if not assume_nonsingular:
-        if not c4c6_nonsingular(c4,c6):
+        if not c4c6_nonsingular(c4, c6):
             return False, 0
     e = P.ramification_index()
     P3 = P**e
     if c4.valuation(P) == 0:
-        b2 = (-c6*c4.inverse_mod(P3)).mod(P3)
+        b2 = (-c6 * c4.inverse_mod(P3)).mod(P3)
         if debug:
-            assert check_b2_local(c4,c6,P,b2)
+            assert check_b2_local(c4, c6, P, b2)
         return True, b2
-    if c6.valuation(P) >= 3*e:
+    if c6.valuation(P) >= 3 * e:
         b2 = c6.parent().zero()
         if debug:
-            assert check_b2_local(c4,c6,P,b2)
+            assert check_b2_local(c4, c6, P, b2)
         return True, b2
     # check for a solution x to x^3-3*x*c4-26=0 (27), such an x must
     # also satisfy x*c4+c6=0 (3) and x^2=c4 (3) and x^3=-c6 (9), and
     # if x is a solution then so is any x'=x (3) so it is enough to
     # check residues mod 3.
     for x in P3.residues():
-        if (x*c4+c6).valuation(P) >= e:
-            if (x*(x*x-3*c4)-2*c6).valuation(P) >= 3*e:
+        if (x * c4 + c6).valuation(P) >= e:
+            if (x * (x * x - 3 * c4) - 2 * c6).valuation(P) >= 3 * e:
                 if debug:
-                    assert check_b2_local(c4,c6,P,x)
+                    assert check_b2_local(c4, c6, P, x)
                 return True, x
     return False, 0
+
 
 # Kraus test and check for primes dividing 2:
 
@@ -461,8 +463,8 @@ def check_a1a3_local(c4, c6, P, a1, a3, debug=False):
         check_a1a3_local: not integral at Fractional ideal (2, a)
         False
     """
-    E = c4c6_model(c4,c6).rst_transform(a1**2/12,a1/2,a3/2)
-    if not (c4,c6) == E.c_invariants():
+    E = c4c6_model(c4, c6).rst_transform(a1**2 / 12, a1 / 2, a3 / 2)
+    if not (c4, c6) == E.c_invariants():
         if debug:
             print("check_a1a3_local: wrong c-invariants at P=%s" % P)
         return False
@@ -504,13 +506,12 @@ def check_a1a3_global(c4, c6, a1, a3, debug=False):
          y^2 + a*x*y = x^3 + (3784/3*a-24106/3)*x + (1772120/27*a-2790758/9)
          over Number Field in a with defining polynomial x^2 - 10
     """
-    E = c4c6_model(c4,c6).rst_transform(a1**2/12,a1/2,a3/2)
+    E = c4c6_model(c4, c6).rst_transform(a1**2 / 12, a1 / 2, a3 / 2)
     if not (c4, c6) == E.c_invariants():
         if debug:
             print("wrong c-invariants")
         return False
-    if not all(E.is_local_integral_model(P)
-               for P in c4.parent().primes_above(2)):
+    if not all(E.is_local_integral_model(P) for P in c4.parent().primes_above(2)):
         if debug:
             print("not integral at all primes above 2")
         return False
@@ -548,8 +549,8 @@ def check_rst_global(c4, c6, r, s, t, debug=False):
         sage: check_rst_global(c4,c6,a, 3, -89*a, debug=False)
         False
     """
-    E = c4c6_model(c4,c6).rst_transform(r,s,t)
-    if not (c4,c6) == E.c_invariants():
+    E = c4c6_model(c4, c6).rst_transform(r, s, t)
+    if not (c4, c6) == E.c_invariants():
         if debug:
             print("test_rst_global: wrong c-invariants")
         return False
@@ -558,11 +559,12 @@ def check_rst_global(c4, c6, r, s, t, debug=False):
             print("test_rst_global: not integral at some prime")
             print(E.ainvs())
             K = E.base_field()
-            for P in K.primes_above(2)+K.primes_above(3):
+            for P in K.primes_above(2) + K.primes_above(3):
                 if not E.is_local_integral_model(P):
                     print(" -- not integral at P=%s" % P)
         return False
     return E
+
 
 # When a1 is None this function finds a pair a1, a3 such that there is
 # a model with these invariants and a2=0 with the given c4, c6,
@@ -615,54 +617,55 @@ def check_Kraus_local_2(c4, c6, P, a1=None, assume_nonsingular=False):
         (True, a, 0)
     """
     if not assume_nonsingular:
-        if not c4c6_nonsingular(c4,c6):
-            return False,0,0
+        if not c4c6_nonsingular(c4, c6):
+            return False, 0, 0
     e = P.ramification_index()
     P2 = P**e
     c4val = c4.valuation(P)
 
     if c4val == 0:
         if a1 is None:
-            flag, t = sqrt_mod_4(-c6,P)
+            flag, t = sqrt_mod_4(-c6, P)
             if not flag:
-                return False,0,0
+                return False, 0, 0
             # In the assignment to a1, a3 we divide by units at P,
             # (note that c6+a1**6 = 0 mod P**e so dividing by 4 is OK)
             # but the results, which are well-defined modulo P^e, may
             # not be globally integral
-            a1 = make_integral(c4/t,P,e)
+            a1 = make_integral(c4 / t, P, e)
         a13 = a1**3
-        a3 = make_integral((c6+a13**2)/(4*a13),P,2*e)
-        if check_a1a3_local(c4,c6,P,a1,a3):
-            return True, a1,a3
+        a3 = make_integral((c6 + a13**2) / (4 * a13), P, 2 * e)
+        if check_a1a3_local(c4, c6, P, a1, a3):
+            return True, a1, a3
         raise RuntimeError("check_Kraus_local_2 fails")
 
-    if c4val >= 4*e:
+    if c4val >= 4 * e:
         if a1 is None:
-            a1 = c4.parent().zero() # 0
-        flag, a3 = sqrt_mod_4(c6/8,P)
+            a1 = c4.parent().zero()  # 0
+        flag, a3 = sqrt_mod_4(c6 / 8, P)
         if flag:
-            if check_a1a3_local(c4,c6,P,a1,a3):
-                return True, a1,a3
+            if check_a1a3_local(c4, c6, P, a1, a3):
+                return True, a1, a3
             raise RuntimeError("check_Kraus_local_2 fails")
         else:
-            return False,0,0
+            return False, 0, 0
 
     # val(c4) strictly between 0 and 4e; a1 unique mod 2, with 3 conditions to be satisfied:
 
     P2res = [a1] if a1 else P2.residues()
     for a1 in P2res:
-        Px = -a1**6+3*a1**2*c4+2*c6
-        if Px.valuation(P) >= 4*e:                                   # (i)
-            flag, a3 = sqrt_mod_4(Px/16,P)                           # (ii)
+        Px = -(a1**6) + 3 * a1**2 * c4 + 2 * c6
+        if Px.valuation(P) >= 4 * e:  # (i)
+            flag, a3 = sqrt_mod_4(Px / 16, P)  # (ii)
             if flag:
-                a1sq = a1*a1
-                if (4*a1sq*Px-(a1sq**2-c4)**2).valuation(P) >= 8*e:  # (iii)
-                    if check_a1a3_local(c4,c6,P,a1,a3):
+                a1sq = a1 * a1
+                if (4 * a1sq * Px - (a1sq**2 - c4) ** 2).valuation(P) >= 8 * e:  # (iii)
+                    if check_a1a3_local(c4, c6, P, a1, a3):
                         return True, a1, a3
                     raise RuntimeError("check_Kraus_local_2 fails")
     # end of loop, but no a1 found
     return False, 0, 0
+
 
 # Wrapper function for local Kraus check, outsources the real work to
 # other functions for primes dividing 2 or 3:
@@ -722,24 +725,24 @@ def check_Kraus_local(c4, c6, P, assume_nonsingular=False):
         (False, None)
     """
     if not assume_nonsingular:
-        if not c4c6_nonsingular(c4,c6):
+        if not c4c6_nonsingular(c4, c6):
             return False, None
     K = c4.parent()
     if K(2).valuation(P) > 0:
-        flag, a1, a3 = check_Kraus_local_2(c4,c6,P,None,True)
+        flag, a1, a3 = check_Kraus_local_2(c4, c6, P, None, True)
         if flag:
-            E = check_a1a3_local(c4,c6,P,a1,a3)
+            E = check_a1a3_local(c4, c6, P, a1, a3)
             if E:
                 return (True, E)
         return (False, None)
     if K(3).valuation(P) > 0:
-        flag, b2 = check_Kraus_local_3(c4,c6,P,True)
+        flag, b2 = check_Kraus_local_3(c4, c6, P, True)
         if flag:
-            E = check_b2_local(c4,c6,P,b2)
+            E = check_b2_local(c4, c6, P, b2)
             if E:
                 return (True, E)
         return (False, None)
-    return (True, c4c6_model(c4,c6))
+    return (True, c4c6_model(c4, c6))
 
 
 def check_Kraus_global(c4, c6, assume_nonsingular=False, debug=False):
@@ -807,33 +810,39 @@ def check_Kraus_global(c4, c6, assume_nonsingular=False, debug=False):
          over Number Field in b with defining polynomial x^6 - 42*x^4 + 441*x^2 - 697
     """
     if not assume_nonsingular:
-        if not c4c6_nonsingular(c4,c6):
+        if not c4c6_nonsingular(c4, c6):
             return False
 
     # Check all primes dividing 3; for each get the value of b2
     K = c4.parent()
     three = K.ideal(3)
     Plist3 = K.primes_above(3)
-    dat = [check_Kraus_local_3(c4,c6,P,True) for P in Plist3]
+    dat = [check_Kraus_local_3(c4, c6, P, True) for P in Plist3]
     if not all(d[0] for d in dat):
         if debug:
-            print("Local Kraus condition for (c4,c6)=(%s,%s) fails at some prime dividing 3" % (c4,c6))
+            print(
+                "Local Kraus condition for (c4,c6)=(%s,%s) fails at some prime dividing 3"
+                % (c4, c6)
+            )
         return False
     if debug:
-        print("Local Kraus conditions for (c4,c6)=(%s,%s) pass at all primes dividing 3" % (c4,c6))
+        print(
+            "Local Kraus conditions for (c4,c6)=(%s,%s) pass at all primes dividing 3"
+            % (c4, c6)
+        )
 
     # OK at all primes dividing 3; now use CRT to combine the b2
     # values to get a single residue class for b2 mod 3:
 
     b2list = [d[1] for d in dat]
-    P3list = [P**three.valuation(P) for P in Plist3]
-    b2 = K.solve_CRT(b2list,P3list, check=True).mod(three)
+    P3list = [P ** three.valuation(P) for P in Plist3]
+    b2 = K.solve_CRT(b2list, P3list, check=True).mod(three)
 
     # test that this b2 value works at all P|3:
     if debug:
-        E = check_b2_global(c4,c6,b2)
+        E = check_b2_global(c4, c6, b2)
         if E:
-            print("Using b2=%s gives a model integral at 3:\n%s" % (b2,E.ainvs()))
+            print("Using b2=%s gives a model integral at 3:\n%s" % (b2, E.ainvs()))
         else:
             raise RuntimeError("Error in check_Kraus_global at some prime dividing 3")
 
@@ -845,31 +854,40 @@ def check_Kraus_global(c4, c6, assume_nonsingular=False, debug=False):
     dat = [check_Kraus_local_2(c4, c6, P, None, True) for P in Plist2]
     if not all(d[0] for d in dat):
         if debug:
-            print("Local Kraus condition for (c4,c6)=(%s,%s) fails at some prime dividing 2" % (c4, c6))
+            print(
+                "Local Kraus condition for (c4,c6)=(%s,%s) fails at some prime dividing 2"
+                % (c4, c6)
+            )
         return False
     if debug:
-        print("Local Kraus conditions for (c4,c6)=(%s,%s) pass at all primes dividing 2" % (c4,c6))
+        print(
+            "Local Kraus conditions for (c4,c6)=(%s,%s) pass at all primes dividing 2"
+            % (c4, c6)
+        )
 
     # OK at all primes dividing 2; now use CRT to combine the a1
     # values to get the residue classes of a1 mod 2:
-    P2list = [P**(two.valuation(P)) for P in Plist2]
+    P2list = [P ** (two.valuation(P)) for P in Plist2]
     a1list = [d[1] for d in dat]
-    a1 = K.solve_CRT(a1list,P2list, check=True)
+    a1 = K.solve_CRT(a1list, P2list, check=True)
     # See comment below: this is needed for when we combine with the primes above 3.
     if a1 not in three:  # three.divides(a1) causes a segfault
-        a1 = 3*a1
+        a1 = 3 * a1
 
     # Using this a1, recompute the local a3's:
-    dat = [check_Kraus_local_2(c4,c6,P,a1,True) for P in Plist2]
+    dat = [check_Kraus_local_2(c4, c6, P, a1, True) for P in Plist2]
     # Use CRT to combine these:
     a3list = [d[2] for d in dat]
-    a3 = K.solve_CRT(a3list,P2list, check=True)
+    a3 = K.solve_CRT(a3list, P2list, check=True)
 
     # test that these a1,a3 values work at all P|2:
     if debug:
-        E = check_a1a3_global(c4,c6,a1,a3,debug)
+        E = check_a1a3_global(c4, c6, a1, a3, debug)
         if E:
-            print("Using (a1,a3)=(%s,%s) gives a model integral at 2:\n%s" % (a1,a3,E.ainvs()))
+            print(
+                "Using (a1,a3)=(%s,%s) gives a model integral at 2:\n%s"
+                % (a1, a3, E.ainvs())
+            )
         else:
             raise RuntimeError("Error in check_Kraus_global at some prime dividing 2")
 
@@ -888,27 +906,34 @@ def check_Kraus_global(c4, c6, assume_nonsingular=False, debug=False):
     # multiplying a1 by 3 if necessary.  We did this above.
 
     if debug:
-        print("(a1, b2, a3) = (%s, %s, %s)" % (a1,b2,a3))
+        print("(a1, b2, a3) = (%s, %s, %s)" % (a1, b2, a3))
     assert a1.is_integral()
     assert a3.is_integral()
     assert b2.is_integral()
-    s = a1/2
-    r = b2/3 - s**2
-    t = s*(b2-a1**2)/3 + a3/2
+    s = a1 / 2
+    r = b2 / 3 - s**2
+    t = s * (b2 - a1**2) / 3 + a3 / 2
     if debug:
-        print("Using (r, s, t)=(%s, %s, %s) should give a global integral model..." % (r,s,t))
+        print(
+            "Using (r, s, t)=(%s, %s, %s) should give a global integral model..."
+            % (r, s, t)
+        )
 
     # Final computation of the curve E:
-    E = check_rst_global(c4,c6,r,s,t,debug)
+    E = check_rst_global(c4, c6, r, s, t, debug)
     if not E:
         if debug:
-            print("Error in check_Kraus_global with combining mod-2 and mod-3 transforms")
-            E = c4c6_model(c4,c6).rst_transform(r,s,t)
+            print(
+                "Error in check_Kraus_global with combining mod-2 and mod-3 transforms"
+            )
+            E = c4c6_model(c4, c6).rst_transform(r, s, t)
             print("Transformed model is %a" % (E.ainvs(),))
-            for P in Plist2+Plist3:
+            for P in Plist2 + Plist3:
                 if not E.is_local_integral_model(P):
                     print("Not integral at P=%s" % P)
-        raise RuntimeError("Error in check_Kraus_global combining transforms at 2 and 3")
+        raise RuntimeError(
+            "Error in check_Kraus_global combining transforms at 2 and 3"
+        )
 
     # Success!
     if debug:
@@ -992,7 +1017,10 @@ def semi_global_minimal_model(E, debug=False):
         P = E.base_field().ideal(1)
     else:
         if debug:
-            print("No global minimal model, obstruction class = %s of order %s" % (c, c.order()))
+            print(
+                "No global minimal model, obstruction class = %s of order %s"
+                % (c, c.order())
+            )
         bound = E.base_field().minkowski_bound().round() * 5
         have_prime = False
         while not have_prime:

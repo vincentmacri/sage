@@ -169,8 +169,7 @@ def CFiniteSequences(base_ring, names=None, category=None):
     return CFiniteSequences_generic(polynomial_ring, category)
 
 
-class CFiniteSequence(FieldElement,
-                      metaclass=InheritComparisonClasscallMetaclass):
+class CFiniteSequence(FieldElement, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     Create a C-finite sequence given its ordinary generating function.
 
@@ -250,6 +249,7 @@ class CFiniteSequence(FieldElement,
         ...
         NotImplementedError: Multidimensional o.g.f. not implemented.
     """
+
     @staticmethod
     def __classcall_private__(cls, ogf):
         r"""
@@ -320,10 +320,14 @@ class CFiniteSequence(FieldElement,
                 # method, but symbolic elements don't have the gens method so we check both
 
         if not variables:
-            parent = CFiniteSequences(QQ)  # if we cannot find variables, we create the default parent (with x)
+            parent = CFiniteSequences(
+                QQ
+            )  # if we cannot find variables, we create the default parent (with x)
         else:
             parent = CFiniteSequences(QQ, variables)
-        return parent(ogf)  # if ogf cannot be converted to a fraction field, this will break and raise the proper error
+        return parent(
+            ogf
+        )  # if ogf cannot be converted to a fraction field, this will break and raise the proper error
 
     def __init__(self, parent, ogf):
         r"""
@@ -676,7 +680,7 @@ class CFiniteSequence(FieldElement,
             x = P.gen()
             while n:
                 nden = den(-x)
-                num = P((num * nden).list()[n % 2::2])
+                num = P((num * nden).list()[n % 2 :: 2])
                 den = P((den * nden).list()[::2])
                 n //= 2
             return wp + num[0] / den[0]
@@ -776,7 +780,13 @@ class CFiniteSequence(FieldElement,
         for i in range(maxwexp + self._deg):
             astr = astr + str(self[self._off + i]) + ', '
         astr = astr[:-2] + ']'
-        return 'homogeneous linear recurrence with constant coefficients of degree ' + str(self._deg) + ': ' + cstr + astr
+        return (
+            'homogeneous linear recurrence with constant coefficients of degree '
+            + str(self._deg)
+            + ': '
+            + cstr
+            + astr
+        )
 
     def series(self, n):
         """
@@ -860,6 +870,7 @@ class CFiniteSequence(FieldElement,
         from sage.rings.qqbar import QQbar
 
         from sage.symbolic.ring import SR
+
         n = SR(n)
         expr = SR.zero()
 
@@ -876,14 +887,19 @@ class CFiniteSequence(FieldElement,
             b = denom_base.constant_coefficient()
             # check that the partial fraction decomposition was indeed done correctly
             # (that is, there is only one factor, of degree 1, and monic)
-            assert len(denom) == 1 and len(denom_base.list()) == 2 and denom_base[1] == 1 and denom.unit() == 1
+            assert (
+                len(denom) == 1
+                and len(denom_base.list()) == 2
+                and denom_base[1] == 1
+                and denom.unit() == 1
+            )
 
             r = SR((-1 / b).radical_expression())
             c = SR.zero()
             for k, a in enumerate(part.numerator()):
                 a = -QQbar(a) if k % 2 else QQbar(a)
                 bino = binomial(n + m - k, m)
-                c += bino * SR((a * b**(k - m - 1)).radical_expression())
+                c += bino * SR((a * b ** (k - m - 1)).radical_expression())
 
             expr += c.expand() * r**n
 
@@ -940,8 +956,9 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
         self._fraction_field = FractionField(self._polynomial_ring)
         if category is None:
             category = Rings().Commutative()
-        Parent.__init__(self, base_ring, names=self._polynomial_ring.gens(),
-                        category=category)
+        Parent.__init__(
+            self, base_ring, names=self._polynomial_ring.gens(), category=category
+        )
 
     def _repr_(self):
         r"""
@@ -953,7 +970,9 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
             sage: C
             The ring of C-Finite sequences in x over Rational Field
         """
-        return "The ring of C-Finite sequences in {} over {}".format(self.gen(), self.base_ring())
+        return "The ring of C-Finite sequences in {} over {}".format(
+            self.gen(), self.base_ring()
+        )
 
     def _element_constructor_(self, ogf):
         r"""
@@ -1168,10 +1187,13 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
         co = coefficients[::-1] + [0] * (len(values) - deg)
         R = self.polynomial_ring()
         den = R([-1] + co[:deg])
-        num = R([-values[0]] +
-                [-values[n] + sum(values[k] * co[n - 1 - k]
-                                  for k in range(n))
-                 for n in range(1, len(values))])
+        num = R(
+            [-values[0]]
+            + [
+                -values[n] + sum(values[k] * co[n - 1 - k] for k in range(n))
+                for n in range(1, len(values))
+            ]
+        )
         return self(num / den)
 
     def guess(self, sequence, algorithm='sage'):
@@ -1223,6 +1245,7 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
 
         if algorithm == 'bm':
             from sage.matrix.berlekamp_massey import berlekamp_massey
+
             if len(sequence) < 2:
                 raise ValueError('sequence too short for guessing')
             R = PowerSeriesRing(QQ, 'x')
@@ -1237,13 +1260,15 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
         if algorithm == 'pari':
             if len(sequence) < 6:
                 raise ValueError('sequence too short for guessing')
-            pari("ggf(v)=local(l,m,p,q,B);l=length(v);B=l\\2;\
+            pari(
+                "ggf(v)=local(l,m,p,q,B);l=length(v);B=l\\2;\
                 if(B<3,return(0));m=matrix(B,B,x,y,v[x-y+B+1]);\
                 q=qflll(m,4)[1];if(length(q)==0,return(0));\
                 p=sum(k=1,B,x^(k-1)*q[k,1]);\
                 q=Pol(Pol(vector(l,n,v[l-n+1]))*p+O(x^(B+1)));\
                 if(polcoeff(p,0)<0,q=-q;p=-p);q=q/p;p=Ser(q+O(x^(l+1)));\
-                for(m=1,l,if(polcoeff(p,m-1)!=v[m],return(0)));q")
+                for(m=1,l,if(polcoeff(p,m-1)!=v[m],return(0)));q"
+            )
             pari_guess = pari("ggf")(sequence)
             num = S(pari_guess.numerator().Vec().sage()[::-1])
             den = S(pari_guess.denominator().Vec().sage()[::-1])
@@ -1254,6 +1279,7 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
         from sage.matrix.constructor import matrix
         from sage.arith.misc import integer_ceil as ceil
         from numpy import trim_zeros
+
         seq = sequence[:]
         while seq and sequence[-1] == 0:
             seq.pop()
@@ -1264,7 +1290,7 @@ class CFiniteSequences_generic(Parent, UniqueRepresentation):
             raise ValueError('sequence too short for guessing')
 
         hl = ceil(ZZ(l) / 2)
-        A = matrix([sequence[k: k + hl] for k in range(hl)])
+        A = matrix([sequence[k : k + hl] for k in range(hl)])
         K = A.kernel()
         if K.dimension() == 0:
             return 0

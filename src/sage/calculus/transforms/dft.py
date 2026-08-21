@@ -72,6 +72,7 @@ AUTHORS:
 
 - William Stein (2006-11) -- fix many bugs
 """
+
 ##########################################################################
 #  Copyright (C) 2006 David Joyner <wdjoyner@gmail.com>
 #
@@ -113,6 +114,7 @@ class IndexedSequence(SageObject):
 
     .. automethod:: _repr_
     """
+
     def __init__(self, L, index_object):
         r"""
         Initialize ``self``.
@@ -236,7 +238,12 @@ class IndexedSequence(SageObject):
             Indexed sequence: [0, 1, 1]
              indexed by Finite Field of size 3
         """
-        return "Indexed sequence: " + str(self.list()) + "\n    indexed by " + str(self.index_object())
+        return (
+            "Indexed sequence: "
+            + str(self.list())
+            + "\n    indexed by "
+            + str(self.index_object())
+        )
 
     def plot_histogram(self, clr=(0, 0, 1), eps=0.4):
         r"""
@@ -257,17 +264,28 @@ class IndexedSequence(SageObject):
             sage: show(P)                       # not tested                            # needs sage.plot
         """
         from sage.rings.real_mpfr import RR
+
         # elements must be coercible into RR
         I = self.index_object()
         N = len(I)
         S = self.list()
-        P = [polygon([[RR(I[i]) - eps, 0],
-                      [RR(I[i]) - eps, RR(S[i])],
-                      [RR(I[i]) + eps, RR(S[i])],
-                      [RR(I[i]) + eps, 0],
-                      [RR(I[i]), 0]], rgbcolor=clr) for i in range(N)]
-        T = [text(str(I[i]), (RR(I[i]), -0.8), fontsize=15, rgbcolor=(1, 0, 0))
-             for i in range(N)]
+        P = [
+            polygon(
+                [
+                    [RR(I[i]) - eps, 0],
+                    [RR(I[i]) - eps, RR(S[i])],
+                    [RR(I[i]) + eps, RR(S[i])],
+                    [RR(I[i]) + eps, 0],
+                    [RR(I[i]), 0],
+                ],
+                rgbcolor=clr,
+            )
+            for i in range(N)
+        ]
+        T = [
+            text(str(I[i]), (RR(I[i]), -0.8), fontsize=15, rgbcolor=(1, 0, 0))
+            for i in range(N)
+        ]
         return sum(P) + sum(T)
 
     def plot(self):
@@ -286,6 +304,7 @@ class IndexedSequence(SageObject):
             sage: show(P)                       # not tested                            # needs sage.plot
         """
         from sage.rings.real_mpfr import RR
+
         # elements must be coercible into RR
         I = self.index_object()
         S = self.list()
@@ -360,28 +379,37 @@ class IndexedSequence(SageObject):
         """
         if chi is None:
             chi = lambda x: x
-        J = self.index_object()   # index set of length N
+        J = self.index_object()  # index set of length N
         N = len(J)
         S = self.list()
-        F = self.base_ring()   # elements must be coercible into QQ(zeta_N)
+        F = self.base_ring()  # elements must be coercible into QQ(zeta_N)
         if J[0] not in ZZ:
             G = J[0].parent()  # if J is not a range it is a group G
         if J[0] in ZZ and F.base_ring().fraction_field() == QQ:
             # assumes J is range(N)
             zeta = CyclotomicField(N).gen()
-            FT = [sum([S[i] * chi(zeta**(i * j)) for i in J]) for j in J]
-        elif (J[0] not in ZZ) and G.is_abelian() and F == ZZ or (F.is_field() and F.base_ring() == QQ):
+            FT = [sum([S[i] * chi(zeta ** (i * j)) for i in J]) for j in J]
+        elif (
+            (J[0] not in ZZ)
+            and G.is_abelian()
+            and F == ZZ
+            or (F.is_field() and F.base_ring() == QQ)
+        ):
             if isinstance(J[0], PermutationGroupElement):
                 # J is a CyclicPermGp
                 n = G.order()
                 a = list(n.factor())
-                invs = [x[0]**x[1] for x in a]
+                invs = [x[0] ** x[1] for x in a]
                 G = AbelianGroup(len(a), invs)
             # assumes J is AbelianGroup(...)
             Gd = G.dual_group()
-            FT = [sum([S[i] * chid(G.list()[i]) for i in range(N)])
-                  for chid in Gd]
-        elif (J[0] not in ZZ) and G.is_finite() and F == ZZ or (F.is_field() and F.base_ring() == QQ):
+            FT = [sum([S[i] * chid(G.list()[i]) for i in range(N)]) for chid in Gd]
+        elif (
+            (J[0] not in ZZ)
+            and G.is_finite()
+            and F == ZZ
+            or (F.is_field() and F.base_ring() == QQ)
+        ):
             # assumes J is the list of conj class representatives of a
             # PermutationGroup(...) or Matrixgroup(...)
             chi = G.character_table()
@@ -408,12 +436,12 @@ class IndexedSequence(SageObject):
             sage: it == s                                                               # needs sage.rings.number_field
             True
         """
-        F = self.base_ring()   # elements must be coercible into QQ(zeta_N)
-        J = self.index_object()   # must be = range(N)
+        F = self.base_ring()  # elements must be coercible into QQ(zeta_N)
+        J = self.index_object()  # must be = range(N)
         N = len(J)
         S = self.list()
         zeta = CyclotomicField(N).gen()
-        iFT = [sum([S[i] * zeta**(-i * j) for i in J]) for j in J]
+        iFT = [sum([S[i] * zeta ** (-i * j) for i in J]) for j in J]
         if (J[0] not in ZZ) or F.base_ring().fraction_field() != QQ:
             raise NotImplementedError("Sorry this type of idft is not implemented yet.")
         return IndexedSequence(iFT, J) * (Integer(1) / N)
@@ -431,14 +459,15 @@ class IndexedSequence(SageObject):
             Indexed sequence: [0, 1/16*(sqrt(5) + I*sqrt(-2*sqrt(5) + 10) + ...
             indexed by [0, 1, 2, 3, 4]
         """
-        F = self.base_ring()      # elements must be coercible into RR
+        F = self.base_ring()  # elements must be coercible into RR
         try:
             pi = F.pi()
         except AttributeError:
             from sage.symbolic.constants import pi
+
             pi = F(pi)
 
-        J = self.index_object()   # must be = range(N)
+        J = self.index_object()  # must be = range(N)
         N = len(J)
         S = self.list()
         PI = 2 * pi / N
@@ -460,14 +489,15 @@ class IndexedSequence(SageObject):
             Indexed sequence: [0.000000000000000, 1.11022302462516e-16 - 2.50000000000000*I, ...]
             indexed by [0, 1, 2, 3, 4]
         """
-        F = self.base_ring()      # elements must be coercible into RR
+        F = self.base_ring()  # elements must be coercible into RR
         try:
             pi = F.pi()
         except AttributeError:
             from sage.symbolic.constants import pi
+
             pi = F(pi)
 
-        J = self.index_object()   # must be = range(N)
+        J = self.index_object()  # must be = range(N)
         N = len(J)
         S = self.list()
         PI = 2 * F(pi) / N
@@ -517,18 +547,17 @@ class IndexedSequence(SageObject):
             raise TypeError("IndexedSequences must have same index set")
         M = len(S)
         N = len(T)
-        if M < N:             # first, extend by 0 if necessary
+        if M < N:  # first, extend by 0 if necessary
             a = [S[i] for i in range(M)] + [F(0) for i in range(2 * N)]
             b = T + [E(0) for i in range(2 * M)]
-        if M > N:             # python trick - a[-j] is really j from the *right*
+        if M > N:  # python trick - a[-j] is really j from the *right*
             b = [T[i] for i in range(N)] + [E(0) for i in range(2 * M)]
             a = S + [F(0) for i in range(2 * M)]
-        if M == N:              # so need only extend by 0 to the *right*
+        if M == N:  # so need only extend by 0 to the *right*
             a = S + [F(0) for i in range(2 * M)]
             b = T + [E(0) for i in range(2 * M)]
         N = max(M, N)
-        return [sum([a[i] * b[j - i] for i in range(N)])
-                for j in range(2 * N - 1)]
+        return [sum([a[i] * b[j - i] for i in range(N)]) for j in range(2 * N - 1)]
 
     def convolution_periodic(self, other):
         r"""
@@ -573,7 +602,7 @@ class IndexedSequence(SageObject):
             raise TypeError("IndexedSequences must have same index set")
         M = len(S)
         N = len(T)
-        if M < N:           # first, extend by 0 if necessary
+        if M < N:  # first, extend by 0 if necessary
             a = [S[i] for i in range(M)] + [F(0) for i in range(N - M)]
             b = other
         if M > N:
@@ -583,8 +612,9 @@ class IndexedSequence(SageObject):
             a = S
             b = T
         N = max(M, N)
-        return [sum([a[i] * b[(j - i) % N] for i in range(N)])
-                for j in range(2 * N - 1)]
+        return [
+            sum([a[i] * b[(j - i) % N] for i in range(N)]) for j in range(2 * N - 1)
+        ]
 
     def __mul__(self, other):
         """
@@ -634,7 +664,7 @@ class IndexedSequence(SageObject):
             return False
         for i in I:
             try:
-                if abs(S[i] - T[i]) > 10**(-8):
+                if abs(S[i] - T[i]) > 10 ** (-8):
                     # tests if they differ as reals  -- WHY 10^(-8)???
                     return False
             except TypeError:
@@ -664,10 +694,11 @@ class IndexedSequence(SageObject):
                 indexed by [0, 1, 2, 3, 4]
         """
         from sage.rings.cc import CC
+
         I = CC.gen()
 
         # elements must be coercible into RR
-        J = self.index_object()   # must be = range(N)
+        J = self.index_object()  # must be = range(N)
         N = len(J)
         S = self.list()
         a = FastFourierTransform(N)
@@ -701,10 +732,11 @@ class IndexedSequence(SageObject):
             1
         """
         from sage.rings.cc import CC
+
         I = CC.gen()
 
         # elements must be coercible into RR
-        J = self.index_object()   # must be = range(N)
+        J = self.index_object()  # must be = range(N)
         N = len(J)
         S = self.list()
         a = FastFourierTransform(N)
@@ -753,9 +785,10 @@ class IndexedSequence(SageObject):
                 indexed by [0, 1, 2, 3, 4, 5, 6, 7]
         """
         from sage.rings.real_mpfr import RR
+
         # elements must be coercible into RR
-        J = self.index_object()   # must be = range(N)
-        N = len(J)             # must be 1 minus a power of 2
+        J = self.index_object()  # must be = range(N)
+        N = len(J)  # must be 1 minus a power of 2
         S = self.list()
         if other == "haar" or other == "haar_centered":
             if wavelet_k in [2]:
@@ -771,7 +804,9 @@ class IndexedSequence(SageObject):
             if wavelet_k in [103, 105, 202, 204, 206, 208, 301, 305, 307, 309]:
                 a = WaveletTransform(N, other, 103)
             else:
-                raise ValueError("wavelet_k must be in {103,105,202,204,206,208,301,305,307,309}")
+                raise ValueError(
+                    "wavelet_k must be in {103,105,202,204,206,208,301,305,307,309}"
+                )
         for i in range(N):
             a[i] = S[i]
         a.forward_transform()
@@ -831,9 +866,10 @@ class IndexedSequence(SageObject):
             True
         """
         from sage.rings.real_mpfr import RR
+
         # elements must be coercible into RR
-        J = self.index_object()   # must be = range(N)
-        N = len(J)             # must be 1 minus a power of 2
+        J = self.index_object()  # must be = range(N)
+        N = len(J)  # must be 1 minus a power of 2
         S = self.list()
         k = wavelet_k
         if other == "haar" or other == "haar_centered":
@@ -850,7 +886,9 @@ class IndexedSequence(SageObject):
             if k in [103, 105, 202, 204, 206, 208, 301, 305, 307, 309]:
                 a = WaveletTransform(N, other, 103)
             else:
-                raise ValueError("wavelet_k must be in {103,105,202,204,206,208,301,305,307,309}")
+                raise ValueError(
+                    "wavelet_k must be in {103,105,202,204,206,208,301,305,307,309}"
+                )
         for i in range(N):
             a[i] = S[i]
         a.backward_transform()

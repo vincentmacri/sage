@@ -30,11 +30,13 @@ from .space import ModularFormsSpace
 import sage.modular.hecke.submodule
 
 
-class ModularFormsSubmodule(ModularFormsSpace,
-                            sage.modular.hecke.submodule.HeckeSubmodule):
+class ModularFormsSubmodule(
+    ModularFormsSpace, sage.modular.hecke.submodule.HeckeSubmodule
+):
     """
     A submodule of an ambient space of modular forms.
     """
+
     def __init__(self, ambient_module, submodule, dual=None, check=False):
         """
         INPUT:
@@ -53,9 +55,12 @@ class ModularFormsSubmodule(ModularFormsSpace,
           Eisenstein subspace of dimension 11 of Modular Forms space of dimension 13 for Congruence Subgroup Gamma1(13) of weight 2 over Rational Field
         """
         A = ambient_module
-        sage.modular.hecke.submodule.HeckeSubmodule.__init__(self, A, submodule, check=check)
-        ModularFormsSpace.__init__(self, A.group(), A.weight(),
-                                         A.character(), A.base_ring())
+        sage.modular.hecke.submodule.HeckeSubmodule.__init__(
+            self, A, submodule, check=check
+        )
+        ModularFormsSpace.__init__(
+            self, A.group(), A.weight(), A.character(), A.base_ring()
+        )
 
     def _repr_(self):
         """
@@ -64,7 +69,10 @@ class ModularFormsSubmodule(ModularFormsSpace,
           sage: ModularForms(Gamma1(13),2).eisenstein_subspace()._repr_()
           'Eisenstein subspace of dimension 11 of Modular Forms space of dimension 13 for Congruence Subgroup Gamma1(13) of weight 2 over Rational Field'
         """
-        return "Modular Forms subspace of dimension %s of %s" % (self.dimension(), self.ambient_module())
+        return "Modular Forms subspace of dimension %s of %s" % (
+            self.dimension(),
+            self.ambient_module(),
+        )
 
     def _compute_coefficients(self, element, X):
         """
@@ -108,8 +116,7 @@ class ModularFormsSubmodule(ModularFormsSpace,
              O(q^5)]
         """
         A = self.ambient_module()
-        return [A._q_expansion(element=f.element(), prec=prec)
-                for f in self.basis()]
+        return [A._q_expansion(element=f.element(), prec=prec) for f in self.basis()]
 
 
 # TODO

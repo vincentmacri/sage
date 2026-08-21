@@ -17,7 +17,6 @@ from IPython.terminal.prompts import Prompts
 
 
 class SagePrompts(Prompts):
-
     def in_prompt_tokens(self, cli=None):
         return [
             (Token.Prompt, 'sage: '),
@@ -40,7 +39,6 @@ class SagePrompts(Prompts):
 
 
 class InterfacePrompts(Prompts):
-
     def __init__(self, interface_name):
         self.__name = interface_name
         self.__width = len(interface_name)
@@ -67,7 +65,6 @@ class InterfacePrompts(Prompts):
 
 
 class DebugPrompts(Prompts):
-
     def in_prompt_tokens(self, cli=None):
         return [
             (Token.Prompt, 'debug: '),

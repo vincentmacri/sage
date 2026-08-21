@@ -20,6 +20,7 @@ AUTHORS:
 - MuPAD-Combinat developers (algorithms and design inspiration)
 - Travis Scrimshaw (2013-02-03): Removed ``CombinatorialClass``
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen       <mhansen@gmail.com>
 #                     2009 Nicolas M. Thiery <nthiery at users.sf.net>
@@ -136,6 +137,7 @@ class Composition(CombinatorialElement):
         sage: C = Composition([3,1,2])
         sage: TestSuite(C).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, co=None, descents=None, code=None, from_subset=None):
         """
@@ -172,8 +174,7 @@ class Composition(CombinatorialElement):
         """
         if descents is not None:
             if isinstance(descents, tuple):
-                return Compositions().from_descents(descents[0],
-                                                    nps=descents[1])
+                return Compositions().from_descents(descents[0], nps=descents[1])
             return Compositions().from_descents(descents)
         if code is not None:
             return Compositions().from_code(code)
@@ -216,6 +217,7 @@ class Composition(CombinatorialElement):
             sage: Partitions.options._reset()
         """
         from sage.typeset.ascii_art import ascii_art
+
         return ascii_art(self.to_skew_partition())
 
     def _unicode_art_(self):
@@ -239,6 +241,7 @@ class Composition(CombinatorialElement):
             sage: Partitions.options._reset()
         """
         from sage.typeset.unicode_art import unicode_art
+
         return unicode_art(self.to_skew_partition())
 
     def __setstate__(self, state):
@@ -301,8 +304,9 @@ class Composition(CombinatorialElement):
             cocjg += [i + 1 for _ in range(coofcp[ni - 1] - coofcp[ni - 2])]
         cocjg += [n for j in range(coofcp[0])]
 
-        return self.parent()([cocjg[0]] + [cocjg[i] - cocjg[i - 1] + 1
-                                           for i in range(1, len(cocjg))])
+        return self.parent()(
+            [cocjg[0]] + [cocjg[i] - cocjg[i - 1] + 1 for i in range(1, len(cocjg))]
+        )
 
     @combinatorial_map(order=2, name='reversed')
     def reversed(self) -> Composition:
@@ -843,7 +847,10 @@ class Composition(CombinatorialElement):
         """
         co1 = self
         if sum(co1) != sum(co2):
-            raise ValueError("compositions self (= %s) and co2 (= %s) must be of the same size" % (self, co2))
+            raise ValueError(
+                "compositions self (= %s) and co2 (= %s) must be of the same size"
+                % (self, co2)
+            )
 
         sum1 = 0
         sum2 = 0
@@ -903,7 +910,7 @@ class Composition(CombinatorialElement):
         result = [0] * len(grouping)
         j = 0
         for i, gi in enumerate(grouping):
-            result[i] = sum(self[j:j + gi])
+            result[i] = sum(self[j : j + gi])
             j += gi
         return parent(result)
 
@@ -969,7 +976,10 @@ class Composition(CombinatorialElement):
         I = self
         if sum(I) != sum(J):
             # Error: compositions are not of the same size
-            raise ValueError("compositions self (= %s) and J (= %s) must be of the same size" % (I, J))
+            raise ValueError(
+                "compositions self (= %s) and J (= %s) must be of the same size"
+                % (I, J)
+            )
         sum1 = 0
         sum2 = 0
         i1 = -1
@@ -982,7 +992,9 @@ class Composition(CombinatorialElement):
                 new_comp.append(I[i1])
                 sum1 += new_comp[-1]
             if sum1 > sum2:
-                raise ValueError("composition J (= %s) does not refine self (= %s)" % (I, J))
+                raise ValueError(
+                    "composition J (= %s) does not refine self (= %s)" % (I, J)
+                )
             decomp.append(Compositions()(new_comp))
         return decomp
 
@@ -1025,8 +1037,7 @@ class Composition(CombinatorialElement):
         lv = len(self)
         if lv == 1:
             return 0
-        return sum([(lv - (i + 1)) * ci
-                    for i, ci in enumerate(self)])
+        return sum([(lv - (i + 1)) * ci for i, ci in enumerate(self)])
 
     def to_code(self) -> list:
         r"""
@@ -1140,6 +1151,7 @@ class Composition(CombinatorialElement):
             True
         """
         from sage.sets.set import Set
+
         return Set(self.partial_sums(final=final))
 
     def descents(self, final_descent=False) -> list:
@@ -1187,8 +1199,9 @@ class Composition(CombinatorialElement):
             [4, 7]
         """
         descents = set(d - 1 for d in self.to_subset(final=True))
-        return [i + 1 for i in range(len(self))
-                if i not in descents and i + 1 in descents]
+        return [
+            i + 1 for i in range(len(self)) if i not in descents and i + 1 in descents
+        ]
 
     @combinatorial_map(name='to partition')
     def to_partition(self):
@@ -1234,6 +1247,7 @@ class Composition(CombinatorialElement):
             [2, 2] / [1]
         """
         from sage.combinat.skew_partition import SkewPartition
+
         outer = []
         inner = []
         sum_outer = -overlap
@@ -1249,8 +1263,11 @@ class Composition(CombinatorialElement):
             return SkewPartition([[], []])
 
         return SkewPartition(
-            [[x for x in reversed(outer) if x != 0],
-             [x for x in reversed(inner) if x != 0]])
+            [
+                [x for x in reversed(outer) if x != 0],
+                [x for x in reversed(inner) if x != 0],
+            ]
+        )
 
     def shuffle_product(self, other, overlap=False):
         r"""
@@ -1329,9 +1346,10 @@ class Composition(CombinatorialElement):
         """
         if overlap:
             from sage.combinat.shuffle import ShuffleProduct_overlapping
-            return ShuffleProduct_overlapping(self, other,
-                                              Compositions())
+
+            return ShuffleProduct_overlapping(self, other, Compositions())
         from sage.combinat.words.shuffle_product import ShuffleProduct_w1w2
+
         return ShuffleProduct_w1w2(self, other)
 
     def wll_gt(self, co2) -> bool:
@@ -1428,8 +1446,10 @@ class Composition(CombinatorialElement):
         """
         from sage.combinat.specht_module import SpechtModule
         from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
+
         if base_ring is None:
             from sage.rings.rational_field import QQ
+
             base_ring = QQ
         R = SymmetricGroupAlgebra(base_ring, sum(self))
         cells = [(i, j) for i, row in enumerate(self) for j in range(row)]
@@ -1451,6 +1471,7 @@ class Composition(CombinatorialElement):
             5
         """
         from sage.combinat.specht_module import specht_module_rank
+
         return specht_module_rank(self, base_ring)
 
 
@@ -1688,6 +1709,7 @@ class Compositions(UniqueRepresentation, Parent):
         sage: Compositions(5, max_slope=1, min_slope=-2, min_length=2, max_length=4, outer=[2,5,2]).list()
         [[2, 3], [2, 2, 1], [2, 1, 2], [1, 2, 2]]
     """
+
     @staticmethod
     def __classcall_private__(self, n=None, **kwargs):
         """
@@ -1711,8 +1733,10 @@ class Compositions(UniqueRepresentation, Parent):
         else:
             # FIXME: should inherit from IntegerListLex, and implement repr, or _name as a lazy attribute
             txt = "Compositions of the integer %s satisfying constraints %s"
-            kwargs['name'] = txt % (n, ", ".join(f"{key}={kwargs[key]}"
-                                                 for key in sorted(kwargs)))
+            kwargs['name'] = txt % (
+                n,
+                ", ".join(f"{key}={kwargs[key]}" for key in sorted(kwargs)),
+            )
             kwargs['element_class'] = Composition
             if 'min_part' not in kwargs:
                 kwargs['min_part'] = 1
@@ -1722,7 +1746,9 @@ class Compositions(UniqueRepresentation, Parent):
             if 'outer' in kwargs:
                 kwargs['ceiling'] = list(kwargs['outer'])
                 if 'max_length' in kwargs:
-                    kwargs['max_length'] = min(len(kwargs['outer']), kwargs['max_length'])
+                    kwargs['max_length'] = min(
+                        len(kwargs['outer']), kwargs['max_length']
+                    )
                 else:
                     kwargs['max_length'] = len(kwargs['outer'])
                 del kwargs['outer']
@@ -1873,8 +1899,7 @@ class Compositions(UniqueRepresentation, Parent):
             return self.element_class(self, [n])
 
         if n <= d[-1]:
-            raise ValueError("S (=%s) is not a subset of {1, ..., %s}"
-                             % (d, n - 1))
+            raise ValueError("S (=%s) is not a subset of {1, ..., %s}" % (d, n - 1))
         else:
             d.append(n)
 
@@ -1905,7 +1930,9 @@ class Compositions(UniqueRepresentation, Parent):
         if code == [0]:
             return self.element_class(self, [])
 
-        L = [x for x in range(len(code)) if code[x] == 1]  # the positions of the letter 1
+        L = [
+            x for x in range(len(code)) if code[x] == 1
+        ]  # the positions of the letter 1
         c = [L[i] - L[i - 1] for i in range(1, len(L))] + [len(code) - L[-1]]
         return self.element_class(self, c)
 
@@ -1928,8 +1955,7 @@ class Compositions_constraints(IntegerListsLex):
         """
         n = data['n']
         self.__class__ = IntegerListsLex
-        constraints = {'min_part': 1,
-                       'element_class': Composition}
+        constraints = {'min_part': 1, 'element_class': Composition}
         constraints.update(data['constraints'])
         self.__init__(n, **constraints)
 
@@ -2026,6 +2052,7 @@ class Compositions_n(Compositions):
     """
     Class of compositions of a fixed `n`.
     """
+
     @staticmethod
     def __classcall_private__(cls, n):
         """
@@ -2093,7 +2120,7 @@ class Compositions_n(Compositions):
             1
         """
         if self.n >= 1:
-            return ZZ(2)**(self.n - 1)
+            return ZZ(2) ** (self.n - 1)
         if self.n == 0:
             return ZZ.one()
         return ZZ.zero()
@@ -2123,7 +2150,9 @@ class Compositions_n(Compositions):
 
         if self.n == 0:
             return Compositions()([])
-        return Compositions().from_code([1] + [choice([0, 1]) for _ in range(self.n - 1)])
+        return Compositions().from_code(
+            [1] + [choice([0, 1]) for _ in range(self.n - 1)]
+        )
 
     def __iter__(self):
         """
@@ -2173,4 +2202,6 @@ def composition_iterator_fast(n):
             cur.append(Integer(0))
 
 
-register_unpickle_override('sage.combinat.composition', 'Composition_class', Composition)
+register_unpickle_override(
+    'sage.combinat.composition', 'Composition_class', Composition
+)

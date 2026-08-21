@@ -16,6 +16,7 @@ Features for testing the presence of ``coxeter3``
 from sage.config import coxeter3_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Coxeter3(BuildModule):
     r"""
     A :class:`~sage.features.Feature` which describes whether the
@@ -40,6 +41,7 @@ class Coxeter3(BuildModule):
         FeatureTestResult('coxeter3', True)
 
     """
+
     _enabled_in_build = coxeter3_enabled
 
     def __init__(self):

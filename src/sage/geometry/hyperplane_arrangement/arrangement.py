@@ -345,7 +345,10 @@ arrangements.
 # - create ties with the Sage matroid methods
 # - hyperplane arrangements over other fields
 
-from sage.geometry.hyperplane_arrangement.hyperplane import AmbientVectorSpace, Hyperplane
+from sage.geometry.hyperplane_arrangement.hyperplane import (
+    AmbientVectorSpace,
+    Hyperplane,
+)
 from sage.matrix.constructor import matrix, vector
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import VectorSpace
@@ -368,6 +371,7 @@ class HyperplaneArrangementElement(Element):
         :class:`HyperplaneArrangementElement` instances directly,
         always use the parent.
     """
+
     def __init__(self, parent, hyperplanes, check=True, backend=None):
         """
         Construct a hyperplane arrangement.
@@ -409,7 +413,9 @@ class HyperplaneArrangementElement(Element):
                 raise ValueError("the hyperplanes must be given as a tuple")
             if not all(isinstance(h, Hyperplane) for h in hyperplanes):
                 raise ValueError("not all elements are hyperplanes")
-            if not all(h.parent() is self.parent().ambient_space() for h in hyperplanes):
+            if not all(
+                h.parent() is self.parent().ambient_space() for h in hyperplanes
+            ):
                 raise ValueError("not all hyperplanes are in the ambient space")
 
     def _first_ngens(self, n):
@@ -515,12 +521,17 @@ class HyperplaneArrangementElement(Element):
             Empty hyperplane arrangement of dimension 2
         """
         if len(self) == 0:
-            return 'Empty hyperplane arrangement of dimension {0}'.format(self.dimension())
+            return 'Empty hyperplane arrangement of dimension {0}'.format(
+                self.dimension()
+            )
         if len(self) < 5:
-            hyperplanes = ' | '.join(h._repr_linear(include_zero=False) for h in self._hyperplanes)
+            hyperplanes = ' | '.join(
+                h._repr_linear(include_zero=False) for h in self._hyperplanes
+            )
             return 'Arrangement <{0}>'.format(hyperplanes)
         return 'Arrangement of {0} hyperplanes of dimension {1} and rank {2}'.format(
-            len(self), self.dimension(), self.rank())
+            len(self), self.dimension(), self.rank()
+        )
 
     def dimension(self):
         """
@@ -674,6 +685,7 @@ class HyperplaneArrangementElement(Element):
             Graphics object consisting of 3 graphics primitives
         """
         from sage.geometry.hyperplane_arrangement.plot import plot
+
         return plot(self, **kwds)
 
     def cone(self, variable='t'):
@@ -826,6 +838,7 @@ class HyperplaneArrangementElement(Element):
                W = Vector space of dimension 2 over Rational Field]
         """
         if element_label == "int":
+
             def update(mapping, val, I0):
                 mapping[val] = len(mapping)
         elif element_label == "subset":
@@ -834,6 +847,7 @@ class HyperplaneArrangementElement(Element):
             def update(mapping, val, I0):
                 mapping[val] = Set(val)
         elif element_label == "subspace":
+
             def update(mapping, val, I0):
                 mapping[val] = I0
         else:
@@ -876,7 +890,10 @@ class HyperplaneArrangementElement(Element):
                 update(mapping, label, T)
 
         from sage.combinat.posets.posets import Poset
-        return Poset({mapping[i]: [mapping[j] for j in val] for i, val in hasse.items()})
+
+        return Poset(
+            {mapping[i]: [mapping[j] for j in val] for i, val in hasse.items()}
+        )
 
     def _slow_characteristic_polynomial(self):
         """
@@ -892,10 +909,11 @@ class HyperplaneArrangementElement(Element):
             x^2 - 2*x + 1
         """
         from sage.rings.polynomial.polynomial_ring import polygen
+
         x = polygen(QQ, 'x')
         P = self.intersection_poset()
         n = self.dimension()
-        return sum([P.moebius_function(0, p) * x**(n - P.rank(p)) for p in P])
+        return sum([P.moebius_function(0, p) * x ** (n - P.rank(p)) for p in P])
 
     @cached_method
     def characteristic_polynomial(self):
@@ -930,11 +948,12 @@ class HyperplaneArrangementElement(Element):
             1
         """
         from sage.rings.polynomial.polynomial_ring import polygen
+
         x = polygen(QQ, 'x')
         if self.rank() == 1:
-            return x**(self.dimension() - 1) * (x - len(self))
+            return x ** (self.dimension() - 1) * (x - len(self))
         if self.rank() == 0:
-            return x ** 0
+            return x**0
 
         H = self[0]
         R = self.restriction(H)
@@ -959,7 +978,7 @@ class HyperplaneArrangementElement(Element):
         charpoly = self.characteristic_polynomial()
         R = charpoly.parent()
         x = R.gen(0)
-        poincare = (-x)**self.dimension() * charpoly(-QQ(1)/x)
+        poincare = (-x) ** self.dimension() * charpoly(-QQ(1) / x)
         return R(poincare)
 
     @cached_method
@@ -1003,12 +1022,12 @@ class HyperplaneArrangementElement(Element):
             raise ValueError("only defined for central hyperplane arrangements")
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(ZZ, 'z')
         z = R.gen()
         L = self.intersection_poset(element_label='subspace').dual()
         B = L.minimal_elements()[0]
-        return R.sum(abs(L.moebius_function(B, X)) * z**X.dimension()
-                     for X in L)
+        return R.sum(abs(L.moebius_function(B, X)) * z ** X.dimension() for X in L)
 
     @cached_method
     def primitive_eulerian_polynomial(self):
@@ -1122,13 +1141,15 @@ class HyperplaneArrangementElement(Element):
             raise ValueError("only defined for central hyperplane arrangements")
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(ZZ, 'z')
         z = R.gen()
         L = self.intersection_poset(element_label='subspace').dual()
         B = L.minimal_elements()[0]
         n = self.dimension()
-        return R.sum(abs(L.moebius_function(B, X)) * (z - 1)**(n-X.dimension())
-                     for X in L)
+        return R.sum(
+            abs(L.moebius_function(B, X)) * (z - 1) ** (n - X.dimension()) for X in L
+        )
 
     def deletion(self, hyperplanes):
         r"""
@@ -1261,7 +1282,10 @@ class HyperplaneArrangementElement(Element):
             hyperplanes.append([A, b])
         names = list(parent._names)
         names.pop(pivot)
-        from sage.geometry.hyperplane_arrangement.ordered_arrangement import OrderedHyperplaneArrangements
+        from sage.geometry.hyperplane_arrangement.ordered_arrangement import (
+            OrderedHyperplaneArrangements,
+        )
+
         if isinstance(parent, OrderedHyperplaneArrangements):
             H = OrderedHyperplaneArrangements(parent.base_ring(), names=tuple(names))
             if not repetitions:
@@ -1366,7 +1390,7 @@ class HyperplaneArrangementElement(Element):
         if self.base_ring().characteristic() != 0:
             raise TypeError('base field must have characteristic zero')
         charpoly = self.characteristic_polynomial()
-        return (-1)**self.dimension() * charpoly(-1)
+        return (-1) ** self.dimension() * charpoly(-1)
 
     @cached_method
     def n_bounded_regions(self):
@@ -1397,7 +1421,7 @@ class HyperplaneArrangementElement(Element):
         if self.base_ring().characteristic() != 0:
             raise TypeError('base field must have characteristic zero')
         charpoly = self.characteristic_polynomial()
-        return (-1)**self.rank() * charpoly(1)
+        return (-1) ** self.rank() * charpoly(1)
 
     def has_good_reduction(self, p) -> bool:
         r"""
@@ -1433,6 +1457,7 @@ class HyperplaneArrangementElement(Element):
         if not p.is_prime():
             raise TypeError('must reduce modulo a prime number')
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         a = self.change_ring(GF(p))
         p = self.intersection_poset()
         q = a.intersection_poset()
@@ -1532,6 +1557,7 @@ class HyperplaneArrangementElement(Element):
         if self.n_hyperplanes() == 0:
             if certificate:
                 from sage.geometry.polyhedron.parent import Polyhedra
+
                 pp = Polyhedra(R, self.dimension(), backend=self._backend)
                 return (True, pp.universe())
             return True
@@ -1545,6 +1571,7 @@ class HyperplaneArrangementElement(Element):
             # The solution set is empty, therefore the center is empty
             if certificate:
                 from sage.geometry.polyhedron.parent import Polyhedra
+
                 pp = Polyhedra(R, self.dimension(), backend=self._backend)
                 return (False, pp.empty())
             return False
@@ -1552,9 +1579,13 @@ class HyperplaneArrangementElement(Element):
         if certificate:
             Ker = m.right_kernel()
             from sage.geometry.polyhedron.constructor import Polyhedron
-            return (True, Polyhedron(base_ring=R, vertices=[x],
-                                     lines=Ker.basis(),
-                                     backend=self._backend))
+
+            return (
+                True,
+                Polyhedron(
+                    base_ring=R, vertices=[x], lines=Ker.basis(), backend=self._backend
+                ),
+            )
         return True
 
     def center(self):
@@ -1675,6 +1706,7 @@ class HyperplaneArrangementElement(Element):
             sage: b.essentialization() is b
             True
         """
+
         def echelon_col_iter(row_iter):
             """helper to iterat over the echelon pivot column indices"""
             for row in row_iter:
@@ -1704,7 +1736,7 @@ class HyperplaneArrangementElement(Element):
                 v[pivot] = 1
                 complement_basis.append(vector(R, v))
         # reduce the hyperplane equations
-        echelon_pivots = []   # the column indices where N has 1s from the echelonization
+        echelon_pivots = []  # the column indices where N has 1s from the echelonization
         for pivot, row in echelon_col_iter(complement_basis):
             assert row[pivot] == 1
             echelon_pivots.append(pivot)
@@ -1718,7 +1750,9 @@ class HyperplaneArrangementElement(Element):
             A = [A[i] for i in range(self.dimension()) if i not in echelon_pivots]
             b = h.b()
             restricted.append([A, b])
-        names = tuple(name for i, name in enumerate(parent._names) if i not in echelon_pivots)
+        names = tuple(
+            name for i, name in enumerate(parent._names) if i not in echelon_pivots
+        )
         # Construct the result
         restricted_parent = HyperplaneArrangements(R, names=names)
         return restricted_parent(*restricted, signed=False, backend=self._backend)
@@ -1760,6 +1794,7 @@ class HyperplaneArrangementElement(Element):
         if self.base_ring().characteristic() != 0:
             raise ValueError('characteristic must be zero')
         from sage.functions.generalized import sign
+
         values = [hyperplane(p) for hyperplane in self]
         signs = vector(ZZ, [sign(_) for _ in values])
         signs.set_immutable()
@@ -1784,7 +1819,7 @@ class HyperplaneArrangementElement(Element):
         m = self.whitney_data()[0]
         v = list(sum(m.transpose().apply_map(abs)))
         v.reverse()
-        v = vector(ZZ, [0]*(self.dimension() - self.rank()) + v)
+        v = vector(ZZ, [0] * (self.dimension() - self.rank()) + v)
         v.set_immutable()
         return v
 
@@ -1834,8 +1869,10 @@ class HyperplaneArrangementElement(Element):
             b = hyperplane.b() * (A / hyperplane.A())
             parallel_planes.append([b, (hyperplane, A, b)])
             parallels[through_origin] = parallel_planes
-        parallels = sorted(tuple(hyperplane[1] for hyperplane in sorted(value))
-                           for value in parallels.values())
+        parallels = sorted(
+            tuple(hyperplane[1] for hyperplane in sorted(value))
+            for value in parallels.values()
+        )
         return tuple(parallels)
 
     def vertices(self, exclude_sandwiched=False):
@@ -1883,16 +1920,20 @@ class HyperplaneArrangementElement(Element):
         """
         import itertools
         from sage.matroids.constructor import Matroid
+
         R = self.parent().base_ring()
         parallels = self._parallel_hyperplanes()
         A_list = [parallel[0][1] for parallel in parallels]
-        b_list_list = [[-hyperplane[2] for hyperplane in parallel]
-                       for parallel in parallels]
+        b_list_list = [
+            [-hyperplane[2] for hyperplane in parallel] for parallel in parallels
+        ]
         if exclude_sandwiched:
+
             def skip(b_list):
                 if len(b_list) == 1:
                     return b_list
                 return [b_list[0], b_list[-1]]
+
             b_list_list = [skip(_) for _ in b_list_list]
         M = Matroid(groundset=range(len(parallels)), matrix=matrix(A_list).transpose())
         d = self.dimension()
@@ -1942,9 +1983,13 @@ class HyperplaneArrangementElement(Element):
         """
         ieqs = [h.dense_coefficient_list() for h in hyperplanes]
         from sage.geometry.polyhedron.constructor import Polyhedron
-        return Polyhedron(ieqs=ieqs, ambient_dim=self.dimension(),
-                          base_ring=self.parent().base_ring(),
-                          backend=self._backend)
+
+        return Polyhedron(
+            ieqs=ieqs,
+            ambient_dim=self.dimension(),
+            base_ring=self.parent().base_ring(),
+            backend=self._backend,
+        )
 
     @cached_method
     def regions(self):
@@ -2043,12 +2088,11 @@ class HyperplaneArrangementElement(Element):
         if self.base_ring().characteristic() != 0:
             raise ValueError('base field must have characteristic zero')
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         R = self.base_ring()
         dim = self.dimension()
         be = self._backend
-        universe = Polyhedron(eqns=[[0] + [0] * dim],
-                              base_ring=R,
-                              backend=be)
+        universe = Polyhedron(eqns=[[0] + [0] * dim], base_ring=R, backend=be)
         regions = [universe]
         if self.is_linear() and self.n_hyperplanes():
             # We only take the positive half w.r. to the first hyperplane.
@@ -2070,7 +2114,7 @@ class HyperplaneArrangementElement(Element):
 
                 # Determine if all vertices lie on one side of the hyperplane.
                 # If so, we determine on which side.
-                valuations = tuple(ieq[0] + ieq[1:]*v[:] for v in region.vertices())
+                valuations = tuple(ieq[0] + ieq[1:] * v[:] for v in region.vertices())
                 direction = 0
                 if any(x > 0 for x in valuations):
                     direction = 1
@@ -2086,17 +2130,24 @@ class HyperplaneArrangementElement(Element):
                     if direction == 0:
                         # In this case all vertices lie on the hyperplane and we must
                         # check if rays are contained in one closed halfspace given by the hyperplane.
-                        valuations = tuple(ieq[1:]*ray[:] for ray in region.rays())
+                        valuations = tuple(ieq[1:] * ray[:] for ray in region.rays())
                         if region_lines:
-                            valuations += tuple(ieq[1:]*line[:] for line in region_lines)
-                            valuations += tuple(-ieq[1:]*line[:] for line in region_lines)
-                        if any(x > 0 for x in valuations) and any(x < 0 for x in valuations):
+                            valuations += tuple(
+                                ieq[1:] * line[:] for line in region_lines
+                            )
+                            valuations += tuple(
+                                -ieq[1:] * line[:] for line in region_lines
+                            )
+                        if any(x > 0 for x in valuations) and any(
+                            x < 0 for x in valuations
+                        ):
                             splits = True
                     else:
                         # In this case, at least one of the vertices is not on the hyperplane.
                         # So we check if any ray or line pokes the hyperplane.
-                        if (any(ieq[1:]*r[:]*direction < 0 for r in region.rays()) or
-                                any(ieq[1:]*ll[:] != 0 for ll in region_lines)):
+                        if any(
+                            ieq[1:] * r[:] * direction < 0 for r in region.rays()
+                        ) or any(ieq[1:] * ll[:] != 0 for ll in region_lines):
                             splits = True
 
                 if splits:
@@ -2368,6 +2419,7 @@ class HyperplaneArrangementElement(Element):
         if R.characteristic() != 0:
             raise ValueError('base field must have characteristic zero')
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         dim = self.dimension()
         hypes = self.hyperplanes()
         be = self._backend
@@ -2413,7 +2465,13 @@ class HyperplaneArrangementElement(Element):
                     for l, testhype in enumerate(hypes[:k]):
                         if signs[l] != 0:
                             h = testhype.dense_coefficient_list()
-                            testval = R.sum(h[i+1] * gi for i, gi in enumerate(zero_part_point)) + h[0]
+                            testval = (
+                                R.sum(
+                                    h[i + 1] * gi
+                                    for i, gi in enumerate(zero_part_point)
+                                )
+                                + h[0]
+                            )
                             if testval == 0:
                                 break
                     else:
@@ -2514,6 +2572,7 @@ class HyperplaneArrangementElement(Element):
         n = len(f)
         R = self.base_ring()
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         eqns = [[0] + [0] * n]
         ieqs = []
         signs = []
@@ -2522,13 +2581,13 @@ class HyperplaneArrangementElement(Element):
             # on.
             H = hyperplane.dense_coefficient_list()
             ieq = vector(R, H)
-            x = R.sum(H[i+1] * fi for i, fi in enumerate(f)) + H[0]
+            x = R.sum(H[i + 1] * fi for i, fi in enumerate(f)) + H[0]
             if x < 0:
                 side = -1
             elif x > 0:
                 side = 1
             else:
-                x = R.sum(H[i+1] * gi for i, gi in enumerate(g)) + H[0]
+                x = R.sum(H[i + 1] * gi for i, gi in enumerate(g)) + H[0]
                 if x < 0:
                     side = -1
                 elif x > 0:
@@ -2638,10 +2697,12 @@ class HyperplaneArrangementElement(Element):
         """
         if field is None:
             from sage.rings.rational_field import QQ
+
             field = QQ
         zero = field.zero()
         one = field.one()
         from sage.matrix.matrix_space import MatrixSpace
+
         Fs = [F0 for F0, F1 in self.closed_faces()]
         # ``Fs`` is the list of the sign vectors of all closed faces of
         # ``self``.
@@ -2658,13 +2719,15 @@ class HyperplaneArrangementElement(Element):
             matrix_j = []
             for i, si in enumerate(Fs):
                 row_i = [zero] * N
-                sk = [sil if sil != 0 else sj[l]
-                      for l, sil in enumerate(si)]
+                sk = [sil if sil != 0 else sj[l] for l, sil in enumerate(si)]
                 k = Fdict[tuple(sk)]
                 row_i[k] = one
                 matrix_j += row_i
             table.append(MS(matrix_j, coerce=False))
-        from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import FiniteDimensionalAlgebra as FDA
+        from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import (
+            FiniteDimensionalAlgebra as FDA,
+        )
+
         return FDA(field, table, names=names, assume_associative=True)
 
     def region_containing_point(self, p):
@@ -2737,15 +2800,21 @@ class HyperplaneArrangementElement(Element):
             (2, 7, 8, 9, 10, 11, 16)
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
-        normal = Polyhedron(vertices=[[0]*self.dimension()],
-                            lines=[hyperplane.normal() for hyperplane in self],
-                            backend=self._backend)
+
+        normal = Polyhedron(
+            vertices=[[0] * self.dimension()],
+            lines=[hyperplane.normal() for hyperplane in self],
+            backend=self._backend,
+        )
         if normal.dim() == 0:
             transverse = lambda poly: poly
         else:
             transverse = lambda poly: poly.intersection(normal)
-        return tuple(i for i, region in enumerate(self.regions())
-                     if transverse(region).is_compact())
+        return tuple(
+            i
+            for i, region in enumerate(self.regions())
+            if transverse(region).is_compact()
+        )
 
     def bounded_regions(self):
         r"""
@@ -2871,8 +2940,9 @@ class HyperplaneArrangementElement(Element):
         r = p.rank_function()
         top = r(p.maximal_elements()[0])
         from sage.matrix.constructor import zero_matrix
-        m1 = zero_matrix(ZZ, top+1, top+1)
-        m2 = zero_matrix(ZZ, top+1, top+1)
+
+        m1 = zero_matrix(ZZ, top + 1, top + 1)
+        m2 = zero_matrix(ZZ, top + 1, top + 1)
         for i, j in p.relations_iterator():
             m1[r(i), r(j)] += p.moebius_function(i, j)
             m2[r(i), r(j)] += 1
@@ -3020,6 +3090,7 @@ class HyperplaneArrangementElement(Element):
         except AttributeError:
             p2 = list(region2)
         from sage.functions.generalized import sign
+
         s = sign(hyperplane(p1)) * sign(hyperplane(p2))
         if s < 0:
             return True
@@ -3048,8 +3119,11 @@ class HyperplaneArrangementElement(Element):
             sage: c.distance_between_regions(s, s)
             0
         """
-        count = sum(1 for hyperplane in self
-                    if self.is_separating_hyperplane(region1, region2, hyperplane))
+        count = sum(
+            1
+            for hyperplane in self
+            if self.is_separating_hyperplane(region1, region2, hyperplane)
+        )
         return ZZ(count)
 
     def distance_enumerator(self, base_region):
@@ -3075,10 +3149,11 @@ class HyperplaneArrangementElement(Element):
             x^3 + 3*x^2 + 3*x + 1
         """
         d = [self.distance_between_regions(r, base_region) for r in self.regions()]
-        d = [d.count(i) for i in range(max(d)+1)]
+        d = [d.count(i) for i in range(max(d) + 1)]
         from sage.rings.polynomial.polynomial_ring import polygen
+
         x = polygen(QQ, 'x')
-        return sum([d[i]*x**i for i in range(len(d))])
+        return sum([d[i] * x**i for i in range(len(d))])
 
     @cached_method
     def varchenko_matrix(self, names='h'):
@@ -3124,6 +3199,7 @@ class HyperplaneArrangementElement(Element):
         """
         from sage.matrix.constructor import identity_matrix
         from sage.misc.misc_c import prod
+
         k = len(self)
         R = PolynomialRing(QQ, names, k)
         h = R.gens()
@@ -3132,8 +3208,11 @@ class HyperplaneArrangementElement(Element):
         v = identity_matrix(R, n, n)
         for i in range(n):
             for j in range(i + 1, n):
-                t = prod(h[p] for p in range(k) if
-                         self.is_separating_hyperplane(region[i], region[j], self[p]))
+                t = prod(
+                    h[p]
+                    for p in range(k)
+                    if self.is_separating_hyperplane(region[i], region[j], self[p])
+                )
                 v[i, j] = v[j, i] = t
         v.set_immutable()
         return v
@@ -3169,6 +3248,7 @@ class HyperplaneArrangementElement(Element):
             raise ValueError("the hyperplane arrangement must be central")
         norms = [p.normal() for p in self]
         from sage.matroids.constructor import Matroid
+
         return Matroid(matrix=matrix(norms).transpose())
 
     def orlik_solomon_algebra(self, base_ring=None, ordering=None, **kwds):
@@ -3370,7 +3450,10 @@ class HyperplaneArrangementElement(Element):
         """
         if not self.is_central():
             raise NotImplementedError("only implemented for central arrangements")
-        from sage.geometry.hyperplane_arrangement.check_freeness import construct_free_chain
+        from sage.geometry.hyperplane_arrangement.check_freeness import (
+            construct_free_chain,
+        )
+
         return construct_free_chain(self)
 
     @cached_method(key=lambda self, a: None)
@@ -3545,6 +3628,7 @@ class HyperplaneArrangementElement(Element):
                     S = self.parent().ambient_space().symmetric_space()
                     return matrix.identity(S, self.dimension()).rows()
                 from sage.misc.misc_c import prod
+
                 return prod(reversed(C)).rows()
             return None
         raise ValueError("invalid algorithm")
@@ -3573,6 +3657,7 @@ class HyperplaneArrangements(Parent, UniqueRepresentation):
         sage: H(x, y, x-1, y-1)
         Arrangement <y - 1 | y | x - 1 | x>
     """
+
     Element = HyperplaneArrangementElement
 
     def __init__(self, base_ring, names=tuple()):
@@ -3599,6 +3684,7 @@ class HyperplaneArrangements(Parent, UniqueRepresentation):
         """
         from sage.categories.sets_cat import Sets
         from sage.rings.ring import _Fields
+
         if base_ring not in _Fields:
             raise ValueError('base ring must be a field')
         super().__init__(category=Sets())
@@ -3738,14 +3824,17 @@ class HyperplaneArrangements(Parent, UniqueRepresentation):
         """
         if len(args) == 1:
             arg = args[0]
-            if isinstance(arg, HyperplaneArrangementElement) and args[0].parent() is self:
+            if (
+                isinstance(arg, HyperplaneArrangementElement)
+                and args[0].parent() is self
+            ):
                 # optimization if argument is already a hyperplane arrangement
                 return arg
             if arg == 0 and not isinstance(arg, Hyperplane):
                 # zero = neutral element under addition = the empty hyperplane arrangement
                 args = []
         # process keyword arguments
-        not_char2 = (self.base_ring().characteristic() != 2)
+        not_char2 = self.base_ring().characteristic() != 2
         signed = kwds.pop('signed', not_char2)
         warn_duplicates = kwds.pop('warn_duplicates', False)
         check = kwds.pop('check', True)
@@ -3769,16 +3858,25 @@ class HyperplaneArrangements(Parent, UniqueRepresentation):
         hyperplanes = set(hyperplanes)
         if warn_duplicates and n != len(hyperplanes):
             from warnings import warn
-            warn('Input contained {0} hyperplanes, but only {1} are distinct.'.format(n, len(hyperplanes)))
+
+            warn(
+                'Input contained {0} hyperplanes, but only {1} are distinct.'.format(
+                    n, len(hyperplanes)
+                )
+            )
         # argument checking (optional but recommended)
         if check:
             if signed and not not_char2:
                 raise ValueError('cannot be signed in characteristic 2')
             for h in hyperplanes:
                 if h.A() == 0:
-                    raise ValueError('linear expression must be non-constant to define a hyperplane')
+                    raise ValueError(
+                        'linear expression must be non-constant to define a hyperplane'
+                    )
                 if not_char2 and -h in hyperplanes:
-                    raise ValueError('arrangement cannot simultaneously have h and -h as hyperplane')
+                    raise ValueError(
+                        'arrangement cannot simultaneously have h and -h as hyperplane'
+                    )
         return self.element_class(self, tuple(sorted(hyperplanes)), backend=backend)
 
     @cached_method

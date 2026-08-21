@@ -55,7 +55,7 @@ def test_gc_loop_2():
     two = libgap(2)
 
     for _ in range(100):
-        rel = libgap([a**2, b**2, a*b*a*b])
+        rel = libgap([a**2, b**2, a * b * a * b])
         H = G / rel
         H1 = H.GeneratorsOfGroup()[0]
         n = H1.Order()
@@ -64,7 +64,7 @@ def test_gc_loop_2():
     result = True
     for i in range(300000):
         n = libgap.Order(H1)
-        result &= (n == two)
+        result &= n == two
     assert result
 
 
@@ -82,7 +82,7 @@ def test_gc_loop_3():
     a, b = G.GeneratorsOfGroup()
     for _ in range(300000):
         lis = libgap([])
-        lis.Add(a ** 2)
-        lis.Add(b ** 2)
+        lis.Add(a**2)
+        lis.Add(b**2)
         lis.Add(b * a)
     assert True

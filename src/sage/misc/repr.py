@@ -43,8 +43,14 @@ def coeff_repr(c, is_latex=False):
     return s
 
 
-def repr_lincomb(terms, is_latex=False, scalar_mult='*', strip_one=False,
-                 repr_monomial=None, latex_scalar_mult=None):
+def repr_lincomb(
+    terms,
+    is_latex=False,
+    scalar_mult='*',
+    strip_one=False,
+    repr_monomial=None,
+    latex_scalar_mult=None,
+):
     """
     Compute a string representation of a linear combination of some
     formal symbols.
@@ -144,7 +150,11 @@ def repr_lincomb(terms, is_latex=False, scalar_mult='*', strip_one=False,
         if is_latex:
 
             def repr_monomial(monomial):
-                return monomial._latex_() if hasattr(monomial, '_latex_') else str(monomial)
+                return (
+                    monomial._latex_()
+                    if hasattr(monomial, '_latex_')
+                    else str(monomial)
+                )
         else:
             repr_monomial = str
 
@@ -196,5 +206,5 @@ def repr_lincomb(terms, is_latex=False, scalar_mult='*', strip_one=False,
         return "0"
         # this can happen only if are only terms with coeff_repr(c) == "0"
     # elif s == "":
-        # return "1"  # is empty string representation invalid?
+    # return "1"  # is empty string representation invalid?
     return s

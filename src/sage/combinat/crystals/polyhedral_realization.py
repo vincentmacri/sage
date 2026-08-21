@@ -21,8 +21,10 @@ Polyhedral realization of `B(\infty)`
 from sage.structure.parent import Parent
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.categories.highest_weight_crystals import HighestWeightCrystals
-from sage.combinat.crystals.tensor_product import TensorProductOfCrystals, \
-    TensorProductOfCrystalsElement
+from sage.combinat.crystals.tensor_product import (
+    TensorProductOfCrystals,
+    TensorProductOfCrystalsElement,
+)
 from sage.combinat.crystals.elementary_crystals import ElementaryCrystal
 from sage.combinat.root_system.cartan_type import CartanType
 
@@ -139,6 +141,7 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
         sage: mg.f_string([2,1,2,2])
         [0, -3, -1, 0, 0, 0]
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type, seq=None):
         """
@@ -189,7 +192,9 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
             sage: crystals.infinity.PolyhedralRealization(['A',2])
             Polyhedral realization of B(oo) of type ['A', 2] using (1, 2)
         """
-        return "Polyhedral realization of B(oo) of type {} using {}".format(self._cartan_type, self._seq)
+        return "Polyhedral realization of B(oo) of type {} using {}".format(
+            self._cartan_type, self._seq
+        )
 
     def finite_tensor_product(self, k):
         """
@@ -215,6 +220,7 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
         r"""
         An element in the polyhedral realization of `B(\infty)`.
         """
+
         # For simplicity (and safety), we use the regular crystals implementation
 
         def epsilon(self, i):
@@ -285,8 +291,9 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
             N = len(self) + 1
             pos = None
             for k in range(1, N):
-                if all(self._sig(i,k) > self._sig(i,j) for j in range(1, k)) and \
-                        all(self._sig(i,k) >= self._sig(i,j) for j in range(k+1, N)):
+                if all(self._sig(i, k) > self._sig(i, j) for j in range(1, k)) and all(
+                    self._sig(i, k) >= self._sig(i, j) for j in range(k + 1, N)
+                ):
                     crystal = self[-k].e(i)
                     pos = k
                     break
@@ -297,7 +304,7 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
 
             l = list(self)
             l[-pos] = crystal
-            if pos <= 2*nf and all(b._m == 0 for b in l[-2*nf:-nf]):
+            if pos <= 2 * nf and all(b._m == 0 for b in l[-2 * nf : -nf]):
                 return self.__class__(self.parent(), l[:-nf])
             return self.__class__(self.parent(), l)
 
@@ -317,8 +324,9 @@ class InfinityCrystalAsPolyhedralRealization(TensorProductOfCrystals):
             N = len(self) + 1
             pos = None
             for k in range(1, N):
-                if all(self._sig(i,k) >= self._sig(i,j) for j in range(1, k)) and \
-                        all(self._sig(i,k) > self._sig(i,j) for j in range(k+1, N)):
+                if all(self._sig(i, k) >= self._sig(i, j) for j in range(1, k)) and all(
+                    self._sig(i, k) > self._sig(i, j) for j in range(k + 1, N)
+                ):
                     crystal = self[-k].f(i)
                     pos = k
                     break

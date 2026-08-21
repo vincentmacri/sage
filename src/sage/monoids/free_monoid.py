@@ -78,9 +78,11 @@ class FreeMonoid(Monoid_class, UniqueRepresentation):
         sage: FreeMonoid(index_set=ZZ, commutative=True)
         Free abelian monoid indexed by Integer Ring
     """
+
     @staticmethod
-    def __classcall_private__(cls, index_set=None, names=None,
-                              commutative=False, **kwds):
+    def __classcall_private__(
+        cls, index_set=None, names=None, commutative=False, **kwds
+    ):
         r"""
         Construct a free monoid or a free abelian monoid, depending on the
         input. Also, normalize the input.
@@ -116,6 +118,7 @@ class FreeMonoid(Monoid_class, UniqueRepresentation):
 
         if commutative:
             from sage.monoids.free_abelian_monoid import FreeAbelianMonoid
+
             return FreeAbelianMonoid(index_set, names, **kwds)
 
         # Swap args (this works if names is None as well)
@@ -132,6 +135,7 @@ class FreeMonoid(Monoid_class, UniqueRepresentation):
             if names is not None:
                 names = normalize_names(-1, names)
             from sage.monoids.indexed_free_monoid import IndexedFreeMonoid
+
             return IndexedFreeMonoid(index_set, names=names, **kwds)
 
         if names is None:
@@ -222,11 +226,11 @@ class FreeMonoid(Monoid_class, UniqueRepresentation):
                 return x
             if P == self:
                 return self.element_class(self, x._element_list, check)
-            if all(v in self.variable_names()
-                     for v in P.variable_names()):
-                reindex = [next(j for j, w in enumerate(self.variable_names())
-                                if v == w)
-                           for v in P.variable_names()]
+            if all(v in self.variable_names() for v in P.variable_names()):
+                reindex = [
+                    next(j for j, w in enumerate(self.variable_names()) if v == w)
+                    for v in P.variable_names()
+                ]
                 elt = [(reindex[i], exp) for i, exp in x._element_list]
                 return self.element_class(self, elt, check)
         if isinstance(x, (int, Integer)) and x == 1:
@@ -299,4 +303,5 @@ class FreeMonoid(Monoid_class, UniqueRepresentation):
         if self.__ngens == 0:
             return ZZ.one()
         from sage.rings.infinity import infinity
+
         return infinity

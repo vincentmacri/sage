@@ -64,7 +64,9 @@ REFERENCES: See [KL1990]_ and [Car1972]_.
 from sage.categories.fields import Fields
 from sage.categories.groups import Groups
 from sage.groups.matrix_gps.named_group import (
-    normalize_args_vectorspace, NamedMatrixGroup_generic)
+    normalize_args_vectorspace,
+    NamedMatrixGroup_generic,
+)
 from sage.misc.latex import latex
 from sage.misc.misc_c import prod
 from sage.rings.infinity import Infinity
@@ -75,6 +77,7 @@ from sage.rings.finite_rings.integer_mod_ring import Integers
 ###############################################################################
 # General Linear Group
 ###############################################################################
+
 
 def GL(n, R, var='a'):
     r"""
@@ -182,18 +185,19 @@ def GL(n, R, var='a'):
     else:
         try:
             cmd = 'GL({0}, {1})'.format(degree, ring._gap_init_())
-            return LinearMatrixGroup_gap(degree, ring, False, name, ltx, cmd,
-                                         category=cat)
+            return LinearMatrixGroup_gap(
+                degree, ring, False, name, ltx, cmd, category=cat
+            )
         except ValueError:
             pass
 
-    return LinearMatrixGroup_generic(degree, ring, False, name, ltx,
-                                     category=cat)
+    return LinearMatrixGroup_generic(degree, ring, False, name, ltx, category=cat)
 
 
 ###############################################################################
 # Special Linear Group
 ###############################################################################
+
 
 def SL(n, R, var='a'):
     r"""
@@ -278,21 +282,21 @@ def SL(n, R, var='a'):
     else:
         try:
             cmd = 'SL({0}, {1})'.format(degree, ring._gap_init_())
-            return LinearMatrixGroup_gap(degree, ring, True, name, ltx, cmd,
-                                         category=cat)
+            return LinearMatrixGroup_gap(
+                degree, ring, True, name, ltx, cmd, category=cat
+            )
         except ValueError:
             pass
 
-    return LinearMatrixGroup_generic(degree, ring, True, name, ltx,
-                                     category=cat)
+    return LinearMatrixGroup_generic(degree, ring, True, name, ltx, category=cat)
 
 
 ########################################################################
 # Linear Matrix Group class
 ########################################################################
 
-class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
 
+class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
     def _check_matrix(self, x, *args):
         r"""
         Check whether the matrix ``x`` is special linear.
@@ -379,10 +383,11 @@ class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
             sage: GL(1, ZZ).order()
             2
         """
+
         def order_over_finite_field(q, n):
             ord = prod(q**n - q**i for i in range(n))
             if self._special:
-                return ord // (q-1)
+                return ord // (q - 1)
             return ord
 
         n = self.degree()
@@ -403,11 +408,11 @@ class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
                 # By the Chinese remainder theorem we need to build the product
                 # over the orders of GL(n, ZZ/p^e ZZ) (or SL) for all prime
                 # powers in the factorization of q
-                for (p,e) in q.factor():
+                for p, e in q.factor():
                     ord_base = order_over_finite_field(p, n)
 
                     if not self._special:
-                        ord *= p**((e-1)*n**2) * ord_base
+                        ord *= p ** ((e - 1) * n**2) * ord_base
 
                     # We apply |SL(n, R)| = |GL(n, R)| / euler_phi(q), but since we
                     # already iterate over the prime factorization of q, we divide
@@ -415,12 +420,14 @@ class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
                     # handled in the call to order_over_finite_field, we only
                     # need to remove p^(e-1) compared to the above formula
                     else:
-                        ord *= p**((e-1)*(n**2-1)) * ord_base
+                        ord *= p ** ((e - 1) * (n**2 - 1)) * ord_base
 
                 return ord
 
-            raise NotImplementedError("order computation of linear groups not "
-                                      "fully supported for arbitrary base rings")
+            raise NotImplementedError(
+                "order computation of linear groups not "
+                "fully supported for arbitrary base rings"
+            )
 
         if n > 1 or (R.is_field() and not self._special):
             return Infinity
@@ -431,7 +438,9 @@ class LinearMatrixGroup_generic(NamedMatrixGroup_generic):
         if R == ZZ:
             return ZZ(2)
 
-        raise NotImplementedError("order computation of linear groups not "
-                                  "fully supported for arbitrary base rings")
+        raise NotImplementedError(
+            "order computation of linear groups not "
+            "fully supported for arbitrary base rings"
+        )
 
     cardinality = order

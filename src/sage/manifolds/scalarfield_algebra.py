@@ -19,7 +19,7 @@ REFERENCES:
 - [KN1963]_
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #       Copyright (C) 2016 Travis Scrimshaw <tscrimsh@umn.edu>
@@ -28,7 +28,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.commutative_algebras import CommutativeAlgebras
 from sage.categories.topological_spaces import TopologicalSpaces
@@ -381,14 +381,18 @@ class ScalarFieldAlgebra(UniqueRepresentation, Parent):
         base_field = domain.base_field()
         if domain.base_field_type() in ['real', 'complex']:
             base_field = SR
-        Parent.__init__(self, base=base_field,
-                        category=CommutativeAlgebras(base_field) & TopologicalSpaces().Homsets())
+        Parent.__init__(
+            self,
+            base=base_field,
+            category=CommutativeAlgebras(base_field) & TopologicalSpaces().Homsets(),
+        )
         self._domain = domain
         self._populate_coercion_lists_()
 
     #### Methods required for any Parent
-    def _element_constructor_(self, coord_expression=None, chart=None,
-                              name=None, latex_name=None):
+    def _element_constructor_(
+        self, coord_expression=None, chart=None, name=None, latex_name=None
+    ):
         r"""
         Construct a scalar field.
 
@@ -467,14 +471,19 @@ class ScalarFieldAlgebra(UniqueRepresentation, Parent):
             # Anything going wrong here should produce a readable error:
             try:
                 # generic constructor:
-                resu = self.element_class(self,
-                                          coord_expression=coord_expression,
-                                          name=name, latex_name=latex_name,
-                                          chart=chart)
+                resu = self.element_class(
+                    self,
+                    coord_expression=coord_expression,
+                    name=name,
+                    latex_name=latex_name,
+                    chart=chart,
+                )
             except TypeError:
-                raise TypeError("cannot convert " +
-                                "{} to a scalar ".format(coord_expression) +
-                                "field on {}".format(self._domain))
+                raise TypeError(
+                    "cannot convert "
+                    + "{} to a scalar ".format(coord_expression)
+                    + "field on {}".format(self._domain)
+                )
         return resu
 
     def _an_element_(self):
@@ -519,11 +528,12 @@ class ScalarFieldAlgebra(UniqueRepresentation, Parent):
             True
         """
         from sage.manifolds.chart_func import ChartFunctionRing
+
         if isinstance(other, SymbolicRing):
             return True  # coercion from the base ring (multiplication by the
-                         # algebra unit, i.e. self.one())
-                         # cf. ScalarField._lmul_() for the implementation of
-                         # the coercion map
+            # algebra unit, i.e. self.one())
+            # cf. ScalarField._lmul_() for the implementation of
+            # the coercion map
         if isinstance(other, ScalarFieldAlgebra):
             return self._domain.is_subset(other._domain)
         if isinstance(other, ChartFunctionRing):
@@ -586,11 +596,10 @@ class ScalarFieldAlgebra(UniqueRepresentation, Parent):
             sage: CM.zero() is z
             True
         """
-        coord_express = {chart: chart.zero_function()
-                         for chart in self._domain.atlas()}
-        zero = self.element_class(self,
-                                  coord_expression=coord_express,
-                                  name='zero', latex_name='0')
+        coord_express = {chart: chart.zero_function() for chart in self._domain.atlas()}
+        zero = self.element_class(
+            self, coord_expression=coord_express, name='zero', latex_name='0'
+        )
         zero._is_zero = True
         zero.set_immutable()
         return zero
@@ -619,9 +628,9 @@ class ScalarFieldAlgebra(UniqueRepresentation, Parent):
             sage: CM.one() is h
             True
         """
-        coord_express = {chart: chart.one_function()
-                         for chart in self._domain.atlas()}
-        one = self.element_class(self, coord_expression=coord_express,
-                                 name='1', latex_name='1')
+        coord_express = {chart: chart.one_function() for chart in self._domain.atlas()}
+        one = self.element_class(
+            self, coord_expression=coord_express, name='1', latex_name='1'
+        )
         one.set_immutable()
         return one

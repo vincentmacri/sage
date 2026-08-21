@@ -13,7 +13,6 @@ The cdd backend for polyhedral computations, floating point version
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from .backend_cdd import Polyhedron_cdd
 from .base_RDF import Polyhedron_RDF
 
@@ -77,6 +76,7 @@ class Polyhedron_RDF_cdd(Polyhedron_cdd, Polyhedron_RDF):
         sage: Polyhedron(vertices=[], backend='cdd', base_ring=RDF)
         The empty polyhedron in RDF^0
     """
+
     _cdd_type = 'real'
 
     _cdd_executable = 'cddexec'
@@ -156,6 +156,7 @@ class Polyhedron_RDF_cdd(Polyhedron_cdd, Polyhedron_RDF):
             sage: P1*P2
             The empty polyhedron in RDF^2
         """
+
         def parse_Vrep(intro, data):
             count = int(data[0][0])
             if count != len(vertices) + len(rays) + len(lines):
@@ -168,11 +169,16 @@ class Polyhedron_RDF_cdd(Polyhedron_cdd, Polyhedron_RDF):
                 # expert in that field by any means.) See also
                 # https://github.com/cddlib/cddlib/pull/7.
                 from warnings import warn
-                warn("This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies.")
+
+                warn(
+                    "This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies."
+                )
 
         def parse_Hrep(intro, data):
             count = int(data[0][0])
-            infinite_count = len([d for d in data[1:] if d[0] == '1' and all(c == '0' for c in d[1:])])
+            infinite_count = len(
+                [d for d in data[1:] if d[0] == '1' and all(c == '0' for c in d[1:])]
+            )
             if count - infinite_count != len(ieqs) + len(eqns):
                 # Upstream claims that nothing can be done about these
                 # cases/that they are features not bugs. Imho, cddlib is
@@ -182,17 +188,22 @@ class Polyhedron_RDF_cdd(Polyhedron_cdd, Polyhedron_RDF):
                 # somewhat random numerical choices. (But I am not an
                 # expert in that field by any means.)
                 from warnings import warn
-                warn("This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies.")
+
+                warn(
+                    "This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies."
+                )
 
         def try_init(rep):
             if rep == "Vrep":
                 from .cdd_file_format import cdd_Vrepresentation
+
                 s = cdd_Vrepresentation(self._cdd_type, vertices, rays, lines)
             else:
                 # We have to add a trivial inequality, in case the polyhedron is the universe.
                 new_ieqs = ieqs + ((1,) + tuple(0 for _ in range(self.ambient_dim())),)
 
                 from .cdd_file_format import cdd_Hrepresentation
+
                 s = cdd_Hrepresentation(self._cdd_type, new_ieqs, eqns)
 
             s = self._run_cdd(s, '--redcheck', verbose=verbose)

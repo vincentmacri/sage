@@ -44,8 +44,24 @@ lazy_import('sage.interfaces.snappy', ['snappyhp', 'SnapPyHP'])
 lazy_import('sage.interfaces.tachyon', 'tachyon_rt')
 
 # The following variable is used by sage-shell-mode in emacs:
-interfaces = ['gap', 'gap3', 'giac', 'gp', 'mathematica', 'gnuplot',
-              'kash', 'magma', 'macaulay2', 'maple', 'maxima',
-              'mathematica', 'mwrank', 'octave', 'r', 'singular',
-              'sage0', 'sage']
+interfaces = [
+    'gap',
+    'gap3',
+    'giac',
+    'gp',
+    'mathematica',
+    'gnuplot',
+    'kash',
+    'magma',
+    'macaulay2',
+    'maple',
+    'maxima',
+    'mathematica',
+    'mwrank',
+    'octave',
+    'r',
+    'singular',
+    'sage0',
+    'sage',
+]
 del lazy_import

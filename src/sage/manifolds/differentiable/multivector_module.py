@@ -23,14 +23,14 @@ REFERENCES:
 - \R. L. Bishop and S. L. Goldberg (1980) [BG1980]_
 - \C.-M. Marle (1997) [Mar1997]_
 """
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2017 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.modules import Modules
 from sage.manifolds.differentiable.multivectorfield import (
@@ -217,6 +217,7 @@ class MultivectorModule(UniqueRepresentation, Parent):
         sage: a_U.display(eU)
         a = 3*x ∂/∂x∧∂/∂y
     """
+
     Element = MultivectorField
 
     def __init__(self, vector_field_module, degree):
@@ -250,8 +251,7 @@ class MultivectorModule(UniqueRepresentation, Parent):
         domain = vector_field_module._domain
         dest_map = vector_field_module._dest_map
         name = "A^{}(".format(degree) + domain._name
-        latex_name = r"A^{{{}}}\left({}".format(degree,
-                                                domain._latex_name)
+        latex_name = r"A^{{{}}}\left({}".format(degree, domain._latex_name)
         if dest_map is not domain.identity_map():
             dm_name = dest_map._name
             dm_latex_name = dest_map._latex_name
@@ -268,8 +268,7 @@ class MultivectorModule(UniqueRepresentation, Parent):
         # the member self._ring is created for efficiency (to avoid
         # calls to self.base_ring()):
         self._ring = domain.scalar_field_algebra()
-        Parent.__init__(self, base=self._ring,
-                        category=Modules(self._ring))
+        Parent.__init__(self, base=self._ring, category=Modules(self._ring))
         self._domain = domain
         self._dest_map = dest_map
         self._ambient_domain = vector_field_module._ambient_domain
@@ -279,8 +278,7 @@ class MultivectorModule(UniqueRepresentation, Parent):
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct a multivector field.
 
@@ -307,19 +305,25 @@ class MultivectorModule(UniqueRepresentation, Parent):
                 return self.zero()
         if isinstance(comp, (MultivectorField, MultivectorFieldParal)):
             # coercion by domain restriction
-            if (self._degree == comp._tensor_type[0]
-                   and self._domain.is_subset(comp._domain)
-                   and self._ambient_domain.is_subset(
-                                                 comp._ambient_domain)):
+            if (
+                self._degree == comp._tensor_type[0]
+                and self._domain.is_subset(comp._domain)
+                and self._ambient_domain.is_subset(comp._ambient_domain)
+            ):
                 return comp.restrict(self._domain)
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._vmodule, self._degree,
-                                  name=name, latex_name=latex_name)
+        resu = self.element_class(
+            self._vmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(frame)[:] = comp
         return resu
@@ -344,7 +348,8 @@ class MultivectorModule(UniqueRepresentation, Parent):
             # the first non-trivial open cover is selected
             for dom in oc:
                 vmodule_dom = dom.vector_field_module(
-                                  dest_map=self._dest_map.restrict(dom))
+                    dest_map=self._dest_map.restrict(dom)
+                )
                 dmodule_dom = vmodule_dom.exterior_power(self._degree)
                 resu.set_restriction(dmodule_dom._an_element_())
             return resu
@@ -369,10 +374,11 @@ class MultivectorModule(UniqueRepresentation, Parent):
         """
         if isinstance(other, (MultivectorModule, MultivectorFreeModule)):
             # coercion by domain restriction
-            return (self._degree == other._degree
-                    and self._domain.is_subset(other._domain)
-                    and self._ambient_domain.is_subset(
-                                                 other._ambient_domain))
+            return (
+                self._degree == other._degree
+                and self._domain.is_subset(other._domain)
+                and self._ambient_domain.is_subset(other._ambient_domain)
+            )
         return False
 
     @cached_method
@@ -419,7 +425,8 @@ class MultivectorModule(UniqueRepresentation, Parent):
             description += "on the {}".format(self._domain)
         else:
             description += "along the {} mapped into the {}".format(
-                                      self._domain, self._ambient_domain)
+                self._domain, self._ambient_domain
+            )
         return description
 
     def _latex_(self):
@@ -487,7 +494,8 @@ class MultivectorModule(UniqueRepresentation, Parent):
         """
         return self._degree
 
-#***********************************************************************
+
+# ***********************************************************************
 
 
 class MultivectorFreeModule(ExtPowerFreeModule):
@@ -674,8 +682,7 @@ class MultivectorFreeModule(ExtPowerFreeModule):
         domain = vector_field_module._domain
         dest_map = vector_field_module._dest_map
         name = "A^{}(".format(degree) + domain._name
-        latex_name = r"A^{{{}}}\left({}".format(degree,
-                                                domain._latex_name)
+        latex_name = r"A^{{{}}}\left({}".format(degree, domain._latex_name)
         if dest_map is not domain.identity_map():
             dm_name = dest_map._name
             dm_latex_name = dest_map._latex_name
@@ -687,16 +694,16 @@ class MultivectorFreeModule(ExtPowerFreeModule):
             latex_name += "," + dm_latex_name
         name += ")"
         latex_name += r"\right)"
-        ExtPowerFreeModule.__init__(self, vector_field_module, degree,
-                                    name=name, latex_name=latex_name)
+        ExtPowerFreeModule.__init__(
+            self, vector_field_module, degree, name=name, latex_name=latex_name
+        )
         self._domain = domain
         self._dest_map = dest_map
         self._ambient_domain = vector_field_module._ambient_domain
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct a multivector field.
 
@@ -721,19 +728,25 @@ class MultivectorFreeModule(ExtPowerFreeModule):
                 return self.zero()
         if isinstance(comp, (MultivectorField, MultivectorFieldParal)):
             # coercion by domain restriction
-            if (self._degree == comp._tensor_type[0]
-                    and self._domain.is_subset(comp._domain)
-                    and self._ambient_domain.is_subset(
-                                                 comp._ambient_domain)):
+            if (
+                self._degree == comp._tensor_type[0]
+                and self._domain.is_subset(comp._domain)
+                and self._ambient_domain.is_subset(comp._ambient_domain)
+            ):
                 return comp.restrict(self._domain)
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to a multivector field in {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to a multivector field in {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._fmodule, self._degree, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(
+            self._fmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(frame)[:] = comp
         return resu
@@ -763,10 +776,11 @@ class MultivectorFreeModule(ExtPowerFreeModule):
         """
         if isinstance(other, (MultivectorModule, MultivectorFreeModule)):
             # coercion by domain restriction
-            return (self._degree == other._degree
-                    and self._domain.is_subset(other._domain)
-                    and self._ambient_domain.is_subset(
-                                                 other._ambient_domain))
+            return (
+                self._degree == other._degree
+                and self._domain.is_subset(other._domain)
+                and self._ambient_domain.is_subset(other._ambient_domain)
+            )
         return False
 
     #### End of Parent methods
@@ -792,5 +806,6 @@ class MultivectorFreeModule(ExtPowerFreeModule):
             description += "on the {}".format(self._domain)
         else:
             description += "along the {} mapped into the {}".format(
-                                     self._domain, self._ambient_domain)
+                self._domain, self._ambient_domain
+            )
         return description

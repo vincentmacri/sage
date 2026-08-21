@@ -44,6 +44,7 @@ class SubmoduleHelper(metaclass=ClasscallMetaclass):
     - ``is_saturated``: a boolean; whether this submodule is
       saturated in the ambient space
     """
+
     def __classcall_private__(self, mat, saturate=False):
         r"""
         Dispatch to the appropriate class.
@@ -80,13 +81,14 @@ class SubmoduleHelper(metaclass=ClasscallMetaclass):
         base = mat.base_ring()
         if base in Fields():
             cls = SubmoduleHelper_field
-        elif (isinstance(mat, Matrix_polynomial_dense)
-          and base.base_ring() in Fields()):
+        elif isinstance(mat, Matrix_polynomial_dense) and base.base_ring() in Fields():
             cls = SubmoduleHelper_polynomial_ring
         elif base in PrincipalIdealDomains():
             cls = SubmoduleHelper_PID
         else:
-            raise NotImplementedError("submodules and quotients are only implemented over PIDs")
+            raise NotImplementedError(
+                "submodules and quotients are only implemented over PIDs"
+            )
         return cls.__call__(mat, saturate)
 
     def __hash__(self):
@@ -146,6 +148,7 @@ class SubmoduleHelper_field(SubmoduleHelper):
     r"""
     Submodules over fields.
     """
+
     def __init__(self, mat, saturate):
         r"""
         Initialize this submodule.
@@ -183,7 +186,7 @@ class SubmoduleHelper_field(SubmoduleHelper):
         pivots = basis.pivots()
         self.basis = basis.matrix_from_rows(range(r))
         self.basis.set_immutable()
-        self.complement = matrix(base, n-r, n)
+        self.complement = matrix(base, n - r, n)
         self.coordinates = matrix(base, n, n)
         indices = []
         i = 0
@@ -193,11 +196,11 @@ class SubmoduleHelper_field(SubmoduleHelper):
                 i += 1
             else:
                 indices.append(j)
-                self.complement[j-i, j] = base.one()
-                self.coordinates[j, j-i+r] = base.one()
+                self.complement[j - i, j] = base.one()
+                self.coordinates[j, j - i + r] = base.one()
         for i in range(r):
-            for j in range(n-r):
-                self.coordinates[pivots[i], j+r] = -basis[i, indices[j]]
+            for j in range(n - r):
+                self.coordinates[pivots[i], j + r] = -basis[i, indices[j]]
         self.is_saturated = True
 
 
@@ -206,6 +209,7 @@ class SubmoduleHelper_PID(SubmoduleHelper):
     Submodules over principal ideal domains (except
     polynomial rings to which a special class is dedicated).
     """
+
     def __init__(self, mat, saturate):
         r"""
         Initialize this submodule.
@@ -252,7 +256,7 @@ class SubmoduleHelper_PID(SubmoduleHelper):
         S, U, V = mat.smith_form()
         r = 0
         for i in range(min(S.nrows(), S.ncols())):
-            if S[i,i] == 0:
+            if S[i, i] == 0:
                 break
             r += 1
         self.rank = r
@@ -263,10 +267,11 @@ class SubmoduleHelper_PID(SubmoduleHelper):
             self.is_saturated = True
         else:
             S = S.matrix_from_rows(range(r))
-            basis = matrix(base, [[S[i,i]*W[i,j] for j in range(n)]
-                                        for i in range(r)])
+            basis = matrix(
+                base, [[S[i, i] * W[i, j] for j in range(n)] for i in range(r)]
+            )
             complement = W.matrix_from_rows(range(r, n))
-            self.is_saturated = all(S[i,i].is_unit() for i in range(r))
+            self.is_saturated = all(S[i, i].is_unit() for i in range(r))
         self.basis = basis.echelon_form()
         self.basis.set_immutable()
         self.complement = complement.echelon_form()
@@ -277,6 +282,7 @@ class SubmoduleHelper_polynomial_ring(SubmoduleHelper):
     r"""
     Submodules over polynomial rings.
     """
+
     def __init__(self, mat, saturate):
         r"""
         Initialize this submodule.
@@ -310,7 +316,7 @@ class SubmoduleHelper_polynomial_ring(SubmoduleHelper):
             W = V.inverse().change_ring(base)
             r = 0
             for i in range(min(S.nrows(), S.ncols())):
-                if S[i,i] == 0:
+                if S[i, i] == 0:
                     break
                 r += 1
             mat = W.matrix_from_rows(range(r))

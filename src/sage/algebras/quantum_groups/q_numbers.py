@@ -75,7 +75,7 @@ def q_int(n, q=None):
         R = q.parent()
     if n == 0:
         return R.zero()
-    return R.sum(q**(n - 2 * i - 1) for i in range(n))
+    return R.sum(q ** (n - 2 * i - 1) for i in range(n))
 
 
 def q_factorial(n, q=None):
@@ -127,7 +127,7 @@ def q_factorial(n, q=None):
         ValueError: argument (-2) must be a nonnegative integer
     """
     if n in ZZ and n >= 0:
-        return prod(q_int(i, q) for i in range(1, n+1))
+        return prod(q_int(i, q) for i in range(1, n + 1))
     raise ValueError("argument ({}) must be a nonnegative integer".format(n))
 
 

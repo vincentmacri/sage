@@ -26,10 +26,18 @@ from itertools import combinations
 from sage.graphs.graph import Graph
 
 
-def ChessboardGraphGenerator(dim_list, rook=True, rook_radius=None,
-                             bishop=True, bishop_radius=None,
-                             knight=True, knight_x=1, knight_y=2,
-                             relabel=False, immutable=False):
+def ChessboardGraphGenerator(
+    dim_list,
+    rook=True,
+    rook_radius=None,
+    bishop=True,
+    bishop_radius=None,
+    knight=True,
+    knight_x=1,
+    knight_y=2,
+    relabel=False,
+    immutable=False,
+):
     r"""
     Return a Graph built on a `d`-dimensional chessboard with prescribed
     dimensions and interconnections.
@@ -173,14 +181,22 @@ def ChessboardGraphGenerator(dim_list, rook=True, rook_radius=None,
         if rook_radius is None:
             rook_radius = max(dim)
         elif rook_radius not in ZZ or rook_radius < 1:
-            raise ValueError('the rook_radius must be either None or have an integer value >= 1')
+            raise ValueError(
+                'the rook_radius must be either None or have an integer value >= 1'
+            )
     if bishop:
         if bishop_radius is None:
             bishop_radius = max(dim)
         elif bishop_radius not in ZZ or bishop_radius < 1:
-            raise ValueError('the bishop_radius must be either None or have an integer value >= 1')
-    if knight and (knight_x not in ZZ or knight_y not in ZZ or knight_x < 1 or knight_y < 1):
-        raise ValueError('the knight_x and knight_y values must be integers of value >= 1')
+            raise ValueError(
+                'the bishop_radius must be either None or have an integer value >= 1'
+            )
+    if knight and (
+        knight_x not in ZZ or knight_y not in ZZ or knight_x < 1 or knight_y < 1
+    ):
+        raise ValueError(
+            'the knight_x and knight_y values must be integers of value >= 1'
+        )
 
     # We build the set of vertices of the d-dimensional chessboard
     V = list(product(*[range(_) for _ in dim]))
@@ -248,8 +264,7 @@ def ChessboardGraphGenerator(dim_list, rook=True, rook_radius=None,
         else:
             G.relabel(inplace=True)
     else:
-        G = Graph([V, edges()], format="vertices_and_edges",
-                  immutable=immutable)
+        G = Graph([V, edges()], format="vertices_and_edges", immutable=immutable)
     return G, dimstr
 
 
@@ -317,12 +332,16 @@ def QueenGraph(dim_list, radius=None, relabel=False, immutable=False):
         ....:         if not G.is_isomorphic(H):
         ....:             print("that's not good!")
     """
-    G, dimstr = ChessboardGraphGenerator(dim_list,
-                                         rook=True, rook_radius=radius,
-                                         bishop=True, bishop_radius=radius,
-                                         knight=False,
-                                         relabel=relabel,
-                                         immutable=immutable)
+    G, dimstr = ChessboardGraphGenerator(
+        dim_list,
+        rook=True,
+        rook_radius=radius,
+        bishop=True,
+        bishop_radius=radius,
+        knight=False,
+        relabel=relabel,
+        immutable=immutable,
+    )
     if radius is None:
         G._name = f"{dimstr}-Queen Graph"
     else:
@@ -385,12 +404,16 @@ def KingGraph(dim_list, radius=None, relabel=False, immutable=False):
     """
     rook_radius = 1 if radius is None else radius
     bishop_radius = 1 if radius is None else radius
-    G, dimstr = ChessboardGraphGenerator(dim_list,
-                                         rook=True, rook_radius=rook_radius,
-                                         bishop=True, bishop_radius=bishop_radius,
-                                         knight=False,
-                                         relabel=relabel,
-                                         immutable=immutable)
+    G, dimstr = ChessboardGraphGenerator(
+        dim_list,
+        rook=True,
+        rook_radius=rook_radius,
+        bishop=True,
+        bishop_radius=bishop_radius,
+        knight=False,
+        relabel=relabel,
+        immutable=immutable,
+    )
     if radius is None:
         G._name = f"{dimstr}-King Graph"
     else:
@@ -450,10 +473,16 @@ def KnightGraph(dim_list, one=1, two=2, relabel=False, immutable=False):
         sage: G.is_hamiltonian()                                                        # needs sage.numerical.mip
         True
     """
-    G, dimstr = ChessboardGraphGenerator(dim_list,
-                                         rook=False, bishop=False,
-                                         knight=True, knight_x=one, knight_y=two,
-                                         relabel=relabel, immutable=immutable)
+    G, dimstr = ChessboardGraphGenerator(
+        dim_list,
+        rook=False,
+        bishop=False,
+        knight=True,
+        knight_x=one,
+        knight_y=two,
+        relabel=relabel,
+        immutable=immutable,
+    )
     if one + two == 3:
         G._name = f"{dimstr}-Knight Graph"
     else:
@@ -509,10 +538,15 @@ def RookGraph(dim_list, radius=None, relabel=False, immutable=False):
         sage: G.is_isomorphic( H )
         True
     """
-    G, dimstr = ChessboardGraphGenerator(dim_list,
-                                         rook=True, rook_radius=radius,
-                                         bishop=False, knight=False,
-                                         relabel=relabel, immutable=immutable)
+    G, dimstr = ChessboardGraphGenerator(
+        dim_list,
+        rook=True,
+        rook_radius=radius,
+        bishop=False,
+        knight=False,
+        relabel=relabel,
+        immutable=immutable,
+    )
     if radius is None:
         G._name = f"{dimstr}-Rook Graph"
     else:
@@ -567,10 +601,15 @@ def BishopGraph(dim_list, radius=None, relabel=False, immutable=False):
         ....:         if not B.is_isomorphic(H):
         ....:            print("that's not good!")
     """
-    G, dimstr = ChessboardGraphGenerator(dim_list,
-                                         rook=False, knight=False,
-                                         bishop=True, bishop_radius=radius,
-                                         relabel=relabel, immutable=immutable)
+    G, dimstr = ChessboardGraphGenerator(
+        dim_list,
+        rook=False,
+        knight=False,
+        bishop=True,
+        bishop_radius=radius,
+        relabel=relabel,
+        immutable=immutable,
+    )
     if radius is None:
         G._name = f"{dimstr}-Bishop Graph"
     else:

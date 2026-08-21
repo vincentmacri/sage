@@ -1,14 +1,14 @@
 r"""
 SetsWithPartialMaps
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 David Kohel <kohel@maths.usyd.edu> and
 #                     William Stein <wstein@math.ucsd.edu>
 #                     Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.objects import Objects
@@ -37,7 +37,8 @@ class SetsWithPartialMaps(Category_singleton):
 
         sage: TestSuite(SetsWithPartialMaps()).run()
     """
-    #def __call__(self, X, pt):
+
+    # def __call__(self, X, pt):
     #    import sage.sets.all
     #    return sage.sets.all.Set(X, pt)
 

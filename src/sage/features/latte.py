@@ -26,6 +26,7 @@ class Latte_count(Executable):
     r"""
     Feature for the executable ``count`` from :ref:`LattE integrale <spkg_latte_int>`.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -34,15 +35,16 @@ class Latte_count(Executable):
             sage: isinstance(Latte_count(), Latte_count)
             True
         """
-        Executable.__init__(self, 'count', executable='count',
-                            spkg='latte_int',
-                            url=LATTE_URL)
+        Executable.__init__(
+            self, 'count', executable='count', spkg='latte_int', url=LATTE_URL
+        )
 
 
 class Latte_integrate(Executable):
     r"""
     Feature for the executable ``integrate`` from :ref:`LattE integrale <spkg_latte_int>`.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -51,9 +53,9 @@ class Latte_integrate(Executable):
             sage: isinstance(Latte_integrate(), Latte_integrate)
             True
         """
-        Executable.__init__(self, 'integrate', executable='integrate',
-                            spkg='latte_int',
-                            url=LATTE_URL)
+        Executable.__init__(
+            self, 'integrate', executable='integrate', spkg='latte_int', url=LATTE_URL
+        )
 
 
 class Latte(JoinFeature):
@@ -67,6 +69,7 @@ class Latte(JoinFeature):
         sage: Latte().is_present()  # optional - latte_int
         FeatureTestResult('latte_int', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -75,9 +78,9 @@ class Latte(JoinFeature):
             sage: isinstance(Latte(), Latte)
             True
         """
-        JoinFeature.__init__(self, 'latte_int',
-                             (Latte_count(), Latte_integrate()),
-                             description='LattE')
+        JoinFeature.__init__(
+            self, 'latte_int', (Latte_count(), Latte_integrate()), description='LattE'
+        )
 
 
 def all_features():

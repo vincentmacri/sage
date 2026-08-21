@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2013-05-03): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013-2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,15 +14,20 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.element import parent
 from sage.categories.kac_moody_algebras import KacMoodyAlgebras
 
-from sage.algebras.lie_algebras.lie_algebra import LieAlgebra, FinitelyGeneratedLieAlgebra
-from sage.algebras.lie_algebras.lie_algebra_element import UntwistedAffineLieAlgebraElement
+from sage.algebras.lie_algebras.lie_algebra import (
+    LieAlgebra,
+    FinitelyGeneratedLieAlgebra,
+)
+from sage.algebras.lie_algebras.lie_algebra_element import (
+    UntwistedAffineLieAlgebraElement,
+)
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.categories.cartesian_product import cartesian_product
 from sage.rings.integer_ring import ZZ
@@ -63,6 +68,7 @@ class AffineLieAlgebra(FinitelyGeneratedLieAlgebra):
 
     - [Ka1990]_
     """
+
     @staticmethod
     def __classcall_private__(cls, arg0, cartan_type=None, kac_moody=True):
         """
@@ -166,6 +172,7 @@ class AffineLieAlgebra(FinitelyGeneratedLieAlgebra):
         else:
             K = TwistedAffineIndices(self._cartan_type)
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         c = FiniteEnumeratedSet(['c'])
         if self._kac_moody:
             d = FiniteEnumeratedSet(['d'])
@@ -191,8 +198,9 @@ class AffineLieAlgebra(FinitelyGeneratedLieAlgebra):
         """
         P = parent(x)
         if P is self.derived_subalgebra():
-            return self.element_class(self, x.t_dict(), x.c_coefficient(),
-                                      x.d_coefficient())
+            return self.element_class(
+                self, x.t_dict(), x.c_coefficient(), x.d_coefficient()
+            )
         if P == self._g:
             zero = self.base_ring().zero()
             return self.element_class(self, {0: x}, zero, zero)
@@ -383,32 +391,34 @@ class AffineLieAlgebra(FinitelyGeneratedLieAlgebra):
 
         if self._cartan_type.is_untwisted_affine():
             # e_0 = f_{\theta} t
-            d['e0'] = self.element_class(self, {1: self._g.highest_root_basis_elt(False)},
-                                         zero, zero)
+            d['e0'] = self.element_class(
+                self, {1: self._g.highest_root_basis_elt(False)}, zero, zero
+            )
             # f_0 = e_{\theta} t^-1
-            d['f0'] = self.element_class(self, {-1: self._g.highest_root_basis_elt(True)},
-                                         zero, zero)
+            d['f0'] = self.element_class(
+                self, {-1: self._g.highest_root_basis_elt(True)}, zero, zero
+            )
         elif self._cartan_type.type() != 'BC':
             a = self._cartan_type.a()
             Q = self._g._Q
             theta = Q._from_dict({i: a[i] for i in Q.index_set()}, remove_zeros=False)
             # e_0 = f_{\theta} t
-            d['e0'] = self.element_class(self, {1: self._g.basis()[-theta]},
-                                         zero, zero)
+            d['e0'] = self.element_class(self, {1: self._g.basis()[-theta]}, zero, zero)
             # f_0 = e_{\theta} t^-1
-            d['f0'] = self.element_class(self, {-1: self._g.basis()[theta]},
-                                         zero, zero)
+            d['f0'] = self.element_class(self, {-1: self._g.basis()[theta]}, zero, zero)
         else:
             n = self._g.cartan_type().rank()
             a = self._cartan_type.a()
             Q = self._g._Q
             theta = Q._from_dict({i: ZZ(2) for i in Q.index_set()}, remove_zeros=False)
             # e_0 = f_{\theta} t
-            d[f'e{n}'] = self.element_class(self, {1: self._g1.basis()[-theta]},
-                                         zero, zero)
+            d[f'e{n}'] = self.element_class(
+                self, {1: self._g1.basis()[-theta]}, zero, zero
+            )
             # f_0 = e_{\theta} t^-1
-            d[f'f{n}'] = self.element_class(self, {-1: self._g1.basis()[theta]},
-                                         zero, zero)
+            d[f'f{n}'] = self.element_class(
+                self, {-1: self._g1.basis()[theta]}, zero, zero
+            )
 
         return Family(self.variable_names(), d.__getitem__)
 
@@ -578,6 +588,7 @@ class UntwistedAffineLieAlgebra(AffineLieAlgebra):
         sage: D.d()
         0
     """
+
     def __init__(self, g, kac_moody) -> None:
         """
         Initialize ``self``.
@@ -608,7 +619,7 @@ class UntwistedAffineLieAlgebra(AffineLieAlgebra):
         if self._kac_moody:
             old_len = len(rep)
             rep = rep.replace("Lie", "Kac-Moody")
-            if len(rep) == old_len: # We did not replace anything
+            if len(rep) == old_len:  # We did not replace anything
                 base += "Kac-Moody "
         return base + rep
 
@@ -671,6 +682,7 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
     weights in this representation with the roots of type `B_n` and
     the double all of its short roots.
     """
+
     def __init__(self, R, cartan_type, kac_moody) -> None:
         """
         Initialize ``self``.
@@ -702,36 +714,41 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
         if cartan_type.type() == 'BC':
             classical = cartan_type.classical().dual()
             n = classical.rank()
-            classical = classical.relabel({n-i: i for i in range(n)})
+            classical = classical.relabel({n - i: i for i in range(n)})
         else:
             classical = cartan_type.classical()
         g = LieAlgebra(R, cartan_type=classical)
         n = classical.rank()
-        names = ['e%s' % i for i in range(1, n+1)]
-        names.extend('f%s' % i for i in range(1, n+1))
+        names = ['e%s' % i for i in range(1, n + 1)]
+        names.extend('f%s' % i for i in range(1, n + 1))
         if cartan_type.type() == 'BC':
             names.extend('h%s' % i for i in range(n))
         else:
-            names.extend('h%s' % i for i in range(1, n+1))
+            names.extend('h%s' % i for i in range(1, n + 1))
         names += ['e0', 'f0', 'c']
         super().__init__(g, cartan_type, names, kac_moody)
 
         # setup the ambient simply-laced algebra
         basic_ct = cartan_type.basic_untwisted()
         if cartan_type.dual().type() == 'B':
-            ep = [(i, i+1) for i in range(1, n)]
-            ep.extend((i+1, i) for i in range(n, 2*n-1))
+            ep = [(i, i + 1) for i in range(1, n)]
+            ep.extend((i + 1, i) for i in range(n, 2 * n - 1))
         elif cartan_type.dual().type() == 'F':
             ep = [(1, 3), (3, 4), (5, 4), (6, 5), (4, 2)]
         elif cartan_type.dual().type() == 'G':
             ep = [(1, 2), (3, 2), (4, 2)]
         else:
-            ep = basic_ct.dynkin_diagram().to_undirected().edges(labels=False, sort=False)
+            ep = (
+                basic_ct.dynkin_diagram()
+                .to_undirected()
+                .edges(labels=False, sort=False)
+            )
 
         if self._cartan_type.dual().type() == 'G':
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             RP = PolynomialRing(R, 'x')
-            Rext = RP.quotient(RP.gen(0)**3 - 1)
+            Rext = RP.quotient(RP.gen(0) ** 3 - 1)
             self._basic = LieAlgebra(Rext, cartan_type=basic_ct, epsilon=ep)
         else:
             self._basic = LieAlgebra(R, cartan_type=basic_ct, epsilon=ep)
@@ -757,7 +774,9 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
             while cur != al:
                 O.append(cur)
                 visited.add(cur)
-                cur = basic_Q._from_dict({auto(i): c for i, c in cur}, remove_zeros=False)
+                cur = basic_Q._from_dict(
+                    {auto(i): c for i, c in cur}, remove_zeros=False
+                )
             orbits.append(O)
 
         finite_ct = self._g.cartan_type()
@@ -771,31 +790,52 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
             reindex = {2: 4, 4: 3, 3: 2, 1: 1}
 
             def build_root(O):
-                return Q._from_dict({reindex[i]: c * (ord // a[reindex[i]]) / len(O) for i, c in sum(O) if i in reindex},
-                                    remove_zeros=False)
+                return Q._from_dict(
+                    {
+                        reindex[i]: c * (ord // a[reindex[i]]) / len(O)
+                        for i, c in sum(O)
+                        if i in reindex
+                    },
+                    remove_zeros=False,
+                )
         elif self._cartan_type.type() == 'BC':
-            reindex = {n-i: i for i in range(finite_ct.rank())}
+            reindex = {n - i: i for i in range(finite_ct.rank())}
 
             def build_root(O):
-                return Q._from_dict({reindex[i]: c * (ord // len(O)) for i, c in sum(O) if i in reindex},
-                                    remove_zeros=False)
+                return Q._from_dict(
+                    {
+                        reindex[i]: c * (ord // len(O))
+                        for i, c in sum(O)
+                        if i in reindex
+                    },
+                    remove_zeros=False,
+                )
         else:
 
             def build_root(O):
-                return Q._from_dict({i: c * (ord // a[i]) / len(O) for i, c in sum(O) if i in I},
-                                    remove_zeros=False)
+                return Q._from_dict(
+                    {i: c * (ord // a[i]) / len(O) for i, c in sum(O) if i in I},
+                    remove_zeros=False,
+                )
 
         self._root_mapping = {build_root(O): O for O in orbits}
         for r in list(self._root_mapping.keys()):
             self._root_mapping[-r] = [-s for s in self._root_mapping[r]]
         if self._cartan_type.type() == 'BC':
-            assert {r for r in self._root_mapping if len(self._root_mapping[r]) > 1} == set(Q.roots())
+            assert {
+                r for r in self._root_mapping if len(self._root_mapping[r]) > 1
+            } == set(Q.roots())
             if self._cartan_type.rank() == 2:
                 # Special case since sl_2 has only 1 root length
-                assert {r / 2 for r in self._root_mapping if len(self._root_mapping[r]) == 1} == set(Q.roots())
+                assert {
+                    r / 2 for r in self._root_mapping if len(self._root_mapping[r]) == 1
+                } == set(Q.roots())
             else:
-                assert {r / 2 for r in self._root_mapping if len(self._root_mapping[r]) == 1} == set(Q.short_roots())
+                assert {
+                    r / 2 for r in self._root_mapping if len(self._root_mapping[r]) == 1
+                } == set(Q.short_roots())
             from sage.combinat.free_module import CombinatorialFreeModule
+
             X = sorted(self._root_mapping, key=str)
             self._g1 = CombinatorialFreeModule(R, X, prefix='E')
         else:
@@ -803,7 +843,9 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
         al = Q.simple_roots()
         ac = Q.simple_coroots()
         for i in I:
-            self._root_mapping[ac[i]] = [r.associated_coroot() for r in self._root_mapping[al[i]]]
+            self._root_mapping[ac[i]] = [
+                r.associated_coroot() for r in self._root_mapping[al[i]]
+            ]
         self._inverse_root_map = {O[0]: r for r, O in self._root_mapping.items()}
 
     def _repr_(self):
@@ -839,13 +881,18 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
         B = self.basis()
         roots = set(self._g._Q.roots())
         from sage.misc.misc import some_tuples
+
         for r, s in some_tuples(roots, 2, tester._max_runs):
             ret = B[r, 0].bracket(B[s, 0])
             if r + s in roots:
-                tester.assertEqual(list(ret.support()), [(r+s, 0)], f"obtained [{r}, {s}] == {ret}")
+                tester.assertEqual(
+                    list(ret.support()), [(r + s, 0)], f"obtained [{r}, {s}] == {ret}"
+                )
             elif r == -s:
                 supp = {(ac, 0) for ac in r.associated_coroot().monomials()}
-                tester.assertEqual(set(ret.support()), supp, f"obtained [{r}, {s}] == {ret}")
+                tester.assertEqual(
+                    set(ret.support()), supp, f"obtained [{r}, {s}] == {ret}"
+                )
             else:
                 tester.assertEqual(ret, self.zero(), f"nonzero for [{r}, {s}]")
 
@@ -864,7 +911,9 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
             True
         """
         if self._kac_moody:
-            return TwistedAffineLieAlgebra(self.base_ring(), self._cartan_type, kac_moody=False)
+            return TwistedAffineLieAlgebra(
+                self.base_ring(), self._cartan_type, kac_moody=False
+            )
         return self
 
     def ambient(self):
@@ -919,24 +968,44 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
         if self._cartan_type.dual().type() == 'G':
             R = self.base_ring()
             for i in t_dict:
-                t_dict[i] = self._g._from_dict({self._inverse_root_map[r]: R(c.lift())
-                                                for r, c in t_dict[i] if r in self._inverse_root_map},
-                                               remove_zeros=False)
+                t_dict[i] = self._g._from_dict(
+                    {
+                        self._inverse_root_map[r]: R(c.lift())
+                        for r, c in t_dict[i]
+                        if r in self._inverse_root_map
+                    },
+                    remove_zeros=False,
+                )
         elif self._cartan_type.type() == 'BC':
             for i in t_dict:
                 if i % 2:
-                    t_dict[i] = self._g1._from_dict({self._inverse_root_map[r]: c for r, c in t_dict[i]
-                                                     if r in self._inverse_root_map},
-                                                    remove_zeros=False)
+                    t_dict[i] = self._g1._from_dict(
+                        {
+                            self._inverse_root_map[r]: c
+                            for r, c in t_dict[i]
+                            if r in self._inverse_root_map
+                        },
+                        remove_zeros=False,
+                    )
                 else:
-                    t_dict[i] = self._g._from_dict({self._inverse_root_map[r]: c for r, c in t_dict[i]
-                                                    if r in self._inverse_root_map},
-                                                   remove_zeros=False)
+                    t_dict[i] = self._g._from_dict(
+                        {
+                            self._inverse_root_map[r]: c
+                            for r, c in t_dict[i]
+                            if r in self._inverse_root_map
+                        },
+                        remove_zeros=False,
+                    )
         else:
             for i in t_dict:
-                t_dict[i] = self._g._from_dict({self._inverse_root_map[r]: c for r, c in t_dict[i]
-                                                if r in self._inverse_root_map},
-                                               remove_zeros=False)
+                t_dict[i] = self._g._from_dict(
+                    {
+                        self._inverse_root_map[r]: c
+                        for r, c in t_dict[i]
+                        if r in self._inverse_root_map
+                    },
+                    remove_zeros=False,
+                )
         return self.element_class(self, t_dict, c_coeff, d_coeff)
 
     @lazy_attribute
@@ -960,33 +1029,41 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
 
             def basis_map(r):
                 O = self._root_mapping[r]
-                return self._basic._from_dict({O[0]: one, O[1]: mone**(1+O[1].height())},
-                                              remove_zeros=False)
+                return self._basic._from_dict(
+                    {O[0]: one, O[1]: mone ** (1 + O[1].height())}, remove_zeros=False
+                )
         else:
 
             def basis_map(r):
-                return self._basic._from_dict({s: one for s in self._root_mapping[r]}, remove_zeros=False)
+                return self._basic._from_dict(
+                    {s: one for s in self._root_mapping[r]}, remove_zeros=False
+                )
 
         if self._cartan_type.dual().type() == 'G':
             zeta3 = self._basic.base_ring().gen()
 
             def basis_alt(r):
-                return self._basic._from_dict({s: zeta3**ind for ind, s in enumerate(self._root_mapping[r])},
-                                              remove_zeros=False)
+                return self._basic._from_dict(
+                    {s: zeta3**ind for ind, s in enumerate(self._root_mapping[r])},
+                    remove_zeros=False,
+                )
         elif self._cartan_type.type() == 'BC':
 
             def basis_alt(r):
                 O = self._root_mapping[r]
                 if len(O) == 1:
                     return self._basic.monomial(O[0])
-                return self._basic._from_dict({O[0]: one, O[1]: mone**O[1].height()},
-                                              remove_zeros=False)
+                return self._basic._from_dict(
+                    {O[0]: one, O[1]: mone ** O[1].height()}, remove_zeros=False
+                )
         else:
             mone = -one
 
             def basis_alt(r):
-                return self._basic._from_dict({s: mone**ind for ind, s in enumerate(self._root_mapping[r])},
-                                              remove_zeros=False)
+                return self._basic._from_dict(
+                    {s: mone**ind for ind, s in enumerate(self._root_mapping[r])},
+                    remove_zeros=False,
+                )
 
         def lift_map(elt):
             t_dict = elt.t_dict()
@@ -994,11 +1071,13 @@ class TwistedAffineLieAlgebra(AffineLieAlgebra):
             d_coeff = elt.d_coefficient()
             for i in t_dict:
                 if i % 2:
-                    t_dict[i] = self._basic.linear_combination((basis_alt(r), c)
-                                                               for r, c in t_dict[i])
+                    t_dict[i] = self._basic.linear_combination(
+                        (basis_alt(r), c) for r, c in t_dict[i]
+                    )
                 else:
-                    t_dict[i] = self._basic.linear_combination((basis_map(r), c)
-                                                               for r, c in t_dict[i])
+                    t_dict[i] = self._basic.linear_combination(
+                        (basis_map(r), c) for r, c in t_dict[i]
+                    )
             return self._ambient.element_class(self._ambient, t_dict, c_coeff, d_coeff)
 
         return self.module_morphism(function=lift_map, codomain=self._ambient)
@@ -1087,6 +1166,7 @@ class TwistedAffineIndices(UniqueRepresentation, Set_generic):
          (-alpha[0], 1), (2*alpha[0], 1), (-2*alpha[0], 1),
          (alphacheck[0], 1), (alpha[0], -1), (-alpha[0], -1)]
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """
@@ -1121,13 +1201,17 @@ class TwistedAffineIndices(UniqueRepresentation, Set_generic):
         if cartan_type.type() == 'BC':
             finite_ct = cartan_type.classical().dual()
             n = finite_ct.rank()
-            Q = finite_ct.relabel({n-i: i for i in range(n)}).root_system().root_lattice()
+            Q = (
+                finite_ct.relabel({n - i: i for i in range(n)})
+                .root_system()
+                .root_lattice()
+            )
             self._roots = tuple(Q.roots())
             self._ac = tuple(Q.simple_coroots())
             if cartan_type.rank() == 2:
-                self._short_roots = self._roots + tuple(2*r for r in Q.roots())
+                self._short_roots = self._roots + tuple(2 * r for r in Q.roots())
             else:
-                self._short_roots = self._roots + tuple(2*r for r in Q.short_roots())
+                self._short_roots = self._roots + tuple(2 * r for r in Q.short_roots())
             self._short_roots += self._ac
             facade = cartesian_product([self._short_roots, ZZ])
         else:
@@ -1136,9 +1220,12 @@ class TwistedAffineIndices(UniqueRepresentation, Set_generic):
             self._ac = tuple(Q.simple_coroots())
             self._short_roots = tuple(Q.short_roots())
             ac = Q.simple_coroots()
-            self._short_roots += tuple([ac[i] for i in Q.index_set() if Q.simple_root(i).is_short_root()])
+            self._short_roots += tuple(
+                [ac[i] for i in Q.index_set() if Q.simple_root(i).is_short_root()]
+            )
             facade = cartesian_product([self._roots + self._ac, ZZ])
         from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
+
         super().__init__(facade=facade, category=InfiniteEnumeratedSets())
 
     def __contains__(self, x) -> bool:
@@ -1195,7 +1282,7 @@ class TwistedAffineIndices(UniqueRepresentation, Set_generic):
         if self._cartan_type.type() == 'BC':
             finite_ct = self._cartan_type.classical().dual()
             n = finite_ct.rank()
-            finite_ct = finite_ct.relabel({n-i: i for i in range(n)})
+            finite_ct = finite_ct.relabel({n - i: i for i in range(n)})
         else:
             finite_ct = self._cartan_type.classical()
         P = self._facade_for[0]

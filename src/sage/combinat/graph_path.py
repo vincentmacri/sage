@@ -432,7 +432,11 @@ class GraphPaths_st(Parent, GraphPaths_common):
             sage: repr(p)
             'Paths in Multi-digraph on 5 vertices starting at 1 and ending at 2'
         """
-        return "Paths in %s starting at %s and ending at %s" % (repr(self.graph), self.source, self.target)
+        return "Paths in %s starting at %s and ending at %s" % (
+            repr(self.graph),
+            self.source,
+            self.target,
+        )
 
     def list(self):
         """

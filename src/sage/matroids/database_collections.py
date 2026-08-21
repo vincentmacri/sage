@@ -162,6 +162,7 @@ def AllMatroids(n, r=None, type='all'):
     """
     from sage.matroids.constructor import Matroid
     from sage.features.databases import DatabaseMatroids
+
     DatabaseMatroids().require()
     import matroid_database
 
@@ -170,9 +171,9 @@ def AllMatroids(n, r=None, type='all'):
             getattr(Matroid(bases=[[1, 2], [1, 3]]), 'is_' + type)
         except AttributeError:
             raise AttributeError(
-                "The type '%s' is not available. " % type +
-                "There needs to be an 'is_%s()' attribute for the " % type +
-                "type to be supported."
+                "The type '%s' is not available. " % type
+                + "There needs to be an 'is_%s()' attribute for the " % type
+                + "type to be supported."
             )
 
     if r is None and type == 'unorientable':
@@ -186,7 +187,17 @@ def AllMatroids(n, r=None, type='all'):
     for r in rng:
         if (r == 0 or r == n) and type != 'unorientable':
             M = Matroid(groundset=range(n), bases=[range(r)])
-            M.rename(type + '_n' + str(n).zfill(2) + '_r' + str(r).zfill(2) + '_#' + '0' + ': ' + repr(M))
+            M.rename(
+                type
+                + '_n'
+                + str(n).zfill(2)
+                + '_r'
+                + str(r).zfill(2)
+                + '_#'
+                + '0'
+                + ': '
+                + repr(M)
+            )
             if type == 'all':
                 yield M
             else:
@@ -212,7 +223,17 @@ def AllMatroids(n, r=None, type='all'):
 
                 if type != 'unorientable' and n - r < r:
                     M = M.dual()
-                M.rename(type + '_n' + str(n).zfill(2) + '_r' + str(r).zfill(2) + '_#' + str(cnt) + ': ' + repr(M))
+                M.rename(
+                    type
+                    + '_n'
+                    + str(n).zfill(2)
+                    + '_r'
+                    + str(r).zfill(2)
+                    + '_#'
+                    + str(cnt)
+                    + ': '
+                    + repr(M)
+                )
                 if type == 'all' or type == 'unorientable':
                     yield M
                     cnt += 1
@@ -247,28 +268,98 @@ def OxleyMatroids():
     ``Some Interesting Matroids`` in [Oxl2011]_ (p. 639-64).
     """
     from sage.matroids.database_matroids import (
-        U24, U25, U35, K4, Whirl3, Q6, P6, U36, R6,
-        Fano, FanoDual, NonFano, NonFanoDual, O7, P7,
-        AG32, AG32prime, R8, F8, Q8, L8, S8, Vamos, T8, J, P8, P8pp,
-        Wheel4, Whirl4,
-        K33dual, K33, AG23, TernaryDowling3, R9, Pappus, NonPappus,
-        K5, K5dual, R10, NonDesargues,
-        R12, ExtendedTernaryGolayCode, T12,
-        PG23
+        U24,
+        U25,
+        U35,
+        K4,
+        Whirl3,
+        Q6,
+        P6,
+        U36,
+        R6,
+        Fano,
+        FanoDual,
+        NonFano,
+        NonFanoDual,
+        O7,
+        P7,
+        AG32,
+        AG32prime,
+        R8,
+        F8,
+        Q8,
+        L8,
+        S8,
+        Vamos,
+        T8,
+        J,
+        P8,
+        P8pp,
+        Wheel4,
+        Whirl4,
+        K33dual,
+        K33,
+        AG23,
+        TernaryDowling3,
+        R9,
+        Pappus,
+        NonPappus,
+        K5,
+        K5dual,
+        R10,
+        NonDesargues,
+        R12,
+        ExtendedTernaryGolayCode,
+        T12,
+        PG23,
     )
 
-    lst = [U24,  # 4
-           U25, U35,  # 5
-           K4, Whirl3, Q6, P6, U36, R6,  # 6
-           Fano, FanoDual, NonFano, NonFanoDual, O7, P7,  # 7
-           AG32, AG32prime,
-           R8, F8, Q8, L8, S8,
-           Vamos, T8, J, P8, P8pp,
-           Wheel4, Whirl4,  # 8
-           K33dual, K33, AG23, TernaryDowling3, R9, Pappus, NonPappus,  # 9
-           K5, K5dual, R10, NonDesargues,  # 10
-           R12, ExtendedTernaryGolayCode, T12,  # 12
-           PG23]  # 13
+    lst = [
+        U24,  # 4
+        U25,
+        U35,  # 5
+        K4,
+        Whirl3,
+        Q6,
+        P6,
+        U36,
+        R6,  # 6
+        Fano,
+        FanoDual,
+        NonFano,
+        NonFanoDual,
+        O7,
+        P7,  # 7
+        AG32,
+        AG32prime,
+        R8,
+        F8,
+        Q8,
+        L8,
+        S8,
+        Vamos,
+        T8,
+        J,
+        P8,
+        P8pp,
+        Wheel4,
+        Whirl4,  # 8
+        K33dual,
+        K33,
+        AG23,
+        TernaryDowling3,
+        R9,
+        Pappus,
+        NonPappus,  # 9
+        K5,
+        K5dual,
+        R10,
+        NonDesargues,  # 10
+        R12,
+        ExtendedTernaryGolayCode,
+        T12,  # 12
+        PG23,
+    ]  # 13
     for M in lst:
         yield M()
 
@@ -292,32 +383,146 @@ def BrettellMatroids():
         ``Brettell's matroid collection``.
     """
     from sage.matroids.database_matroids import (
-        RelaxedNonFano, TippedFree3spike,
-        AG23minusDY, TQ8, P8p, KP8, Sp8, Sp8pp, LP8, WQ8,
-        BB9, TQ9, TQ9p, M8591, PP9, BB9gDY, A9, FN9, FX9, KR9, KQ9,
-        UG10, FF10, GP10, FZ10, UQ10, FP10, TQ10, FY10, PP10, FU10, D10, UK10,
-        PK10, GK10, FT10, TK10, KT10, TU10, UT10, FK10, KF10,
+        RelaxedNonFano,
+        TippedFree3spike,
+        AG23minusDY,
+        TQ8,
+        P8p,
+        KP8,
+        Sp8,
+        Sp8pp,
+        LP8,
+        WQ8,
+        BB9,
+        TQ9,
+        TQ9p,
+        M8591,
+        PP9,
+        BB9gDY,
+        A9,
+        FN9,
+        FX9,
+        KR9,
+        KQ9,
+        UG10,
+        FF10,
+        GP10,
+        FZ10,
+        UQ10,
+        FP10,
+        TQ10,
+        FY10,
+        PP10,
+        FU10,
+        D10,
+        UK10,
+        PK10,
+        GK10,
+        FT10,
+        TK10,
+        KT10,
+        TU10,
+        UT10,
+        FK10,
+        KF10,
         FA11,
-        FR12, GP12, FQ12, FF12, FZ12, UQ12, FP12, FS12, UK12, UA12, AK12,
-        FK12, KB12, AF12, NestOfTwistedCubes,
+        FR12,
+        GP12,
+        FQ12,
+        FF12,
+        FZ12,
+        UQ12,
+        FP12,
+        FS12,
+        UK12,
+        UA12,
+        AK12,
+        FK12,
+        KB12,
+        AF12,
+        NestOfTwistedCubes,
         XY13,
-        N3, N3pp, UP14, VP14, FV14, OW14, FM14,
+        N3,
+        N3pp,
+        UP14,
+        VP14,
+        FV14,
+        OW14,
+        FM14,
         FA15,
-        N4
+        N4,
     )
 
-    lst = [RelaxedNonFano, TippedFree3spike,  # 7
-           AG23minusDY, TQ8, P8p, KP8, Sp8, Sp8pp, LP8, WQ8,  # 8
-           BB9, TQ9, TQ9p, M8591, PP9, BB9gDY, A9, FN9, FX9, KR9, KQ9,  # 9
-           UG10, FF10, GP10, FZ10, UQ10, FP10, TQ10, FY10, PP10, FU10, D10,
-           UK10, PK10, GK10, FT10, TK10, KT10, TU10, UT10, FK10, KF10,  # 10
-           FA11,  # 11
-           FR12, GP12, FQ12, FF12, FZ12, UQ12, FP12, FS12, UK12, UA12, AK12,
-           FK12, KB12, AF12, NestOfTwistedCubes,  # 12
-           XY13,  # 13
-           N3, N3pp, UP14, VP14, FV14, OW14, FM14,  # 14
-           FA15,  # 15
-           N4]  # 16
+    lst = [
+        RelaxedNonFano,
+        TippedFree3spike,  # 7
+        AG23minusDY,
+        TQ8,
+        P8p,
+        KP8,
+        Sp8,
+        Sp8pp,
+        LP8,
+        WQ8,  # 8
+        BB9,
+        TQ9,
+        TQ9p,
+        M8591,
+        PP9,
+        BB9gDY,
+        A9,
+        FN9,
+        FX9,
+        KR9,
+        KQ9,  # 9
+        UG10,
+        FF10,
+        GP10,
+        FZ10,
+        UQ10,
+        FP10,
+        TQ10,
+        FY10,
+        PP10,
+        FU10,
+        D10,
+        UK10,
+        PK10,
+        GK10,
+        FT10,
+        TK10,
+        KT10,
+        TU10,
+        UT10,
+        FK10,
+        KF10,  # 10
+        FA11,  # 11
+        FR12,
+        GP12,
+        FQ12,
+        FF12,
+        FZ12,
+        UQ12,
+        FP12,
+        FS12,
+        UK12,
+        UA12,
+        AK12,
+        FK12,
+        KB12,
+        AF12,
+        NestOfTwistedCubes,  # 12
+        XY13,  # 13
+        N3,
+        N3pp,
+        UP14,
+        VP14,
+        FV14,
+        OW14,
+        FM14,  # 14
+        FA15,  # 15
+        N4,
+    ]  # 16
     for M in lst:
         yield M()
 
@@ -341,21 +546,41 @@ def VariousMatroids():
         ``Collection of various matroids``.
     """
     from sage.matroids.database_matroids import (
-        NonVamos, NotP8, AG23minus,
-        P9, R9A, R9B, Block_9_4, TicTacToe,
-        N1, Block_10_5, Q10,
+        NonVamos,
+        NotP8,
+        AG23minus,
+        P9,
+        R9A,
+        R9B,
+        Block_9_4,
+        TicTacToe,
+        N1,
+        Block_10_5,
+        Q10,
         BetsyRoss,
         N2,
-        D16, Terrahawk,
-        ExtendedBinaryGolayCode
+        D16,
+        Terrahawk,
+        ExtendedBinaryGolayCode,
     )
 
-    lst = [NonVamos, NotP8, AG23minus,  # 8
-           P9, R9A, R9B, Block_9_4, TicTacToe,  # 9
-           N1, Block_10_5, Q10,  # 10
-           BetsyRoss,  # 11
-           N2,  # 12
-           D16, Terrahawk,  # 16
-           ExtendedBinaryGolayCode]  # 24
+    lst = [
+        NonVamos,
+        NotP8,
+        AG23minus,  # 8
+        P9,
+        R9A,
+        R9B,
+        Block_9_4,
+        TicTacToe,  # 9
+        N1,
+        Block_10_5,
+        Q10,  # 10
+        BetsyRoss,  # 11
+        N2,  # 12
+        D16,
+        Terrahawk,  # 16
+        ExtendedBinaryGolayCode,
+    ]  # 24
     for M in lst:
         yield M()

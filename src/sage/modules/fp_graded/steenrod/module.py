@@ -103,6 +103,7 @@ class SteenrodModuleMixin:
     """
     Mixin class for common methods of the Steenrod algebra modules.
     """
+
     def profile(self):
         r"""
         Return a finite profile over which ``self`` can be defined.
@@ -133,12 +134,16 @@ class SteenrodModuleMixin:
             sage: X.profile()
             (0,)
         """
-        elements = [coeffifient for value in self.relations()
-                    for coeffifient in value.dense_coefficient_list()]
+        elements = [
+            coeffifient
+            for value in self.relations()
+            for coeffifient in value.dense_coefficient_list()
+        ]
         elements = [a for a in elements if a not in (0, 1)]
 
-        return enveloping_profile_elements(elements,
-                                           char=self.base_ring().characteristic())
+        return enveloping_profile_elements(
+            elements, char=self.base_ring().characteristic()
+        )
 
     def export_module_definition(self, powers_of_two_only=True):
         r"""
@@ -226,26 +231,30 @@ class SteenrodModuleMixin:
 
         n = self.connectivity()
         if n == infinity:
-            print('The module connectivity is infinite, so there is ' +
-                  'nothing to export.')
+            print(
+                'The module connectivity is infinite, so there is '
+                + 'nothing to export.'
+            )
             return ''
 
         limit = self.base_ring().top_class().degree() + max(self.generator_degrees())
 
         # Create a list of bases, one for every module degree we consider.
-        vector_space_basis = [self.basis_elements(i)
-                              for i in range(n, limit + 1)]
+        vector_space_basis = [self.basis_elements(i) for i in range(n, limit + 1)]
 
         additive_generator_degrees = []
         additive_generator_global_indices = [0]
         for dim, basis_vectors in enumerate(vector_space_basis):
             additive_generator_global_indices.append(
-                len(basis_vectors) + additive_generator_global_indices[-1])
+                len(basis_vectors) + additive_generator_global_indices[-1]
+            )
             additive_generator_degrees += len(basis_vectors) * [dim + n]
 
         # Print the degrees of the additive generators.
-        ret = '%d %s' % (len(additive_generator_degrees),
-                         ' '.join('%d' % x for x in additive_generator_degrees))
+        ret = '%d %s' % (
+            len(additive_generator_degrees),
+            ' '.join('%d' % x for x in additive_generator_degrees),
+        )
 
         # A private function which transforms a vector in a given dimension
         # to a vector of global indices for the basis elements corresponding
@@ -256,7 +265,10 @@ class SteenrodModuleMixin:
         # last vector in the same part.
         def _GetIndices(dim, vec):
             if len(vector_space_basis[dim]) != len(vec):
-                raise ValueError('the given vector\n%s\nhas the wrong size, it should be %d' % (str(vec), len(vector_space_basis[dim])))
+                raise ValueError(
+                    'the given vector\n%s\nhas the wrong size, it should be %d'
+                    % (str(vec), len(vector_space_basis[dim]))
+                )
             base_index = additive_generator_global_indices[dim]
             return [base_index + a for a, c in enumerate(vec) if c != 0]
 
@@ -264,13 +276,14 @@ class SteenrodModuleMixin:
         if powers_of_two_only:
             powers = [2**i for i in range(profile[0])]
         else:
-            powers = range(1, 2**profile[0])
+            powers = range(1, 2 ** profile[0])
 
         R = self.base_ring()
         for k in powers:
             Sqk = R.Sq(k)
-            images = [[(Sqk * x).vector_presentation() for x in D]
-                      for D in vector_space_basis]
+            images = [
+                [(Sqk * x).vector_presentation() for x in D] for D in vector_space_basis
+            ]
 
             element_index = 0
 
@@ -284,7 +297,8 @@ class SteenrodModuleMixin:
                             element_index,
                             k,
                             len(values),
-                            " ".join("%d" % x for x in values))
+                            " ".join("%d" % x for x in values),
+                        )
                     element_index += 1
         return ret
 
@@ -330,6 +344,7 @@ class SteenrodFPModule(FPModule, SteenrodModuleMixin):
         sage: SteenrodFPModule(SteenrodAlgebra(2), (0,))
         Free graded left module on 1 generator over mod 2 Steenrod algebra, milnor basis
     """
+
     def _Hom_(self, other, category=None):
         """
         The homset from ``self`` to ``other``.
@@ -349,6 +364,7 @@ class SteenrodFPModule(FPModule, SteenrodModuleMixin):
             Set of Morphisms from Free graded left module on 2 generators ...
         """
         from .homspace import SteenrodFPModuleHomspace
+
         return SteenrodFPModuleHomspace(self, other, category=category)
 
     def resolution(self, k, top_dim=None, verbose=False):
@@ -429,15 +445,15 @@ class SteenrodFPModule(FPModule, SteenrodModuleMixin):
              Module endomorphism of Free graded left module on 0 generators over mod 2 Steenrod algebra, milnor basis]
         """
         algebra = self.base_ring()
-        finite_algebra = SteenrodAlgebra_generic(algebra.prime(),
-                                                 profile=self.profile())
+        finite_algebra = SteenrodAlgebra_generic(
+            algebra.prime(), profile=self.profile()
+        )
 
         # Change rings to the finite algebra, and call the base class
         # implementation of this function.
-        res = FPModule.resolution(self.change_ring(finite_algebra),
-                                  k,
-                                  top_dim=top_dim,
-                                  verbose=verbose)
+        res = FPModule.resolution(
+            self.change_ring(finite_algebra), k, top_dim=top_dim, verbose=verbose
+        )
 
         # Change rings back to the original Steenrod algebra.
         # Also convert the maps and modules from FPModule to SteenrodFPModule.
@@ -470,4 +486,5 @@ class SteenrodFreeModule(FreeGradedModule, SteenrodModuleMixin):
             Set of Morphisms from Free graded left module on 2 generators ...
         """
         from sage.modules.fp_graded.steenrod.homspace import SteenrodFreeModuleHomspace
+
         return SteenrodFreeModuleHomspace(self, Y, category)

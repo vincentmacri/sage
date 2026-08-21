@@ -142,7 +142,7 @@ The crystals library in Sage grew up from an initial implementation in
 MuPAD-Combinat (see <MuPAD-Combinat>/lib/COMBINAT/crystals.mu).
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 Anne Schilling <anne at math.ucdavis.edu>
 #                          Nicolas Thiery <nthiery at users.sf.net>
 #
@@ -229,8 +229,8 @@ class CrystalBacktracker(GenericBacktracker):
             sage: list(CB._rec(C(1), 'n/a'))
             [(2, 'n/a', True)]
         """
-        #We will signal the initial case by having a object and state
-        #of None and consider it separately.
+        # We will signal the initial case by having a object and state
+        # of None and consider it separately.
         if x is None and state is None:
             for gen in self._crystal.highest_weight_vectors():
                 yield gen, "n/a", True

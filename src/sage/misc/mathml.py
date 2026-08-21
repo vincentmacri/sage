@@ -49,7 +49,7 @@ mathml_table = {
     bool: bool_function,
     str: str_function,
     float: str,
-    int: str
+    int: str,
 }
 
 

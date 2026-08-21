@@ -69,6 +69,7 @@ REFERENCES:
 Limits of inductive valuations are discussed in [Mac1936I]_ and [Mac1936II]_. An
 overview can also be found in Section 4.6 of [Rüt2014]_.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2016-2017 Julian Rüth <julian.rueth@fsfe.org>
 #
@@ -104,6 +105,7 @@ class LimitValuationFactory(UniqueFactory):
         sage: w(x)
         +Infinity
     """
+
     def create_key(self, base_valuation, G):
         r"""
         Create a key from the parameters of this valuation.
@@ -125,7 +127,9 @@ class LimitValuationFactory(UniqueFactory):
         But mostly from other factories which have made sure that the
         parameters are normalized already.
         """
-        if not base_valuation.restriction(G.parent().base_ring()).is_discrete_valuation():
+        if not base_valuation.restriction(
+            G.parent().base_ring()
+        ).is_discrete_valuation():
             raise ValueError("base_valuation must be discrete on the coefficient ring.")
         return base_valuation, G
 
@@ -141,11 +145,16 @@ class LimitValuationFactory(UniqueFactory):
         """
         base_valuation, G = key
         from .valuation_space import DiscretePseudoValuationSpace
+
         parent = DiscretePseudoValuationSpace(base_valuation.domain())
-        return parent.__make_element_class__(MacLaneLimitValuation)(parent, base_valuation, G)
+        return parent.__make_element_class__(MacLaneLimitValuation)(
+            parent, base_valuation, G
+        )
 
 
-LimitValuation = LimitValuationFactory("sage.rings.valuation.limit_valuation.LimitValuation")
+LimitValuation = LimitValuationFactory(
+    "sage.rings.valuation.limit_valuation.LimitValuation"
+)
 
 
 class LimitValuation_generic(DiscretePseudoValuation):
@@ -178,6 +187,7 @@ class LimitValuation_generic(DiscretePseudoValuation):
         True
         sage: TestSuite(w._base_valuation).run()        # long time                     # needs sage.rings.function_field
     """
+
     def __init__(self, parent, approximation):
         r"""
         TESTS::
@@ -334,6 +344,7 @@ class LimitValuation_generic(DiscretePseudoValuation):
         """
         from sage.rings.infinity import infinity
         from .augmented_valuation import AugmentedValuation_base
+
         if self._initial_approximation(self._G) is not infinity:
             if isinstance(self._initial_approximation, AugmentedValuation_base):
                 return repr(self._initial_approximation)[:-1] + ", … ]"
@@ -360,6 +371,7 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
         sage: u = v._base_valuation; u
         [ Gauss valuation induced by 2-adic valuation, v(x + 1) = 1/2 , … ]
     """
+
     def __init__(self, parent, approximation, G):
         r"""
         TESTS::
@@ -393,10 +405,17 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
         if self.domain() is ring:
             return [self]
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-        if isinstance(ring, PolynomialRing_generic) and self.domain().base_ring().is_subring(ring.base_ring()):
+
+        if isinstance(
+            ring, PolynomialRing_generic
+        ) and self.domain().base_ring().is_subring(ring.base_ring()):
             if self.domain().base_ring().fraction_field() is ring.base_ring():
-                return [LimitValuation(self._initial_approximation.change_domain(ring),
-                        self._G.change_ring(ring.base_ring()))]
+                return [
+                    LimitValuation(
+                        self._initial_approximation.change_domain(ring),
+                        self._G.change_ring(ring.base_ring()),
+                    )
+                ]
             # we need to recompute the mac lane approximants over this base
             # ring because it could split differently
             pass
@@ -463,6 +482,7 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
         self._improve_approximation_for_call(f)
         if self._G.divides(f):
             from sage.rings.infinity import infinity
+
             return infinity
         return self._approximation(f)
 
@@ -492,18 +512,26 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
             [ Gauss valuation induced by 2-adic valuation, v(t + 1) = 1/2, v(t^2 + 1) = +Infinity ]
         """
         from sage.rings.infinity import infinity
+
         if self._approximation(self._G) is infinity:
             # an infinite valuation can not be improved further
             return
 
-        approximations = self._approximation.mac_lane_step(self._G,
-                          assume_squarefree=True,
-                          assume_equivalence_irreducible=True,
-                          check=False,
-                          principal_part_bound=1 if self._approximation.E() * self._approximation.F() == self._approximation.phi().degree() else None,
-                          report_degree_bounds_and_caches=True)
-        assert (len(approximations) == 1)
-        self._approximation, _, _, self._next_coefficients, self._next_valuations = approximations[0]
+        approximations = self._approximation.mac_lane_step(
+            self._G,
+            assume_squarefree=True,
+            assume_equivalence_irreducible=True,
+            check=False,
+            principal_part_bound=1
+            if self._approximation.E() * self._approximation.F()
+            == self._approximation.phi().degree()
+            else None,
+            report_degree_bounds_and_caches=True,
+        )
+        assert len(approximations) == 1
+        self._approximation, _, _, self._next_coefficients, self._next_valuations = (
+            approximations[0]
+        )
 
     def _improve_approximation_for_call(self, f):
         r"""
@@ -557,6 +585,7 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
             for all future computations.)
         """
         from sage.rings.infinity import infinity
+
         if self._approximation(self._approximation.phi()) is infinity:
             # an infinite valuation can not be improved further
             return
@@ -632,11 +661,13 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
         """
         R = self._initial_approximation.residue_ring()
         from sage.categories.fields import Fields
+
         if R in Fields():
             # the approximation ends in v(phi)=infty
             return R
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-        assert (isinstance(R, PolynomialRing_generic))
+
+        assert isinstance(R, PolynomialRing_generic)
         return R.base_ring()
 
     def _ge_(self, other):
@@ -660,7 +691,11 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
         if other.is_trivial():
             return other.is_discrete_valuation()
         if isinstance(other, MacLaneLimitValuation):
-            if self._approximation.restriction(self._approximation.domain().base_ring()) == other._approximation.restriction(other._approximation.domain().base_ring()):
+            if self._approximation.restriction(
+                self._approximation.domain().base_ring()
+            ) == other._approximation.restriction(
+                other._approximation.domain().base_ring()
+            ):
                 # Two MacLane limit valuations v,w over the same constant
                 # valuation are either equal or incomparable; neither v>w nor
                 # v<w can hold everywhere.
@@ -677,8 +712,10 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
                 # If the valuations are comparable, they must approximate the
                 # same factor of G (see the documentation of LimitValuation:
                 # the approximation must *uniquely* single out a valuation.)
-                return (self._initial_approximation >= other._initial_approximation
-                        or self._initial_approximation <= other._initial_approximation)
+                return (
+                    self._initial_approximation >= other._initial_approximation
+                    or self._initial_approximation <= other._initial_approximation
+                )
 
         return super()._ge_(other)
 
@@ -740,6 +777,7 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
             sage: u.separating_element([ww,w,v,uu])  # not tested, takes forever
         """
         from .scaled_valuation import ScaledValuation_generic
+
         v = self.restriction(self.domain().base())
         if isinstance(v, ScaledValuation_generic):
             v = v._base_valuation
@@ -751,7 +789,9 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
             # phi of the initial approximant must be good enough to separate it
             # from any other approximant of an extension
             ret = self._initial_approximation.phi()
-            assert (self(ret) > other(ret))  # I could not come up with an example where this fails
+            assert self(ret) > other(
+                ret
+            )  # I could not come up with an example where this fails
             return ret
         # if the valuations are sane, it should be possible to separate
         # them with constants

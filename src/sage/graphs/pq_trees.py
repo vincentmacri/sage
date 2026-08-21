@@ -131,6 +131,7 @@ UNALIGNED = False
 # defined in class PQ                                                    #
 ##########################################################################
 
+
 def _set_contiguous(tree, x):
     """
     Helper function for updating ``tree``.
@@ -467,9 +468,11 @@ class PQ:
         if isinstance(self, Q):
             L = []
             for c in self._children:
-                if (isinstance(c, PQ) and               # Is c partial?
-                        v in c and                      # (does c contain sets with
-                        any(v not in cc for cc in c)):  # and without v ?)
+                if (
+                    isinstance(c, PQ)  # Is c partial?
+                    and v in c  # (does c contain sets with
+                    and any(v not in cc for cc in c)
+                ):  # and without v ?)
                     L.extend(c.simplify(v, right=right, left=left))
                 else:
                     L.append(c)
@@ -480,8 +483,10 @@ class PQ:
 
         for c in self._children:
             if v in c:
-                if (isinstance(c, PQ) and               # Is c partial? (does c contain
-                        any(v not in cc for cc in c)):  # sets with and without v ?)
+                if (
+                    isinstance(c, PQ)  # Is c partial? (does c contain
+                    and any(v not in cc for cc in c)
+                ):  # sets with and without v ?)
                     partial = c.simplify(v, right=right, left=left)
                 else:
                     full.append(c)
@@ -524,6 +529,7 @@ class P(PQ):
 
     For more information, see the documentation of :mod:`sage.graphs.pq_trees`.
     """
+
     def set_contiguous(self, v):
         r"""
         Update ``self`` so that the sets containing ``v`` are
@@ -607,8 +613,8 @@ class P(PQ):
             (FULL, ALIGNED): set_FULL,
             (EMPTY, ALIGNED): set_EMPTY,
             (PARTIAL, ALIGNED): set_PARTIAL_ALIGNED,
-            (PARTIAL, UNALIGNED): set_PARTIAL_UNALIGNED
-            }
+            (PARTIAL, UNALIGNED): set_PARTIAL_UNALIGNED,
+        }
 
         for i in self:
             sorting[f_seq[i]].append(i)
@@ -621,8 +627,9 @@ class P(PQ):
         # Excludes the situation where there is no solution.
         # read next comment for more explanations
 
-        if (n_PARTIAL_ALIGNED > 2 or
-                (n_PARTIAL_UNALIGNED >= 1 and n_EMPTY != self.number_of_children() - 1)):
+        if n_PARTIAL_ALIGNED > 2 or (
+            n_PARTIAL_UNALIGNED >= 1 and n_EMPTY != self.number_of_children() - 1
+        ):
             raise ValueError(impossible_msg)
 
         # From now on, there are at most two pq-trees which are partially filled
@@ -652,9 +659,7 @@ class P(PQ):
         # If there is just one partial element and all the others are
         # empty, we just reorder the set to put it at the right end
 
-        elif (n_PARTIAL_ALIGNED == 1 and
-              n_EMPTY == self.number_of_children()-1):
-
+        elif n_PARTIAL_ALIGNED == 1 and n_EMPTY == self.number_of_children() - 1:
             self._children = set_EMPTY + set_PARTIAL_ALIGNED
             return (PARTIAL, ALIGNED)
 
@@ -669,7 +674,6 @@ class P(PQ):
         ################################################################
 
         else:
-
             self._children = []
 
             # We first move the empty elements to the left, if any
@@ -687,12 +691,10 @@ class P(PQ):
             # ==> We create a Q-tree
 
             if n_PARTIAL_ALIGNED < 2:
-
                 new = []
 
                 # add the partial element, if any
                 if n_PARTIAL_ALIGNED == 1:
-
                     subtree = set_PARTIAL_ALIGNED[0]
                     new.extend(subtree.simplify(v, right=ALIGNED))
 
@@ -701,7 +703,6 @@ class P(PQ):
                 # elements containing v on an interval
 
                 if n_FULL > 0:
-
                     new.append(_new_P(set_FULL))
 
                 # We lock all of them in a Q-tree
@@ -763,10 +764,11 @@ class P(PQ):
             1440
         """
         from math import factorial
+
         n = factorial(self.number_of_children())
         for c in self._children:
             if isinstance(c, PQ):
-                n = n*c.cardinality()
+                n = n * c.cardinality()
         return n
 
     def orderings(self):
@@ -790,9 +792,11 @@ class P(PQ):
             ...
         """
         from itertools import permutations, product
+
         for p in permutations(self._children):
-            yield from product(*[x.orderings() if isinstance(x, PQ) else [x]
-                                 for x in p])
+            yield from product(
+                *[x.orderings() if isinstance(x, PQ) else [x] for x in p]
+            )
 
 
 class Q(PQ):
@@ -890,8 +894,8 @@ class Q(PQ):
             (FULL, ALIGNED): set_FULL,
             (EMPTY, ALIGNED): set_EMPTY,
             (PARTIAL, ALIGNED): set_PARTIAL_ALIGNED,
-            (PARTIAL, UNALIGNED): set_PARTIAL_UNALIGNED
-            }
+            (PARTIAL, UNALIGNED): set_PARTIAL_UNALIGNED,
+        }
 
         for i in self:
             sorting[f_seq[i]].append(i)
@@ -921,9 +925,10 @@ class Q(PQ):
         #   others are full                                               #
         ###################################################################
 
-        if (f_seq[self._children[-1]] == (EMPTY, ALIGNED) or
-            (f_seq[self._children[-1]] == (PARTIAL, ALIGNED) and
-             n_FULL == self.number_of_children() - 1)):
+        if f_seq[self._children[-1]] == (EMPTY, ALIGNED) or (
+            f_seq[self._children[-1]] == (PARTIAL, ALIGNED)
+            and n_FULL == self.number_of_children() - 1
+        ):
             # We reverse the order of the elements in the SET only.
             # Which means that they are still aligned to the right !
             self._children.reverse()
@@ -938,9 +943,9 @@ class Q(PQ):
         # Excludes the situation where there is no solution.
         # read next comment for more explanations
 
-        if (n_PARTIAL_ALIGNED > 2 or
-            (n_PARTIAL_UNALIGNED >= 1 and
-             n_EMPTY != self.number_of_children() - 1)):
+        if n_PARTIAL_ALIGNED > 2 or (
+            n_PARTIAL_UNALIGNED >= 1 and n_EMPTY != self.number_of_children() - 1
+        ):
             raise ValueError(impossible_msg)
 
         # From now on, there are at most two pq-trees which are partially filled
@@ -962,9 +967,7 @@ class Q(PQ):
         # and all the others are empty, we just reorder
         # the set to put it at the right end
 
-        elif (n_PARTIAL_ALIGNED == 1 and
-              n_EMPTY == self.number_of_children() - 1):
-
+        elif n_PARTIAL_ALIGNED == 1 and n_EMPTY == self.number_of_children() - 1:
             if set_PARTIAL_ALIGNED[0] == self._children[-1]:
                 return (PARTIAL, ALIGNED)
 
@@ -986,7 +989,6 @@ class Q(PQ):
         ##############################################################
 
         else:
-
             new_children = []
 
             # Two variables to remember where we are
@@ -996,12 +998,10 @@ class Q(PQ):
             seen_right_end = False
 
             for i in self:
-
                 type, aligned = f_seq[i]
 
                 # We met an empty element
                 if type == EMPTY:
-
                     # 2 possibilities :
                     #
                     #  * we have NOT met a non-empty element before
@@ -1024,7 +1024,6 @@ class Q(PQ):
                         raise ValueError(impossible_msg)
 
                     if type == PARTIAL:
-
                         # if we see an ALIGNED partial tree after
                         # having seen a nonempty element then the
                         # partial tree must be aligned to the left and
@@ -1054,7 +1053,6 @@ class Q(PQ):
                             seen_right_end = True
 
                         elif not seen_nonempty and aligned:
-
                             # left partial subtree
                             subtree = i
 
@@ -1091,9 +1089,9 @@ class Q(PQ):
         n = 1
         for c in self._children:
             if isinstance(c, PQ):
-                n = n*c.cardinality()
+                n = n * c.cardinality()
 
-        return n if (self.number_of_children() == 1) else 2*n
+        return n if (self.number_of_children() == 1) else 2 * n
 
     def orderings(self):
         r"""
@@ -1117,7 +1115,9 @@ class Q(PQ):
             yield from (c.orderings() if isinstance(c, PQ) else [c])
         else:
             from itertools import product
-            for o in product(*[x.orderings() if isinstance(x, PQ) else [x]
-                               for x in self._children]):
+
+            for o in product(
+                *[x.orderings() if isinstance(x, PQ) else [x] for x in self._children]
+            ):
                 yield o
                 yield o[::-1]

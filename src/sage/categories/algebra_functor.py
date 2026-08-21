@@ -458,7 +458,11 @@ AUTHORS:
 from sage.categories.pushout import ConstructionFunctor
 from sage.categories.morphism import SetMorphism
 
-from sage.categories.covariant_functorial_construction import CovariantFunctorialConstruction, CovariantConstructionCategory, FunctorialConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    CovariantFunctorialConstruction,
+    CovariantConstructionCategory,
+    FunctorialConstructionCategory,
+)
 from sage.categories.category_types import Category_over_base_ring
 
 # TODO: merge the two univariate functors below into a bivariate one
@@ -478,6 +482,7 @@ class AlgebraFunctor(CovariantFunctorialConstruction):
         Algebra of Dihedral group of order 6 as a permutation group
                 over Rational Field
     """
+
     _functor_name = "algebra"
     _functor_category = "Algebras"
 
@@ -491,6 +496,7 @@ class AlgebraFunctor(CovariantFunctorialConstruction):
             sage: TestSuite(F).run()
         """
         from sage.categories.rings import Rings
+
         assert base_ring in Rings()
         self._base_ring = base_ring
 
@@ -556,6 +562,7 @@ class GroupAlgebraFunctor(ConstructionFunctor):
         sage: A is KleinFourGroup().algebra(QQ)
         True
     """
+
     def __init__(self, group):
         r"""
         See :class:`GroupAlgebraFunctor` for full documentation.
@@ -568,6 +575,7 @@ class GroupAlgebraFunctor(ConstructionFunctor):
         """
         self.__group = group
         from sage.categories.rings import Rings
+
         ConstructionFunctor.__init__(self, Rings(), Rings())
 
     def group(self):
@@ -629,12 +637,15 @@ class GroupAlgebraFunctor(ConstructionFunctor):
             2*() + 2*(2,3) + (1,2,3) + 4*(1,3,2)
         """
         from sage.categories.rings import Rings
+
         domain = self(f.domain())
         codomain = self(f.codomain())
         # we would want to use something like:
         # domain.module_morphism(on_coefficients=h, codomain=codomain, category=Rings())
-        return SetMorphism(domain.Hom(codomain, category=Rings()),
-                           lambda x: codomain.sum_of_terms((g, f(c)) for (g, c) in x))
+        return SetMorphism(
+            domain.Hom(codomain, category=Rings()),
+            lambda x: codomain.sum_of_terms((g, f(c)) for (g, c) in x),
+        )
 
 
 class AlgebrasCategory(CovariantConstructionCategory, Category_over_base_ring):
@@ -674,8 +685,9 @@ class AlgebrasCategory(CovariantConstructionCategory, Category_over_base_ring):
             sage: Semigroups().Algebras(QQ)  # indirect doctest
             Category of semigroup algebras over Rational Field
         """
-        return "{} algebras over {}".format(self.base_category()._repr_object_names()[:-1],
-                                            self.base_ring())
+        return "{} algebras over {}".format(
+            self.base_category()._repr_object_names()[:-1], self.base_ring()
+        )
 
     @staticmethod
     def __classcall__(cls, category=None, R=None):
@@ -706,12 +718,13 @@ class AlgebrasCategory(CovariantConstructionCategory, Category_over_base_ring):
         """
         base_category_class = cls._base_category_class[0]
         if isinstance(category, base_category_class):
-            return super(FunctorialConstructionCategory, cls).__classcall__(cls, category, R)
+            return super(FunctorialConstructionCategory, cls).__classcall__(
+                cls, category, R
+            )
         # category should now be the base ring ...
         return cls.category_of(base_category_class(), category)
 
     class ParentMethods:
-
         # coalgebra structure
 
         def coproduct_on_basis(self, g):
@@ -739,5 +752,6 @@ class AlgebrasCategory(CovariantConstructionCategory, Category_over_base_ring):
                 3*B[[1, 1, 1, 3]] # B[[1, 1, 1, 3]]
             """
             from sage.categories.tensor import tensor
+
             g = self.term(g)
             return tensor([g, g])

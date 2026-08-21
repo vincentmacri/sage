@@ -56,7 +56,16 @@ class CNFEncoder(ANF2CNFConverter):
     .. automethod:: __init__
     .. automethod:: __call__
     """
-    def __init__(self, solver, ring, max_vars_sparse=6, use_xor_clauses=None, cutting_number=6, random_seed=16):
+
+    def __init__(
+        self,
+        solver,
+        ring,
+        max_vars_sparse=6,
+        use_xor_clauses=None,
+        cutting_number=6,
+        random_seed=16,
+    ):
         """
         Construct ANF to CNF converter over ``ring`` passing clauses to ``solver``.
 
@@ -280,16 +289,16 @@ class CNFEncoder(ANF2CNFConverter):
         # any zero block of f+1
 
         blocks = self.zero_blocks(f + 1)
-        C = [{variable: 1 - value for variable, value in b.items()}
-             for b in blocks]
+        C = [{variable: 1 - value for variable, value in b.items()} for b in blocks]
 
         def to_dimacs_index(v):
             return v.index() + 1
 
         def clause(c):
-            return [to_dimacs_index(variable)
-                    if value == 1 else -to_dimacs_index(variable)
-                    for variable, value in c.items()]
+            return [
+                to_dimacs_index(variable) if value == 1 else -to_dimacs_index(variable)
+                for variable, value in c.items()
+            ]
 
         data = (clause(c) for c in C)
         for d in sorted(data):
@@ -329,7 +338,7 @@ class CNFEncoder(ANF2CNFConverter):
         """
         equal_zero = not bool(f.constant_coefficient())
 
-        f = (f - f.constant_coefficient())
+        f = f - f.constant_coefficient()
         f = [self.monomial(m) for m in f]
 
         if self.use_xor_clauses:
@@ -466,12 +475,12 @@ class CNFEncoder(ANF2CNFConverter):
         c = self.cutting_number
 
         nm = len(monomial_list)
-        step = ceil((c-2)/ZZ(nm) * nm)
+        step = ceil((c - 2) / ZZ(nm) * nm)
         M = []
 
         new_variables = []
         for j in range(0, nm, step):
-            m = new_variables + monomial_list[j:j+step]
+            m = new_variables + monomial_list[j : j + step]
             if (j + step) < nm:
                 new_variables = [self.var(None)]
                 m += new_variables

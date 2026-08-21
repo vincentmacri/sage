@@ -177,10 +177,12 @@ WORKING_CENTER_MAX_TRIES = 1000
 # Generic implementation of Ore function fields
 ###############################################
 
+
 class OreFunctionField(Parent, UniqueRepresentation):
     r"""
     A class for fraction fields of Ore polynomial rings.
     """
+
     Element = None
 
     def __init__(self, ring, category=None):
@@ -198,6 +200,7 @@ class OreFunctionField(Parent, UniqueRepresentation):
         """
         if self.Element is None:
             import sage.rings.polynomial.ore_function_element
+
             self.Element = sage.rings.polynomial.ore_function_element.OreFunction
         if not isinstance(ring, OrePolynomialRing):
             raise TypeError("not a Ore Polynomial Ring")
@@ -214,8 +217,13 @@ class OreFunctionField(Parent, UniqueRepresentation):
             category = Algebras(base).Commutative().or_subcategory(category)
         else:
             category = Algebras(base).or_subcategory(category)
-        Parent.__init__(self, base=base, names=ring.variable_name(),
-                        normalize=True, category=category)
+        Parent.__init__(
+            self,
+            base=base,
+            names=ring.variable_name(),
+            normalize=True,
+            category=category,
+        )
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -298,7 +306,10 @@ class OreFunctionField(Parent, UniqueRepresentation):
             sage: S.fraction_field()
             Ore Function Field in x over Finite Field of size 7 untwisted
         """
-        s = "Ore Function Field in %s over %s " % (self.variable_name(), self.base_ring())
+        s = "Ore Function Field in %s over %s " % (
+            self.variable_name(),
+            self.base_ring(),
+        )
         s += self._ring._repr_twist()
         return s
 
@@ -331,6 +342,7 @@ class OreFunctionField(Parent, UniqueRepresentation):
             \Bold{F}_{7}\left(x\right)
         """
         from sage.misc.latex import latex
+
         s = "%s\\left(%s" % (latex(self.base_ring()), self.latex_variable_names()[0])
         twist = self._ring._latex_twist()
         if twist != "":
@@ -674,11 +686,13 @@ class OreFunctionField(Parent, UniqueRepresentation):
 # Special classes for twisting morphisms with finite order
 ##########################################################
 
+
 class SectionOreFunctionCenterInjection(Section):
     r"""
     Section of the canonical injection of the center of a Ore
     function field into this field
     """
+
     def __init__(self, embed):
         r"""
         Initialize this map.
@@ -746,7 +760,9 @@ class SectionOreFunctionCenterInjection(Section):
             False
         """
         if op == op_EQ:
-            return (self.domain() is other.domain()) and (self.codomain() is other.codomain())
+            return (self.domain() is other.domain()) and (
+                self.codomain() is other.codomain()
+            )
         return NotImplemented
 
 
@@ -755,6 +771,7 @@ class OreFunctionCenterInjection(RingHomomorphism):
     Canonical injection of the center of a Ore function field
     into this field.
     """
+
     def __init__(self, domain, codomain, ringembed):
         r"""
         Initialize this morphism.
@@ -827,9 +844,13 @@ class OreFunctionCenterInjection(RingHomomorphism):
             False
         """
         if op == op_EQ:
-            return (self.domain() is other.domain()) and (self.codomain() is other.codomain())
+            return (self.domain() is other.domain()) and (
+                self.codomain() is other.codomain()
+            )
         if op == op_NE:
-            return (self.domain() is not other.domain()) or (self.codomain() is not other.codomain())
+            return (self.domain() is not other.domain()) or (
+                self.codomain() is not other.codomain()
+            )
         return NotImplemented
 
     def section(self):
@@ -854,6 +875,7 @@ class OreFunctionField_with_large_center(OreFunctionField):
     """
     A specialized class for Ore polynomial fields whose center has finite index.
     """
+
     def __init__(self, ring, category=None):
         r"""
         Initialize this Ore function field.
@@ -991,7 +1013,9 @@ class OreFunctionField_with_large_center(OreFunctionField):
                 self.register_coercion(embed)
                 center.register_conversion(embed.section())
             except AssertionError:
-                raise ValueError("creation of coercion map fails; consider using another variable name")
+                raise ValueError(
+                    "creation of coercion map fails; consider using another variable name"
+                )
             self._center[name] = center
         if default or (self._center_variable_name is None):
             self._center_variable_name = name

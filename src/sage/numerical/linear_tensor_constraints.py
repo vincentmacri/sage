@@ -39,6 +39,7 @@ from sage.misc.cachefunc import cached_function
 #
 # ***************************************************************************
 
+
 @cached_function
 def LinearTensorConstraintsParent(linear_functions_parent):
     """
@@ -75,6 +76,7 @@ def LinearTensorConstraintsParent(linear_functions_parent):
 # Elements of linear tensor constraints
 #
 # ****************************************************************************
+
 
 class LinearTensorConstraint(Element):
     """
@@ -222,6 +224,7 @@ class LinearTensorConstraint(Element):
         def matrix_art(m):
             lines = str(m).splitlines()
             return AsciiArt(lines, baseline=len(lines) // 2)
+
         comparator = AsciiArt([' == ' if self.is_equation() else ' <= '])
         return matrix_art(self.lhs()) + comparator + matrix_art(self.rhs())
 
@@ -245,7 +248,7 @@ class LinearTensorConstraint(Element):
         """
         if self.parent().linear_tensors().is_matrix_space():
             return str(self._ascii_art_())
-        comparator = (' == ' if self.is_equation() else ' <= ')
+        comparator = ' == ' if self.is_equation() else ' <= '
         return str(self.lhs()) + comparator + str(self.rhs())
 
 
@@ -254,6 +257,7 @@ class LinearTensorConstraint(Element):
 # Parent of linear constraints
 #
 # ***************************************************************************
+
 
 class LinearTensorConstraintsParent_class(Parent):
     """
@@ -282,6 +286,7 @@ class LinearTensorConstraintsParent_class(Parent):
         sage: type(LTC)
         <class 'sage.numerical.linear_tensor_constraints.LinearTensorConstraintsParent_class'>
     """
+
     Element = LinearTensorConstraint
 
     def __init__(self, linear_tensor_parent):
@@ -356,7 +361,8 @@ class LinearTensorConstraintsParent_class(Parent):
             Real Double Field
         """
         return 'Linear constraints in the tensor product of {0} and {1}'.format(
-            self.linear_tensors().free_module(), self.linear_functions())
+            self.linear_tensors().free_module(), self.linear_functions()
+        )
 
     def _element_constructor_(self, left, right, equality):
         """

@@ -29,6 +29,7 @@ def have_dot2tex() -> bool:
     """
     try:
         import dot2tex
+
         # Test for this required feature from dot2tex 2.8.7
         return dot2tex.dot2tex("graph {}", format='positions') == {}
     except (Exception, SystemExit):
@@ -97,4 +98,4 @@ def quoted_str(x):
         [0 1]\n\
         [0 0]
     """
-    return re.sub("\n", r"\\n\\"+"\n", re.sub("\"|\r|}|{", "", str(x)))
+    return re.sub("\n", r"\\n\\" + "\n", re.sub("\"|\r|}|{", "", str(x)))

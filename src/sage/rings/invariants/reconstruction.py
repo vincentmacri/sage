@@ -20,7 +20,9 @@ AUTHORS:
 # ****************************************************************************
 
 
-def binary_quadratic_coefficients_from_invariants(discriminant, invariant_choice='default'):
+def binary_quadratic_coefficients_from_invariants(
+    discriminant, invariant_choice='default'
+):
     """
     Reconstruct a binary quadratic from the value of its discriminant.
 
@@ -50,12 +52,15 @@ def binary_quadratic_coefficients_from_invariants(discriminant, invariant_choice
         (1, 0, 0)
     """
     if invariant_choice not in ['default', 'discriminant']:
-        raise ValueError('unknown choice of invariants {} for a binary '
-                         'quadratic'.format(invariant_choice))
+        raise ValueError(
+            'unknown choice of invariants {} for a binary quadratic'.format(
+                invariant_choice
+            )
+        )
     if discriminant == 0:
         return (1, 0, 0)
     try:
-        return (1, 0, -discriminant/4)
+        return (1, 0, -discriminant / 4)
     except ZeroDivisionError:
         return (0, 1, 0)
 
@@ -97,16 +102,22 @@ def binary_cubic_coefficients_from_invariants(discriminant, invariant_choice='de
         ValueError: no unique reconstruction possible for binary cubics with a double root
     """
     if invariant_choice not in ['default', 'discriminant']:
-        raise ValueError('unknown choice of invariants {} for a binary cubic'
-                         .format(invariant_choice))
+        raise ValueError(
+            'unknown choice of invariants {} for a binary cubic'.format(
+                invariant_choice
+            )
+        )
     if discriminant == 0:
-        raise ValueError('no unique reconstruction possible for binary '
-                         'cubics with a double root')
+        raise ValueError(
+            'no unique reconstruction possible for binary cubics with a double root'
+        )
     else:
         return (0, 1, -1, 0)
 
 
-def binary_quintic_coefficients_from_invariants(invariants, K=None, invariant_choice='default', scaling='none'):
+def binary_quintic_coefficients_from_invariants(
+    invariants, K=None, invariant_choice='default', scaling='none'
+):
     r"""
     Reconstruct a binary quintic from the values of its (Clebsch) invariants.
 
@@ -245,28 +256,35 @@ def binary_quintic_coefficients_from_invariants(invariants, K=None, invariant_ch
         ValueError: unknown scaling option 'unknown'
     """
     if invariant_choice not in ['default', 'clebsch']:
-        raise ValueError('unknown choice of invariants {} for a binary quintic'
-                         .format(invariant_choice))
+        raise ValueError(
+            'unknown choice of invariants {} for a binary quintic'.format(
+                invariant_choice
+            )
+        )
     if scaling not in ['none', 'normalized', 'coprime']:
         raise ValueError("unknown scaling option '%s'" % scaling)
     if scaling == 'coprime':
         if len(invariants) == 3:
-            invariants = _reduce_invariants(invariants, [1,2,3])
+            invariants = _reduce_invariants(invariants, [1, 2, 3])
         elif len(invariants) == 4:
-            invariants = _reduce_invariants(invariants, [2,4,6,9])
+            invariants = _reduce_invariants(invariants, [2, 4, 6, 9])
     A, B, C = invariants[0:3]
     if K is None:
         from sage.rings.fraction_field import FractionField
+
         K = FractionField(A.parent())
     if K.characteristic() in [2, 3, 5]:
-        raise NotImplementedError('no reconstruction of binary quintics '
-                          'implemented for fields of characteristic 2, 3 or 5')
-    M = 2*A*B - 3*C
-    N = K(2)**-1 * (A*C-B**2)
-    R2 = -K(2)**-1 * (A*N**2-2*B*M*N+C*M**2)
+        raise NotImplementedError(
+            'no reconstruction of binary quintics '
+            'implemented for fields of characteristic 2, 3 or 5'
+        )
+    M = 2 * A * B - 3 * C
+    N = K(2) ** -1 * (A * C - B**2)
+    R2 = -(K(2) ** -1) * (A * N**2 - 2 * B * M * N + C * M**2)
     scale = [1, 1, 1, 1, 1, 1]
     from sage.arith.misc import binomial
     from sage.misc.functional import sqrt
+
     if len(invariants) == 3:
         if R2.is_square():
             R = sqrt(R2)
@@ -277,18 +295,24 @@ def binary_quintic_coefficients_from_invariants(invariants, K=None, invariant_ch
             M, N = R2**3 * M, R2**4 * N
             R = R2**5
     elif len(invariants) == 4:
-        if invariants[3]**2 != R2:
-            raise ValueError('provided invariants do not satisfy the syzygy '
-                             'for Clebsch invariants of a binary quintic')
+        if invariants[3] ** 2 != R2:
+            raise ValueError(
+                'provided invariants do not satisfy the syzygy '
+                'for Clebsch invariants of a binary quintic'
+            )
         R = invariants[3]
     else:
-        raise ValueError('incorrect number of invariants provided, this '
-                         'method requires 3 or 4 invariants')
+        raise ValueError(
+            'incorrect number of invariants provided, this '
+            'method requires 3 or 4 invariants'
+        )
     if M == 0:
         if N == 0:
             if A == 0:
-                raise ValueError('no unique reconstruction possible for '
-                                 'quintics with a treefold linear factor')
+                raise ValueError(
+                    'no unique reconstruction possible for '
+                    'quintics with a treefold linear factor'
+                )
             else:
                 if B == 0:
                     return (1, 0, 0, 0, 0, 1)
@@ -299,55 +323,63 @@ def binary_quintic_coefficients_from_invariants(invariants, K=None, invariant_ch
                 return (1, 0, 0, 0, 1, 0)
             if scaling == 'normalized':
                 # scaling z by (R/A**3)
-                scale = [(-N)**-5*A**6*(R/A**3)**i for i in range(6)]
+                scale = [(-N) ** -5 * A**6 * (R / A**3) ** i for i in range(6)]
             D = -N
             Delta = C
             a = [0]
-            a.append((2*K(3)**-1*A**2-B)*N*B*K(2)**-1 - N**2*K(2)**-1)
-            B0 = 2*K(3)**-1*A*R
-            B1 = A*N*B*K(3)**-1
-            C0 = 2*K(3)**-1*R
-            C1 = B*N
+            a.append(
+                (2 * K(3) ** -1 * A**2 - B) * N * B * K(2) ** -1 - N**2 * K(2) ** -1
+            )
+            B0 = 2 * K(3) ** -1 * A * R
+            B1 = A * N * B * K(3) ** -1
+            C0 = 2 * K(3) ** -1 * R
+            C1 = B * N
     else:
         # case corresponding to using alpha and beta as coordinates
         if R == 0:
             if A == 0:
-                return (1,0,10,0,-15,0)
+                return (1, 0, 10, 0, -15, 0)
             if scaling == 'normalized':
                 # scaling x by A and z by sqrt(A)
-                scale = [ (-M)**(-5)*sqrt(A)**(12+i) for i in range(6) ]
+                scale = [(-M) ** (-5) * sqrt(A) ** (12 + i) for i in range(6)]
         else:
             if A == 0:
                 if B == 0:
-                    return (1,0,0,1,0,0)
+                    return (1, 0, 0, 1, 0, 0)
                 if scaling == 'normalized':
                     # scaling y by R/B**2
-                    scale = [ (-M)**(-3)*(R/B**2)**i for i in range(6) ]
+                    scale = [(-M) ** (-3) * (R / B**2) ** i for i in range(6)]
             elif scaling == 'normalized':
                 # scaling y by R/A**4
-                scale = [ (-M)**(-3)*(R/A**4)**i for i in range(6) ]
+                scale = [(-M) ** (-3) * (R / A**4) ** i for i in range(6)]
         D = -M
         Delta = A
         a = [0]
-        a.append((2*K(3)**-1*A**2-B)*(N*A-M*B)*K(2)**-1
-                 - M*(N*K(2)**-1-M*A*K(3)**-1))
+        a.append(
+            (2 * K(3) ** -1 * A**2 - B) * (N * A - M * B) * K(2) ** -1
+            - M * (N * K(2) ** -1 - M * A * K(3) ** -1)
+        )
         B0 = R
-        B1 = K(2)**-1*(N*A-M*B)
+        B1 = K(2) ** -1 * (N * A - M * B)
         C0 = 0
         C1 = -M
-    a[0] = (2*K(3)**-1*A**2-B)*R
-    a.append(-D*B0 - K(2)**-1*Delta*a[0])
-    a.append(-D*B1 - K(2)**-1*Delta*a[1])
-    a.append(D**2*C0 + D*Delta*B0 + K(4)**-1*Delta**2*a[0])
-    a.append(D**2*C1 + D*Delta*B1 + K(4)**-1*Delta**2*a[1])
-    coeffs = tuple([K((-1)**i*binomial(5,i)*scale[5-i]*a[i]) for i in range(6)])
+    a[0] = (2 * K(3) ** -1 * A**2 - B) * R
+    a.append(-D * B0 - K(2) ** -1 * Delta * a[0])
+    a.append(-D * B1 - K(2) ** -1 * Delta * a[1])
+    a.append(D**2 * C0 + D * Delta * B0 + K(4) ** -1 * Delta**2 * a[0])
+    a.append(D**2 * C1 + D * Delta * B1 + K(4) ** -1 * Delta**2 * a[1])
+    coeffs = tuple(
+        [K((-1) ** i * binomial(5, i) * scale[5 - i] * a[i]) for i in range(6)]
+    )
     if scaling == 'coprime':
         from sage.arith.misc import gcd
-        return tuple([coeffs[i]/gcd(coeffs) for i in range(6)])
+
+        return tuple([coeffs[i] / gcd(coeffs) for i in range(6)])
     return coeffs
 
 
 ######################################################################
+
 
 def _reduce_invariants(invariants, weights):
     """
@@ -377,14 +409,16 @@ def _reduce_invariants(invariants, weights):
         [3, 75, 250]
     """
     from sage.rings.integer_ring import ZZ
+
     factors = [dict(I.factor()) for I in invariants]
     scalar = ZZ(1)
     n = len(weights)
     from sage.arith.misc import gcd
+
     for prime in gcd(invariants).factor():
         p = prime[0]
         for D in factors:
             if p not in D:
                 D[p] = 0
-        scalar = scalar*p**min([factors[i][p]//weights[i] for i in range(n)])
-    return [invariants[i]*scalar**-weights[i] for i in range(n)]
+        scalar = scalar * p ** min([factors[i][p] // weights[i] for i in range(n)])
+    return [invariants[i] * scalar ** -weights[i] for i in range(n)]

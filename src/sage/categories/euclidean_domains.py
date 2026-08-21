@@ -40,6 +40,7 @@ class EuclideanDomains(Category_singleton):
 
         sage: TestSuite(EuclideanDomains()).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -103,15 +104,17 @@ class EuclideanDomains(Category_singleton):
                 ...
                 TypeError: unable to convert x + 1 to an element of Rational Field
             """
+
             def refine(a, b):
                 g = a.gcd(b)
                 if g.is_unit():
                     return (a, set(), b)
-                l1, s1, r1 = refine(a//g, g)
-                l2, s2, r2 = refine(r1, b//g)
+                l1, s1, r1 = refine(a // g, g)
+                l2, s2, r2 = refine(r1, b // g)
                 s1.update(s2)
                 s1.add(l2)
                 return (l1, s1, r2)
+
             elts = Sequence(elts, universe=self)
             res = set()
             if len(elts) == 1:
@@ -146,13 +149,15 @@ class EuclideanDomains(Category_singleton):
             min_degree = self.one().euclidean_degree()
 
             from sage.rings.semirings.non_negative_integer_semiring import NN
+
             for a in S:
                 tester.assertIn(a.euclidean_degree(), NN)
                 tester.assertGreaterEqual(a.euclidean_degree(), min_degree)
                 tester.assertEqual(a.euclidean_degree() == min_degree, a.is_unit())
 
             from sage.misc.misc import some_tuples
-            for a,b in some_tuples(S, 2, tester._max_runs):
+
+            for a, b in some_tuples(S, 2, tester._max_runs):
                 p = a * b
                 # For rings which are not exact, we might get something that
                 #   acts like a zero divisor.
@@ -179,14 +184,15 @@ class EuclideanDomains(Category_singleton):
             tester = self._tester(**options)
             S = tester.some_elements()
             from sage.misc.misc import some_tuples
-            for a,b in some_tuples(S, 2, tester._max_runs):
+
+            for a, b in some_tuples(S, 2, tester._max_runs):
                 if b.is_zero():
                     tester.assertRaises(ZeroDivisionError, lambda: a.quo_rem(b))
                 else:
-                    q,r = a.quo_rem(b)
+                    q, r = a.quo_rem(b)
                     tester.assertIn(q, self)
                     tester.assertIn(r, self)
-                    tester.assertEqual(a,q*b+r)
+                    tester.assertEqual(a, q * b + r)
                     if r != 0:
                         tester.assertLess(r.euclidean_degree(), b.euclidean_degree())
 

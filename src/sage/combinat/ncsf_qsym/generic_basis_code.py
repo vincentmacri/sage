@@ -43,7 +43,6 @@ from sage.categories.realizations import RealizationsCategory
 
 
 class BasesOfQSymOrNCSF(Category_realization_of_parent):
-
     def _repr_object_names(self):
         r"""
         Return the name of the objects of this category.
@@ -58,7 +57,10 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
             sage: C
             Category of bases of Non-Commutative Symmetric Functions or Quasisymmetric functions over the Rational Field
         """
-        return "bases of Non-Commutative Symmetric Functions or Quasisymmetric functions over the %s" % self.base().base_ring()
+        return (
+            "bases of Non-Commutative Symmetric Functions or Quasisymmetric functions over the %s"
+            % self.base().base_ring()
+        )
 
     def super_categories(self):
         r"""
@@ -74,14 +76,18 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
               and Category of graded coalgebras over Rational Field]
         """
         R = self.base().base_ring()
-        from sage.categories.graded_hopf_algebras_with_basis import GradedHopfAlgebrasWithBasis
+        from sage.categories.graded_hopf_algebras_with_basis import (
+            GradedHopfAlgebrasWithBasis,
+        )
         from sage.categories.graded_hopf_algebras import GradedHopfAlgebras
-        return [self.base().Realizations(),
-                GradedHopfAlgebrasWithBasis(R),
-                GradedHopfAlgebras(R).Realizations()]
+
+        return [
+            self.base().Realizations(),
+            GradedHopfAlgebrasWithBasis(R),
+            GradedHopfAlgebras(R).Realizations(),
+        ]
 
     class ParentMethods:
-
         def _repr_(self):
             """
             TESTS::
@@ -93,7 +99,10 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 sage: F._repr_()
                 'Quasisymmetric functions over the Integer Ring in the Fundamental basis'
             """
-            return "%s in the %s basis" % (self.realization_of(), self._realization_name())
+            return "%s in the %s basis" % (
+                self.realization_of(),
+                self._realization_name(),
+            )
 
         def __getitem__(self, c, *rest):
             """
@@ -170,7 +179,7 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 R[1, 1, 1, 1] + R[1, 1, 2] + R[1, 2, 1] + R[1, 3]
             """
 
-            return self.sum_of_monomials( compo for compo in composition.finer() )
+            return self.sum_of_monomials(compo for compo in composition.finer())
 
         def sum_of_fatter_compositions(self, composition):
             r"""
@@ -194,7 +203,7 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 sage: R.sum_of_fatter_compositions(Composition([1,3]))
                 R[1, 3] + R[4]
             """
-            return self.sum_of_monomials( compo for compo in composition.fatter() )
+            return self.sum_of_monomials(compo for compo in composition.fatter())
 
         def alternating_sum_of_compositions(self, n):
             r"""
@@ -231,8 +240,9 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 S[1, 1, 1] - S[1, 2] - S[2, 1] + S[3]
             """
             ring = self.base_ring()
-            return (-ring.one())**(n)*self.sum_of_terms(
-                (compo, ring((-1)**(len(compo)))) for compo in Compositions(n) )
+            return (-ring.one()) ** (n) * self.sum_of_terms(
+                (compo, ring((-1) ** (len(compo)))) for compo in Compositions(n)
+            )
 
         def alternating_sum_of_finer_compositions(self, composition, conjugate=False):
             """
@@ -274,7 +284,9 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 composition = composition.conjugate()
             l = len(composition)
             ring = self.base_ring()
-            return self.sum_of_terms( (compo, ring((-1)**(len(compo)-l))) for compo in composition.finer() )
+            return self.sum_of_terms(
+                (compo, ring((-1) ** (len(compo) - l))) for compo in composition.finer()
+            )
 
         def alternating_sum_of_fatter_compositions(self, composition):
             """
@@ -311,7 +323,10 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
             """
             l = len(composition)
             ring = self.base_ring()
-            return self.sum_of_terms( (compo, ring((-1)**(len(compo)-l))) for compo in composition.fatter() )
+            return self.sum_of_terms(
+                (compo, ring((-1) ** (len(compo) - l)))
+                for compo in composition.fatter()
+            )
 
         def sum_of_partition_rearrangements(self, par):
             """
@@ -338,7 +353,9 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 sage: elementary.sum_of_partition_rearrangements(Partition([]))
                 L[]
             """
-            return self.sum_of_monomials( self._indices(comp) for comp in Permutations(par) )
+            return self.sum_of_monomials(
+                self._indices(comp) for comp in Permutations(par)
+            )
 
         def _comp_to_par(self, comp):
             """
@@ -472,9 +489,11 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 x = self(x)
                 y = self.dual()(y)
                 v = 1 if side == 'left' else 0
-                return self.sum(coeff * y[IJ[1-v]] * self[IJ[v]]
-                                for (IJ, coeff) in x.coproduct()
-                                if IJ[1-v] in y.support())
+                return self.sum(
+                    coeff * y[IJ[1 - v]] * self[IJ[v]]
+                    for (IJ, coeff) in x.coproduct()
+                    if IJ[1 - v] in y.support()
+                )
             return self._skew_by_coercion(x, y, side=side)
 
         def _skew_by_coercion(self, x, y, side='left'):
@@ -706,12 +725,20 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
                 [1]
             """
             from sage.matrix.constructor import matrix
+
             # TODO: generalize to keys indexing the basis of the graded component
             from sage.combinat.composition import Compositions
-            return matrix(self.base_ring(),
-                          [[self.duality_pairing(self[I], basis[J])
-                            for J in Compositions(degree)]
-                           for I in Compositions(degree)])
+
+            return matrix(
+                self.base_ring(),
+                [
+                    [
+                        self.duality_pairing(self[I], basis[J])
+                        for J in Compositions(degree)
+                    ]
+                    for I in Compositions(degree)
+                ],
+            )
 
         def counit_on_basis(self, I):
             r"""
@@ -793,12 +820,12 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
 
                 Generalize this to all graded vector spaces?
             """
-            return self.sum_of_terms([ (lam, (-1)**(sum(lam) % 2) * a)
-                                       for lam, a in self(element) ],
-                                     distinct=True)
+            return self.sum_of_terms(
+                [(lam, (-1) ** (sum(lam) % 2) * a) for lam, a in self(element)],
+                distinct=True,
+            )
 
     class ElementMethods:
-
         def degree_negation(self):
             r"""
             Return the image of ``self`` under the degree negation
@@ -837,9 +864,9 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
 
                 Generalize this to all graded vector spaces?
             """
-            return self.parent().sum_of_terms([ (lam, (-1)**(sum(lam) % 2) * a)
-                                                for lam, a in self ],
-                                              distinct=True)
+            return self.parent().sum_of_terms(
+                [(lam, (-1) ** (sum(lam) % 2) * a) for lam, a in self], distinct=True
+            )
 
         def duality_pairing(self, y):
             r"""
@@ -983,12 +1010,20 @@ class BasesOfQSymOrNCSF(Category_realization_of_parent):
             return self.maximal_degree()
 
 
-class AlgebraMorphism(ModuleMorphismByLinearity): # Find a better name
+class AlgebraMorphism(ModuleMorphismByLinearity):  # Find a better name
     """
     A class for algebra morphism defined on a free algebra from the image of the generators
     """
 
-    def __init__(self, domain, on_generators, position=0, codomain=None, category=None, anti=False):
+    def __init__(
+        self,
+        domain,
+        on_generators,
+        position=0,
+        codomain=None,
+        category=None,
+        anti=False,
+    ):
         """
         Given a map on the multiplicative basis of a free algebra, this method
         returns the algebra morphism that is the linear extension of its image
@@ -1074,10 +1109,9 @@ class AlgebraMorphism(ModuleMorphismByLinearity): # Find a better name
                 category = AlgebrasWithBasis(domain.base_ring())
         self._anti = anti
         self._on_generators = on_generators
-        ModuleMorphismByLinearity.__init__(self, domain=domain,
-                                           codomain=codomain,
-                                           position=position,
-                                           category=category)
+        ModuleMorphismByLinearity.__init__(
+            self, domain=domain, codomain=codomain, position=position, category=category
+        )
 
     def __eq__(self, other):
         """
@@ -1094,12 +1128,15 @@ class AlgebraMorphism(ModuleMorphismByLinearity): # Find a better name
             sage: f is g
             False
         """
-        return (self.__class__ is other.__class__ and self.parent() == other.parent()
-                and self._zero == other._zero
-                and self._on_generators == other._on_generators
-                and self._position == other._position
-                and self._is_module_with_basis_over_same_base_ring
-                    == other._is_module_with_basis_over_same_base_ring)
+        return (
+            self.__class__ is other.__class__
+            and self.parent() == other.parent()
+            and self._zero == other._zero
+            and self._on_generators == other._on_generators
+            and self._position == other._position
+            and self._is_module_with_basis_over_same_base_ring
+            == other._is_module_with_basis_over_same_base_ring
+        )
 
     def __ne__(self, other):
         """
@@ -1158,6 +1195,7 @@ class GradedModulesWithInternalProduct(Category_over_base_ring):
         sage: R in GradedModulesWithInternalProduct(QQ)
         True
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -1168,6 +1206,7 @@ class GradedModulesWithInternalProduct(Category_over_base_ring):
             [Category of graded modules over Integer Ring]
         """
         from sage.categories.graded_modules import GradedModules
+
         R = self.base_ring()
         return [GradedModules(R)]
 
@@ -1236,10 +1275,11 @@ class GradedModulesWithInternalProduct(Category_over_base_ring):
             """
             if self.internal_product_on_basis is not NotImplemented:
                 return self.module_morphism(
-                                self.module_morphism(self.internal_product_on_basis,
-                                                     position=0,
-                                                     codomain=self),
-                                position=1)
+                    self.module_morphism(
+                        self.internal_product_on_basis, position=0, codomain=self
+                    ),
+                    position=1,
+                )
             return self.internal_product_by_coercion
 
         itensor = internal_product

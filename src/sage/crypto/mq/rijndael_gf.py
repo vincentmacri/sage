@@ -435,7 +435,6 @@ from sage.misc.sageinspect import sage_getargspec
 
 
 class RijndaelGF(SageObject):
-
     def __init__(self, Nb, Nk, state_chr='a', key_chr='k'):
         r"""
         An algebraically generalized version of the AES cipher.
@@ -498,76 +497,105 @@ class RijndaelGF(SageObject):
 
         self._Nb = Nb
         self._Nk = Nk
-        round_num_table = matrix([[10,11,12,13,14], [11,11,12,13,14],
-                                  [12,12,12,13,14], [13,13,13,13,14],
-                                  [14,14,14,14,14]])
+        round_num_table = matrix(
+            [
+                [10, 11, 12, 13, 14],
+                [11, 11, 12, 13, 14],
+                [12, 12, 12, 13, 14],
+                [13, 13, 13, 13, 14],
+                [14, 14, 14, 14, 14],
+            ]
+        )
         self._Nr = round_num_table[self._Nb - 4, self._Nk - 4]
         from sage.rings.polynomial.polynomial_ring import polygen
 
         # Build framework for polynomial creation.
         from sage.rings.finite_rings.integer_mod_ring import Integers
+
         pgen = polygen(Integers(2))
         mod = pgen**8 + pgen**4 + pgen**3 + pgen + 1
         self._F = FiniteField(2**8, 'x', modulus=mod)
-        state_names = [state_chr + str(i) + str(j)
-                       for i in range(4) for j in range(self._Nb)]
-        subkey_names = [key_chr + str(r) + str(i) + str(j)
-                        for r in range(self._Nr + 1) for i in range(4)
-                        for j in range(self._Nb)]
+        state_names = [
+            state_chr + str(i) + str(j) for i in range(4) for j in range(self._Nb)
+        ]
+        subkey_names = [
+            key_chr + str(r) + str(i) + str(j)
+            for r in range(self._Nr + 1)
+            for i in range(4)
+            for j in range(self._Nb)
+        ]
         self._state_PR = PolynomialRing(self._F, len(state_names), state_names)
-        self._all_PR = PolynomialRing(self._F, len(state_names + subkey_names),
-                                      state_names + subkey_names)
+        self._all_PR = PolynomialRing(
+            self._F, len(state_names + subkey_names), state_names + subkey_names
+        )
         self.state_vrs = matrix(4, self._Nb, self._state_PR.gens())
         fNb = 4 * self._Nb
         self.subkey_vrs_list = list(self._all_PR.gens()[fNb:])
-        self.subkey_vrs = [matrix(4, self._Nb,
-                           self.subkey_vrs_list[fNb * i: fNb * (i + 1)])
-                           for i in range(self._Nr)]
-        self.key_vrs = column_matrix([
-                       self.subkey_vrs[int(i / self._Nb)].column(i % 4)
-                       for i in range(self._Nk)])
-        self._shiftrows_offsets_E = matrix([[0,1,2,3], [0,1,2,3], [0,1,2,3],
-                                   [0,1,2,4], [0,1,3,4]])
-        self._shiftrows_offsets_D = matrix([[0,-1,-2,-3], [0,-1,-2,-3],
-                                           [0,-1,-2,-3], [0,-1,-2,-4],
-                                           [0,-1,-3,-4]])
-        self._sb_E_coeffs = [self._F("x^2 + 1"),
-                             self._F("x^3 + 1"),
-                             self._F("x^7 + x^6 + x^5 + x^4 + x^3 + 1"),
-                             self._F("x^5 + x^2 + 1"),
-                             self._F("x^7 + x^6 + x^5 + x^4 + x^2"),
-                             self._F("1"),
-                             self._F("x^7 + x^5 + x^4 + x^2 + 1"),
-                             self._F("x^7 + x^3 + x^2 + x + 1")]
-        self._sb_D_coeffs = [self._F("x^2 + 1"),
-                             self._F("x^7 + x^6 + x^5 + x^4 + x^3 + x^2 + x"),
-                             self._F("x^6 + x^5 + x^4 + x^3 + x^2 + x + 1"),
-                             self._F("x^6 + x^4 + x^3 + x"),
-                             self._F("x^6 + x^5 + x^4 + x^3"),
-                             self._F("x^6 + x^4 + x^3 + 1"),
-                             self._F("x^7 + x^6 + x^4 + x^3 + x + 1"),
-                             self._F("x^6 + x^5 + x^3 + x^2 + x")]
-        mixcols_E_row = [self._F('x'), self._F('x+1'), self._F('1'),
-                         self._F('1')]
-        self._mixcols_E = matrix([mixcols_E_row[-i:] + mixcols_E_row[:-i]
-                                  for i in range(4)])
-        mixcols_D_row = [self._F('x^3 + x^2 + x'), self._F('x^3 + x + 1'),
-                         self._F('x^3 + x^2 + 1'), self._F('x^3 + 1')]
-        self._mixcols_D = matrix([mixcols_D_row[-i:] + mixcols_D_row[:-i]
-                                  for i in range(4)])
+        self.subkey_vrs = [
+            matrix(4, self._Nb, self.subkey_vrs_list[fNb * i : fNb * (i + 1)])
+            for i in range(self._Nr)
+        ]
+        self.key_vrs = column_matrix(
+            [self.subkey_vrs[int(i / self._Nb)].column(i % 4) for i in range(self._Nk)]
+        )
+        self._shiftrows_offsets_E = matrix(
+            [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 4], [0, 1, 3, 4]]
+        )
+        self._shiftrows_offsets_D = matrix(
+            [
+                [0, -1, -2, -3],
+                [0, -1, -2, -3],
+                [0, -1, -2, -3],
+                [0, -1, -2, -4],
+                [0, -1, -3, -4],
+            ]
+        )
+        self._sb_E_coeffs = [
+            self._F("x^2 + 1"),
+            self._F("x^3 + 1"),
+            self._F("x^7 + x^6 + x^5 + x^4 + x^3 + 1"),
+            self._F("x^5 + x^2 + 1"),
+            self._F("x^7 + x^6 + x^5 + x^4 + x^2"),
+            self._F("1"),
+            self._F("x^7 + x^5 + x^4 + x^2 + 1"),
+            self._F("x^7 + x^3 + x^2 + x + 1"),
+        ]
+        self._sb_D_coeffs = [
+            self._F("x^2 + 1"),
+            self._F("x^7 + x^6 + x^5 + x^4 + x^3 + x^2 + x"),
+            self._F("x^6 + x^5 + x^4 + x^3 + x^2 + x + 1"),
+            self._F("x^6 + x^4 + x^3 + x"),
+            self._F("x^6 + x^5 + x^4 + x^3"),
+            self._F("x^6 + x^4 + x^3 + 1"),
+            self._F("x^7 + x^6 + x^4 + x^3 + x + 1"),
+            self._F("x^6 + x^5 + x^3 + x^2 + x"),
+        ]
+        mixcols_E_row = [self._F('x'), self._F('x+1'), self._F('1'), self._F('1')]
+        self._mixcols_E = matrix(
+            [mixcols_E_row[-i:] + mixcols_E_row[:-i] for i in range(4)]
+        )
+        mixcols_D_row = [
+            self._F('x^3 + x^2 + x'),
+            self._F('x^3 + x + 1'),
+            self._F('x^3 + x^2 + 1'),
+            self._F('x^3 + 1'),
+        ]
+        self._mixcols_D = matrix(
+            [mixcols_D_row[-i:] + mixcols_D_row[:-i] for i in range(4)]
+        )
         # Build the Round_Component_Poly_Constr objects
-        self._add_round_key_rcpc = \
-        RijndaelGF.Round_Component_Poly_Constr(self._add_round_key_pc, self,
-                                               "Add Round Key")
-        self._sub_bytes_rcpc = \
-        RijndaelGF.Round_Component_Poly_Constr(self._sub_bytes_pc, self,
-                                               "SubBytes")
-        self._mix_columns_rcpc = \
-        RijndaelGF.Round_Component_Poly_Constr(self._mix_columns_pc, self,
-                                               "Mix Columns")
-        self._shift_rows_rcpc = \
-        RijndaelGF.Round_Component_Poly_Constr(self._shift_rows_pc, self,
-                                               "Shift Rows")
+        self._add_round_key_rcpc = RijndaelGF.Round_Component_Poly_Constr(
+            self._add_round_key_pc, self, "Add Round Key"
+        )
+        self._sub_bytes_rcpc = RijndaelGF.Round_Component_Poly_Constr(
+            self._sub_bytes_pc, self, "SubBytes"
+        )
+        self._mix_columns_rcpc = RijndaelGF.Round_Component_Poly_Constr(
+            self._mix_columns_pc, self, "Mix Columns"
+        )
+        self._shift_rows_rcpc = RijndaelGF.Round_Component_Poly_Constr(
+            self._shift_rows_pc, self, "Shift Rows"
+        )
 
     def __call__(self, text, key, algorithm='encrypt', format='hex'):
         r"""
@@ -612,8 +640,7 @@ class RijndaelGF(SageObject):
             return self.encrypt(text, key, format)
         if algorithm == 'decrypt':
             return self.decrypt(text, key, format)
-        raise ValueError("keyword 'algorithm' must be either 'encrypt' "
-                         "or 'decrypt'")
+        raise ValueError("keyword 'algorithm' must be either 'encrypt' or 'decrypt'")
 
     def __repr__(self):
         r"""
@@ -627,8 +654,10 @@ class RijndaelGF(SageObject):
             Rijndael-GF block cipher with block length 5, key length 8, and 14 rounds.
         """
 
-        msg = ("Rijndael-GF block cipher with block length {0}, key length "
-               "{1}, and {2} rounds.")
+        msg = (
+            "Rijndael-GF block cipher with block length {0}, key length "
+            "{1}, and {2} rounds."
+        )
         return msg.format(self._Nb, self._Nk, self._Nr)
 
     def block_length(self):
@@ -706,12 +735,12 @@ class RijndaelGF(SageObject):
             sage: rgf._hex_to_GF('1a2b0f', matrix=False)
             [x^4 + x^3 + x, x^5 + x^3 + x + 1, x^3 + x^2 + x + 1]
         """
-        if not isinstance(H, str) or \
-           any(c not in '0123456789abcdefABCDEF' for c in H):
+        if not isinstance(H, str) or any(c not in '0123456789abcdefABCDEF' for c in H):
             raise TypeError("keyword 'H' must be a hex string")
 
         def hx_to_gf(h):
             return self._F([int(_) for _ in bin(int(h, 16))[2:].zfill(8)][::-1])
+
         hexes = [H[2 * i] + H[2 * i + 1] for i in range(len(H) // 2)]
         result = [hx_to_gf(h) for h in hexes]
         if matrix:
@@ -756,30 +785,43 @@ class RijndaelGF(SageObject):
             sage: rgf._GF_to_hex(output)
             'e142cd5fcd9d6d94a3340793034391b5'
         """
-        if not isinstance(GF, Matrix) and \
-           not isinstance(GF, list) and \
-           not (isinstance(GF, Element) and isinstance(GF.parent(), FiniteField_base)):
-            msg = ("keyword 'GF' must be a matrix over {0}, a list of "
-                   "elements from {0}, or a single element from {0}")
+        if (
+            not isinstance(GF, Matrix)
+            and not isinstance(GF, list)
+            and not (
+                isinstance(GF, Element) and isinstance(GF.parent(), FiniteField_base)
+            )
+        ):
+            msg = (
+                "keyword 'GF' must be a matrix over {0}, a list of "
+                "elements from {0}, or a single element from {0}"
+            )
             raise TypeError(msg.format(self._F))
 
         if isinstance(GF, Matrix):
-            if not GF.base_ring().is_field() or \
-               not GF.base_ring().is_finite() or \
-               not GF.base_ring().order() == 2**8:
+            if (
+                not GF.base_ring().is_field()
+                or not GF.base_ring().is_finite()
+                or not GF.base_ring().order() == 2**8
+            ):
                 msg = "The elements of keyword 'GF' must all be from {0}"
                 raise TypeError(msg.format(self._F))
-            return ''.join([self._GF_to_hex(el)
-                            for col in GF.columns() for el in col])
+            return ''.join([self._GF_to_hex(el) for col in GF.columns() for el in col])
         if isinstance(GF, list):
-            if not all(g.parent().is_field() and g.parent().is_finite() and
-                       g.parent().order() == 2**8 for g in GF):
+            if not all(
+                g.parent().is_field()
+                and g.parent().is_finite()
+                and g.parent().order() == 2**8
+                for g in GF
+            ):
                 msg = "The elements of keyword 'GF' must all be from {0}"
                 raise TypeError(msg.format(self._F))
             return ''.join([self._GF_to_hex(el) for el in GF])
-        if not GF.parent().is_field() or \
-           not GF.parent().is_finite() or \
-           not GF.parent().order() == 2**8:
+        if (
+            not GF.parent().is_field()
+            or not GF.parent().is_finite()
+            or not GF.parent().order() == 2**8
+        ):
             msg = "keyword 'GF' must be in"
             raise TypeError(msg.format(self._F))
         return hex(GF.to_integer())[2:].zfill(2)
@@ -879,30 +921,43 @@ class RijndaelGF(SageObject):
             sage: rgf._GF_to_bin(output)
             '11011000000111111111100000011011110110000001111111111000000110111101100000011111111110000001101111011000000111111111100000011011'
         """
-        if not isinstance(GF, Matrix) and \
-           not isinstance(GF, list) and \
-           not (isinstance(GF, Element) and isinstance(GF.parent(), FiniteField_base)):
-            msg = ("keyword 'GF' must be a matrix over {0}, a list of "
-                   "elements from {0}, or a single element from {0}")
+        if (
+            not isinstance(GF, Matrix)
+            and not isinstance(GF, list)
+            and not (
+                isinstance(GF, Element) and isinstance(GF.parent(), FiniteField_base)
+            )
+        ):
+            msg = (
+                "keyword 'GF' must be a matrix over {0}, a list of "
+                "elements from {0}, or a single element from {0}"
+            )
             raise TypeError(msg.format(self))
 
         if isinstance(GF, Matrix):
-            if not GF.base_ring().is_field() or \
-               not GF.base_ring().is_finite() or \
-               not GF.base_ring().order() == 2**8:
+            if (
+                not GF.base_ring().is_field()
+                or not GF.base_ring().is_finite()
+                or not GF.base_ring().order() == 2**8
+            ):
                 msg = "The elements of keyword 'GF' must all be from {0}"
                 raise TypeError(msg.format(self._F))
-            return ''.join([self._GF_to_bin(el)
-                            for col in GF.columns() for el in col])
+            return ''.join([self._GF_to_bin(el) for col in GF.columns() for el in col])
         if isinstance(GF, list):
-            if not all(g.parent().is_field() and g.parent().is_finite() and
-                       g.parent().order() == 2**8 for g in GF):
+            if not all(
+                g.parent().is_field()
+                and g.parent().is_finite()
+                and g.parent().order() == 2**8
+                for g in GF
+            ):
                 msg = "The elements of keyword 'GF' must all be from {0}"
                 raise TypeError(msg.format(self._F))
             return ''.join([self._GF_to_bin(el) for el in GF])
-        if not GF.parent().is_field() or \
-           not GF.parent().is_finite() or \
-           not GF.parent().order() == 2**8:
+        if (
+            not GF.parent().is_field()
+            or not GF.parent().is_finite()
+            or not GF.parent().order() == 2**8
+        ):
             msg = "keyword 'GF' must be in"
             raise TypeError(msg.format(self._F))
         return bin(GF.to_integer())[2:].zfill(8)
@@ -944,14 +999,16 @@ class RijndaelGF(SageObject):
             True
         """
         if format == 'hex':
-            if not isinstance(plain, str) or \
-               any(c not in '0123456789abcdefABCDEF' for c in plain):
+            if not isinstance(plain, str) or any(
+                c not in '0123456789abcdefABCDEF' for c in plain
+            ):
                 raise TypeError("'plain' keyword must be a hex string")
             if len(plain) != 8 * self._Nb:
-                msg = "'plain' keyword\'s length must be {0}, not{1}"
+                msg = "'plain' keyword's length must be {0}, not{1}"
                 raise ValueError(msg.format(8 * self._Nb, len(plain)))
-            if not isinstance(key, str) or \
-               any(c not in '0123456789abcdefABCDEF' for c in key):
+            if not isinstance(key, str) or any(
+                c not in '0123456789abcdefABCDEF' for c in key
+            ):
                 raise TypeError("'key' keyword must be a hex string")
             if len(key) != 8 * self._Nk:
                 msg = "'key' keyword's length must be {0}, not {1}"
@@ -960,14 +1017,12 @@ class RijndaelGF(SageObject):
             key_state = self._hex_to_GF(key)
             roundKeys = self.expand_key(key_state)
         elif format == 'binary':
-            if not isinstance(plain, str) or \
-               any(c not in '01' for c in plain):
+            if not isinstance(plain, str) or any(c not in '01' for c in plain):
                 raise TypeError("'plain' keyword must be a binary string")
             if len(plain) != 32 * self._Nb:
                 msg = "'plain' keyword's length must be {0}, not {1}"
                 raise ValueError(msg.format(32 * self._Nb, len(plain)))
-            if not isinstance(key, str) or \
-               any(c not in '01' for c in key):
+            if not isinstance(key, str) or any(c not in '01' for c in key):
                 raise TypeError("'key' keyword must be a binary string")
             if len(key) != 32 * self._Nk:
                 msg = "'key' keyword's length must be {0}, not {1}"
@@ -976,15 +1031,14 @@ class RijndaelGF(SageObject):
             key_state = self._bin_to_GF(key)
             roundKeys = self.expand_key(key_state)
         else:
-            raise ValueError("'format' keyword must be either 'hex' or "
-                             "'binary'")
+            raise ValueError("'format' keyword must be either 'hex' or 'binary'")
 
         state = self.add_round_key(state, roundKeys[0])
-        for r in range(self._Nr-1):
+        for r in range(self._Nr - 1):
             state = self.sub_bytes(state, algorithm='encrypt')
             state = self.shift_rows(state, algorithm='encrypt')
             state = self.mix_columns(state, algorithm='encrypt')
-            state = self.add_round_key(state, roundKeys[r+1])
+            state = self.add_round_key(state, roundKeys[r + 1])
         state = self.sub_bytes(state, algorithm='encrypt')
         state = self.shift_rows(state, algorithm='encrypt')
         state = self.add_round_key(state, roundKeys[self._Nr])
@@ -1033,14 +1087,16 @@ class RijndaelGF(SageObject):
             True
         """
         if format == 'hex':
-            if not isinstance(ciphertext, str) or \
-               any(c not in '0123456789abcdefABCDEF' for c in ciphertext):
+            if not isinstance(ciphertext, str) or any(
+                c not in '0123456789abcdefABCDEF' for c in ciphertext
+            ):
                 raise TypeError("'ciphertext' keyword must be a hex string")
             if len(ciphertext) != 8 * self._Nb:
                 msg = "'ciphertext' keyword's length must be {0}, not{1}"
                 raise ValueError(msg.format(8 * self._Nb, len(ciphertext)))
-            if not isinstance(key, str) or \
-               any(c not in '0123456789abcdefABCDEF' for c in key):
+            if not isinstance(key, str) or any(
+                c not in '0123456789abcdefABCDEF' for c in key
+            ):
                 raise TypeError("'key' keyword must be a hex string")
             if len(key) != 8 * self._Nk:
                 msg = "'key' keyword's length must be {0}, not {1}"
@@ -1049,30 +1105,28 @@ class RijndaelGF(SageObject):
             key_state = self._hex_to_GF(key)
             roundKeys = self.expand_key(key_state)
         elif format == 'binary':
-            if not isinstance(ciphertext, str) or \
-               any(c not in '01' for c in ciphertext):
-                raise TypeError("'ciphertext' keyword must be a binary "
-                                 "string")
+            if not isinstance(ciphertext, str) or any(
+                c not in '01' for c in ciphertext
+            ):
+                raise TypeError("'ciphertext' keyword must be a binary string")
             if len(ciphertext) != 32 * self._Nb:
                 msg = "'ciphertext' keyword's length must be {0}, not {1}"
                 raise ValueError(msg.format(32 * self._Nb, len(ciphertext)))
-            if not isinstance(key, str) or \
-               any(c not in '01' for c in key):
+            if not isinstance(key, str) or any(c not in '01' for c in key):
                 raise TypeError("'key' keyword must be a binary string")
             if len(key) != 32 * self._Nk:
-                msg = "'key' keyword\'s length must be {0}, not {1}"
+                msg = "'key' keyword's length must be {0}, not {1}"
                 raise ValueError(msg.format(32 * self._Nk, len(key)))
             state = self._bin_to_GF(ciphertext)
             key_state = self._bin_to_GF(key)
             roundKeys = self.expand_key(key_state)
         else:
-            raise ValueError("'format' keyword must be either \'hex\' or "
-                             "'binary'")
+            raise ValueError("'format' keyword must be either 'hex' or 'binary'")
 
         state = self.add_round_key(state, roundKeys[self._Nr])
         state = self.shift_rows(state, algorithm='decrypt')
         state = self.sub_bytes(state, algorithm='decrypt')
-        for r in range(self._Nr-1):
+        for r in range(self._Nr - 1):
             state = self.add_round_key(state, roundKeys[self._Nr - r - 1])
             state = self.mix_columns(state, algorithm='decrypt')
             state = self.shift_rows(state, algorithm='decrypt')
@@ -1129,22 +1183,33 @@ class RijndaelGF(SageObject):
             TypeError: keyword 'state' must be a 4 x 4 matrix with entries from
             a multivariate PolynomialRing over Finite Field in x of size 2^8
         """
-        from sage.rings.polynomial.multi_polynomial_ring_base import \
-            MPolynomialRing_base
-        msg = ("keyword '{0}' must be a {1} x {2} matrix with entries from a "
-               "multivariate PolynomialRing over {3}")
+        from sage.rings.polynomial.multi_polynomial_ring_base import (
+            MPolynomialRing_base,
+        )
+
+        msg = (
+            "keyword '{0}' must be a {1} x {2} matrix with entries from a "
+            "multivariate PolynomialRing over {3}"
+        )
         msg = msg.format(keyword, 4, self._Nb, self._F)
-        if (not isinstance(PRm, Matrix) or
-            not (PRm.base_ring().is_field() and
-                 PRm.base_ring().is_finite() and
-                 PRm.base_ring().order() == 256 and
-                 PRm.dimensions() == (4, self._Nb))) and \
-           (not isinstance(PRm, Matrix) or
-            not isinstance(PRm.base_ring(), MPolynomialRing_base) or
-            not (PRm.base_ring().base_ring().is_field() and
-                 PRm.base_ring().base_ring().is_finite() and
-                 PRm.base_ring().base_ring().order() == 256) or
-                not PRm.dimensions() == (4, self._Nb)):
+        if (
+            not isinstance(PRm, Matrix)
+            or not (
+                PRm.base_ring().is_field()
+                and PRm.base_ring().is_finite()
+                and PRm.base_ring().order() == 256
+                and PRm.dimensions() == (4, self._Nb)
+            )
+        ) and (
+            not isinstance(PRm, Matrix)
+            or not isinstance(PRm.base_ring(), MPolynomialRing_base)
+            or not (
+                PRm.base_ring().base_ring().is_field()
+                and PRm.base_ring().base_ring().is_finite()
+                and PRm.base_ring().base_ring().order() == 256
+            )
+            or not PRm.dimensions() == (4, self._Nb)
+        ):
             raise TypeError(msg)
 
     def expand_key(self, key):
@@ -1176,11 +1241,15 @@ class RijndaelGF(SageObject):
         """
         msg = "keyword '{0}' must be a {1} x {2} matrix over GF({3})"
         msg = msg.format(key, 4, self._Nk, self._F.order())
-        if not isinstance(key, Matrix) or \
-           not (key.base_ring().is_field() and
-                key.base_ring().is_finite() and
-                key.base_ring().order() == self._F.order()) or \
-           not key.dimensions() == (4, self._Nk):
+        if (
+            not isinstance(key, Matrix)
+            or not (
+                key.base_ring().is_field()
+                and key.base_ring().is_finite()
+                and key.base_ring().order() == self._F.order()
+            )
+            or not key.dimensions() == (4, self._Nk)
+        ):
             raise TypeError(msg)
 
         def add_cols(col1, col2):
@@ -1209,8 +1278,7 @@ class RijndaelGF(SageObject):
         # Copy the expanded columns into 4xNb blocks
         round_keys = []
         for r in range(self._Nr + 1):
-            rk = column_matrix([key_cols[r*self._Nb + i]
-                                for i in range(self._Nb)])
+            rk = column_matrix([key_cols[r * self._Nb + i] for i in range(self._Nb)])
             round_keys.append(rk)
         return round_keys
 
@@ -1280,31 +1348,29 @@ class RijndaelGF(SageObject):
         key_col = round * self._Nb + col
         if key_col < self._Nk:
             return self.key_vrs[row, key_col]
-        if key_col % self._Nk == 0 or \
-           (self._Nk > 6 and col % self._Nk == 4):
+        if key_col % self._Nk == 0 or (self._Nk > 6 and col % self._Nk == 4):
             # Apply non-linear transformation to key_col - 1
-            recur_r = int((key_col - 1)/self._Nb)
+            recur_r = int((key_col - 1) / self._Nb)
             recur_j = (key_col - 1) - (recur_r * self._Nb)
-            non_linear = self.expand_key_poly((row+1) % 4,
-                                              recur_j, recur_r)
+            non_linear = self.expand_key_poly((row + 1) % 4, recur_j, recur_r)
             non_linear = self._srd(non_linear)
             non_linear += self._F.gen() ** (int(key_col / self._Nk) - 1)
             # Identify key_col - Nk
-            recur_r = int((key_col - self._Nk)/self._Nb)
+            recur_r = int((key_col - self._Nk) / self._Nb)
             recur_j = (key_col - self._Nk) - (recur_r * self._Nb)
             return self.expand_key_poly(row, recur_j, recur_r) + non_linear
         # Identify key_col - Nk
-        recur_r = int((key_col - self._Nk)/self._Nb)
+        recur_r = int((key_col - self._Nk) / self._Nb)
         recur_j = (key_col - self._Nk) - (recur_r * self._Nb)
         result = self.expand_key_poly(row, recur_j, recur_r)
         # Identify key_col - 1
-        recur_r = int((key_col - 1)/self._Nb)
+        recur_r = int((key_col - 1) / self._Nb)
         recur_j = (key_col - 1) - (recur_r * self._Nb)
-        return result + \
-               self.expand_key_poly(row, recur_j, recur_r)
+        return result + self.expand_key_poly(row, recur_j, recur_r)
 
-    def apply_poly(self, state, poly_constr, algorithm='encrypt', keys=None,
-                   poly_constr_attr=None):
+    def apply_poly(
+        self, state, poly_constr, algorithm='encrypt', keys=None, poly_constr_attr=None
+    ):
         r"""
         Return a state matrix where ``poly_method`` is applied to each entry.
 
@@ -1390,14 +1456,19 @@ class RijndaelGF(SageObject):
         if not isinstance(poly_constr, RijndaelGF.Round_Component_Poly_Constr):
             msg = "keyword 'poly_constr' must be a Round_Component_Poly_Constr"
             raise TypeError(msg)
-        if keys is not None and (not isinstance(keys, list) or
-           len(keys) != self._Nr + 1 or
-           not all(isinstance(k, Matrix) for k in keys) or
-           not all(k.dimensions() == (4, self._Nb) for k in keys) or
-           not all(k.base_ring().is_finite() and k.base_ring().is_field()
-                   and k.base_ring().order() == 256 for k in keys)):
-            msg = ("keys must be a length {0} array of 4 by {1} matrices"
-                   " over {2}")
+        if keys is not None and (
+            not isinstance(keys, list)
+            or len(keys) != self._Nr + 1
+            or not all(isinstance(k, Matrix) for k in keys)
+            or not all(k.dimensions() == (4, self._Nb) for k in keys)
+            or not all(
+                k.base_ring().is_finite()
+                and k.base_ring().is_field()
+                and k.base_ring().order() == 256
+                for k in keys
+            )
+        ):
+            msg = "keys must be a length {0} array of 4 by {1} matrices over {2}"
             raise TypeError(msg.format(self._Nr, self._Nb, self._F))
 
         output = []
@@ -1407,8 +1478,10 @@ class RijndaelGF(SageObject):
             for j in range(self._Nb):
                 # this is to combat a major performance issue caused by
                 # subbytes' inversion transformation.
-                if poly_constr == self.sub_bytes_poly_constr() and \
-                   algorithm == 'decrypt':
+                if (
+                    poly_constr == self.sub_bytes_poly_constr()
+                    and algorithm == 'decrypt'
+                ):
                     p = poly_constr(i, j, algorithm, no_inversion=True)
                     p = p(state.list()) ** 254
                 else:
@@ -1544,10 +1617,14 @@ class RijndaelGF(SageObject):
             msg = "keyword 'f' must be a Round_Component_Poly_Constr"
             raise TypeError(msg)
         from sage.rings.polynomial.multi_polynomial import MPolynomial
-        if not isinstance(g, RijndaelGF.Round_Component_Poly_Constr) and \
-           not isinstance(g, MPolynomial):
-            msg = ("keyword 'g' must be a Round_Component_Poly_Constr or a "
-                   "polynomial over {0}")
+
+        if not isinstance(g, RijndaelGF.Round_Component_Poly_Constr) and not isinstance(
+            g, MPolynomial
+        ):
+            msg = (
+                "keyword 'g' must be a Round_Component_Poly_Constr or a "
+                "polynomial over {0}"
+            )
             raise TypeError(msg.format(self._F))
         if f_attr is not None and not isinstance(f_attr, dict):
             raise TypeError("f_attr must be a dictionary of keywords for f")
@@ -1556,20 +1633,24 @@ class RijndaelGF(SageObject):
 
         if g in self._all_PR:
             if isinstance(f_attr, dict):
-                f_vals = [f(i, j, algorithm, **f_attr)
-                          for i in range(4) for j in range(self._Nb)]
+                f_vals = [
+                    f(i, j, algorithm, **f_attr)
+                    for i in range(4)
+                    for j in range(self._Nb)
+                ]
             else:
-                f_vals = [f(i, j, algorithm)
-                          for i in range(4) for j in range(self._Nb)]
+                f_vals = [f(i, j, algorithm) for i in range(4) for j in range(self._Nb)]
             if g in self._state_PR:
                 return g(f_vals)
             return g(f_vals + self.subkey_vrs_list)
         if isinstance(g_attr, dict):
-            lm = lambda i, j, alg='encrypt': \
-            self.compose(f, g(i, j, alg, **g_attr), alg, f_attr, g_attr)
+            lm = lambda i, j, alg='encrypt': self.compose(
+                f, g(i, j, alg, **g_attr), alg, f_attr, g_attr
+            )
         else:
-            lm = lambda i, j, alg='encrypt': \
-                 self.compose(f, g(i, j, alg), alg, f_attr, g_attr)
+            lm = lambda i, j, alg='encrypt': self.compose(
+                f, g(i, j, alg), alg, f_attr, g_attr
+            )
         return RijndaelGF.Round_Component_Poly_Constr(lm, self)
 
     def add_round_key_poly_constr(self):
@@ -1848,20 +1929,22 @@ class RijndaelGF(SageObject):
             var = self.state_vrs[row, col]
             coeffs = self._sb_E_coeffs
             if no_inversion:
-                return sum([coeffs[i] * (var**(2**i))
-                            for i in range(8)]) + self._F("x^6 + x^5 + x + 1")
-            return sum([coeffs[i] * (var**(255 - 2**i))
-                        for i in range(8)]) + self._F("x^6 + x^5 + x + 1")
+                return sum([coeffs[i] * (var ** (2**i)) for i in range(8)]) + self._F(
+                    "x^6 + x^5 + x + 1"
+                )
+            return sum([coeffs[i] * (var ** (255 - 2**i)) for i in range(8)]) + self._F(
+                "x^6 + x^5 + x + 1"
+            )
         if algorithm == 'decrypt':
             var = self.state_vrs[row, col]
             coeffs = self._sb_D_coeffs
-            result = (sum([coeffs[i] * var**(2**i) for i in range(8)]) +
-                      self._F("x^2 + 1"))
+            result = sum([coeffs[i] * var ** (2**i) for i in range(8)]) + self._F(
+                "x^2 + 1"
+            )
             if no_inversion:
                 return result
-            return result ** 254
-        raise ValueError("keyword 'algorithm' must be either 'encrypt' "
-                         "or 'decrypt'")
+            return result**254
+        raise ValueError("keyword 'algorithm' must be either 'encrypt' or 'decrypt'")
 
     def _srd(self, el, algorithm='encrypt'):
         r"""
@@ -1889,14 +1972,13 @@ class RijndaelGF(SageObject):
         """
         if algorithm == 'encrypt':
             p = self._sub_bytes_rcpc(0, 0, algorithm)
-            state = [el] + [self._F.zero()]*((4 * self._Nb)-1)
+            state = [el] + [self._F.zero()] * ((4 * self._Nb) - 1)
             return p(state)
         if algorithm == 'decrypt':
             p = self._sub_bytes_rcpc(0, 0, algorithm, no_inversion=True)
-            state = [el] + [self._F.zero()]*((4 * self._Nb)-1)
+            state = [el] + [self._F.zero()] * ((4 * self._Nb) - 1)
             return p(state) ** 254
-        raise ValueError("keyword 'algorithm' must be either 'encrypt' "
-                         "or 'decrypt'")
+        raise ValueError("keyword 'algorithm' must be either 'encrypt' or 'decrypt'")
 
     def sub_bytes(self, state, algorithm='encrypt'):
         r"""
@@ -1995,9 +2077,10 @@ class RijndaelGF(SageObject):
         elif algorithm == 'decrypt':
             coeffs = self._mixcols_D
         else:
-            raise ValueError("keyword 'algorithm' must be either 'encrypt' "
-                             "or 'decrypt'")
-        return sum([coeffs[row,k] * self.state_vrs[k,col] for k in range(4)])
+            raise ValueError(
+                "keyword 'algorithm' must be either 'encrypt' or 'decrypt'"
+            )
+        return sum([coeffs[row, k] * self.state_vrs[k, col] for k in range(4)])
 
     def mix_columns(self, state, algorithm='encrypt'):
         r"""
@@ -2094,8 +2177,9 @@ class RijndaelGF(SageObject):
         elif algorithm == 'decrypt':
             offs = self._shiftrows_offsets_D
         else:
-            raise ValueError("keyword 'algorithm' must be either 'encrypt' "
-                             "or 'decrypt'")
+            raise ValueError(
+                "keyword 'algorithm' must be either 'encrypt' or 'decrypt'"
+            )
         return self.state_vrs[row, (col + offs[4 - self._Nb][row]) % 4]
 
     def shift_rows(self, state, algorithm='encrypt'):
@@ -2130,7 +2214,6 @@ class RijndaelGF(SageObject):
         return self.apply_poly(state, self._shift_rows_rcpc, algorithm)
 
     class Round_Component_Poly_Constr(SageObject):
-
         def __init__(self, polynomial_constr, rgf, round_component_name=None):
             r"""
             An object which constructs polynomials representing round
@@ -2239,19 +2322,24 @@ class RijndaelGF(SageObject):
             if pc_args[0][0] == 'self':
                 # Check number of defaulted arguments
                 if len(pc_args[3]) != len(pc_args[0]) - 3:
-                    msg = ("keyword 'polynomial_constr' must be callable as: "
-                           "polynomial_constr(row, col, algorithm='encrypt')")
+                    msg = (
+                        "keyword 'polynomial_constr' must be callable as: "
+                        "polynomial_constr(row, col, algorithm='encrypt')"
+                    )
                     raise TypeError(msg)
             else:
                 if len(pc_args[3]) != len(pc_args[0]) - 2:
-                    msg = ("keyword 'polynomial_constr' must be callable as: "
-                           "polynomial_constr(row, col, algorithm='encrypt')")
+                    msg = (
+                        "keyword 'polynomial_constr' must be callable as: "
+                        "polynomial_constr(row, col, algorithm='encrypt')"
+                    )
                     raise TypeError(msg)
             self._polynomial_constr = polynomial_constr
             self._Nb = rgf.block_length()
             self._rgf_name = rgf.__repr__()
-            if round_component_name is not None and \
-               not isinstance(round_component_name, str):
+            if round_component_name is not None and not isinstance(
+                round_component_name, str
+            ):
                 msg = "round_component_name must be None or a string"
                 raise TypeError(msg)
             self._rc_name = round_component_name
@@ -2297,8 +2385,7 @@ class RijndaelGF(SageObject):
                 msg = "keyword 'col' must be in range 0 - {0}"
                 raise ValueError(msg.format(self._Nb - 1))
             if algorithm not in ['encrypt', 'decrypt']:
-                msg = ("keyword 'algorithm' must be either 'encrypt' or "
-                       "'decrypt'")
+                msg = "keyword 'algorithm' must be either 'encrypt' or 'decrypt'"
                 print(algorithm)
                 raise ValueError(msg)
             return self._polynomial_constr(row, col, algorithm, **kwargs)

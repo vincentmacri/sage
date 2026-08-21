@@ -512,7 +512,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from importlib import import_module
 from pickle import PicklingError
 from textwrap import dedent
@@ -543,6 +542,7 @@ class Option:
 
         sage: TestSuite(Partitions.options.display).run()                               # needs sage.combinat
     """
+
     __name__ = 'Option class'
 
     def __init__(self, options, name):
@@ -982,9 +982,12 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
     .. automethod:: _dispatch
     .. automethod:: _reset
     """
+
     __name__ = 'options'
 
-    def __init__(self, NAME=None, module='', option_class='', doc='', end_doc='', **options):
+    def __init__(
+        self, NAME=None, module='', option_class='', doc='', end_doc='', **options
+    ):
         r"""
         Initialize ``self``.
 
@@ -1040,17 +1043,17 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
         self._name = NAME
 
         # initialise the various dictionaries used by GlobalOptions
-        self._alias = {}           # a dictionary of alias for the values of some options
-        self._alt_names = {}       # a dictionary of alternative names for some options
+        self._alias = {}  # a dictionary of alias for the values of some options
+        self._alt_names = {}  # a dictionary of alternative names for some options
         self._case_sensitive = {}  # a dictionary of booleans indicating to check case sensitivity
-        self._checker = {}         # a dictionary of validity checkers for each option
+        self._checker = {}  # a dictionary of validity checkers for each option
         self.__default_value = {}  # a dictionary of the default options
         self._display_values = {}  # a dictionary of the output of the values
-        self._doc = {}             # a dictionary of doc strings, forced by the linked options
-        self._legal_values = {}    # a dictionary of lists of the legal values for each option
-        self._linked_value = {}    # a dictionary of linked to other global options as (link, linked_option)
-        self._setter = {}          # a dictionary of the list of setters
-        self._value = {}           # a dictionary of the current options
+        self._doc = {}  # a dictionary of doc strings, forced by the linked options
+        self._legal_values = {}  # a dictionary of lists of the legal values for each option
+        self._linked_value = {}  # a dictionary of linked to other global options as (link, linked_option)
+        self._setter = {}  # a dictionary of the list of setters
+        self._value = {}  # a dictionary of the current options
         for option in options:
             self._add_option(option, options[option])
 
@@ -1099,8 +1102,10 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
 
         options.sort()
         width = 1 + max(len(option) for option in options)
-        txt = '\n'.join('  - {:{}} {}'.format(option + ':', width, self[option])
-                        for option in options)
+        txt = '\n'.join(
+            '  - {:{}} {}'.format(option + ':', width, self[option])
+            for option in options
+        )
         return 'Current options for {}\n{}'.format(self._name, txt)
 
     def __call__(self, *get_value, **set_value):
@@ -1206,7 +1211,7 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
 
         if value == '?':  # return help
             print('%s\nCurrent value: %s' % (self._doc[option], self[option]))
-            return      # we do not want to call the setter below
+            return  # we do not want to call the setter below
 
         if option in self._linked_value:
             link, linked_opt = self._linked_value[option]
@@ -1253,7 +1258,9 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             <BLANKLINE>
                 The :class:`GlobalOptions` class is a generic class for setting...
         """
-        options = 'OPTIONS:\n\n{}\n\n'.format('\n'.join(self._doc[opt] for opt in sorted(self._doc)))
+        options = 'OPTIONS:\n\n{}\n\n'.format(
+            '\n'.join(self._doc[opt] for opt in sorted(self._doc))
+        )
         return self._docstring.replace("@OPTIONS@", options)
 
     def __setattr__(self, name, value=None):
@@ -1314,7 +1321,9 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
         """
         # open the options for the corresponding "parent" and copy all of
         # the data from its options class into unpickle
-        options_class = getattr(import_module(state['options_module']), state['option_class'])
+        options_class = getattr(
+            import_module(state['options_module']), state['option_class']
+        )
         unpickle = options_class.options
         state.pop('option_class')
         state.pop('options_module')
@@ -1359,12 +1368,19 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             pickleable = False
         else:
             opt_mod = import_module(self._options_module)
-            pickleable = hasattr(opt_mod, self._name) and hasattr(getattr(opt_mod, self._name), 'options')
+            pickleable = hasattr(opt_mod, self._name) and hasattr(
+                getattr(opt_mod, self._name), 'options'
+            )
 
         if not pickleable:
-            raise PicklingError('%s cannot be pickled because it is not associated with a class' % self)
+            raise PicklingError(
+                '%s cannot be pickled because it is not associated with a class' % self
+            )
 
-        pickle = {'option_class': self._option_class, 'options_module': self._options_module}
+        pickle = {
+            'option_class': self._option_class,
+            'options_module': self._options_module,
+        }
         for opt in self._value:
             if opt not in self._alt_names and self[opt] != self.__default_value[opt]:
                 pickle[opt] = self[opt]
@@ -1385,7 +1401,10 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             sage: Partitions.options == Tableaux.options                                # needs sage.combinat
             False
         """
-        return isinstance(other, GlobalOptions) and self.__getstate__() == other.__getstate__()
+        return (
+            isinstance(other, GlobalOptions)
+            and self.__getstate__() == other.__getstate__()
+        )
 
     def _add_option(self, option, specifications):
         r"""
@@ -1402,12 +1421,15 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             ``specifications``.
         """
         if not isinstance(specifications, dict):
-            raise TypeError("expected dict as specification of %r, got %r" % (option, specifications))
+            raise TypeError(
+                "expected dict as specification of %r, got %r"
+                % (option, specifications)
+            )
 
         doc = {}  # will be used to build the doc string
-        self._case_sensitive[option] = True    # ``True`` by default
+        self._case_sensitive[option] = True  # ``True`` by default
         self._legal_values[option] = []
-        for spec in sorted(specifications):   # NB: options processed alphabetically!
+        for spec in sorted(specifications):  # NB: options processed alphabetically!
             if spec == 'alias':
                 self._alias[option] = specifications[spec]
                 self._legal_values[option] += list(specifications[spec])
@@ -1416,15 +1438,23 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             elif spec == 'alt_name':
                 self._alt_names[option] = specifications[spec]
                 self._linked_value[option] = (self, specifications[spec])
-                doc = '- ``%s`` -- alternative name for ``%s``' % (option, specifications[spec].lower())
+                doc = '- ``%s`` -- alternative name for ``%s``' % (
+                    option,
+                    specifications[spec].lower(),
+                )
             elif spec == 'case_sensitive':
                 if not specifications[spec]:
                     for opt in self._legal_values:
-                        self._display_values[option] = {val.lower(): val for val in self._legal_values[option]}
-                        self._legal_values[option] = [val.lower() for val in self._legal_values[option]]
+                        self._display_values[option] = {
+                            val.lower(): val for val in self._legal_values[option]
+                        }
+                        self._legal_values[option] = [
+                            val.lower() for val in self._legal_values[option]
+                        ]
                     if option in self._alias:
-                        self._alias[option] = {k.lower(): v.lower()
-                                               for k, v in self._alias[option].items()}
+                        self._alias[option] = {
+                            k.lower(): v.lower() for k, v in self._alias[option].items()
+                        }
                 self._case_sensitive[option] = bool(specifications[spec])
             elif spec == 'checker':
                 if not callable(specifications[spec]):
@@ -1433,9 +1463,11 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             elif spec == 'default':
                 self.__default_value[option] = specifications[spec]
             elif spec == 'link_to':
-                if (isinstance(specifications[spec], tuple) and
-                        len(specifications[spec]) == 2 and
-                        isinstance(specifications[spec][0], GlobalOptions)):
+                if (
+                    isinstance(specifications[spec], tuple)
+                    and len(specifications[spec]) == 2
+                    and isinstance(specifications[spec][0], GlobalOptions)
+                ):
                     link, linked_opt = specifications['link_to']  # for sanity
                     if linked_opt in link._value:
                         self._linked_value[option] = specifications['link_to']
@@ -1445,9 +1477,15 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
                         self._linked_value[option] = link._linked_value[linked_opt]
                         doc = link._doc[linked_opt]
                     else:
-                        raise ValueError("could not find link to {1} in {0}".format(*specifications[spec]))
+                        raise ValueError(
+                            "could not find link to {1} in {0}".format(
+                                *specifications[spec]
+                            )
+                        )
                 else:
-                    raise ValueError("linked options must be specified as a string: 'linked_option' or a tuple: (link,linked_option)")
+                    raise ValueError(
+                        "linked options must be specified as a string: 'linked_option' or a tuple: (link,linked_option)"
+                    )
             elif spec == 'setter':
                 if callable(specifications[spec]):
                     self._setter[option] = specifications[spec]
@@ -1459,16 +1497,28 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
                 doc.update(specifications[spec])
                 if self._case_sensitive[option]:
                     self._legal_values[option] += list(specifications[spec])
-                    self._display_values[option] = {val: val for val in specifications[spec]}
+                    self._display_values[option] = {
+                        val: val for val in specifications[spec]
+                    }
                 else:
-                    self._legal_values[option] += [val.lower() for val in specifications[spec]]
-                    self._display_values[option] = {val.lower(): val for val in specifications[spec]}
+                    self._legal_values[option] += [
+                        val.lower() for val in specifications[spec]
+                    ]
+                    self._display_values[option] = {
+                        val.lower(): val for val in specifications[spec]
+                    }
             elif spec != 'description':
-                raise ValueError('Initialization error in Global options for %s: %s not recognized!' % (self._name, spec))
+                raise ValueError(
+                    'Initialization error in Global options for %s: %s not recognized!'
+                    % (self._name, spec)
+                )
 
         # now build the doc string for this option
         if doc == {} and 'description' not in specifications:
-            raise ValueError('no documentation specified for %s in the options for %s' % (option, self._name))
+            raise ValueError(
+                'no documentation specified for %s in the options for %s'
+                % (option, self._name)
+            )
 
         # first a necessary hack to initialise the option in self._doc because __setitem__ calls _match_option
         self._doc[option] = ''
@@ -1478,14 +1528,24 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             width = max(len(v) for v in doc) + 4 if doc != {} else 4
             if len(doc) > 0:
                 self._doc[option] = '- ``{}`` -- (default: ``{}``)\n{}\n{}\n'.format(
-                    option, self._default_value(option),
-                    '  %s\n' % specifications['description'] if 'description' in specifications else '',
-                    '\n'.join('  - {:{}} -- {}'.format('``' + val + '``', width, doc[val])
-                              for val in sorted(doc)))
+                    option,
+                    self._default_value(option),
+                    '  %s\n' % specifications['description']
+                    if 'description' in specifications
+                    else '',
+                    '\n'.join(
+                        '  - {:{}} -- {}'.format('``' + val + '``', width, doc[val])
+                        for val in sorted(doc)
+                    ),
+                )
             else:
                 self._doc[option] = '- ``{}`` -- (default: ``{}``)\n{}'.format(
-                    option, self._default_value(option),
-                    '  %s\n' % specifications['description'] if 'description' in specifications else '')
+                    option,
+                    self._default_value(option),
+                    '  %s\n' % specifications['description']
+                    if 'description' in specifications
+                    else '',
+                )
 
         # sanity check for non-linked options
         if option not in self._linked_value:
@@ -1493,11 +1553,16 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
                 raise ValueError('a default value for %s must be given' % option)
 
             if not (option in self._checker or option in self._legal_values):
-                raise ValueError('a value checker or a list of valid values for %s must be given' % option)
+                raise ValueError(
+                    'a value checker or a list of valid values for %s must be given'
+                    % option
+                )
 
             # finally, set, check and process the default value using  __setitem__
             self[option] = self.__default_value[option]
-            self.__default_value[option] = self._value[option]  # in case the default is an alias
+            self.__default_value[option] = self._value[
+                option
+            ]  # in case the default is an alias
 
         # Build getters and setters for this option. As we have
         # overridden __setattr__, we call object.__setattr__ directly
@@ -1573,7 +1638,7 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             ValueError: w is not a valid value for drink in the options for daily meal
         """
         if value == "?":
-            return value   # help on this value
+            return value  # help on this value
 
         if option in self._linked_value:
             link, linked_opt = self._linked_value[option]
@@ -1592,7 +1657,9 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
                 return value
 
             # as it is not a value try and match it with a prefix of a value
-            matches = [val for val in self._legal_values[option] if val.startswith(value)]
+            matches = [
+                val for val in self._legal_values[option] if val.startswith(value)
+            ]
             if matches and all(m.startswith(matches[0]) for m in matches):
                 val = matches[0]
                 if option in self._alias and val in self._alias[option]:
@@ -1607,7 +1674,10 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
         # replace any value alias with its "real" value
         if option in self._alias and value in self._alias[option]:
             orig_value = self._alias[option][value]
-        raise ValueError('%s is not a valid value for %s in the options for %s' % (orig_value, option, self._name))
+        raise ValueError(
+            '%s is not a valid value for %s in the options for %s'
+            % (orig_value, option, self._name)
+        )
 
     def _default_value(self, option):
         r"""
@@ -1716,7 +1786,9 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
         if option is None:
             for option in self.__default_value:
                 self._value[option] = self.__default_value[option]
-                if not self._case_sensitive[option] and isinstance(self._value[option], str):
+                if not self._case_sensitive[option] and isinstance(
+                    self._value[option], str
+                ):
                     self._value[option] = self._value[option].lower()
             for option in self._linked_value:
                 link, linked_opt = self._linked_value[option]
@@ -1725,7 +1797,9 @@ class GlobalOptions(metaclass=GlobalOptionsMeta):
             option = self._match_option(option)
             if option in self.__default_value:
                 self._value[option] = self.__default_value[option]
-                if not self._case_sensitive[option] and isinstance(self._value[option], str):
+                if not self._case_sensitive[option] and isinstance(
+                    self._value[option], str
+                ):
                     self._value[option] = self._value[option].lower()
             elif option in self._linked_value:
                 link, linked_opt = self._linked_value[option]

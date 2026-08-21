@@ -55,6 +55,7 @@ class FGP_Element(ModuleElement):
         sage: loads(dumps(Q.0)) == Q.0
         True
     """
+
     def __init__(self, parent, x, check=DEBUG):
         """
         INPUT:
@@ -78,7 +79,9 @@ class FGP_Element(ModuleElement):
         For full documentation, see :class:`FGP_Element`.
         """
         if check:
-            assert x in parent.V(), 'The argument x='+str(x)+' is not in the covering module!'
+            assert x in parent.V(), (
+                'The argument x=' + str(x) + ' is not in the covering module!'
+            )
         ModuleElement.__init__(self, parent)
         self._x = x
 
@@ -443,6 +446,7 @@ class FGP_Element(ModuleElement):
         from sage.rings.finite_rings.integer_mod import Mod
         from sage.rings.integer import Integer
         from sage.arith.functions import lcm
+
         n = Integer(1)
         for vi, a in zip(v, I):
             if a == 0:

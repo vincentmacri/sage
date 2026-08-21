@@ -16,6 +16,7 @@ EXAMPLES::
       Defn: Defined by sending (x : y , u : v) to
             (x^2*u : y^2*v , x*v^2 : y*u^2).
 """
+
 # ****************************************************************************
 #     Copyright (C) 2014 Ben Hutz <bn4941@gmail.com>
 #
@@ -29,11 +30,14 @@ from sage.dynamics.arithmetic_dynamics.generic_ds import DynamicalSystem
 from sage.dynamics.arithmetic_dynamics.projective_ds import DynamicalSystem_projective
 from sage.rings.integer_ring import ZZ
 from sage.rings.quotient_ring import QuotientRing_generic
-from sage.schemes.product_projective.morphism import ProductProjectiveSpaces_morphism_ring
+from sage.schemes.product_projective.morphism import (
+    ProductProjectiveSpaces_morphism_ring,
+)
 
 
-class DynamicalSystem_product_projective(DynamicalSystem,
-                                         ProductProjectiveSpaces_morphism_ring):
+class DynamicalSystem_product_projective(
+    DynamicalSystem, ProductProjectiveSpaces_morphism_ring
+):
     r"""
     The class of dynamical systems on products of projective spaces.
 
@@ -98,14 +102,23 @@ class DynamicalSystem_product_projective(DynamicalSystem,
             (4/9 : 0 : 1 , 0 : 1)
         """
         if check:
-            from sage.schemes.product_projective.point import ProductProjectiveSpaces_point_ring
+            from sage.schemes.product_projective.point import (
+                ProductProjectiveSpaces_point_ring,
+            )
+
             if not isinstance(P, ProductProjectiveSpaces_point_ring):
                 try:
                     P = self.domain()(P)
                 except (TypeError, NotImplementedError):
-                    raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (P, self.domain()))
+                    raise TypeError(
+                        "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                        % (P, self.domain())
+                    )
             elif self.domain() != P.codomain():
-                raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (P, self.domain()))
+                raise TypeError(
+                    "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                    % (P, self.domain())
+                )
 
         A = self.domain()
         Q = list(P)
@@ -158,7 +171,7 @@ class DynamicalSystem_product_projective(DynamicalSystem,
         Q = self(P)
         if normalize:
             Q.normalize_coordinates()
-        for i in range(2,n+1):
+        for i in range(2, n + 1):
             Q = self(Q)
             if normalize:
                 Q.normalize_coordinates()
@@ -210,7 +223,7 @@ class DynamicalSystem_product_projective(DynamicalSystem,
         """
         if P.codomain() != self.domain():
             raise TypeError("point is not defined over domain of function")
-        if not isinstance(N, (list,tuple)):
+        if not isinstance(N, (list, tuple)):
             N = [0, N]
         try:
             N[0] = ZZ(N[0])
@@ -228,12 +241,12 @@ class DynamicalSystem_product_projective(DynamicalSystem,
 
         if normalize:
             Q.normalize_coordinates()
-        for i in range(1, N[0]+1):
+        for i in range(1, N[0] + 1):
             Q = self(Q, check)
             if normalize:
                 Q.normalize_coordinates()
         orb = [Q]
-        for i in range(N[0]+1, N[1]+1):
+        for i in range(N[0] + 1, N[1] + 1):
             Q = self(Q, check)
             if normalize:
                 Q.normalize_coordinates()
@@ -291,8 +304,9 @@ class DynamicalSystem_product_projective_field(DynamicalSystem_product_projectiv
     pass
 
 
-class DynamicalSystem_product_projective_finite_field(DynamicalSystem_product_projective_field):
-
+class DynamicalSystem_product_projective_finite_field(
+    DynamicalSystem_product_projective_field
+):
     def cyclegraph(self):
         r"""
         Return the digraph of all orbits of this morphism mod `p`.
@@ -326,12 +340,16 @@ class DynamicalSystem_product_projective_finite_field(DynamicalSystem_product_pr
         V = []
         E = []
         from sage.schemes.product_projective.space import ProductProjectiveSpaces_ring
+
         if isinstance(self.domain(), ProductProjectiveSpaces_ring):
             for P in self.domain():
                 V.append(str(P))
                 Q = self(P)
                 E.append([str(Q)])
         else:
-            raise NotImplementedError("cyclegraph for product projective spaces not implemented for subschemes")
+            raise NotImplementedError(
+                "cyclegraph for product projective spaces not implemented for subschemes"
+            )
         from sage.graphs.digraph import DiGraph
+
         return DiGraph(dict(zip(V, E)), loops=True)

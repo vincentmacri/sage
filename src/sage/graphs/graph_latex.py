@@ -420,15 +420,24 @@ def check_tkz_graph():
         sage: check_tkz_graph()  # random - depends on TeX installation
         sage: check_tkz_graph()  # at least the second time, so no output
     """
-    latex.check_file("tikz.sty", """This package is required to render graphs in LaTeX.
+    latex.check_file(
+        "tikz.sty",
+        """This package is required to render graphs in LaTeX.
 Visit '...'.
-""")
-    latex.check_file("tkz-graph.sty", """This package is required to render graphs in LaTeX.
+""",
+    )
+    latex.check_file(
+        "tkz-graph.sty",
+        """This package is required to render graphs in LaTeX.
 Visit 'https://www.ctan.org/pkg/tkz-graph'.
-""")
-    latex.check_file("tkz-berge.sty", """This package is required to render graphs in LaTeX.
+""",
+    )
+    latex.check_file(
+        "tkz-berge.sty",
+        """This package is required to render graphs in LaTeX.
 Visit 'https://www.ctan.org/pkg/tkz-berge'.
-""")
+""",
+    )
 
 
 def have_tkz_graph() -> bool:
@@ -448,7 +457,11 @@ def have_tkz_graph() -> bool:
         sage: have_tkz_graph() in [True, False]
         True
     """
-    return latex.has_file("tikz.sty") and latex.has_file("tkz-graph.sty") and latex.has_file("tkz-berge.sty")
+    return (
+        latex.has_file("tikz.sty")
+        and latex.has_file("tkz-graph.sty")
+        and latex.has_file("tkz-berge.sty")
+    )
 
 
 @cached_function
@@ -510,49 +523,51 @@ class GraphLatex(SageObject):
     # This dictionary could also contain type information (list of admissible
     # values) and a description
     # See e.g. @option
-    __graphlatex_options = {'tkz_style': 'Custom',
-                            'format': 'tkz_graph',
-                            'layout': 'acyclic',
-                            'prog': 'dot',
-                            'units': 'cm',
-                            'scale': 1.0,
-                            'graphic_size': (5, 5),
-                            'margins': (0, 0, 0, 0),
-                            'vertex_color': 'black',
-                            'vertex_colors': {},
-                            'vertex_fill_color': 'white',
-                            'vertex_fill_colors': {},
-                            'vertex_shape': 'circle',
-                            'vertex_shapes': {},
-                            'vertex_size': 1.0,
-                            'vertex_sizes': {},
-                            'vertex_labels': True,
-                            'vertex_labels_math': True,
-                            'vertex_label_color': 'black',
-                            'vertex_label_colors': {},
-                            'vertex_label_placement': 'center',
-                            'vertex_label_placements': {},
-                            'edge_options': (),
-                            'edge_color': 'black',
-                            'edge_colors': {},
-                            'edge_fills': False,
-                            'edge_fill_color': 'black',
-                            'edge_fill_colors': {},
-                            'edge_thickness': 0.1,
-                            'edge_thicknesses': {},
-                            'edge_labels': False,
-                            'edge_labels_math': True,
-                            'edge_label_color': 'black',
-                            'edge_label_colors': {},
-                            'edge_label_sloped': True,
-                            'edge_label_slopes': {},
-                            'edge_label_placement': 0.50,
-                            'edge_label_placements': {},
-                            'loop_placement': (3.0, 'NO'),
-                            'loop_placements': {},
-                            'color_by_label': False,
-                            'rankdir': 'down',
-                            'subgraph_clusters': []}
+    __graphlatex_options = {
+        'tkz_style': 'Custom',
+        'format': 'tkz_graph',
+        'layout': 'acyclic',
+        'prog': 'dot',
+        'units': 'cm',
+        'scale': 1.0,
+        'graphic_size': (5, 5),
+        'margins': (0, 0, 0, 0),
+        'vertex_color': 'black',
+        'vertex_colors': {},
+        'vertex_fill_color': 'white',
+        'vertex_fill_colors': {},
+        'vertex_shape': 'circle',
+        'vertex_shapes': {},
+        'vertex_size': 1.0,
+        'vertex_sizes': {},
+        'vertex_labels': True,
+        'vertex_labels_math': True,
+        'vertex_label_color': 'black',
+        'vertex_label_colors': {},
+        'vertex_label_placement': 'center',
+        'vertex_label_placements': {},
+        'edge_options': (),
+        'edge_color': 'black',
+        'edge_colors': {},
+        'edge_fills': False,
+        'edge_fill_color': 'black',
+        'edge_fill_colors': {},
+        'edge_thickness': 0.1,
+        'edge_thicknesses': {},
+        'edge_labels': False,
+        'edge_labels_math': True,
+        'edge_label_color': 'black',
+        'edge_label_colors': {},
+        'edge_label_sloped': True,
+        'edge_label_slopes': {},
+        'edge_label_placement': 0.50,
+        'edge_label_placements': {},
+        'loop_placement': (3.0, 'NO'),
+        'loop_placements': {},
+        'color_by_label': False,
+        'rankdir': 'down',
+        'subgraph_clusters': [],
+    }
 
     def __init__(self, graph, **options):
         r"""
@@ -1088,7 +1103,7 @@ class GraphLatex(SageObject):
 
         if option_name not in GraphLatex.__graphlatex_options:
             raise ValueError("%s is not a LaTeX option for a graph." % option_name)
-        if option_value is None:    # clear the option, if set
+        if option_value is None:  # clear the option, if set
             if option_name in self._options:
                 del self._options[option_name]
         else:
@@ -1099,7 +1114,16 @@ class GraphLatex(SageObject):
             # Tuples of constants
             #
             formats = ('tkz_graph', 'dot2tex')
-            styles = ('Custom', 'Shade', 'Art', 'Normal', 'Dijkstra', 'Welsh', 'Classic', 'Simple')
+            styles = (
+                'Custom',
+                'Shade',
+                'Art',
+                'Normal',
+                'Dijkstra',
+                'Welsh',
+                'Classic',
+                'Simple',
+            )
             unit_names = ('in', 'mm', 'cm', 'pt', 'em', 'ex')
             shape_names = ('circle', 'sphere', 'rectangle', 'diamond')
             label_places = ('above', 'below', 'right', 'left')
@@ -1108,12 +1132,30 @@ class GraphLatex(SageObject):
             #
             # Options with structurally similar tests
             #
-            boolean_options = ('vertex_labels', 'vertex_labels_math', 'edge_fills',
-                               'edge_labels', 'edge_labels_math', 'edge_label_sloped')
-            color_options = ('vertex_color', 'vertex_fill_color', 'vertex_label_color',
-                             'edge_color', 'edge_fill_color', 'edge_label_color')
-            color_dicts = ('vertex_colors', 'vertex_fill_colors', 'vertex_label_colors',
-                           'edge_colors', 'edge_fill_colors', 'edge_label_colors')
+            boolean_options = (
+                'vertex_labels',
+                'vertex_labels_math',
+                'edge_fills',
+                'edge_labels',
+                'edge_labels_math',
+                'edge_label_sloped',
+            )
+            color_options = (
+                'vertex_color',
+                'vertex_fill_color',
+                'vertex_label_color',
+                'edge_color',
+                'edge_fill_color',
+                'edge_label_color',
+            )
+            color_dicts = (
+                'vertex_colors',
+                'vertex_fill_colors',
+                'vertex_label_colors',
+                'edge_colors',
+                'edge_fill_colors',
+                'edge_label_colors',
+            )
             boolean_dicts = ('edge_label_slopes',)
             positive_scalars = ('scale', 'vertex_size', 'edge_thickness')
             positive_scalar_dicts = ('vertex_sizes', 'edge_thicknesses')
@@ -1122,101 +1164,201 @@ class GraphLatex(SageObject):
             #  Checks/test on single values (ie graph-wide defaults)
             #
             if name == 'tkz_style' and value not in styles:
-                raise ValueError('%s is not "Custom", nor an implemented tkz-graph style' % name)
+                raise ValueError(
+                    '%s is not "Custom", nor an implemented tkz-graph style' % name
+                )
             elif name == 'format' and value not in formats:
-                raise ValueError('%s option must be one of: tkz_graph, dot2tex not %s' % (name, value))
+                raise ValueError(
+                    '%s option must be one of: tkz_graph, dot2tex not %s'
+                    % (name, value)
+                )
             elif name == 'units' and value not in unit_names:
-                raise ValueError('%s option must be one of: in, mm, cm, pt, em, ex, not %s' % (name, value))
-            elif name == 'graphic_size' and not (isinstance(value, tuple) and (len(value) == 2)):
-                raise ValueError('%s option must be an ordered pair, not %s' % (name, value))
-            elif name == 'margins' and not ((isinstance(value, tuple)) and (len(value) == 4)):
+                raise ValueError(
+                    '%s option must be one of: in, mm, cm, pt, em, ex, not %s'
+                    % (name, value)
+                )
+            elif name == 'graphic_size' and not (
+                isinstance(value, tuple) and (len(value) == 2)
+            ):
+                raise ValueError(
+                    '%s option must be an ordered pair, not %s' % (name, value)
+                )
+            elif name == 'margins' and not (
+                (isinstance(value, tuple)) and (len(value) == 4)
+            ):
                 raise ValueError('%s option must be 4-tuple, not %s' % (name, value))
             elif name in color_options:
                 try:
                     cc.to_rgb(value)
                 except Exception:
-                    raise ValueError('%s option needs to be a matplotlib color (always as a string), not %s' % (name, value))
+                    raise ValueError(
+                        '%s option needs to be a matplotlib color (always as a string), not %s'
+                        % (name, value)
+                    )
             elif name in boolean_options and not isinstance(value, bool):
-                raise ValueError('%s option must be True or False, not %s' % (name, value))
+                raise ValueError(
+                    '%s option must be True or False, not %s' % (name, value)
+                )
             elif name == 'vertex_shape' and value not in shape_names:
-                raise ValueError('%s option must be the shape of a vertex, not %s' % (name, value))
-            elif name in positive_scalars and not (type(value) in number_types and (value >= 0.0)):
-                raise ValueError('%s option must be a positive number, not %s' % (name, value))
-            elif (name == 'vertex_label_placement' and value != 'center' and
-                  not (isinstance(value, tuple) and len(value) == 2 and
-                       type(value[0]) in number_types and value[0] >= 0 and
-                       type(value[1]) in number_types and value[1] >= 0)):
-                raise ValueError('%s option must be None, or a pair of positive numbers, not %s' % (name, value))
-            elif (name == 'edge_label_placement' and
-                  not ((type(value) in number_types and 0 <= value <= 1)
-                       or value in label_places)):
-                raise ValueError('%s option must be a number between 0.0 and 1.0 or a place (like "above"), not %s' % (name, value))
-            elif (name == 'loop_placement' and
-                  not (isinstance(value, tuple) and len(value) == 2 and
-                       value[0] >= 0 and value[1] in compass_points)):
-                raise ValueError('%s option must be a pair that is a positive number followed by a compass point abbreviation, not %s' % (name, value))
+                raise ValueError(
+                    '%s option must be the shape of a vertex, not %s' % (name, value)
+                )
+            elif name in positive_scalars and not (
+                type(value) in number_types and (value >= 0.0)
+            ):
+                raise ValueError(
+                    '%s option must be a positive number, not %s' % (name, value)
+                )
+            elif (
+                name == 'vertex_label_placement'
+                and value != 'center'
+                and not (
+                    isinstance(value, tuple)
+                    and len(value) == 2
+                    and type(value[0]) in number_types
+                    and value[0] >= 0
+                    and type(value[1]) in number_types
+                    and value[1] >= 0
+                )
+            ):
+                raise ValueError(
+                    '%s option must be None, or a pair of positive numbers, not %s'
+                    % (name, value)
+                )
+            elif name == 'edge_label_placement' and not (
+                (type(value) in number_types and 0 <= value <= 1)
+                or value in label_places
+            ):
+                raise ValueError(
+                    '%s option must be a number between 0.0 and 1.0 or a place (like "above"), not %s'
+                    % (name, value)
+                )
+            elif name == 'loop_placement' and not (
+                isinstance(value, tuple)
+                and len(value) == 2
+                and value[0] >= 0
+                and value[1] in compass_points
+            ):
+                raise ValueError(
+                    '%s option must be a pair that is a positive number followed by a compass point abbreviation, not %s'
+                    % (name, value)
+                )
             #
             #  Checks/test on dictionaries of values (ie per-vertex or per-edge defaults)
             #
             elif name in color_dicts:
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, c in value.items():
                         try:
                             cc.to_rgb(c)
                         except Exception:
-                            raise ValueError('%s option for %s needs to be a matplotlib color (always as a string), not %s' % (name, key, c))
+                            raise ValueError(
+                                '%s option for %s needs to be a matplotlib color (always as a string), not %s'
+                                % (name, key, c)
+                            )
             elif name in positive_scalar_dicts:
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, x in value.items():
-                        if type(x) not in [int, Integer, float, RealLiteral] or not x >= 0.0:
-                            raise ValueError('%s option for %s needs to be a positive number, not %s' % (name, key, x))
+                        if (
+                            type(x) not in [int, Integer, float, RealLiteral]
+                            or not x >= 0.0
+                        ):
+                            raise ValueError(
+                                '%s option for %s needs to be a positive number, not %s'
+                                % (name, key, x)
+                            )
             elif name in boolean_dicts:
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, b in value.items():
                         if not isinstance(b, bool):
-                            raise ValueError('%s option for %s needs to be True or False, not %s' % (name, key, b))
+                            raise ValueError(
+                                '%s option for %s needs to be True or False, not %s'
+                                % (name, key, b)
+                            )
             elif name == 'vertex_shapes':
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, s in value.items():
                         if s not in shape_names:
-                            raise ValueError('%s option for %s needs to be a vertex shape, not %s' % (name, key, s))
+                            raise ValueError(
+                                '%s option for %s needs to be a vertex shape, not %s'
+                                % (name, key, s)
+                            )
             elif name == 'vertex_label_placements':
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, p in value.items():
-                        if (p != 'center' and
-                            not (isinstance(p, tuple) and len(p) == 2 and
-                                 type(p[0]) in number_types and p[0] >= 0 and
-                                 type(p[1]) in number_types and p[1] >= 0)):
-                            raise ValueError('%s option for %s needs to be None or a pair of positive numbers, not %s' % (name, key, p))
+                        if p != 'center' and not (
+                            isinstance(p, tuple)
+                            and len(p) == 2
+                            and type(p[0]) in number_types
+                            and p[0] >= 0
+                            and type(p[1]) in number_types
+                            and p[1] >= 0
+                        ):
+                            raise ValueError(
+                                '%s option for %s needs to be None or a pair of positive numbers, not %s'
+                                % (name, key, p)
+                            )
             elif name == 'edge_label_placements':
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, p in value.items():
-                        if not (isinstance(p, (float, RealLiteral)) and (0 <= p <= 1)) and (p not in label_places):
-                            raise ValueError('%s option for %s needs to be a number between 0.0 and 1.0 or a place (like "above"), not %s' % (name, key, p))
+                        if not (
+                            isinstance(p, (float, RealLiteral)) and (0 <= p <= 1)
+                        ) and (p not in label_places):
+                            raise ValueError(
+                                '%s option for %s needs to be a number between 0.0 and 1.0 or a place (like "above"), not %s'
+                                % (name, key, p)
+                            )
             elif name == 'loop_placements':
                 if not isinstance(value, dict):
-                    raise TypeError('%s option must be a dictionary, not %s' % (name, value))
+                    raise TypeError(
+                        '%s option must be a dictionary, not %s' % (name, value)
+                    )
                 else:
                     for key, p in value.items():
-                        if not ((isinstance(p, tuple)) and (len(p) == 2) and (p[0] >= 0) and (p[1] in compass_points)):
-                            raise ValueError('%s option for %s needs to be a positive number and a compass point (like "EA"), not %s' % (name, key, p))
+                        if not (
+                            (isinstance(p, tuple))
+                            and (len(p) == 2)
+                            and (p[0] >= 0)
+                            and (p[1] in compass_points)
+                        ):
+                            raise ValueError(
+                                '%s option for %s needs to be a positive number and a compass point (like "EA"), not %s'
+                                % (name, key, p)
+                            )
             # These have been verified as tuples before going into this next check
             elif name in positive_tuples:
                 for x in value:
-                    if type(x) not in [int, Integer, float, RealLiteral] or not x >= 0.0:
-                        raise ValueError('%s option of %s cannot contain %s' % (name, value, x))
+                    if (
+                        type(x) not in [int, Integer, float, RealLiteral]
+                        or not x >= 0.0
+                    ):
+                        raise ValueError(
+                            '%s option of %s cannot contain %s' % (name, value, x)
+                        )
             #
             # Verified.  Set it.
             self._options[option_name] = option_value
@@ -1419,6 +1561,7 @@ class GraphLatex(SageObject):
             can work without ``graphviz`` if layout information is provided.
         """
         from sage.graphs.dot2tex_utils import assert_have_dot2tex
+
         assert_have_dot2tex()
 
         options = self.__graphlatex_options.copy()
@@ -1438,12 +1581,15 @@ class GraphLatex(SageObject):
 
         dotdata = self._graph.graphviz_string(labels='latex', **options)
         import dot2tex
-        return dot2tex.dot2tex(dotdata,
-                               format='tikz',
-                               autosize=True,
-                               crop=True,
-                               figonly='True',
-                               prog=self.get_option('prog')).strip()
+
+        return dot2tex.dot2tex(
+            dotdata,
+            format='tikz',
+            autosize=True,
+            crop=True,
+            figonly='True',
+            prog=self.get_option('prog'),
+        ).strip()
         # usepdflatex = True, debug = True)
 
     def tkz_picture(self):
@@ -1612,7 +1758,9 @@ class GraphLatex(SageObject):
         # It will properly handle digraphs where a pair of vertices has an edge
         # in each direction, since edges of a digraph are curved.
         if self._graph.has_multiple_edges():
-            raise NotImplementedError('it is not possible create a tkz-graph version of a graph with multiple edges')
+            raise NotImplementedError(
+                'it is not possible create a tkz-graph version of a graph with multiple edges'
+            )
 
         from matplotlib.colors import ColorConverter
         from sage.misc.latex import latex
@@ -1632,7 +1780,7 @@ class GraphLatex(SageObject):
         # We preserve the pre-built style OR get defaults for each option, but
         # we do not mix the two
         style = self.get_option('tkz_style')
-        customized = (style == 'Custom')
+        customized = style == 'Custom'
         # We don't do much for a pre-built style
         # Layout information from the graph
         # And vertex labels (if used) are the latex representation of Sage objects
@@ -1699,8 +1847,7 @@ class GraphLatex(SageObject):
         # space
 
         def translate(p):
-            return ((p[0] - xmin) * x_scale + llx,
-                    (p[1] - ymin) * y_scale + lly)
+            return ((p[0] - xmin) * x_scale + llx, (p[1] - ymin) * y_scale + lly)
 
         #############
         #  Vertices
@@ -1756,7 +1903,6 @@ class GraphLatex(SageObject):
                 vl_color = {}
                 vl_placement = {}
             for u in vertex_list:
-
                 c = dvc
                 if u in vertex_colors:
                     c = cc.to_rgb(vertex_colors[u])
@@ -1778,7 +1924,6 @@ class GraphLatex(SageObject):
                 v_size[u] = vs
 
                 if vertex_labels:
-
                     c = dvlc
                     if u in vertex_label_colors:
                         c = cc.to_rgb(vertex_label_colors[u])
@@ -1862,7 +2007,9 @@ class GraphLatex(SageObject):
 
                 if edge_fills:
                     c = defc
-                    if edge in edge_fill_colors or (not is_directed and reverse in edge_fill_colors):
+                    if edge in edge_fill_colors or (
+                        not is_directed and reverse in edge_fill_colors
+                    ):
                         if edge in edge_colors:
                             c = cc.to_rgb(edge_fill_colors[edge])
                         else:
@@ -1870,7 +2017,9 @@ class GraphLatex(SageObject):
                     ef_color[edge] = c
 
                 et = det
-                if edge in edge_thicknesses or (not is_directed and reverse in edge_thicknesses):
+                if edge in edge_thicknesses or (
+                    not is_directed and reverse in edge_thicknesses
+                ):
                     if edge in edge_thicknesses:
                         et = edge_thicknesses[edge]
                     else:
@@ -1879,7 +2028,9 @@ class GraphLatex(SageObject):
 
                 if edge_labels:
                     c = delc
-                    if edge in edge_label_colors or (not is_directed and reverse in edge_label_colors):
+                    if edge in edge_label_colors or (
+                        not is_directed and reverse in edge_label_colors
+                    ):
                         if edge in edge_label_colors:
                             c = cc.to_rgb(edge_label_colors[edge])
                         else:
@@ -1887,7 +2038,9 @@ class GraphLatex(SageObject):
                     el_color[edge] = c
 
                     els = dels
-                    if edge in edge_label_slopes or (not is_directed and reverse in edge_label_slopes):
+                    if edge in edge_label_slopes or (
+                        not is_directed and reverse in edge_label_slopes
+                    ):
                         if edge in edge_label_slopes:
                             els = edge_label_slopes[edge]
                         else:
@@ -1895,7 +2048,9 @@ class GraphLatex(SageObject):
                     el_slope[edge] = els
 
                     elp = delp
-                    if edge in edge_label_placements or (not is_directed and reverse in edge_label_placements):
+                    if edge in edge_label_placements or (
+                        not is_directed and reverse in edge_label_placements
+                    ):
                         if edge in edge_label_placements:
                             elp = edge_label_placements[edge]
                         else:
@@ -1953,7 +2108,9 @@ class GraphLatex(SageObject):
                 s += [str(round(vf_color[u][1], 4)), ',']
                 s += [str(round(vf_color[u][2], 4)), '}\n']
                 if vertex_labels:
-                    vertex_label_color_names[u] = 'cl' + prefix + str(index_of_vertex[u])
+                    vertex_label_color_names[u] = (
+                        'cl' + prefix + str(index_of_vertex[u])
+                    )
                     s += [r'\definecolor{', vertex_label_color_names[u], '}{rgb}{']
                     s += [str(round(vl_color[u][0], 4)), ',']
                     s += [str(round(vl_color[u][1], 4)), ',']
@@ -1964,19 +2121,37 @@ class GraphLatex(SageObject):
             edge_label_color_names = {}
             for e in self._graph.edge_iterator():
                 edge = (e[0], e[1])
-                edge_color_names[edge] = 'c' + prefix + str(index_of_vertex[edge[0]]) + prefix + str(index_of_vertex[edge[1]])
+                edge_color_names[edge] = (
+                    'c'
+                    + prefix
+                    + str(index_of_vertex[edge[0]])
+                    + prefix
+                    + str(index_of_vertex[edge[1]])
+                )
                 s += [r'\definecolor{', edge_color_names[edge], '}{rgb}{']
                 s += [str(round(e_color[edge][0], 4)), ',']
                 s += [str(round(e_color[edge][1], 4)), ',']
                 s += [str(round(e_color[edge][2], 4)), '}\n']
                 if edge_fills:
-                    edge_fill_color_names[edge] = 'cf' + prefix + str(index_of_vertex[edge[0]]) + prefix + str(index_of_vertex[edge[1]])
+                    edge_fill_color_names[edge] = (
+                        'cf'
+                        + prefix
+                        + str(index_of_vertex[edge[0]])
+                        + prefix
+                        + str(index_of_vertex[edge[1]])
+                    )
                     s += [r'\definecolor{', edge_fill_color_names[edge], '}{rgb}{']
                     s += [str(round(ef_color[edge][0], 4)), ',']
                     s += [str(round(ef_color[edge][1], 4)), ',']
                     s += [str(round(ef_color[edge][2], 4)), '}\n']
                 if edge_labels:
-                    edge_label_color_names[edge] = 'cl' + prefix + str(index_of_vertex[edge[0]]) + prefix + str(index_of_vertex[edge[1]])
+                    edge_label_color_names[edge] = (
+                        'cl'
+                        + prefix
+                        + str(index_of_vertex[edge[0]])
+                        + prefix
+                        + str(index_of_vertex[edge[1]])
+                    )
                     s += [r'\definecolor{', edge_label_color_names[edge], '}{rgb}{']
                     s += [str(round(el_color[edge][0], 4)), ',']
                     s += [str(round(el_color[edge][1], 4)), ',']
@@ -1995,14 +2170,22 @@ class GraphLatex(SageObject):
                 # these keys as a \Vertex[style={...}] option leaves them
                 # ineffective for shape/color overrides.
                 t += [r'\begin{scope}[VertexStyle/.append style={']
-                t += ['minimum size=', str(round(float(scale * v_size[u]), 4)),
-                      units, ',']
+                t += [
+                    'minimum size=',
+                    str(round(float(scale * v_size[u]), 4)),
+                    units,
+                    ',',
+                ]
                 t += ['draw=', vertex_color_names[u], ',']
                 t += ['fill=', vertex_fill_color_names[u], ',']
                 if vertex_labels:
                     t += ['text=', vertex_label_color_names[u], ',']
                 if v_shape[u] == 'sphere':
-                    t += ['shape=circle,shading=ball,line width=0pt,ball color=', vertex_color_names[u], ',']
+                    t += [
+                        'shape=circle,shading=ball,line width=0pt,ball color=',
+                        vertex_color_names[u],
+                        ',',
+                    ]
                 else:
                     t += ['shape=', v_shape[u]]
                 t += ['}]', '\n']
@@ -2013,14 +2196,25 @@ class GraphLatex(SageObject):
                         t += ['LabelOut=false,']
                     else:
                         t += ['LabelOut=true,']
-                        t += ['Ldist=', str(round(float(scale * vl_placement[u][0]), 4)), units, ',']
-                        t += ['Lpos=', str(round(float(vl_placement[u][1]), 4)), ',']  # degrees, no units
+                        t += [
+                            'Ldist=',
+                            str(round(float(scale * vl_placement[u][0]), 4)),
+                            units,
+                            ',',
+                        ]
+                        t += [
+                            'Lpos=',
+                            str(round(float(vl_placement[u][1]), 4)),
+                            ',',
+                        ]  # degrees, no units
                 else:
                     t += ['NoLabel,']
             # vertex label information is available to all pre-built styles
             # but may be ignored by the style, so not apparent
             if vertex_labels or not customized:
-                if vertex_labels_math and not (isinstance(u, str) and u[0] == '$' and u[-1] == '$'):
+                if vertex_labels_math and not (
+                    isinstance(u, str) and u[0] == '$' and u[-1] == '$'
+                ):
                     ltx = str(latex(u))
                     if '\\' in ltx:  # complicated case; use \sbox
                         box = r'\sbox{\vertex}{$' + ltx + '$}'
@@ -2057,21 +2251,31 @@ class GraphLatex(SageObject):
                 u = e[0]
                 s += ['\\Loop[']
                 if customized:
-                    s += ['dist=', str(round(float(scale * lp_placement[u][0]), 4)), units, ',']
+                    s += [
+                        'dist=',
+                        str(round(float(scale * lp_placement[u][0]), 4)),
+                        units,
+                        ',',
+                    ]
                     s += ['dir=', lp_placement[u][1], ',']
             else:
                 s += ['\\Edge[']
             # colors, shapes, sizes, labels/placement for 'Custom' style
             if customized:
                 if not loop:  # lw not available for loops!
-                    s += ['lw=', str(round(float(scale * e_thick[edge]), 4)), units, ',']
+                    s += [
+                        'lw=',
+                        str(round(float(scale * e_thick[edge]), 4)),
+                        units,
+                        ',',
+                    ]
                 s += ['style={']  # begin style list
                 if is_directed and not loop:
                     s += ['post, bend right', ',']
                 s += ['color=', edge_color_names[edge], ',']
                 if edge_fills:
                     s += ['double=', edge_fill_color_names[edge]]
-                s += ['},']     # end style list
+                s += ['},']  # end style list
                 if edge_labels:
                     s += ['labelstyle={']
                     if el_slope[edge]:
@@ -2079,11 +2283,17 @@ class GraphLatex(SageObject):
                     if isinstance(el_placement[edge], str):
                         s += [el_placement[edge], ',']
                     else:
-                        s += ['pos=', str(round(float(el_placement[edge]), 4)), ',']  # no units needed
+                        s += [
+                            'pos=',
+                            str(round(float(el_placement[edge]), 4)),
+                            ',',
+                        ]  # no units needed
                     s += ['text=', edge_label_color_names[edge], ',']
                     s += ['},']
                     el = self._graph.edge_label(edge[0], edge[1])
-                    if edge_labels_math and not (isinstance(el, str) and el[0] == '$' and el[-1] == '$'):
+                    if edge_labels_math and not (
+                        isinstance(el, str) and el[0] == '$' and el[-1] == '$'
+                    ):
                         lab = r'\hbox{$%s$}' % latex(el)
                     else:
                         lab = r'\hbox{%s}' % el

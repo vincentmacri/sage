@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2024-01-07): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2024 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_function
 from sage.structure.unique_representation import UniqueRepresentation
@@ -65,6 +65,7 @@ class BGGResolution(UniqueRepresentation, ChainComplex_class):
         ....:     for i in range(w0.length()))
         True
     """
+
     def __init__(self, L):
         r"""
         Initialize ``self``.
@@ -78,6 +79,7 @@ class BGGResolution(UniqueRepresentation, ChainComplex_class):
             sage: TestSuite(res).run()
         """
         from sage.combinat.root_system.weyl_group import WeylGroup
+
         ct = L.lie_algebra().cartan_type()
         self._cartan_type = ct
         self._simple = L
@@ -187,18 +189,19 @@ def build_differentials(W):
          4: [s2*s1*s2*s1]}
     """
     from itertools import combinations
+
     w0 = W.long_element()
     maxlen = w0.length()
-    module_order = {i: [] for i in range(maxlen+1)}
+    module_order = {i: [] for i in range(maxlen + 1)}
     for w in sorted(W):
         module_order[w.length()].append(w)
 
     one = ZZ.one()
     # Set the initial step
-    prev = {w: (j, frozenset([0])) for j, w in enumerate(module_order[maxlen-1])}
-    prev_mat = matrix(ZZ, [[one]]*len(module_order[maxlen-1]), immutable=True)
+    prev = {w: (j, frozenset([0])) for j, w in enumerate(module_order[maxlen - 1])}
+    prev_mat = matrix(ZZ, [[one]] * len(module_order[maxlen - 1]), immutable=True)
     differentials = {maxlen: prev_mat}
-    for i in range(maxlen-2, -1, -1):
+    for i in range(maxlen - 2, -1, -1):
         mat = matrix.zero(ZZ, len(module_order[i]), len(prev))
         cur = {}
         for j, w in enumerate(module_order[i]):
@@ -217,14 +220,24 @@ def build_differentials(W):
                     if not mat[j, vind]:
                         if not mat[j, vpind]:
                             mat[j, vpind] = one
-                        mat[j, vind] = -mat[j, vpind] * prev_mat[vpind, uind] * prev_mat[vind, uind]
+                        mat[j, vind] = (
+                            -mat[j, vpind]
+                            * prev_mat[vpind, uind]
+                            * prev_mat[vind, uind]
+                        )
                     elif not mat[j, vpind]:
-                        mat[j, vpind] = -mat[j, vind] * prev_mat[vpind, uind] * prev_mat[vind, uind]
+                        mat[j, vpind] = (
+                            -mat[j, vind] * prev_mat[vpind, uind] * prev_mat[vind, uind]
+                        )
                     else:
-                        assert mat[j, vpind] * prev_mat[vpind, uind] + mat[j, vind] * prev_mat[vind, uind] == 0
-        differentials[i+1] = mat
+                        assert (
+                            mat[j, vpind] * prev_mat[vpind, uind]
+                            + mat[j, vind] * prev_mat[vind, uind]
+                            == 0
+                        )
+        differentials[i + 1] = mat
         prev = cur
         prev_mat = mat
     differentials[0] = matrix.zero(ZZ, 0, 1)
-    differentials[maxlen+1] = matrix.zero(ZZ, 1, 0)
+    differentials[maxlen + 1] = matrix.zero(ZZ, 1, 0)
     return differentials, module_order

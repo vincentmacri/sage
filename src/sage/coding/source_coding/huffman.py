@@ -39,6 +39,7 @@ from sage.structure.sage_object import SageObject
 #
 ###########################################################################
 
+
 def frequency_table(string):
     r"""
     Return the frequency table corresponding to the given string.
@@ -281,12 +282,8 @@ class Huffman(SageObject):
         # feeding this class a sufficiently large alphabet, it is possible to
         # exceed the maximum recursion depth and hence result in a RuntimeError.
         try:
-            self._build_code_from_tree(tree[0],
-                                       d,
-                                       prefix="".join([prefix, "0"]))
-            self._build_code_from_tree(tree[1],
-                                       d,
-                                       prefix="".join([prefix, "1"]))
+            self._build_code_from_tree(tree[0], d, prefix="".join([prefix, "0"]))
+            self._build_code_from_tree(tree[1], d, prefix="".join([prefix, "1"]))
         except TypeError:
             d[tree] = prefix
 
@@ -338,7 +335,9 @@ class Huffman(SageObject):
             # enforce 2 or more characters
             raise ValueError(
                 "The alphabet for {} must contain at least two symbols.".format(
-                    self.__class__.__name__))
+                    self.__class__.__name__
+                )
+            )
 
         symbols = sorted(dic.items(), key=lambda x: (x[1], x[0]))
 
@@ -353,7 +352,7 @@ class Huffman(SageObject):
         def pop():
             # pop the lowest weight node from the heads of the two queues (as
             # long as at least one of them has one node)
-            q = min(queues, key=lambda q: (q and q[0][0] or tot_weight))
+            q = min(queues, key=lambda q: q and q[0][0] or tot_weight)
             return q.pop(0)
 
         while len(q0) + len(q1) > 1:
@@ -368,8 +367,7 @@ class Huffman(SageObject):
         # is associated with the empty string.
         self._build_code_from_tree(self._tree, d, prefix="")
         self._index = {i: s for i, (s, w) in enumerate(symbols)}
-        self._character_to_code = {
-            s: d[i] for i, (s, w) in enumerate(symbols)}
+        self._character_to_code = {s: d[i] for i, (s, w) in enumerate(symbols)}
 
     def encode(self, string):
         r"""
@@ -509,6 +507,7 @@ class Huffman(SageObject):
             <BLANKLINE>
         """
         from sage.graphs.digraph import DiGraph
+
         g = DiGraph()
         g.add_edges(self._generate_edges(self._tree))
         return g

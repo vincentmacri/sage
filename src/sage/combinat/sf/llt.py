@@ -2,6 +2,7 @@
 r"""
 LLT symmetric functions
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>
 #                     2012 Mike Zabrocki <mike.zabrocki@gmail.com>
@@ -79,6 +80,7 @@ class LLT_class(UniqueRepresentation):
         sage: HS3x(HC3t2[3,1])
         2*HSp3[3, 1] - (2*x-1)*HSp3[4]
     """
+
     @staticmethod
     def __classcall__(cls, Sym, k, t='t'):
         """
@@ -160,7 +162,7 @@ class LLT_class(UniqueRepresentation):
         """
         return self._name
 
-    def symmetric_function_ring( self ):
+    def symmetric_function_ring(self):
         r"""
         The symmetric function algebra associated to the family of LLT
         symmetric function bases
@@ -248,25 +250,31 @@ class LLT_class(UniqueRepresentation):
         if skp in _Partitions:
             m = (sum(skp) / self.level()).floor()
             if m == 0:
-                raise ValueError("level (%s=) must divide %s " % (sum(skp),
-                                                                  self.level()))
-            mu = Partitions( ZZ(sum(skp) / self.level()) )
+                raise ValueError(
+                    "level (%s=) must divide %s " % (sum(skp), self.level())
+                )
+            mu = Partitions(ZZ(sum(skp) / self.level()))
 
-        elif isinstance(skp, list) and skp[0] in sage.combinat.skew_partition.SkewPartitions():
-            #skp is a list of skew partitions
+        elif (
+            isinstance(skp, list)
+            and skp[0] in sage.combinat.skew_partition.SkewPartitions()
+        ):
+            # skp is a list of skew partitions
             skp2 = [Partition(core=[], quotient=[skp[i][0] for i in range(len(skp))])]
             skp2 += [Partition(core=[], quotient=[skp[i][1] for i in range(len(skp))])]
-            mu = Partitions(ZZ((skp2[0].size()-skp2[1].size()) / self.level()))
+            mu = Partitions(ZZ((skp2[0].size() - skp2[1].size()) / self.level()))
             skp = skp2
         elif isinstance(skp, list) and skp[0] in _Partitions:
-            #skp is a list of partitions
+            # skp is a list of partitions
             skp = Partition(core=[], quotient=skp)
             mu = Partitions(ZZ(sum(skp) / self.level()))
         else:
             raise ValueError("LLT polynomials not defined for %s" % skp)
 
         BR = self.base_ring()
-        return sum([BR(stat(skp, nu, self.level()).subs(t=self.t)) * self._m(nu) for nu in mu])
+        return sum(
+            [BR(stat(skp, nu, self.level()).subs(t=self.t)) * self._m(nu) for nu in mu]
+        )
 
     def spin_square(self, skp):
         r"""
@@ -331,16 +339,16 @@ class LLT_class(UniqueRepresentation):
         """
         return self._llt_generic(skp, ribbon_tableau.cospin_polynomial)
 
-#### Is it safe to delete this function?
-##     def llt_inv(self, skp):
-##         """
-##         """
-##         l = sage.combinat.partitions( sum( [ p.size() for p in skp ] ) ).list()
-##         res = m(0)
-##         for p in l:
-##             inv_p = [ ktuple.inversions() for ktuple in kTupleTableaux(skp, p) ]
-##             res += sum([t**x for x in inv_p])*m(p)
-##         return res
+    #### Is it safe to delete this function?
+    ##     def llt_inv(self, skp):
+    ##         """
+    ##         """
+    ##         l = sage.combinat.partitions( sum( [ p.size() for p in skp ] ) ).list()
+    ##         res = m(0)
+    ##         for p in l:
+    ##             inv_p = [ ktuple.inversions() for ktuple in kTupleTableaux(skp, p) ]
+    ##             res += sum([t**x for x in inv_p])*m(p)
+    ##         return res
 
     def hcospin(self):
         r"""
@@ -403,7 +411,6 @@ class LLT_class(UniqueRepresentation):
 
 
 class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
-
     def __init__(self, llt, prefix):
         r"""
         A class of methods which are common to both the hspin and hcospin
@@ -426,9 +433,11 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
         """
         s = self.__class__.__name__[4:]
         sfa.SymmetricFunctionAlgebra_generic.__init__(
-            self, llt._sym,
+            self,
+            llt._sym,
             basis_name="level %s LLT " % llt.level() + s + llt._name_suffix,
-            prefix=prefix)
+            prefix=prefix,
+        )
 
         self.t = llt.t
         self._sym = llt._sym
@@ -440,8 +449,12 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
         # temporary until Hom(GradedHopfAlgebrasWithBasis work better)
         category = ModulesWithBasis(self._sym.base_ring())
         self._m = llt._sym.m()
-        self   .register_coercion(SetMorphism(Hom(self._m, self, category), self._m_to_self))
-        self._m.register_coercion(SetMorphism(Hom(self, self._m, category), self._self_to_m))
+        self.register_coercion(
+            SetMorphism(Hom(self._m, self, category), self._m_to_self)
+        )
+        self._m.register_coercion(
+            SetMorphism(Hom(self, self._m, category), self._self_to_m)
+        )
 
     def construction(self):
         """
@@ -458,10 +471,13 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
              Fraction Field of Univariate Polynomial Ring in t over Rational Field)
         """
         from sage.combinat.sf.sfa import SymmetricFunctionsFamilyFunctor
-        return (SymmetricFunctionsFamilyFunctor(self, LLT_class,
-                                                self.basis_name(),
-                                                self._k, self.t),
-                self.base_ring())
+
+        return (
+            SymmetricFunctionsFamilyFunctor(
+                self, LLT_class, self.basis_name(), self._k, self.t
+            ),
+            self.base_ring(),
+        )
 
     def _m_to_self(self, x):
         r"""
@@ -487,8 +503,7 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
             sage: HSp3(m[2,1])
             -2*HSp3[1, 1, 1] + (2*t^2+2*t+1)*HSp3[2, 1] + (-2*t^2-t)*HSp3[3]
         """
-        return self._from_cache(x, self._m_cache, self._m_to_self_cache,
-                                t=self.t)
+        return self._from_cache(x, self._m_cache, self._m_to_self_cache, t=self.t)
 
     def _self_to_m(self, x):
         r"""
@@ -514,8 +529,7 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
             sage: m(HSp3[2,1])
             (t+2)*m[1, 1, 1] + (t+1)*m[2, 1] + t*m[3]
         """
-        return self._m._from_cache(x, self._m_cache, self._self_to_m_cache,
-                                   t=self.t)
+        return self._m._from_cache(x, self._m_cache, self._self_to_m_cache, t=self.t)
 
     def level(self):
         r"""
@@ -535,7 +549,7 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
         """
         return self._k
 
-    def llt_family( self ):
+    def llt_family(self):
         r"""
         The family of the llt bases of the symmetric functions.
 
@@ -604,9 +618,13 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
             [([1, 1], [([1, 1], 1/t), ([2], -1/t)]),
              ([2], [([1, 1], -1/t), ([2], (t + 1)/t)])]
         """
-        self._invert_morphism(n, QQt, self._self_to_m_cache,
-                              self._m_to_self_cache,
-                              to_other_function=self._to_m)
+        self._invert_morphism(
+            n,
+            QQt,
+            self._self_to_m_cache,
+            self._m_to_self_cache,
+            to_other_function=self._to_m,
+        )
 
     class Element(sfa.SymmetricFunctionAlgebra_generic.Element):
         pass
@@ -614,7 +632,6 @@ class LLT_generic(sfa.SymmetricFunctionAlgebra_generic):
 
 # the H-spin basis
 class LLT_spin(LLT_generic):
-
     def __init__(self, llt):
         r"""
         A class of methods for the h-spin LLT basis of the symmetric functions.
@@ -675,7 +692,9 @@ class LLT_spin(LLT_generic):
             (t+2)*m[1, 1, 1] + (t+1)*m[2, 1] + t*m[3]
         """
         level = self.level()
-        f = lambda part2: QQt(ribbon_tableau.spin_polynomial([level*i for i in part], part2, level))
+        f = lambda part2: QQt(
+            ribbon_tableau.spin_polynomial([level * i for i in part], part2, level)
+        )
         return f
 
     class Element(LLT_generic.Element):
@@ -743,7 +762,9 @@ class LLT_cospin(LLT_generic):
             (2*t+1)*m[1, 1, 1] + (t+1)*m[2, 1] + m[3]
         """
         level = self.level()
-        f = lambda part2: QQt(ribbon_tableau.cospin_polynomial([level*i for i in part], part2, level))
+        f = lambda part2: QQt(
+            ribbon_tableau.cospin_polynomial([level * i for i in part], part2, level)
+        )
         return f
 
     class Element(LLT_generic.Element):
@@ -754,4 +775,6 @@ class LLT_cospin(LLT_generic):
 from sage.misc.persist import register_unpickle_override
 
 register_unpickle_override('sage.combinat.sf.llt', 'LLTElement_spin', LLT_spin.Element)
-register_unpickle_override('sage.combinat.sf.llt', 'LLTElement_cospin', LLT_cospin.Element)
+register_unpickle_override(
+    'sage.combinat.sf.llt', 'LLTElement_cospin', LLT_cospin.Element
+)

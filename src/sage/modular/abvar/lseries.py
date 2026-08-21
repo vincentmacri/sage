@@ -39,6 +39,7 @@ class Lseries(SageObject):
     This is a common base class for complex and `p`-adic `L`-series
     of modular abelian varieties.
     """
+
     def __init__(self, abvar):
         """
         Called when creating an `L`-series.
@@ -80,6 +81,7 @@ class Lseries_complex(Lseries):
         sage: A.lseries()
         Complex L-series attached to Abelian variety J0(37) of dimension 2
     """
+
     def __call__(self, s, prec=53):
         """
         Evaluate this complex `L`-series at `s`.
@@ -135,9 +137,11 @@ class Lseries_complex(Lseries):
         abelian_variety = self.abelian_variety()
         newforms = abelian_variety.newform_decomposition('a')
 
-        factors = [newform.lseries(embedding=i, prec=prec)
-                for newform in newforms
-                for i in range(newform.base_ring().degree())]
+        factors = [
+            newform.lseries(embedding=i, prec=prec)
+            for newform in newforms
+            for i in range(newform.base_ring().degree())
+        ]
         self.__factors[prec] = factors
 
         return prod(L(s) for L in factors)
@@ -244,8 +248,10 @@ class Lseries_complex(Lseries):
             return False
         if not abelian_variety.is_simple():
             from .constructor import AbelianVariety
-            decomp = (AbelianVariety(f) for f in
-                      abelian_variety.newform_decomposition('a'))
+
+            decomp = (
+                AbelianVariety(f) for f in abelian_variety.newform_decomposition('a')
+            )
             return any(S.lseries().vanishes_at_1() for S in decomp)
         modular_symbols = abelian_variety.modular_symbols()
         Phi = modular_symbols.rational_period_mapping()
@@ -277,14 +283,12 @@ class Lseries_complex(Lseries):
         if self.vanishes_at_1():
             return QQ(0)
         s = ambient_module.sturm_bound()
-        I = ambient_module.hecke_images(0, range(1, s+1))
-        PhiTe = span([Phi(ambient_module(I[n]))
-            for n in range(I.nrows())], ZZ)
+        I = ambient_module.hecke_images(0, range(1, s + 1))
+        PhiTe = span([Phi(ambient_module(I[n])) for n in range(I.nrows())], ZZ)
 
         ambient_plus = ambient_module.sign_submodule(1)
         ambient_plus_cusp = ambient_plus.cuspidal_submodule()
-        PhiH1plus = span([Phi(x) for
-            x in ambient_plus_cusp.integral_basis()], ZZ)
+        PhiH1plus = span([Phi(x) for x in ambient_plus_cusp.integral_basis()], ZZ)
 
         return PhiTe.index_in(PhiH1plus)
 
@@ -295,6 +299,7 @@ class Lseries_padic(Lseries):
     """
     A `p`-adic `L`-series attached to a modular abelian variety.
     """
+
     def __init__(self, abvar, p):
         """
         Create a `p`-adic `L`-series.
@@ -337,8 +342,9 @@ class Lseries_padic(Lseries):
         """
         if not isinstance(other, Lseries_padic):
             return False
-        return (self.abelian_variety() == other.abelian_variety() and
-                self.__p == other.__p)
+        return (
+            self.abelian_variety() == other.abelian_variety() and self.__p == other.__p
+        )
 
     def __ne__(self, other):
         """
@@ -409,5 +415,4 @@ class Lseries_padic(Lseries):
             sage: L._repr_()
             '5-adic L-series attached to Simple abelian subvariety 37a(1,37) of dimension 1 of J0(37)'
         """
-        return "%s-adic L-series attached to %s" % (self.__p,
-                                                    self.abelian_variety())
+        return "%s-adic L-series attached to %s" % (self.__p, self.abelian_variety())

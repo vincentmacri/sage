@@ -1,7 +1,8 @@
 """
 Composition species
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -14,7 +15,7 @@ Composition species
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from .species import GenericCombinatorialSpecies
 from .structure import GenericSpeciesStructure
 from .partition_species import PartitionSpecies
@@ -167,6 +168,7 @@ class CompositionSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [[1, 2], [1]]
         """
         from itertools import product
+
         P = PartitionSpecies()
         for pi in P.structures(labels):
             # The labels of the G-structures will be just be the things
@@ -200,7 +202,9 @@ class CompositionSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: L.generating_series()[:5]
             [1, 1, 1, 1, 1]
         """
-        return self._F.generating_series(base_ring)(self._G.generating_series(base_ring))
+        return self._F.generating_series(base_ring)(
+            self._G.generating_series(base_ring)
+        )
 
     def _itgs(self, series_ring, base_ring):
         """

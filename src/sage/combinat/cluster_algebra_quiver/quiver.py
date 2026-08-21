@@ -32,6 +32,7 @@ AUTHORS:
     For mutation types of combinatorial quivers, see :meth:`~sage.combinat.cluster_algebra_quiver.quiver_mutation_type.QuiverMutationType`.
     Cluster seeds are closely related to :meth:`~sage.combinat.cluster_algebra_quiver.cluster_seed.ClusterSeed`.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2011 Gregg Musiker <musiker@math.mit.edu>
 #                          Christian Stump <christian.stump@univie.ac.at>
@@ -43,9 +44,26 @@ from copy import copy
 from itertools import product
 
 from sage.arith.misc import gcd
-from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import QuiverMutationType, QuiverMutationType_Irreducible, QuiverMutationType_Reducible, _edge_list_to_matrix
-from sage.combinat.cluster_algebra_quiver.mutation_class import _principal_part, _digraph_mutate, _matrix_to_digraph, _dg_canonical_form, _mutation_class_iter, _digraph_to_dig6, _dig6_to_matrix
-from sage.combinat.cluster_algebra_quiver.mutation_type import _connected_mutation_type, _mutation_type_from_data, is_mutation_finite
+from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import (
+    QuiverMutationType,
+    QuiverMutationType_Irreducible,
+    QuiverMutationType_Reducible,
+    _edge_list_to_matrix,
+)
+from sage.combinat.cluster_algebra_quiver.mutation_class import (
+    _principal_part,
+    _digraph_mutate,
+    _matrix_to_digraph,
+    _dg_canonical_form,
+    _mutation_class_iter,
+    _digraph_to_dig6,
+    _dig6_to_matrix,
+)
+from sage.combinat.cluster_algebra_quiver.mutation_type import (
+    _connected_mutation_type,
+    _mutation_type_from_data,
+    is_mutation_finite,
+)
 from sage.combinat.cluster_algebra_quiver.interact import cluster_interact
 from sage.graphs.digraph import DiGraph
 from sage.graphs.graph import Graph
@@ -234,20 +252,23 @@ class ClusterQuiver(SageObject):
         from sage.structure.element import Matrix
 
         if isinstance(user_labels, list):
-            user_labels = [tuple(x) if isinstance(x, list) else x
-                           for x in user_labels]
+            user_labels = [tuple(x) if isinstance(x, list) else x for x in user_labels]
         elif isinstance(user_labels, dict):
-            user_labels = {x: tuple(label) if isinstance(label, list)
-                           else label
-                           for x, label in user_labels.items()}
+            user_labels = {
+                x: tuple(label) if isinstance(label, list) else label
+                for x, label in user_labels.items()
+            }
 
         # constructs a quiver from a mutation type
-        if isinstance(data, (QuiverMutationType_Irreducible,
-                             QuiverMutationType_Reducible)):
+        if isinstance(
+            data, (QuiverMutationType_Irreducible, QuiverMutationType_Reducible)
+        ):
             if frozen is not None:
-                print('The input specifies a mutation type, so the'
-                      ' additional parameter frozen is ignored.'
-                      ' Use set_frozen to freeze vertices.')
+                print(
+                    'The input specifies a mutation type, so the'
+                    ' additional parameter frozen is ignored.'
+                    ' Use set_frozen to freeze vertices.'
+                )
 
             mutation_type = data
             self.__init__(mutation_type.standard_quiver())
@@ -260,13 +281,18 @@ class ClusterQuiver(SageObject):
         # NOTE: for now, any string representing a *reducible type* is
         #   coerced into the standard quiver, but there is now more flexibility
         #   in how to input a connected (irreducible) quiver.
-        elif (isinstance(data, (list, tuple))
-              and (isinstance(data[0], str) or
-                   all(isinstance(comp, (list, tuple))
-                       and isinstance(comp[0], str) for comp in data))):
+        elif isinstance(data, (list, tuple)) and (
+            isinstance(data[0], str)
+            or all(
+                isinstance(comp, (list, tuple)) and isinstance(comp[0], str)
+                for comp in data
+            )
+        ):
             if frozen is not None:
-                print('The input specifies a mutation type, so the additional'
-                      ' parameter frozen is ignored. Use set_frozen to freeze vertices.')
+                print(
+                    'The input specifies a mutation type, so the additional'
+                    ' parameter frozen is ignored. Use set_frozen to freeze vertices.'
+                )
             mutation_type = QuiverMutationType(data)
 
             # The command QuiverMutationType_Irreducible (which is not imported
@@ -278,30 +304,42 @@ class ClusterQuiver(SageObject):
                 d0, d1 = data
                 if d0 in {'TR', 'GR'} or (d0 == 'C' and d1 == 2):
                     if d1 in ZZ:
-                        quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, d1)._digraph)
+                        quiv = ClusterQuiver(
+                            QuiverMutationType_Irreducible(d0, d1)._digraph
+                        )
                         quiv._mutation_type = mutation_type
                         self.__init__(quiv)
                     elif isinstance(d1, list):
-                        quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, tuple(d1))._digraph)
+                        quiv = ClusterQuiver(
+                            QuiverMutationType_Irreducible(d0, tuple(d1))._digraph
+                        )
                         quiv._mutation_type = mutation_type
                         self.__init__(quiv)
                 else:
                     self.__init__(mutation_type.standard_quiver())
             elif len(data) == 3 and isinstance(data[0], str):
                 d0, d1, d2 = data
-                if ((d0 == 'F' and d1 == 4 and d2 == [2, 1]) or
-                        (d0 == 'G' and d1 == 2 and d2 == [3, 1])):
-                    quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, d1, tuple(d2))._digraph)
+                if (d0 == 'F' and d1 == 4 and d2 == [2, 1]) or (
+                    d0 == 'G' and d1 == 2 and d2 == [3, 1]
+                ):
+                    quiv = ClusterQuiver(
+                        QuiverMutationType_Irreducible(d0, d1, tuple(d2))._digraph
+                    )
                     quiv._mutation_type = mutation_type
                     self.__init__(quiv)
-                elif ((d0 == 'F' and d1 == 4 and d2 == (2, 1)) or
-                      (d0 == 'G' and d1 == 2 and d2 == (3, 1))):
-                    quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, d1, d2)._digraph)
+                elif (d0 == 'F' and d1 == 4 and d2 == (2, 1)) or (
+                    d0 == 'G' and d1 == 2 and d2 == (3, 1)
+                ):
+                    quiv = ClusterQuiver(
+                        QuiverMutationType_Irreducible(d0, d1, d2)._digraph
+                    )
                     quiv._mutation_type = mutation_type
                     self.__init__(quiv)
                 elif d0 == 'A' and isinstance(d1, list) and d2 == 1:
                     if len(d1) == 2 and min(d1) == 0:
-                        quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, tuple(d1), d2)._digraph)
+                        quiv = ClusterQuiver(
+                            QuiverMutationType_Irreducible(d0, tuple(d1), d2)._digraph
+                        )
                         quiv._mutation_type = mutation_type
                         self.__init__(quiv)
                     else:
@@ -309,7 +347,9 @@ class ClusterQuiver(SageObject):
 
                 elif d0 == 'A' and isinstance(d1, tuple) and d2 == 1:
                     if len(d1) == 2 and min(d1) == 0:
-                        quiv = ClusterQuiver(QuiverMutationType_Irreducible(d0, d1, d2)._digraph)
+                        quiv = ClusterQuiver(
+                            QuiverMutationType_Irreducible(d0, d1, d2)._digraph
+                        )
                         quiv._mutation_type = mutation_type
                         self.__init__(quiv)
                     else:
@@ -335,8 +375,10 @@ class ClusterQuiver(SageObject):
         # constructs a quiver from a quiver
         elif isinstance(data, ClusterQuiver):
             if frozen is not None:
-                print('The input data is a quiver, therefore the additional'
-                      ' parameter frozen is ignored. Use set_frozen to freeze vertices.')
+                print(
+                    'The input data is a quiver, therefore the additional'
+                    ' parameter frozen is ignored. Use set_frozen to freeze vertices.'
+                )
 
             self._M = copy(data._M)
             self._M.set_immutable()
@@ -352,10 +394,14 @@ class ClusterQuiver(SageObject):
         # constructs a quiver from a matrix
         elif isinstance(data, Matrix):
             if not _principal_part(data).is_skew_symmetrizable(positive=True):
-                raise ValueError('The principal part of the matrix data must be skew-symmetrizable.')
+                raise ValueError(
+                    'The principal part of the matrix data must be skew-symmetrizable.'
+                )
 
             if frozen is not None:
-                print('The input data is a matrix, therefore the additional parameter frozen is ignored. Frozen vertices read off accordingly if the matrix is not square.')
+                print(
+                    'The input data is a matrix, therefore the additional parameter frozen is ignored. Frozen vertices read off accordingly if the matrix is not square.'
+                )
 
             self._M = copy(data).sparse_matrix()
             self._M.set_immutable()
@@ -368,10 +414,10 @@ class ClusterQuiver(SageObject):
             if user_labels:
                 if isinstance(user_labels, dict):
                     self._nlist = list(user_labels)[0:n]
-                    self._mlist = list(user_labels)[n:n+m]
+                    self._mlist = list(user_labels)[n : n + m]
                 elif isinstance(user_labels, list):
                     self._nlist = user_labels[0:n]
-                    self._mlist = user_labels[n:n+m]
+                    self._mlist = user_labels[n : n + m]
                 self._digraph.relabel(self._nlist + self._mlist)
             else:
                 self._mlist = list(range(n, n + m))
@@ -408,8 +454,7 @@ class ClusterQuiver(SageObject):
             if data.has_loops():
                 raise ValueError("the input DiGraph contains a loop")
 
-            if any(data.has_edge((b, a))
-                   for a, b in data.edge_iterator(labels=False)):
+            if any(data.has_edge((b, a)) for a, b in data.edge_iterator(labels=False)):
                 raise ValueError("the input DiGraph contains two-cycles")
 
             dg = copy(data)
@@ -425,20 +470,24 @@ class ClusterQuiver(SageObject):
                 multi_edges = {}
                 for v1, v2, label in multiple_edges:
                     if label not in ZZ:
-                        raise ValueError("the input DiGraph contains multiple"
-                                         " edges labeled by non-integers")
+                        raise ValueError(
+                            "the input DiGraph contains multiple"
+                            " edges labeled by non-integers"
+                        )
                     elif (v1, v2) in multi_edges:
                         multi_edges[(v1, v2)] += label
                     else:
                         multi_edges[(v1, v2)] = label
                     dg.delete_edge(v1, v2)
-                dg.add_edges([(v1, v2, multi_edges[(v1, v2)])
-                              for v1, v2 in multi_edges])
+                dg.add_edges(
+                    [(v1, v2, multi_edges[(v1, v2)]) for v1, v2 in multi_edges]
+                )
 
             for e0, e1, lab in dg.edge_iterator():
                 if e0 >= n and e1 >= n:
-                    raise ValueError("the input digraph contains edges"
-                                     " within the frozen vertices")
+                    raise ValueError(
+                        "the input digraph contains edges within the frozen vertices"
+                    )
                 if lab is None:
                     lab = (1, -1)
                     dg.set_edge_label(e0, e1, lab)
@@ -446,20 +495,27 @@ class ClusterQuiver(SageObject):
                     lab = (lab, -lab)
                     dg.set_edge_label(e0, e1, lab)
                 elif isinstance(lab, list) and len(lab) != 2:
-                    raise ValueError("the input digraph contains an edge with"
-                                     " the wrong type of list as a label")
+                    raise ValueError(
+                        "the input digraph contains an edge with"
+                        " the wrong type of list as a label"
+                    )
                 elif isinstance(lab, list) and len(lab) == 2:
                     lab = tuple(lab)
                     dg.set_edge_label(e0, e1, lab)
                 elif (e0 >= n or e1 >= n) and not lab[0] == -lab[1]:
-                    raise ValueError("the input digraph contains an edge to or"
-                                     " from a frozen vertex which is not skew-symmetric")
+                    raise ValueError(
+                        "the input digraph contains an edge to or"
+                        " from a frozen vertex which is not skew-symmetric"
+                    )
                 if lab[0] < 0:
-                    raise ValueError("the input digraph contains an edge of "
-                                     "the form (a,-b) with negative a")
+                    raise ValueError(
+                        "the input digraph contains an edge of "
+                        "the form (a,-b) with negative a"
+                    )
 
-            M = _edge_list_to_matrix(dg.edge_iterator(), list(range(n)),
-                                     list(range(n, n + m)))
+            M = _edge_list_to_matrix(
+                dg.edge_iterator(), list(range(n)), list(range(n, n + m))
+            )
             if not _principal_part(M).is_skew_symmetrizable(positive=True):
                 raise ValueError("the input digraph must be skew-symmetrizable")
 
@@ -480,8 +536,9 @@ class ClusterQuiver(SageObject):
 
         # if data is a list of edges, the appropriate digraph is constructed.
 
-        elif (isinstance(data, (list, EdgesView))
-              and all(isinstance(x, (list, tuple)) for x in data)):
+        elif isinstance(data, (list, EdgesView)) and all(
+            isinstance(x, (list, tuple)) for x in data
+        ):
             dg = DiGraph(data)
             self.__init__(data=dg, frozen=frozen)
 
@@ -492,6 +549,7 @@ class ClusterQuiver(SageObject):
         # stopgap for bugs arising from coefficients
         if self._m:
             from sage.misc.stopgap import stopgap
+
             stopgap("Having frozen nodes is known to produce wrong answers", 22381)
 
     def __eq__(self, other) -> bool:
@@ -546,8 +604,15 @@ class ClusterQuiver(SageObject):
             name += ' with %s frozen vertices' % self._m
         return name
 
-    def plot(self, circular=True, center=(0, 0), directed=True, mark=None,
-             save_pos=False, greens=[]):
+    def plot(
+        self,
+        circular=True,
+        center=(0, 0),
+        directed=True,
+        mark=None,
+        save_pos=False,
+        greens=[],
+    ):
         """
         Return the plot of the underlying digraph of ``self``.
 
@@ -581,6 +646,7 @@ class ClusterQuiver(SageObject):
         from sage.symbolic.constants import e, pi
         from sage.rings.cc import CC
         from sage.rings.imaginary_unit import I
+
         graphs = GraphGenerators()
         # returns positions for graph vertices on two concentric cycles with radius 1 and 2
 
@@ -588,10 +654,10 @@ class ClusterQuiver(SageObject):
             g1 = graphs.CycleGraph(n).get_pos()
             g2 = graphs.CycleGraph(m).get_pos()
             for i in g2:
-                z = CC(g2[i])*e**(-pi*I/(2*m))
+                z = CC(g2[i]) * e ** (-pi * I / (2 * m))
                 g2[i] = (z.real_part(), z.imag_part())
             for i in range(m):
-                g1[n+i] = [2*g2[i][0], 2*g2[i][1]]
+                g1[n + i] = [2 * g2[i][0], 2 * g2[i][1]]
             return g1
 
         n, m = self._n, self._m
@@ -599,8 +665,7 @@ class ClusterQuiver(SageObject):
         nlist = copy(self._nlist)
         mlist = copy(self._mlist)
         colors = rainbow(11)
-        color_dict = {colors[0]: [], colors[1]: [],
-                      colors[6]: [], colors[5]: []}
+        color_dict = {colors[0]: [], colors[1]: [], colors[6]: [], colors[5]: []}
 
         # Set up our graph. If it's directed we have a digraph, else
         # just a normal graph
@@ -611,7 +676,6 @@ class ClusterQuiver(SageObject):
 
         # For each edge in our graph we assign a color
         for v1, v2, ab in dg.edges(sort=True):
-
             if v1 in nlist and v2 in nlist:
                 if ab == (1, -1):
                     color_dict[colors[0]].append((v1, v2))
@@ -631,7 +695,6 @@ class ClusterQuiver(SageObject):
         # If a mark is given, then we set that mark apart from the rest
         # The mark is assumed to be a vertex
         if mark is not None:
-
             if mark in nlist:
                 nlist.remove(mark)
                 partition = (nlist, mlist, [mark])
@@ -641,7 +704,6 @@ class ClusterQuiver(SageObject):
             else:
                 raise ValueError("the given mark is not a vertex of self")
         else:
-
             # Partition out the green vertices
             for i in greens:
                 if i in nlist:
@@ -650,9 +712,11 @@ class ClusterQuiver(SageObject):
                     mlist.remove(i)
             partition = (nlist, mlist, greens)
 
-        vertex_color_dict = {'tomato': partition[0],
-                             'lightblue': partition[1],
-                             'lightgreen': partition[2]}
+        vertex_color_dict = {
+            'tomato': partition[0],
+            'lightblue': partition[1],
+            'lightgreen': partition[2],
+        }
 
         options = {
             'graph_border': True,
@@ -670,12 +734,19 @@ class ClusterQuiver(SageObject):
                     vkey = self._vertex_dictionary[v]
                 else:
                     vkey = v
-                options['pos'][vkey] = (pp[v][0] + center[0],
-                                        pp[v][1] + center[1])
+                options['pos'][vkey] = (pp[v][0] + center[0], pp[v][1] + center[1])
 
         return dg.plot(**options)
 
-    def show(self, fig_size=1, circular=False, directed=True, mark=None, save_pos=False, greens=[]):
+    def show(
+        self,
+        fig_size=1,
+        circular=False,
+        directed=True,
+        mark=None,
+        save_pos=False,
+        greens=[],
+    ):
         """
         Show the plot of the underlying digraph of ``self``.
 
@@ -700,12 +771,19 @@ class ClusterQuiver(SageObject):
             sage: Q.show() # long time
         """
         n, m = self._n, self._m
-        plot = self.plot(circular=circular, directed=directed,
-                         mark=mark, save_pos=save_pos, greens=greens)
+        plot = self.plot(
+            circular=circular,
+            directed=directed,
+            mark=mark,
+            save_pos=save_pos,
+            greens=greens,
+        )
         if circular:
-            plot.show(figsize=[fig_size*3*(n+m)/4+1, fig_size*3*(n+m)/4+1])
+            plot.show(
+                figsize=[fig_size * 3 * (n + m) / 4 + 1, fig_size * 3 * (n + m) / 4 + 1]
+            )
         else:
-            plot.show(figsize=[fig_size*n+1, fig_size*n+1])
+            plot.show(figsize=[fig_size * n + 1, fig_size * n + 1])
 
     def interact(self, fig_size=1, circular=True):
         r"""
@@ -784,6 +862,7 @@ class ClusterQuiver(SageObject):
         if self.m():
             from sage.matrix.constructor import matrix
             from sage.matrix.constructor import block_matrix
+
             M1 = M.matrix_from_rows(range(self.n()))
             M2 = M.matrix_from_rows(list(range(self.n(), self.n() + self.m())))
             M3 = matrix(self.m(), self.m())
@@ -811,8 +890,7 @@ class ClusterQuiver(SageObject):
         string.append('1')
         string.append('//Matrix')
         string.append(str(m) + ' ' + str(m))
-        string.extend(' '.join(str(M[i, j]) for j in range(m))
-                      for i in range(m))
+        string.extend(' '.join(str(M[i, j]) for j in range(m)) for i in range(m))
         string.append('//Points')
 
         for i in range(m):
@@ -1048,13 +1126,17 @@ class ClusterQuiver(SageObject):
                     mut_type_part = 'undetermined infinite mutation type'
                 else:
                     # checking if this quiver is in the database
-                    mut_type_part = _mutation_type_from_data(dg_component.order(), dig6, compute_if_necessary=False)
+                    mut_type_part = _mutation_type_from_data(
+                        dg_component.order(), dig6, compute_if_necessary=False
+                    )
                     # checking if the algorithm can determine the mutation type
                     if mut_type_part == 'unknown':
                         mut_type_part = _connected_mutation_type(dg_component)
                     # checking if this quiver is of exceptional type by computing the exceptional mutation classes
                     if mut_type_part == 'unknown':
-                        mut_type_part = _mutation_type_from_data(dg_component.order(), dig6, compute_if_necessary=True)
+                        mut_type_part = _mutation_type_from_data(
+                            dg_component.order(), dig6, compute_if_necessary=True
+                        )
                     if mut_type_part == 'unknown':
                         mut_type_part = 'undetermined finite mutation type'
                 mutation_type.append(mut_type_part)
@@ -1066,8 +1148,9 @@ class ClusterQuiver(SageObject):
             elif len(mutation_type) == 1:
                 mutation_type = mutation_type[0]
             # the reducible quiver case
-            elif not any(isinstance(mut_type_part, str)
-                         for mut_type_part in mutation_type):
+            elif not any(
+                isinstance(mut_type_part, str) for mut_type_part in mutation_type
+            ):
                 mutation_type = QuiverMutationType(mutation_type)
             self._mutation_type = mutation_type
         return self._mutation_type
@@ -1178,11 +1261,14 @@ class ClusterQuiver(SageObject):
                 Q._mutation_type = self._mutation_type
             else:
                 CC = sorted(self._digraph.connected_components(sort=False))
-                CC_new = sorted(zip([sorted(iso[i] for i in L) for L in CC],
-                                    range(len(CC))))
+                CC_new = sorted(
+                    zip([sorted(iso[i] for i in L) for L in CC], range(len(CC)))
+                )
                 comp_iso = [L[1] for L in CC_new]
-                Q._mutation_type = [copy(self._mutation_type.irreducible_components()[comp_i])
-                                    for comp_i in comp_iso]
+                Q._mutation_type = [
+                    copy(self._mutation_type.irreducible_components()[comp_i])
+                    for comp_i in comp_iso
+                ]
                 Q._mutation_type = QuiverMutationType(Q._mutation_type)
         if certificate:
             return Q, iso
@@ -1276,8 +1362,7 @@ class ClusterQuiver(SageObject):
         """
         dg = self._digraph.copy(immutable=False)
         dg.add_edges([(self._n + self._m + i, i) for i in range(self._n)])
-        Q = ClusterQuiver(dg, frozen=list(range(self._n,
-                                                2 * self._n + self._m)))
+        Q = ClusterQuiver(dg, frozen=list(range(self._n, 2 * self._n + self._m)))
         Q._mutation_type = self._mutation_type
         if inplace:
             self.__init__(Q)
@@ -1478,9 +1563,13 @@ class ClusterQuiver(SageObject):
         if isinstance(seq, tuple):
             seq = list(seq)
         if not isinstance(seq, list):
-            raise ValueError('The quiver can only be mutated at a vertex or at a sequence of vertices')
+            raise ValueError(
+                'The quiver can only be mutated at a vertex or at a sequence of vertices'
+            )
         if not isinstance(inplace, bool):
-            raise ValueError('The second parameter must be boolean.  To mutate at a sequence of length 2, input it as a list.')
+            raise ValueError(
+                'The second parameter must be boolean.  To mutate at a sequence of length 2, input it as a list.'
+            )
         if any(v not in V for v in seq):
             v = next(v for v in seq if v not in V)
             raise ValueError('The quiver cannot be mutated at the vertex %s' % v)
@@ -1529,17 +1618,19 @@ class ClusterQuiver(SageObject):
         m = self._m
         if m == 0:
             width_factor = 3
-            fig_size = fig_size*2*n/3
+            fig_size = fig_size * 2 * n / 3
         else:
             width_factor = 6
-            fig_size = fig_size*4*n/3
+            fig_size = fig_size * 4 * n / 3
         V = range(n)
 
         if isinstance(sequence, tuple):
             sequence = list(sequence)
         if not isinstance(sequence, list):
-            raise ValueError('the quiver can only be mutated at a vertex'
-                             ' or at a sequence of vertices')
+            raise ValueError(
+                'the quiver can only be mutated at a vertex'
+                ' or at a sequence of vertices'
+            )
         if any(v not in V for v in sequence):
             v = next(v for v in sequence if v not in V)
             raise ValueError(f'the quiver can only be mutated at the vertex {v}')
@@ -1557,11 +1648,26 @@ class ClusterQuiver(SageObject):
             from sage.plot.text import text
 
             def _plot_arrow(v, k, center=(0, 0)):
-                return text(r"$\longleftrightarrow$", (center[0], center[1]), fontsize=25) + text(r"$\mu_"+str(v)+"$", (center[0], center[1]+0.15), fontsize=15) \
-                    + text("$"+str(k)+"$", (center[0], center[1]-0.2), fontsize=15)
+                return (
+                    text(r"$\longleftrightarrow$", (center[0], center[1]), fontsize=25)
+                    + text(
+                        r"$\mu_" + str(v) + "$",
+                        (center[0], center[1] + 0.15),
+                        fontsize=15,
+                    )
+                    + text(
+                        "$" + str(k) + "$", (center[0], center[1] - 0.2), fontsize=15
+                    )
+                )
 
-            plot_sequence = [quiver_sequence[i].plot(circular=True, center=(i*width_factor, 0)) for i in range(len(quiver_sequence))]
-            arrow_sequence = [_plot_arrow(sequence[i], i+1, center=((i+0.5)*width_factor, 0)) for i in range(len(sequence))]
+            plot_sequence = [
+                quiver_sequence[i].plot(circular=True, center=(i * width_factor, 0))
+                for i in range(len(quiver_sequence))
+            ]
+            arrow_sequence = [
+                _plot_arrow(sequence[i], i + 1, center=((i + 0.5) * width_factor, 0))
+                for i in range(len(sequence))
+            ]
             sequence = []
             for i in range(len(plot_sequence)):
                 if i < len(arrow_sequence):
@@ -1571,8 +1677,9 @@ class ClusterQuiver(SageObject):
             plot_obj = Graphics()
             for elem in sequence:
                 plot_obj += elem
-            plot_obj.show(axes=False, figsize=[fig_size * len(quiver_sequence),
-                                               fig_size])
+            plot_obj.show(
+                axes=False, figsize=[fig_size * len(quiver_sequence), fig_size]
+            )
         return quiver_sequence
 
     def reorient(self, data):
@@ -1630,8 +1737,9 @@ class ClusterQuiver(SageObject):
                 else:
                     dg_new.add_edge(edge[1], edge[0], edge[2])
             self._digraph = dg_new
-            self._M = _edge_list_to_matrix(dg_new.edges(sort=True),
-                                           self._nlist, self._mlist)
+            self._M = _edge_list_to_matrix(
+                dg_new.edges(sort=True), self._nlist, self._mlist
+            )
             self._M.set_immutable()
             self._mutation_type = None
         elif isinstance(first, (list, tuple)) and len(first) == 2:
@@ -1641,17 +1749,26 @@ class ClusterQuiver(SageObject):
                     label = self._digraph.edge_label(edge[1], edge[0])
                     self._digraph.delete_edge(edge[1], edge[0])
                     self._digraph.add_edge(edge[0], edge[1], label)
-            self._M = _edge_list_to_matrix(self._digraph.edges(sort=True),
-                                           self._nlist, self._mlist)
+            self._M = _edge_list_to_matrix(
+                self._digraph.edges(sort=True), self._nlist, self._mlist
+            )
             self._M.set_immutable()
             self._mutation_type = None
         else:
-            raise ValueError('not a total order on the vertices of the quiver'
-                             ' or a list of edges to be oriented')
+            raise ValueError(
+                'not a total order on the vertices of the quiver'
+                ' or a list of edges to be oriented'
+            )
 
-    def mutation_class_iter(self, depth=infinity, show_depth=False,
-                            return_paths=False, data_type='quiver',
-                            up_to_equivalence=True, sink_source=False):
+    def mutation_class_iter(
+        self,
+        depth=infinity,
+        show_depth=False,
+        return_paths=False,
+        data_type='quiver',
+        up_to_equivalence=True,
+        sink_source=False,
+    ):
         """
         Return an iterator for the mutation class of ``self``
         together with certain constraints.
@@ -1765,11 +1882,16 @@ class ClusterQuiver(SageObject):
         dg = ClusterQuiver(self._M).digraph()
         frozen = list(range(self._n, self._n + self._m))
 
-        MC_iter = _mutation_class_iter(dg, self._n, self._m, depth=depth,
-                                       return_dig6=(data_type == "dig6"),
-                                       show_depth=show_depth,
-                                       up_to_equivalence=up_to_equivalence,
-                                       sink_source=sink_source)
+        MC_iter = _mutation_class_iter(
+            dg,
+            self._n,
+            self._m,
+            depth=depth,
+            return_dig6=(data_type == "dig6"),
+            show_depth=show_depth,
+            up_to_equivalence=up_to_equivalence,
+            sink_source=sink_source,
+        )
         for data in MC_iter:
             if data_type == "quiver":
                 next_element = ClusterQuiver(data[0], frozen=frozen)
@@ -1783,15 +1905,21 @@ class ClusterQuiver(SageObject):
             elif data_type == "path":
                 next_element = data[1]
             else:
-                raise ValueError("the parameter for data_type was "
-                                 "not recognized")
+                raise ValueError("the parameter for data_type was not recognized")
             if return_paths:
                 yield (next_element, data[1])
             else:
                 yield next_element
 
-    def mutation_class(self, depth=infinity, show_depth=False, return_paths=False,
-                       data_type='quiver', up_to_equivalence=True, sink_source=False):
+    def mutation_class(
+        self,
+        depth=infinity,
+        show_depth=False,
+        return_paths=False,
+        data_type='quiver',
+        up_to_equivalence=True,
+        sink_source=False,
+    ):
         """
         Return the mutation class of ``self`` together with certain constraints.
 
@@ -1891,13 +2019,20 @@ class ClusterQuiver(SageObject):
             True
         """
         if depth is infinity and not self.is_mutation_finite():
-            raise ValueError('the mutation class can - for infinite mutation'
-                             ' types - only be computed up to a given depth')
-        return list(self.mutation_class_iter(depth=depth, show_depth=show_depth,
-                                             return_paths=return_paths,
-                                             data_type=data_type,
-                                             up_to_equivalence=up_to_equivalence,
-                                             sink_source=sink_source))
+            raise ValueError(
+                'the mutation class can - for infinite mutation'
+                ' types - only be computed up to a given depth'
+            )
+        return list(
+            self.mutation_class_iter(
+                depth=depth,
+                show_depth=show_depth,
+                return_paths=return_paths,
+                data_type=data_type,
+                up_to_equivalence=up_to_equivalence,
+                sink_source=sink_source,
+            )
+        )
 
     def is_finite(self) -> bool:
         """
@@ -1939,8 +2074,10 @@ class ClusterQuiver(SageObject):
             False
         """
         mt = self.mutation_type()
-        return (type(mt) in [QuiverMutationType_Irreducible,
-                             QuiverMutationType_Reducible] and mt.is_finite())
+        return (
+            type(mt) in [QuiverMutationType_Irreducible, QuiverMutationType_Reducible]
+            and mt.is_finite()
+        )
 
     def is_mutation_finite(self, nr_of_checks=None, return_path=False) -> bool:
         """
@@ -1978,17 +2115,28 @@ class ClusterQuiver(SageObject):
         if self._n <= 2:
             is_finite = True
             path = None
-        elif not return_path and self._mutation_type == 'undetermined infinite mutation type':
+        elif (
+            not return_path
+            and self._mutation_type == 'undetermined infinite mutation type'
+        ):
             is_finite = False
-        elif (isinstance(self._mutation_type, (QuiverMutationType_Irreducible,
-                                               QuiverMutationType_Reducible))
-              and self._mutation_type.is_mutation_finite()):
+        elif (
+            isinstance(
+                self._mutation_type,
+                (QuiverMutationType_Irreducible, QuiverMutationType_Reducible),
+            )
+            and self._mutation_type.is_mutation_finite()
+        ):
             is_finite = True
             path = None
-        elif (not return_path and isinstance(self._mutation_type,
-                                             (QuiverMutationType_Irreducible,
-                                              QuiverMutationType_Reducible))
-              and not self._mutation_type.is_mutation_finite()):
+        elif (
+            not return_path
+            and isinstance(
+                self._mutation_type,
+                (QuiverMutationType_Irreducible, QuiverMutationType_Reducible),
+            )
+            and not self._mutation_type.is_mutation_finite()
+        ):
             is_finite = False
         else:
             # turning dg_component into a canonical form
@@ -2062,8 +2210,7 @@ class ClusterQuiver(SageObject):
                     # If the key is in the old vertices, use that mapping
                     digraph_labels[key] = val
                     # And place it in the right order for our dictionary
-                    loc = [i for i, x in enumerate(old_vertices)
-                           if x == key][0]
+                    loc = [i for i, x in enumerate(old_vertices) if x == key][0]
                     dict_labels[loc] = val
                 elif isinstance(key, int) and len(old_vertices) > key:
                     # If the key is an integer, grab that particular vertex
@@ -2145,16 +2292,14 @@ class ClusterQuiver(SageObject):
 
         n = self.n()
         b_mat = self.b_matrix()
-        Eu = matrix(ZZ, n, n,
-                    lambda i, j: -b_mat[i, j] if b_mat[i, j] > 0 else 0)
+        Eu = matrix(ZZ, n, n, lambda i, j: -b_mat[i, j] if b_mat[i, j] > 0 else 0)
         Eu = 1 + Eu
         edges = list(self.digraph().edges(sort=True, labels=False))
 
         mu_d = theta.dot_product(d) / sum(d)
 
         Li = [0 * d]
-        it = (vector(e) for e in product(*[range(d_i + 1)
-                                           for d_i in d]))
+        it = (vector(e) for e in product(*[range(d_i + 1) for d_i in d]))
         Li += [e for e in it if e.dot_product(theta) > mu_d * sum(e)]
         Li.append(d)
         N = len(Li) - 1
@@ -2163,8 +2308,7 @@ class ClusterQuiver(SageObject):
 
         def cardinal_RG(d):
             cardinal_G = prod(q**d_i - q**k for d_i in d for k in range(d_i))
-            cardinal_R = prod(q**(b_mat[i, j] * d[i] * d[j])
-                              for i, j in edges)
+            cardinal_R = prod(q ** (b_mat[i, j] * d[i] * d[j]) for i, j in edges)
             return cardinal_R / cardinal_G
 
         Reineke_submat = matrix(q.parent().fraction_field(), N, N)
@@ -2179,7 +2323,7 @@ class ClusterQuiver(SageObject):
                     power = (-f_e) * Eu * e
                     Reineke_submat[i, j] = q**power * cardinal_RG(f_e)
 
-        poly = (-1)**N * ((1 - q) * Reineke_submat.det()).numerator()
+        poly = (-1) ** N * ((1 - q) * Reineke_submat.det()).numerator()
         return poly(q**2)  # replacing q by v**2
 
     def d_vector_fan(self):
@@ -2229,8 +2373,7 @@ class ClusterQuiver(SageObject):
         from sage.geometry.cone import Cone
 
         seed = ClusterSeed(self)
-        return Fan([Cone(s.d_matrix().columns())
-                    for s in seed.mutation_class()])
+        return Fan([Cone(s.d_matrix().columns()) for s in seed.mutation_class()])
 
     def g_vector_fan(self):
         r"""
@@ -2277,5 +2420,4 @@ class ClusterQuiver(SageObject):
         if not (self.is_finite()):
             raise ValueError('only supported for quivers of finite type')
         seed = ClusterSeed(self).principal_extension()
-        return Fan([Cone(s.g_matrix().columns())
-                    for s in seed.mutation_class()])
+        return Fan([Cone(s.g_matrix().columns()) for s in seed.mutation_class()])

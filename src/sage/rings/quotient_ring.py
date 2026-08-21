@@ -99,6 +99,7 @@ easily::
     sage: Q2.is_commutative()
     True
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -285,6 +286,7 @@ def QuotientRing(R, I, names=None, **kwds):
     # 2. We want to support quotients of free algebras by homogeneous two-sided ideals.
     from sage.rings.finite_rings.integer_mod_ring import Integers
     from sage.rings.integer_ring import ZZ
+
     if R not in _Rings:
         raise TypeError("R must be a ring")
     is_commutative = R in _CommRings
@@ -299,10 +301,12 @@ def QuotientRing(R, I, names=None, **kwds):
         from sage.rings.polynomial.polynomial_ring_constructor import (
             BooleanPolynomialRing_constructor as BooleanPolynomialRing,
         )
+
         kwds.pop('implementation')
         return BooleanPolynomialRing(R.ngens(), names=names, **kwds)
     # workaround to silence warning from #34806
     from sage.rings.abc import Order
+
     if isinstance(R, Order):
         if not R.is_maximal():
             raise NotImplementedError('only implemented for maximal orders')
@@ -410,6 +414,7 @@ class QuotientRing_nc(Parent):
         sage: T.gens()
         (0, d)
     """
+
     Element = quotient_ring_element.QuotientRingElement
 
     def __init__(self, R, I, names, category=None):
@@ -441,12 +446,16 @@ class QuotientRing_nc(Parent):
             raise TypeError("The first argument must be a ring, but %s is not" % R)
         # workaround to silence warning from #34806
         from sage.rings.abc import Order
+
         if isinstance(R, Order):
             M = R.number_field().ideal_monoid()
         else:
             M = R.ideal_monoid()
         if I not in M:
-            raise TypeError("The second argument must be an ideal of the given ring, but %s is not" % I)
+            raise TypeError(
+                "The second argument must be an ideal of the given ring, but %s is not"
+                % I
+            )
         self.__R = R
         self.__I = I
 
@@ -463,7 +472,9 @@ class QuotientRing_nc(Parent):
                 except (AttributeError, NotImplementedError):
                     commutative = False
                 if commutative:
-                    category = check_default_category(_CommutativeRingsQuotients, category)
+                    category = check_default_category(
+                        _CommutativeRingsQuotients, category
+                    )
                 else:
                     category = check_default_category(_RingsQuotients, category)
             Parent.__init__(self, base=R.base_ring(), names=names, category=category)
@@ -500,6 +511,7 @@ class QuotientRing_nc(Parent):
 
         # Is there a better generic way to distinguish between things like Z/pZ as a field and Z/pZ as a ring?
         from sage.rings.ring import Field
+
         try:
             names = self.variable_names()
         except ValueError:
@@ -508,11 +520,16 @@ class QuotientRing_nc(Parent):
             except ValueError:
                 names = None
         if self in _CommRings:
-            return QuotientFunctor(self.__I, names=names, domain=_CommRings,
-                                   codomain=_CommRings,
-                                   as_field=isinstance(self, Field)), self.__R
-        return QuotientFunctor(self.__I, names=names,
-                               as_field=isinstance(self, Field)), self.__R
+            return QuotientFunctor(
+                self.__I,
+                names=names,
+                domain=_CommRings,
+                codomain=_CommRings,
+                as_field=isinstance(self, Field),
+            ), self.__R
+        return QuotientFunctor(
+            self.__I, names=names, as_field=isinstance(self, Field)
+        ), self.__R
 
     def _repr_(self):
         """
@@ -525,7 +542,10 @@ class QuotientRing_nc(Parent):
             sage: R.quotient_ring(I)._repr_()
             'Quotient of Univariate Polynomial Ring in x over Integer Ring by the ideal (x^2 + 3*x + 4, x^2 + 1)'
         """
-        return "Quotient of %s by the ideal %s" % (self.cover_ring(), self.defining_ideal()._repr_short())
+        return "Quotient of %s by the ideal %s" % (
+            self.cover_ring(),
+            self.defining_ideal()._repr_short(),
+        )
 
     def _latex_(self):
         """
@@ -538,7 +558,10 @@ class QuotientRing_nc(Parent):
             sage: R.quotient_ring(I)._latex_()
             '\\Bold{Z}[x]/\\left(x^{2} + 3x + 4, x^{2} + 1\\right)\\Bold{Z}[x]'
         """
-        return "%s/%s" % (latex.latex(self.cover_ring()), latex.latex(self.defining_ideal()))
+        return "%s/%s" % (
+            latex.latex(self.cover_ring()),
+            latex.latex(self.defining_ideal()),
+        )
 
     def is_commutative(self) -> bool:
         """
@@ -586,8 +609,11 @@ class QuotientRing_nc(Parent):
         except (AttributeError, NotImplementedError):
             pass
         from sage.rings.infinity import Infinity
+
         if self.ngens() == Infinity:
-            raise NotImplementedError("This quotient ring has an infinite number of generators.")
+            raise NotImplementedError(
+                "This quotient ring has an infinite number of generators."
+            )
         for i in range(self.ngens()):
             gi = self.gen(i)
             for j in range(i + 1, self.ngens()):
@@ -637,6 +663,7 @@ class QuotientRing_nc(Parent):
             return self.__cover
         except AttributeError:
             from . import morphism
+
             pi = morphism.RingHomomorphism_cover(self.__R.Hom(self))
             lift = self.lifting_map()
             pi._set_lift(lift)
@@ -705,6 +732,7 @@ class QuotientRing_nc(Parent):
         except AttributeError:
             pass
         from .morphism import RingMap_lift
+
         m = RingMap_lift(self, self.__R)
         self.__lift = m
         return m
@@ -953,6 +981,7 @@ class QuotientRing_nc(Parent):
         from sage.rings.polynomial.multi_polynomial_ring_base import (
             MPolynomialRing_base,
         )
+
         if not (isinstance(self.__R, MPolynomialRing_base) and self.__R._has_singular):
             # pass through
             return super().ideal(gens, **kwds)
@@ -961,7 +990,9 @@ class QuotientRing_nc(Parent):
         elif not isinstance(gens, (list, tuple)):
             gens = [gens]
         if 'coerce' in kwds and kwds['coerce']:
-            gens = [self(x) for x in gens]  # this will even coerce from singular ideals correctly!
+            gens = [
+                self(x) for x in gens
+            ]  # this will even coerce from singular ideals correctly!
 
         global MPolynomialIdeal_quotient
         if MPolynomialIdeal_quotient is None:
@@ -1113,8 +1144,11 @@ class QuotientRing_nc(Parent):
         """
         if not isinstance(other, QuotientRing_nc):
             return NotImplemented
-        return richcmp((self.cover_ring(), self.defining_ideal().gens()),
-                       (other.cover_ring(), other.defining_ideal().gens()), op)
+        return richcmp(
+            (self.cover_ring(), self.defining_ideal().gens()),
+            (other.cover_ring(), other.defining_ideal().gens()),
+            op,
+        )
 
     def ngens(self):
         r"""
@@ -1195,8 +1229,7 @@ class QuotientRing_nc(Parent):
             sage: S.gens()
             (xbar, ybar)
         """
-        return tuple(self(self.__R.gen(i))
-                     for i in range(self.cover_ring().ngens()))
+        return tuple(self(self.__R.gen(i)) for i in range(self.cover_ring().ngens()))
 
     def _singular_(self, singular=None):
         """
@@ -1362,10 +1395,11 @@ class QuotientRing_generic(QuotientRing_nc, ring.Ring):
             True
         """
         if R not in _CommRings:
-            raise TypeError("This class is for quotients of commutative rings only.\n    For non-commutative rings, use <sage.rings.quotient_ring.QuotientRing_nc>")
+            raise TypeError(
+                "This class is for quotients of commutative rings only.\n    For non-commutative rings, use <sage.rings.quotient_ring.QuotientRing_nc>"
+            )
         if not self._is_category_initialized():
-            category = check_default_category(_CommutativeRingsQuotients,
-                                              category)
+            category = check_default_category(_CommutativeRingsQuotients, category)
         QuotientRing_nc.__init__(self, R, I, names, category=category)
 
     def _macaulay2_init_(self, macaulay2=None):
@@ -1422,6 +1456,7 @@ class QuotientRing_generic(QuotientRing_nc, ring.Ring):
         """
         if macaulay2 is None:
             from sage.interfaces.macaulay2 import macaulay2 as m2_default
+
             macaulay2 = m2_default
         I = self.defining_ideal()._macaulay2_(macaulay2)
         return I.ring()._operator('/', I)
@@ -1474,7 +1509,9 @@ class QuotientRingIdeal_generic(ideal.Ideal_generic):
             Ideal (x, y) of Multivariate Polynomial Ring in x, y over Rational Field
         """
         R = self.ring()
-        return R.defining_ideal() + R.cover_ring().ideal([g.lift() for g in self.gens()])
+        return R.defining_ideal() + R.cover_ring().ideal(
+            [g.lift() for g in self.gens()]
+        )
 
     def _contains_(self, other):
         r"""

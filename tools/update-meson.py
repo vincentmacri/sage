@@ -90,7 +90,10 @@ def update_python_sources(self: Rewriter, visitor: AstPython):
 
         folder = Path(target.filename).parent
         python_files = sorted(
-            list(folder.glob("*.py")) + list(folder.glob('*.pxd')) + list(folder.glob('*.pyx')) + list(folder.glob('*.pyi'))
+            list(folder.glob("*.py"))
+            + list(folder.glob('*.pxd'))
+            + list(folder.glob('*.pyx'))
+            + list(folder.glob('*.pyi'))
         )  # + list(folder.glob('*.pxd')) + list(folder.glob('*.h')))
 
         to_append: list[StringNode] = []
@@ -199,7 +202,14 @@ def update_doc_sources(self: Rewriter, visitor: AstPython):
         for file in existing_sources:
             if not (folder / file).exists():
                 existing_sources.remove(file)
-                token = next((x for x in target.value.args.arguments if getattr(x, "value", None) == file), None)
+                token = next(
+                    (
+                        x
+                        for x in target.value.args.arguments
+                        if getattr(x, "value", None) == file
+                    ),
+                    None,
+                )
                 if token is not None:
                     target.value.args.arguments.remove(token)
                     if target not in self.modified_nodes:
@@ -208,7 +218,7 @@ def update_doc_sources(self: Rewriter, visitor: AstPython):
     # Add all missing meson files in the src/doc folder
     doc_folder = Path(options.sourcedir) / "src" / "doc"
     # Delete all totally empty folders as pre-processing step
-    for folder, dirs, files in doc_folder.walk(top_down = False):
+    for folder, dirs, files in doc_folder.walk(top_down=False):
         if not dirs and not files:
             folder.rmdir()
 
@@ -240,6 +250,7 @@ def update_doc_sources(self: Rewriter, visitor: AstPython):
                     if dir in ignored_folders:
                         continue
                     f.write(f"subdir('{dir}')\n")
+
 
 def apply_changes(self: Rewriter):
     assert all(

@@ -171,7 +171,9 @@ class EllipticCurve_padic_field(EllipticCurve_field):
         - Jennifer Balakrishnan (2007-12)
         """
         if P[2].is_zero():
-            raise ValueError(f"P = {P} is the point at infinity. Use local_coordinates_at_infinity instead!")
+            raise ValueError(
+                f"P = {P} is the point at infinity. Use local_coordinates_at_infinity instead!"
+            )
 
         d = P[1]
         if d.is_zero():
@@ -230,11 +232,13 @@ class EllipticCurve_padic_field(EllipticCurve_field):
         #  Ensure the input point is Weierstrass
         if not P[1].is_zero():
             raise ValueError(
-                    f"P = {P} is not a finite Weierstrass point. Use local_coordinates_at_nonweierstrass instead!"
-                )
+                f"P = {P} is not a finite Weierstrass point. Use local_coordinates_at_nonweierstrass instead!"
+            )
 
         if P[2].is_zero():
-            raise ValueError(f"P = {P} is the point at infinity. Use local_coordinates_at_infinity instead!")
+            raise ValueError(
+                f"P = {P} is the point at infinity. Use local_coordinates_at_infinity instead!"
+            )
 
         L = PowerSeriesRing(self.base_ring(), name)
         t = L.gen()
@@ -594,7 +598,7 @@ class EllipticCurve_padic_field(EllipticCurve_field):
         except ValueError:
             raise ValueError(
                 "The base change of the elliptic curve to the residue field is not well-defined."
-                )
+            )
 
         if P == self(0, 1, 0):
             return HF(0, 1, 0)

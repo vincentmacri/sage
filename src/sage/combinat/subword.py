@@ -39,6 +39,7 @@ AUTHORS:
 
 - Florent Hivert (2009/02/06): doc improvements + new methods + bug fixes
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #                     2014 Vincent Delecroix <20100.delecroix@gmail.com>,
@@ -146,6 +147,7 @@ def Subwords(w, k=None, element_constructor=None):
             element_constructor = _stringification
         else:
             from sage.combinat.words.words import Words
+
             try:
                 alphabet = w.parent().alphabet()
                 element_constructor = Words(alphabet)
@@ -188,7 +190,11 @@ class Subwords_w(Parent):
             sage: Subwords([1,2,3]) == Subwords([1,3,2])
             False
         """
-        return self.__class__ == other.__class__ and self._w == other._w and self._build == other._build
+        return (
+            self.__class__ == other.__class__
+            and self._w == other._w
+            and self._build == other._build
+        )
 
     def __ne__(self, other) -> bool:
         r"""
@@ -314,8 +320,9 @@ class Subwords_w(Parent):
             sage: Subwords('123').list()
             ['', '1', '2', '3', '12', '13', '23', '123']
         """
-        return itertools.chain(*[Subwords_wk(self._w, i, self._build)
-                                 for i in range(len(self._w) + 1)])
+        return itertools.chain(
+            *[Subwords_wk(self._w, i, self._build) for i in range(len(self._w) + 1)]
+        )
 
 
 class Subwords_wk(Subwords_w):

@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,7 +7,7 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 
 from ..instructions import (
@@ -80,13 +80,24 @@ class CDFInterpreter(StackInterpreter):
         # See comment for RDFInterpreter
         self.err_return = '-1094648119105371'
         self.adjust_retval = "dz_to_CDE"
-        self.chunks = [self.mc_args, self.mc_constants, self.mc_py_constants,
-                       self.mc_stack,
-                       self.mc_code]
-        pg = params_gen(A=self.mc_args, C=self.mc_constants, D=self.mc_code,
-                        S=self.mc_stack, P=self.mc_py_constants)
+        self.chunks = [
+            self.mc_args,
+            self.mc_constants,
+            self.mc_py_constants,
+            self.mc_stack,
+            self.mc_code,
+        ]
+        pg = params_gen(
+            A=self.mc_args,
+            C=self.mc_constants,
+            D=self.mc_code,
+            S=self.mc_stack,
+            P=self.mc_py_constants,
+        )
         self.pg = pg
-        self.c_header = ri(0,"""
+        self.c_header = ri(
+            0,
+            """
             #include <stdlib.h>
             #include <complex.h>
 
@@ -145,9 +156,12 @@ class CDFInterpreter(StackInterpreter):
                 }
                 return cpow(z, exp);
             }
-            """)
+            """,
+        )
 
-        self.pxd_header = ri(0, """
+        self.pxd_header = ri(
+            0,
+            """
             # This is to work around a header incompatibility with PARI using
             # "I" as variable conflicting with the complex "I".
             # If we cimport pari earlier, we avoid this problem.
@@ -158,9 +172,12 @@ class CDFInterpreter(StackInterpreter):
             # so this is a bit hackish.
             cdef extern from "complex.h":
                 ctypedef double double_complex "double complex"
-            """)
+            """,
+        )
 
-        self.pyx_header = ri(0, """
+        self.pyx_header = ri(
+            0,
+            """
             from sage.libs.gsl.complex cimport *
             from sage.rings.complex_double cimport ComplexDoubleElement
             import sage.rings.complex_double
@@ -195,37 +212,55 @@ class CDFInterpreter(StackInterpreter):
                     result = CDF(py_result)
                 retval[0] = CDE_to_dz(result)
                 return 1
-            """[1:])
+            """[1:],
+        )
 
         instrs = [
-            InstrSpec('load_arg', pg('A[D]', 'S'),
-                      code='o0 = i0;'),
-            InstrSpec('load_const', pg('C[D]', 'S'),
-                      code='o0 = i0;'),
-            InstrSpec('return', pg('S', ''),
-                      code='return i0;'),
-            InstrSpec('py_call', pg('P[D]S@D', 'S'),
-                      uses_error_handler=True,
-                      code="""
+            InstrSpec('load_arg', pg('A[D]', 'S'), code='o0 = i0;'),
+            InstrSpec('load_const', pg('C[D]', 'S'), code='o0 = i0;'),
+            InstrSpec('return', pg('S', ''), code='return i0;'),
+            InstrSpec(
+                'py_call',
+                pg('P[D]S@D', 'S'),
+                uses_error_handler=True,
+                code="""
 if (!cdf_py_call_helper(i0, n_i1, i1, &o0)) {
   goto error;
 }
-""")
-            ]
-        for name, op in [('add', '+'), ('sub', '-'),
-                         ('mul', '*'), ('div', '/'),
-                         ('truediv', '/')]:
+""",
+            ),
+        ]
+        for name, op in [
+            ('add', '+'),
+            ('sub', '-'),
+            ('mul', '*'),
+            ('div', '/'),
+            ('truediv', '/'),
+        ]:
             instrs.append(instr_infix(name, pg('SS', 'S'), op))
         instrs.append(instr_funcall_2args('pow', pg('SS', 'S'), 'cpow'))
         instrs.append(instr_funcall_2args('ipow', pg('SD', 'S'), 'cpow_int'))
-        for (name, op) in [('neg', '-i0'), ('invert', '1/i0'),
-                           ('abs', 'cabs(i0)')]:
+        for name, op in [('neg', '-i0'), ('invert', '1/i0'), ('abs', 'cabs(i0)')]:
             instrs.append(instr_unary(name, pg('S', 'S'), op))
-        for name in ['sqrt', 'sin', 'cos', 'tan',
-                     'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
-                     'asinh', 'acosh', 'atanh', 'exp', 'log']:
+        for name in [
+            'sqrt',
+            'sin',
+            'cos',
+            'tan',
+            'asin',
+            'acos',
+            'atan',
+            'sinh',
+            'cosh',
+            'tanh',
+            'asinh',
+            'acosh',
+            'atanh',
+            'exp',
+            'log',
+        ]:
             instrs.append(instr_unary(name, pg('S', 'S'), "c%s(i0)" % name))
         self.instr_descs = instrs
         self._set_opcodes()
         # supported for exponents that fit in an int
-        self.ipow_range = (int(-2**31), int(2**31 - 1))
+        self.ipow_range = (int(-(2**31)), int(2**31 - 1))

@@ -85,6 +85,7 @@ class EllipticCurveHomset(CachedRepresentation, SchemeHomset_generic):
         sage: iso in End(E)
         False
     """
+
     def __init__(self, E1, E2, category=None):
         r"""
         Construct the homset for a given pair of elliptic curves
@@ -149,7 +150,7 @@ class EllipticCurveHomset(CachedRepresentation, SchemeHomset_generic):
 
         super().__init__(E1, E2, category=category, base=base)
 
-        #TODO: We should also add CommutativeRings to the category
+        # TODO: We should also add CommutativeRings to the category
         # of self whenever this holds true; see the method
         # EllipticCurve_field.endomorphism_ring_is_commutative().
         # Is there a way to perform this check lazily?
@@ -198,8 +199,12 @@ class EllipticCurveHomset(CachedRepresentation, SchemeHomset_generic):
             if m:
                 raise ValueError('domain and codomain must be equal')
             from sage.schemes.elliptic_curves.hom_sum import EllipticCurveHom_sum
-            return EllipticCurveHom_sum([], domain=self.domain(), codomain=self.codomain())
+
+            return EllipticCurveHom_sum(
+                [], domain=self.domain(), codomain=self.codomain()
+            )
         from sage.schemes.elliptic_curves.hom_scalar import EllipticCurveHom_scalar
+
         return EllipticCurveHom_scalar(self.domain(), m)
 
     def _repr_(self):
@@ -268,5 +273,7 @@ class EllipticCurveHomset(CachedRepresentation, SchemeHomset_generic):
             False
         """
         if not self.is_endomorphism_set():
-            raise ValueError('commutativity does not make sense for homsets between different objects')
+            raise ValueError(
+                'commutativity does not make sense for homsets between different objects'
+            )
         return self.domain().endomorphism_ring_is_commutative()

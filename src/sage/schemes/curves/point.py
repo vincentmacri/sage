@@ -24,6 +24,7 @@ AUTHORS:
 
 - Grayson Jorgenson (2016-6): initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -32,16 +33,21 @@ AUTHORS:
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from sage.schemes.affine.affine_point import (SchemeMorphism_point_affine_field,
-                                              SchemeMorphism_point_affine_finite_field)
-from sage.schemes.projective.projective_point import (SchemeMorphism_point_projective_field,
-                                                      SchemeMorphism_point_projective_finite_field)
+from sage.schemes.affine.affine_point import (
+    SchemeMorphism_point_affine_field,
+    SchemeMorphism_point_affine_finite_field,
+)
+from sage.schemes.projective.projective_point import (
+    SchemeMorphism_point_projective_field,
+    SchemeMorphism_point_projective_finite_field,
+)
 
 
 class ProjectiveCurvePoint_field(SchemeMorphism_point_projective_field):
     """
     Point of a projective curve over a field.
     """
+
     def is_singular(self) -> bool:
         r"""
         Return whether this point is a singular point of the projective curve it is on.
@@ -64,6 +70,7 @@ class ProjectivePlaneCurvePoint_field(ProjectiveCurvePoint_field):
     """
     Point of a projective plane curve over a field.
     """
+
     def multiplicity(self):
         r"""
         Return the multiplicity of this point with respect to the projective
@@ -157,11 +164,13 @@ class ProjectivePlaneCurvePoint_field(ProjectiveCurvePoint_field):
         return self.codomain().is_transverse(D, self)
 
 
-class ProjectivePlaneCurvePoint_finite_field(ProjectivePlaneCurvePoint_field,
-                                             SchemeMorphism_point_projective_finite_field):
+class ProjectivePlaneCurvePoint_finite_field(
+    ProjectivePlaneCurvePoint_field, SchemeMorphism_point_projective_finite_field
+):
     """
     Point of a projective plane curve over a finite field.
     """
+
     pass
 
 
@@ -190,8 +199,7 @@ class IntegralProjectiveCurvePoint(ProjectiveCurvePoint_field):
                 break
         ai = hcoords[i]
         xi = S.gen(i)
-        hgens = [ai * S.gen(j) - hcoords[j] * xi
-                 for j in range(S.ngens()) if j != i]
+        hgens = [ai * S.gen(j) - hcoords[j] * xi for j in range(S.ngens()) if j != i]
         return curve._closed_point(curve, S.ideal(hgens), degree=1)
 
     def places(self):
@@ -231,25 +239,31 @@ class IntegralProjectiveCurvePoint_finite_field(IntegralProjectiveCurvePoint):
     """
     Point of an integral projective curve over a finite field.
     """
+
     pass
 
 
-class IntegralProjectivePlaneCurvePoint(IntegralProjectiveCurvePoint, ProjectivePlaneCurvePoint_field):
+class IntegralProjectivePlaneCurvePoint(
+    IntegralProjectiveCurvePoint, ProjectivePlaneCurvePoint_field
+):
     """
     Point of an integral projective plane curve over a field.
     """
+
     pass
 
 
-class IntegralProjectivePlaneCurvePoint_finite_field(ProjectivePlaneCurvePoint_finite_field, IntegralProjectiveCurvePoint_finite_field):
+class IntegralProjectivePlaneCurvePoint_finite_field(
+    ProjectivePlaneCurvePoint_finite_field, IntegralProjectiveCurvePoint_finite_field
+):
     """
     Point of an integral projective plane curve over a finite field.
     """
+
     pass
 
 
 class AffineCurvePoint_field(SchemeMorphism_point_affine_field):
-
     def is_singular(self) -> bool:
         r"""
         Return whether this point is a singular point of the affine curve it is on.
@@ -274,6 +288,7 @@ class AffinePlaneCurvePoint_field(AffineCurvePoint_field):
     """
     Point of an affine plane curve over a field.
     """
+
     def multiplicity(self):
         r"""
         Return the multiplicity of this point with respect to the affine curve it is on.
@@ -369,10 +384,13 @@ class AffinePlaneCurvePoint_field(AffineCurvePoint_field):
         return self.codomain().is_transverse(D, self)
 
 
-class AffinePlaneCurvePoint_finite_field(AffinePlaneCurvePoint_field, SchemeMorphism_point_affine_finite_field):
+class AffinePlaneCurvePoint_finite_field(
+    AffinePlaneCurvePoint_field, SchemeMorphism_point_affine_finite_field
+):
     """
     Point of an affine plane curve over a finite field.
     """
+
     pass
 
 
@@ -380,6 +398,7 @@ class IntegralAffineCurvePoint(AffineCurvePoint_field):
     """
     Point of an integral affine curve.
     """
+
     def closed_point(self):
         """
         Return the closed point that corresponds to this rational point.
@@ -445,18 +464,25 @@ class IntegralAffineCurvePoint_finite_field(IntegralAffineCurvePoint):
     """
     Point of an integral affine curve over a finite field.
     """
+
     pass
 
 
-class IntegralAffinePlaneCurvePoint(IntegralAffineCurvePoint, AffinePlaneCurvePoint_field):
+class IntegralAffinePlaneCurvePoint(
+    IntegralAffineCurvePoint, AffinePlaneCurvePoint_field
+):
     """
     Point of an integral affine plane curve.
     """
+
     pass
 
 
-class IntegralAffinePlaneCurvePoint_finite_field(AffinePlaneCurvePoint_finite_field, IntegralAffineCurvePoint_finite_field):
+class IntegralAffinePlaneCurvePoint_finite_field(
+    AffinePlaneCurvePoint_finite_field, IntegralAffineCurvePoint_finite_field
+):
     """
     Point of an integral affine plane curve over a finite field.
     """
+
     pass

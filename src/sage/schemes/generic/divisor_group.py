@@ -8,12 +8,12 @@ AUTHORS:
 - Volker Braun (2010-07-16): Documentation, doctests, coercion fixes, bugfixes.
 """
 
-#*******************************************************************************
+# *******************************************************************************
 #  Copyright (C) 2010 Volker Braun <vbraun.name@gmail.com>
 #  Copyright (C) 2006 David Kohel <kohel@maths.usyd.edu.au>
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*******************************************************************************
+# *******************************************************************************
 
 from sage.misc.lazy_import import lazy_import
 from sage.schemes.generic.divisor import Divisor_generic, Divisor_curve
@@ -136,8 +136,8 @@ class DivisorGroup_generic(FormalSums):
         elif ring == QQ:
             base_ring_str = 'QQ'
         else:
-            base_ring_str = '('+str(ring)+')'
-        return 'Group of '+base_ring_str+'-Divisors on '+str(self._scheme)
+            base_ring_str = '(' + str(ring) + ')'
+        return 'Group of ' + base_ring_str + '-Divisors on ' + str(self._scheme)
 
     def _element_constructor_(self, x, check=True, reduce=True):
         r"""
@@ -161,7 +161,9 @@ class DivisorGroup_generic(FormalSums):
             return Divisor_generic(x, check=check, reduce=reduce, parent=self)
         if x == 0:
             return Divisor_generic([], check=False, reduce=False, parent=self)
-        return Divisor_generic([(self.base_ring()(1), x)], check=False, reduce=False, parent=self)
+        return Divisor_generic(
+            [(self.base_ring()(1), x)], check=False, reduce=False, parent=self
+        )
 
     def _coerce_map_from_(self, other):
         r"""
@@ -189,9 +191,11 @@ class DivisorGroup_generic(FormalSums):
             sage: E.divisor_group()._coerce_map_from_(D.parent())
             False
         """
-        return (isinstance(other, DivisorGroup_generic)
-                and self.scheme().has_coerce_map_from(other.scheme())
-                and super()._coerce_map_from_(other))
+        return (
+            isinstance(other, DivisorGroup_generic)
+            and self.scheme().has_coerce_map_from(other.scheme())
+            and super()._coerce_map_from_(other)
+        )
 
     def scheme(self):
         r"""
@@ -218,7 +222,9 @@ class DivisorGroup_generic(FormalSums):
             sage: DivisorGroup(C).an_element()    # indirect test                       # needs sage.rings.real_mpfr sage.schemes
             0
         """
-        return self._scheme.divisor([], base_ring=self.base_ring(), check=False, reduce=False)
+        return self._scheme.divisor(
+            [], base_ring=self.base_ring(), check=False, reduce=False
+        )
 
     def base_extend(self, R):
         """
@@ -277,4 +283,6 @@ class DivisorGroup_curve(DivisorGroup_generic):
             return Divisor_curve(x, check=check, reduce=reduce, parent=self)
         if x == 0:
             return Divisor_curve([], check=False, reduce=False, parent=self)
-        return Divisor_curve([(self.base_ring()(1), x)], check=False, reduce=False, parent=self)
+        return Divisor_curve(
+            [(self.base_ring()(1), x)], check=False, reduce=False, parent=self
+        )

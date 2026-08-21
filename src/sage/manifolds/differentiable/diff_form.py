@@ -281,6 +281,7 @@ class DiffForm(TensorField):
         sage: s.display(eV)
         f*a = u**2*v/2 du - u**3/2 dv
     """
+
     def __init__(self, vector_field_module, degree, name=None, latex_name=None):
         r"""
         Construct a differential form.
@@ -321,9 +322,15 @@ class DiffForm(TensorField):
 
             Fix ``_test_pickling`` (in the superclass :class:`TensorField`).
         """
-        TensorField.__init__(self, vector_field_module, (0, degree), name=name,
-                             latex_name=latex_name, antisym=range(degree),
-                             parent=vector_field_module.dual_exterior_power(degree))
+        TensorField.__init__(
+            self,
+            vector_field_module,
+            (0, degree),
+            name=name,
+            latex_name=latex_name,
+            antisym=range(degree),
+            parent=vector_field_module.dual_exterior_power(degree),
+        )
         self._init_derived()  # initialization of derived quantities
 
     def _repr_(self):
@@ -459,7 +466,7 @@ class DiffForm(TensorField):
         return resu
 
     derivative = exterior_derivative  # allows one to use functional notation,
-                                      # e.g. diff(a) for a.exterior_derivative()
+    # e.g. diff(a) for a.exterior_derivative()
 
     def wedge(self, other: DiffForm) -> DiffForm:
         r"""
@@ -529,6 +536,7 @@ class DiffForm(TensorField):
             return self * other
         from sage.tensor.modules.format_utilities import is_atomic
         from sage.typeset.unicode_characters import unicode_wedge
+
         if self._domain.is_subset(other._domain):
             if not self._ambient_domain.is_subset(other._ambient_domain):
                 raise ValueError("incompatible ambient domains for exterior product")
@@ -539,18 +547,14 @@ class DiffForm(TensorField):
         ambient_dom_resu = self._ambient_domain.intersection(other._ambient_domain)
         resu_degree = self._tensor_rank + other._tensor_rank
         dest_map = self._vmodule._dest_map
-        dest_map_resu = dest_map.restrict(dom_resu,
-                                          subcodomain=ambient_dom_resu)
+        dest_map_resu = dest_map.restrict(dom_resu, subcodomain=ambient_dom_resu)
         # Facilitate computations involving zero:
         if resu_degree > ambient_dom_resu._dim:
-            return dom_resu.diff_form_module(resu_degree,
-                                             dest_map=dest_map_resu).zero()
+            return dom_resu.diff_form_module(resu_degree, dest_map=dest_map_resu).zero()
         if self._is_zero or other._is_zero:
-            return dom_resu.diff_form_module(resu_degree,
-                                             dest_map=dest_map_resu).zero()
+            return dom_resu.diff_form_module(resu_degree, dest_map=dest_map_resu).zero()
         if self is other and (self._tensor_rank % 2) == 1:
-            return dom_resu.diff_form_module(resu_degree,
-                                             dest_map=dest_map_resu).zero()
+            return dom_resu.diff_form_module(resu_degree, dest_map=dest_map_resu).zero()
         # Generic case:
         self_r = self.restrict(dom_resu)
         other_r = other.restrict(dom_resu)
@@ -577,12 +581,14 @@ class DiffForm(TensorField):
                 olname = '(' + olname + ')'
             resu_latex_name = slname + r'\wedge ' + olname
         vmodule = dom_resu.vector_field_module(dest_map=dest_map_resu)
-        resu = vmodule.alternating_form(resu_degree, name=resu_name,
-                                        latex_name=resu_latex_name)
+        resu = vmodule.alternating_form(
+            resu_degree, name=resu_name, latex_name=resu_latex_name
+        )
         for dom in self_r._restrictions:
             if dom in other_r._restrictions:
                 resu._restrictions[dom] = self_r._restrictions[dom].wedge(
-                                          other_r._restrictions[dom])
+                    other_r._restrictions[dom]
+                )
         return resu
 
     def degree(self) -> int:
@@ -785,12 +791,14 @@ class DiffForm(TensorField):
                 result = result / factorial(p)
             if minus_eigenvalues_convention:
                 from sage.manifolds.differentiable.metric import PseudoRiemannianMetric
+
                 if isinstance(nondegenerate_tensor, PseudoRiemannianMetric):
                     result = result * nondegenerate_tensor._indic_signat
             from sage.manifolds.differentiable.symplectic_form import SymplecticForm
+
             if isinstance(nondegenerate_tensor, SymplecticForm):
                 # correction because we lifted the indices of the volume (see above)
-                result = result * (-1)**p
+                result = result * (-1) ** p
 
         result.set_name(
             name=format_unop_txt("*", self._name),
@@ -892,14 +900,17 @@ class DiffForm(TensorField):
             True
         """
         from sage.tensor.modules.format_utilities import is_atomic
+
         if self._domain.is_subset(qvect._domain):
             if not self._ambient_domain.is_subset(qvect._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         elif qvect._domain.is_subset(self._domain):
             if not qvect._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         dom_resu = self._domain.intersection(qvect._domain)
         ambient_dom_resu = self._ambient_domain.intersection(qvect._ambient_domain)
         self_r = self.restrict(dom_resu)
@@ -927,25 +938,27 @@ class DiffForm(TensorField):
             resu_latex_name = r'\iota_{' + slname + '} ' + olname
         # Domain and computation of the result
         dest_map = self._vmodule._dest_map
-        dest_map_resu = dest_map.restrict(dom_resu,
-                                          subcodomain=ambient_dom_resu)
+        dest_map_resu = dest_map.restrict(dom_resu, subcodomain=ambient_dom_resu)
         vmodule = dom_resu.vector_field_module(dest_map=dest_map_resu)
         resu_degree = qvect._tensor_rank - self._tensor_rank
-        resu = vmodule.alternating_contravariant_tensor(resu_degree,
-                                    name=resu_name, latex_name=resu_latex_name)
+        resu = vmodule.alternating_contravariant_tensor(
+            resu_degree, name=resu_name, latex_name=resu_latex_name
+        )
         for dom in self_r._restrictions:
             if dom in qvect_r._restrictions:
-                resu._restrictions[dom] = \
-                    self_r._restrictions[dom].interior_product(
-                                                    qvect_r._restrictions[dom])
+                resu._restrictions[dom] = self_r._restrictions[dom].interior_product(
+                    qvect_r._restrictions[dom]
+                )
         if resu_degree == 0:
             if not resu._express:
                 # only the restrictions to subdomains have
                 # been initialized
                 for chart in dom_resu.top_charts():
-                    resu._express[chart] = \
-                            resu.restrict(chart.domain()).coord_function(chart)
+                    resu._express[chart] = resu.restrict(chart.domain()).coord_function(
+                        chart
+                    )
         return resu
+
 
 # *****************************************************************************
 
@@ -1242,8 +1255,14 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
         sage: c.symmetries()    # c has no symmetries:
         no symmetry;  no antisymmetry
     """
-    def __init__(self, vector_field_module: VectorFieldModule, degree: int, name: Optional[str] = None,
-                 latex_name: Optional[str] = None):
+
+    def __init__(
+        self,
+        vector_field_module: VectorFieldModule,
+        degree: int,
+        name: Optional[str] = None,
+        latex_name: Optional[str] = None,
+    ):
         r"""
         Construct a differential form.
 
@@ -1276,8 +1295,9 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
             sage: a.display()
             a = x*y dx∧dy
         """
-        FreeModuleAltForm.__init__(self, vector_field_module, degree,
-                                   name=name, latex_name=latex_name)
+        FreeModuleAltForm.__init__(
+            self, vector_field_module, degree, name=name, latex_name=latex_name
+        )
         # TensorFieldParal attributes:
         self._vmodule = vector_field_module
         self._domain = vector_field_module._domain
@@ -1447,12 +1467,13 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
             format_unop_latex,
             format_unop_txt,
         )
-        fmodule = self._fmodule # shortcut
+
+        fmodule = self._fmodule  # shortcut
         rname = format_unop_txt('d', self._name)
         rlname = format_unop_latex(r'\mathrm{d}', self._latex_name)
-        resu = fmodule.alternating_form(self._tensor_rank + 1,
-                                        name=rname,
-                                        latex_name=rlname)
+        resu = fmodule.alternating_form(
+            self._tensor_rank + 1, name=rname, latex_name=rlname
+        )
         # 1/ List of all coordinate frames in which the components of self
         # are known
         coord_frames = []
@@ -1486,22 +1507,24 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
         for frame in coord_frames:
             chart = frame._chart
             sc = self._components[frame]
-            dc = CompFullyAntiSym(fmodule._ring, frame,
-                                  self._tensor_rank + 1,
-                                  start_index=fmodule._sindex,
-                                  output_formatter=fmodule._output_formatter)
+            dc = CompFullyAntiSym(
+                fmodule._ring,
+                frame,
+                self._tensor_rank + 1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
             for ind, val in sc._comp.items():
                 for i in fmodule.irange():
                     ind_d = (i,) + ind
                     if len(ind_d) == len(set(ind_d)):
                         # all indices are different
-                        dc[[ind_d]] += \
-                           val.coord_function(chart).diff(i).scalar_field()
+                        dc[[ind_d]] += val.coord_function(chart).diff(i).scalar_field()
             resu._components[frame] = dc
         return resu
 
     derivative = exterior_derivative  # allows one to use functional notation,
-                                      # e.g. diff(a) for a.exterior_derivative()
+    # e.g. diff(a) for a.exterior_derivative()
 
     def wedge(self, other):
         r"""
@@ -1551,12 +1574,14 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
             return self * other
         if self._domain.is_subset(other._domain):
             if not self._ambient_domain.is_subset(other._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         elif other._domain.is_subset(self._domain):
             if not other._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         dom_resu = self._domain.intersection(other._domain)
         self_r = self.restrict(dom_resu)
         other_r = other.restrict(dom_resu)
@@ -1647,12 +1672,14 @@ class DiffFormParal(FreeModuleAltForm, TensorFieldParal, DiffForm):
         """
         if self._domain.is_subset(qvect._domain):
             if not self._ambient_domain.is_subset(qvect._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         elif qvect._domain.is_subset(self._domain):
             if not qvect._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         dom_resu = self._domain.intersection(qvect._domain)
         self_r = self.restrict(dom_resu)
         qvect_r = qvect.restrict(dom_resu)

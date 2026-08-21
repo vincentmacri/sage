@@ -16,15 +16,18 @@ notebook or remote Jupyter sessions.
 
 import sys
 import warnings
+
 with warnings.catch_warnings():
     # When upstream pydevd (as opposed to the bundled version) is used
     # with debugpy, a PEP 420 warning is emitted. Debugpy and/or
     # pydevd will eventually work around this, but as of September
     # 2023, hiding the warning gives us more flexibility in the
     # versions of those packages that we can accept.
-    warnings.filterwarnings("ignore",
-                            message=r".*pkg_resources\.declare_namespace",
-                            category=DeprecationWarning)
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*pkg_resources\.declare_namespace",
+        category=DeprecationWarning,
+    )
     from ipykernel.ipkernel import IPythonKernel
 
 from ipykernel.zmqshell import ZMQInteractiveShell
@@ -80,6 +83,7 @@ class SageKernel(IPythonKernel):
             ┌...SageMath version...
         """
         from sage.misc.banner import banner_text
+
         return banner_text()
 
     @property
@@ -107,12 +111,15 @@ class SageKernel(IPythonKernel):
         from sage.features.sagemath import sagemath_doc_html
 
         if SAGE_DOC_SERVER_URL:
+
             def doc_url(path):
                 return f'{SAGE_DOC_SERVER_URL}/{path}'
         elif sagemath_doc_html().is_present() and int(port):
+
             def doc_url(path):
                 return f'http://127.0.0.1:{port}/{path}'
         else:
+
             def doc_url(path):
                 return f'https://doc.sagemath.org/{path}'
 
@@ -213,4 +220,5 @@ class SageKernel(IPythonKernel):
             <cyfunction python_check_interrupt at ...>
         """
         from cysignals import init_cysignals
+
         self.saved_sigint_handler = init_cysignals()

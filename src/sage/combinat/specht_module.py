@@ -46,6 +46,7 @@ class SymmetricGroupRepresentation(Representation_abstract):
     """
     Mixin class for symmetric group (algebra) representations.
     """
+
     def __init__(self, SGA):
         """
         Initialize ``self``.
@@ -113,13 +114,20 @@ class SymmetricGroupRepresentation(Representation_abstract):
             s[2, 2, 1] + s[3, 1, 1] + 2*s[3, 2] + 2*s[4, 1] + s[5]
         """
         from sage.combinat.sf.sf import SymmetricFunctions
+
         p = SymmetricFunctions(QQ).p()
         s = SymmetricFunctions(QQ).s()
         G = self._semigroup
         CCR = [(elt, elt.cycle_type()) for elt in G.conjugacy_classes_representatives()]
         B = self.basis()
-        return s(p.sum(QQ(sum((elt * B[k])[k] for k in B.keys())) / la.centralizer_size() * p[la]
-                       for elt, la in CCR))
+        return s(
+            p.sum(
+                QQ(sum((elt * B[k])[k] for k in B.keys()))
+                / la.centralizer_size()
+                * p[la]
+                for elt, la in CCR
+            )
+        )
 
 
 class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
@@ -193,6 +201,7 @@ class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
         :class:`~sage.combinat.symmetric_group_representations.SpechtRepresentation`
         for an implementation of the representation by matrices.
     """
+
     @staticmethod
     def __classcall_private__(cls, SGA, D):
         r"""
@@ -224,7 +233,9 @@ class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
         n = len(D)
         if SGA.group().rank() != n - 1:
             rk = SGA.group().rank() + 1
-            raise ValueError(f"the domain size (={rk}) does not match the number of boxes (={n}) of the diagram")
+            raise ValueError(
+                f"the domain size (={rk}) does not match the number of boxes (={n}) of the diagram"
+            )
         return super().__classcall__(cls, SGA, D)
 
     def __init__(self, SGA, D):
@@ -244,9 +255,15 @@ class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
         support_order = SGA.get_order()
         basis = SGA.echelon_form(span_set, False, order=support_order)
         basis = Family(basis)
-        SubmoduleWithBasis.__init__(self, basis, support_order, ambient=SGA,
-                                    unitriangular=False, category=Mod.Subobjects(),
-                                    prefix='S')
+        SubmoduleWithBasis.__init__(
+            self,
+            basis,
+            support_order,
+            ambient=SGA,
+            unitriangular=False,
+            category=Mod.Subobjects(),
+            prefix='S',
+        )
 
     def _repr_(self):
         r"""
@@ -312,6 +329,7 @@ class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
             S
         """
         from sage.typeset.ascii_art import ascii_art
+
         return ascii_art("S", baseline=0) + ascii_art(self._diagram, baseline=-1)
 
     def _unicode_art_(self):
@@ -340,6 +358,7 @@ class SpechtModule(SymmetricGroupRepresentation, SubmoduleWithBasis):
             S
         """
         from sage.typeset.unicode_art import unicode_art
+
         return unicode_art("S", baseline=0) + unicode_art(self._diagram, baseline=-1)
 
     class Element(SubmoduleWithBasis.Element):
@@ -438,6 +457,7 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
         sage: IM.basis()[0].lift() == sum(TM.basis())
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, SGA, shape):
         r"""
@@ -461,7 +481,9 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
         if SGA.group().rank() != sum(shape) - 1:
             rk = SGA.group().rank() + 1
             n = sum(shape)
-            raise ValueError(f"the domain size (={rk}) does not match the number of boxes (={n}) of the diagram")
+            raise ValueError(
+                f"the domain size (={rk}) does not match the number of boxes (={n}) of the diagram"
+            )
         return super().__classcall__(cls, SGA, shape)
 
     def __init__(self, SGA, shape):
@@ -476,13 +498,15 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
         """
         from sage.combinat.set_partition_ordered import OrderedSetPartitions
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         self._shape = shape
         n = sum(shape)
         self._symgp = SymmetricGroup(n)
         cat = ModulesWithBasis(SGA.base_ring()).FiniteDimensional()
         tabloids = OrderedSetPartitions(n, shape)
-        CombinatorialFreeModule.__init__(self, SGA.base_ring(), tabloids,
-                                         category=cat, prefix='T', bracket='')
+        CombinatorialFreeModule.__init__(
+            self, SGA.base_ring(), tabloids, category=cat, prefix='T', bracket=''
+        )
         SymmetricGroupRepresentation.__init__(self, SGA)
 
     def _repr_(self):
@@ -531,8 +555,11 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
         """
         # This is basically copied from CombinatorialFreeModule._ascii_art_term
         from sage.typeset.ascii_art import AsciiArt, ascii_art
+
         pref = AsciiArt([self.prefix()])
-        tab = "\n".join("{" + ", ".join(str(val) for val in sorted(row)) + "}" for row in T)
+        tab = "\n".join(
+            "{" + ", ".join(str(val) for val in sorted(row)) + "}" for row in T
+        )
         if not tab:
             tab = '-'
         r = pref * (AsciiArt([" " * len(pref)]) + ascii_art(tab))
@@ -554,6 +581,7 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
                {5}         {4}         {3}
         """
         from sage.typeset.unicode_art import unicode_art
+
         r = unicode_art(repr(self._ascii_art_term(T)))
         r._baseline = r._h - 1
         return r
@@ -591,6 +619,7 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
             tab = "\\emptyset"
         else:
             from sage.combinat.output import tex_from_array
+
             A = list(map(sorted, T))
             tab = str(tex_from_array(A))
             tab = tab.replace("|", "")
@@ -618,7 +647,10 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
         """
         P = self._indices
         g = self._symgp(g)
-        if not isinstance(self._semigroup, Permutations) or self._semigroup.options.mult != 'r2l':
+        if (
+            not isinstance(self._semigroup, Permutations)
+            or self._semigroup.options.mult != 'r2l'
+        ):
             g = ~g
         return P.element_class(P, [[g(val) for val in row] for row in osp], check=False)
 
@@ -720,10 +752,17 @@ class TabloidModule(SymmetricGroupRepresentation, CombinatorialFreeModule):
                 return None
             P = self.parent()
             if x in P._semigroup_algebra:
-                return P.linear_combination((perm * self, c) for perm, c in x.monomial_coefficients().items())
+                return P.linear_combination(
+                    (perm * self, c) for perm, c in x.monomial_coefficients().items()
+                )
             if x in P._semigroup_algebra.indices():
-                return P.element_class(P, {P._symmetric_group_action(T, x): c
-                                           for T, c in self._monomial_coefficients.items()})
+                return P.element_class(
+                    P,
+                    {
+                        P._symmetric_group_action(T, x): c
+                        for T, c in self._monomial_coefficients.items()
+                    },
+                )
 
 
 class SpechtModuleTableauxBasis(SpechtModule):
@@ -741,6 +780,7 @@ class SpechtModuleTableauxBasis(SpechtModule):
         - :class:`~sage.combinat.symmetric_group_representations.SpechtRepresentation`
           for an implementation of the representation by matrices.
     """
+
     def __init__(self, ambient):
         r"""
         Initialize ``self``.
@@ -760,15 +800,23 @@ class SpechtModuleTableauxBasis(SpechtModule):
 
         def elt(T):
             tab = tabloids.element_class(tabloids, list(T), check=False)
-            return ambient.sum_of_terms((ambient._symmetric_group_action(tab, sigma), sigma.sign())
-                                        for sigma in T.column_stabilizer())
+            return ambient.sum_of_terms(
+                (ambient._symmetric_group_action(tab, sigma), sigma.sign())
+                for sigma in T.column_stabilizer()
+            )
 
-        basis = Family({T: elt(T)
-                        for T in self._diagram.standard_tableaux()})
+        basis = Family({T: elt(T) for T in self._diagram.standard_tableaux()})
         cat = ambient.category().Subobjects()
-        SubmoduleWithBasis.__init__(self, basis, support_order, ambient=ambient,
-                                    unitriangular=False, category=cat,
-                                    prefix='S', bracket='')
+        SubmoduleWithBasis.__init__(
+            self,
+            basis,
+            support_order,
+            ambient=ambient,
+            unitriangular=False,
+            category=cat,
+            prefix='S',
+            bracket='',
+        )
 
     @lazy_attribute
     def lift(self):
@@ -974,8 +1022,11 @@ class SpechtModuleTableauxBasis(SpechtModule):
             sage: A.characteristic_polynomial().factor()
             (x - 4) * (x - 3) * (x - 2) * (x - 1)
         """
-        from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangements
+        from sage.geometry.hyperplane_arrangement.arrangement import (
+            HyperplaneArrangements,
+        )
         from sage.combinat.set_partition import SetPartitions
+
         if base_ring is None:
             base_ring = self.base_ring()
 
@@ -999,10 +1050,12 @@ class SpechtModuleTableauxBasis(SpechtModule):
             span = []
             for a in alpha:
                 a = list(a)
-                for i in range(len(a)-1):
-                    elt = t(a[i], a[i+1])
+                for i in range(len(a) - 1):
+                    elt = t(a[i], a[i + 1])
                     if elt not in fixed_spaces:
-                        fixed_spaces[elt] = self.annihilator_basis([elt - SGA.one()], side='left')
+                        fixed_spaces[elt] = self.annihilator_basis(
+                            [elt - SGA.one()], side='left'
+                        )
                     span.extend(fixed_spaces[elt])
             H = self.echelon_form(span)
             N = matrix([v.to_vector() for v in H]).right_kernel_matrix()
@@ -1010,7 +1063,9 @@ class SpechtModuleTableauxBasis(SpechtModule):
             norms.append(N[0])
 
         # Convert the data to an arrangement
-        HA = HyperplaneArrangements(base_ring, tuple([f'T{i}' for i in range(self.dimension())]))
+        HA = HyperplaneArrangements(
+            base_ring, tuple([f'T{i}' for i in range(self.dimension())])
+        )
         return HA([[0] + list(N) for N in norms])
 
 
@@ -1037,6 +1092,7 @@ class MaximalSpechtSubmodule(SymmetricGroupRepresentation, SubmoduleWithBasis):
         sage: sum(SGA.basis()) * u
         0
     """
+
     def __init__(self, specht_module):
         r"""
         Initialize ``self``.
@@ -1078,9 +1134,15 @@ class MaximalSpechtSubmodule(SymmetricGroupRepresentation, SubmoduleWithBasis):
         unitriangular = all(b.leading_support() == 1 for b in basis)
         support_order = list(specht_module.basis().keys())
         cat = specht_module.category().Subobjects()
-        SubmoduleWithBasis.__init__(self, basis, support_order, ambient=specht_module,
-                                    unitriangular=unitriangular, category=cat,
-                                    prefix='U')
+        SubmoduleWithBasis.__init__(
+            self,
+            basis,
+            support_order,
+            ambient=specht_module,
+            unitriangular=unitriangular,
+            category=cat,
+            prefix='U',
+        )
 
     def _repr_(self):
         r"""
@@ -1164,6 +1226,7 @@ class SimpleModule(SymmetricGroupRepresentation, QuotientModuleWithBasis):
         [0 0 2 1]
         [0 0 1 2]
     """
+
     def __init__(self, specht_module):
         r"""
         Initialize ``self``.
@@ -1188,7 +1251,9 @@ class SimpleModule(SymmetricGroupRepresentation, QuotientModuleWithBasis):
             raise ValueError(f"the partition must be {p}-regular")
         SymmetricGroupRepresentation.__init__(self, specht_module._semigroup_algebra)
         cat = specht_module.category()
-        QuotientModuleWithBasis.__init__(self, specht_module.maximal_submodule(), cat, prefix='D')
+        QuotientModuleWithBasis.__init__(
+            self, specht_module.maximal_submodule(), cat, prefix='D'
+        )
 
     def _repr_(self):
         r"""
@@ -1244,6 +1309,7 @@ def _to_diagram(D):
     """
     from sage.combinat.integer_vector import IntegerVectors
     from sage.combinat.skew_partition import SkewPartitions
+
     if isinstance(D, Diagram):
         return D
     if D in _Partitions:
@@ -1290,6 +1356,7 @@ def specht_module_spanning_set(D, SGA=None):
     n = len(D)
     if SGA is None:
         from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
+
         SGA = SymmetricGroupAlgebra(QQ, n)
     elif SGA.group().rank() != n - 1:
         raise ValueError("the rank does not match the size of the diagram")
@@ -1399,6 +1466,7 @@ def tabloid_gram_matrix(la, base_ring):
         [4 1 1 2 4]
     """
     from sage.combinat.tableau import StandardTableaux
+
     ST = list(StandardTableaux(la))
 
     def bilinear_form(p1, p2):
@@ -1438,6 +1506,7 @@ def simple_module_rank(la, base_ring):
     """
     from sage.categories.fields import Fields
     from sage.combinat.partition import Partition
+
     if base_ring not in Fields():
         raise NotImplementedError("the base must be a field")
     p = base_ring.characteristic()

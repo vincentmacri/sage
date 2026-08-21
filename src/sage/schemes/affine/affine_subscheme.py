@@ -50,8 +50,15 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
         Closed subscheme of Affine Space of dimension 3 over Rational Field defined by:
           x^2 - y*z
     """
-    def __init__(self, A, polynomials, embedding_center=None,
-                 embedding_codomain=None, embedding_images=None):
+
+    def __init__(
+        self,
+        A,
+        polynomials,
+        embedding_center=None,
+        embedding_codomain=None,
+        embedding_images=None,
+    ):
         """
         EXAMPLES::
 
@@ -62,11 +69,11 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
         """
         AlgebraicScheme_subscheme.__init__(self, A, polynomials)
         if embedding_images is not None:
-            self._embedding_morphism = self.hom(embedding_images,
-                                                embedding_codomain)
+            self._embedding_morphism = self.hom(embedding_images, embedding_codomain)
         elif A._ambient_projective_space is not None:
             self._embedding_morphism = self.projective_embedding(
-                A._default_embedding_index, A._ambient_projective_space)
+                A._default_embedding_index, A._ambient_projective_space
+            )
         if embedding_center is not None:
             self._embedding_center = self.point(embedding_center)
 
@@ -207,7 +214,9 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
                 i = n
         i = int(i)
         if i < 0 or i > n:
-            raise ValueError("Argument i (=%s) must be between 0 and %s, inclusive" % (i, n))
+            raise ValueError(
+                "Argument i (=%s) must be between 0 and %s, inclusive" % (i, n)
+            )
         try:
             phi = self.__projective_embedding[i]
             # assume that if you've passed in a new ambient projective space
@@ -328,7 +337,7 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
         except AttributeError:
             pass
         sing_dim = self.Jacobian().dimension()
-        self._smooth = (sing_dim == -1)
+        self._smooth = sing_dim == -1
         return self._smooth
 
     def intersection_multiplicity(self, X, P):
@@ -399,14 +408,22 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
         """
         AA = self.ambient_space()
         if AA != X.ambient_space():
-            raise TypeError("this subscheme and (=%s) must be defined in the same ambient space" % X)
+            raise TypeError(
+                "this subscheme and (=%s) must be defined in the same ambient space" % X
+            )
         W = self.intersection(X)
         try:
             W._check_satisfies_equations(P)
         except TypeError:
-            raise TypeError("(=%s) must be a point in the intersection of this subscheme and (=%s)" % (P, X))
+            raise TypeError(
+                "(=%s) must be a point in the intersection of this subscheme and (=%s)"
+                % (P, X)
+            )
         if AA.dimension() != self.dimension() + X.dimension() or W.dimension() != 0:
-            raise TypeError("the intersection of this subscheme and (=%s) must be proper and finite" % X)
+            raise TypeError(
+                "the intersection of this subscheme and (=%s) must be proper and finite"
+                % X
+            )
         I = self.defining_ideal()
         J = X.defining_ideal()
         # move P to the origin and localize
@@ -416,12 +433,13 @@ class AlgebraicScheme_subscheme_affine(AlgebraicScheme_subscheme):
         Jloc = R.ideal([f(chng_coords) for f in J.gens()])
         # compute the intersection multiplicity with Serre's Tor formula using Singular
         from sage.interfaces.singular import singular
+
         singular.lib("homolog.lib")
         i = 0
         s = 0
         t = sum(singular.Tor(i, Iloc, Jloc).std().hilb(2).sage())
         while t != 0:
-            s += (-1)**i * t
+            s += (-1) ** i * t
             i += 1
             t = sum(singular.Tor(i, Iloc, Jloc).std().hilb(2).sage())
         return s
@@ -504,6 +522,7 @@ class AlgebraicScheme_subscheme_affine_field(AlgebraicScheme_subscheme_affine):
     """
     Algebraic subschemes of projective spaces defined over fields.
     """
+
     def _morphism(self, *args, **kwds):
         r"""
         Construct a morphism determined by action on points of ``self``.

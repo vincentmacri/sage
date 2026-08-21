@@ -5,6 +5,7 @@ AUTHORS:
 
 - Reimundo Heluani (2019-08-09): Initial implementation.
 """
+
 # *****************************************************************************
 #       Copyright (C) 2019 Reimundo Heluani <heluani@potuz.net>
 #
@@ -26,6 +27,7 @@ class LCAWithGeneratorsElement(IndexedFreeModuleElement):
     The element class of a Lie conformal algebra with a
     preferred set of generators.
     """
+
     def T(self, n=1):
         r"""
         The `n`-th derivative of this element.
@@ -57,6 +59,7 @@ class LCAWithGeneratorsElement(IndexedFreeModuleElement):
             2*T^(2)L + 12*T^(3)G
         """
         from sage.rings.integer_ring import ZZ
+
         if n not in ZZ or n < 0:
             raise ValueError("n must be a nonnegative Integer")
         if n == 0 or self.is_zero():
@@ -67,8 +70,7 @@ class LCAWithGeneratorsElement(IndexedFreeModuleElement):
             a, m = self.index()
             coef = self._monomial_coefficients[(a, m)]
             if (a, m + n) in p._indices:
-                return coef * prod(range(m + 1, m + n + 1))\
-                    * p.monomial((a, m + n))
+                return coef * prod(range(m + 1, m + n + 1)) * p.monomial((a, m + n))
             return p.zero()
         return sum(mon.T(n) for mon in self.terms())
 
@@ -92,6 +94,7 @@ class LCAStructureCoefficientsElement(LCAWithGeneratorsElement):
     An element of a Lie conformal algebra given by structure
     coefficients.
     """
+
     def _bracket_(self, right):
         """
         The lambda bracket of these two elements.
@@ -131,16 +134,25 @@ class LCAStructureCoefficientsElement(LCAWithGeneratorsElement):
             except KeyError:
                 return {}
             pole = max(mbr.keys())
-            ret = {l: coefa * coefb * (-1)**k / factorial(k) *
-                   sum(factorial(l) / factorial(m + k + j - l)
-                       / factorial(l - k - j) / factorial(j)
-                       * mbr[j].T(m + k + j - l)
-                       for j in mbr if l - m - k <= j <= l - k)
-                   for l in range(m + k + pole + 1)}
+            ret = {
+                l: coefa
+                * coefb
+                * (-1) ** k
+                / factorial(k)
+                * sum(
+                    factorial(l)
+                    / factorial(m + k + j - l)
+                    / factorial(l - k - j)
+                    / factorial(j)
+                    * mbr[j].T(m + k + j - l)
+                    for j in mbr
+                    if l - m - k <= j <= l - k
+                )
+                for l in range(m + k + pole + 1)
+            }
             return {k: v for k, v in ret.items() if v}
 
-        diclist = [i._bracket_(j) for i in self.terms()
-                   for j in right.terms()]
+        diclist = [i._bracket_(j) for i in self.terms() for j in right.terms()]
         ret = {}
         pz = p.zero()
         for d in diclist:
@@ -174,15 +186,23 @@ class LCAStructureCoefficientsElement(LCAWithGeneratorsElement):
             return "0"
         p = self.parent()
         if p._names:
-            terms = [(f"T^({k1}){p._names[p._index_to_pos[k0]]}", v) if k1 > 1
-                     else (f"T{p._names[p._index_to_pos[k0]]}", v) if k1 == 1
-                     else (f"{p._names[p._index_to_pos[k0]]}", v)
-                     for (k0, k1), v in self.monomial_coefficients().items()]
+            terms = [
+                (f"T^({k1}){p._names[p._index_to_pos[k0]]}", v)
+                if k1 > 1
+                else (f"T{p._names[p._index_to_pos[k0]]}", v)
+                if k1 == 1
+                else (f"{p._names[p._index_to_pos[k0]]}", v)
+                for (k0, k1), v in self.monomial_coefficients().items()
+            ]
         else:
-            terms = [(f"T^({k1}){p._repr_generator(k0)}", v) if k1 > 1
-                     else (f"T{p._repr_generator(k0)}", v) if k1 == 1
-                     else (f"{p._repr_generator(k0)}", v)
-                     for (k0, k1), v in self.monomial_coefficients().items()]
+            terms = [
+                (f"T^({k1}){p._repr_generator(k0)}", v)
+                if k1 > 1
+                else (f"T{p._repr_generator(k0)}", v)
+                if k1 == 1
+                else (f"{p._repr_generator(k0)}", v)
+                for (k0, k1), v in self.monomial_coefficients().items()
+            ]
 
         return repr_lincomb(terms, strip_one=True)
 
@@ -222,14 +242,22 @@ class LCAStructureCoefficientsElement(LCAWithGeneratorsElement):
         except ValueError:
             names = None
         if names:
-            terms = [("T^{{({})}}{}".format(k1, names[p._index_to_pos[k0]]), v) if k1 > 1
-                     else ("T{}".format(names[p._index_to_pos[k0]]), v) if k1 == 1
-                     else ("{}".format(names[p._index_to_pos[k0]]), v)
-                     for (k0, k1), v in self.monomial_coefficients().items()]
+            terms = [
+                ("T^{{({})}}{}".format(k1, names[p._index_to_pos[k0]]), v)
+                if k1 > 1
+                else ("T{}".format(names[p._index_to_pos[k0]]), v)
+                if k1 == 1
+                else ("{}".format(names[p._index_to_pos[k0]]), v)
+                for (k0, k1), v in self.monomial_coefficients().items()
+            ]
         else:
-            terms = [("T^{{({})}}{}".format(k1, latex(k0)), v) if k1 > 1
-                     else ("T{}".format(latex(k0)), v) if k1 == 1
-                     else ("{}".format(latex(k0)), v)
-                     for (k0, k1), v in self.monomial_coefficients().items()]
+            terms = [
+                ("T^{{({})}}{}".format(k1, latex(k0)), v)
+                if k1 > 1
+                else ("T{}".format(latex(k0)), v)
+                if k1 == 1
+                else ("{}".format(latex(k0)), v)
+                for (k0, k1), v in self.monomial_coefficients().items()
+            ]
 
         return repr_lincomb(terms, is_latex=True, strip_one=True)

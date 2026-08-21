@@ -2,6 +2,7 @@
 """
 Elementary symmetric functions
 """
+
 # ***************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>
 #                     2012 Mike Zabrocki <mike.zabrocki@gmail.com>
@@ -31,7 +32,9 @@ from sage.rings.infinity import infinity
 ###################################
 
 
-class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebra_multiplicative):
+class SymmetricFunctionAlgebra_elementary(
+    multiplicative.SymmetricFunctionAlgebra_multiplicative
+):
     def __init__(self, Sym):
         """
         A class for methods for the elementary basis of the symmetric functions.
@@ -49,7 +52,9 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
             sage: TestSuite(e).run(skip=['_test_associativity', '_test_distributivity', '_test_prod'])
             sage: TestSuite(e).run(elements = [e[1,1]+e[2], e[1]+2*e[1,1]])
         """
-        classical.SymmetricFunctionAlgebra_classical.__init__(self, Sym, "elementary", 'e')
+        classical.SymmetricFunctionAlgebra_classical.__init__(
+            self, Sym, "elementary", 'e'
+        )
 
     def _dual_basis_default(self):
         """
@@ -92,8 +97,10 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
             sage: e.coproduct_on_generators(0)
             e[] # e[]
         """
+
         def P(i):
             return Partition([i]) if i else Partition([])
+
         T = self.tensor_square()
         return T.sum_of_monomials((P(j), P(i - j)) for j in range(i + 1))
 
@@ -278,10 +285,12 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
             """
             parent = self.parent()
             e_coords_of_self = self.monomial_coefficients().items()
-            dct = {Partition([i // n for i in lam]):
-                   (-1) ** (sum(lam) - (sum(lam) // n)) * coeff
-                   for (lam, coeff) in e_coords_of_self
-                   if all(not i % n for i in lam)}
+            dct = {
+                Partition([i // n for i in lam]): (-1) ** (sum(lam) - (sum(lam) // n))
+                * coeff
+                for (lam, coeff) in e_coords_of_self
+                if all(not i % n for i in lam)
+            }
             result_in_e_basis = parent._from_dict(dct)
             return parent(result_in_e_basis)
 
@@ -397,8 +406,9 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
             if n == 1:
                 R = self.base_ring()
                 mc = self.monomial_coefficients(copy=False).items()
-                return R.sum(c for partition, c in mc
-                             if not partition or partition[0] == 1)
+                return R.sum(
+                    c for partition, c in mc if not partition or partition[0] == 1
+                )
 
             from sage.combinat.q_analogues import q_binomial
 
@@ -409,24 +419,33 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q is None:
                 q = get_variable(self.base_ring(), "q")
 
             if q == 1:
                 if n == infinity:
-                    raise ValueError("the stable principal specialization at q=1 is not defined")
+                    raise ValueError(
+                        "the stable principal specialization at q=1 is not defined"
+                    )
                 f = lambda partition: prod(binomial(n, part) for part in partition)
             elif n == infinity:
-                f = lambda partition: prod(q**binomial(part, 2)/prod((1-q**i)
-                                                                     for i in range(1, part+1))
-                                           for part in partition)
+                f = lambda partition: prod(
+                    q ** binomial(part, 2)
+                    / prod((1 - q**i) for i in range(1, part + 1))
+                    for part in partition
+                )
             else:
-                f = lambda partition: prod(q**binomial(part, 2)*q_binomial(n, part, q=q)
-                                           for part in partition)
+                f = lambda partition: prod(
+                    q ** binomial(part, 2) * q_binomial(n, part, q=q)
+                    for part in partition
+                )
 
             return self.parent()._apply_module_morphism(self, f, q.parent())
 
@@ -508,9 +527,12 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q == 1:
                 if t is None:
@@ -522,7 +544,7 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
                     for part in partition:
                         n += part
                         m *= factorial(part)
-                    return t**n/m
+                    return t**n / m
 
                 return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -539,7 +561,7 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
                 m = 1
                 for part in partition:
                     n += part
-                    m *= q**binomial(part, 2)/q_factorial(part, q=q)
+                    m *= q ** binomial(part, 2) / q_factorial(part, q=q)
 
                 return t**n * m
 
@@ -549,6 +571,8 @@ class SymmetricFunctionAlgebra_elementary(multiplicative.SymmetricFunctionAlgebr
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.elementary',
-                           'SymmetricFunctionAlgebraElement_elementary',
-                           SymmetricFunctionAlgebra_elementary.Element)
+register_unpickle_override(
+    'sage.combinat.sf.elementary',
+    'SymmetricFunctionAlgebraElement_elementary',
+    SymmetricFunctionAlgebra_elementary.Element,
+)

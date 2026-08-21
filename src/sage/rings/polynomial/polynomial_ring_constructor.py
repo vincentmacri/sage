@@ -26,11 +26,13 @@ from sage.structure.category_object import normalize_names
 try:
     from sage.rings.padics import padic_base_leaves
 except ImportError:
+
     class padic_base_leaves:
         pAdicFieldCappedRelative = ()
         pAdicRingCappedRelative = ()
         pAdicRingCappedAbsolute = ()
         pAdicRingFixedMod = ()
+
 
 import sage.misc.weak_dict
 import sage.rings.abc
@@ -669,8 +671,11 @@ def PolynomialRing(base_ring, *args, **kwds):
         Multivariate Polynomial Ring in x0, x1 over The Infinity Ring
     """
     from sage.rings.semirings.tropical_semiring import TropicalSemiring
+
     if base_ring not in Rings() and not isinstance(base_ring, TropicalSemiring):
-        raise TypeError("base_ring {!r} must be a ring or the tropical semiring".format(base_ring))
+        raise TypeError(
+            "base_ring {!r} must be a ring or the tropical semiring".format(base_ring)
+        )
 
     n = -1  # Unknown number of variables
     names = None  # Unknown variable names
@@ -688,7 +693,10 @@ def PolynomialRing(base_ring, *args, **kwds):
     if "var_array" in kwds:
         for forbidden in "name", "names":
             if forbidden in kwds:
-                raise TypeError("keyword argument '%s' cannot be combined with 'var_array'" % forbidden)
+                raise TypeError(
+                    "keyword argument '%s' cannot be combined with 'var_array'"
+                    % forbidden
+                )
 
         names = kwds.pop("var_array")
         if isinstance(names, (tuple, list)):
@@ -718,7 +726,9 @@ def PolynomialRing(base_ring, *args, **kwds):
     else:  # No "var_array" keyword
         if "name" in kwds:
             if "names" in kwds:
-                raise TypeError("keyword argument 'name' cannot be combined with 'names'")
+                raise TypeError(
+                    "keyword argument 'name' cannot be combined with 'names'"
+                )
             names = [kwds.pop("name")]
 
         # Interpret remaining arguments in *args as either a number of
@@ -729,12 +739,16 @@ def PolynomialRing(base_ring, *args, **kwds):
             except TypeError:
                 # Interpret arg as names
                 if names is not None:
-                    raise TypeError("variable names specified twice: %r and %r" % (names, arg))
+                    raise TypeError(
+                        "variable names specified twice: %r and %r" % (names, arg)
+                    )
                 names = arg
             else:
                 # Interpret arg as number of variables
                 if n >= 0:
-                    raise TypeError("number of variables specified twice: %r and %r" % (n, arg))
+                    raise TypeError(
+                        "number of variables specified twice: %r and %r" % (n, arg)
+                    )
                 if k < 0:
                     raise ValueError("number of variables must be nonnegative")
                 n = k
@@ -760,7 +774,10 @@ def PolynomialRing(base_ring, *args, **kwds):
     if "names" in kwds:
         kwnames = kwds.pop("names")
         if kwnames != names:
-            raise TypeError("variable names specified twice inconsistently: %r and %r" % (names, kwnames))
+            raise TypeError(
+                "variable names specified twice inconsistently: %r and %r"
+                % (names, kwnames)
+            )
 
     if multivariate or len(names) != 1:
         return _multi_variate(base_ring, names, **kwds)
@@ -780,7 +797,11 @@ def unpickle_PolynomialRing(base_ring, arg1=None, arg2=None, sparse=False):
 
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.rings.polynomial.polynomial_ring_constructor', 'PolynomialRing', unpickle_PolynomialRing)
+register_unpickle_override(
+    'sage.rings.polynomial.polynomial_ring_constructor',
+    'PolynomialRing',
+    unpickle_PolynomialRing,
+)
 
 
 def _get_from_cache(key):
@@ -832,17 +853,21 @@ def _single_variate(base_ring, name, sparse=None, implementation=None, order=Non
 
     # If the implementation is supported, then we are done
     if specialized is not None:
-        implementation_names = specialized._implementation_names_impl(implementation, base_ring, sparse)
+        implementation_names = specialized._implementation_names_impl(
+            implementation, base_ring, sparse
+        )
         if implementation_names is not NotImplemented:
             constructor = specialized
 
     # Generic implementations
     if constructor is None:
         from sage.rings.semirings.tropical_semiring import TropicalSemiring
+
         if isinstance(base_ring, TropicalSemiring):
             from sage.rings.semirings.tropical_polynomial import (
                 TropicalPolynomialSemiring,
             )
+
             constructor = TropicalPolynomialSemiring
         elif base_ring not in _CommutativeRings:
             constructor = polynomial_ring.PolynomialRing_generic
@@ -857,12 +882,18 @@ def _single_variate(base_ring, name, sparse=None, implementation=None, order=Non
         else:
             constructor = polynomial_ring.PolynomialRing_commutative
 
-        implementation_names = constructor._implementation_names(implementation, base_ring, sparse)
+        implementation_names = constructor._implementation_names(
+            implementation, base_ring, sparse
+        )
 
         # Only use names which are not supported by the specialized class.
         if specialized is not None:
-            implementation_names = [n for n in implementation_names
-                                    if specialized._implementation_names_impl(n, base_ring, sparse) is NotImplemented]
+            implementation_names = [
+                n
+                for n in implementation_names
+                if specialized._implementation_names_impl(n, base_ring, sparse)
+                is NotImplemented
+            ]
 
     if implementation is not None:
         kwds["implementation"] = implementation
@@ -875,13 +906,18 @@ def _single_variate(base_ring, name, sparse=None, implementation=None, order=Non
     return R
 
 
-def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementation=None):
+def _multi_variate(
+    base_ring, names, sparse=None, order='degrevlex', implementation=None
+):
     if sparse is None:
         sparse = True
     if not sparse:
-        raise NotImplementedError("a dense representation of multivariate polynomials is not supported")
+        raise NotImplementedError(
+            "a dense representation of multivariate polynomials is not supported"
+        )
 
     from sage.rings.polynomial.term_order import TermOrder
+
     n = len(names)
     order = TermOrder(order, n)
 
@@ -895,7 +931,9 @@ def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementat
     # yield the same implementation. We need this for caching.
     implementation_names = set([implementation])
 
-    if implementation is None and isinstance(base_ring, (sage.rings.abc.RealDoubleField, sage.rings.abc.ComplexDoubleField)):
+    if implementation is None and isinstance(
+        base_ring, (sage.rings.abc.RealDoubleField, sage.rings.abc.ComplexDoubleField)
+    ):
         implementation = "generic"  # singular has some issues with RDF/CDF, do not make singular the default
 
     if implementation is None or implementation == "singular":
@@ -903,6 +941,7 @@ def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementat
             from sage.rings.polynomial.multi_polynomial_libsingular import (
                 MPolynomialRing_libsingular,
             )
+
             R = MPolynomialRing_libsingular(base_ring, n, names, order)
         except (ImportError, TypeError, NotImplementedError):
             if implementation is not None:
@@ -921,10 +960,12 @@ def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementat
         from sage.rings.semirings.tropical_semiring import TropicalSemiring
 
         from . import multi_polynomial_ring
+
         if isinstance(base_ring, TropicalSemiring):
             from sage.rings.semirings.tropical_mpolynomial import (
                 TropicalMPolynomialSemiring,
             )
+
             constructor = TropicalMPolynomialSemiring
         elif base_ring in _Domains:
             constructor = multi_polynomial_ring.MPolynomialRing_polydict_domain
@@ -933,7 +974,10 @@ def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementat
         R = constructor(base_ring, n, names, order)
 
     if R is None:
-        raise ValueError("unknown implementation %r for multivariate polynomial rings" % (implementation,))
+        raise ValueError(
+            "unknown implementation %r for multivariate polynomial rings"
+            % (implementation,)
+        )
 
     for impl in implementation_names:
         key[-1] = impl
@@ -951,7 +995,9 @@ from sage.categories.algebras import Algebras
 _FiniteSets = categories.sets_cat.Sets().Finite()
 _InfiniteSets = categories.sets_cat.Sets().Infinite()
 _EuclideanDomains = categories.euclidean_domains.EuclideanDomains()
-_UniqueFactorizationDomains = categories.unique_factorization_domains.UniqueFactorizationDomains()
+_UniqueFactorizationDomains = (
+    categories.unique_factorization_domains.UniqueFactorizationDomains()
+)
 _IntegralDomains = categories.integral_domains.IntegralDomains()
 _Rings = categories.rings.Rings()
 
@@ -1090,10 +1136,12 @@ def BooleanPolynomialRing_constructor(n=None, names=None, order='lex'):
         return R
 
     from sage.rings.polynomial.pbori.pbori import BooleanPolynomialRing
+
     R = BooleanPolynomialRing(n, names, order)
 
     _save_in_cache(key, R)
     return R
+
 
 ############################################################################
 # END (Factory function for making polynomial rings)

@@ -128,8 +128,13 @@ class GaloisRepresentation(SageObject):
              over Number Field in a with defining polynomial x^2 - x + 1
         """
         if self.E.has_cm():
-            return "Compatible family of Galois representations associated to the CM " + repr(self.E)
-        return "Compatible family of Galois representations associated to the " + repr(self.E)
+            return (
+                "Compatible family of Galois representations associated to the CM "
+                + repr(self.E)
+            )
+        return "Compatible family of Galois representations associated to the " + repr(
+            self.E
+        )
 
     def __eq__(self, other):
         r"""
@@ -352,7 +357,9 @@ class GaloisRepresentation(SageObject):
         E = _over_numberfield(self.E)
         K = E.base_field()
 
-        char = lambda P: P.smallest_integer() # cheaper than constructing the residue field
+        char = lambda P: (
+            P.smallest_integer()
+        )  # cheaper than constructing the residue field
 
         # semistable reducible primes (we are now not in the CM case)
         bad_primes = _semistable_reducible_primes(E)
@@ -476,7 +483,7 @@ def _non_surjective(E, patience=100):
     # the slower the rest of the computation is, so it is not clear that
     # this would help...)
 
-    char = lambda P: P.smallest_integer() # cheaper than constructing the residue field
+    char = lambda P: P.smallest_integer()  # cheaper than constructing the residue field
 
     bad_primes = exceptional_primes
     bad_primes += [char(P) for P in SA]
@@ -551,15 +558,15 @@ def Frobenius_filter(E, L, patience=100):
     E = _over_numberfield(E).global_integral_model()
     K = E.base_field()
 
-    L = list(set(L)) # Remove duplicates from L and makes a copy for output
+    L = list(set(L))  # Remove duplicates from L and makes a copy for output
     L.sort()
 
     include_2 = False
-    if 2 in L: # c.f. Section 5.3(a) of [Ser1972].
+    if 2 in L:  # c.f. Section 5.3(a) of [Ser1972].
         L.remove(2)
         include_2 = not E.division_polynomial(2).is_irreducible()
 
-    K_is_Q = (K == QQ)
+    K_is_Q = K == QQ
     from sage.arith.misc import primes
     from sage.rings.infinity import infinity
 
@@ -574,7 +581,9 @@ def Frobenius_filter(E, L, patience=100):
                         yield P
 
     for numP, P in enumerate(primes_iter()):
-        if not L or numP == patience:  # stop if no primes are left, or patience is exhausted
+        if (
+            not L or numP == patience
+        ):  # stop if no primes are left, or patience is exhausted
             break
 
         # Discard any l for which the Frobenius polynomial at P is
@@ -634,19 +643,19 @@ def _exceptionals(E, L, patience=1000):
 
     output = []
 
-    L = list(set(L)) # Remove duplicates from L.
+    L = list(set(L))  # Remove duplicates from L.
 
     for l in L:
-        if l == 2: # c.f. Section 5.3(a) of [Ser1972].
+        if l == 2:  # c.f. Section 5.3(a) of [Ser1972].
             if (E.j_invariant() - 1728).is_square():
                 output.append(2)
             elif not E.division_polynomial(2).is_irreducible():
                 output.append(2)
 
-        elif l == 3: # c.f. Section 5.3(b) of [Ser1972].
+        elif l == 3:  # c.f. Section 5.3(b) of [Ser1972].
             if K(-3).is_square():
                 output.append(3)
-            elif not (K['x'].gen()**3 - E.j_invariant()).is_irreducible():
+            elif not (K['x'].gen() ** 3 - E.j_invariant()).is_irreducible():
                 output.append(3)
             elif not E.division_polynomial(3).is_irreducible():
                 output.append(3)
@@ -682,7 +691,7 @@ def _exceptionals(E, L, patience=1000):
     for P in deg_one_primes_iter(K):
         try:
             trace = E.change_ring(P.residue_field()).trace_of_frobenius()
-        except ArithmeticError: # Bad reduction at P.
+        except ArithmeticError:  # Bad reduction at P.
             continue
 
         patience -= 1
@@ -690,7 +699,7 @@ def _exceptionals(E, L, patience=1000):
         determinant = P.norm()
         discriminant = trace**2 - 4 * determinant
 
-        unexc = [] # Primes we discover are unexceptional go here.
+        unexc = []  # Primes we discover are unexceptional go here.
 
         for l in D:
             tr = GF(l)(trace)
@@ -768,6 +777,7 @@ def _over_numberfield(E):
 
     if K == QQ:
         from sage.rings.polynomial.polynomial_ring import polygen
+
         K = NumberField(polygen(QQ), 'a')
     else:
         K = K.absolute_field('a')
@@ -810,9 +820,11 @@ def deg_one_primes_iter(K, principal_only=False):
          Fractional ideal (3*a - 4)]
     """
     # imaginary quadratic fields have no principal primes of norm < disc / 4
-    start = K.discriminant().abs() // 4 if principal_only and K.signature() == (0,1) else 2
+    start = (
+        K.discriminant().abs() // 4 if principal_only and K.signature() == (0, 1) else 2
+    )
 
-    K_is_Q = (K == QQ)
+    K_is_Q = K == QQ
 
     for p in primes(start=start, stop=Infinity):
         if K_is_Q:
@@ -872,12 +884,16 @@ def _semistable_reducible_primes(E, verbose=False):
     # a generator and the characteristic polynomial of Frob_P^12.
 
     precomp = []
-    last_p = 0 # The residue characteristic of the most recent prime.
+    last_p = 0  # The residue characteristic of the most recent prime.
 
     while len(precomp) < 2:
         P = next(deg_one_primes)
         p = P.norm()
-        if p != last_p and (d == 1 or P.ramification_index() == 1) and E.has_good_reduction(P):
+        if (
+            p != last_p
+            and (d == 1 or P.ramification_index() == 1)
+            and E.has_good_reduction(P)
+        ):
             precomp.append(P)
             last_p = p
 
@@ -887,16 +903,18 @@ def _semistable_reducible_primes(E, verbose=False):
     EmodPy = E.reduction(Py) if d > 1 else E.reduction(y)
     fxpol = EmodPx.frobenius_polynomial()
     fypol = EmodPy.frobenius_polynomial()
-    fx12pol = fxpol.adams_operator_on_roots(12) # roots are 12th powers of those of fxpol
+    fx12pol = fxpol.adams_operator_on_roots(
+        12
+    )  # roots are 12th powers of those of fxpol
     fy12pol = fypol.adams_operator_on_roots(12)
     px = x.norm() if d > 1 else x
     py = y.norm() if d > 1 else x
     Zx = fxpol.parent()
-    xpol = x.charpoly() if d > 1 else Zx([-x,1])
-    ypol = y.charpoly() if d > 1 else Zx([-y,1])
+    xpol = x.charpoly() if d > 1 else Zx([-x, 1])
+    ypol = y.charpoly() if d > 1 else Zx([-y, 1])
 
     if verbose:
-        print("Finished precomp, x={} (p={}), y={} (p={})".format(x,px,y,py))
+        print("Finished precomp, x={} (p={}), y={} (p={})".format(x, px, y, py))
 
     for w in range(1 + d // 2):
         if verbose:
@@ -912,7 +930,11 @@ def _semistable_reducible_primes(E, verbose=False):
         if gxyn:
             xprimes = gxyn.prime_factors()
             if verbose:
-                print("adding prime factors {} of {} to {}".format(xprimes, gxyn, sorted(bad_primes)))
+                print(
+                    "adding prime factors {} of {} to {}".format(
+                        xprimes, gxyn, sorted(bad_primes)
+                    )
+                )
             bad_primes.update(xprimes)
             if verbose:
                 print("...done, bad_primes now {}".format(sorted(bad_primes)))
@@ -939,14 +961,18 @@ def _semistable_reducible_primes(E, verbose=False):
         # See #19229: the names given here, which are not used, should
         # not be the name of the generator of the base field.
 
-        rootsa = K(a).sqrt(all=True) # otherwise if a is not a square the
-                                     # returned result is in the symbolic ring!
+        rootsa = K(a).sqrt(all=True)  # otherwise if a is not a square the
+        # returned result is in the symbolic ring!
         try:
             roota = rootsa[0]
         except IndexError:
-            raise RuntimeError("error in _semistable_reducible_primes: K={} does not contain sqrt({})".format(K,a))
-        K_rel = K.relativize(roota, ['name1','name2'])
-        iso = K_rel.structure()[1] # an isomorphism from K to K_rel
+            raise RuntimeError(
+                "error in _semistable_reducible_primes: K={} does not contain sqrt({})".format(
+                    K, a
+                )
+            )
+        K_rel = K.relativize(roota, ['name1', 'name2'])
+        iso = K_rel.structure()[1]  # an isomorphism from K to K_rel
 
         ## We try again to find a nontrivial divisibility condition. ##
 
@@ -957,7 +983,7 @@ def _semistable_reducible_primes(E, verbose=False):
         # TODO: Is this the best value for this parameter?
 
         while div == 0 and patience > 0:
-            P = next(deg_one_primes) # a prime of K not K_rel
+            P = next(deg_one_primes)  # a prime of K not K_rel
             while E.has_bad_reduction(P):
                 P = next(deg_one_primes)
 
@@ -969,7 +995,9 @@ def _semistable_reducible_primes(E, verbose=False):
                 print("...good reduction, frobenius poly = {}".format(fpol))
             x = iso(P.gens_reduced()[0]).relative_norm()
             xpol = x.charpoly().adams_operator_on_roots(12)
-            div2 = Integer(xpol.resultant(fpol.adams_operator_on_roots(12)) // x.norm()**12)
+            div2 = Integer(
+                xpol.resultant(fpol.adams_operator_on_roots(12)) // x.norm() ** 12
+            )
             if div2:
                 div = div2.isqrt()
                 assert div2 == div**2
@@ -983,14 +1011,20 @@ def _semistable_reducible_primes(E, verbose=False):
         if patience == 0:
             # We suspect that E has CM, so we check:
             if E.has_cm():
-                raise ValueError("In _semistable_reducible_primes, the curve E should not have CM.")
+                raise ValueError(
+                    "In _semistable_reducible_primes, the curve E should not have CM."
+                )
 
         assert div != 0
         # We found our divisibility constraint.
 
         xprimes = div.prime_factors()
         if verbose:
-            print("...adding prime factors {} of {} to {}...".format(xprimes,div, sorted(bad_primes)))
+            print(
+                "...adding prime factors {} of {} to {}...".format(
+                    xprimes, div, sorted(bad_primes)
+                )
+            )
         bad_primes.update(xprimes)
         if verbose:
             print("...done, bad_primes now {}".format(sorted(bad_primes)))
@@ -1043,7 +1077,7 @@ def _possible_normalizers(E, SA):
     K = E.base_field()
     SA = [K.ideal(I.gens()) for I in SA]
 
-    selmer_gens = K.selmer_generators(SA, 2) # Generators of the selmer group.
+    selmer_gens = K.selmer_generators(SA, 2)  # Generators of the selmer group.
 
     if not selmer_gens:
         return []
@@ -1067,7 +1101,7 @@ def _possible_normalizers(E, SA):
         # to zero if any elements of the selmer group are
         # zero mod P (i.e. the character is ramified).
 
-        splitting_vector = [] # This will be the values of this
+        splitting_vector = []  # This will be the values of this
         # character on the generators of the Selmer group.
 
         for a in selmer_gens:
@@ -1090,7 +1124,7 @@ def _possible_normalizers(E, SA):
 
         try:
             Etilde = E.change_ring(k)
-        except ArithmeticError: # Bad reduction.
+        except ArithmeticError:  # Bad reduction.
             continue
 
         tr = Etilde.trace_of_frobenius()
@@ -1134,7 +1168,7 @@ def _possible_normalizers(E, SA):
         if not k(a).is_square():
             try:
                 tr = E.change_ring(k).trace_of_frobenius()
-            except ArithmeticError: # Bad reduction.
+            except ArithmeticError:  # Bad reduction.
                 continue
 
             if tr == 0:
@@ -1146,6 +1180,7 @@ def _possible_normalizers(E, SA):
 
                 bad_primes = sorted(bad_primes)
                 return bad_primes
+
 
 #
 # Code for Billerey's algorithm to find reducible primes
@@ -1184,10 +1219,15 @@ def Billerey_P_l(E, l):
     #     return None
     from sage.rings.polynomial.polynomial_ring import polygen
     from operator import mul
-    P = polygen(ZZ)-1
+
+    P = polygen(ZZ) - 1
     for q in qq:
         e = K(l).valuation(q)
-        P = P.composed_op(E.reduction(q).frobenius_polynomial().adams_operator_on_roots(12*e), mul, monic=True)
+        P = P.composed_op(
+            E.reduction(q).frobenius_polynomial().adams_operator_on_roots(12 * e),
+            mul,
+            monic=True,
+        )
     return P
 
 
@@ -1226,7 +1266,7 @@ def Billerey_B_l(E, l, B=0):
     # We compute the factors one at a time since if any is 0 we quit:
     B_l = ZZ(1)
     for k in range(1 + d // 2):
-        factor = ZZ(P(l**(12*k)))
+        factor = ZZ(P(l ** (12 * k)))
         if factor:
             B_l *= factor.gcd(B)
         else:
@@ -1263,7 +1303,7 @@ def Billerey_R_q(E, q, B=0):
     K = E.base_field()
     d = K.absolute_degree()
     h = K.class_number()
-    P = E.reduction(q).frobenius_polynomial().adams_operator_on_roots(12*h)
+    P = E.reduction(q).frobenius_polynomial().adams_operator_on_roots(12 * h)
     Q = ((q**h).gens_reduced()[0]).absolute_minpoly().adams_operator_on_roots(12)
 
     # We compute the factors one at a time since if any is 0 we quit:
@@ -1337,20 +1377,28 @@ def Billerey_B_bound(E, max_l=200, num_l=8, small_prime_bound=0, debug=False):
         1
     """
     if debug:
-        print("Computing B-bound for {} with max_l={}, num_l={}".format(E.ainvs(),max_l,num_l) + " (ignoring primes under {})".format(small_prime_bound) if small_prime_bound else "")
+        print(
+            "Computing B-bound for {} with max_l={}, num_l={}".format(
+                E.ainvs(), max_l, num_l
+            )
+            + " (ignoring primes under {})".format(small_prime_bound)
+            if small_prime_bound
+            else ""
+        )
     B = ZZ.zero()
     ells = []
     K = E.base_field()
     DK = K.discriminant()
     ED = E.discriminant().norm()
-    B0 = ZZ(6*DK*ED)
+    B0 = ZZ(6 * DK * ED)
 
     def remove_primes(B):
         B1 = B.prime_to_m_part(B0)
         for p in primes(small_prime_bound):
             B1 = B1.prime_to_m_part(p)
         return B1
-    ll = primes(5,max_l) # iterator
+
+    ll = primes(5, max_l)  # iterator
     while B != 1 and len(ells) < num_l:
         try:
             l = next(ll)
@@ -1360,7 +1408,7 @@ def Billerey_B_bound(E, max_l=200, num_l=8, small_prime_bound=0, debug=False):
             break
         if debug:
             print("..trying l={}".format(l))
-        b = Billerey_B_l(E,l,B)
+        b = Billerey_B_l(E, l, B)
         if b:
             if debug:
                 print("..ok, B_l = {}".format(b))
@@ -1370,13 +1418,13 @@ def Billerey_B_bound(E, max_l=200, num_l=8, small_prime_bound=0, debug=False):
                 B = remove_primes(b)
             ells.append(l)
             if debug:
-                print("..so far, B = {} using l in {}".format(B,ells))
+                print("..so far, B = {} using l in {}".format(B, ells))
         else:
             if debug:
                 print("..B_l=0 for l={}".format(l))
 
     if B:
-        res = [p for p,e in B.factor()]
+        res = [p for p, e in B.factor()]
         if debug:
             print("..returning {}".format(res))
         return res
@@ -1447,20 +1495,28 @@ def Billerey_R_bound(E, max_l=200, num_l=8, small_prime_bound=None, debug=False)
         1
     """
     if debug:
-        print("Computing R-bound for {} with max_l={}, num_l={}".format(E.ainvs(),max_l,num_l) + " (ignoring primes under {})".format(small_prime_bound) if small_prime_bound else "")
+        print(
+            "Computing R-bound for {} with max_l={}, num_l={}".format(
+                E.ainvs(), max_l, num_l
+            )
+            + " (ignoring primes under {})".format(small_prime_bound)
+            if small_prime_bound
+            else ""
+        )
     B = ZZ.zero()
     ells = []
     K = E.base_field()
     DK = K.discriminant()
     ED = E.discriminant().norm()
-    B0 = ZZ(6*DK*ED)
+    B0 = ZZ(6 * DK * ED)
 
     def remove_primes(B):
         B1 = B.prime_to_m_part(B0)
         for p in primes(small_prime_bound):
             B1 = B1.prime_to_m_part(p)
         return B1
-    ll = primes(5, max_l) # iterator
+
+    ll = primes(5, max_l)  # iterator
     while len(ells) < num_l and B != 1:
         try:
             l = next(ll)
@@ -1470,18 +1526,18 @@ def Billerey_R_bound(E, max_l=200, num_l=8, small_prime_bound=None, debug=False)
             break
         q = K.prime_above(l)
         if debug:
-            print("..trying q={} above l={}".format(q,l))
-        b = Billerey_R_q(E,q,B)
+            print("..trying q={} above l={}".format(q, l))
+        b = Billerey_R_q(E, q, B)
         if b:
             if debug:
-                print("..ok, R_q = {}, type={}".format(b,type(b)))
+                print("..ok, R_q = {}, type={}".format(b, type(b)))
             if B:
                 B = B.gcd(b)
             else:
                 B = remove_primes(b)
             ells.append(l)
             if debug:
-                print("..so far, B = {} using l in {}".format(B,ells))
+                print("..so far, B = {} using l in {}".format(B, ells))
 
     if B:
         res = B.support()
@@ -1562,9 +1618,13 @@ def reducible_primes_Billerey(E, num_l=None, max_l=None, verbose=False):
         sage: len(C)                                        # long time
         4
     """
-    #verbose=True
+    # verbose=True
     if verbose:
-        print("E = {}, finding reducible primes using Billerey's algorithm".format(E.ainvs()))
+        print(
+            "E = {}, finding reducible primes using Billerey's algorithm".format(
+                E.ainvs()
+            )
+        )
 
     # Set parameters to default values if not given:
     if max_l is None:
@@ -1579,7 +1639,7 @@ def reducible_primes_Billerey(E, num_l=None, max_l=None, verbose=False):
     # function and the helper functions need this:
     E1 = E.global_integral_model()
     ED = E1.discriminant().norm()
-    B0 = ZZ(6*DK*ED).prime_divisors()
+    B0 = ZZ(6 * DK * ED).prime_divisors()
 
     # Billeray's algorithm will be faster if we tell it to ignore
     # small primes; these can be tested using the naive algorithm.
@@ -1588,19 +1648,29 @@ def reducible_primes_Billerey(E, num_l=None, max_l=None, verbose=False):
         print("First doing naive test of primes up to {}...".format(max_l))
 
     max_small_prime = 200
-    OK_small_primes = reducible_primes_naive(E1, max_l=max_small_prime, num_P=200, verbose=verbose)
+    OK_small_primes = reducible_primes_naive(
+        E1, max_l=max_small_prime, num_P=200, verbose=verbose
+    )
     if verbose:
-        print("Naive test of primes up to {} returns {}.".format(max_small_prime, OK_small_primes))
+        print(
+            "Naive test of primes up to {} returns {}.".format(
+                max_small_prime, OK_small_primes
+            )
+        )
 
     B1 = Billerey_B_bound(E1, max_l, num_l, max_small_prime, verbose)
     if B1 == [0]:
         if verbose:
-            print("...  B_bound ineffective using max_l={}, moving on to R-bound".format(max_l))
+            print(
+                "...  B_bound ineffective using max_l={}, moving on to R-bound".format(
+                    max_l
+                )
+            )
 
-        B1 = Billerey_R_bound(E1,max_l, num_l, max_small_prime, verbose)
+        B1 = Billerey_R_bound(E1, max_l, num_l, max_small_prime, verbose)
         if B1 == [0]:
             if verbose:
-                print("... R_bound ineffective using max_l={}",format(max_l))
+                print("... R_bound ineffective using max_l={}", format(max_l))
             return [0]
         if verbose:
             print("... R_bound = {}".format(B1))
@@ -1660,7 +1730,11 @@ def reducible_primes_naive(E, max_l=None, num_P=None, verbose=False):
     if num_P is None:
         num_P = 100
     if verbose:
-        print("E = {}, finding reducible primes up to {} using Frobenius filter with {} primes".format(E.ainvs(), max_l, num_P))
+        print(
+            "E = {}, finding reducible primes up to {} using Frobenius filter with {} primes".format(
+                E.ainvs(), max_l, num_P
+            )
+        )
 
     B = Frobenius_filter(E, primes(max_l), num_P)
     if verbose:

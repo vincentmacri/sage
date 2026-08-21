@@ -88,8 +88,8 @@ class NumericalEigenforms(SageObject):
          [4.0, 2.2360679774997894, -2.236067977499788],
          [6.0, -3.2360679774997894, 1.2360679774997936]]
     """
-    def __init__(self, group, weight=2, eps=1e-20,
-                 delta=1e-2, tp=[2, 3, 5]):
+
+    def __init__(self, group, weight=2, eps=1e-20, delta=1e-2, tp=[2, 3, 5]):
         """
         Create a new space of numerical eigenforms.
 
@@ -160,7 +160,9 @@ class NumericalEigenforms(SageObject):
             'Numerical Hecke eigenvalues for Congruence Subgroup Gamma0(61) of weight 2'
         """
         return "Numerical Hecke eigenvalues for %s of weight %s" % (
-            self._group, self._weight)
+            self._group,
+            self._weight,
+        )
 
     @cached_method
     def modular_symbols(self):
@@ -173,8 +175,7 @@ class NumericalEigenforms(SageObject):
             sage: n = numerical_eigenforms(61) ; n.modular_symbols()
             Modular Symbols space of dimension 5 for Gamma_0(61) of weight 2 with sign 1 over Rational Field
         """
-        M = ModularSymbols(self._group,
-                self._weight, sign=1)
+        M = ModularSymbols(self._group, self._weight, sign=1)
         if M.base_ring() != QQ:
             raise ValueError("modular forms space must be defined over QQ")
         return M
@@ -230,7 +231,10 @@ class NumericalEigenforms(SageObject):
         if scipy is None:
             import scipy
         import scipy.linalg
-        evals, eig = scipy.linalg.eig(self._hecke_matrix.numpy(), right=True, left=False)
+
+        evals, eig = scipy.linalg.eig(
+            self._hecke_matrix.numpy(), right=True, left=False
+        )
         B = matrix(eig)
         v = [CDF(evals[i]) for i in range(len(evals))]
 
@@ -243,7 +247,7 @@ class NumericalEigenforms(SageObject):
             e = v[i]
             uniq = True
             for j in range(len(v)):
-                if uniq and i != j and abs(e-v[j]) < eps:
+                if uniq and i != j and abs(e - v[j]) < eps:
                     uniq = False
             if uniq:
                 w.append(i)
@@ -279,7 +283,7 @@ class NumericalEigenforms(SageObject):
         """
         E = self._eigenvectors()
         delta = self._delta
-        x = (CDF**E.nrows()).zero_vector()
+        x = (CDF ** E.nrows()).zero_vector()
         if E.nrows() == 0:
             return x
 
@@ -311,7 +315,7 @@ class NumericalEigenforms(SageObject):
             C = E.matrix_from_columns(zp)
             # best row
             i, f = best_row(C)
-            x[i] += 1   # simplistic
+            x[i] += 1  # simplistic
             e = x * E
 
         self.__easy_vector = x
@@ -346,7 +350,7 @@ class NumericalEigenforms(SageObject):
 
         phi_x = phi(x)
         V = phi_x.parent()
-        phi_x_inv = V([a**(-1) for a in phi_x])
+        phi_x_inv = V([a ** (-1) for a in phi_x])
         eps = self._eps
         nzp = support(x, eps)
         x_nzp = vector(CDF, x.list_from_positions(nzp))
@@ -427,8 +431,8 @@ class NumericalEigenforms(SageObject):
         m = self.modular_symbols().ambient_module()
         for p in primes:
             t = m._compute_hecke_matrix_prime(p, nzp)
-            w = phi(x_nzp*t)
-            ans.append([w[i]*phi_x_inv[i] for i in range(w.degree())])
+            w = phi(x_nzp * t)
+            ans.append([w[i] * phi_x_inv[i] for i in range(w.degree())])
         return ans
 
     def systems_of_eigenvalues(self, bound):

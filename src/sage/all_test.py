@@ -15,7 +15,8 @@ def test_import_sage_all_in_fresh_interpreter():
         [sys.executable, "-c", "import sage.all"],
         capture_output=True,
         env=env,
-        text=True, check=False,
+        text=True,
+        check=False,
     )
     assert proc.returncode == 0, (
         "Importing 'sage.all' in a fresh interpreter failed.\n"

@@ -1,12 +1,12 @@
 r"""
 Supercommutative Algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2019 Travis Scrimshaw <tcscrims at gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.super_algebras import SuperAlgebras
@@ -39,6 +39,7 @@ class SupercommutativeAlgebras(CategoryWithAxiom_over_base_ring):
 
         sage: TestSuite(Algebras(ZZ).Supercommutative()).run()
     """
+
     _base_category_class_and_axiom = (SuperAlgebras, "Supercommutative")
 
     class SignedTensorProducts(SignedTensorProductsCategory):
@@ -92,7 +93,8 @@ class SupercommutativeAlgebras(CategoryWithAxiom_over_base_ring):
                 elements = options.pop("elements", self.basis())
                 tester = self._tester(**options)
                 from sage.misc.misc import some_tuples
-                for x,y in some_tuples(elements, 2, tester._max_runs):
-                    tester.assertEqual((x * y),
-                                       (-1)**(x.is_even_odd() * y.is_even_odd())
-                                       * (y * x))
+
+                for x, y in some_tuples(elements, 2, tester._max_runs):
+                    tester.assertEqual(
+                        (x * y), (-1) ** (x.is_even_odd() * y.is_even_odd()) * (y * x)
+                    )

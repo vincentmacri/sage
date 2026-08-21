@@ -235,6 +235,7 @@ class Animation(WithEqualityById, SageObject):
         sage: hash(Animation())  # random
         140658972348064
     """
+
     def __init__(self, v=None, **kwds):
         r"""
         Return an animation of a sequence of plots of objects.  See
@@ -281,8 +282,9 @@ class Animation(WithEqualityById, SageObject):
             new_kwds.update(kwds)
 
         for name in ['xmin', 'xmax', 'ymin', 'ymax']:
-            values = [v for kwds in kwds_tuple
-                      if (v := kwds.get(name, None)) is not None]
+            values = [
+                v for kwds in kwds_tuple if (v := kwds.get(name, None)) is not None
+            ]
             if values:
                 new_kwds[name] = getattr(builtins, name[1:])(values)
         return new_kwds
@@ -361,9 +363,9 @@ class Animation(WithEqualityById, SageObject):
 
         kwds = self._combine_kwds(self._kwds, other._kwds)
 
-        #Combine the frames
+        # Combine the frames
         m = max(len(self), len(other))
-        frames = [a+b for a,b in zip(self._frames, other._frames)]
+        frames = [a + b for a, b in zip(self._frames, other._frames)]
         frames += self._frames[m:] + other._frames[m:]
 
         return Animation(frames, **kwds)
@@ -494,7 +496,7 @@ class Animation(WithEqualityById, SageObject):
             dir = tmp_dir()
         i = 0
         for frame in self._frames:
-            filename = '%s/%08d.png' % (dir,i)
+            filename = '%s/%08d.png' % (dir, i)
             try:
                 save_image = frame.save_image
             except AttributeError:
@@ -549,13 +551,14 @@ class Animation(WithEqualityById, SageObject):
         ncols = int(ncols)
         frame_list = list(self._frames)
         n = len(frame_list)
-        nrows, rem = divmod(n,ncols)
+        nrows, rem = divmod(n, ncols)
         if rem > 0:
             nrows += 1
         return plot.graphics_array(frame_list, nrows, ncols)
 
-    def gif(self, delay=20, savefile=None, iterations=0, show_path=False,
-            use_ffmpeg=False):
+    def gif(
+        self, delay=20, savefile=None, iterations=0, show_path=False, use_ffmpeg=False
+    ):
         r"""
         Return an animated gif composed from rendering the graphics
         objects in ``self``.
@@ -623,23 +626,34 @@ class Animation(WithEqualityById, SageObject):
         from sage.features.ffmpeg import FFmpeg
 
         if not ImageMagick().is_present() and not FFmpeg().is_present():
-            raise OSError("Error: Neither ImageMagick nor ffmpeg appear to "
-                    "be installed. Saving an animation to a GIF file or "
-                    "displaying an animation requires one of these "
-                    "packages, so please install one of them and try "
-                    "again. See www.imagemagick.org and www.ffmpeg.org "
-                    "for more information.")
+            raise OSError(
+                "Error: Neither ImageMagick nor ffmpeg appear to "
+                "be installed. Saving an animation to a GIF file or "
+                "displaying an animation requires one of these "
+                "packages, so please install one of them and try "
+                "again. See www.imagemagick.org and www.ffmpeg.org "
+                "for more information."
+            )
 
         if use_ffmpeg or not ImageMagick().is_present():
-            self.ffmpeg(savefile=savefile, show_path=show_path,
-                        output_format='.gif', delay=delay,
-                        iterations=iterations)
+            self.ffmpeg(
+                savefile=savefile,
+                show_path=show_path,
+                output_format='.gif',
+                delay=delay,
+                iterations=iterations,
+            )
         else:
-            self._gif_from_imagemagick(savefile=savefile, show_path=show_path,
-                        delay=delay, iterations=iterations)
+            self._gif_from_imagemagick(
+                savefile=savefile,
+                show_path=show_path,
+                delay=delay,
+                iterations=iterations,
+            )
 
-    def _gif_from_imagemagick(self, savefile=None, show_path=False,
-            delay=20, iterations=0):
+    def _gif_from_imagemagick(
+        self, savefile=None, show_path=False, delay=20, iterations=0
+    ):
         r"""
         Return a movie showing an animation composed from rendering
         the frames in ``self``.
@@ -689,6 +703,7 @@ class Animation(WithEqualityById, SageObject):
               https://www.imagemagick.org/.
         """
         from sage.features.imagemagick import ImageMagick, Magick
+
         ImageMagick().require()
 
         if not savefile:
@@ -699,27 +714,41 @@ class Animation(WithEqualityById, SageObject):
 
         # running the command
         directory = self.png()
-        cmd = [Magick().executable, '-dispose', 'Background',
-                '-delay', '%s' % int(delay), '-loop', '%s' % int(iterations),
-                '*.png', savefile]
+        cmd = [
+            Magick().executable,
+            '-dispose',
+            'Background',
+            '-delay',
+            '%s' % int(delay),
+            '-loop',
+            '%s' % int(iterations),
+            '*.png',
+            savefile,
+        ]
         from subprocess import run
-        result = run(cmd, cwd=directory, capture_output=True, text=True,
-                     check=False)
+
+        result = run(cmd, cwd=directory, capture_output=True, text=True, check=False)
 
         # If a problem with the command occurs, print the log before
         # raising an error (more verbose than result.check_returncode())
         if result.returncode:
-            print('Command "{}" returned nonzero exit status "{}" '
-                  '(with stderr "{}" and stdout "{}").'.format(result.args,
-                                        result.returncode,
-                                        result.stderr.strip(),
-                                        result.stdout.strip()))
-            raise OSError("Error: Cannot generate GIF animation. "
-                    "The magick/convert command (ImageMagick) is present but does "
-                    "not seem to be functional. Verify that the objects "
-                    "passed to the animate command can be saved in PNG "
-                    "image format. "
-                    "See www.imagemagick.org more information.")
+            print(
+                'Command "{}" returned nonzero exit status "{}" '
+                '(with stderr "{}" and stdout "{}").'.format(
+                    result.args,
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
+            raise OSError(
+                "Error: Cannot generate GIF animation. "
+                "The magick/convert command (ImageMagick) is present but does "
+                "not seem to be functional. Verify that the objects "
+                "passed to the animate command can be saved in PNG "
+                "image format. "
+                "See www.imagemagick.org more information."
+            )
 
         if show_path:
             print("Animation saved to file %s." % savefile)
@@ -741,7 +770,7 @@ class Animation(WithEqualityById, SageObject):
         """
 
         iterations = kwds.get('iterations', 0)
-        loop = (iterations == 0)
+        loop = iterations == 0
 
         t = display_manager.types
         supported = display_manager.supported_output()
@@ -750,7 +779,7 @@ class Animation(WithEqualityById, SageObject):
             if t.OutputImageGif in supported:
                 format = "gif"
             else:
-                return # No supported format could be guessed
+                return  # No supported format could be guessed
         suffix = None
         outputType = None
         if format == "gif":
@@ -775,15 +804,17 @@ class Animation(WithEqualityById, SageObject):
         if format is None:
             raise ValueError("Unknown video format")
         if outputType not in supported:
-            return # Sorry, requested format is not supported
+            return  # Sorry, requested format is not supported
         if suffix is not None:
             return display_manager.graphics_from_save(
-                self.save, kwds, suffix, outputType)
+                self.save, kwds, suffix, outputType
+            )
 
         # Now we save for OutputVideoBase
         filename = tmp_filename(ext=outputType.ext)
         self.save(filename, **kwds)
         from sage.repl.rich_output.buffer import OutputBuffer
+
         buf = OutputBuffer.from_file(filename)
         return outputType(buf, loop=loop)
 
@@ -883,11 +914,20 @@ class Animation(WithEqualityById, SageObject):
             kwds.setdefault("iterations", iterations)
 
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self, **kwds)
 
-    def ffmpeg(self, savefile=None, show_path=False, output_format=None,
-               ffmpeg_options='', delay=None, iterations=0, pix_fmt='rgb24'):
+    def ffmpeg(
+        self,
+        savefile=None,
+        show_path=False,
+        output_format=None,
+        ffmpeg_options='',
+        delay=None,
+        iterations=0,
+        pix_fmt='rgb24',
+    ):
         r"""
         Return a movie showing an animation composed from rendering
         the frames in ``self``.
@@ -965,6 +1005,7 @@ class Animation(WithEqualityById, SageObject):
             sage: a.ffmpeg(output_format='gif',delay=30,iterations=5)  # long time  # optional -- FFmpeg
         """
         from sage.features.ffmpeg import FFmpeg
+
         FFmpeg().require()
 
         if savefile is None:
@@ -972,7 +1013,7 @@ class Animation(WithEqualityById, SageObject):
                 output_format = '.mpg'
             else:
                 if output_format[0] != '.':
-                    output_format = '.'+output_format
+                    output_format = '.' + output_format
             savefile = tmp_filename(ext=output_format)
         else:
             if output_format is None:
@@ -1007,7 +1048,7 @@ class Animation(WithEqualityById, SageObject):
                 pix_fmt_cmd = ''
             ffmpeg_options += f' {pix_fmt_cmd}{loop_cmd}'
         if delay is not None and output_format != '.mpeg' and output_format != '.mpg':
-            early_options += ' -r %s ' % int(100/delay)
+            early_options += ' -r %s ' % int(100 / delay)
         savefile = os.path.abspath(savefile)
         pngdir = self.png()
         pngs = os.path.join(pngdir, "%08d.png")
@@ -1018,15 +1059,21 @@ class Animation(WithEqualityById, SageObject):
         # The `-nostdin` is needed to avoid the command to hang, see
         # https://stackoverflow.com/questions/16523746/ffmpeg-hangs-when-run-in-background
         cmd = 'cd {}; {} -nostdin -y -f image2 {} -i {} {} {}'.format(
-            shlex.quote(pngdir), shlex.quote(FFmpeg().absolute_filename()),
-            early_options, shlex.quote(pngs), ffmpeg_options, shlex.quote(savefile))
+            shlex.quote(pngdir),
+            shlex.quote(FFmpeg().absolute_filename()),
+            early_options,
+            shlex.quote(pngs),
+            ffmpeg_options,
+            shlex.quote(savefile),
+        )
         from subprocess import check_call, CalledProcessError, PIPE
+
         try:
             if sage.misc.verbose.get_verbose() > 0:
                 set_stderr = None
             else:
                 set_stderr = PIPE
-            sage.misc.verbose.verbose("Executing '%s'" % cmd,level=1)
+            sage.misc.verbose.verbose("Executing '%s'" % cmd, level=1)
             sage.misc.verbose.verbose("\n---- ffmpeg output below ----\n")
             check_call(cmd, shell=True, stderr=set_stderr)
             if show_path:
@@ -1093,9 +1140,7 @@ class Animation(WithEqualityById, SageObject):
         if savefile is None:
             savefile = tmp_filename(ext='.png')
         with open(savefile, "wb") as out:
-            apng = APngAssembler(
-                out, len(self),
-                delay=delay, num_plays=iterations)
+            apng = APngAssembler(out, len(self), delay=delay, num_plays=iterations)
             for i in range(len(self)):
                 png = os.path.join(pngdir, "%08d.png" % i)
                 apng.add_frame(png)
@@ -1185,8 +1230,9 @@ class Animation(WithEqualityById, SageObject):
                 suffix = '.gif'
 
         if filename is None or suffix == '.gif':
-            self.gif(savefile=filename, show_path=show_path,
-                     use_ffmpeg=use_ffmpeg, **kwds)
+            self.gif(
+                savefile=filename, show_path=show_path, use_ffmpeg=use_ffmpeg, **kwds
+            )
         elif suffix == '.sobj':
             SageObject.save(self, filename)
             if show_path:
@@ -1232,6 +1278,7 @@ class Animation(WithEqualityById, SageObject):
             :ref:`threejs_viewer`
         """
         from sage.plot.plot3d.base import Graphics3d, KeyframeAnimationGroup
+
         # Attempt to convert frames to Graphics3d objects.
         g3d_frames = []
         for i, frame in enumerate(self._frames):
@@ -1295,12 +1342,13 @@ class APngAssembler:
         sage: assembleAPNG()  # long time
         '...png'
     """
-    magic = b"\x89PNG\x0d\x0a\x1a\x0a"
-    mustmatch = frozenset([b"IHDR", b"PLTE", b"bKGD", b"cHRM", b"gAMA",
-                           b"pHYs", b"sBIT", b"tRNS"])
 
-    def __init__(self, out, num_frames,
-                 num_plays=0, delay=200, delay_denominator=100):
+    magic = b"\x89PNG\x0d\x0a\x1a\x0a"
+    mustmatch = frozenset(
+        [b"IHDR", b"PLTE", b"bKGD", b"cHRM", b"gAMA", b"pHYs", b"sBIT", b"tRNS"]
+    )
+
+    def __init__(self, out, num_frames, num_plays=0, delay=200, delay_denominator=100):
         r"""
         Initialize for creation of an APNG file.
         """
@@ -1539,7 +1587,7 @@ class APngAssembler:
             exit _next_IDAT -> None
         """
         self._fctl()
-        maxlen = 0x7ffffffb
+        maxlen = 0x7FFFFFFB
         while len(data) > maxlen:
             self._chunk(b"fdAT", self._seqno() + data[:maxlen])
             data = data[maxlen:]
@@ -1628,9 +1676,15 @@ class APngAssembler:
             return
         data = struct.pack(
             ">4L2H2B",
-            self.width, self.height, 0, 0,
-            self.delay_numerator, self.delay_denominator,
-            1, 0)
+            self.width,
+            self.height,
+            0,
+            0,
+            self.delay_numerator,
+            self.delay_denominator,
+            1,
+            0,
+        )
         self._chunk(b"fcTL", self._seqno() + data)
         self._fctl_written = True
 
@@ -1650,7 +1704,7 @@ class APngAssembler:
             sage: buf.getvalue() == b'\x89PNG\r\n\x1a\n\x00\x00\x00\x04abcdefgh\xae\xef*P'
             True
         """
-        ccrc = struct.pack(">L", zlib.crc32(ctype + cdata) & 0xffffffff)
+        ccrc = struct.pack(">L", zlib.crc32(ctype + cdata) & 0xFFFFFFFF)
         clen = struct.pack(">L", len(cdata))
         for d in [clen, ctype, cdata, ccrc]:
             self.out.write(d)
@@ -1682,15 +1736,15 @@ class APngAssembler:
         """
         b = []
         while h:
-            if h[0] in ' \n': # ignore whitespace
+            if h[0] in ' \n':  # ignore whitespace
                 h = h[1:]
-            elif h[0] in '0123456789abcdef': # hex byte
+            elif h[0] in '0123456789abcdef':  # hex byte
                 b.append(int(h[:2], 16))
                 h = h[2:]
-            elif h[0] == '.': # for chunk type
+            elif h[0] == '.':  # for chunk type
                 b.extend(ord(h[i]) for i in range(1, 5))
                 h = h[5:]
-            else: # for PNG magic
+            else:  # for PNG magic
                 b.append(ord(h[0]))
                 h = h[1:]
 
@@ -1717,7 +1771,6 @@ class APngAssembler:
             '...png'
         """
         data = {
-
             # Input 1: one PNG image, except the data makes no real sense
             "input1": """89 PNG 0d0a1a0a
             0000000d.IHDR 00000003000000020800000000 b81f39c6
@@ -1725,7 +1778,6 @@ class APngAssembler:
             00000007.tIME 07de061b0b2624 1f307ad5
             00000008.IDAT 696d673164617461 ce8a4999
             00000000.IEND ae426082""",
-
             # Input 2: slightly different, data in two chunks
             "input2": """89 PNG 0d0a1a0a
             0000000d.IHDR 00000003000000020800000000 b81f39c6
@@ -1733,7 +1785,6 @@ class APngAssembler:
             00000004.IDAT 696d6732 0e69ab1d
             00000004.IDAT 64617461 6694cb78
             00000000.IEND ae426082""",
-
             # Expected output 1: both images as frames of an animation
             "anim12": """89 PNG 0d0a1a0a
             0000000d.IHDR 00000003000000020800000000 b81f39c6
@@ -1747,7 +1798,6 @@ class APngAssembler:
             00000008.fdAT 00000002696d6732 9cfb89a3
             00000008.fdAT 0000000364617461 c966c076
             00000000.IEND ae426082""",
-
             # Expected output 2: first image as fallback, second as animation
             "still1anim2": """89 PNG 0d0a1a0a
             0000000d.IHDR 00000003000000020800000000 b81f39c6
@@ -1759,11 +1809,11 @@ class APngAssembler:
             00000008.fdAT 00000001696d6732 db5bf373
             00000008.fdAT 0000000264617461 f406e9c6
             00000000.IEND ae426082""",
-
         }
         d = cls._hex2bin(data[name])
         if asFile:
             from sage.misc.temporary_file import tmp_filename
+
             fn = tmp_filename(ext='.png')
             with open(fn, 'wb') as f:
                 f.write(d)
@@ -1786,12 +1836,14 @@ class APngAssembler:
         """
         from sage.doctest.fixtures import trace_method
         from io import BytesIO
+
         buf = BytesIO()
         apng = cls(buf, 2)
         if methodToTrace is not None:
             trace_method(apng, methodToTrace, **kwds)
-        apng.add_frame(cls._testData("input1", True),
-                       delay=0x567, delay_denominator=0x1234)
+        apng.add_frame(
+            cls._testData("input1", True), delay=0x567, delay_denominator=0x1234
+        )
         apng.add_frame(cls._testData("input2", True))
         out = buf.getvalue()
         assert len(out) == 217

@@ -99,6 +99,7 @@ def normalize_args_vectorspace(*args, **kwds):
         (2, Rational Field)
     """
     from sage.rings.integer_ring import ZZ
+
     if len(args) == 1:
         V = args[0]
         try:
@@ -111,6 +112,7 @@ def normalize_args_vectorspace(*args, **kwds):
         try:
             ring = ZZ(ring)
             from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
             var = kwds.get('var', 'a')
             ring = FiniteField(ring, var)
         except (ValueError, TypeError):
@@ -175,6 +177,7 @@ def normalize_args_invariant_form(R, d, invariant_form):
         return invariant_form
 
     from sage.matrix.constructor import matrix
+
     m = matrix(R, d, d, invariant_form)
 
     if m.is_singular():
@@ -183,9 +186,16 @@ def normalize_args_invariant_form(R, d, invariant_form):
 
 
 class NamedMatrixGroup_generic(CachedRepresentation, MatrixGroup_generic):
-
-    def __init__(self, degree, base_ring, special, sage_name, latex_string,
-                 category=None, invariant_form=None):
+    def __init__(
+        self,
+        degree,
+        base_ring,
+        special,
+        sage_name,
+        latex_string,
+        category=None,
+        invariant_form=None,
+    ):
         """
         Base class for "named" matrix groups.
 

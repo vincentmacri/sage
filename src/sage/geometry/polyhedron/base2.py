@@ -182,11 +182,14 @@ class Polyhedron_base2(Polyhedron_base1):
             vertices = self.vertices_matrix(ZZ).columns()
         except TypeError:
             if not envelope:
-                raise ValueError('Some vertices are not integral. '
+                raise ValueError(
+                    'Some vertices are not integral. '
                     'You probably want to add the argument '
-                    '"envelope=True" to compute an enveloping lattice polytope.')
+                    '"envelope=True" to compute an enveloping lattice polytope.'
+                )
             from sage.arith.misc import integer_ceil as ceil
             from sage.arith.misc import integer_floor as floor
+
             vertices = []
             for v in self.vertex_generator():
                 vbox = [set([floor(x), ceil(x)]) for x in v]
@@ -194,6 +197,7 @@ class Polyhedron_base2(Polyhedron_base1):
 
         # construct the (enveloping) lattice polytope
         from sage.geometry.lattice_polytope import LatticePolytope
+
         return LatticePolytope(vertices)
 
     def _integral_points_PALP(self):
@@ -497,6 +501,7 @@ class Polyhedron_base2(Polyhedron_base1):
             sage: S = set(P.integral_points())
         """
         from sage.misc.misc_c import prod
+
         if not self.is_compact():
             raise ValueError('can only enumerate points in a compact polyhedron')
         # Trivial cases: polyhedron with 0 or 1 vertices
@@ -513,15 +518,21 @@ class Polyhedron_base2(Polyhedron_base1):
         box_min, box_max = self.bounding_box(integral_hull=True)
         if box_min is None:
             return ()
-        box_points = prod(max_coord-min_coord+1 for min_coord, max_coord in zip(box_min, box_max))
-        if not self.is_lattice_polytope() or \
-                (self.is_simplex() and box_points < 1000) or \
-                box_points < threshold:
+        box_points = prod(
+            max_coord - min_coord + 1 for min_coord, max_coord in zip(box_min, box_max)
+        )
+        if (
+            not self.is_lattice_polytope()
+            or (self.is_simplex() and box_points < 1000)
+            or box_points < threshold
+        ):
             from sage.geometry.integral_points import rectangular_box_points
+
             return rectangular_box_points(list(box_min), list(box_max), self)
 
         # for more complicate polytopes, triangulate & use smith normal form
         from sage.geometry.integral_points import simplex_points
+
         if self.is_simplex():
             return simplex_points(self.Vrepresentation())
         triangulation = self.triangulate()
@@ -595,6 +606,7 @@ class Polyhedron_base2(Polyhedron_base1):
         """
         from sage.arith.misc import integer_ceil as ceil
         from sage.arith.misc import integer_floor as floor
+
         if not self.is_compact():
             raise ValueError('can only enumerate points in a compact polyhedron')
 
@@ -607,11 +619,16 @@ class Polyhedron_base2(Polyhedron_base1):
         P = self
         S = self.parent()
         for i in range(D):  # Now compute x_i, the ith component of coordinate.
-            lower, upper = ceil(lower_bounds[i]), floor(upper_bounds[i]) + 1  # So lower <= x_i < upper.
-            while lower < upper-1:
+            lower, upper = (
+                ceil(lower_bounds[i]),
+                floor(upper_bounds[i]) + 1,
+            )  # So lower <= x_i < upper.
+            while lower < upper - 1:
                 guess = (lower + upper) // 2  # > lower.
                 # Build new polyhedron by intersecting P with the halfspace {x_i < guess}.
-                P_lt_guess = P.intersection(S(None, ([[guess-1] + [0] * i + [-1] + [0] * (D - i - 1)], [])))
+                P_lt_guess = P.intersection(
+                    S(None, ([[guess - 1] + [0] * i + [-1] + [0] * (D - i - 1)], []))
+                )
                 # Avoid computing P_geq_guess = P.intersection({x_i >= guess}) right now, it might not be needed.
                 P_lt_guess_count = P_lt_guess.integral_points_count(**kwds)
                 if P_lt_guess_count > index:  # Move upper down to guess.
@@ -621,7 +638,9 @@ class Polyhedron_base2(Polyhedron_base1):
                 else:  # P_lt_guess_count <= index:  # Move lower up to guess.
                     lower = guess
                     index -= P_lt_guess_count
-                    P_geq_guess = P.intersection(S(None, ([[-guess] + [0] * i + [1] + [0] * (D - i - 1)], [])))
+                    P_geq_guess = P.intersection(
+                        S(None, ([[-guess] + [0] * i + [1] + [0] * (D - i - 1)], []))
+                    )
                     P = P_geq_guess
             coordinate.append(lower)  # Record the new component that we have found.
         point = vector(ZZ, coordinate)
@@ -684,9 +703,12 @@ class Polyhedron_base2(Polyhedron_base1):
         count = self.integral_points_count()
         if count == 0:
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError('polyhedron does not contain any integral points')
 
-        return self.get_integral_point(current_randstate().python_random().randint(0, count-1), **kwds)
+        return self.get_integral_point(
+            current_randstate().python_random().randint(0, count - 1), **kwds
+        )
 
     def generating_function_of_integral_points(self, **kwds):
         r"""
@@ -814,4 +836,5 @@ class Polyhedron_base2(Polyhedron_base1):
             :func:`~sage.geometry.polyhedron.generating_function.generating_function_of_integral_points`.
         """
         from .generating_function import generating_function_of_integral_points
+
         return generating_function_of_integral_points(self, **kwds)

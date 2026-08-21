@@ -364,7 +364,11 @@ class DIMACS(SatSolver):
         with open(filename, "w") as fh:
             fh.write("p cnf %d %d\n" % (nlits, len(clauses)))
             for clause in clauses:
-                if len(clause) == 3 and clause[1] in (True, False) and clause[2] in (True, False, None):
+                if (
+                    len(clause) == 3
+                    and clause[1] in (True, False)
+                    and clause[2] in (True, False, None)
+                ):
                     lits, is_xor, rhs = clause
                 else:
                     lits, is_xor, rhs = clause, False, None
@@ -425,7 +429,10 @@ class DIMACS(SatSolver):
         try:
             process = subprocess.Popen(args, stdout=subprocess.PIPE)
         except OSError:
-            raise OSError("Could not run '%s', perhaps you need to add your SAT solver to $PATH?" % (" ".join(args)))
+            raise OSError(
+                "Could not run '%s', perhaps you need to add your SAT solver to $PATH?"
+                % (" ".join(args))
+            )
 
         try:
             while process.poll() is None:
@@ -519,7 +526,9 @@ class DIMACS(SatSolver):
             sage: solve_sat(F, solver=sage.sat.solvers.RSat)    # optional - rsat, needs brial
         """
         if assumptions is not None:
-            raise NotImplementedError("Assumptions are not supported for DIMACS based solvers.")
+            raise NotImplementedError(
+                "Assumptions are not supported for DIMACS based solvers."
+            )
 
         self._run()
 
@@ -535,9 +544,15 @@ class DIMACS(SatSolver):
 
         if v_lines:
             L = " ".join(v_lines).split(" ")
-            assert L[-1] == "0", "last digit of solution line must be zero (not {})".format(L[-1])
+            assert L[-1] == "0", (
+                "last digit of solution line must be zero (not {})".format(L[-1])
+            )
             return (None,) + tuple(int(e) > 0 for e in L[:-1])
-        raise ValueError("When parsing the output(={}), no line starts with letter v or s".format(self._output))
+        raise ValueError(
+            "When parsing the output(={}), no line starts with letter v or s".format(
+                self._output
+            )
+        )
 
 
 class RSat(DIMACS):
@@ -573,6 +588,7 @@ class RSat(DIMACS):
         sage: solver()                            # optional - rsat
         False
     """
+
     command = "rsat {input} -v -s"
 
 
@@ -638,6 +654,7 @@ class Glucose(DIMACS):
         s SATISFIABLE
         v -1 -2 ... 100 0
     """
+
     command = "glucose -verb=0 -model {input}"
 
 
@@ -702,6 +719,7 @@ class GlucoseSyrup(DIMACS):
         s SATISFIABLE
         v -1 -2 ... 100 0
     """
+
     command = "glucose-syrup -model -verb=0 {input}"
 
 

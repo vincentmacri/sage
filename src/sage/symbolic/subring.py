@@ -166,9 +166,14 @@ class SymbolicSubringFactory(UniqueFactory):
         sage: SymbolicSubring(rejecting_variables=tuple()) is SR
         True
     """
+
     def create_key_and_extra_args(
-            self, accepting_variables=None, rejecting_variables=None,
-            no_variables=False, **kwds):
+        self,
+        accepting_variables=None,
+        rejecting_variables=None,
+        no_variables=False,
+        **kwds,
+    ):
         r"""
         Given the arguments and keyword, create a key that uniquely
         determines this object.
@@ -198,16 +203,25 @@ class SymbolicSubringFactory(UniqueFactory):
             ...
             ValueError: cannot create a symbolic subring since input is ambiguous
         """
-        if accepting_variables is None and \
-           rejecting_variables is None and \
-           not no_variables:
-            raise ValueError('cannot create a symbolic subring '
-                             'since nothing is specified')
-        if accepting_variables is not None and rejecting_variables is not None or \
-           rejecting_variables is not None and no_variables or \
-           no_variables and accepting_variables is not None:
-            raise ValueError('cannot create a symbolic subring '
-                             'since input is ambiguous')
+        if (
+            accepting_variables is None
+            and rejecting_variables is None
+            and not no_variables
+        ):
+            raise ValueError(
+                'cannot create a symbolic subring since nothing is specified'
+            )
+        if (
+            accepting_variables is not None
+            and rejecting_variables is not None
+            or rejecting_variables is not None
+            and no_variables
+            or no_variables
+            and accepting_variables is not None
+        ):
+            raise ValueError(
+                'cannot create a symbolic subring since input is ambiguous'
+            )
 
         if accepting_variables is not None:
             vars = tuple(accepting_variables)
@@ -247,7 +261,6 @@ SymbolicSubring = SymbolicSubringFactory("SymbolicSubring")
 
 
 class GenericSymbolicSubring(SymbolicRing):
-
     def __init__(self, vars):
         r"""
         An abstract base class for a symbolic subring.
@@ -278,9 +291,15 @@ class GenericSymbolicSubring(SymbolicRing):
         super().__init__()
         self._vars_ = set(vars)
         if not all(v.is_symbol() for v in self._vars_):
-            raise ValueError('Invalid variables: {}'.format(
-                ', '.join(str(v) for v in sorted(self._vars_, key=str)
-                          if not v.is_symbol())))
+            raise ValueError(
+                'Invalid variables: {}'.format(
+                    ', '.join(
+                        str(v)
+                        for v in sorted(self._vars_, key=str)
+                        if not v.is_symbol()
+                    )
+                )
+            )
 
     def _repr_variables_(self):
         r"""
@@ -351,8 +370,7 @@ class GenericSymbolicSubring(SymbolicRing):
         """
         expression = super()._element_constructor_(x)
         assert expression.parent() is self
-        if not all(self.has_valid_variable(var)
-                   for var in expression.variables()):
+        if not all(self.has_valid_variable(var) for var in expression.variables()):
             raise TypeError('%s is not contained in %s' % (x, self))
         return expression
 
@@ -402,15 +420,17 @@ class GenericSymbolicSubring(SymbolicRing):
         if isinstance(P, type):
             return SR._coerce_map_from_(P)
 
-        if RLF.has_coerce_map_from(P) or \
-           CLF.has_coerce_map_from(P) or \
-           AA.has_coerce_map_from(P) or \
-           QQbar.has_coerce_map_from(P):
+        if (
+            RLF.has_coerce_map_from(P)
+            or CLF.has_coerce_map_from(P)
+            or AA.has_coerce_map_from(P)
+            or QQbar.has_coerce_map_from(P)
+        ):
             return True
 
-        if (P is InfinityRing or
-            isinstance(P, (sage.rings.abc.RealIntervalField,
-                           sage.rings.abc.ComplexIntervalField))):
+        if P is InfinityRing or isinstance(
+            P, (sage.rings.abc.RealIntervalField, sage.rings.abc.ComplexIntervalField)
+        ):
             return True
 
         if P._is_numerical():
@@ -514,6 +534,7 @@ class GenericSymbolicSubringFunctor(ConstructionFunctor):
         """
         self.vars = set(vars)
         from sage.categories.rings import Rings
+
         super().__init__(Rings(), Rings())
 
     def _repr_variables_(self):
@@ -548,8 +569,10 @@ class GenericSymbolicSubringFunctor(ConstructionFunctor):
             Symbolic Constants Subring
         """
         return 'Subring<%s%s%s>' % (
-            self._repr_type_, ' ' if self._repr_type_ else '',
-            self._repr_variables_() if self.vars else 'no variable')
+            self._repr_type_,
+            ' ' if self._repr_type_ else '',
+            self._repr_variables_() if self.vars else 'no variable',
+        )
 
     def merge(self, other):
         r"""
@@ -627,8 +650,7 @@ class SymbolicSubringAcceptingVars(GenericSymbolicSubring):
             sage: SymbolicSubring(accepting_variables=('a',))  # indirect doctest
             Symbolic Subring accepting the variable a
         """
-        return 'Symbolic Subring accepting %s' % \
-            (self._repr_variables_())
+        return 'Symbolic Subring accepting %s' % (self._repr_variables_())
 
     def has_valid_variable(self, variable):
         r"""
@@ -712,7 +734,6 @@ class SymbolicSubringAcceptingVars(GenericSymbolicSubring):
 
 
 class SymbolicSubringAcceptingVarsFunctor(GenericSymbolicSubringFunctor):
-
     _functor_name = 'SymbolicSubringAcceptingVarsFunctor'
 
     _repr_type_ = 'accepting'
@@ -771,8 +792,10 @@ class SymbolicSubringAcceptingVarsFunctor(GenericSymbolicSubringFunctor):
             symbolic ring but Symbolic Subring accepting the variable a given.
         """
         if R is not SR:
-            raise NotImplementedError('This functor can only be applied on '
-                                      'the symbolic ring but %s given.' % (R,))
+            raise NotImplementedError(
+                'This functor can only be applied on '
+                'the symbolic ring but %s given.' % (R,)
+            )
         return SymbolicSubring(accepting_variables=self.vars)
 
 
@@ -794,8 +817,7 @@ class SymbolicSubringRejectingVars(GenericSymbolicSubring):
             sage: SymbolicSubring(rejecting_variables=('r',))  # indirect doctest
             Symbolic Subring rejecting the variable r
         """
-        return 'Symbolic Subring rejecting %s' % \
-            (self._repr_variables_())
+        return 'Symbolic Subring rejecting %s' % (self._repr_variables_())
 
     def has_valid_variable(self, variable):
         r"""
@@ -901,7 +923,6 @@ class SymbolicSubringRejectingVars(GenericSymbolicSubring):
 
 
 class SymbolicSubringRejectingVarsFunctor(GenericSymbolicSubringFunctor):
-
     _functor_name = 'SymbolicSubringRejectingVarsFunctor'
 
     _repr_type_ = 'rejecting'
@@ -960,8 +981,10 @@ class SymbolicSubringRejectingVarsFunctor(GenericSymbolicSubringFunctor):
             symbolic ring but Symbolic Subring rejecting the variable r given.
         """
         if R is not SR:
-            raise NotImplementedError('This functor can only be applied on '
-                                      'the symbolic ring but %s given.' % (R,))
+            raise NotImplementedError(
+                'This functor can only be applied on '
+                'the symbolic ring but %s given.' % (R,)
+            )
         return SymbolicSubring(rejecting_variables=self.vars)
 
 

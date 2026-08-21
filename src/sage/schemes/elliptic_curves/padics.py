@@ -96,18 +96,23 @@ def _normalize_padic_lseries(self, p, normalize, implementation, precision):
         if precision is None:
             raise ValueError("Must specify precision when using 'pollackstevens'")
         if normalize is not None:
-            raise ValueError("The 'normalize' parameter is not used for Pollack-Stevens' overconvergent modular symbols")
+            raise ValueError(
+                "The 'normalize' parameter is not used for Pollack-Stevens' overconvergent modular symbols"
+            )
     elif implementation == "num":
         if normalize is not None:
-            raise ValueError("The 'normalize' parameter is not used for numerical modular symbols")
+            raise ValueError(
+                "The 'normalize' parameter is not used for numerical modular symbols"
+            )
     else:
-        raise ValueError("Implementation should be one of  'sage', 'eclib', 'num' or 'pollackstevens'")
+        raise ValueError(
+            "Implementation should be one of  'sage', 'eclib', 'num' or 'pollackstevens'"
+        )
     return (p, normalize, implementation, precision)
 
 
 @cached_method(key=_normalize_padic_lseries)
-def padic_lseries(self, p, normalize=None, implementation='eclib',
-                  precision=None):
+def padic_lseries(self, p, normalize=None, implementation='eclib', precision=None):
     r"""
     Return the `p`-adic `L`-series of ``self`` at
     `p`, which is an object whose approx method computes
@@ -211,23 +216,26 @@ def padic_lseries(self, p, normalize=None, implementation='eclib',
         sage: L[3]
         O(11^0)
     """
-    p, normalize, implementation, precision = self._normalize_padic_lseries(p,
-        normalize, implementation, precision)
+    p, normalize, implementation, precision = self._normalize_padic_lseries(
+        p, normalize, implementation, precision
+    )
 
     if implementation in ['sage', 'eclib', 'num']:
         if self.ap(p) % p != 0:
-            Lp = plseries.pAdicLseriesOrdinary(self, p,
-                                  normalize=normalize, implementation=implementation)
+            Lp = plseries.pAdicLseriesOrdinary(
+                self, p, normalize=normalize, implementation=implementation
+            )
         else:
-            Lp = plseries.pAdicLseriesSupersingular(self, p,
-                                  normalize=normalize, implementation=implementation)
+            Lp = plseries.pAdicLseriesSupersingular(
+                self, p, normalize=normalize, implementation=implementation
+            )
     else:
         phi = self.pollack_stevens_modular_symbol(sign=0)
         if phi.parent().level() % p == 0:
             Phi = phi.lift(p, precision, eigensymbol=True)
         else:
             Phi = phi.p_stabilize_and_lift(p, precision, eigensymbol=True)
-        Lp = Phi.padic_lseries()  #mm TODO should this pass precision on too ?
+        Lp = Phi.padic_lseries()  # mm TODO should this pass precision on too ?
         Lp._cinf = self.real_components()
     return Lp
 
@@ -318,7 +326,7 @@ def padic_regulator(self, p, prec=20, height=None, check_hypotheses=True):
         if not p.is_prime():
             raise ValueError("p = (%s) must be prime" % p)
         if p == 2:
-            raise ValueError("p must be odd")   # todo
+            raise ValueError("p must be odd")  # todo
         if self.conductor() % (p**2) == 0:
             raise ArithmeticError("p must be a semi-stable prime")
 
@@ -331,10 +339,12 @@ def padic_regulator(self, p, prec=20, height=None, check_hypotheses=True):
         reg = lp.Dp_valued_regulator(prec=prec)
         return reg
     if self.rank() == 0:
-        return Qp(p,prec)(1)
+        return Qp(p, prec)(1)
     if height is None:
         height = self.padic_height(p, prec, check_hypotheses=False)
-    d = self.padic_height_pairing_matrix(p=p, prec=prec, height=height, check_hypotheses=False)
+    d = self.padic_height_pairing_matrix(
+        p=p, prec=prec, height=height, check_hypotheses=False
+    )
     return d.determinant()
 
 
@@ -411,10 +421,10 @@ def padic_height_pairing_matrix(self, p, prec=20, height=None, check_hypotheses=
     # Use <P, Q> =1/2*( h(P + Q) - h(P) - h(Q) )
 
     for i in range(rank):
-        M[i,i] = height(basis[i])
+        M[i, i] = height(basis[i])
     for i in range(rank):
-        for j in range(i+1, rank):
-            M[i, j] = ( height(basis[i] + basis[j]) - M[i,i] - M[j,j] ) / 2
+        for j in range(i + 1, rank):
+            M[i, j] = (height(basis[i] + basis[j]) - M[i, i] - M[j, j]) / 2
             M[j, i] = M[i, j]
 
     return M
@@ -526,12 +536,12 @@ def _multiply_point(E, R, P, m):
     b6 = R(E.b6()) * d**6
     b8 = R(E.b8()) * d**8
 
-    B4 = 6*alpha**2 + b2*alpha + b4
-    B6 = 4*alpha**3 + b2*alpha**2 + 2*b4*alpha + b6
-    B6_sqr = B6*B6
-    B8 = 3*alpha**4 + b2*alpha**3 + 3*b4*alpha**2 + 3*b6*alpha + b8
+    B4 = 6 * alpha**2 + b2 * alpha + b4
+    B6 = 4 * alpha**3 + b2 * alpha**2 + 2 * b4 * alpha + b6
+    B6_sqr = B6 * B6
+    B8 = 3 * alpha**4 + b2 * alpha**3 + 3 * b4 * alpha**2 + 3 * b6 * alpha + b8
 
-    T = 2*beta + a1*alpha + a3
+    T = 2 * beta + a1 * alpha + a3
 
     # make a list of disjoint intervals [a[i], b[i]) such that we need to
     # compute g(k) for all a[i] <= k <= b[i] for each i
@@ -539,11 +549,13 @@ def _multiply_point(E, R, P, m):
     interval = (m - 2, m + 3)
     while interval[0] < interval[1]:
         intervals.append(interval)
-        interval = max((interval[0] - 3) >> 1, 0), \
-                   min((interval[1] + 5) >> 1, interval[0])
+        interval = (
+            max((interval[0] - 3) >> 1, 0),
+            min((interval[1] + 5) >> 1, interval[0]),
+        )
 
     # now walk through list and compute g(k)
-    g = {0 : R(0), 1 : R(1), 2 : R(-1), 3 : B8, 4 : B6**2 - B4*B8}
+    g = {0: R(0), 1: R(1), 2: R(-1), 3: B8, 4: B6**2 - B4 * B8}
     for i in reversed(intervals):
         k = i[0]
         while k < i[1]:
@@ -551,27 +563,27 @@ def _multiply_point(E, R, P, m):
                 j = k >> 1
                 if k & 1:
                     t1 = g[j]
-                    t2 = g[j+1]
-                    prod1 = g[j+2] * t1*t1*t1
-                    prod2 = g[j-1] * t2*t2*t2
+                    t2 = g[j + 1]
+                    prod1 = g[j + 2] * t1 * t1 * t1
+                    prod2 = g[j - 1] * t2 * t2 * t2
                     g[k] = prod1 - B6_sqr * prod2 if j & 1 else B6_sqr * prod1 - prod2
                 else:
-                    t1 = g[j-1]
-                    t2 = g[j+1]
-                    g[k] = g[j] * (g[j-2] * t2*t2 - g[j+2] * t1*t1)
+                    t1 = g[j - 1]
+                    t2 = g[j + 1]
+                    g[k] = g[j] * (g[j - 2] * t2 * t2 - g[j + 2] * t1 * t1)
             k = k + 1
 
     if m & 1:
         psi_m = g[m]
-        psi_m_m1 = g[m-1] * T
-        psi_m_p1 = g[m+1] * T
+        psi_m_m1 = g[m - 1] * T
+        psi_m_p1 = g[m + 1] * T
     else:
         psi_m = g[m] * T
-        psi_m_m1 = g[m-1]
-        psi_m_p1 = g[m+1]
+        psi_m_m1 = g[m - 1]
+        psi_m_p1 = g[m + 1]
 
     theta = alpha * psi_m * psi_m - psi_m_m1 * psi_m_p1
-    t1 = g[m-2] * g[m+1] * g[m+1] - g[m+2] * g[m-1] * g[m-1]
+    t1 = g[m - 2] * g[m + 1] * g[m + 1] - g[m + 2] * g[m - 1] * g[m - 1]
     if m & 1:
         t1 = t1 * T
     omega = (t1 + (a1 * theta + a3 * psi_m * psi_m) * psi_m) / -2
@@ -626,8 +638,7 @@ def _multiple_to_make_good_reduction(E):
         4
     """
     if not E.is_integral():
-        st = ("This only implemented for integral models. "
-              "Please change the model first.")
+        st = "This only implemented for integral models. Please change the model first."
         raise NotImplementedError(st)
     if E.is_minimal():
         n2 = LCM(E.tamagawa_numbers())
@@ -641,15 +652,15 @@ def _multiple_to_make_good_reduction(E):
         for p in ps:
             np = u.valuation(p)
             if Emin.discriminant() % p != 0:
-                li.append(Emin.Np(p) * p**(np-1))
+                li.append(Emin.Np(p) * p ** (np - 1))
             elif Emin.has_additive_reduction(p):
                 li.append(E.tamagawa_number(p) * p**np)
             elif E.has_split_multiplicative_reduction(p):
-                li.append(E.tamagawa_number(p) * (p-1) * p**(np-1))
-            else: # non split
-                li.append(E.tamagawa_number(p) * (p+1) * p**(np-1))
+                li.append(E.tamagawa_number(p) * (p - 1) * p ** (np - 1))
+            else:  # non split
+                li.append(E.tamagawa_number(p) * (p + 1) * p ** (np - 1))
         otherbad = Integer(Emin.discriminant()).prime_divisors()
-        otherbad = [p for p in otherbad if u % p != 0 ]
+        otherbad = [p for p in otherbad if u % p != 0]
         li += [E.tamagawa_number(p) for p in otherbad]
         n2 = LCM(li)
     return n2
@@ -788,7 +799,7 @@ def padic_height(self, p, prec=20, sigma=None, check_hypotheses=True):
         if not p.is_prime():
             raise ValueError("p = (%s) must be prime" % p)
         if p == 2:
-            raise ValueError("p must be odd")   # todo
+            raise ValueError("p must be odd")  # todo
         if self.conductor() % (p**2) == 0:
             raise ArithmeticError("p must be a semi-stable prime")
 
@@ -812,14 +823,14 @@ def padic_height(self, p, prec=20, sigma=None, check_hypotheses=True):
     n = LCM(n1, n2)
     m = int(n / n2)
 
-    adjusted_prec = prec + 2 * valuation(n, p)   # this is M'
-    R = Integers(p ** adjusted_prec)
+    adjusted_prec = prec + 2 * valuation(n, p)  # this is M'
+    R = Integers(p**adjusted_prec)
 
     if sigma is None:
         sigma = self.padic_sigma(p, adjusted_prec, check_hypotheses=False)
 
     # K is the field for the final result
-    K = Qp(p, prec=adjusted_prec-1)
+    K = Qp(p, prec=adjusted_prec - 1)
     E = self
 
     def height(P, check=True):
@@ -827,8 +838,10 @@ def padic_height(self, p, prec=20, sigma=None, check_hypotheses=True):
             return K(0)
 
         if check:
-            assert P.curve() == E, "the point P must lie on the curve " \
-                   "from which the height function was created"
+            assert P.curve() == E, (
+                "the point P must lie on the curve "
+                "from which the height function was created"
+            )
 
         Q = n2 * P
         alpha, beta, d = _multiply_point(E, R, Q, m)
@@ -846,14 +859,16 @@ def padic_height(self, p, prec=20, sigma=None, check_hypotheses=True):
         total = (-alpha / beta) * total
 
         L = Qp(p, prec=adjusted_prec)
-        total = L(total.lift(), adjusted_prec)   # yuck... get rid of this lift!
+        total = L(total.lift(), adjusted_prec)  # yuck... get rid of this lift!
 
         # changed sign to make it correct for p-adic bsd
         answer = -total.log() * 2 / n**2
 
         if check:
-            assert answer.precision_absolute() >= prec, "we should have got an " \
-                   "answer with precision at least prec, but we didn't."
+            assert answer.precision_absolute() >= prec, (
+                "we should have got an "
+                "answer with precision at least prec, but we didn't."
+            )
         return K(answer)
 
     # (man... I love python's local function definitions...)
@@ -939,7 +954,7 @@ def padic_height_via_multiply(self, p, prec=20, E2=None, check_hypotheses=True):
         if not p.is_prime():
             raise ValueError("p = (%s) must be prime" % p)
         if p == 2:
-            raise ValueError("p must be odd")   # todo
+            raise ValueError("p must be odd")  # todo
         if self.conductor() % p == 0:
             raise ArithmeticError("must have good reduction at p")
         if self.ap(p) % p == 0:
@@ -958,13 +973,13 @@ def padic_height_via_multiply(self, p, prec=20, E2=None, check_hypotheses=True):
 
     lamb = int(math.floor(math.sqrt(prec)))
 
-    adjusted_prec = prec + 2 * valuation(n, p)   # this is M'
-    R = Integers(p ** (adjusted_prec + 2*lamb))
+    adjusted_prec = prec + 2 * valuation(n, p)  # this is M'
+    R = Integers(p ** (adjusted_prec + 2 * lamb))
 
     sigma = self.padic_sigma_truncated(p, N=adjusted_prec, E2=E2, lamb=lamb)
 
     # K is the field for the final result
-    K = Qp(p, prec=adjusted_prec-1)
+    K = Qp(p, prec=adjusted_prec - 1)
     E = self
 
     def height(P, check=True):
@@ -972,8 +987,10 @@ def padic_height_via_multiply(self, p, prec=20, E2=None, check_hypotheses=True):
             return K(0)
 
         if check:
-            assert P.curve() == E, "the point P must lie on the curve " \
-                   "from which the height function was created"
+            assert P.curve() == E, (
+                "the point P must lie on the curve "
+                "from which the height function was created"
+            )
 
         Q = n2 * P
         alpha, beta, d = _multiply_point(E, R, Q, m * p**lamb)
@@ -990,15 +1007,17 @@ def padic_height_via_multiply(self, p, prec=20, E2=None, check_hypotheses=True):
             t_power = t_power * t
         total = (-alpha / beta) * total
 
-        L = Qp(p, prec=adjusted_prec + 2*lamb)
-        total = L(total.lift(), adjusted_prec + 2*lamb)
+        L = Qp(p, prec=adjusted_prec + 2 * lamb)
+        total = L(total.lift(), adjusted_prec + 2 * lamb)
 
         # changed sign to make it correct for p-adic bsd
-        answer = -total.log() * 2 / (n * p**lamb)**2
+        answer = -total.log() * 2 / (n * p**lamb) ** 2
 
         if check:
-            assert answer.precision_absolute() >= prec, "we should have got an " \
-                   "answer with precision at least prec, but we didn't."
+            assert answer.precision_absolute() >= prec, (
+                "we should have got an "
+                "answer with precision at least prec, but we didn't."
+            )
         return K(answer)
 
     # (man... I love python's local function definitions...)
@@ -1137,32 +1156,31 @@ def padic_sigma(self, p, N=20, E2=None, check=False, check_hypotheses=True):
     if N == 2:
         # return t + a_1/2 t^2 + O(t^3)
         K = Qp(p, 3)
-        return PowerSeriesRing(K, "t")([K(0), K(1, 2),
-                                        K(self.a1()/2, 1)], prec=3)
+        return PowerSeriesRing(K, "t")([K(0), K(1, 2), K(self.a1() / 2, 1)], prec=3)
 
     if self.discriminant().valuation(p) != 0:
         raise NotImplementedError("equation of curve must be minimal at p")
 
     if E2 is None:
-        E2 = self.padic_E2(p, N-2, check_hypotheses=False)
-    elif E2.precision_absolute() < N-2:
+        E2 = self.padic_E2(p, N - 2, check_hypotheses=False)
+    elif E2.precision_absolute() < N - 2:
         raise ValueError("supplied E2 has insufficient precision")
 
     QQt = LaurentSeriesRing(RationalField(), "x")
 
-    R = Integers(p**(N-2))
+    R = Integers(p ** (N - 2))
     X = self.change_ring(R)
-    c = (X.a1()**2 + 4*X.a2() - R(E2)) / 12
+    c = (X.a1() ** 2 + 4 * X.a2() - R(E2)) / 12
 
-    f = X.formal_group().differential(N+2)   # f = 1 + ... + O(t^{N+2})
-    x = X.formal_group().x(N)                # x = t^{-2} + ... + O(t^N)
+    f = X.formal_group().differential(N + 2)  # f = 1 + ... + O(t^{N+2})
+    x = X.formal_group().x(N)  # x = t^{-2} + ... + O(t^N)
 
     Rt = x.parent()
 
     A = (x + c) * f
     # do integral over QQ, to avoid divisions by p
     A = Rt(QQt(A).integral())
-    A = (-X.a1()/2 - A) * f
+    A = (-X.a1() / 2 - A) * f
 
     # Convert to a power series and remove the -1/x term.
     # Also we artificially bump up the accuracy from N-2 to N-1 digits;
@@ -1171,9 +1189,9 @@ def padic_sigma(self, p, N=20, E2=None, check=False, check_hypotheses=True):
     assert A.valuation() == -1 and A[-1] == 1
     A = A - A.parent().gen() ** (-1)
     A = A.power_series().list()
-    R = Integers(p**(N-1))
+    R = Integers(p ** (N - 1))
     A = [R(u) for u in A]
-    A[0] = self.change_ring(R).a1()/2     # fix constant term
+    A[0] = self.change_ring(R).a1() / 2  # fix constant term
     A = PowerSeriesRing(R, "x")(A, len(A))
 
     theta = _brent(A, p, N)
@@ -1186,37 +1204,38 @@ def padic_sigma(self, p, N=20, E2=None, check=False, check_hypotheses=True):
     # for p-adic height purposes anyway]
     K = Qp(p, N + 1)
 
-    sigma = sigma.padded_list(N+1)
+    sigma = sigma.padded_list(N + 1)
 
     sigma[0] = K(0, N + 1)
     sigma[1] = K(1, N)
-    for n in range(2, N+1):
+    for n in range(2, N + 1):
         sigma[n] = K(sigma[n].lift(), N - n + 1)
 
-    S = PowerSeriesRing(K, "t", N+1)
-    sigma = S(sigma, N+1)
+    S = PowerSeriesRing(K, "t", N + 1)
+    sigma = S(sigma, N + 1)
 
     # if requested, check that sigma satisfies the appropriate
     # differential equation
     if check:
         R = Integers(p**N)
         X = self.change_ring(R)
-        x = X.formal_group().x(N+5)       # few extra terms for safety
-        f = X.formal_group().differential(N+5)
-        c = (X.a1()**2 + 4*X.a2() - R(E2)) / 12
+        x = X.formal_group().x(N + 5)  # few extra terms for safety
+        f = X.formal_group().differential(N + 5)
+        c = (X.a1() ** 2 + 4 * X.a2() - R(E2)) / 12
 
         # convert sigma to be over Z/p^N
         s = f.parent()(sigma)
-        sinv = s**(-1)
-        finv = f**(-1)
+        sinv = s ** (-1)
+        finv = f ** (-1)
 
         # apply differential equation
         temp = (s.derivative() * sinv * finv).derivative() * finv + c + x
 
         # coefficient of t^k in the result should be zero mod p^(N-k-2)
-        for k in range(N-2):
-            assert temp[k].lift().valuation(p) >= N - k - 2, \
-                        "sigma correctness check failed!"
+        for k in range(N - 2):
+            assert temp[k].lift().valuation(p) >= N - k - 2, (
+                "sigma correctness check failed!"
+            )
 
     return sigma
 
@@ -1314,38 +1333,39 @@ def padic_sigma_truncated(self, p, N=20, lamb=0, E2=None, check_hypotheses=True)
 
     if N == 2:
         # return t + a_1/2 t^2 + O(t^3)
-        K = Qp(p, 3*(lamb+1))
-        return PowerSeriesRing(K, "t")([K(0), K(1, 2*(lamb+1)),
-                                        K(self.a1()/2, lamb+1)], prec=3)
+        K = Qp(p, 3 * (lamb + 1))
+        return PowerSeriesRing(K, "t")(
+            [K(0), K(1, 2 * (lamb + 1)), K(self.a1() / 2, lamb + 1)], prec=3
+        )
 
     if self.discriminant().valuation(p) != 0:
         raise NotImplementedError("equation of curve must be minimal at p")
 
     if E2 is None:
-        E2 = self.padic_E2(p, N-2, check_hypotheses=False)
-    elif E2.precision_absolute() < N-2:
+        E2 = self.padic_E2(p, N - 2, check_hypotheses=False)
+    elif E2.precision_absolute() < N - 2:
         raise ValueError("supplied E2 has insufficient precision")
 
     # The main part of the algorithm is exactly the same as
     # for padic_sigma(), but we truncate all the series earlier.
     # Want the answer O(t^(trunc+1)) instead of O(t^(N+1)) like in padic_sigma().
-    trunc = (Integer(N-2) / (lamb + 1)).ceil() + 2
+    trunc = (Integer(N - 2) / (lamb + 1)).ceil() + 2
 
     QQt = LaurentSeriesRing(RationalField(), "x")
 
-    R = Integers(p**(N-2))
+    R = Integers(p ** (N - 2))
     X = self.change_ring(R)
-    c = (X.a1()**2 + 4*X.a2() - R(E2)) / 12
+    c = (X.a1() ** 2 + 4 * X.a2() - R(E2)) / 12
 
-    f = X.formal_group().differential(trunc+2)   # f = 1 + ... + O(t^{trunc+2})
-    x = X.formal_group().x(trunc)                # x = t^{-2} + ... + O(t^trunc)
+    f = X.formal_group().differential(trunc + 2)  # f = 1 + ... + O(t^{trunc+2})
+    x = X.formal_group().x(trunc)  # x = t^{-2} + ... + O(t^trunc)
 
     Rt = x.parent()
 
     A = (x + c) * f
     # do integral over QQ, to avoid divisions by p
     A = Rt(QQt(A).integral())
-    A = (-X.a1()/2 - A) * f
+    A = (-X.a1() / 2 - A) * f
 
     # Convert to a power series and remove the -1/x term.
     # Also we artificially bump up the accuracy from N-2 to N-1+lamb digits;
@@ -1354,9 +1374,9 @@ def padic_sigma_truncated(self, p, N=20, lamb=0, E2=None, check_hypotheses=True)
     assert A.valuation() == -1 and A[-1] == 1
     A = A - A.parent().gen() ** (-1)
     A = A.power_series().list()
-    R = Integers(p**(N-1+lamb))
+    R = Integers(p ** (N - 1 + lamb))
     A = [R(u) for u in A]
-    A[0] = self.change_ring(R).a1()/2     # fix constant term
+    A[0] = self.change_ring(R).a1() / 2  # fix constant term
     A = PowerSeriesRing(R, "x")(A, len(A))
 
     theta = _brent(A, p, trunc)
@@ -1364,17 +1384,17 @@ def padic_sigma_truncated(self, p, N=20, lamb=0, E2=None, check_hypotheses=True)
 
     # Convert the answer to power series over p-adics; drop the precision
     # of the t^j coefficient to p^{N - 2 + (3 - j)(lamb + 1)}).
-    K = Qp(p, N - 2 + 3*(lamb+1))
+    K = Qp(p, N - 2 + 3 * (lamb + 1))
 
-    sigma = sigma.padded_list(trunc+1)
+    sigma = sigma.padded_list(trunc + 1)
 
-    sigma[0] = K(0, N - 2 + 3*(lamb+1))
-    sigma[1] = K(1, N - 2 + 2*(lamb+1))
-    for j in range(2, trunc+1):
-        sigma[j] = K(sigma[j].lift(), N - 2 + (3 - j)*(lamb+1))
+    sigma[0] = K(0, N - 2 + 3 * (lamb + 1))
+    sigma[1] = K(1, N - 2 + 2 * (lamb + 1))
+    for j in range(2, trunc + 1):
+        sigma[j] = K(sigma[j].lift(), N - 2 + (3 - j) * (lamb + 1))
 
     S = PowerSeriesRing(K, "t", trunc + 1)
-    sigma = S(sigma, trunc+1)
+    sigma = S(sigma, trunc + 1)
 
     return sigma
 
@@ -1538,15 +1558,16 @@ def padic_E2(self, p, prec=20, check=False, check_hypotheses=True, algorithm='au
             return eq.E2(prec=prec)
 
     X = self.minimal_model().short_weierstrass_model()
-    frob_p = X.matrix_of_frobenius(p, prec, check, check_hypotheses, algorithm).change_ring(Integers(p**prec))
+    frob_p = X.matrix_of_frobenius(
+        p, prec, check, check_hypotheses, algorithm
+    ).change_ring(Integers(p**prec))
 
     frob_p_n = frob_p**prec
 
     # todo: think about the sign of this. Is it correct?
     output_ring = Qp(p, prec)
 
-    E2_of_X = output_ring( (-12 * frob_p_n[0,1] / frob_p_n[1,1]).lift() ) \
-              + O(p**prec)
+    E2_of_X = output_ring((-12 * frob_p_n[0, 1] / frob_p_n[1, 1]).lift()) + O(p**prec)
 
     # Take into account the coordinate change.
     fudge_factor = (X.discriminant() / self.discriminant()).nth_root(6)
@@ -1557,11 +1578,15 @@ def padic_E2(self, p, prec=20, check=False, check_hypotheses=True, algorithm='au
     #    EllipticCurve([1, 1, 1, 1, 1]).padic_E2(5, 1)
     # makes it crash. I haven't figured out exactly what the bug
     # is yet, but for now I use the following workaround:
-    fudge_factor_inverse = Qp(p, prec=(E2_of_X.precision_absolute() + 1))(1 / fudge_factor)
+    fudge_factor_inverse = Qp(p, prec=(E2_of_X.precision_absolute() + 1))(
+        1 / fudge_factor
+    )
     return output_ring(E2_of_X * fudge_factor_inverse)
 
 
-def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, algorithm='auto'):
+def matrix_of_frobenius(
+    self, p, prec=20, check=False, check_hypotheses=True, algorithm='auto'
+):
     r"""
     Return the matrix of Frobenius on the Monsky Washnitzer cohomology of
     the short Weierstrass model of the minimal model of the elliptic curve.
@@ -1629,8 +1654,8 @@ def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, al
         p = __check_padic_hypotheses(self, p)
 
     if algorithm == "auto":
-        algorithm = "standard" if p < 6*prec else "sqrtp"
-    elif algorithm == "sqrtp" and p < 6*prec:
+        algorithm = "standard" if p < 6 * prec else "sqrtp"
+    elif algorithm == "sqrtp" and p < 6 * prec:
         raise ValueError("sqrtp algorithm is only available when p > 6*prec")
 
     if algorithm not in ["standard", "sqrtp"]:
@@ -1640,8 +1665,9 @@ def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, al
     # and call matrix of frobenius on it
     if p == 3:
         from sage.schemes.hyperelliptic_curves.constructor import HyperellipticCurve
-        f,g = self.hyperelliptic_polynomials()
-        return HyperellipticCurve(f + (g/2)**2).matrix_of_frobenius(p,prec)
+
+        f, g = self.hyperelliptic_polynomials()
+        return HyperellipticCurve(f + (g / 2) ** 2).matrix_of_frobenius(p, prec)
 
     # To run matrix_of_frobenius(), we need to have the equation in the
     # form y^2 = x^3 + ax + b, whose discriminant is invertible mod p.
@@ -1660,15 +1686,19 @@ def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, al
     # TODO change the basis back to the original equation.
     X = self.minimal_model().short_weierstrass_model()
 
-    assert X.discriminant().valuation(p) == 0, "Something's gone wrong. " \
-           "The discriminant of the Weierstrass model should be a unit " \
-           " at p."
+    assert X.discriminant().valuation(p) == 0, (
+        "Something's gone wrong. "
+        "The discriminant of the Weierstrass model should be a unit "
+        " at p."
+    )
 
     if algorithm == "standard":
         # Need to increase precision a little to compensate for precision
         # losses during the computation. (See monsky_washnitzer.py
         # for more details.)
-        adjusted_prec = sage.schemes.hyperelliptic_curves.monsky_washnitzer.adjusted_prec(p, prec)
+        adjusted_prec = (
+            sage.schemes.hyperelliptic_curves.monsky_washnitzer.adjusted_prec(p, prec)
+        )
 
         if check:
             trace = None
@@ -1679,10 +1709,13 @@ def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, al
 
         R, x = PolynomialRing(base_ring, 'x').objgen()
         Q = x**3 + base_ring(X.a4()) * x + base_ring(X.a6())
-        frob_p = sage.schemes.hyperelliptic_curves.monsky_washnitzer.matrix_of_frobenius(
-                         Q, p, adjusted_prec, trace)
+        frob_p = (
+            sage.schemes.hyperelliptic_curves.monsky_washnitzer.matrix_of_frobenius(
+                Q, p, adjusted_prec, trace
+            )
+        )
 
-    else:   # algorithm == "sqrtp"
+    else:  # algorithm == "sqrtp"
         p_to_prec = p**prec
         R = PolynomialRing(Integers(), "x")
         Q = R([X.a6() % p_to_prec, X.a4() % p_to_prec, 0, 1])
@@ -1696,9 +1729,10 @@ def matrix_of_frobenius(self, p, prec=20, check=False, check_hypotheses=True, al
     if check:
         trace_of_frobenius = frob_p.trace().lift() % p**prec
         correct_trace = self.ap(p) % p**prec
-        assert trace_of_frobenius == correct_trace, \
-                "Consistency check failed! (correct = %s, actual = %s)" % \
-                (correct_trace, trace_of_frobenius)
+        assert trace_of_frobenius == correct_trace, (
+            "Consistency check failed! (correct = %s, actual = %s)"
+            % (correct_trace, trace_of_frobenius)
+        )
 
     return frob_p.change_ring(Zp(p, prec))
 
@@ -1758,7 +1792,7 @@ def _brent(F, p, N):
         ....:         assert err[i].lift().valuation(p) >= (N - i), \
         ....:                "incorrect precision output"
     """
-    Rx = F.parent()           # Rx = power series ring over Z/p^{N-1} Z
+    Rx = F.parent()  # Rx = power series ring over Z/p^{N-1} Z
     Qx = PowerSeriesRing(RationalField(), "x")
 
     # initial approximation:

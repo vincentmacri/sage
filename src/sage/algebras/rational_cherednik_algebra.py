@@ -72,8 +72,11 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
     - [GGOR2003]_
     - [EM2001]_
     """
+
     @staticmethod
-    def __classcall_private__(cls, ct, c=1, t=None, base_ring=None, prefix=('a', 's', 'ac')):
+    def __classcall_private__(
+        cls, ct, c=1, t=None, base_ring=None, prefix=('a', 's', 'ac')
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -101,11 +104,15 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         if isinstance(c, (tuple, list)):
             if ct.is_simply_laced():
                 if len(c) != 1:
-                    raise ValueError("1 parameter c_s must be given for simply-laced types")
+                    raise ValueError(
+                        "1 parameter c_s must be given for simply-laced types"
+                    )
                 c = (base_ring(c[0]),)
             else:
                 if len(c) != 2:
-                    raise ValueError("2 parameters c_s must be given for non-simply-laced types")
+                    raise ValueError(
+                        "2 parameters c_s must be given for non-simply-laced types"
+                    )
                 c = (base_ring(c[0]), base_ring(c[1]))
         else:
             c = base_ring(c)
@@ -130,14 +137,20 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         self._t = t
         self._cartan_type = ct
         self._weyl = RootSystem(ct).root_lattice().weyl_group(prefix=prefix[1])
-        self._hd = IndexedFreeAbelianMonoid(ct.index_set(), prefix=prefix[0],
-                                            bracket=False)
-        self._h = IndexedFreeAbelianMonoid(ct.index_set(), prefix=prefix[2],
-                                           bracket=False)
+        self._hd = IndexedFreeAbelianMonoid(
+            ct.index_set(), prefix=prefix[0], bracket=False
+        )
+        self._h = IndexedFreeAbelianMonoid(
+            ct.index_set(), prefix=prefix[2], bracket=False
+        )
         indices = DisjointUnionEnumeratedSets([self._hd, self._weyl, self._h])
-        CombinatorialFreeModule.__init__(self, base_ring, indices,
-                                         category=Algebras(base_ring).WithBasis().Graded(),
-                                         sorting_key=self._genkey)
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            indices,
+            category=Algebras(base_ring).WithBasis().Graded(),
+            sorting_key=self._genkey,
+        )
 
     def _genkey(self, t):
         r"""
@@ -244,19 +257,20 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         def gen_map(k):
             if k[0] == 's':
                 i = int(k[1:])
-                return self.monomial((self._hd.one(),
-                                      self._weyl.group_generators()[i],
-                                      self._h.one()))
+                return self.monomial(
+                    (self._hd.one(), self._weyl.group_generators()[i], self._h.one())
+                )
             if k[1] == 'c':
                 i = int(k[2:])
-                return self.monomial((self._hd.one(),
-                                      self._weyl.one(),
-                                      self._h.monoid_generators()[i]))
+                return self.monomial(
+                    (self._hd.one(), self._weyl.one(), self._h.monoid_generators()[i])
+                )
 
             i = int(k[1:])
-            return self.monomial((self._hd.monoid_generators()[i],
-                                  self._weyl.one(),
-                                  self._h.one()))
+            return self.monomial(
+                (self._hd.monoid_generators()[i], self._weyl.one(), self._h.one())
+            )
+
         return Family(keys, gen_map)
 
     @cached_method
@@ -328,7 +342,7 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
             ret = P.one()
             for k in al:
                 x = sum(c * gens_dict[i] for i, c in alpha[k].weyl_action(w))
-                ret *= x**al[k]
+                ret *= x ** al[k]
             ret = ret.monomial_coefficients()
             for k in ret:
                 yield (self._hd({I[i]: e for i, e in enumerate(k) if e != 0}), ret[k])
@@ -350,15 +364,20 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
                 del dr[ir]
 
             # We now commute right roots past the left reflections: s Ra = Ra' s
-            cur = self._from_dict({(hd, s * right[1], right[2]): c * cc
-                                   for s, c in terms
-                                   for hd, cc in commute_w_hd(s, dr)})
+            cur = self._from_dict(
+                {
+                    (hd, s * right[1], right[2]): c * cc
+                    for s, c in terms
+                    for hd, cc in commute_w_hd(s, dr)
+                }
+            )
             cur = self.monomial((left[0], left[1], self._h(dl))) * cur
 
             # Add back in the commuted h and hd elements
             rem = self.monomial((left[0], left[1], self._h(dl)))
-            rem = rem * self.monomial((self._hd({ir: 1}), self._weyl.one(),
-                                       self._h({il: 1})))
+            rem = rem * self.monomial(
+                (self._hd({ir: 1}), self._weyl.one(), self._h({il: 1}))
+            )
             rem = rem * self.monomial((self._hd(dr), right[1], right[2]))
 
             return cur + rem
@@ -370,23 +389,31 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
             ret = P.one()
             r1_red = right[1].reduced_word()
             for k, dlk in dl.items():
-                x = sum(c * gens_dict[i]
-                        for i, c in alphacheck[k].weyl_action(r1_red,
-                                                              inverse=True))
+                x = sum(
+                    c * gens_dict[i]
+                    for i, c in alphacheck[k].weyl_action(r1_red, inverse=True)
+                )
                 ret *= x**dlk
             ret = ret.monomial_coefficients()
             w = left[1] * right[1]
-            return self._from_dict({(left[0], w,
-                                     self._h({I[i]: e for i, e in enumerate(k)
-                                              if e != 0}) * right[2]
-                                     ): ret[k]
-                                    for k in ret})
+            return self._from_dict(
+                {
+                    (
+                        left[0],
+                        w,
+                        self._h({I[i]: e for i, e in enumerate(k) if e != 0})
+                        * right[2],
+                    ): ret[k]
+                    for k in ret
+                }
+            )
 
         # Otherwise dr is non-trivial and we have La Ls Ra Rs Rac,
         #   so we must commute Ls Ra = Ra' Ls
         w = left[1] * right[1]
-        return self._from_dict({(left[0] * hd, w, right[2]): c
-                                for hd, c in commute_w_hd(left[1], dr)})
+        return self._from_dict(
+            {(left[0] * hd, w, right[2]): c for hd, c in commute_w_hd(left[1], dr)}
+        )
 
     @cached_method
     def _product_coroot_root(self, i, j):
@@ -433,8 +460,7 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         for s in self._reflections:
             # p[0] is the root, p[1] is the coroot, p[2] the value c_s
             pr, pc, c = self._reflections[s]
-            terms.append((s, c * R(ac.scalar(pr) * pc.scalar(al)
-                                   / pc.scalar(pr))))
+            terms.append((s, c * R(ac.scalar(pr) * pc.scalar(al) / pc.scalar(pr))))
         return tuple(terms)
 
     def degree_on_basis(self, m):
@@ -469,8 +495,9 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         coeff = self.base_ring()(~self._weyl.cardinality())
         hd_one = self._hd.one()  # root - a
         h_one = self._h.one()  # coroot - ac
-        return self._from_dict({(hd_one, w, h_one): coeff for w in self._weyl},
-                               remove_zeros=False)
+        return self._from_dict(
+            {(hd_one, w, h_one): coeff for w in self._weyl}, remove_zeros=False
+        )
 
     @cached_method
     def deformed_euler(self):
@@ -489,8 +516,7 @@ class RationalCherednikAlgebra(CombinatorialFreeModule):
         cm = ~CartanMatrix(self._cartan_type)
         n = len(I)
         ac = [G['ac' + str(i)] for i in I]
-        la = [sum(cm[i, j] * G['a' + str(I[i])]
-                  for i in range(n)) for j in range(n)]
+        la = [sum(cm[i, j] * G['a' + str(I[i])] for i in range(n)) for j in range(n)]
         return self.sum(ac[i] * la[i] for i in range(n))
 
     @cached_method

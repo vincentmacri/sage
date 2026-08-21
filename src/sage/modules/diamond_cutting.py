@@ -182,8 +182,12 @@ def diamond_cut(V, GM, C, verbose=False) -> Polyhedron:
     L = [0] * dim
 
     # calculate the Gram matrix
-    q = matrix([[sum(GM[i][k] * GM[j][k] for k in range(dim))
-                 for j in range(dim)] for i in range(dim)])
+    q = matrix(
+        [
+            [sum(GM[i][k] * GM[j][k] for k in range(dim)) for j in range(dim)]
+            for i in range(dim)
+        ]
+    )
     if verbose:
         print("q:\n{}".format(q.n()))
     # apply Cholesky/Jacobi decomposition
@@ -316,6 +320,7 @@ def calculate_voronoi_cell(basis, radius=None, verbose=False) -> Polyhedron:
         # Convert the basis matrix to use RDF numbers for efficiency when we
         # calculate the triangular matrix of the QR decomposition.
         from sage.rings.real_double import RDF
+
         transposed_RDF_matrix = (basis.transpose()).change_ring(RDF)
         R = transposed_RDF_matrix.QR()[1]
         # The length of the vector formed by the diagonal entries of R is an
@@ -324,19 +329,20 @@ def calculate_voronoi_cell(basis, radius=None, verbose=False) -> Polyhedron:
         # diamond cutting. However, the value of the `radius` keyword is
         # actually a squared length, so there is no square root in the
         # following formula.
-        radius = sum(R[i, i]**2 for i in range(dim[0]))
+        radius = sum(R[i, i] ** 2 for i in range(dim[0]))
         # We then divide by 4 as we will divide the basis by 2 later on.
         radius = ceil(radius / 4)
     artificial_length = None
     if dim[0] < dim[1]:
         F = basis.base_ring().fraction_field()
         # Introduce "artificial" basis points (representing infinity).
-        additional_vectors = (F**dim[1]).subspace(basis).complement().basis()
+        additional_vectors = (F ** dim[1]).subspace(basis).complement().basis()
         additional_vectors = matrix(additional_vectors)
         # LLL-reduce for efficiency.
         additional_vectors = additional_vectors.LLL()
 
         from sage.rings.real_double import RDF
+
         # Convert the basis matrix to use RDF numbers for efficiency when we
         # perform the QR decomposition.
         transposed_RDF_matrix = additional_vectors.transpose().change_ring(RDF)
@@ -345,8 +351,7 @@ def calculate_voronoi_cell(basis, radius=None, verbose=False) -> Polyhedron:
         # lower bound on the length of the shortest nonzero vector in the
         # lattice spanned by the artificial points. We square it because
         # value of `radius` is a squared length.
-        shortest_vector_lower_bound = min(R[i, i]**2
-                                          for i in range(dim[1] - dim[0]))
+        shortest_vector_lower_bound = min(R[i, i] ** 2 for i in range(dim[1] - dim[0]))
         # We will multiply our artificial points by the following scalar in
         # order to make sure the squared length of the shortest
         # nonzero vector is greater than radius, even after the vectors
@@ -371,9 +376,15 @@ def calculate_voronoi_cell(basis, radius=None, verbose=False) -> Polyhedron:
     if artificial_length is not None:
         # Remove inequalities introduced by artificial basis points.
         H = V.Hrepresentation()
-        H = [v for v in H if all(not V._is_zero(v.A() * w / 2 - v.b()) and
-                                 not V._is_zero(v.A() * (-w) / 2 - v.b())
-                                 for w in additional_vectors)]
+        H = [
+            v
+            for v in H
+            if all(
+                not V._is_zero(v.A() * w / 2 - v.b())
+                and not V._is_zero(v.A() * (-w) / 2 - v.b())
+                for w in additional_vectors
+            )
+        ]
         V = Polyhedron(ieqs=H)
 
     return V

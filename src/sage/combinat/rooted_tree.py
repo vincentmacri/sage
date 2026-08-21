@@ -8,8 +8,10 @@ AUTHORS:
 
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.sets_cat import Sets
-from sage.combinat.abstract_tree import (AbstractClonableTree,
-                                         AbstractLabelledClonableTree)
+from sage.combinat.abstract_tree import (
+    AbstractClonableTree,
+    AbstractLabelledClonableTree,
+)
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.inherit_comparison import InheritComparisonClasscallMetaclass
 from sage.misc.lazy_attribute import lazy_attribute, lazy_class_attribute
@@ -50,13 +52,18 @@ def number_of_rooted_trees(n):
     if n == 1:
         return Integer(1)
     n = Integer(n)
-    return sum(sum(d * number_of_rooted_trees(d) for d in k.divisors()) *
-               number_of_rooted_trees(n - k)
-               for k in ZZ.range(1, n)) // (n - 1)
+    return sum(
+        sum(d * number_of_rooted_trees(d) for d in k.divisors())
+        * number_of_rooted_trees(n - k)
+        for k in ZZ.range(1, n)
+    ) // (n - 1)
 
 
-class RootedTree(AbstractClonableTree, NormalizedClonableList,
-        metaclass=InheritComparisonClasscallMetaclass):
+class RootedTree(
+    AbstractClonableTree,
+    NormalizedClonableList,
+    metaclass=InheritComparisonClasscallMetaclass,
+):
     r"""
     The class for unordered rooted trees.
 
@@ -121,6 +128,7 @@ class RootedTree(AbstractClonableTree, NormalizedClonableList,
         as distinct). Thus, you will have to override the method by
         one that does distinguish different trees.
     """
+
     # Standard auto-parent trick
     @staticmethod
     def __classcall_private__(cls, *args, **opts):
@@ -447,9 +455,10 @@ class RootedTree(AbstractClonableTree, NormalizedClonableList,
             a[b[d[]], c[e[]]]
         """
         P = self.parent()
-        child_grafts = [suby.single_graft(x, grafting_function,
-                                          path_prefix + (i,))
-                        for i, suby in enumerate(self)]
+        child_grafts = [
+            suby.single_graft(x, grafting_function, path_prefix + (i,))
+            for i, suby in enumerate(self)
+        ]
         try:
             y1 = P(child_grafts, label=self.label())
         except AttributeError:
@@ -483,6 +492,7 @@ class RootedTrees(UniqueRepresentation, Parent):
         sage: RootedTrees(2)
         Rooted trees with 2 nodes
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None):
         """
@@ -532,8 +542,11 @@ class RootedTrees_all(DisjointUnionEnumeratedSets, RootedTrees):
             sage: TestSuite(RootedTrees()).run() # long time
         """
         DisjointUnionEnumeratedSets.__init__(
-            self, Family(NonNegativeIntegers(), RootedTrees_size),
-            facade=True, keepkey=False)
+            self,
+            Family(NonNegativeIntegers(), RootedTrees_size),
+            facade=True,
+            keepkey=False,
+        )
 
     def _repr_(self):
         r"""
@@ -695,6 +708,7 @@ class RootedTrees_size(RootedTrees):
 
         from sage.combinat.partition import Partitions
         from itertools import combinations_with_replacement, product
+
         for part in Partitions(self._n - 1):
             mults = part.to_exp_dict()
             choices = []
@@ -854,6 +868,7 @@ class LabelledRootedTree(AbstractLabelledClonableTree, RootedTree):
         sage: xyy2._get_list() == yxy2._get_list()
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, *args, **opts):
         """
@@ -990,6 +1005,7 @@ class LabelledRootedTrees(UniqueRepresentation, Parent):
 
         Add the possibility to restrict the labels to a fixed set.
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None):
         """

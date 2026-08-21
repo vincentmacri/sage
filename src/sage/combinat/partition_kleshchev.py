@@ -91,9 +91,9 @@ from sage.cpython.getattr import getattr_from_other_class
 
 from collections import defaultdict
 
-#--------------------------------------------------
+# --------------------------------------------------
 # Kleshchev partition - element classes
-#--------------------------------------------------
+# --------------------------------------------------
 
 
 class KleshchevPartition(Partition):
@@ -143,18 +143,18 @@ class KleshchevPartition(Partition):
             {0: [(1, 4), (3, 3)], 2: [(0, 5)]}
         """
         # We use a dictionary for the conormal nodes as the indexing set is Z when e=0
-        conormals = defaultdict(list)   # the conormal cells of each residue
-        carry = defaultdict(int)        # a tally of #(removable cells) - #(addable cells)
+        conormals = defaultdict(list)  # the conormal cells of each residue
+        carry = defaultdict(int)  # a tally of #(removable cells) - #(addable cells)
 
         # determine if we read up or down the partition
         KP = self.parent()
-        rows = list(range(len(self)+1))
+        rows = list(range(len(self) + 1))
         if KP._convention[1] == 'G':
             rows.reverse()
 
         # work through the rows
         for row in rows:
-            if row == len(self): # addable cell at bottom of partition
+            if row == len(self):  # addable cell at bottom of partition
                 res = KP._multicharge[0] - row
                 if carry[res] == 0:
                     conormals[res].append((row, 0))
@@ -162,13 +162,13 @@ class KleshchevPartition(Partition):
                     carry[res] += 1
             else:
                 res = KP._multicharge[0] + self[row] - row - 1
-                if row == len(self)-1 or self[row] > self[row+1]:  # removable cell
+                if row == len(self) - 1 or self[row] > self[row + 1]:  # removable cell
                     carry[res] -= 1
-                if row == 0 or self[row-1] > self[row]:  # addable cell
-                    if carry[res+1] >= 0:
-                        conormals[res+1].append((row, self[row]))
+                if row == 0 or self[row - 1] > self[row]:  # addable cell
+                    if carry[res + 1] >= 0:
+                        conormals[res + 1].append((row, self[row]))
                     else:
-                        carry[res+1] += 1
+                        carry[res + 1] += 1
 
         # finally return the result
         return dict(conormals) if i is None else conormals[i]
@@ -255,28 +255,28 @@ class KleshchevPartition(Partition):
             [(3, 2)]
         """
         # We use a dictionary for the normal nodes as the indexing set is Z when e=0
-        normals = defaultdict(list)     # the normal cells of each residue
-        carry = defaultdict(int)        # a tally of #(removable cells)-#(addable cells)
+        normals = defaultdict(list)  # the normal cells of each residue
+        carry = defaultdict(int)  # a tally of #(removable cells)-#(addable cells)
 
         # determine if we read up or down the partition
         KP = self.parent()
-        rows = list(range(len(self)+1))
+        rows = list(range(len(self) + 1))
         if KP._convention[1] == 'S':
             rows.reverse()
 
         # work through the rows
         for row in rows:
-            if row == len(self): # addable cell at bottom of partition
-                carry[KP._multicharge[0]-row] += 1
+            if row == len(self):  # addable cell at bottom of partition
+                carry[KP._multicharge[0] - row] += 1
             else:
                 res = KP._multicharge[0] + self[row] - row - 1
-                if row == len(self) - 1 or self[row] > self[row+1]: # removable cell
+                if row == len(self) - 1 or self[row] > self[row + 1]:  # removable cell
                     if carry[res] == 0:
-                        normals[res].insert(0, (row, self[row]-1))
+                        normals[res].insert(0, (row, self[row] - 1))
                     else:
                         carry[res] -= 1
-                if row == 0 or self[row-1] > self[row]:              # addable cell
-                    carry[res+1] += 1
+                if row == 0 or self[row - 1] > self[row]:  # addable cell
+                    carry[res + 1] += 1
 
         # finally return the result
         return dict(normals) if i is None else normals[i]
@@ -341,7 +341,9 @@ class KleshchevPartition(Partition):
 
         res = sorted(good_cells)[0]
         r, c = good_cells[res]
-        good_seq = type(self)(self.parent(), self.remove_cell(r,c)).good_residue_sequence()
+        good_seq = type(self)(
+            self.parent(), self.remove_cell(r, c)
+        ).good_residue_sequence()
         good_seq.append(self.parent()._index_set(res))
         return good_seq
 
@@ -370,7 +372,9 @@ class KleshchevPartition(Partition):
         assert good_cells
 
         cell = good_cells[sorted(good_cells)[0]]
-        good_seq = type(self)(self.parent(), self.remove_cell(*cell)).good_cell_sequence()
+        good_seq = type(self)(
+            self.parent(), self.remove_cell(*cell)
+        ).good_cell_sequence()
         good_seq.append(cell)
         return good_seq
 
@@ -409,8 +413,9 @@ class KleshchevPartition(Partition):
             size = None
             if isinstance(P, KleshchevPartitions_size):
                 size = P._size
-            KP = KleshchevPartitions(P._e, [-c for c in P._multicharge],
-                                     size=size, convention=P._convention)
+            KP = KleshchevPartitions(
+                P._e, [-c for c in P._multicharge], size=size, convention=P._convention
+            )
             return KP.element_class(KP, [])
 
         good_cells = self.good_cells()
@@ -425,8 +430,8 @@ class KleshchevPartition(Partition):
         # add back on a cogood cell of residue -residue(k,r,c)
         KP = mu.parent()
         return KP.element_class(
-            KP,
-            mu.add_cell(*mu.cogood_cells(r-c-self.parent()._multicharge[0])))
+            KP, mu.add_cell(*mu.cogood_cells(r - c - self.parent()._multicharge[0]))
+        )
 
     def is_regular(self) -> bool:
         r"""
@@ -529,22 +534,26 @@ class KleshchevPartitionTuple(PartitionTuple):
             [(1, 0, 5), (1, 1, 3), (1, 2, 1)]
         """
         # We use a dictionary for the conormal nodes as the indexing set is Z when e=0
-        conormals = defaultdict(list)   # the conormal cells of each residue
-        carry = defaultdict(int)        # a tally of #(removable cells)-#(addable cells)
+        conormals = defaultdict(list)  # the conormal cells of each residue
+        carry = defaultdict(int)  # a tally of #(removable cells)-#(addable cells)
 
         part_lens = [len(part) for part in self]  # so we don't repeatedly call these
         # the indices for the rows ending in addable nodes
         KP = self.parent()
         if KP._convention[0] == 'L':
-            rows = [(k,r) for k,ell in enumerate(part_lens) for r in range(ell+1)]
+            rows = [(k, r) for k, ell in enumerate(part_lens) for r in range(ell + 1)]
         else:
-            rows = [(k,r) for k,ell in reversed(list(enumerate(part_lens))) for r in range(ell+1)]
+            rows = [
+                (k, r)
+                for k, ell in reversed(list(enumerate(part_lens)))
+                for r in range(ell + 1)
+            ]
         if KP._convention[1] == 'G':
             rows.reverse()
 
         for row in rows:
-            k,r = row
-            if r == part_lens[k]: # addable cell at bottom of a component
+            k, r = row
+            if r == part_lens[k]:  # addable cell at bottom of a component
                 res = KP._multicharge[k] - r
                 if carry[res] == 0:
                     conormals[res].append((k, r, 0))
@@ -553,13 +562,13 @@ class KleshchevPartitionTuple(PartitionTuple):
             else:
                 part = self[k]
                 res = KP._multicharge[k] + (part[r] - r - 1)
-                if r == part_lens[k] - 1 or part[r] > part[r+1]: # removable cell
+                if r == part_lens[k] - 1 or part[r] > part[r + 1]:  # removable cell
                     carry[res] -= 1
-                if r == 0 or part[r-1] > part[r]:                # addable cell
-                    if carry[res+1] == 0:
-                        conormals[res+1].append((k, r, part[r]))
+                if r == 0 or part[r - 1] > part[r]:  # addable cell
+                    if carry[res + 1] == 0:
+                        conormals[res + 1].append((k, r, part[r]))
                     else:
-                        carry[res+1] += 1
+                        carry[res + 1] += 1
 
         # finally return the result
         if i is None:
@@ -654,36 +663,40 @@ class KleshchevPartitionTuple(PartitionTuple):
             {0: [(0, 0, 3), (0, 1, 1)], 2: [(1, 0, 4), (1, 1, 2), (1, 2, 0)]}
         """
         # We use a dictionary for the normal nodes as the indexing set is Z when e=0
-        normals = defaultdict(list)     # the normal cells of each residue
-        carry = defaultdict(int)        # a tally of #(removable cells)-#(addable cells)
+        normals = defaultdict(list)  # the normal cells of each residue
+        carry = defaultdict(int)  # a tally of #(removable cells)-#(addable cells)
 
         part_lens = [len(part) for part in self]  # so we don't repeatedly call these
         KP = self.parent()
         if KP._convention[0] == 'L':
-            rows = [(k, r) for k, ell in enumerate(part_lens) for r in range(ell+1)]
+            rows = [(k, r) for k, ell in enumerate(part_lens) for r in range(ell + 1)]
         else:
-            rows = [(k, r) for k, ell in reversed(list(enumerate(part_lens))) for r in range(ell+1)]
+            rows = [
+                (k, r)
+                for k, ell in reversed(list(enumerate(part_lens)))
+                for r in range(ell + 1)
+            ]
         if KP._convention[1] == 'S':
             rows.reverse()
 
         for row in rows:
             k, r = row
             if r == part_lens[k]:  # addable cell at bottom of a component
-                carry[KP._multicharge[k]-r] += 1
+                carry[KP._multicharge[k] - r] += 1
             else:
                 part = self[k]
                 res = KP._multicharge[k] + (part[r] - r - 1)
-                if r == part_lens[k]-1 or part[r] > part[r+1]:  # removable cell
+                if r == part_lens[k] - 1 or part[r] > part[r + 1]:  # removable cell
                     if carry[res] == 0:
-                        normals[res].insert(0, (k, r, part[r]-1))
+                        normals[res].insert(0, (k, r, part[r] - 1))
                     else:
                         carry[res] -= 1
-                if r == 0 or part[r-1] > part[r]:     # addable cell
-                    carry[res+1] += 1
+                if r == 0 or part[r - 1] > part[r]:  # addable cell
+                    carry[res + 1] += 1
 
         # finally return the result
         if i is None:
-            return dict(normals)    # change the defaultdict into a dict
+            return dict(normals)  # change the defaultdict into a dict
 
         return normals[i]
 
@@ -743,7 +756,9 @@ class KleshchevPartitionTuple(PartitionTuple):
 
         res = sorted(good_cells.keys())[0]
         k, r, c = good_cells[res]
-        good_seq = type(self)(self.parent(), self.remove_cell(k, r, c)).good_residue_sequence()
+        good_seq = type(self)(
+            self.parent(), self.remove_cell(k, r, c)
+        ).good_residue_sequence()
         good_seq.append(self.parent()._index_set(res))
         return good_seq
 
@@ -765,7 +780,9 @@ class KleshchevPartitionTuple(PartitionTuple):
         assert good_cells
 
         cell = good_cells[sorted(good_cells)[0]]
-        good_seq = type(self)(self.parent(), self.remove_cell(*cell)).good_cell_sequence()
+        good_seq = type(self)(
+            self.parent(), self.remove_cell(*cell)
+        ).good_cell_sequence()
         good_seq.append(cell)
         return good_seq
 
@@ -792,22 +809,25 @@ class KleshchevPartitionTuple(PartitionTuple):
             size = None
             if isinstance(P, KleshchevPartitions_size):
                 size = P._size
-            KP = KleshchevPartitions(P._e, [-c for c in P._multicharge],
-                                     size=size, convention=P._convention)
-            return KP.element_class(KP, [[]]*P._level)
+            KP = KleshchevPartitions(
+                P._e, [-c for c in P._multicharge], size=size, convention=P._convention
+            )
+            return KP.element_class(KP, [[]] * P._level)
 
         good_cells = self.good_cells()
         assert good_cells
 
-        k,r,c = sorted(good_cells.values())[0]
+        k, r, c = sorted(good_cells.values())[0]
         # This is technically wrong when the parent has a fixed size because
         #   the resulting Kleshchev partition after removing a cell has abs
         #   smaller size. However, this is useful to avoid constructing
         #   transient parents.
-        mu = P.element_class(P, self.remove_cell(k,r,c)).mullineux_conjugate()
+        mu = P.element_class(P, self.remove_cell(k, r, c)).mullineux_conjugate()
         # add back on a cogood cell of residue -residue(k,r,c)
         KP = mu.parent()
-        return KP.element_class(KP, mu.add_cell(*mu.cogood_cells( r-c-self.parent()._multicharge[k])))
+        return KP.element_class(
+            KP, mu.add_cell(*mu.cogood_cells(r - c - self.parent()._multicharge[k]))
+        )
 
     def is_regular(self) -> bool:
         r"""
@@ -912,7 +932,7 @@ class KleshchevCrystalMixin:
         WLR = P.weight_lattice_realization()
         La = WLR.fundamental_weights()
         n = self.normal_cells()
-        return WLR.sum(len(n[i])*La[i] for i in P.index_set() if i in n)
+        return WLR.sum(len(n[i]) * La[i] for i in P.index_set() if i in n)
 
     def Phi(self):
         r"""
@@ -929,7 +949,7 @@ class KleshchevCrystalMixin:
         WLR = P.weight_lattice_realization()
         La = WLR.fundamental_weights()
         c = self.conormal_cells()
-        return WLR.sum(len(c[i])*La[i] for i in P.index_set() if i in c)
+        return WLR.sum(len(c[i]) * La[i] for i in P.index_set() if i in c)
 
     def weight(self):
         r"""
@@ -963,8 +983,9 @@ class KleshchevCrystalMixin:
         La = WLR.fundamental_weights()
         r = self.parent()._multicharge
         wt = WLR.sum(La[ZZ(x)] for x in r)
-        return wt - WLR.sum(alpha[self.content(*c, multicharge=r)]
-                            for c in self.cells())
+        return wt - WLR.sum(
+            alpha[self.content(*c, multicharge=r)] for c in self.cells()
+        )
 
 
 class KleshchevPartitionCrystal(KleshchevPartition, KleshchevCrystalMixin):
@@ -1019,7 +1040,7 @@ class KleshchevPartitionCrystal(KleshchevPartition, KleshchevCrystalMixin):
         cell = self.cogood_cells(i)
         if cell is None:
             return None
-        r,c = cell
+        r, c = cell
         mu = list(self)
         if c == 0:
             mu.append(1)
@@ -1080,7 +1101,7 @@ class KleshchevPartitionTupleCrystal(KleshchevPartitionTuple, KleshchevCrystalMi
         cell = self.cogood_cells(i)
         if cell is None:
             return None
-        k,r,c = cell
+        k, r, c = cell
         mu = self.to_list()
         if c == 0:
             mu[k].append(1)
@@ -1088,9 +1109,10 @@ class KleshchevPartitionTupleCrystal(KleshchevPartitionTuple, KleshchevCrystalMi
             mu[k][r] += 1
         return type(self)(P, mu)
 
-#--------------------------------------------------
+
+# --------------------------------------------------
 # Kleshchev partitions - parent classes
-#--------------------------------------------------
+# --------------------------------------------------
 
 
 class KleshchevPartitions(PartitionTuples):
@@ -1180,9 +1202,11 @@ class KleshchevPartitions(PartitionTuples):
     - [BK2009]_
     - [Kle2009]_
     """
+
     @staticmethod
-    def __classcall_private__(cls, e, multicharge=(0,), size=None,
-                              convention="left restricted"):
+    def __classcall_private__(
+        cls, e, multicharge=(0,), size=None, convention="left restricted"
+    ):
         r"""
         This is a factory class which returns the appropriate parent based on
         the values of `level` and `size`.
@@ -1206,7 +1230,7 @@ class KleshchevPartitions(PartitionTuples):
             convention = convention[0] + 'S'
         elif 'G' in convention:
             convention = convention[0] + 'G'
-        if convention not in ['RG','LG', 'RS', 'LS']:
+        if convention not in ['RG', 'LG', 'RS', 'LS']:
             raise ValueError('invalid convention')
 
         if size is None:
@@ -1442,7 +1466,8 @@ class KleshchevPartitions_all(KleshchevPartitions):
             from sage.combinat.root_system.cartan_type import CartanType
             from sage.categories.highest_weight_crystals import HighestWeightCrystals
             from sage.categories.regular_crystals import RegularCrystals
-            self._cartan_type = CartanType(['A', e-1, 1])
+
+            self._cartan_type = CartanType(['A', e - 1, 1])
             cat = (HighestWeightCrystals(), RegularCrystals().Infinite())
         else:
             cat = InfiniteEnumeratedSets()
@@ -1450,12 +1475,14 @@ class KleshchevPartitions_all(KleshchevPartitions):
         self._level = len(multicharge)
         if self._level == 1:
             self.Element = KleshchevPartitionCrystal
-            self._element_constructor_ = getattr_from_other_class(self, Partitions, '_element_constructor_')
+            self._element_constructor_ = getattr_from_other_class(
+                self, Partitions, '_element_constructor_'
+            )
         else:
             self.Element = KleshchevPartitionTupleCrystal
 
         super().__init__(category=cat)
-        self._e = e   # for printing
+        self._e = e  # for printing
         self._index_set = IntegerModRing(e)
         self._multicharge = multicharge
         self._convention = convention
@@ -1463,7 +1490,7 @@ class KleshchevPartitions_all(KleshchevPartitions):
             if self._level == 1:
                 self.module_generators = (self.element_class(self, []),)
             else:
-                self.module_generators = (self.element_class(self, [[]]*self._level),)
+                self.module_generators = (self.element_class(self, [[]] * self._level),)
 
     def _repr_(self):
         """
@@ -1480,7 +1507,9 @@ class KleshchevPartitions_all(KleshchevPartitions):
             return 'Kleshchev partitions with e=%s' % (self._e)
 
         return 'Kleshchev partitions with e=%s and multicharge=(%s)' % (
-                        self._e,','.join('%s' % m for m in self._multicharge))
+            self._e,
+            ','.join('%s' % m for m in self._multicharge),
+        )
 
     def __contains__(self, mu):
         """
@@ -1595,7 +1624,7 @@ class KleshchevPartitions_all(KleshchevPartitions):
             for mu in P:
                 yield self.element_class(self, list(mu))
         else:
-            next_level = [self.element_class(self, [[]]*len(self._multicharge))]
+            next_level = [self.element_class(self, [[]] * len(self._multicharge))]
             while True:
                 cur = next_level
                 next_level = []
@@ -1679,7 +1708,9 @@ class KleshchevPartitions_size(KleshchevPartitions):
         self._level = len(multicharge)
         if self._level == 1:
             self.Element = KleshchevPartition
-            self._element_constructor_ = getattr_from_other_class(self, Partitions, '_element_constructor_')
+            self._element_constructor_ = getattr_from_other_class(
+                self, Partitions, '_element_constructor_'
+            )
         else:
             self.Element = KleshchevPartitionTuple
         super().__init__(category=FiniteEnumeratedSets())
@@ -1704,7 +1735,9 @@ class KleshchevPartitions_size(KleshchevPartitions):
             return 'Kleshchev partitions with e=%s and size %s' % (self._e, self._size)
 
         return 'Kleshchev partitions with e=%s and multicharge=(%s) and size %s' % (
-            self._e,','.join('%s' % m for m in self._multicharge), self._size
+            self._e,
+            ','.join('%s' % m for m in self._multicharge),
+            self._size,
         )
 
     def __contains__(self, mu):
@@ -1782,20 +1815,20 @@ class KleshchevPartitions_size(KleshchevPartitions):
             [([1], [1]), ([], [2]), ([], [1, 1])]
         """
         if self._size == 0:
-            yield self.element_class(self, [[]]*len(self._multicharge))
+            yield self.element_class(self, [[]] * len(self._multicharge))
             return
 
         # For higher levels we have to recursively construct the restricted partitions
         # by adding on co-good nodes to smaller restricted partition. To avoid over
         # counting we return a new restricted partition only if we added on its lowest
         # good node.
-        for mu in KleshchevPartitions_size(self._e, self._multicharge,
-                                           size=self._size-1,
-                                           convention=self._convention):
+        for mu in KleshchevPartitions_size(
+            self._e, self._multicharge, size=self._size - 1, convention=self._convention
+        ):
             mu_list = mu.to_list()
             for cell in mu.cogood_cells().values():
                 data = [list(p) for p in mu_list]
-                k,r,c = cell
+                k, r, c = cell
                 if c == 0:
                     data[k].append(1)
                 else:
@@ -1856,9 +1889,10 @@ class KleshchevPartitions_size(KleshchevPartitions):
 
     Element = KleshchevPartitionTuple
 
-#--------------------------------------------------
+
+# --------------------------------------------------
 # helper functions
-#--------------------------------------------------
+# --------------------------------------------------
 
 
 def _a_good_cell(kpt, multicharge, convention):
@@ -1885,29 +1919,33 @@ def _a_good_cell(kpt, multicharge, convention):
         True
     """
     # We use a dictionary for the normal nodes as the indexing set is Z when e=0
-    carry = defaultdict(int)        # a tally of #(removable cells)-#(addable cells)
+    carry = defaultdict(int)  # a tally of #(removable cells)-#(addable cells)
     ret = None
 
     if convention[0] == 'L':
-        rows = [(k,r) for k,part in enumerate(kpt) for r in range(len(part)+1)]
+        rows = [(k, r) for k, part in enumerate(kpt) for r in range(len(part) + 1)]
     else:
-        rows = [(k,r) for k,part in reversed(list(enumerate(kpt))) for r in range(len(part)+1)]
+        rows = [
+            (k, r)
+            for k, part in reversed(list(enumerate(kpt)))
+            for r in range(len(part) + 1)
+        ]
     if convention[1] == 'S':
         rows.reverse()
 
     for row in rows:
-        k,r = row
-        if r == len(kpt[k]): # addable cell at bottom of a component
-            carry[multicharge[k]-r] += 1
+        k, r = row
+        if r == len(kpt[k]):  # addable cell at bottom of a component
+            carry[multicharge[k] - r] += 1
         else:
             res = multicharge[k] + kpt[k][r] - r - 1
-            if r == len(kpt[k])-1 or kpt[k][r] > kpt[k][r+1]: # removable cell
+            if r == len(kpt[k]) - 1 or kpt[k][r] > kpt[k][r + 1]:  # removable cell
                 if carry[res] == 0:
-                    ret = (k, r, kpt[k][r]-1)
+                    ret = (k, r, kpt[k][r] - 1)
                 else:
                     carry[res] -= 1
-            if r == 0 or kpt[k][r-1] > kpt[k][r]:             # addable cell
-                carry[res+1] += 1
+            if r == 0 or kpt[k][r - 1] > kpt[k][r]:  # addable cell
+                carry[res + 1] += 1
 
     # finally return the result
     return ret

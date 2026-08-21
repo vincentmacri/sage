@@ -282,7 +282,7 @@ def p_adic_normal_form(G, p, precision=None, partial=False, debug=False):
     B = nondeg.stack(kernel)
     D = Matrix.block_diagonal([D, Matrix.zero(kernel.nrows())])
     if debug:
-        assert B.determinant().valuation() == 0     # B is invertible!
+        assert B.determinant().valuation() == 0  # B is invertible!
         if p == 2:
             assert B * G * B.T == Matrix.block_diagonal(collect_small_blocks(D))
         else:
@@ -612,9 +612,9 @@ def _jordan_odd_adic(G):
             for i in range(cnt + 1, n):
                 if D[i, cnt] != 0:
                     c = D[i, cnt] // D[cnt, cnt]
-                    B[i, :] += - c * B[cnt, :]
-                    D[i, :] += - c * D[cnt, :]
-                    D[:, i] += - c * D[:, cnt]
+                    B[i, :] += -c * B[cnt, :]
+                    D[i, :] += -c * D[cnt, :]
+                    D[:, i] += -c * D[:, cnt]
             cnt = cnt + 1
         else:
             # the smallest valuation is off the diagonal
@@ -715,17 +715,17 @@ def _jordan_2_adic(G):
             # we split off a 2 x 2 block
             # if it is the last 2 x 2 block, there is nothing to do.
             if cnt != n - 2:
-                content = R(2 ** minval)
-                eqn_mat = D[cnt:cnt+2, cnt:cnt+2].list()
+                content = R(2**minval)
+                eqn_mat = D[cnt : cnt + 2, cnt : cnt + 2].list()
                 eqn_mat = Matrix(R, 2, 2, [e // content for e in eqn_mat])
                 # calculate the inverse without using division
                 inv = eqn_mat.adjugate() * eqn_mat.det().inverse_of_unit()
-                B1 = B[cnt:cnt+2, :]
-                B2 = D[cnt+2:, cnt:cnt+2] * inv
+                B1 = B[cnt : cnt + 2, :]
+                B2 = D[cnt + 2 :, cnt : cnt + 2] * inv
                 for i in range(B2.nrows()):
                     for j in range(B2.ncols()):
                         B2[i, j] = B2[i, j] // content
-                B[cnt + 2:, :] -= B2 * B1
+                B[cnt + 2 :, :] -= B2 * B1
                 D[cnt:, cnt:] = B[cnt:, :] * G * B[cnt:, :].transpose()
             cnt += 2
     return D, B
@@ -840,10 +840,10 @@ def _normalize(G, normal_odd=True):
                 B[i, :] *= (v * d.inverse_of_unit()).sqrt()
         D = B * G * B.T
         for i in range(n - 1):
-            if D[i, i + 1] != 0:    # there is a 2 x 2 block here
-                block = D[i:i+2, i:i+2]
+            if D[i, i + 1] != 0:  # there is a 2 x 2 block here
+                block = D[i : i + 2, i : i + 2]
                 trafo = _normalize_2x2(block)
-                B[i:i+2, :] = trafo * B[i:i+2, :]
+                B[i : i + 2, :] = trafo * B[i : i + 2, :]
     D = B * G * B.T
     return D, B
 
@@ -895,14 +895,15 @@ def _normalize_2x2(G):
     """
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
     from sage.modules.free_module_element import vector
+
     B = copy(G.parent().identity_matrix())
     R = G.base_ring()
     P = PolynomialRing(R, 'x')
     x = P.gen()
 
     # The input must be an even block
-    odd1 = (G[0, 0].valuation() < G[1, 0].valuation())
-    odd2 = (G[1, 1].valuation() < G[1, 0].valuation())
+    odd1 = G[0, 0].valuation() < G[1, 0].valuation()
+    odd2 = G[1, 1].valuation() < G[1, 0].valuation()
     if odd1 or odd2:
         raise ValueError("not a valid 2 x 2 block")
     scale = 2 ** G[0, 1].valuation()
@@ -1072,7 +1073,7 @@ def _partial_normal_form_of_block(G):
     """
     D = copy(G)
     n = D.ncols()
-    B = copy(G.parent().identity_matrix())     # the transformation matrix
+    B = copy(G.parent().identity_matrix())  # the transformation matrix
     blocks = _get_small_block_indices(D)
     # collect the indices of forms of types U, V and W
     U = []
@@ -1324,8 +1325,7 @@ def _relations(G, n):
         e3 = G[2, 2].unit_part()
         B = Matrix(R, 3, 3, [1, 1, 1, e2, -e1, 0, e3, 0, -e1])
     elif n == 3:
-        B = Matrix(R, 4, 4,
-                   [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, -1])
+        B = Matrix(R, 4, 4, [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, -1])
     elif n == 4:
         raise NotImplementedError("relation 4 is not needed")
     elif n == 5:
@@ -1333,10 +1333,11 @@ def _relations(G, n):
         e2 = G[3, 3].unit_part()
         if mod(e1, 4) != mod(e2, 4):
             raise ValueError("W is of the wrong type for relation 5")
-        B = Matrix(R, 4, [1, 0, 1, 1,
-                          0, 1, 1, 1,
-                          -e2, -e2, 0, 3,
-                          -e1, -e1, 2 * e2 + 3, -2 * e1])
+        B = Matrix(
+            R,
+            4,
+            [1, 0, 1, 1, 0, 1, 1, 1, -e2, -e2, 0, 3, -e1, -e1, 2 * e2 + 3, -2 * e1],
+        )
     elif n == 6:
         if G[0, 0].valuation() + 1 != G[1, 1].valuation():
             raise ValueError("wrong scales for relation 6")
@@ -1349,21 +1350,29 @@ def _relations(G, n):
     elif n == 8:
         e = G[2, 2].unit_part()
         if G[0, 0] == 0:
-            B = Matrix(R, 3, 3, [e, 0, -1,
-                                 0, e, -1,
-                                 2, 2, 1])
+            B = Matrix(R, 3, 3, [e, 0, -1, 0, e, -1, 2, 2, 1])
         else:
-            B = Matrix(R, 3, 3, [1, 0, 1,
-                                 0, 1, 1,
-                                 2 * e, 2 * e, - 3])
+            B = Matrix(R, 3, 3, [1, 0, 1, 0, 1, 1, 2 * e, 2 * e, -3])
     elif n == 9:
         e1 = G[0, 0].unit_part()
         e2 = G[1, 1].unit_part()
         e3 = G[2, 2].unit_part()
-        B = Matrix(R, 3, 3, [1, 0, 1,
-                             2 * e3, 1, -e1,
-                             -2 * e2 * e3, 2 * e1**2 * e3 + 4 * e1 * e3**2,
-                             e1 * e2])
+        B = Matrix(
+            R,
+            3,
+            3,
+            [
+                1,
+                0,
+                1,
+                2 * e3,
+                1,
+                -e1,
+                -2 * e2 * e3,
+                2 * e1**2 * e3 + 4 * e1 * e3**2,
+                e1 * e2,
+            ],
+        )
     elif n == 10:
         e1 = G[0, 0].unit_part()
         e2 = G[1, 1].unit_part()
@@ -1424,19 +1433,19 @@ def _two_adic_normal_forms(G, partial=False):
     # UVlist[k] is a list of indices of the block of scale p^k.
     # It contains the indices of the part of types U or V.
     # So it may be empty.
-    UVlist = [[], []]    # empty lists are appended to avoid special cases.
+    UVlist = [[], []]  # empty lists are appended to avoid special cases.
     # same as UVlist but contains the indices of the part of type W
     Wlist = [[], []]
     # homogeneous normal form for each part
     for k in range(scales[-1] - scales[0] + 1):
         if k + scales[0] in scales:
             i = scales.index(k + scales[0])
-            Gk = G[h[i]:h[i + 1], h[i]:h[i + 1]]
+            Gk = G[h[i] : h[i + 1], h[i] : h[i + 1]]
             Dk, Bk, wk = _partial_normal_form_of_block(Gk)
-            B[h[i]:h[i + 1], :] = Bk * B[h[i]:h[i + 1], :]
+            B[h[i] : h[i + 1], :] = Bk * B[h[i] : h[i + 1], :]
             if not partial:
                 Dk, B1k = _homogeneous_normal_form(Dk, wk)
-                B[h[i]:h[i + 1], :] = B1k * B[h[i]:h[i + 1], :]
+                B[h[i] : h[i + 1], :] = B1k * B[h[i] : h[i + 1], :]
             UVlist.append(list(range(h[i], h[i + 1] - wk)))
             Wlist.append(list(range(h[i + 1] - wk, h[i + 1])))
         else:
@@ -1458,7 +1467,7 @@ def _two_adic_normal_forms(G, partial=False):
         UVm = UVlist[k - 1]
         V = UVlist[k][-2:]
         if V and D[V[0], V[0]] == 0:
-            V = []    # it is U not V
+            V = []  # it is U not V
         # condition b)
         if Wm:
             if len(V) == 2:
@@ -1482,8 +1491,7 @@ def _two_adic_normal_forms(G, partial=False):
         # 0 if there is no type V component or
         # 2 if there is a single type V component
         # a = [[0,1], [2,3], [2,5], [0,7], [0,1,1], [2,1,3], [0,7,7], [0,1,7]]
-        b = [[0, 5], [2, 7], [2, 1], [0, 3],
-             [0, 1, 5], [2, 1, 7], [0, 3, 7], [0, 1, 3]]
+        b = [[0, 5], [2, 7], [2, 1], [0, 3], [0, 1, 5], [2, 1, 7], [0, 3, 7], [0, 1, 3]]
         if x in b:
             w = W[-1]
             if x == [0, 3, 7]:

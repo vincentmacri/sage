@@ -122,7 +122,9 @@ def normalize_square_matrices(matrices):
         else:
             degree, rem = ZZ(len(m)).sqrtrem()
             if rem != 0:
-                raise ValueError('list of plain numbers must have square integer length')
+                raise ValueError(
+                    'list of plain numbers must have square integer length'
+                )
         deg.append(degree)
         gens.append(matrix(degree, degree, m))
     deg = set(deg)
@@ -198,9 +200,10 @@ def QuaternionMatrixGroupGF3():
     """
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
     from sage.matrix.matrix_space import MatrixSpace
+
     MS = MatrixSpace(FiniteField(3), 2)
-    aye = MS([1,1,1,2])
-    jay = MS([2,1,1,1])
+    aye = MS([1, 1, 1, 2])
+    jay = MS([2, 1, 1, 1])
     return MatrixGroup([aye, jay])
 
 
@@ -272,7 +275,7 @@ def MatrixGroup(*gens, **kwds):
         ...
         AttributeError: 'LinearMatrixGroup_generic_with_category' object has no attribute 'gens'...
     """
-    if isinstance(gens[-1], dict):   # hack for unpickling
+    if isinstance(gens[-1], dict):  # hack for unpickling
         kwds.update(gens[-1])
         gens = gens[:-1]
     check = kwds.get('check', True)
@@ -291,7 +294,7 @@ def MatrixGroup(*gens, **kwds):
         raise ValueError('each generator must be an invertible matrix')
     MS = gens.universe()
     base_ring = MS.base_ring()
-    degree = ZZ(MS.ncols())   # == MS.nrows()
+    degree = ZZ(MS.ncols())  # == MS.nrows()
     category = kwds.get('category', None)
     try:
         from sage.libs.gap.libgap import libgap
@@ -302,13 +305,16 @@ def MatrixGroup(*gens, **kwds):
         try:
             gap_gens = [libgap(matrix_gen) for matrix_gen in gens]
             gap_group = libgap.Group(gap_gens)
-            return FinitelyGeneratedMatrixGroup_gap(degree, base_ring, gap_group,
-                                                    category=category)
+            return FinitelyGeneratedMatrixGroup_gap(
+                degree, base_ring, gap_group, category=category
+            )
         except (TypeError, ValueError):
             pass
 
-    return FinitelyGeneratedMatrixGroup_generic(degree, base_ring, gens,
-                                                category=category)
+    return FinitelyGeneratedMatrixGroup_generic(
+        degree, base_ring, gens, category=category
+    )
+
 
 ###################################################################
 #
@@ -405,8 +411,10 @@ class FinitelyGeneratedMatrixGroup_generic(MatrixGroup_generic):
             [0 1], [3 4]
             )
         """
-        return tuple(self.element_class(self, x, check=False, convert=False)
-                     for x in self._gens_matrix)
+        return tuple(
+            self.element_class(self, x, check=False, convert=False)
+            for x in self._gens_matrix
+        )
 
     def gen(self, i=0):
         """
@@ -481,5 +489,5 @@ class FinitelyGeneratedMatrixGroup_generic(MatrixGroup_generic):
             sage: G._test_matrix_generators()
         """
         tester = self._tester(**options)
-        for g,h in zip(self.gens(), MatrixGroup(self.gens()).gens()):
+        for g, h in zip(self.gens(), MatrixGroup(self.gens()).gens()):
             tester.assertEqual(g.matrix(), h.matrix())

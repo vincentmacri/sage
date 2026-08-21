@@ -33,14 +33,14 @@ REFERENCES:
 - [Lee2013]_
 - [KN1963]_
 """
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.manifolds.differentiable.curve import DifferentiableCurve
 from sage.manifolds.differentiable.diff_map import DiffMap
@@ -183,14 +183,20 @@ class DifferentiableManifoldHomset(TopologicalManifoldHomset):
             sage: TestSuite(E).run()
         """
         from sage.manifolds.differentiable.manifold import DifferentiableManifold
+
         if not isinstance(domain, DifferentiableManifold):
-            raise TypeError("domain = {} is not an ".format(domain) +
-                            "instance of DifferentiableManifold")
+            raise TypeError(
+                "domain = {} is not an ".format(domain)
+                + "instance of DifferentiableManifold"
+            )
         if not isinstance(codomain, DifferentiableManifold):
-            raise TypeError("codomain = {} is not an ".format(codomain) +
-                            "instance of DifferentiableManifold")
-        TopologicalManifoldHomset.__init__(self, domain, codomain, name=name,
-                                           latex_name=latex_name)
+            raise TypeError(
+                "codomain = {} is not an ".format(codomain)
+                + "instance of DifferentiableManifold"
+            )
+        TopologicalManifoldHomset.__init__(
+            self, domain, codomain, name=name, latex_name=latex_name
+        )
 
     #### Parent methods ####
 
@@ -218,7 +224,8 @@ class DifferentiableManifoldHomset(TopologicalManifoldHomset):
     #### End of parent methods ####
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class DifferentiableCurveSet(DifferentiableManifoldHomset):
     r"""
@@ -368,6 +375,7 @@ class DifferentiableCurveSet(DifferentiableManifoldHomset):
 
         sage: TestSuite(EI).run()
     """
+
     Element = DifferentiableCurve
 
     def __init__(self, domain, codomain, name=None, latex_name=None):
@@ -405,16 +413,23 @@ class DifferentiableCurveSet(DifferentiableManifoldHomset):
             sage: TestSuite(H).run()
         """
         from sage.manifolds.differentiable.examples.real_line import OpenInterval
+
         if not isinstance(domain, OpenInterval):
             raise TypeError("{} is not an open real interval".format(domain))
-        DifferentiableManifoldHomset.__init__(self, domain, codomain, name=name,
-                                              latex_name=latex_name)
+        DifferentiableManifoldHomset.__init__(
+            self, domain, codomain, name=name, latex_name=latex_name
+        )
 
     #### Parent methods ####
 
-    def _element_constructor_(self, coord_expression, name=None,
-                              latex_name=None, is_isomorphism=False,
-                              is_identity=False):
+    def _element_constructor_(
+        self,
+        coord_expression,
+        name=None,
+        latex_name=None,
+        is_isomorphism=False,
+        is_identity=False,
+    ):
         r"""
         Construct an element of ``self``, i.e. a differentiable curve
         `I \to M`, where `I` is a real interval and `M` some
@@ -435,10 +450,14 @@ class DifferentiableCurveSet(DifferentiableManifoldHomset):
             Identity map Id_ℝ of the Real number line ℝ
         """
         # Standard construction
-        return self.element_class(self, coord_expression=coord_expression,
-                                  name=name, latex_name=latex_name,
-                                  is_isomorphism=is_isomorphism,
-                                  is_identity=is_identity)
+        return self.element_class(
+            self,
+            coord_expression=coord_expression,
+            name=name,
+            latex_name=latex_name,
+            is_isomorphism=is_isomorphism,
+            is_identity=is_identity,
+        )
 
     def _an_element_(self):
         r"""
@@ -476,6 +495,7 @@ class DifferentiableCurveSet(DifferentiableManifoldHomset):
         """
         from sage.rings.infinity import Infinity
         from sage.rings.rational_field import QQ
+
         dom = self.domain()
         codom = self.codomain()
         # A simple curve is constructed around a point of the codomain:
@@ -489,26 +509,27 @@ class DifferentiableCurveSet(DifferentiableManifoldHomset):
         one_half = QQ(1) / QQ(2)
         if xmin == -Infinity:
             if xmax == Infinity:
-                x1 = - one_half
+                x1 = -one_half
                 x2 = one_half
             else:
-                x1 = xmax - 3*one_half
+                x1 = xmax - 3 * one_half
                 x2 = xmax - one_half
         else:
             if xmax == Infinity:
                 x1 = xmin + one_half
-                x2 = xmin + 3*one_half
+                x2 = xmin + 3 * one_half
             else:
                 dx = (xmax - xmin) / 4
                 x1 = xmin + dx
                 x2 = xmax - dx
         # The coordinate function defining the curve:
         t = dom.canonical_coordinate()
-        target_coord[0] = x1 + (x2-x1) / (1+t*t)
+        target_coord[0] = x1 + (x2 - x1) / (1 + t * t)
         coord_expression = {chart2: target_coord}
         return self.element_class(self, coord_expression)
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class IntegratedCurveSet(DifferentiableCurveSet):
@@ -719,27 +740,30 @@ class IntegratedCurveSet(DifferentiableCurveSet):
 
         from sage.rings.infinity import Infinity
 
-        DifferentiableCurveSet.__init__(self, domain, codomain,
-                                       name=name, latex_name=latex_name)
+        DifferentiableCurveSet.__init__(
+            self, domain, codomain, name=name, latex_name=latex_name
+        )
 
         # checking argument 'domain': 't_min' and 't_max' are only
         # allowed to be either expressions of finite real values
         t_min = domain.lower_bound()
         t_max = domain.upper_bound()
         if t_min == -Infinity or t_max == +Infinity:
-            raise ValueError("both boundaries of the interval " +
-                             "defining the domain of a Homset of " +
-                             "integrated curves need to be finite")
+            raise ValueError(
+                "both boundaries of the interval "
+                + "defining the domain of a Homset of "
+                + "integrated curves need to be finite"
+            )
 
         if name is None:
-            self._name = "Hom_integrated({},{})".format(domain._name,
-                                                         codomain._name)
+            self._name = "Hom_integrated({},{})".format(domain._name, codomain._name)
         else:
             self._name = name
         if latex_name is None:
             self._latex_name = r"\mathrm{{Hom}_{integrated}}"
             self._latex_name += r"\left({},{}\right)".format(
-                               domain._latex_name, codomain._latex_name)
+                domain._latex_name, codomain._latex_name
+            )
         else:
             self._latex_name = latex_name
 
@@ -760,14 +784,24 @@ class IntegratedCurveSet(DifferentiableCurveSet):
              spaces which actually are integrated curves
         """
         description = "Set of Morphisms "
-        description += "from {} to {} in {} ".format(self._domain,
-                                        self._codomain, self.category())
+        description += "from {} to {} in {} ".format(
+            self._domain, self._codomain, self.category()
+        )
         description += "which actually are integrated curves"
         return description
 
-    def _element_constructor_(self, equations_rhs, velocities,
-                 curve_parameter, initial_tangent_vector, chart=None,
-                 name=None, latex_name=None, verbose=False, across_charts=False):
+    def _element_constructor_(
+        self,
+        equations_rhs,
+        velocities,
+        curve_parameter,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct an element of ``self``, i.e. an integrated curve
         `I \to M`, where `I` is a real interval and `M` some
@@ -794,9 +828,18 @@ class IntegratedCurveSet(DifferentiableCurveSet):
              manifold M
         """
         # Standard construction
-        return self.element_class(self, equations_rhs, velocities,
-                curve_parameter, initial_tangent_vector, chart=chart,
-                name=name, latex_name=latex_name, verbose=verbose, across_charts=across_charts)
+        return self.element_class(
+            self,
+            equations_rhs,
+            velocities,
+            curve_parameter,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
     def _an_element_(self):
         r"""
@@ -868,7 +911,7 @@ class IntegratedCurveSet(DifferentiableCurveSet):
 
         dom = self.domain()
         t = dom.canonical_coordinate()
-        t_min = dom.lower_bound() # this is either an expression or a
+        t_min = dom.lower_bound()  # this is either an expression or a
         # finite value thanks to tests in '__init__'
 
         codom = self.codomain()
@@ -910,11 +953,13 @@ class IntegratedCurveSet(DifferentiableCurveSet):
         p = codom.point(p_coords)
 
         # The initial tangent vector:
-        v_comps = [(x0_B-x0_A)/2] + [0 for i in range(dim-1)]
+        v_comps = [(x0_B - x0_A) / 2] + [0 for i in range(dim - 1)]
         v = codom.tangent_space(p)(v_comps)
 
         # The equations defining the curve:
-        eqns_rhs = [-(x0_B-x0_A)/2*sin(param-t_min)]+[0 for i in range(dim-1)]
+        eqns_rhs = [-(x0_B - x0_A) / 2 * sin(param - t_min)] + [
+            0 for i in range(dim - 1)
+        ]
         # combined with the initial components above, all velocities
         # vanish, except the first one, which is a cosine function.
         # This differential system results in a curve constant in all
@@ -924,7 +969,7 @@ class IntegratedCurveSet(DifferentiableCurveSet):
         # The symbolic expressions for the velocities:
         vels = chart2.symbolic_velocities()
 
-        return self.element_class(self,eqns_rhs,vels,param,v)
+        return self.element_class(self, eqns_rhs, vels, param, v)
 
     def one(self):
         r"""
@@ -960,11 +1005,14 @@ class IntegratedCurveSet(DifferentiableCurveSet):
         if self.codomain() != self.domain():
             raise TypeError("{} is not a monoid".format(self))
         else:
-            raise ValueError("the identity is not implemented for " +
-                            "integrated curves and associated " +
-                            "subclasses")
+            raise ValueError(
+                "the identity is not implemented for "
+                + "integrated curves and associated "
+                + "subclasses"
+            )
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
@@ -1151,17 +1199,20 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
 
         from sage.rings.infinity import Infinity
 
-        DifferentiableCurveSet.__init__(self, domain, codomain,
-                                       name=name, latex_name=latex_name)
+        DifferentiableCurveSet.__init__(
+            self, domain, codomain, name=name, latex_name=latex_name
+        )
 
         # checking argument 'domain'
         t_min = domain.lower_bound()
         t_max = domain.upper_bound()
         if t_min == -Infinity or t_max == +Infinity:
-            raise ValueError("both boundaries of the interval " +
-                             "defining the domain of a Homset of " +
-                             "integrated autoparallel curves need to " +
-                             "be finite")
+            raise ValueError(
+                "both boundaries of the interval "
+                + "defining the domain of a Homset of "
+                + "integrated autoparallel curves need to "
+                + "be finite"
+            )
 
         if name is None:
             self._name = "Hom_autoparallel"
@@ -1171,7 +1222,8 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         if latex_name is None:
             self._latex_name = r"\mathrm{{Hom}_{autoparallel}}"
             self._latex_name += r"\left({},{}\right)".format(
-                               domain._latex_name, codomain._latex_name)
+                domain._latex_name, codomain._latex_name
+            )
         else:
             self._latex_name = latex_name
 
@@ -1194,15 +1246,24 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         """
 
         description = "Set of Morphisms "
-        description += "from {} to {} in {} ".format(self._domain,
-                                        self._codomain, self.category())
+        description += "from {} to {} in {} ".format(
+            self._domain, self._codomain, self.category()
+        )
         description += "which actually are integrated autoparallel "
         description += "curves with respect to a certain affine connection"
         return description
 
-    def _element_constructor_(self, affine_connection, curve_parameter,
-                    initial_tangent_vector, chart=None, name=None,
-                    latex_name=None, verbose=False, across_charts=False):
+    def _element_constructor_(
+        self,
+        affine_connection,
+        curve_parameter,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct an element of ``self``, i.e. an integrated
         autoparallel curve `I \to M`, where `I` is a real interval and
@@ -1231,9 +1292,17 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
              differentiable manifold M
         """
         # Standard construction
-        return self.element_class(self, affine_connection,
-                 curve_parameter, initial_tangent_vector, chart=chart,
-                 name=name,latex_name=latex_name, verbose=verbose, across_charts=across_charts)
+        return self.element_class(
+            self,
+            affine_connection,
+            curve_parameter,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
     def _an_element_(self):
         r"""
@@ -1315,9 +1384,9 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
 
         dom = self.domain()
         t = dom.canonical_coordinate()
-        t_min = dom.lower_bound() # this is either an expression or a
+        t_min = dom.lower_bound()  # this is either an expression or a
         # finite value thanks to tests in '__init__'
-        t_max = dom.upper_bound() # idem
+        t_max = dom.upper_bound()  # idem
 
         codom = self.codomain()
         dim = codom.dim()
@@ -1348,18 +1417,18 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         # where a certain integrated autoparallel curve may be defined:
         H = Hom(dom, codom)
         c = H.an_element()
-        x_A = c.expr()[0].substitute({t:1})
-        x_B = c.expr()[0].substitute({t:0}) # necessarily, x_A < x_B
+        x_A = c.expr()[0].substitute({t: 1})
+        x_B = c.expr()[0].substitute({t: 0})  # necessarily, x_A < x_B
 
         if dim == 1:
             nab = codom.affine_connection('nab')
-            nab.set_coef()[i0,i0,i0] = 1
+            nab.set_coef()[i0, i0, i0] = 1
 
             # The initial point:
             p = codom.point([x_A])
 
             # The initial tangent vector:
-            x_dot_A = (exp(x_B - x_A) - 1)/(t_max - t_min)
+            x_dot_A = (exp(x_B - x_A) - 1) / (t_max - t_min)
             v = codom.tangent_space(p)([x_dot_A])
 
             return self.element_class(self, nab, param, v)
@@ -1372,7 +1441,7 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         # else: (i.e. dim >= 2)
 
         nab = codom.affine_connection('nab')
-        nab.set_coef()[i0,i0,i0+1] = 1
+        nab.set_coef()[i0, i0, i0 + 1] = 1
 
         y_bounds = chart2._bounds[1]  # bounds of second coordinate
         # Determination of an interval (y_A, y_B) around target_point:
@@ -1381,15 +1450,15 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         one_half = QQ(1) / QQ(2)
         if y_min == -Infinity:
             if y_max == Infinity:
-                y_A = - one_half
+                y_A = -one_half
                 y_B = one_half
             else:
-                y_A = y_max - 3*one_half
+                y_A = y_max - 3 * one_half
                 y_B = y_max - one_half
         else:
             if y_max == Infinity:
                 y_A = y_min + one_half
-                y_B = y_min + 3*one_half
+                y_B = y_min + 3 * one_half
             else:
                 dy = (y_max - y_min) / 4
                 y_A = y_min + dy
@@ -1401,8 +1470,8 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
 
         # The initial tangent vector:
         y_dot_A = (y_B - y_A) / (t_max - t_min)
-        x_dot_A = y_dot_A*(x_B - x_A) / (1-exp(-y_dot_A*(t_max-t_min)))
-        v_comps = [x_dot_A] + [y_dot_A] + [0 for i in range(dim-2)]
+        x_dot_A = y_dot_A * (x_B - x_A) / (1 - exp(-y_dot_A * (t_max - t_min)))
+        v_comps = [x_dot_A] + [y_dot_A] + [0 for i in range(dim - 2)]
         v = codom.tangent_space(p)(v_comps)
 
         return self.element_class(self, nab, param, v)
@@ -1418,7 +1487,8 @@ class IntegratedAutoparallelCurveSet(IntegratedCurveSet):
         # y(t_min) = y_A and y(t_max) = y_B due to y_dot_A set to the
         # value above
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
@@ -1599,16 +1669,19 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
 
         from sage.rings.infinity import Infinity
 
-        DifferentiableCurveSet.__init__(self, domain, codomain,
-                                       name=name, latex_name=latex_name)
+        DifferentiableCurveSet.__init__(
+            self, domain, codomain, name=name, latex_name=latex_name
+        )
 
         # checking argument 'domain'
         t_min = domain.lower_bound()
         t_max = domain.upper_bound()
         if t_min == -Infinity or t_max == +Infinity:
-            raise ValueError("both boundaries of the interval " +
-                             "defining the domain of a Homset of " +
-                             "integrated geodesics need to be finite")
+            raise ValueError(
+                "both boundaries of the interval "
+                + "defining the domain of a Homset of "
+                + "integrated geodesics need to be finite"
+            )
 
         if name is None:
             self._name = "Hom_geodesic"
@@ -1618,7 +1691,8 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
         if latex_name is None:
             self._latex_name = r"\mathrm{{Hom}_{geodesic}}"
             self._latex_name += r"\left({},{}\right)".format(
-                               domain._latex_name, codomain._latex_name)
+                domain._latex_name, codomain._latex_name
+            )
         else:
             self._latex_name = latex_name
 
@@ -1640,15 +1714,24 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
              certain metric
         """
         description = "Set of Morphisms "
-        description += "from {} to {} in {} ".format(self._domain,
-                                        self._codomain, self.category())
+        description += "from {} to {} in {} ".format(
+            self._domain, self._codomain, self.category()
+        )
         description += "which actually are integrated geodesics "
         description += "with respect to a certain metric"
         return description
 
-    def _element_constructor_(self, metric, curve_parameter,
-                    initial_tangent_vector, chart=None, name=None,
-                    latex_name=None, verbose=False, across_charts=False):
+    def _element_constructor_(
+        self,
+        metric,
+        curve_parameter,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct an element of ``self``, i.e. an integrated geodesic
         `I \to M`, where `I` is a real interval and
@@ -1675,9 +1758,17 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
              manifold M
         """
         # Standard construction
-        return self.element_class(self, metric, curve_parameter,
-                 initial_tangent_vector, chart=chart, name=name,
-                 latex_name=latex_name, verbose=verbose, across_charts=across_charts)
+        return self.element_class(
+            self,
+            metric,
+            curve_parameter,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
     def _an_element_(self):
         r"""
@@ -1761,9 +1852,9 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
 
         dom = self.domain()
         t = dom.canonical_coordinate()
-        t_min = dom.lower_bound() # this is either an expression or a
+        t_min = dom.lower_bound()  # this is either an expression or a
         # finite value thanks to tests in '__init__'
-        t_max = dom.upper_bound() # idem
+        t_max = dom.upper_bound()  # idem
 
         codom = self.codomain()
         dim = codom.dim()
@@ -1795,22 +1886,22 @@ class IntegratedGeodesicSet(IntegratedAutoparallelCurveSet):
         # where a certain integrated autoparallel curve may be defined:
         H = Hom(dom, codom)
         c = H.an_element()
-        x_A = c.expr()[0].substitute({t:1})
-        x_B = c.expr()[0].substitute({t:0}) # necessarily, x_A < x_B
+        x_A = c.expr()[0].substitute({t: 1})
+        x_B = c.expr()[0].substitute({t: 0})  # necessarily, x_A < x_B
 
         g = codom.metric('g')
-        g[i0,i0] = exp(2*x)
+        g[i0, i0] = exp(2 * x)
         if dim > 1:
-            for i in range(1,dim):
-                g[i0+i,i0+i] = 1
+            for i in range(1, dim):
+                g[i0 + i, i0 + i] = 1
 
         # The initial point:
         p_coords = [x_A] + list(c.expr()[1:dim])
         p = codom.point(p_coords)
 
         # The initial tangent vector:
-        x_dot_A = (exp(x_B - x_A) - 1)/(t_max - t_min)
-        v_comps = [x_dot_A] + [0 for i in range(dim-1)]
+        x_dot_A = (exp(x_B - x_A) - 1) / (t_max - t_min)
+        v_comps = [x_dot_A] + [0 for i in range(dim - 1)]
         v = codom.tangent_space(p)(v_comps)
 
         return self.element_class(self, g, param, v)

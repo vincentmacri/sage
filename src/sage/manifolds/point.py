@@ -76,7 +76,7 @@ for the comparison::
     True
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #
@@ -85,7 +85,7 @@ for the comparison::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.decorators import options
 from sage.rings.integer_ring import ZZ
@@ -164,8 +164,16 @@ class ManifoldPoint(Element):
     Points can be drawn in 2D or 3D graphics thanks to the
     method :meth:`plot`.
     """
-    def __init__(self, parent, coords=None, chart=None, name=None,
-                 latex_name=None, check_coords=True):
+
+    def __init__(
+        self,
+        parent,
+        coords=None,
+        chart=None,
+        name=None,
+        latex_name=None,
+        check_coords=True,
+    ):
         r"""
         Construct a manifold point.
 
@@ -182,27 +190,36 @@ class ManifoldPoint(Element):
             sage: TestSuite(q).run()
         """
         if parent.is_empty():
-            raise TypeError(f'cannot define a point on the {parent} because it has been declared empty')
+            raise TypeError(
+                f'cannot define a point on the {parent} because it has been declared empty'
+            )
         Element.__init__(self, parent)
         parent._has_defined_points = True
         self._manifold = parent.manifold()  # a useful shortcut
-        self._coordinates = {} # dictionary of the point coordinates in various
-                               # charts, with the charts as keys
+        self._coordinates = {}  # dictionary of the point coordinates in various
+        # charts, with the charts as keys
         if coords is not None:
             if len(coords) != parent.manifold().dimension():
-                raise ValueError("the number of coordinates must be equal " +
-                                 "to the manifold's dimension")
+                raise ValueError(
+                    "the number of coordinates must be equal "
+                    + "to the manifold's dimension"
+                )
             from sage.manifolds.manifold import TopologicalManifold
+
             if chart is None:
                 chart = parent._def_chart
             elif isinstance(parent, TopologicalManifold):
                 if chart not in parent._atlas:
-                    raise ValueError("the {} has not been".format(chart) +
-                                     "defined on the {}".format(parent))
+                    raise ValueError(
+                        "the {} has not been".format(chart)
+                        + "defined on the {}".format(parent)
+                    )
             if check_coords:
                 if not chart.valid_coordinates(*coords):
-                    raise ValueError("the coordinates {}".format(coords) +
-                                     " are not valid on the {}".format(chart))
+                    raise ValueError(
+                        "the coordinates {}".format(coords)
+                        + " are not valid on the {}".format(chart)
+                    )
             for schart in chart._supercharts:
                 self._coordinates[schart] = tuple(coords)
             for schart in chart._subcharts:
@@ -373,8 +390,9 @@ class ManifoldPoint(Element):
             dom = chart.domain()
             def_chart = dom._def_chart
             if self not in dom:
-                raise ValueError("the point does not belong to the domain " +
-                                 "of {}".format(chart))
+                raise ValueError(
+                    "the point does not belong to the domain " + "of {}".format(chart)
+                )
         if chart not in self._coordinates:
             # Check whether chart corresponds to a superchart of a chart
             # in which the coordinates are known:
@@ -390,8 +408,10 @@ class ManifoldPoint(Element):
             else:
                 # A chart must be found as a starting point of the computation
                 # The domain's default chart is privileged:
-                if (def_chart in self._coordinates
-                        and (def_chart, chart) in dom._coord_changes):
+                if (
+                    def_chart in self._coordinates
+                    and (def_chart, chart) in dom._coord_changes
+                ):
                     old_chart = def_chart
                     s_old_chart = def_chart
                     s_chart = chart
@@ -421,9 +441,12 @@ class ManifoldPoint(Element):
                         if old_chart is not None:
                             break
             if old_chart is None:
-                raise ValueError("the coordinates of {}".format(self) +
-                          " in the {}".format(chart) + " cannot be computed " +
-                          "by means of known changes of charts.")
+                raise ValueError(
+                    "the coordinates of {}".format(self)
+                    + " in the {}".format(chart)
+                    + " cannot be computed "
+                    + "by means of known changes of charts."
+                )
             else:
                 chcoord = dom._coord_changes[(s_old_chart, s_chart)]
                 self._coordinates[chart] = chcoord(*self._coordinates[old_chart])
@@ -549,14 +572,19 @@ class ManifoldPoint(Element):
             {Chart (M, (u, v)): (-1, 5)}
         """
         if len(coords) != self.parent().manifold()._dim:
-            raise ValueError("the number of coordinates must be equal to " +
-                             "the manifold's dimension.")
+            raise ValueError(
+                "the number of coordinates must be equal to "
+                + "the manifold's dimension."
+            )
         if chart is None:
             chart = self.parent()._def_chart
         else:
             if chart not in self.parent()._atlas:
-                raise ValueError("the {}".format(chart) + " has not been " +
-                                 "defined on the {}".format(self.parent()))
+                raise ValueError(
+                    "the {}".format(chart)
+                    + " has not been "
+                    + "defined on the {}".format(self.parent())
+                )
         self._coordinates[chart] = coords
 
     add_coord = add_coordinates
@@ -685,12 +713,13 @@ class ManifoldPoint(Element):
             # raise ValueError("no common chart has been found to compare " +
             #                  "{} and {}".format(self, other))
         periods = common_chart.periods()
-        for ind, (xs, xo) in enumerate(zip(self._coordinates[common_chart],
-                                           other._coordinates[common_chart])):
+        for ind, (xs, xo) in enumerate(
+            zip(self._coordinates[common_chart], other._coordinates[common_chart])
+        ):
             diff = xs - xo
             period = periods[ind]
             if period is not None:
-                if diff/period not in ZZ:
+                if diff / period not in ZZ:
                     return False
             else:
                 if isinstance(diff, Expression) and not diff.is_trivial_zero():
@@ -743,8 +772,15 @@ class ManifoldPoint(Element):
         return hash(self.parent().manifold())
 
     @options(size=10, color='black', label_color=None, fontsize=10, label_offset=0.1)
-    def plot(self, chart=None, ambient_coords=None, mapping=None,
-             label=None, parameters=None, **kwds):
+    def plot(
+        self,
+        chart=None,
+        ambient_coords=None,
+        mapping=None,
+        label=None,
+        parameters=None,
+        **kwds,
+    ):
         r"""
         For real manifolds, plot ``self`` in a Cartesian graph based
         on the coordinates of some ambient chart.
@@ -940,9 +976,12 @@ class ManifoldPoint(Element):
         from sage.plot.plot3d.shapes2 import point3d, text3d
         from sage.plot.point import point2d
         from sage.plot.text import text
+
         if self._manifold.base_field_type() != 'real':
-            raise NotImplementedError('plot of points on manifolds over fields different'
-                                      ' from the real field is not implemented')
+            raise NotImplementedError(
+                'plot of points on manifolds over fields different'
+                ' from the real field is not implemented'
+            )
         # The ambient chart:
         if chart is None:
             chart = self.parent().default_chart()
@@ -983,11 +1022,13 @@ class ManifoldPoint(Element):
         if nca == 2:
             if label is None:
                 label = r'$' + self._latex_name + r'$'
-            resu += (point2d(xp, color=color, size=size) +
-                     text(label, xlab, fontsize=fontsize, color=label_color))
+            resu += point2d(xp, color=color, size=size) + text(
+                label, xlab, fontsize=fontsize, color=label_color
+            )
         else:
             if label is None:
                 label = self._name
-            resu += (point3d(xp, color=color, size=size) +
-                     text3d(label, xlab, fontsize=fontsize, color=label_color))
+            resu += point3d(xp, color=color, size=size) + text3d(
+                label, xlab, fontsize=fontsize, color=label_color
+            )
         return resu

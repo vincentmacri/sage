@@ -1,12 +1,12 @@
 r"""
 Division rings
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.lazy_import import LazyImport
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -104,6 +104,7 @@ class DivisionRings(CategoryWithAxiom):
             True
         """
         from sage.categories.magmas import Magmas
+
         return (Magmas().Commutative(),)
 
     class ParentMethods:

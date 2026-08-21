@@ -1,6 +1,7 @@
 r"""
 The F-Matrix of a Fusion Ring
 """
+
 # ****************************************************************************
 #  Copyright (C) 2019 Daniel Bump <bump at match.stanford.edu>
 #                     Guillermo Aboumrad <gh_willieab>
@@ -19,17 +20,22 @@ from os import getpid, remove
 import pickle
 
 from sage.algebras.fusion_rings.fast_parallel_fmats_methods import (
-    _backward_subs, _solve_for_linear_terms,
-    executor
+    _backward_subs,
+    _solve_for_linear_terms,
+    executor,
 )
 from sage.algebras.fusion_rings.poly_tup_engine import (
-    apply_coeff_map, constant_coeff,
+    apply_coeff_map,
+    constant_coeff,
     compute_known_powers,
-    get_variables_degrees, variables,
-    poly_to_tup, _tup_to_poly, tup_to_univ_poly,
+    get_variables_degrees,
+    variables,
+    poly_to_tup,
+    _tup_to_poly,
+    tup_to_univ_poly,
     _unflatten_coeffs,
     poly_tup_sortkey,
-    resize
+    resize,
 )
 from sage.algebras.fusion_rings.shm_managers import KSHandler, FvarsHandler
 from sage.graphs.graph import Graph
@@ -263,7 +269,10 @@ class FMatrix(SageObject):
         sage: f.field()                                 # long time
         Algebraic Field
     """
-    def __init__(self, fusion_ring, fusion_label='f', var_prefix='fx', inject_variables=False):
+
+    def __init__(
+        self, fusion_ring, fusion_label='f', var_prefix='fx', inject_variables=False
+    ):
         r"""
         Initialize ``self``.
 
@@ -276,7 +285,9 @@ class FMatrix(SageObject):
         if inject_variables and (self._FR._fusion_labels is None):
             self._FR.fusion_labels(fusion_label, inject_variables=True)
         if not self._FR.is_multiplicity_free():
-            raise NotImplementedError("FMatrix is only available for multiplicity free FusionRings")
+            raise NotImplementedError(
+                "FMatrix is only available for multiplicity free FusionRings"
+            )
         # Set up F-symbols entry by entry
         n_vars = self.findcases()
         self._poly_ring = PolynomialRing(self._FR.field(), n_vars, var_prefix)
@@ -346,7 +357,9 @@ class FMatrix(SageObject):
             sage: f.get_fvars()[some_key]
             fx0
         """
-        self._fvars = {t: self._poly_ring.gen(idx) for idx, t in self._idx_to_sextuple.items()}
+        self._fvars = {
+            t: self._poly_ring.gen(idx) for idx, t in self._idx_to_sextuple.items()
+        }
         self._solved = [False] * self._poly_ring.ngens()
 
     def _reset_solver_state(self):
@@ -435,10 +448,12 @@ class FMatrix(SageObject):
              (-zeta60^14 + zeta60^6 + zeta60^4 - 1),
              (zeta60^14 - zeta60^6 - zeta60^4 + 1)]
         """
-        if (self._FR.Nk_ij(a, b, x) == 0
-                or self._FR.Nk_ij(x, c, d) == 0
-                or self._FR.Nk_ij(b, c, y) == 0
-                or self._FR.Nk_ij(a, y, d) == 0):
+        if (
+            self._FR.Nk_ij(a, b, x) == 0
+            or self._FR.Nk_ij(x, c, d) == 0
+            or self._FR.Nk_ij(b, c, y) == 0
+            or self._FR.Nk_ij(a, y, d) == 0
+        ):
             return 0
 
         # Some known zero F-symbols
@@ -616,8 +631,11 @@ class FMatrix(SageObject):
             sage: f.f_to(a1, a1, a2, a2)
             [a1, a3]
         """
-        return [x for x in self._FR.basis()
-                if self._FR.Nk_ij(a, b, x) != 0 and self._FR.Nk_ij(x, c, d) != 0]
+        return [
+            x
+            for x in self._FR.basis()
+            if self._FR.Nk_ij(a, b, x) != 0 and self._FR.Nk_ij(x, c, d) != 0
+        ]
 
     def f_to(self, a, b, c, d):
         r"""
@@ -643,8 +661,11 @@ class FMatrix(SageObject):
             sage: B.f_to(b2, b4, b2, b4)
             [b1, b3, b5]
         """
-        return [y for y in self._FR.basis()
-                if self._FR.Nk_ij(b, c, y) != 0 and self._FR.Nk_ij(a, y, d) != 0]
+        return [
+            y
+            for y in self._FR.basis()
+            if self._FR.Nk_ij(b, c, y) != 0 and self._FR.Nk_ij(a, y, d) != 0
+        ]
 
     ####################
     #   Data getters   #
@@ -835,7 +856,10 @@ class FMatrix(SageObject):
              (g1, g1, g1, g1, g1, g0): -0.7861514? + 0.?e-8*I,
              (g1, g1, g1, g1, g1, g1): -0.61803399? + 0.?e-8*I}
         """
-        return {sextuple: self._qqbar_embedding(fvar) for sextuple, fvar in self._fvars.items()}
+        return {
+            sextuple: self._qqbar_embedding(fvar)
+            for sextuple, fvar in self._fvars.items()
+        }
 
     def get_radical_expression(self):
         """
@@ -850,7 +874,10 @@ class FMatrix(SageObject):
             sage: radical_fvars[g1, g1, g1, g1, g1, g0]            # long time
             -sqrt(1/2*sqrt(5) - 1/2)
         """
-        return {sextuple: val.radical_expression() for sextuple, val in self.get_fvars_in_alg_field().items()}
+        return {
+            sextuple: val.radical_expression()
+            for sextuple, val in self.get_fvars_in_alg_field().items()
+        }
 
     #######################
     #   Private helpers   #
@@ -871,7 +898,11 @@ class FMatrix(SageObject):
             sage: len(f._get_known_vals()) == f._poly_ring.ngens()
             True
         """
-        return {i: self._fvars[s] for i, s in self._idx_to_sextuple.items() if self._solved[i]}
+        return {
+            i: self._fvars[s]
+            for i, s in self._idx_to_sextuple.items()
+            if self._solved[i]
+        }
 
     def _get_known_nonz(self):
         r"""
@@ -910,7 +941,9 @@ class FMatrix(SageObject):
             sage: f.largest_fmat_size()
             4
         """
-        return max(self.fmatrix(*tup).nrows() for tup in product(self._FR.basis(), repeat=4))
+        return max(
+            self.fmatrix(*tup).nrows() for tup in product(self._FR.basis(), repeat=4)
+        )
 
     def get_fvars_by_size(self, n, indices=False):
         r"""
@@ -1007,10 +1040,12 @@ class FMatrix(SageObject):
             True
             sage: os.remove(filename)
         """
-        final_state = [self._fvars,
-                       self._non_cyc_roots,
-                       self.get_coerce_map_from_fr_cyclotomic_field(),
-                       self._qqbar_embedding]
+        final_state = [
+            self._fvars,
+            self._non_cyc_roots,
+            self.get_coerce_map_from_fr_cyclotomic_field(),
+            self._qqbar_embedding,
+        ]
         with open(filename, 'wb') as f:
             pickle.dump(final_state, f)
 
@@ -1046,7 +1081,12 @@ class FMatrix(SageObject):
             :meth:`find_orthogonal_solution`.
         """
         with open(filename, 'rb') as f:
-            self._fvars, self._non_cyc_roots, self._coerce_map_from_cyc_field, self._qqbar_embedding = pickle.load(f)
+            (
+                self._fvars,
+                self._non_cyc_roots,
+                self._coerce_map_from_cyc_field,
+                self._qqbar_embedding,
+            ) = pickle.load(f)
         # Update state attributes
         self._chkpt_status = 7
         self._solved = [True for v in self._fvars]
@@ -1139,7 +1179,9 @@ class FMatrix(SageObject):
             return
         filename = "fmatrix_solver_checkpoint_" + self.get_fr_str() + ".pickle"
         with open(filename, 'wb') as f:
-            pickle.dump([self._fvars, list(self._solved), self._ks, self.ideal_basis, status], f)
+            pickle.dump(
+                [self._fvars, list(self._solved), self._ks, self.ideal_basis, status], f
+            )
         if verbose:
             print(f"Checkpoint {status} reached!")
 
@@ -1204,7 +1246,9 @@ class FMatrix(SageObject):
             self.load_fvars(filename)
             self._chkpt_status = 7
             return
-        self._fvars, self._solved, self._ks, self.ideal_basis, self._chkpt_status = state
+        self._fvars, self._solved, self._ks, self.ideal_basis, self._chkpt_status = (
+            state
+        )
         self._update_reduction_params()
 
     #################
@@ -1277,12 +1321,21 @@ class FMatrix(SageObject):
         n = self._poly_ring.ngens()
         self._ks = KSHandler(n, self._field, use_mp=True, init_data=self._ks)
         ks_names = self._ks.shm.name
-        self._shared_fvars = FvarsHandler(n, self._field, self._idx_to_sextuple, use_mp=n_proc, pids_name=pids_name, init_data=self._fvars)
+        self._shared_fvars = FvarsHandler(
+            n,
+            self._field,
+            self._idx_to_sextuple,
+            use_mp=n_proc,
+            pids_name=pids_name,
+            init_data=self._fvars,
+        )
         fvar_names = self._shared_fvars.shm.name
         # Initialize worker pool processes
         args = (id(self), s_name, vd_name, ks_names, fvar_names, n_proc, pids_name)
 
-        def init(fmats_id, solved_name, vd_name, ks_names, fvar_names, n_proc, pids_name):
+        def init(
+            fmats_id, solved_name, vd_name, ks_names, fvar_names, n_proc, pids_name
+        ):
             """
             Connect worker process to shared memory resources
             """
@@ -1291,7 +1344,14 @@ class FMatrix(SageObject):
             fmats_obj._var_degs = shared_memory.ShareableList(name=vd_name)
             n = fmats_obj._poly_ring.ngens()
             K = fmats_obj._field
-            fmats_obj._fvars = FvarsHandler(n, K, fmats_obj._idx_to_sextuple, name=fvar_names, use_mp=n_proc, pids_name=pids_name)
+            fmats_obj._fvars = FvarsHandler(
+                n,
+                K,
+                fmats_obj._idx_to_sextuple,
+                name=fvar_names,
+                use_mp=n_proc,
+                pids_name=pids_name,
+            )
             fmats_obj._ks = KSHandler(n, K, name=ks_names, use_mp=True)
 
         self.pool = Pool(processes=n_proc, initializer=init, initargs=args)
@@ -1329,7 +1389,9 @@ class FMatrix(SageObject):
             self._pid_list.shm.unlink()
             del self.__dict__['_shared_fvars']
 
-    def _map_triv_reduce(self, mapper, input_iter, worker_pool=None, chunksize=None, mp_thresh=None):
+    def _map_triv_reduce(
+        self, mapper, input_iter, worker_pool=None, chunksize=None, mp_thresh=None
+    ):
         r"""
         Apply the given mapper to each element of the given input iterable and
         return the results (with no duplicates) in a list.
@@ -1377,10 +1439,13 @@ class FMatrix(SageObject):
         if no_mp:
             mapped = map(executor, input_iter)
         else:
-            mapped = worker_pool.imap_unordered(executor, input_iter, chunksize=chunksize)
+            mapped = worker_pool.imap_unordered(
+                executor, input_iter, chunksize=chunksize
+            )
         # Reduce phase
-        results = {eqn for child_eqns in mapped if child_eqns is not None
-                   for eqn in child_eqns}
+        results = {
+            eqn for child_eqns in mapped if child_eqns is not None for eqn in child_eqns
+        }
         return list(results)
 
     ########################
@@ -1484,9 +1549,13 @@ class FMatrix(SageObject):
             self._reset_solver_state()
         n_proc = self.pool._processes if self.pool is not None else 1
         params = [(child_id, n_proc, output) for child_id in range(n_proc)]
-        eqns = self._map_triv_reduce('get_reduced_' + option, params,
-                                     worker_pool=self.pool, chunksize=1,
-                                     mp_thresh=0)
+        eqns = self._map_triv_reduce(
+            'get_reduced_' + option,
+            params,
+            worker_pool=self.pool,
+            chunksize=1,
+            mp_thresh=0,
+        )
         if output:
             F = self._field
             for i, eq_tup in enumerate(eqns):
@@ -1550,7 +1619,9 @@ class FMatrix(SageObject):
         for i, d in enumerate(get_variables_degrees(eqns, self._poly_ring.ngens())):
             self._var_degs[i] = d
         self._nnz = self._get_known_nonz()
-        self._kp = compute_known_powers(self._var_degs, self._get_known_vals(), self._field.one())
+        self._kp = compute_known_powers(
+            self._var_degs, self._get_known_vals(), self._field.one()
+        )
 
     def _triangular_elim(self, eqns=None, verbose=True):
         r"""
@@ -1596,10 +1667,16 @@ class FMatrix(SageObject):
                 eqns = chunks
             else:
                 eqns = [eqns]
-            eqns = self._map_triv_reduce('update_reduce', eqns, worker_pool=self.pool, mp_thresh=0)
+            eqns = self._map_triv_reduce(
+                'update_reduce', eqns, worker_pool=self.pool, mp_thresh=0
+            )
             eqns.sort(key=poly_tup_sortkey)
             if verbose:
-                print("Elimination epoch completed... {} eqns remain in ideal basis".format(len(eqns)))
+                print(
+                    "Elimination epoch completed... {} eqns remain in ideal basis".format(
+                        len(eqns)
+                    )
+                )
         self.ideal_basis = eqns
 
     #####################
@@ -1715,13 +1792,25 @@ class FMatrix(SageObject):
         graph = self.equations_graph(eqns)
         partition = {tuple(c): [] for c in graph.connected_components(sort=True)}
         for eq_tup in eqns:
-            partition[tuple(graph.connected_component_containing_vertex(variables(eq_tup)[0], sort=True))].append(eq_tup)
+            partition[
+                tuple(
+                    graph.connected_component_containing_vertex(
+                        variables(eq_tup)[0], sort=True
+                    )
+                )
+            ].append(eq_tup)
         if verbose:
-            print("Partitioned {} equations into {} components of size:".format(len(eqns), graph.number_of_connected_components()))
+            print(
+                "Partitioned {} equations into {} components of size:".format(
+                    len(eqns), graph.number_of_connected_components()
+                )
+            )
             print(graph.connected_components_sizes())
         return partition
 
-    def _par_graph_gb(self, eqns=None, term_order='degrevlex', largest_comp=45, verbose=True):
+    def _par_graph_gb(
+        self, eqns=None, term_order='degrevlex', largest_comp=45, verbose=True
+    ):
         r"""
         Compute a Groebner basis for a list of equations partitioned
         according to their corresponding graph.
@@ -1766,7 +1855,9 @@ class FMatrix(SageObject):
             else:
                 small_comps.append(comp_eqns)
         input_iter = zip_longest(small_comps, [], fillvalue=term_order)
-        small_comp_gb = self._map_triv_reduce('compute_gb', input_iter, worker_pool=self.pool, chunksize=1, mp_thresh=50)
+        small_comp_gb = self._map_triv_reduce(
+            'compute_gb', input_iter, worker_pool=self.pool, chunksize=1, mp_thresh=50
+        )
         return small_comp_gb + temp_eqns
 
     def _get_component_variety(self, var, eqns):
@@ -1803,12 +1894,20 @@ class FMatrix(SageObject):
         idx_map = {old: new for new, old in enumerate(sorted(var))}
         nvars = len(var)
         eqns = [_unflatten_coeffs(self._field, eq_tup) for eq_tup in eqns]
-        polys = [_tup_to_poly(resize(eq_tup, idx_map, nvars), parent=R) for eq_tup in eqns]
+        polys = [
+            _tup_to_poly(resize(eq_tup, idx_map, nvars), parent=R) for eq_tup in eqns
+        ]
         var_in_R = Ideal(sorted(polys)).variety(ring=AA)
 
         # Change back to fmats poly ring and append to temp_eqns
         inv_idx_map = {v: k for k, v in idx_map.items()}
-        return [{inv_idx_map[i]: value for i, (key, value) in enumerate(sorted(soln.items()))} for soln in var_in_R]
+        return [
+            {
+                inv_idx_map[i]: value
+                for i, (key, value) in enumerate(sorted(soln.items()))
+            }
+            for soln in var_in_R
+        ]
 
     #######################
     #   Solution method   #
@@ -1948,7 +2047,9 @@ class FMatrix(SageObject):
                 if verbose:
                     print("Computing appropriate NumberField...")
                 roots = [self._FR.field().gen()] + [r[1] for r in non_cyclotomic_roots]
-                self._field, bf_elts, self._qqbar_embedding = number_field_elements_from_algebraics(roots, minimal=True)
+                self._field, bf_elts, self._qqbar_embedding = (
+                    number_field_elements_from_algebraics(roots, minimal=True)
+                )
             else:
                 self._field = QQbar
                 bf_elts = [self._qqbar_embedding(F.gen())]
@@ -1970,14 +2071,23 @@ class FMatrix(SageObject):
         for fx in numeric_fvars:
             self._solved[fx] = True
         nvars = self._poly_ring.ngens()
-        assert sum(self._solved) == nvars, "Some F-symbols are still missing...{}".format([self._poly_ring.gen(fx) for fx in range(nvars) if not self._solved[fx]])
+        assert sum(self._solved) == nvars, (
+            "Some F-symbols are still missing...{}".format(
+                [self._poly_ring.gen(fx) for fx in range(nvars) if not self._solved[fx]]
+            )
+        )
 
         # Backward substitution step. Traverse variables in reverse lexicographical order. (System is in triangular form)
-        self._fvars = {sextuple: apply_coeff_map(rhs, phi) for sextuple, rhs in self._fvars.items()}
+        self._fvars = {
+            sextuple: apply_coeff_map(rhs, phi) for sextuple, rhs in self._fvars.items()
+        }
         for fx, rhs in numeric_fvars.items():
-            self._fvars[self._idx_to_sextuple[fx]] = ((ETuple({}, nvars), rhs), )
+            self._fvars[self._idx_to_sextuple[fx]] = ((ETuple({}, nvars), rhs),)
         _backward_subs(self, flatten=False)
-        self._fvars = {sextuple: constant_coeff(rhs, self._field) for sextuple, rhs in self._fvars.items()}
+        self._fvars = {
+            sextuple: constant_coeff(rhs, self._field)
+            for sextuple, rhs in self._fvars.items()
+        }
 
         # Update base field attributes
         self._FR._field = self.field()
@@ -1985,7 +2095,14 @@ class FMatrix(SageObject):
         if self._FR._basecoer:
             self._FR.r_matrix.clear_cache()
 
-    def find_orthogonal_solution(self, checkpoint=False, save_results='', warm_start='', use_mp=True, verbose=True):
+    def find_orthogonal_solution(
+        self,
+        checkpoint=False,
+        save_results='',
+        warm_start='',
+        use_mp=True,
+        verbose=True,
+    ):
         r"""
         Solve the hexagon and pentagon relations, along with
         orthogonality constraints, to evaluate an orthogonal F-matrix.
@@ -2094,7 +2211,11 @@ class FMatrix(SageObject):
         if use_mp:
             self.start_worker_pool()
         if verbose:
-            print("Computing F-symbols for {} with {} variables...".format(self._FR, self._poly_ring.ngens()))
+            print(
+                "Computing F-symbols for {} with {} variables...".format(
+                    self._FR, self._poly_ring.ngens()
+                )
+            )
 
         if self._chkpt_status < 1:
             # Set up hexagon equations and orthogonality constraints
@@ -2102,14 +2223,20 @@ class FMatrix(SageObject):
             self.get_defining_equations('hexagons', output=False)
             # Report progress
             if verbose:
-                print("Set up {} hex and orthogonality constraints...".format(len(self.ideal_basis)))
+                print(
+                    "Set up {} hex and orthogonality constraints...".format(
+                        len(self.ideal_basis)
+                    )
+                )
 
         # Unzip _fvars and link to shared_memory structure if using multiprocessing
         if use_mp:  # and loads_shared_memory:
             self._fvars = self._shared_fvars
         else:
             n = self._poly_ring.ngens()
-            self._fvars = FvarsHandler(n, self._field, self._idx_to_sextuple, init_data=self._fvars)
+            self._fvars = FvarsHandler(
+                n, self._field, self._idx_to_sextuple, init_data=self._fvars
+            )
         self._checkpoint(checkpoint, 1, verbose=verbose)
 
         if self._chkpt_status < 2:
@@ -2119,7 +2246,11 @@ class FMatrix(SageObject):
             self._triangular_elim(verbose=verbose)
             # Report progress
             if verbose:
-                print("Hex elim step solved for {} / {} variables".format(sum(self._solved), len(self._poly_ring.gens())))
+                print(
+                    "Hex elim step solved for {} / {} variables".format(
+                        sum(self._solved), len(self._poly_ring.gens())
+                    )
+                )
         self._checkpoint(checkpoint, 2, verbose=verbose)
 
         if self._chkpt_status < 3:
@@ -2136,7 +2267,11 @@ class FMatrix(SageObject):
             self._triangular_elim(verbose=verbose)
             # Report progress
             if verbose:
-                print("Pent elim step solved for {} / {} variables".format(sum(self._solved), len(self._poly_ring.gens())))
+                print(
+                    "Pent elim step solved for {} / {} variables".format(
+                        sum(self._solved), len(self._poly_ring.gens())
+                    )
+                )
         self._checkpoint(checkpoint, 4, verbose=verbose)
 
         # Try adding degrevlex gb -> elim loop until len(ideal_basis) does not change
@@ -2195,7 +2330,9 @@ class FMatrix(SageObject):
             # Fix var = 1, substitute, and solve equations
             self.ideal_basis.add(var - 1)
             print("adding equation...", var - 1)
-            self.ideal_basis = set(Ideal(list(self.ideal_basis)).groebner_basis(algorithm=algorithm))
+            self.ideal_basis = set(
+                Ideal(list(self.ideal_basis)).groebner_basis(algorithm=algorithm)
+            )
             self._substitute_degree_one()
             self._update_equations()
 
@@ -2226,8 +2363,17 @@ class FMatrix(SageObject):
         new_knowns = set()
         useless = set()
         for eq in eqns:
-            if eq.degree() == 1 and sum(eq.degrees()) <= 2 and eq.lm() not in self._solved:
-                self._fvars[self._var_to_sextuple[eq.lm()]] = -sum(c * m for c, m in zip(eq.coefficients()[1:], eq.monomials()[1:])) / eq.lc()
+            if (
+                eq.degree() == 1
+                and sum(eq.degrees()) <= 2
+                and eq.lm() not in self._solved
+            ):
+                self._fvars[self._var_to_sextuple[eq.lm()]] = (
+                    -sum(
+                        c * m for c, m in zip(eq.coefficients()[1:], eq.monomials()[1:])
+                    )
+                    / eq.lc()
+                )
                 # Add variable to set of known values and remove this equation
                 new_knowns.add(eq.lm())
                 useless.add(eq)
@@ -2237,7 +2383,11 @@ class FMatrix(SageObject):
             if fx in new_knowns:
                 self._solved[idx] = fx
         for sextuple, rhs in self._fvars.items():
-            d = {var: self._fvars[self._var_to_sextuple[var]] for var in rhs.variables() if var in self._solved}
+            d = {
+                var: self._fvars[self._var_to_sextuple[var]]
+                for var in rhs.variables()
+                if var in self._solved
+            }
             if d:
                 self._fvars[sextuple] = rhs.subs(d)
         return new_knowns, useless
@@ -2260,11 +2410,17 @@ class FMatrix(SageObject):
             sage: f.ideal_basis
             {fx3}
         """
-        special_values = {known: self._fvars[self._var_to_sextuple[known]] for known in self._solved if known}
+        special_values = {
+            known: self._fvars[self._var_to_sextuple[known]]
+            for known in self._solved
+            if known
+        }
         self.ideal_basis = {eq.subs(special_values) for eq in self.ideal_basis}
         self.ideal_basis.discard(0)
 
-    def find_cyclotomic_solution(self, equations=None, algorithm='', verbose=True, output=False):
+    def find_cyclotomic_solution(
+        self, equations=None, algorithm='', verbose=True, output=False
+    ):
         r"""
         Solve the hexagon and pentagon relations to evaluate the F-matrix.
 
@@ -2322,12 +2478,16 @@ class FMatrix(SageObject):
         if self._poly_ring.ngens() == 0:
             return None
         self._reset_solver_state()
-        self._var_to_sextuple = {self._poly_ring.gen(i): s for i, s in self._idx_to_sextuple.items()}
+        self._var_to_sextuple = {
+            self._poly_ring.gen(i): s for i, s in self._idx_to_sextuple.items()
+        }
 
         if equations is None:
             if verbose:
                 print("Setting up hexagons and pentagons...")
-            equations = self.get_defining_equations("hexagons") + self.get_defining_equations("pentagons")
+            equations = self.get_defining_equations(
+                "hexagons"
+            ) + self.get_defining_equations("pentagons")
         if verbose:
             print("Finding a Groebner basis...")
         self.ideal_basis = set(Ideal(equations).groebner_basis(algorithm=algorithm))
@@ -2424,14 +2584,19 @@ class FMatrix(SageObject):
             True
         """
         fvars_copy = deepcopy(self._fvars)
-        self._fvars = {sextuple: float(rhs) for sextuple, rhs in self.get_fvars_in_alg_field().items()}
+        self._fvars = {
+            sextuple: float(rhs)
+            for sextuple, rhs in self.get_fvars_in_alg_field().items()
+        }
         if use_mp:
             pool = Pool()
         else:
             pool = None
         n_proc = pool._processes if pool is not None else 1
         params = [(child_id, n_proc, verbose) for child_id in range(n_proc)]
-        pe = self._map_triv_reduce('pent_verify', params, worker_pool=pool, chunksize=1, mp_thresh=0)
+        pe = self._map_triv_reduce(
+            'pent_verify', params, worker_pool=pool, chunksize=1, mp_thresh=0
+        )
         if np.all(np.isclose(np.array(pe), 0, atol=1e-7)):
             if verbose:
                 print("Found valid F-symbols for {}".format(self._FR))

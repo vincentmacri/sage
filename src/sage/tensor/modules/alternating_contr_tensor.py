@@ -178,6 +178,7 @@ class AlternatingContrTensor(FreeModuleTensor):
         sage: s.display(e)
         b∧b = 0
     """
+
     def __init__(self, fmodule, degree, name=None, latex_name=None):
         r"""
         Initialize ``self``.
@@ -200,10 +201,15 @@ class AlternatingContrTensor(FreeModuleTensor):
             sage: a1[e,0,1] = 2
             sage: TestSuite(a1).run()
         """
-        FreeModuleTensor.__init__(self, fmodule, (degree,0), name=name,
-                                  latex_name=latex_name,
-                                  antisym=range(degree),
-                                  parent=fmodule.exterior_power(degree))
+        FreeModuleTensor.__init__(
+            self,
+            fmodule,
+            (degree, 0),
+            name=name,
+            latex_name=latex_name,
+            antisym=range(degree),
+            parent=fmodule.exterior_power(degree),
+        )
 
     def _repr_(self):
         r"""
@@ -285,13 +291,21 @@ class AlternatingContrTensor(FreeModuleTensor):
         """
         fmodule = self._fmodule  # the base free module
         if self._tensor_rank == 1:
-            return Components(fmodule._ring, basis, 1,
-                              start_index=fmodule._sindex,
-                              output_formatter=fmodule._output_formatter)
+            return Components(
+                fmodule._ring,
+                basis,
+                1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
 
-        return CompFullyAntiSym(fmodule._ring, basis, self._tensor_rank,
-                                start_index=fmodule._sindex,
-                                output_formatter=fmodule._output_formatter)
+        return CompFullyAntiSym(
+            fmodule._ring,
+            basis,
+            self._tensor_rank,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+        )
 
     def degree(self):
         r"""
@@ -392,8 +406,10 @@ class AlternatingContrTensor(FreeModuleTensor):
         from sage.misc.latex import latex
         from sage.typeset.unicode_characters import unicode_wedge
         from .format_utilities import is_atomic, FormattedExpansion
-        basis, format_spec = self._preparse_display(basis=basis,
-                                                    format_spec=format_spec)
+
+        basis, format_spec = self._preparse_display(
+            basis=basis, format_spec=format_spec
+        )
         comp = self.comp(basis)
         terms_txt = []
         terms_latex = []
@@ -426,13 +442,13 @@ class AlternatingContrTensor(FreeModuleTensor):
                     if is_atomic(coef_txt):
                         terms_txt.append(coef_txt + ' ' + basis_term_txt)
                     else:
-                        terms_txt.append('(' + coef_txt + ') ' +
-                                         basis_term_txt)
+                        terms_txt.append('(' + coef_txt + ') ' + basis_term_txt)
                     if is_atomic(coef_latex):
                         terms_latex.append(coef_latex + basis_term_latex)
                     else:
-                        terms_latex.append(r'\left(' + coef_latex +
-                                           r'\right)' + basis_term_latex)
+                        terms_latex.append(
+                            r'\left(' + coef_latex + r'\right)' + basis_term_latex
+                        )
         if not terms_txt:
             expansion_txt = '0'
         else:
@@ -530,11 +546,14 @@ class AlternatingContrTensor(FreeModuleTensor):
         """
         from sage.typeset.unicode_characters import unicode_wedge
         from .format_utilities import is_atomic
+
         if not isinstance(other, AlternatingContrTensor):
-            raise TypeError("the second argument for the exterior product " +
-                            "must be an alternating contravariant tensor")
+            raise TypeError(
+                "the second argument for the exterior product "
+                + "must be an alternating contravariant tensor"
+            )
         if other._tensor_rank == 0:
-            return other*self
+            return other * self
         fmodule = self._fmodule
         basis = self.common_basis(other)
         if basis is None:
@@ -542,13 +561,17 @@ class AlternatingContrTensor(FreeModuleTensor):
         rank_r = self._tensor_rank + other._tensor_rank
         cmp_s = self._components[basis]
         cmp_o = other._components[basis]
-        cmp_r = CompFullyAntiSym(fmodule._ring, basis, rank_r,
-                                 start_index=fmodule._sindex,
-                                 output_formatter=fmodule._output_formatter)
+        cmp_r = CompFullyAntiSym(
+            fmodule._ring,
+            basis,
+            rank_r,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+        )
         for ind_s, val_s in cmp_s._comp.items():
             for ind_o, val_o in cmp_o._comp.items():
                 ind_r = ind_s + ind_o
-                if len(ind_r) == len(set(ind_r)): # all indices are different
+                if len(ind_r) == len(set(ind_r)):  # all indices are different
                     cmp_r[[ind_r]] += val_s * val_o
         result = fmodule.alternating_contravariant_tensor(rank_r)
         result._components[basis] = cmp_r
@@ -709,27 +732,31 @@ class AlternatingContrTensor(FreeModuleTensor):
         """
         from .format_utilities import is_atomic
         from .free_module_alt_form import FreeModuleAltForm
+
         if not isinstance(form, FreeModuleAltForm):
             raise TypeError("{} is not an alternating form".format(form))
         p_res = form._tensor_rank - self._tensor_rank  # degree of the result
         if self._tensor_rank == 1:
             # Case p = 1:
             res = self.contract(form)  # contract() deals efficiently with
-                                       # the antisymmetry for p = 1
+            # the antisymmetry for p = 1
         else:
             # Case p > 1:
             if form._fmodule != self._fmodule:
-                raise ValueError("{} is not defined on the same ".format(form) +
-                                 "module as the {}".format(self))
+                raise ValueError(
+                    "{} is not defined on the same ".format(form)
+                    + "module as the {}".format(self)
+                )
             if form._tensor_rank < self._tensor_rank:
-                raise ValueError("the degree of the {} is lower ".format(form) +
-                                 "than that of the {}".format(self))
+                raise ValueError(
+                    "the degree of the {} is lower ".format(form)
+                    + "than that of the {}".format(self)
+                )
             # Interior product at the component level:
             basis = self.common_basis(form)
             if basis is None:
                 raise ValueError("no common basis for the interior product")
-            comp = self._components[basis].interior_product(
-                                                       form._components[basis])
+            comp = self._components[basis].interior_product(form._components[basis])
             if p_res == 0:
                 res = comp  # result is a scalar
             else:

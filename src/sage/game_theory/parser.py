@@ -142,6 +142,7 @@ class Parser:
         equilibria = []
         from sage.misc.sage_eval import sage_eval
         from itertools import groupby, dropwhile
+
         lines = iter(self.raw_string)
         # Skip comment lines starting with a single star
         lines = dropwhile(lambda line: line.startswith('*'), lines)
@@ -265,10 +266,17 @@ class Parser:
         nice_stuff = []
         for gambitstrategy in self.raw_string:
             gambitstrategy = list(gambitstrategy)
-            profile = [tuple(gambitstrategy[:len(gambit_game.players[0].strategies)])]
+            profile = [tuple(gambitstrategy[: len(gambit_game.players[0].strategies)])]
             for player in list(gambit_game.players)[1:]:
                 previousplayerstrategylength = len(profile[-1])
-                profile.append(tuple(gambitstrategy[previousplayerstrategylength: previousplayerstrategylength + len(player.strategies)]))
+                profile.append(
+                    tuple(
+                        gambitstrategy[
+                            previousplayerstrategylength : previousplayerstrategylength
+                            + len(player.strategies)
+                        ]
+                    )
+                )
             nice_stuff.append(profile)
 
         return nice_stuff

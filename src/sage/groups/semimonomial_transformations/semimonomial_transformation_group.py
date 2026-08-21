@@ -52,13 +52,16 @@ TESTS::
     sage: TestSuite(S).run()
     sage: TestSuite(S.an_element()).run()
 """
+
 from __future__ import annotations
 
 from sage.groups.group import FiniteGroup
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.action import Action
 from sage.combinat.permutation import Permutation
-from sage.groups.semimonomial_transformations.semimonomial_transformation import SemimonomialTransformation
+from sage.groups.semimonomial_transformations.semimonomial_transformation import (
+    SemimonomialTransformation,
+)
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -121,6 +124,7 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
         ((1, 1, 1, 1); (),
          Ring endomorphism of Finite Field in a of size 3^2 Defn: a |--> a)
     """
+
     Element = SemimonomialTransformation
 
     def __init__(self, R, len):
@@ -146,6 +150,7 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
         self._len = len
 
         from sage.categories.finite_groups import FiniteGroups
+
         super().__init__(category=FiniteGroups())
 
     def _element_constructor_(self, arg1, v=None, perm=None, autom=None, check=True):
@@ -178,6 +183,7 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
             ((1, 1, 1, 1); (), Ring endomorphism of Finite Field in a of size 3^2 Defn: a |--> 2*a + 1)
         """
         from sage.categories.homset import End
+
         R = self.base_ring()
         if arg1 == 0:
             if v is None:
@@ -191,20 +197,27 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
                 try:
                     v = [R(x) for x in v]
                 except TypeError:
-                    raise TypeError('the vector attribute %s ' % v +
-                                    'should be iterable')
+                    raise TypeError(
+                        'the vector attribute %s ' % v + 'should be iterable'
+                    )
                 if len(v) != self.degree():
-                    raise ValueError('the length of the vector is %s,' % len(v) +
-                                     ' should be %s' % self.degree())
+                    raise ValueError(
+                        'the length of the vector is %s,' % len(v)
+                        + ' should be %s' % self.degree()
+                    )
                 if not all(x.parent() is R and x.is_unit() for x in v):
-                    raise ValueError('there is at least one element in the ' +
-                                     'list %s not lying in %s ' % (v, R) +
-                                     'or which is not invertible')
+                    raise ValueError(
+                        'there is at least one element in the '
+                        + 'list %s not lying in %s ' % (v, R)
+                        + 'or which is not invertible'
+                    )
                 try:
                     perm = Permutation(perm)
                 except TypeError:
-                    raise TypeError('the permutation attribute %s ' % perm +
-                                    'could not be converted to a permutation')
+                    raise TypeError(
+                        'the permutation attribute %s ' % perm
+                        + 'could not be converted to a permutation'
+                    )
                 if len(perm) != self.degree():
                     txt = 'the permutation length is {}, should be {}'
                     raise ValueError(txt.format(len(perm), self.degree()))
@@ -213,8 +226,10 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
                     if autom.parent() != End(R):
                         autom = End(R)(autom)
                 except TypeError:
-                    raise TypeError('%s of type %s' % (autom, type(autom)) +
-                                    ' is not coerceable to an automorphism')
+                    raise TypeError(
+                        '%s of type %s' % (autom, type(autom))
+                        + ' is not coerceable to an automorphism'
+                    )
             return self.Element(self, v, perm, autom)
         try:
             if arg1.parent() is self:
@@ -223,12 +238,14 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
             pass
         try:
             from sage.rings.integer import Integer
+
             if Integer(arg1) == 1:
                 return self()
         except TypeError:
             pass
-        raise TypeError('the first argument must be an integer' +
-                        ' or an element of this group')
+        raise TypeError(
+            'the first argument must be an integer' + ' or an element of this group'
+        )
 
     def base_ring(self):
         r"""
@@ -269,7 +286,7 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
         p = Permutation([self.degree()] + list(range(1, self.degree())))
 
         if not R.is_prime_field():
-            f = R.hom([R.gen()**R.characteristic()])
+            f = R.hom([R.gen() ** R.characteristic()])
         else:
             f = R.Hom(R).identity()
         return self(0, v, p, f)
@@ -309,12 +326,14 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
               Ring endomorphism of Finite Field in a of size 2^2 Defn: a |--> a + 1))
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         R = self.base_ring()
         l = [self(v=([R.primitive_element()] + [R.one()] * (self.degree() - 1)))]
-        l.extend(self(perm=Permutation(g))
-                 for g in SymmetricGroup(self.degree()).gens())
+        l.extend(
+            self(perm=Permutation(g)) for g in SymmetricGroup(self.degree()).gens()
+        )
         if R.is_field() and not R.is_prime_field():
-            l.append(self(autom=R.hom([R.primitive_element()**R.characteristic()])))
+            l.append(self(autom=R.hom([R.primitive_element() ** R.characteristic()])))
         return tuple(l)
 
     def order(self) -> Integer:
@@ -329,6 +348,7 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
         """
         from sage.arith.misc import factorial
         from sage.categories.homset import End
+
         n = self.degree()
         R = self.base_ring()
         if R.is_field():
@@ -387,8 +407,10 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
             sage: SemimonomialTransformationGroup(F, 3)  # indirect doctest
             Semimonomial transformation group over Finite Field in a of size 2^2 of degree 3
         """
-        return ('Semimonomial transformation group over %s' % self.base_ring() +
-                ' of degree %s' % self.degree())
+        return (
+            'Semimonomial transformation group over %s' % self.base_ring()
+            + ' of degree %s' % self.degree()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -401,10 +423,19 @@ class SemimonomialTransformationGroup(FiniteGroup, UniqueRepresentation):
             \left(\Bold{F}_{2^{2}}^3\wr\langle (1,2,3), (1,2) \rangle \right) \rtimes \operatorname{Aut}(\Bold{F}_{2^{2}})
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         ring_latex = self.base_ring()._latex_()
-        return ('\\left(' + ring_latex + '^' + str(self.degree()) + '\\wr' +
-                SymmetricGroup(self.degree())._latex_() +
-                ' \\right) \\rtimes \\operatorname{Aut}(' + ring_latex + ')')
+        return (
+            '\\left('
+            + ring_latex
+            + '^'
+            + str(self.degree())
+            + '\\wr'
+            + SymmetricGroup(self.degree())._latex_()
+            + ' \\right) \\rtimes \\operatorname{Aut}('
+            + ring_latex
+            + ')'
+        )
 
 
 class SemimonomialActionVec(Action):
@@ -417,6 +448,7 @@ class SemimonomialActionVec(Action):
     (The indexing of vectors is `0`-based here, so
     `\psi = (\psi_0, \psi_1, \ldots, \psi_{n-1})`.)
     """
+
     def __init__(self, G, V, check=True):
         r"""
         Initialization.
@@ -431,6 +463,7 @@ class SemimonomialActionVec(Action):
         """
         if check:
             from sage.modules.free_module import FreeModule_generic
+
             if not isinstance(G, SemimonomialTransformationGroup):
                 raise ValueError('%s is not a semimonomial group' % G)
             if not isinstance(V, FreeModule_generic):
@@ -438,7 +471,9 @@ class SemimonomialActionVec(Action):
             if V.ambient_module() != V:
                 raise ValueError('%s is not equal to its ambient module' % V)
             if V.dimension() != G.degree():
-                raise ValueError('%s has a dimension different to the degree of %s' % (V, G))
+                raise ValueError(
+                    '%s has a dimension different to the degree of %s' % (V, G)
+                )
             if V.base_ring() != G.base_ring():
                 raise ValueError('%s and %s have different base rings' % (V, G))
 
@@ -469,6 +504,7 @@ class SemimonomialActionMat(Action):
     See :class:`~sage.groups.semimonomial_transformations.semimonomial_transformation_group.SemimonomialActionVec`
     for the definition of the action on the row vectors of such a matrix.
     """
+
     def __init__(self, G, M, check=True):
         r"""
         Initialization.
@@ -485,13 +521,16 @@ class SemimonomialActionMat(Action):
         """
         if check:
             from sage.matrix.matrix_space import MatrixSpace
+
             if not isinstance(G, SemimonomialTransformationGroup):
                 raise ValueError('%s is not a semimonomial group' % G)
             if not isinstance(M, MatrixSpace):
                 raise ValueError('%s is not a matrix space' % M)
             if M.ncols() != G.degree():
-                raise ValueError('the number of columns of %s' % M +
-                                 ' and the degree of %s are different' % G)
+                raise ValueError(
+                    'the number of columns of %s' % M
+                    + ' and the degree of %s are different' % G
+                )
             if M.base_ring() != G.base_ring():
                 raise ValueError('%s and %s have different base rings' % (M, G))
         Action.__init__(self, G, M)

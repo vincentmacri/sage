@@ -74,6 +74,7 @@ class KodairaSymbol_class(SageObject):
     Users should use the ``KodairaSymbol()`` function to construct
     Kodaira Symbols rather than use the class constructor directly.
     """
+
     def __init__(self, symbol):
         r"""
         Constructor for Kodaira Symbol class.
@@ -153,7 +154,7 @@ class KodairaSymbol_class(SageObject):
                 self._n = nu
                 self._str = 'I%s*' % nu
                 self._latex = 'I_{%s}^{*}' % nu
-            self._starred = (n < 0)
+            self._starred = n < 0
             self._pari = n
             return
         if not symbol:
@@ -165,8 +166,12 @@ class KodairaSymbol_class(SageObject):
             starred = True
             symbol = symbol[:-1]
         self._starred = starred
-        if symbol in ["I", "II", "V"]:    # NB we have already stripped off the leading 'I'
-            self._roman = ["I", "II", "V"].index(symbol) + 2   # =2, 3 or 4
+        if symbol in [
+            "I",
+            "II",
+            "V",
+        ]:  # NB we have already stripped off the leading 'I'
+            self._roman = ["I", "II", "V"].index(symbol) + 2  # =2, 3 or 4
             self._n = None
             if starred:
                 sign = -1
@@ -281,7 +286,9 @@ class KodairaSymbol_class(SageObject):
             IV*]
         """
         if isinstance(other, KodairaSymbol_class):
-            if (self._n == "generic" and other._n is not None) or (other._n == "generic" and self._n is not None):
+            if (self._n == "generic" and other._n is not None) or (
+                other._n == "generic" and self._n is not None
+            ):
                 return richcmp(self._starred, other._starred, op)
             return richcmp(self._str, other._str, op)
         return NotImplemented

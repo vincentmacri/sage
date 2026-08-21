@@ -22,6 +22,7 @@ class SchemePoint(Element):
     Base class for points on a scheme, either topological or defined
     by a morphism.
     """
+
     def __init__(self, S, parent=None):
         """
         INPUT:
@@ -74,10 +75,12 @@ class SchemePoint(Element):
 # Topological points on a scheme
 ########################################################
 
+
 class SchemeTopologicalPoint(SchemePoint):
     """
     Base class for topological points on schemes.
     """
+
     def __init__(self, S):
         """
         INPUT:
@@ -115,8 +118,10 @@ class SchemeTopologicalPoint_affine_open(SchemeTopologicalPoint):
 
     def _repr_(self):
         return "Point on %s defined by x in U, where:\n  U: %s\n  x: %s" % (
-            self.scheme(), self.embedding_of_affine_open().domain(),
-            self.point_on_affine())
+            self.scheme(),
+            self.embedding_of_affine_open().domain(),
+            self.point_on_affine(),
+        )
 
     def point_on_affine(self):
         """
@@ -170,6 +175,7 @@ class SchemeTopologicalPoint_prime_ideal(SchemeTopologicalPoint):
         """
         R = S.coordinate_ring()
         from sage.rings.ideal import Ideal_generic
+
         if not isinstance(P, Ideal_generic):
             P = R.ideal(P)
         elif P.ring() is not R:
@@ -196,8 +202,7 @@ class SchemeTopologicalPoint_prime_ideal(SchemeTopologicalPoint):
             sage: pt._repr_()
             'Point on Projective Space of dimension 2 over Rational Field defined by the Ideal (-x^2 + y*z) of Multivariate Polynomial Ring in x, y, z over Rational Field'
         """
-        return "Point on %s defined by the %s" % (self.scheme(),
-                                                  self.prime_ideal())
+        return "Point on %s defined by the %s" % (self.scheme(), self.prime_ideal())
 
     def prime_ideal(self):
         """

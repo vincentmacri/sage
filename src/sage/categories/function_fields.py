@@ -1,7 +1,7 @@
 r"""
 Function fields
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
@@ -9,7 +9,7 @@ Function fields
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category import Category
 from sage.categories.fields import Fields
@@ -32,6 +32,7 @@ class FunctionFields(Category):
 
         sage: TestSuite(FunctionFields()).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -66,7 +67,9 @@ class FunctionFields(Category):
         try:
             return x.function_field()
         except AttributeError:
-            raise TypeError("unable to canonically associate a function field to %s" % x)
+            raise TypeError(
+                "unable to canonically associate a function field to %s" % x
+            )
 
     class ParentMethods:
         pass

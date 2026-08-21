@@ -5,6 +5,7 @@ AUTHORS:
 
 - Mark Shimozono (2013) initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Mark Shimozono <mshimo at math.vt.edu>
 #
@@ -40,6 +41,7 @@ class GroupSemidirectProductElement(CartesianProduct.Element):
             Weyl Group of type ['A', 3]
             (as a matrix group acting on the ambient space)
         """
+
         def wrapper(prefix, s):
             if prefix is None:
                 return s
@@ -245,8 +247,17 @@ class GroupSemidirectProduct(CartesianProduct):
         - Twofold Direct product as a special case of semidirect product
     """
 
-    def __init__(self, G, H, twist=None, act_to_right=True, prefix0=None,
-                 prefix1=None, print_tuple=False, category=Groups()):
+    def __init__(
+        self,
+        G,
+        H,
+        twist=None,
+        act_to_right=True,
+        prefix0=None,
+        prefix1=None,
+        print_tuple=False,
+        category=Groups(),
+    ):
         r"""
 
         EXAMPLES::
@@ -267,12 +278,16 @@ class GroupSemidirectProduct(CartesianProduct):
         def check_implemented_group(x):
             if x in Groups():
                 return
-            error = ("The semidirect product construction for groups "
-                     "is implemented only for multiplicative groups")
+            error = (
+                "The semidirect product construction for groups "
+                "is implemented only for multiplicative groups"
+            )
             if x in CommutativeAdditiveGroups():
-                error += (f". Please change the commutative additive group {x}"
-                          " into a multiplicative group "
-                          "using the functor sage.groups.group_exp.GroupExp")
+                error += (
+                    f". Please change the commutative additive group {x}"
+                    " into a multiplicative group "
+                    "using the functor sage.groups.group_exp.GroupExp"
+                )
             raise TypeError(error)
 
         check_implemented_group(G)
@@ -323,9 +338,11 @@ class GroupSemidirectProduct(CartesianProduct):
             act_string = "acting on"
         else:
             act_string = "acted upon by"
-        return "Semidirect product of %s %s %s" % (cartesian_factors[0],
-                                                   act_string,
-                                                   cartesian_factors[1])
+        return "Semidirect product of %s %s %s" % (
+            cartesian_factors[0],
+            act_string,
+            cartesian_factors[1],
+        )
 
     def _element_constructor_(self, x):
         r"""
@@ -339,6 +356,7 @@ class GroupSemidirectProduct(CartesianProduct):
             ....:                            WeylGroup(['A',3],prefix='t'), twist).an_element()
             sage: TestSuite(g).run()
         """
+
         def type_error():
             raise TypeError(f"{x} cannot be converted into an element of {self}")
 
@@ -377,8 +395,9 @@ class GroupSemidirectProduct(CartesianProduct):
             sage: one.cartesian_projection(1)
             (0, 0)
         """
-        return self((self.cartesian_factors()[0].one(),
-                     self.cartesian_factors()[1].one()))
+        return self(
+            (self.cartesian_factors()[0].one(), self.cartesian_factors()[1].one())
+        )
 
     def group_generators(self):
         r"""
@@ -393,6 +412,7 @@ class GroupSemidirectProduct(CartesianProduct):
             sage: GroupSemidirectProduct(EZ, EZ, twist, print_tuple=True).group_generators()
             ((1, 0), (0, 1))
         """
+
         def has_gens(G):
             if not hasattr(G, 'group_generators'):
                 return False
@@ -403,10 +423,13 @@ class GroupSemidirectProduct(CartesianProduct):
         if g0 is not False:
             g1 = has_gens(factors[1])
             if g1 is not False:
-                return tuple([self((x, factors[1].one())) for x in g0] +
-                             [self((factors[0].one(), x)) for x in g1])
-        raise NotImplementedError("one of the factors does not "
-                                  "implement 'group_generators'")
+                return tuple(
+                    [self((x, factors[1].one())) for x in g0]
+                    + [self((factors[0].one(), x)) for x in g1]
+                )
+        raise NotImplementedError(
+            "one of the factors does not implement 'group_generators'"
+        )
 
     def product(self, x, y):
         r"""
@@ -472,14 +495,16 @@ class GroupSemidirectProduct(CartesianProduct):
             sage: hop in Hop
             True
         """
-        return GroupSemidirectProduct(self.cartesian_factors()[1],
-                                      self.cartesian_factors()[0],
-                                      twist=self._twist,
-                                      act_to_right=not self.act_to_right(),
-                                      prefix0=self._prefix1,
-                                      prefix1=self._prefix0,
-                                      print_tuple=self._print_tuple,
-                                      category=self._category)
+        return GroupSemidirectProduct(
+            self.cartesian_factors()[1],
+            self.cartesian_factors()[0],
+            twist=self._twist,
+            act_to_right=not self.act_to_right(),
+            prefix0=self._prefix1,
+            prefix1=self._prefix0,
+            print_tuple=self._print_tuple,
+            category=self._category,
+        )
 
     def construction(self):
         r"""

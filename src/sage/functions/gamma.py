@@ -1,6 +1,7 @@
 """
 Gamma and related functions
 """
+
 from sage.misc.lazy_import import lazy_import
 from sage.rings.infinity import Infinity
 from sage.rings.rational import Rational
@@ -175,13 +176,19 @@ class Function_gamma(GinacFunction):
 
             :meth:`gamma`
         """
-        GinacFunction.__init__(self, 'gamma', latex_name=r"\Gamma",
-                               ginac_name='gamma',
-                               conversions={'mathematica':'Gamma',
-                                            'maple':'GAMMA',
-                                            'sympy':'gamma',
-                                            'fricas':'Gamma',
-                                            'giac':'Gamma'})
+        GinacFunction.__init__(
+            self,
+            'gamma',
+            latex_name=r"\Gamma",
+            ginac_name='gamma',
+            conversions={
+                'mathematica': 'Gamma',
+                'maple': 'GAMMA',
+                'sympy': 'gamma',
+                'fricas': 'Gamma',
+                'giac': 'Gamma',
+            },
+        )
 
 
 gamma1 = Function_gamma()
@@ -294,11 +301,17 @@ class Function_log_gamma(GinacFunction):
             sage: conjugate(log_gamma(-2))
             +Infinity
         """
-        GinacFunction.__init__(self, "log_gamma", latex_name=r'\log\Gamma',
-                               conversions=dict(mathematica='LogGamma',
-                                                maxima='log_gamma',
-                                                sympy='loggamma',
-                                                fricas='logGamma'))
+        GinacFunction.__init__(
+            self,
+            "log_gamma",
+            latex_name=r'\log\Gamma',
+            conversions=dict(
+                mathematica='LogGamma',
+                maxima='log_gamma',
+                sympy='loggamma',
+                fricas='logGamma',
+            ),
+        )
 
 
 log_gamma = Function_log_gamma()
@@ -366,10 +379,20 @@ class Function_gamma_inc(BuiltinFunction):
 
             :meth:`gamma`
         """
-        BuiltinFunction.__init__(self, "gamma", nargs=2, latex_name=r"\Gamma",
-                conversions={'maxima':'gamma_incomplete', 'mathematica':'Gamma',
-                             'maple':'GAMMA', 'sympy':'uppergamma', 'fricas':'Gamma',
-                             'giac':'ugamma'})
+        BuiltinFunction.__init__(
+            self,
+            "gamma",
+            nargs=2,
+            latex_name=r"\Gamma",
+            conversions={
+                'maxima': 'gamma_incomplete',
+                'mathematica': 'Gamma',
+                'maple': 'GAMMA',
+                'sympy': 'uppergamma',
+                'fricas': 'Gamma',
+                'giac': 'ugamma',
+            },
+        )
 
     def _method_arguments(self, x, y):
         r"""
@@ -537,9 +560,18 @@ class Function_gamma_inc_lower(BuiltinFunction):
 
         :class:`Function_gamma_inc`
         """
-        BuiltinFunction.__init__(self, "gamma_inc_lower", nargs=2, latex_name=r"\gamma",
-                conversions={'maxima':'gamma_incomplete_lower',
-                    'maple':'GAMMA', 'sympy':'lowergamma', 'giac':'igamma'})
+        BuiltinFunction.__init__(
+            self,
+            "gamma_inc_lower",
+            nargs=2,
+            latex_name=r"\gamma",
+            conversions={
+                'maxima': 'gamma_incomplete_lower',
+                'maple': 'GAMMA',
+                'sympy': 'lowergamma',
+                'giac': 'igamma',
+            },
+        )
 
     def _eval_(self, x, y):
         """
@@ -610,7 +642,9 @@ class Function_gamma_inc_lower(BuiltinFunction):
             Cx = ComplexField(prec)(x)
             v = Cx.gamma() - Cx.gamma_inc(y)
         else:
-            v = ComplexField(prec)(_mpmath_utils_call(_mpmath_gammainc, x, 0, y, parent=R))
+            v = ComplexField(prec)(
+                _mpmath_utils_call(_mpmath_gammainc, x, 0, y, parent=R)
+            )
         return R(v) if v.is_real() else C(v)
 
     def _derivative_(self, x, y, diff_param=None):
@@ -626,10 +660,11 @@ class Function_gamma_inc_lower(BuiltinFunction):
             NotImplementedError: cannot differentiate gamma_inc_lower in the first parameter
         """
         if diff_param == 0:
-            raise NotImplementedError("cannot differentiate gamma_inc_lower in the"
-                                      " first parameter")
+            raise NotImplementedError(
+                "cannot differentiate gamma_inc_lower in the first parameter"
+            )
         else:
-            return exp(-y) * y**(x - 1)
+            return exp(-y) * y ** (x - 1)
 
     def _mathematica_init_evaled_(self, *args):
         r"""
@@ -729,7 +764,10 @@ def gamma(a, *args, **kwds):
     if not args:
         return gamma1(a, **kwds)
     if len(args) > 1:
-        raise TypeError("Symbolic function gamma takes at most 2 arguments (%s given)" % (len(args) + 1))
+        raise TypeError(
+            "Symbolic function gamma takes at most 2 arguments (%s given)"
+            % (len(args) + 1)
+        )
     return gamma_inc(a, args[0], **kwds)
 
 
@@ -803,12 +841,19 @@ class Function_psi1(GinacFunction):
             sage: psi(x)._fricas_()             # optional - fricas
             digamma(x)
         """
-        GinacFunction.__init__(self, "psi", nargs=1, latex_name=r'\psi',
-                               conversions=dict(mathematica='PolyGamma',
-                                                maxima='psi[0]',
-                                                maple='Psi',
-                                                sympy='digamma',
-                                                fricas='digamma'))
+        GinacFunction.__init__(
+            self,
+            "psi",
+            nargs=1,
+            latex_name=r'\psi',
+            conversions=dict(
+                mathematica='PolyGamma',
+                maxima='psi[0]',
+                maple='Psi',
+                sympy='digamma',
+                fricas='digamma',
+            ),
+        )
 
 
 class Function_psi2(GinacFunction):
@@ -866,12 +911,19 @@ class Function_psi2(GinacFunction):
             sage: psi(2, x)._maple_init_()                                              # needs sage.symbolic
             'Psi(2,x)'
         """
-        GinacFunction.__init__(self, "psi", nargs=2, latex_name=r'\psi',
-                               conversions=dict(mathematica='PolyGamma',
-                                                sympy='polygamma',
-                                                maple='Psi',
-                                                giac='Psi',
-                                                fricas='polygamma'))
+        GinacFunction.__init__(
+            self,
+            "psi",
+            nargs=2,
+            latex_name=r'\psi',
+            conversions=dict(
+                mathematica='PolyGamma',
+                sympy='polygamma',
+                maple='Psi',
+                giac='Psi',
+                fricas='polygamma',
+            ),
+        )
 
     def _maxima_init_evaled_(self, *args):
         """
@@ -946,7 +998,10 @@ def psi(x, *args, **kwds):
     if not args:
         return psi1(x, **kwds)
     if len(args) > 1:
-        raise TypeError("Symbolic function psi takes at most 2 arguments (%s given)" % (len(args) + 1))
+        raise TypeError(
+            "Symbolic function psi takes at most 2 arguments (%s given)"
+            % (len(args) + 1)
+        )
     return psi2(x, args[0], **kwds)
 
 
@@ -1062,14 +1117,20 @@ class Function_beta(GinacFunction):
             sage: beta(-1.3, -0.4)                                                      # needs sage.symbolic
             -4.92909641669610
         """
-        GinacFunction.__init__(self, 'beta', nargs=2,
-                               latex_name=r"\operatorname{B}",
-                               conversions=dict(maxima='beta',
-                                                mathematica='Beta',
-                                                maple='Beta',
-                                                sympy='beta',
-                                                fricas='Beta',
-                                                giac='Beta'))
+        GinacFunction.__init__(
+            self,
+            'beta',
+            nargs=2,
+            latex_name=r"\operatorname{B}",
+            conversions=dict(
+                maxima='beta',
+                mathematica='Beta',
+                maple='Beta',
+                sympy='beta',
+                fricas='Beta',
+                giac='Beta',
+            ),
+        )
 
     def _method_arguments(self, x, y):
         r"""

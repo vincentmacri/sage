@@ -83,6 +83,7 @@ class HochschildComplex(UniqueRepresentation, Parent):
     - https://ncatlab.org/nlab/show/Hochschild+cohomology
     - [Red2001]_
     """
+
     def __init__(self, A, M) -> None:
         """
         Initialize ``self``.
@@ -102,8 +103,9 @@ class HochschildComplex(UniqueRepresentation, Parent):
         """
         self._A = A
         self._M = M
-        Parent.__init__(self, base=A.base_ring(),
-                        category=ChainComplexes(A.base_ring()))
+        Parent.__init__(
+            self, base=A.base_ring(), category=ChainComplexes(A.base_ring())
+        )
 
     def _repr_(self) -> str:
         """
@@ -119,7 +121,9 @@ class HochschildComplex(UniqueRepresentation, Parent):
              with coefficients in Trivial representation of SGA
             sage: T.rename()  # reset the name
         """
-        return "Hochschild complex of {} with coefficients in {}".format(self._A, self._M)
+        return "Hochschild complex of {} with coefficients in {}".format(
+            self._A, self._M
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -134,7 +138,10 @@ class HochschildComplex(UniqueRepresentation, Parent):
             C_{\bullet}\left(..., ...\right)
         """
         from sage.misc.latex import latex
-        return "C_{{\\bullet}}\\left({}, {}\\right)".format(latex(self._A), latex(self._M))
+
+        return "C_{{\\bullet}}\\left({}, {}\\right)".format(
+            latex(self._A), latex(self._M)
+        )
 
     def algebra(self):
         """
@@ -267,7 +274,7 @@ class HochschildComplex(UniqueRepresentation, Parent):
             t = self.trivial_module()
             zero = t.zero()
             return self.module(0).module_morphism(lambda x: zero, codomain=t)
-        Fd = self.module(d-1)
+        Fd = self.module(d - 1)
         Fd1 = self.module(d)
         mone = -one
 
@@ -275,13 +282,16 @@ class HochschildComplex(UniqueRepresentation, Parent):
             p = self._M.monomial(k[0]) * self._A.monomial(k[1])
             ret = Fd._from_dict({(m,) + k[2:]: c for m, c in p}, remove_zeros=False)
             for i in range(1, d):
-                p = self._A.monomial(k[i]) * self._A.monomial(k[i+1])
-                ret += mone**i * Fd._from_dict({k[:i] + (m,) + k[i+2:]: c
-                                                for m, c in p}, remove_zeros=False)
+                p = self._A.monomial(k[i]) * self._A.monomial(k[i + 1])
+                ret += mone**i * Fd._from_dict(
+                    {k[:i] + (m,) + k[i + 2 :]: c for m, c in p}, remove_zeros=False
+                )
             p = self._A.monomial(k[-1]) * self._M.monomial(k[0])
-            ret += mone**d * Fd._from_dict({(m,) + k[1:-1]: c for m, c in p},
-                                           remove_zeros=False)
+            ret += mone**d * Fd._from_dict(
+                {(m,) + k[1:-1]: c for m, c in p}, remove_zeros=False
+            )
             return ret
+
         return Fd1.module_morphism(on_basis, codomain=Fd)
 
     differential = boundary
@@ -389,7 +399,7 @@ class HochschildComplex(UniqueRepresentation, Parent):
         if self._A.category() is not self._A.category().FiniteDimensional():
             raise NotImplementedError("the algebra must be finite dimensional")
 
-        maps = {d: self.boundary(d).matrix(), d+1: self.boundary(d+1).matrix()}
+        maps = {d: self.boundary(d).matrix(), d + 1: self.boundary(d + 1).matrix()}
         C = ChainComplex(maps, degree_of_differential=-1)
         try:
             return C.homology(d)
@@ -397,10 +407,11 @@ class HochschildComplex(UniqueRepresentation, Parent):
             pass
         # Fallback if we are not working over a field or \ZZ
         bdry = self.boundary(d)
-        bdry1 = self.boundary(d+1)
+        bdry1 = self.boundary(d + 1)
         ker = bdry.kernel()
-        im_retract = ker.submodule([ker.retract(b) for b in bdry1.image_basis()],
-                                   unitriangular=True)
+        im_retract = ker.submodule(
+            [ker.retract(b) for b in bdry1.image_basis()], unitriangular=True
+        )
         return ker.quotient_module(im_retract)
 
     def cohomology(self, d):
@@ -443,18 +454,19 @@ class HochschildComplex(UniqueRepresentation, Parent):
         if self._A.category() is not self._A.category().FiniteDimensional():
             raise NotImplementedError("the algebra must be finite dimensional")
 
-        maps = {d+1: self.coboundary(d+1).matrix(), d: self.coboundary(d).matrix()}
+        maps = {d + 1: self.coboundary(d + 1).matrix(), d: self.coboundary(d).matrix()}
         C = ChainComplex(maps, degree_of_differential=1)
         try:
-            return C.homology(d+1)
+            return C.homology(d + 1)
         except NotImplementedError:
             pass
         # Fallback if we are not working over a field or \ZZ
         cb = self.coboundary(d)
-        cb1 = self.coboundary(d+1)
+        cb1 = self.coboundary(d + 1)
         ker = cb1.kernel()
-        im_retract = ker.submodule([ker.retract(b) for b in cb.image_basis()],
-                                   unitriangular=True)
+        im_retract = ker.submodule(
+            [ker.retract(b) for b in cb.image_basis()], unitriangular=True
+        )
         return ker.quotient_module(im_retract)
 
     def _element_constructor_(self, vectors):
@@ -530,8 +542,9 @@ class HochschildComplex(UniqueRepresentation, Parent):
              0,
              0]
         """
-        return self.element_class(self, {d: self.module(d).an_element()
-                                         for d in range(4)})
+        return self.element_class(
+            self, {d: self.module(d).an_element() for d in range(4)}
+        )
 
     class Element(ModuleElement):
         """
@@ -570,6 +583,7 @@ class HochschildComplex(UniqueRepresentation, Parent):
             sage: H({0: x-y, 2: H.module(2).basis().an_element()})
             Chain with 2 nonzero terms over Integer Ring
         """
+
         def __init__(self, parent, vectors) -> None:
             """
             Initialize ``self``.
@@ -623,7 +637,7 @@ class HochschildComplex(UniqueRepresentation, Parent):
                 return 'Trivial chain'
 
             if n == 1:
-                (deg, vec), = self._vec.items()
+                ((deg, vec),) = self._vec.items()
                 return f'Chain({deg}: {vec})'
 
             return f'Chain with {n} nonzero terms over {self.parent().base_ring()}'
@@ -649,22 +663,22 @@ class HochschildComplex(UniqueRepresentation, Parent):
             """
             from sage.typeset.ascii_art import AsciiArt, ascii_art
 
-            if not self._vec:   # 0 chain
+            if not self._vec:  # 0 chain
                 return AsciiArt(['0'])
 
             def arrow_art(d):
                 d_str = ['  d_{0}  '.format(d)]
-                arrow = ' <' + '-'*(len(d_str[0])-3) + ' '
+                arrow = ' <' + '-' * (len(d_str[0]) - 3) + ' '
                 d_str.append(arrow)
                 return AsciiArt(d_str, baseline=0)
 
             result = AsciiArt(['0'])
             max_deg = max(self._vec)
-            for deg in range(min(self._vec), max_deg+1):
+            for deg in range(min(self._vec), max_deg + 1):
                 A = ascii_art(self.vector(deg))
                 A._baseline = A.height() // 2
                 result += arrow_art(deg) + A
-            return result + arrow_art(max_deg+1) + AsciiArt(['0'])
+            return result + arrow_art(max_deg + 1) + AsciiArt(['0'])
 
         def _add_(self, other):
             """

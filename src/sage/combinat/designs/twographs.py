@@ -69,8 +69,16 @@ class TwoGraph(IncidenceStructure):
     information, see the documentation of the
     :mod:`~sage.combinat.designs.twographs` module.
     """
-    def __init__(self, points=None, blocks=None, incidence_matrix=None,
-                 name=None, check=False, copy=True):
+
+    def __init__(
+        self,
+        points=None,
+        blocks=None,
+        incidence_matrix=None,
+        name=None,
+        check=False,
+        copy=True,
+    ):
         r"""
         Constructor of the class.
 
@@ -87,9 +95,15 @@ class TwoGraph(IncidenceStructure):
             sage: TwoGraph(p, check=True)                                               # needs sage.modules
             Incidence structure with 10 points and 60 blocks
         """
-        IncidenceStructure.__init__(self, points=points, blocks=blocks,
-                                    incidence_matrix=incidence_matrix,
-                                    name=name, check=False, copy=copy)
+        IncidenceStructure.__init__(
+            self,
+            points=points,
+            blocks=blocks,
+            incidence_matrix=incidence_matrix,
+            name=name,
+            check=False,
+            copy=copy,
+        )
         if check:  # it is a very slow, O(|points|^4), test...
             assert is_twograph(self), "the structure is not a 2-graph!"
 
@@ -161,8 +175,11 @@ class TwoGraph(IncidenceStructure):
             True
         """
         from sage.graphs.graph import Graph
-        return Graph([[z for z in x if z != v]
-                      for x in self.blocks() if v in x], immutable=immutable)
+
+        return Graph(
+            [[z for z in x if z != v] for x in self.blocks() if v in x],
+            immutable=immutable,
+        )
 
     def complement(self):
         """
@@ -213,6 +230,7 @@ def taylor_twograph(q):
         Incidence structure with 28 points and 1260 blocks
     """
     from sage.graphs.generators.classical_geometries import TaylorTwographSRG
+
     return TaylorTwographSRG(q).twograph()
 
 
@@ -266,8 +284,10 @@ def is_twograph(T) -> bool:
         return bool(v_to_blocks[x] & v_to_blocks[y] & v_to_blocks[z])
 
     # Check that every quadruple contains an even number of triples
-    return not any(sum(map(has_triple, combinations(quad, 3))) % 2
-                   for quad in combinations(range(T.n_points()), 4))
+    return not any(
+        sum(map(has_triple, combinations(quad, 3))) % 2
+        for quad in combinations(range(T.n_points()), 4)
+    )
 
 
 def twograph_descendant(G, v, name=None, immutable=None):

@@ -196,11 +196,12 @@ class Function_erf(BuiltinFunction):
             sage: erf(2)._sympy_()                                                      # needs sympy sage.symbolic
             erf(2)
         """
-        BuiltinFunction.__init__(self, "erf", latex_name=r"\operatorname{erf}",
-                                 conversions=dict(maxima='erf',
-                                                  sympy='erf',
-                                                  fricas='erf',
-                                                  giac='erf'))
+        BuiltinFunction.__init__(
+            self,
+            "erf",
+            latex_name=r"\operatorname{erf}",
+            conversions=dict(maxima='erf', sympy='erf', fricas='erf', giac='erf'),
+        )
 
     def _eval_(self, x):
         """
@@ -305,7 +306,7 @@ class Function_erf(BuiltinFunction):
             sage: erf(c*x).diff(x)._maxima_init_()                                      # needs sage.symbolic
             '((%pi)^(-1/2))*(_SAGE_VAR_c)*(exp(((_SAGE_VAR_c)^(2))*((_SAGE_VAR_x)^(2))*(-1)))*(2)'
         """
-        return 2*exp(-x**2)/sqrt(pi)
+        return 2 * exp(-(x**2)) / sqrt(pi)
 
 
 erf = Function_erf()
@@ -321,6 +322,7 @@ class Function_erfi(BuiltinFunction):
 
         \operatorname{erfi}(x) = -i \operatorname{erf}(ix).
     """
+
     def __init__(self):
         r"""
         Initialize ``self``.
@@ -332,11 +334,12 @@ class Function_erfi(BuiltinFunction):
             sage: erfi(2)._sympy_()                                                     # needs sympy sage.symbolic
             erfi(2)
         """
-        BuiltinFunction.__init__(self, "erfi",
-                                 latex_name=r"\operatorname{erfi}",
-                                 conversions=dict(maxima='erfi',
-                                                  sympy='erfi',
-                                                  fricas='erfi'))
+        BuiltinFunction.__init__(
+            self,
+            "erfi",
+            latex_name=r"\operatorname{erfi}",
+            conversions=dict(maxima='erfi', sympy='erfi', fricas='erfi'),
+        )
 
     def _eval_(self, x):
         """
@@ -383,7 +386,7 @@ class Function_erfi(BuiltinFunction):
             sage: erfi(x).diff(x)                                                       # needs sage.symbolic
             2*e^(x^2)/sqrt(pi)
         """
-        return 2*exp(x**2)/sqrt(pi)
+        return 2 * exp(x**2) / sqrt(pi)
 
 
 erfi = Function_erfi()
@@ -420,6 +423,7 @@ class Function_erfc(BuiltinFunction):
             sage: erfc(x)._fricas_()                                            # optional - fricas, needs sage.symbolic
             - erf(x) + 1
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -429,12 +433,14 @@ class Function_erfc(BuiltinFunction):
             sage: erfc(2)._sympy_()                                                     # needs sympy sage.symbolic
             erfc(2)
         """
-        BuiltinFunction.__init__(self, "erfc",
-                                 latex_name=r"\operatorname{erfc}",
-                                 conversions=dict(maxima='erfc',
-                                                  sympy='erfc',
-                                                  fricas='(x+->1-erf(x))',
-                                                  giac='erfc'))
+        BuiltinFunction.__init__(
+            self,
+            "erfc",
+            latex_name=r"\operatorname{erfc}",
+            conversions=dict(
+                maxima='erfc', sympy='erfc', fricas='(x+->1-erf(x))', giac='erfc'
+            ),
+        )
 
     def _eval_(self, x):
         """
@@ -485,7 +491,7 @@ class Function_erfc(BuiltinFunction):
             sage: erfc(x).diff(x)                                                       # needs sage.symbolic
             -2*e^(-x^2)/sqrt(pi)
         """
-        return -2*exp(-x**2)/sqrt(pi)
+        return -2 * exp(-(x**2)) / sqrt(pi)
 
 
 erfc = Function_erfc()
@@ -501,6 +507,7 @@ class Function_erfinv(BuiltinFunction):
 
         \operatorname{erfinv}(x) = \operatorname{erf}^{-1}(x).
     """
+
     def __init__(self):
         r"""
         Initialize ``self``.
@@ -526,10 +533,12 @@ class Function_erfinv(BuiltinFunction):
             sage: y.n()
             1.96303108415826
         """
-        BuiltinFunction.__init__(self, "erfinv",
-                                 latex_name=r"\operatorname{erfinv}",
-                                 conversions=dict(sympy='erfinv',
-                                                  maxima='inverse_erf'))
+        BuiltinFunction.__init__(
+            self,
+            "erfinv",
+            latex_name=r"\operatorname{erfinv}",
+            conversions=dict(sympy='erfinv', maxima='inverse_erf'),
+        )
 
     def _eval_(self, x):
         """
@@ -545,7 +554,7 @@ class Function_erfinv(BuiltinFunction):
         if isinstance(x, Expression):
             if x.is_trivial_zero():
                 return x
-            if (x-1).is_trivial_zero():
+            if (x - 1).is_trivial_zero():
                 return unsigned_infinity
         elif not x:
             return x
@@ -573,7 +582,7 @@ class Function_erfinv(BuiltinFunction):
             sage: erfinv(x).diff(x)                                                     # needs sage.symbolic
             1/2*sqrt(pi)*e^(erfinv(x)^2)
         """
-        return sqrt(pi)*exp(erfinv(x)**2)/2
+        return sqrt(pi) * exp(erfinv(x) ** 2) / 2
 
 
 erfinv = Function_erfinv()
@@ -616,13 +625,19 @@ class Function_Fresnel_sin(BuiltinFunction):
             sage: fresnel_sin(x)._sympy_()                                              # needs sympy
             fresnels(x)
         """
-        BuiltinFunction.__init__(self, "fresnel_sin", nargs=1,
-                                 latex_name=r"\operatorname{S}",
-                                 conversions=dict(maxima='fresnel_s',
-                                                  sympy='fresnels',
-                                                  mathematica='FresnelS',
-                                                  maple='FresnelS',
-                                                  fricas='fresnelS'))
+        BuiltinFunction.__init__(
+            self,
+            "fresnel_sin",
+            nargs=1,
+            latex_name=r"\operatorname{S}",
+            conversions=dict(
+                maxima='fresnel_s',
+                sympy='fresnels',
+                mathematica='FresnelS',
+                maple='FresnelS',
+                fricas='fresnelS',
+            ),
+        )
 
     def _eval_(self, x):
         r"""
@@ -648,9 +663,9 @@ class Function_Fresnel_sin(BuiltinFunction):
                 if x.is_positive_infinity():
                     return Rational((1, 2))
                 if x.imag_part().is_positive_infinity():
-                    return -I*Rational((1, 2))
+                    return -I * Rational((1, 2))
                 if x.imag_part().is_negative_infinity():
-                    return I*Rational((1, 2))
+                    return I * Rational((1, 2))
         elif x < 0:
             return -fresnel_sin(-x)
         elif not x:
@@ -677,7 +692,7 @@ class Function_Fresnel_sin(BuiltinFunction):
             sage: fresnel_sin(x).diff(x)                                                # needs sage.symbolic
             sin(1/2*pi*x^2)
         """
-        return sin(pi*x**2/2)
+        return sin(pi * x**2 / 2)
 
 
 fresnel_sin = Function_Fresnel_sin()
@@ -714,13 +729,19 @@ class Function_Fresnel_cos(BuiltinFunction):
             sage: fresnel_cos(x)._sympy_()                                              # needs sympy
             fresnelc(x)
         """
-        BuiltinFunction.__init__(self, "fresnel_cos", nargs=1,
-                                 latex_name=r"\operatorname{C}",
-                                 conversions=dict(maxima='fresnel_c',
-                                                  sympy='fresnelc',
-                                                  mathematica='FresnelC',
-                                                  maple='FresnelC',
-                                                  fricas='fresnelC'))
+        BuiltinFunction.__init__(
+            self,
+            "fresnel_cos",
+            nargs=1,
+            latex_name=r"\operatorname{C}",
+            conversions=dict(
+                maxima='fresnel_c',
+                sympy='fresnelc',
+                mathematica='FresnelC',
+                maple='FresnelC',
+                fricas='fresnelC',
+            ),
+        )
 
     def _eval_(self, x):
         r"""
@@ -746,9 +767,9 @@ class Function_Fresnel_cos(BuiltinFunction):
                 if x.is_positive_infinity():
                     return Rational((1, 2))
                 if x.imag_part().is_positive_infinity():
-                    return I*Rational((1, 2))
+                    return I * Rational((1, 2))
                 if x.imag_part().is_negative_infinity():
-                    return -I*Rational((1, 2))
+                    return -I * Rational((1, 2))
         elif x < 0:
             return -fresnel_cos(-x)
         elif not x:
@@ -775,7 +796,7 @@ class Function_Fresnel_cos(BuiltinFunction):
             sage: fresnel_cos(x).diff(x)                                                # needs sage.symbolic
             cos(1/2*pi*x^2)
         """
-        return cos(pi*x**2/2)
+        return cos(pi * x**2 / 2)
 
 
 fresnel_cos = Function_Fresnel_cos()

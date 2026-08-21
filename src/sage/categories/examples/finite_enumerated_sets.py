@@ -1,6 +1,7 @@
 r"""
 Examples of finite enumerated sets
 """
+
 # ****************************************************************************
 #  Copyright (C) 2009 Florent Hivert <Florent.Hivert@univ-rouen.fr>
 #
@@ -78,8 +79,7 @@ class Example(UniqueRepresentation, Parent):
             sage: TestSuite(C).run()
         """
         self._set = [Integer(_) for _ in [1, 2, 3]]
-        Parent.__init__(self, facade=IntegerRing(),
-                        category=FiniteEnumeratedSets())
+        Parent.__init__(self, facade=IntegerRing(), category=FiniteEnumeratedSets())
 
     def _repr_(self) -> str:
         """
@@ -113,7 +113,6 @@ class Example(UniqueRepresentation, Parent):
 
 
 class IsomorphicObjectOfFiniteEnumeratedSet(UniqueRepresentation, Parent):
-
     def __init__(self, ambient=Example()):
         """
         TESTS::
@@ -126,8 +125,11 @@ class IsomorphicObjectOfFiniteEnumeratedSet(UniqueRepresentation, Parent):
             sage: TestSuite(C).run()
         """
         self._ambient = ambient
-        Parent.__init__(self, facade=IntegerRing(),
-                        category=FiniteEnumeratedSets().IsomorphicObjects())
+        Parent.__init__(
+            self,
+            facade=IntegerRing(),
+            category=FiniteEnumeratedSets().IsomorphicObjects(),
+        )
 
     def ambient(self):
         """
@@ -180,7 +182,7 @@ class IsomorphicObjectOfFiniteEnumeratedSet(UniqueRepresentation, Parent):
             sage: C.retract(3)
             9
         """
-        return x ** 2
+        return x**2
 
     def __contains__(self, x) -> bool:
         """

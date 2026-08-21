@@ -2,14 +2,14 @@
 r"""
 Examples of a Lie algebra with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-#from sage.misc.cachefunc import cached_method
+# from sage.misc.cachefunc import cached_method
 from sage.sets.family import Family
 from sage.categories.lie_algebras import LieAlgebras
 from sage.categories.algebras import Algebras
@@ -24,6 +24,7 @@ class AbelianLieAlgebra(CombinatorialFreeModule):
     This class illustrates a minimal implementation of a Lie algebra with
     a distinguished basis.
     """
+
     def __init__(self, R, gens):
         """
         EXAMPLES::
@@ -54,9 +55,12 @@ class AbelianLieAlgebra(CombinatorialFreeModule):
             An example of a Lie algebra: the abelian Lie algebra on the
              generators indexed by Partitions over Rational Field
         """
-        return "An example of a Lie algebra: the abelian Lie algebra on the" \
-               " generators indexed by {} over {}".format(
-                        self.basis().keys(), self.base_ring())
+        return (
+            "An example of a Lie algebra: the abelian Lie algebra on the"
+            " generators indexed by {} over {}".format(
+                self.basis().keys(), self.base_ring()
+            )
+        )
 
     def lie_algebra_generators(self):
         """
@@ -117,6 +121,7 @@ class IndexedPolynomialRing(CombinatorialFreeModule):
         for the example of the abelian Lie algebra. This should be
         factored out into a more complete class.
     """
+
     def __init__(self, R, indices, **kwds):
         """
         Initialize ``self``.
@@ -148,7 +153,8 @@ class IndexedPolynomialRing(CombinatorialFreeModule):
             Polynomial algebra with generators indexed by Partitions over Rational Field
         """
         return "Polynomial algebra with generators indexed by {} over {}".format(
-            self._indices._indices, self.base_ring())
+            self._indices._indices, self.base_ring()
+        )
 
     def one_basis(self):
         """
@@ -177,7 +183,7 @@ class IndexedPolynomialRing(CombinatorialFreeModule):
             sage: UEA.product_on_basis(I.an_element(), I.an_element())
             P[F[]^4*F[1]^4*F[2]^6]
         """
-        return self.monomial(x*y)
+        return self.monomial(x * y)
 
     def algebra_generators(self):
         """
@@ -191,5 +197,6 @@ class IndexedPolynomialRing(CombinatorialFreeModule):
             Lazy family (algebra generator map(i))_{i in Partitions}
         """
         I = self._indices
-        return Family(I._indices, lambda x: self.monomial(I.gen(x)),
-                      name="algebra generator map")
+        return Family(
+            I._indices, lambda x: self.monomial(I.gen(x)), name="algebra generator map"
+        )

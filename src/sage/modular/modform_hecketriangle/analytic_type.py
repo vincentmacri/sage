@@ -436,15 +436,23 @@ class AnalyticType(FiniteLatticePoset):
         P_elements = ["cusp", "holo", "weak", "mero", "quasi"]
         P_relations = [["cusp", "holo"], ["holo", "weak"], ["weak", "mero"]]
 
-        self._base_poset = Poset([P_elements, P_relations], cover_relations=True,
-                                 linear_extension=True, facade=False)
+        self._base_poset = Poset(
+            [P_elements, P_relations],
+            cover_relations=True,
+            linear_extension=True,
+            facade=False,
+        )
 
         L = self._base_poset.order_ideals_lattice()
-        H = L._hasse_diagram.relabel(dict(enumerate(L._elements)),
-                                     inplace=False)
-        FiniteLatticePoset.__init__(self, hasse_diagram=H,
-                                    elements=L._elements, category=L.category(),
-                                    facade=False, key=None)
+        H = L._hasse_diagram.relabel(dict(enumerate(L._elements)), inplace=False)
+        FiniteLatticePoset.__init__(
+            self,
+            hasse_diagram=H,
+            elements=L._elements,
+            category=L.category(),
+            facade=False,
+            key=None,
+        )
 
     def _repr_(self):
         r"""
@@ -519,8 +527,9 @@ class AnalyticType(FiniteLatticePoset):
         if isinstance(element, str):
             element = [element]
         if isinstance(element, (list, tuple)):
-            element = Set(self._base_poset.order_ideal([self._base_poset(s)
-                                                        for s in element]))
+            element = Set(
+                self._base_poset.order_ideal([self._base_poset(s) for s in element])
+            )
 
         return super()._element_constructor_(element)
 

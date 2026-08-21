@@ -27,13 +27,28 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from ipywidgets.widgets import (IntSlider, IntRangeSlider, FloatSlider,
-                                FloatRangeSlider, SelectionSlider,
-                                Checkbox, ToggleButtons, Dropdown)
-from .widgets import (TransformText, TransformTextarea,
-                      TransformIntSlider, TransformIntRangeSlider,
-                      TransformFloatSlider, TransformFloatRangeSlider,
-                      EvalText, EvalTextarea, SageColorPicker, Grid)
+from ipywidgets.widgets import (
+    IntSlider,
+    IntRangeSlider,
+    FloatSlider,
+    FloatRangeSlider,
+    SelectionSlider,
+    Checkbox,
+    ToggleButtons,
+    Dropdown,
+)
+from .widgets import (
+    TransformText,
+    TransformTextarea,
+    TransformIntSlider,
+    TransformIntRangeSlider,
+    TransformFloatSlider,
+    TransformFloatRangeSlider,
+    EvalText,
+    EvalTextarea,
+    SageColorPicker,
+    Grid,
+)
 from ipywidgets.widgets.interaction import _get_min_max_value
 from collections.abc import Iterable, Sequence
 from numbers import Integral, Rational, Real
@@ -159,7 +174,15 @@ def input_box(default=None, label=None, type=None, width=80, height=1):
     return w
 
 
-def slider(vmin, vmax=None, step_size=None, default=None, label=None, display_value=True, _range=False):
+def slider(
+    vmin,
+    vmax=None,
+    step_size=None,
+    default=None,
+    label=None,
+    display_value=True,
+    _range=False,
+):
     """
     A slider widget.
 
@@ -275,6 +298,7 @@ def slider(vmin, vmax=None, step_size=None, default=None, label=None, display_va
                 return (0, abs(v - default))
             except Exception:
                 return (1, 0)
+
         kwds["options"] = options
         if default is not None:
             kwds["value"] = min(options, key=err)
@@ -289,6 +313,7 @@ def slider(vmin, vmax=None, step_size=None, default=None, label=None, display_va
     # Change SR to RR
     if isinstance(p, SymbolicRing):
         from sage.rings.real_mpfr import RR
+
         p = RR
 
     # Convert all inputs to the common parent
@@ -435,7 +460,9 @@ def checkbox(default=True, label=None):
     return Checkbox(**kwds)
 
 
-def selector(values, label=None, default=None, nrows=None, ncols=None, width=None, buttons=False):
+def selector(
+    values, label=None, default=None, nrows=None, ncols=None, width=None, buttons=False
+):
     """
     A widget to select a value from a given list of values.
 
@@ -582,8 +609,7 @@ def color_selector(default=(0, 0, 1), label=None, widget=None, hide_box=False):
         SageColorPicker(value='#19334c')
     """
     # widget argument is silently ignored
-    kwds = {"value": Color(default).html_color(),
-            "concise": hide_box}
+    kwds = {"value": Color(default).html_color(), "concise": hide_box}
     if label is not None:
         kwds["description"] = label
     return SageColorPicker(**kwds)

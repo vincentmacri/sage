@@ -26,7 +26,8 @@ Here we define this species using the default structures::
 If we ignore the parentheses, we can read off that the integer
 compositions are [3], [2, 1], [1, 2], and [1, 1, 1].
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -39,7 +40,7 @@ compositions are [3], [2, 1], [1, 2], and [1, 1, 1].
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.categories.enumerated_sets import EnumeratedSets
 from sage.combinat.combinat import CombinatorialObject
 from sage.rings.integer import Integer
@@ -206,9 +207,9 @@ class GenericSpeciesStructure(CombinatorialObject):
         return self.canonical_label()._list == x.canonical_label()._list
 
 
-#For backward compatibility.  This should be removed in the near
-#future since I doubt that there is any code that depends directly on
-#SpeciesStructure.
+# For backward compatibility.  This should be removed in the near
+# future since I doubt that there is any code that depends directly on
+# SpeciesStructure.
 SpeciesStructure = GenericSpeciesStructure
 
 
@@ -328,7 +329,9 @@ class SpeciesStructureWrapper(GenericSpeciesStructure):
 
 
 class SpeciesWrapper(Parent):
-    def __init__(self, species, labels, iterator, generating_series, name, structure_class):
+    def __init__(
+        self, species, labels, iterator, generating_series, name, structure_class
+    ):
         """
         This is a abstract base class for the set of structures of a
         species as well as the set of isotypes of the species.
@@ -357,7 +360,11 @@ class SpeciesWrapper(Parent):
         self._iterator = iterator
         self._generating_series = generating_series
         self._name = "%s for %s with labels %s" % (name, species, labels)
-        self._structure_class = structure_class if structure_class is not None else species._default_structure_class
+        self._structure_class = (
+            structure_class
+            if structure_class is not None
+            else species._default_structure_class
+        )
 
     def __eq__(self, other) -> bool:
         r"""
@@ -369,11 +376,21 @@ class SpeciesWrapper(Parent):
             sage: S == SpeciesWrapper(F, [1,2,3], "_structures", "generating_series", 'Structures', None)
             True
         """
-        return ((self._species, self._labels,
-                 self._iterator, self._generating_series,
-                 self._name, self._structure_class) == (other._species, other._labels,
-                                                        other._iterator, other._generating_series,
-                                                        other._name, other._structure_class))
+        return (
+            self._species,
+            self._labels,
+            self._iterator,
+            self._generating_series,
+            self._name,
+            self._structure_class,
+        ) == (
+            other._species,
+            other._labels,
+            other._iterator,
+            other._generating_series,
+            other._name,
+            other._structure_class,
+        )
 
     def __ne__(self, other) -> bool:
         r"""
@@ -421,24 +438,24 @@ class SpeciesWrapper(Parent):
             sage: F.structures([1,2,3]).list()
             [{1, 2, 3}]
         """
-        #If the min and max are set, then we want to make sure
-        #that the iterator respects those bounds.
-        if (self._species._min is not None and
-            len(self._labels) < self._species._min):
+        # If the min and max are set, then we want to make sure
+        # that the iterator respects those bounds.
+        if self._species._min is not None and len(self._labels) < self._species._min:
             return iter([])
 
-        if (self._species._max is not None and
-            len(self._labels) >= self._species._max):
+        if self._species._max is not None and len(self._labels) >= self._species._max:
             return iter([])
 
-        #We check to see if the
+        # We check to see if the
         try:
             if self.cardinality() == 0:
                 return iter([])
         except TypeError:
             raise NotImplementedError
 
-        return getattr(self._species, self._iterator)(self._structure_class, self._labels)
+        return getattr(self._species, self._iterator)(
+            self._structure_class, self._labels
+        )
 
     def cardinality(self):
         """
@@ -450,7 +467,9 @@ class SpeciesWrapper(Parent):
             sage: F.structures([1,2,3]).cardinality()
             1
         """
-        return getattr(self._species, self._generating_series)().count(len(self._labels))
+        return getattr(self._species, self._generating_series)().count(
+            len(self._labels)
+        )
 
 
 class StructuresWrapper(SpeciesWrapper):
@@ -469,11 +488,15 @@ class StructuresWrapper(SpeciesWrapper):
             sage: S == loads(dumps(S))
             True
         """
-        SpeciesWrapper.__init__(self, species, labels,
-                                "_structures",
-                                "generating_series",
-                                "Structures",
-                                structure_class)
+        SpeciesWrapper.__init__(
+            self,
+            species,
+            labels,
+            "_structures",
+            "generating_series",
+            "Structures",
+            structure_class,
+        )
 
 
 class IsotypesWrapper(SpeciesWrapper):
@@ -492,11 +515,15 @@ class IsotypesWrapper(SpeciesWrapper):
             sage: S == loads(dumps(S))
             True
         """
-        SpeciesWrapper.__init__(self, species, labels,
-                                "_isotypes",
-                                "isotype_generating_series",
-                                "Isomorphism types",
-                                structure_class)
+        SpeciesWrapper.__init__(
+            self,
+            species,
+            labels,
+            "_isotypes",
+            "isotype_generating_series",
+            "Isomorphism types",
+            structure_class,
+        )
 
 
 class SimpleStructuresWrapper(SpeciesWrapper):
@@ -513,11 +540,15 @@ class SimpleStructuresWrapper(SpeciesWrapper):
             sage: S == loads(dumps(S))
             True
         """
-        SpeciesWrapper.__init__(self, species, labels,
-                                "_simple_structures_selector",
-                                "generating_series",
-                                "Simple structures",
-                                structure_class)
+        SpeciesWrapper.__init__(
+            self,
+            species,
+            labels,
+            "_simple_structures_selector",
+            "generating_series",
+            "Simple structures",
+            structure_class,
+        )
 
 
 class SimpleIsotypesWrapper(SpeciesWrapper):
@@ -534,8 +565,12 @@ class SimpleIsotypesWrapper(SpeciesWrapper):
             sage: S == loads(dumps(S))
             True
         """
-        SpeciesWrapper.__init__(self, species, labels,
-                                "_simple_isotypes_selector",
-                                "isotype_generating_series",
-                                "Simple isomorphism types",
-                                structure_class)
+        SpeciesWrapper.__init__(
+            self,
+            species,
+            labels,
+            "_simple_isotypes_selector",
+            "isotype_generating_series",
+            "Simple isomorphism types",
+            structure_class,
+        )

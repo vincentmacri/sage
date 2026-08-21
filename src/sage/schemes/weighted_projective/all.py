@@ -13,4 +13,6 @@ all.py -- export of projective schemes to Sage
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.schemes.weighted_projective.weighted_projective_space import WeightedProjectiveSpace
+from sage.schemes.weighted_projective.weighted_projective_space import (
+    WeightedProjectiveSpace,
+)

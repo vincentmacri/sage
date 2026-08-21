@@ -242,11 +242,15 @@ class FanMorphism(FreeModuleMorphism):
         True
     """
 
-    def __init__(self, morphism, domain_fan,
-                 codomain=None,
-                 subdivide=False,
-                 check=True,
-                 verbose=False):
+    def __init__(
+        self,
+        morphism,
+        domain_fan,
+        codomain=None,
+        subdivide=False,
+        check=True,
+        verbose=False,
+    ):
         r"""
         Create a fan morphism.
 
@@ -277,12 +281,16 @@ class FanMorphism(FreeModuleMorphism):
         elif isinstance(morphism, Matrix):
             A = morphism
             if codomain is None:
-                raise ValueError("codomain (fan) must be given explicitly if "
-                                 "morphism is given by a matrix!")
+                raise ValueError(
+                    "codomain (fan) must be given explicitly if "
+                    "morphism is given by a matrix!"
+                )
             parent = Hom(domain_fan.lattice(), codomain)
         else:
-            raise TypeError("morphism must be either a FreeModuleMorphism "
-                            "or a matrix!\nGot: %s" % morphism)
+            raise TypeError(
+                "morphism must be either a FreeModuleMorphism "
+                "or a matrix!\nGot: %s" % morphism
+            )
         super().__init__(parent, A)
         self._domain_fan = domain_fan
         self._image_cone = dict()
@@ -328,11 +336,13 @@ class FanMorphism(FreeModuleMorphism):
             Codomain fan: Rational polyhedral fan in 3-d lattice N
         """
         if not isinstance(right, FanMorphism):
-            raise TypeError(
-                "fan morphisms should be composed with fan morphisms")
+            raise TypeError("fan morphisms should be composed with fan morphisms")
         # We don't need it, we just check compatibility of fans:
-        FanMorphism(identity_matrix(self.domain().dimension()),
-                    right.codomain_fan(), self.domain_fan())
+        FanMorphism(
+            identity_matrix(self.domain().dimension()),
+            right.codomain_fan(),
+            self.domain_fan(),
+        )
         m = right.matrix() * self.matrix()
         return FanMorphism(m, right.domain_fan(), self.codomain_fan())
 
@@ -367,12 +377,15 @@ class FanMorphism(FreeModuleMorphism):
         """
         if "_RISGIS_" not in self.__dict__:
             try:
-                cones = [self._codomain_fan.cone_containing(self(ray))
-                         for ray in self._domain_fan.rays()]
+                cones = [
+                    self._codomain_fan.cone_containing(self(ray))
+                    for ray in self._domain_fan.rays()
+                ]
             except ValueError:
                 self._support_error()
-            self._RISGIS_ = tuple(frozenset(cone.star_generator_indices())
-                                  for cone in cones)
+            self._RISGIS_ = tuple(
+                frozenset(cone.star_generator_indices()) for cone in cones
+            )
         return self._RISGIS_
 
     def _chambers(self):
@@ -419,8 +432,10 @@ class FanMorphism(FreeModuleMorphism):
         chambers = []
         cone_to_chamber = []
         for cone in self._codomain_fan:
-            chamber = Cone([self.lift(ray) for ray in cone.intersection(image)]
-                           + kernel_rays, lattice=self.domain())
+            chamber = Cone(
+                [self.lift(ray) for ray in cone.intersection(image)] + kernel_rays,
+                lattice=self.domain(),
+            )
             cone_to_chamber.append(len(chambers))
             for i, old_chamber in enumerate(chambers):
                 if old_chamber.is_equivalent(chamber):
@@ -465,11 +480,13 @@ class FanMorphism(FreeModuleMorphism):
         # We literally try to construct the image fan and hope that it works.
         # If it does not, the fan constructor will raise an exception.
         domain_fan = self._domain_fan
-        self._codomain_fan = Fan(cones=(domain_cone.ambient_ray_indices()
-                                        for domain_cone in domain_fan),
-                                 rays=(self(ray) for ray in domain_fan.rays()),
-                                 lattice=self.codomain(),
-                                 discard_faces=True, check=check)
+        self._codomain_fan = Fan(
+            cones=(domain_cone.ambient_ray_indices() for domain_cone in domain_fan),
+            rays=(self(ray) for ray in domain_fan.rays()),
+            lattice=self.codomain(),
+            discard_faces=True,
+            check=check,
+        )
 
     def _latex_(self):
         r"""
@@ -496,8 +513,12 @@ class FanMorphism(FreeModuleMorphism):
             \end{array}\right) : \Sigma^{2} \to \Sigma^{2}
         """
         from sage.misc.latex import latex
-        return (r"%s : %s \to %s" % (latex(self.matrix()),
-                        latex(self.domain_fan()), latex(self.codomain_fan())))
+
+        return r"%s : %s \to %s" % (
+            latex(self.matrix()),
+            latex(self.domain_fan()),
+            latex(self.codomain_fan()),
+        )
 
     @cached_method
     def _ray_index_map(self):
@@ -536,8 +557,9 @@ class FanMorphism(FreeModuleMorphism):
         for i, rho in enumerate(Sigma(1)):
             sigma_p = self.image_cone(rho)
             if sigma_p.n_rays() > 1:
-                raise ValueError("ray #%d is mapped into a %d-d cone!" %
-                                 (i, sigma_p.dim()))
+                raise ValueError(
+                    "ray #%d is mapped into a %d-d cone!" % (i, sigma_p.dim())
+                )
             elif sigma_p.n_rays() == 1:
                 ray_index_map[i] = sigma_p.ambient_ray_indices()[0]
         return tuple(ray_index_map)
@@ -561,11 +583,12 @@ class FanMorphism(FreeModuleMorphism):
             Domain fan: Rational polyhedral fan in 2-d lattice N
             Codomain fan: Rational polyhedral fan in 2-d lattice N
         """
-        return ("Fan morphism defined by the matrix\n"
-                "%s\n"
-                "Domain fan: %s\n"
-                "Codomain fan: %s"
-                % (self.matrix(), self.domain_fan(), self.codomain_fan()))
+        return (
+            "Fan morphism defined by the matrix\n"
+            "%s\n"
+            "Domain fan: %s\n"
+            "Codomain fan: %s" % (self.matrix(), self.domain_fan(), self.codomain_fan())
+        )
 
     def _subdivide_domain_fan(self, check, verbose):
         r"""
@@ -667,6 +690,7 @@ class FanMorphism(FreeModuleMorphism):
         lattice_dim = self.domain().dimension()
         if verbose:
             from sage.misc.timing import walltime
+
             start = walltime()
             print("Placing ray images", end=" ")
         # Figure out where 1-dimensional cones (i.e. rays) are mapped.
@@ -674,11 +698,12 @@ class FanMorphism(FreeModuleMorphism):
         if verbose:
             print("(%.3f ms)" % walltime(start))
         # Subdivide cones that require it.
-        chambers = None # preimages of codomain cones, computed if necessary
+        chambers = None  # preimages of codomain cones, computed if necessary
         new_cones = []
         for cone_index, domain_cone in enumerate(domain_fan):
-            if reduce(operator.and_,
-                      (RISGIS[i] for i in domain_cone.ambient_ray_indices())):
+            if reduce(
+                operator.and_, (RISGIS[i] for i in domain_cone.ambient_ray_indices())
+            ):
                 # There is a codomain cone containing all rays of this domain
                 # cone, no need to subdivide it.
                 new_cones.append(domain_cone)
@@ -691,9 +716,11 @@ class FanMorphism(FreeModuleMorphism):
                 chambers, cone_to_chamber = self._chambers()
                 if verbose:
                     print("(%.3f ms)" % walltime(start))
-                    print("Number of domain cones: %d.\n"
-                          "Number of chambers: %d." %
-                          (domain_fan.n_generating_cones(), len(chambers)))
+                    print(
+                        "Number of domain cones: %d.\n"
+                        "Number of chambers: %d."
+                        % (domain_fan.n_generating_cones(), len(chambers))
+                    )
             # Subdivide domain_cone.
             if verbose:
                 start = walltime()
@@ -710,8 +737,9 @@ class FanMorphism(FreeModuleMorphism):
                 if new_part.dim() < dim:
                     continue
                 # Small cones may have repetitive intersections with chambers.
-                if (dim == lattice_dim or
-                    not any(part.is_equivalent(new_part) for part in parts)):
+                if dim == lattice_dim or not any(
+                    part.is_equivalent(new_part) for part in parts
+                ):
                     parts.append(new_part)
                     if verbose:
                         print(chamber_index, end=" ")
@@ -729,8 +757,7 @@ class FanMorphism(FreeModuleMorphism):
                 cone_subdivision = Fan(parts, check=False)
                 for cone in cone_subdivision(dim - 1):
                     if len(cone.star_generators()) == 1:
-                        if domain_cone.relative_interior_contains(
-                                                            sum(cone.rays())):
+                        if domain_cone.relative_interior_contains(sum(cone.rays())):
                             self._support_error()
             new_cones.extend(parts)
             if verbose:
@@ -744,8 +771,9 @@ class FanMorphism(FreeModuleMorphism):
                         new_rays.append(ray)
             # Replace domain_fan, this is OK since this method must be called
             # only during initialization of the FanMorphism.
-            self._domain_fan = Fan(new_cones, new_rays, domain_fan.lattice(),
-                                   check=False)
+            self._domain_fan = Fan(
+                new_cones, new_rays, domain_fan.lattice(), check=False
+            )
             # Also remove RISGIS for the old fan
             del self._RISGIS_
 
@@ -778,13 +806,14 @@ class FanMorphism(FreeModuleMorphism):
             into the support of
             Rational polyhedral fan in 2-d lattice N!
         """
-        raise ValueError("morphism defined by\n"
-                         "%s\n"
-                         "does not map\n"
-                         "%s\n"
-                         "into the support of\n"
-                         "%s!"
-                    % (self.matrix(), self.domain_fan(), self.codomain_fan()))
+        raise ValueError(
+            "morphism defined by\n"
+            "%s\n"
+            "does not map\n"
+            "%s\n"
+            "into the support of\n"
+            "%s!" % (self.matrix(), self.domain_fan(), self.codomain_fan())
+        )
 
     def _validate(self):
         r"""
@@ -861,20 +890,20 @@ class FanMorphism(FreeModuleMorphism):
         """
         domain_fan = self._domain_fan
         if domain_fan.lattice() is not self.domain():
-            raise ValueError("%s does not sit in %s!"
-                             % (domain_fan, self.domain()))
+            raise ValueError("%s does not sit in %s!" % (domain_fan, self.domain()))
         codomain_fan = self._codomain_fan
         if codomain_fan.lattice() is not self.codomain():
-            raise ValueError("%s does not sit in %s!"
-                             % (codomain_fan, self.codomain()))
+            raise ValueError("%s does not sit in %s!" % (codomain_fan, self.codomain()))
         RISGIS = self._RISGIS()
         for n, domain_cone in enumerate(domain_fan):
-            if not domain_cone.is_trivial() and \
-                    not reduce(operator.and_,
-                               (RISGIS[i] for i in domain_cone.ambient_ray_indices())):
-                raise ValueError("the image of generating cone #%d of the "
-                                 "domain fan is not contained in a single "
-                                 "cone of the codomain fan!" % n)
+            if not domain_cone.is_trivial() and not reduce(
+                operator.and_, (RISGIS[i] for i in domain_cone.ambient_ray_indices())
+            ):
+                raise ValueError(
+                    "the image of generating cone #%d of the "
+                    "domain fan is not contained in a single "
+                    "cone of the codomain fan!" % n
+                )
 
     def codomain_fan(self, dim=None, codim=None):
         r"""
@@ -986,16 +1015,21 @@ class FanMorphism(FreeModuleMorphism):
             elif codomain_fan.is_complete():
                 # Optimization for a common case
                 RISGIS = self._RISGIS()
-                CSGIS = set(reduce(operator.and_,
-                            (RISGIS[i] for i in cone.ambient_ray_indices())))
+                CSGIS = set(
+                    reduce(
+                        operator.and_, (RISGIS[i] for i in cone.ambient_ray_indices())
+                    )
+                )
                 image_cone = codomain_fan.generating_cone(CSGIS.pop())
                 for i in CSGIS:
                     image_cone = image_cone.intersection(
-                                            codomain_fan.generating_cone(i))
+                        codomain_fan.generating_cone(i)
+                    )
                 self._image_cone[cone] = image_cone
             else:
                 self._image_cone[cone] = codomain_fan.cone_containing(
-                                                    self(ray) for ray in cone)
+                    self(ray) for ray in cone
+                )
         return self._image_cone[cone]
 
     def index(self, cone=None):
@@ -1099,9 +1133,8 @@ class FanMorphism(FreeModuleMorphism):
         if not PPCs:
             return None
         Q = cone.sublattice_quotient()
-        S = Q.submodule([self(g)
-                         for g in PPCs[0].sublattice_complement().gens()])
-        i = prod((Q/S).invariants())
+        S = Q.submodule([self(g) for g in PPCs[0].sublattice_complement().gens()])
+        i = prod((Q / S).invariants())
         return i if i > 0 else Infinity
 
     def is_birational(self):
@@ -1190,32 +1223,33 @@ class FanMorphism(FreeModuleMorphism):
         a bundle, as its index is 2. The last map is not even a fibration.
         """
         if self.index() != 1:
-            return False    # Not surjective between lattices.
+            return False  # Not surjective between lattices.
         Sigma = self.domain_fan()
         Sigma_p = self.codomain_fan()
         Sigma_0 = self.kernel_fan()
-        if (Sigma.n_generating_cones() !=
-            Sigma_0.n_generating_cones() * Sigma_p.n_generating_cones()):
-            return False    # Definitely no splitting.
+        if (
+            Sigma.n_generating_cones()
+            != Sigma_0.n_generating_cones() * Sigma_p.n_generating_cones()
+        ):
+            return False  # Definitely no splitting.
         try:
             ray_index_map = self._ray_index_map()
         except ValueError:
             return False  # Rays are not mapped onto rays or the origin.
         # Figure out how Sigma_0 sits inside Sigma in terms of ray indices.
-        I_0s = [Sigma.embed(sigma_0).ambient_ray_indices()
-                for sigma_0 in Sigma_0]
+        I_0s = [Sigma.embed(sigma_0).ambient_ray_indices() for sigma_0 in Sigma_0]
         # We examine only generating cones, this is sufficient.
         for sigma_p in Sigma_p:
             primitive_cones = self.primitive_preimage_cones(sigma_p)
-            if len(primitive_cones) != 1:   # Should be only sigma_hat.
+            if len(primitive_cones) != 1:  # Should be only sigma_hat.
                 return False
             sigma_hat = primitive_cones[0]
             if sigma_p.dim() != sigma_hat.dim():
-                return False    # sigma -> sigma_p is not a bijection
+                return False  # sigma -> sigma_p is not a bijection
             I_p = sigma_p.ambient_ray_indices()
             I_hat = sigma_hat.ambient_ray_indices()
             if I_p != tuple(sorted(ray_index_map[i] for i in I_hat)):
-                return False    # sigma -> sigma_p is not a bijection
+                return False  # sigma -> sigma_p is not a bijection
             # Check that sigma_hat + sigma_0 is always in Sigma.
             for I_0 in I_0s:
                 I = tuple(sorted(I_hat + I_0))
@@ -1295,7 +1329,7 @@ class FanMorphism(FreeModuleMorphism):
         try:
             ray_index_map = self._ray_index_map()
         except ValueError:
-            return False    # Rays are not mapped onto rays or the origin.
+            return False  # Rays are not mapped onto rays or the origin.
         Sigma_p = self.codomain_fan()
         # Rays are already checked, the origin is trivial, start with 2-cones.
         for d in range(2, Sigma_p.dim() + 1):
@@ -1303,10 +1337,10 @@ class FanMorphism(FreeModuleMorphism):
                 I_p = sigma_p.ambient_ray_indices()
                 for sigma in self.primitive_preimage_cones(sigma_p):
                     if sigma.dim() != d:
-                        return False    # sigma -> sigma_p is not a bijection
+                        return False  # sigma -> sigma_p is not a bijection
                     I = sigma.ambient_ray_indices()
                     if I_p != tuple(sorted(ray_index_map[i] for i in I)):
-                        return False    # sigma -> sigma_p is not a bijection
+                        return False  # sigma -> sigma_p is not a bijection
         return True
 
     @cached_method
@@ -1377,8 +1411,11 @@ class FanMorphism(FreeModuleMorphism):
             return prod(self.factor()[1:]).is_injective()
         # Now we know that underlying lattice morphism is bijective.
         Sigma = self.domain_fan()
-        return all(self.image_cone(sigma).dim() == d
-                   for d in range(1, Sigma.dim() + 1) for sigma in Sigma(d))
+        return all(
+            self.image_cone(sigma).dim() == d
+            for d in range(1, Sigma.dim() + 1)
+            for sigma in Sigma(d)
+        )
 
     @cached_method
     def is_surjective(self):
@@ -1436,7 +1473,7 @@ class FanMorphism(FreeModuleMorphism):
             False
         """
         if isinstance(self.index(), InfinityElement):
-            return False    # Not surjective between vector spaces.
+            return False  # Not surjective between vector spaces.
         for dcones in self.codomain_fan().cones():
             for sigma_p in dcones:
                 if not self.preimage_cones(sigma_p):
@@ -1504,8 +1541,12 @@ class FanMorphism(FreeModuleMorphism):
              (1-d cone of Rational polyhedral fan in Sublattice <N(1, 1)>,))
         """
         fan = self.preimage_fan(Cone([], lattice=self.codomain()))
-        return Fan((cone.ambient_ray_indices() for cone in fan), fan.rays(),
-                   lattice=self.kernel(), check=False)
+        return Fan(
+            (cone.ambient_ray_indices() for cone in fan),
+            fan.rays(),
+            lattice=self.kernel(),
+            check=False,
+        )
 
     def preimage_cones(self, cone):
         r"""
@@ -1562,13 +1603,16 @@ class FanMorphism(FreeModuleMorphism):
             CSGI = cone.star_generator_indices()
             RISGIS = self._RISGIS()
             domain_fan = self._domain_fan
-            possible_rays = frozenset(i for i in range(domain_fan.n_rays())
-                                      if RISGIS[i].issuperset(CSGI))
+            possible_rays = frozenset(
+                i for i in range(domain_fan.n_rays()) if RISGIS[i].issuperset(CSGI)
+            )
             preimage_cones = []
             for dcones in domain_fan.cones():
                 for dcone in dcones:
-                    if (possible_rays.issuperset(dcone.ambient_ray_indices())
-                        and self.image_cone(dcone) == cone):
+                    if (
+                        possible_rays.issuperset(dcone.ambient_ray_indices())
+                        and self.image_cone(dcone) == cone
+                    ):
                         preimage_cones.append(dcone)
             self._preimage_cones[cone] = tuple(preimage_cones)
         return self._preimage_cones[cone]
@@ -1616,15 +1660,17 @@ class FanMorphism(FreeModuleMorphism):
             cones = []
             for dcones in reversed(domain_fan.cones()):
                 for dcone in dcones:
-                    if (not any(dcone.is_face_of(other) for other in cones) and
-                        self.image_cone(dcone).is_face_of(cone)):
+                    if not any(
+                        dcone.is_face_of(other) for other in cones
+                    ) and self.image_cone(dcone).is_face_of(cone):
                         cones.append(dcone)
             # Now form the fan from these cones, keeping the ray order.
             ray_indices = set(cones[0].ambient_ray_indices())
             for c in cones[1:]:
                 ray_indices.update(c.ambient_ray_indices())
-            self._preimage_fans[cone] = Fan(cones,
-                            domain_fan.rays(sorted(ray_indices)), check=False)
+            self._preimage_fans[cone] = Fan(
+                cones, domain_fan.rays(sorted(ray_indices)), check=False
+            )
         return self._preimage_fans[cone]
 
     def primitive_preimage_cones(self, cone):
@@ -1695,7 +1741,7 @@ class FanMorphism(FreeModuleMorphism):
             sage: phi.index()                                                           # needs palp
             1
         """
-        sigma_p = self._codomain_fan.embed(cone) # Necessary if used as a key
+        sigma_p = self._codomain_fan.embed(cone)  # Necessary if used as a key
         if sigma_p not in self._primitive_preimage_cones:
             primitive_cones = []
             for sigma in self.preimage_cones(sigma_p):  # Sorted by dimension
@@ -1847,10 +1893,15 @@ class FanMorphism(FreeModuleMorphism):
         phi_s = FanMorphism(m, self.domain_fan(), L, check=False)
         Sigma_prime = self.codomain_fan()
         L_cone = Cone(sum(([g, -g] for g in L.gens()), []), lattice=L)
-        Sigma_i = Fan(cones=(L_cone.intersection(cone) for cone in Sigma_prime),
-                      lattice=L, discard_faces=True, check=False)
-        phi_b = FanMorphism(identity_matrix(d), phi_s.codomain_fan(), Sigma_i,
-                            check=False)
+        Sigma_i = Fan(
+            cones=(L_cone.intersection(cone) for cone in Sigma_prime),
+            lattice=L,
+            discard_faces=True,
+            check=False,
+        )
+        phi_b = FanMorphism(
+            identity_matrix(d), phi_s.codomain_fan(), Sigma_i, check=False
+        )
         phi_i = FanMorphism(L.basis_matrix(), Sigma_i, Sigma_prime, check=False)
         return (phi_i, phi_b, phi_s)
 

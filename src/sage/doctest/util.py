@@ -196,7 +196,7 @@ class Timer:
             # documentation (Documentation/filesystems/proc.rst). The
             # intent is to sum the user- and kernel-mode "jiffies" for
             # both the given process and its children.
-            cputicks = sum( float(s) for s in stats[13:17] )
+            cputicks = sum(float(s) for s in stats[13:17])
         except (ArithmeticError, TypeError, ValueError) as e:
             # ArithmeticError: unexpected (non-numeric?) values in fields
             # TypeError/ValueError: fields can't be converted to float
@@ -206,7 +206,7 @@ class Timer:
             from os import sysconf
 
             hertz = sysconf("SC_CLK_TCK")
-        except (ValueError) as e:
+        except ValueError as e:
             # ValueError: SC_CLK_TCK doesn't exist
             raise OSError("SC_CLK_TCK sysconf not found") from e
 
@@ -220,7 +220,7 @@ class Timer:
             # about to divide by it.
             raise OSError("SC_CLK_TCK sysconf is nonpositive")
 
-        return (cputicks / hertz)
+        return cputicks / hertz
 
     def _quick_cputime(self, expect_objects):
         r"""
@@ -283,7 +283,7 @@ class Timer:
         # Start by using os.times() to get the cputime for sage itself
         # and any subprocesses that have been wait()ed for and that
         # have terminated.
-        cputime = sum( times()[:4] )
+        cputime = sum(times()[:4])
 
         # Now try to get the times for any pexpect interfaces, since
         # they do not fall into the category above.
@@ -304,9 +304,8 @@ class Timer:
                     # needs it), but it isn't explicitly listed as
                     # a dependency of sagelib.
                     try:
-                        from psutil import (NoSuchProcess,
-                                            Process,
-                                            ZombieProcess)
+                        from psutil import NoSuchProcess, Process, ZombieProcess
+
                         try:
                             cputime += sum(Process(S.pid()).cpu_times()[0:2])
                         except (ValueError, NoSuchProcess, ZombieProcess):
@@ -332,6 +331,7 @@ class Timer:
             {'cputime': ..., 'walltime': ...}
         """
         from sage.interfaces.quit import expect_objects
+
         self.cputime = self._quick_cputime(expect_objects)
         self.walltime = walltime()
         return self
@@ -351,6 +351,7 @@ class Timer:
             {'cputime': ..., 'walltime': ...}
         """
         from sage.interfaces.quit import expect_objects
+
         self.cputime = self._quick_cputime(expect_objects) - self.cputime
         self.walltime = walltime() - self.walltime
         return self
@@ -462,6 +463,7 @@ class RecordingDict(dict):
 
         sage: TestSuite(D).run()
     """
+
     def __init__(self, *args, **kwds):
         """
         Initialization arguments are the same as for a normal dictionary.
@@ -637,6 +639,7 @@ class NestedName:
 
         sage: TestSuite(qname).run()
     """
+
     def __init__(self, base):
         """
         INPUT:
@@ -677,7 +680,7 @@ class NestedName:
             raise ValueError
         while len(self.all) <= index:
             self.all.append(None)
-        self.all[index+1:] = [value]
+        self.all[index + 1 :] = [value]
 
     def __str__(self):
         """
@@ -753,7 +756,11 @@ class NestedName:
 
 
 @contextmanager
-def ensure_interruptible_after(seconds: float, max_wait_after_interrupt: float = 0.2, inaccuracy_tolerance: float = 0.1):
+def ensure_interruptible_after(
+    seconds: float,
+    max_wait_after_interrupt: float = 0.2,
+    inaccuracy_tolerance: float = 0.1,
+):
     """
     Helper function for doctesting to ensure that the code is interruptible after a certain amount of time.
     This should only be used for internal doctesting purposes.
@@ -884,7 +891,9 @@ def ensure_interruptible_after(seconds: float, max_wait_after_interrupt: float =
     try:
         yield data
     except AlarmInterrupt as e:
-        e.__traceback__ = None  # workaround for https://github.com/python/cpython/pull/129276
+        e.__traceback__ = (
+            None  # workaround for https://github.com/python/cpython/pull/129276
+        )
         alarm_raised = True
     finally:
         cancel_alarm()
@@ -894,11 +903,16 @@ def ensure_interruptible_after(seconds: float, max_wait_after_interrupt: float =
 
     if elapsed > seconds + max_wait_after_interrupt:
         raise RuntimeError(
-                f"Function is not interruptible within {seconds:.4f} seconds, only after {elapsed:.4f} seconds"
-                + ("" if alarm_raised else " (__exit__ called before interrupt check)"))
+            f"Function is not interruptible within {seconds:.4f} seconds, only after {elapsed:.4f} seconds"
+            + ("" if alarm_raised else " (__exit__ called before interrupt check)")
+        )
 
     if alarm_raised:
         if elapsed < seconds - inaccuracy_tolerance:
-            raise RuntimeError(f"Interrupted too early: {elapsed:.4f} < {seconds:.4f}, this should not happen")
+            raise RuntimeError(
+                f"Interrupted too early: {elapsed:.4f} < {seconds:.4f}, this should not happen"
+            )
     else:
-        raise RuntimeError(f"Function terminates early after {elapsed:.4f} < {seconds:.4f} seconds")
+        raise RuntimeError(
+            f"Function terminates early after {elapsed:.4f} < {seconds:.4f} seconds"
+        )

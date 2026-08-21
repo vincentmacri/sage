@@ -80,6 +80,7 @@ class DiscreteGaussianDistributionPolynomialSampler(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, P, n, sigma):
         r"""
         Construct a sampler for univariate polynomials of degree ``n-1``
@@ -139,4 +140,7 @@ class DiscreteGaussianDistributionPolynomialSampler(SageObject):
             Discrete Gaussian sampler for polynomials of degree < 8 with σ=3.000000 in each component
         """
         # beware of unicode character in ascii string !
-        return "Discrete Gaussian sampler for polynomials of degree < %d with σ=%f in each component" % (self.n, self.D.sigma)
+        return (
+            "Discrete Gaussian sampler for polynomials of degree < %d with σ=%f in each component"
+            % (self.n, self.D.sigma)
+        )

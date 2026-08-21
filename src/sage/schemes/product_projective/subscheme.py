@@ -6,25 +6,29 @@ AUTHORS:
 - Ben Hutz (2014): subschemes of Cartesian products of projective space
 """
 
-#*****************************************************************************
+# *****************************************************************************
 # Copyright (C) 2014 Ben Hutz <bn4941@gmail.com>
 #
 # Distributed under the terms of the GNU General Public License (GPL)
 # as published by the Free Software Foundation; either version 2 of
 # the License, or (at your option) any later version.
 # http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.misc_c import prod
 from sage.misc.cachefunc import cached_method
 from sage.rings.fraction_field import FractionField
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.schemes.affine.affine_space import AffineSpace
-from sage.schemes.projective.projective_subscheme import AlgebraicScheme_subscheme_projective
+from sage.schemes.projective.projective_subscheme import (
+    AlgebraicScheme_subscheme_projective,
+)
 from sage.schemes.projective.projective_space import ProjectiveSpace
 
 
-class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_projective):
+class AlgebraicScheme_subscheme_product_projective(
+    AlgebraicScheme_subscheme_projective
+):
     r"""
     Construct an algebraic subscheme of a product of projective spaces.
 
@@ -126,57 +130,62 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
         AS = self.ambient_space()
         CR = AS.coordinate_ring()
         N = AS.dimension_relative_components()
-        M = prod([n+1 for n in N]) - 1
+        M = prod([n + 1 for n in N]) - 1
 
-        vars = list(AS.coordinate_ring().variable_names()) + ['u' + str(i) for i in range(M+1)]
-        R = PolynomialRing(AS.base_ring(), AS.ngens()+M+1, vars, order='lex')
+        vars = list(AS.coordinate_ring().variable_names()) + [
+            'u' + str(i) for i in range(M + 1)
+        ]
+        R = PolynomialRing(AS.base_ring(), AS.ngens() + M + 1, vars, order='lex')
 
-        #set-up the elimination for the segre embedding
+        # set-up the elimination for the segre embedding
         mapping = []
         k = AS.ngens()
-        index = AS.n_components()*[0]
+        index = AS.n_components() * [0]
         for count in range(M + 1):
-            mapping.append(R.gen(k+count)-prod([CR(AS[i].gen(index[i])) for i in range(len(index))]))
-            for i in range(len(index)-1, -1, -1):
+            mapping.append(
+                R.gen(k + count)
+                - prod([CR(AS[i].gen(index[i])) for i in range(len(index))])
+            )
+            for i in range(len(index) - 1, -1, -1):
                 if index[i] == N[i]:
                     index[i] = 0
                 else:
                     index[i] += 1
-                    break #only increment once
+                    break  # only increment once
 
-        #change the defining ideal of the subscheme into the variables
+        # change the defining ideal of the subscheme into the variables
         I = R.ideal(list(self.defining_polynomials()) + mapping)
         J = I.groebner_basis()
-        s = set(R.gens()[:AS.ngens()])
-        n = len(J)-1
+        s = set(R.gens()[: AS.ngens()])
+        n = len(J) - 1
         L = []
         while s.isdisjoint(J[n].variables()):
             L.append(J[n])
-            n = n-1
+            n = n - 1
 
-        #create new subscheme
+        # create new subscheme
         if PP is None:
-            PS = ProjectiveSpace(self.base_ring(), M, R.gens()[AS.ngens():])
+            PS = ProjectiveSpace(self.base_ring(), M, R.gens()[AS.ngens() :])
             Y = PS.subscheme(L)
         else:
             if PP.dimension_relative() != M:
                 raise ValueError("projective space %s must be dimension %s") % (PP, M)
             S = PP.coordinate_ring()
-            psi = R.hom([0]*k + list(S.gens()), S)
+            psi = R.hom([0] * k + list(S.gens()), S)
             L = [psi(l) for l in L]
             Y = PP.subscheme(L)
 
-        #create embedding for points
+        # create embedding for points
         mapping = []
-        index = AS.n_components()*[0]
+        index = AS.n_components() * [0]
         for count in range(M + 1):
             mapping.append(prod([CR(AS[i].gen(index[i])) for i in range(len(index))]))
-            for i in range(len(index)-1, -1, -1):
+            for i in range(len(index) - 1, -1, -1):
                 if index[i] == N[i]:
                     index[i] = 0
                 else:
                     index[i] += 1
-                    break #only increment once
+                    break  # only increment once
         phi = self.hom(mapping, Y)
 
         return phi
@@ -227,17 +236,16 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
             return self.__dimension
         except AttributeError:
             try:
-                #move to field to compute radical
+                # move to field to compute radical
                 X = self.change_ring(FractionField(self.base_ring()))
                 PP = X.ambient_space()
                 I = X.defining_ideal().radical()
-                #check if the irrelevant ideal of any component is in the radical
-                if any(all(t in I for t in PS.gens())
-                       for PS in PP.components()):
+                # check if the irrelevant ideal of any component is in the radical
+                if any(all(t in I for t in PS.gens()) for PS in PP.components()):
                     self.__dimension = -1
                 else:
                     self.__dimension = I.dimension() - PP.n_components()
-            except TypeError:  #cannot compute radical for this base ring
+            except TypeError:  # cannot compute radical for this base ring
                 phi = self.segre_embedding()
                 self.__dimension = phi.codomain().defining_ideal().dimension() - 1
             return self.__dimension
@@ -296,16 +304,20 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
                     (1 : x0 : x1 : x2 , x3 : 1))
         """
         if not isinstance(I, (list, tuple)):
-            raise TypeError('The argument I=%s must be a list or tuple of positive integers' % I)
+            raise TypeError(
+                'The argument I=%s must be a list or tuple of positive integers' % I
+            )
         PP = self.ambient_space()
         N = PP.dimension_relative_components()
         if len(I) != len(N):
-            raise ValueError('The argument I=%s must have %s entries' % (I,len(N)))
-        I = tuple([int(i) for i in I])   # implicit type checking
+            raise ValueError('The argument I=%s must have %s entries' % (I, len(N)))
+        I = tuple([int(i) for i in I])  # implicit type checking
         for i in range(len(I)):
             if I[i] < 0 or I[i] > N[i]:
-                raise ValueError("Argument i (= %s) must be between 0 and %s." % (I[i], N[i]))
-        #see if we've already created this affine patch
+                raise ValueError(
+                    "Argument i (= %s) must be between 0 and %s." % (I[i], N[i])
+                )
+        # see if we've already created this affine patch
         try:
             if return_embedding:
                 return self.__affine_patches[I]
@@ -314,22 +326,22 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
             self.__affine_patches = {}
         except KeyError:
             pass
-        AA = AffineSpace(PP.base_ring(),sum(N),'x')
+        AA = AffineSpace(PP.base_ring(), sum(N), 'x')
         v = list(AA.gens())
         # create the projective embedding
         index = 0
         for i in range(len(I)):
-            v.insert(index+I[i],1)
-            index += N[i]+1
-        phi = AA.hom(v,self)
-        #find the image of the subscheme
+            v.insert(index + I[i], 1)
+            index += N[i] + 1
+        phi = AA.hom(v, self)
+        # find the image of the subscheme
         polys = self.defining_polynomials()
         xi = phi.defining_polynomials()
-        U = AA.subscheme([ f(xi) for f in polys ])
-        phi = U.hom(v,self)
-        self.__affine_patches.update({I:(U,phi)})
+        U = AA.subscheme([f(xi) for f in polys])
+        phi = U.hom(v, self)
+        self.__affine_patches.update({I: (U, phi)})
         if return_embedding:
-            return U,phi
+            return U, phi
         return U
 
     def intersection_multiplicity(self, X, P):
@@ -388,7 +400,10 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
         try:
             PP(P)
         except TypeError:
-            raise TypeError("(=%s) must be a point in the ambient space of this subscheme and (=%s)" % (P,X))
+            raise TypeError(
+                "(=%s) must be a point in the ambient space of this subscheme and (=%s)"
+                % (P, X)
+            )
         # find an affine chart of the ambient space of this subscheme that contains P
         indices = []
         aff_pt = []
@@ -400,7 +415,9 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
             indices.append(j)
             T = list(Q)
             t = T.pop(j)
-            aff_pt.extend([1/t*T[k] for k in range(PP.components()[i].dimension_relative())])
+            aff_pt.extend(
+                [1 / t * T[k] for k in range(PP.components()[i].dimension_relative())]
+            )
         X1 = self.affine_patch(indices)
         X2 = X.affine_patch(indices)
         return X1.intersection_multiplicity(X2, X1.ambient_space()(aff_pt))
@@ -445,8 +462,10 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
         try:
             PP(P)
         except TypeError:
-            raise TypeError("(={}) must be a point in the ambient space of this "
-                            "subscheme and (={})".format(P, self))
+            raise TypeError(
+                "(={}) must be a point in the ambient space of this "
+                "subscheme and (={})".format(P, self)
+            )
         # find an affine chart of the ambient space of this subscheme that contains P
         indices = []
         aff_pt = []
@@ -458,6 +477,8 @@ class AlgebraicScheme_subscheme_product_projective(AlgebraicScheme_subscheme_pro
             indices.append(j)
             T = list(Q)
             t = T.pop(j)
-            aff_pt.extend([1/t*T[k] for k in range(PP.components()[i].dimension_relative())])
+            aff_pt.extend(
+                [1 / t * T[k] for k in range(PP.components()[i].dimension_relative())]
+            )
         X = self.affine_patch(indices)
         return X.multiplicity(X.ambient_space()(aff_pt))

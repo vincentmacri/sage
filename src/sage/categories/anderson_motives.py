@@ -16,7 +16,6 @@ AUTHOR:
 #                   http://www.gnu.org/licenses/
 # *****************************************************************************
 
-
 from sage.misc.latex import latex
 from sage.matrix.special import identity_matrix
 
@@ -38,6 +37,7 @@ class AndersonMotives(OreModules):
         :class:`sage.categories.drinfeld_modules.DrinfeldModules`,
         :mod:`sage.rings.function_field.drinfeld_modules.anderson_motive`
     """
+
     @staticmethod
     def __classcall_private__(cls, category):
         r"""
@@ -99,12 +99,16 @@ class AndersonMotives(OreModules):
         self._ore_variable_name = category._ore_variable_name
         self._characteristic = category._characteristic
         K = self._base_morphism.codomain()
-        self._base_combined = AK = PolynomialRing(K, A.variable_name())  # TODO: find a better name
+        self._base_combined = AK = PolynomialRing(
+            K, A.variable_name()
+        )  # TODO: find a better name
         self._constant_coefficient = category.constant_coefficient()
         self._divisor = AK.gen() - self._constant_coefficient
         twisting_morphism = category.ore_polring().twisting_morphism()
         twisting_morphism = AK.hom([AK.gen()], base_map=twisting_morphism)
-        self._ore_polring = OrePolynomialRing(AK, twisting_morphism, names=self._ore_variable_name, polcast=False)
+        self._ore_polring = OrePolynomialRing(
+            AK, twisting_morphism, names=self._ore_variable_name, polcast=False
+        )
         super().__init__(self._ore_polring)
 
     def _repr_(self):
@@ -137,8 +141,10 @@ class AndersonMotives(OreModules):
             sage: latex(C)  # indirect doctest
             \text{Category{ }of{ }Anderson{ }motives{ }over{ }\Bold{F}_{3^{3}}[T]
         """
-        return f'\\text{{Category{{ }}of{{ }}Anderson{{ }}motives{{ }}' \
-               f'over{{ }}{latex(self.base())}'
+        return (
+            f'\\text{{Category{{ }}of{{ }}Anderson{{ }}motives{{ }}'
+            f'over{{ }}{latex(self.base())}'
+        )
 
     def __reduce__(self):
         r"""
@@ -277,8 +283,9 @@ class AndersonMotives(OreModules):
             T + 2*z
         """
         if self._characteristic is None:
-            raise NotImplementedError('function ring characteristic not '
-                                      'implemented in this case')
+            raise NotImplementedError(
+                'function ring characteristic not implemented in this case'
+            )
         return self._characteristic
 
     def function_ring(self):
@@ -334,16 +341,23 @@ class AndersonMotives(OreModules):
             [T 1]
             [z 1]
         """
-        from sage.rings.function_field.drinfeld_modules.anderson_motive import AndersonMotive_general
+        from sage.rings.function_field.drinfeld_modules.anderson_motive import (
+            AndersonMotive_general,
+        )
+
         if tau is None:
             tau = identity_matrix(self._base_combined, 1)
         det = tau.determinant()
         if det == 0:
-            raise ValueError("the given matrix does not define an Anderson motive in this category")
+            raise ValueError(
+                "the given matrix does not define an Anderson motive in this category"
+            )
         h = det.degree()
-        disc, R = det.quo_rem(self._divisor ** h)
+        disc, R = det.quo_rem(self._divisor**h)
         if R:
-            raise ValueError("the given matrix does not define an Anderson motive in this category")
+            raise ValueError(
+                "the given matrix does not define an Anderson motive in this category"
+            )
         return AndersonMotive_general(self, tau, names=names)
 
     def super_categories(self):
@@ -362,7 +376,6 @@ class AndersonMotives(OreModules):
         return [OreModules(AKtau.base(), AKtau)]
 
     class ParentMethods:
-
         def function_ring(self):
             r"""
             Return the underlying function ring of this Anderson motive.

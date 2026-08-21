@@ -283,7 +283,9 @@ def absorption(left, right):
         try:
             return right.absorb(left)
         except ArithmeticError:
-            raise ArithmeticError('Absorption between %s and %s is not possible.' % (left, right))
+            raise ArithmeticError(
+                'Absorption between %s and %s is not possible.' % (left, right)
+            )
 
 
 def can_absorb(left, right):
@@ -415,8 +417,7 @@ class GenericTerm(MultiplicativeGroupElement):
             :meth:`TermWithCoefficient.construction`,
             :meth:`GenericTermMonoid.from_construction`
         """
-        return (self.__class__, {'parent': self.parent(),
-                                 'growth': self.growth})
+        return (self.__class__, {'parent': self.parent(), 'growth': self.growth})
 
     def _mul_(self, other):
         r"""
@@ -479,8 +480,9 @@ class GenericTerm(MultiplicativeGroupElement):
             NotImplementedError: Inversion of Generic Term with growth x^2
             not implemented (in this abstract method).
         """
-        raise NotImplementedError('Inversion of %s not implemented '
-                                  '(in this abstract method).' % (self,))
+        raise NotImplementedError(
+            'Inversion of %s not implemented (in this abstract method).' % (self,)
+        )
 
     def __pow__(self, exponent):
         r"""
@@ -510,8 +512,9 @@ class GenericTerm(MultiplicativeGroupElement):
             NotImplementedError: Taking powers of Generic Term with growth z
             not implemented (in this abstract method).
         """
-        raise NotImplementedError('Taking powers of %s not implemented '
-                                  '(in this abstract method).' % (self,))
+        raise NotImplementedError(
+            'Taking powers of %s not implemented (in this abstract method).' % (self,)
+        )
 
     def _calculate_pow_test_zero_(self, exponent):
         r"""
@@ -557,12 +560,14 @@ class GenericTerm(MultiplicativeGroupElement):
 
         zero = self.parent().coefficient_ring.zero()
         try:
-            zero ** exponent
+            zero**exponent
         except (TypeError, ValueError, ZeroDivisionError) as e:
             from .misc import combine_exceptions
+
             raise combine_exceptions(
-                ZeroDivisionError('Cannot take %s to exponent %s.' %
-                                  (self, exponent)), e)
+                ZeroDivisionError('Cannot take %s to exponent %s.' % (self, exponent)),
+                e,
+            )
         return self._calculate_pow_(exponent)
 
     def _calculate_pow_(self, exponent, new_coefficient=None):
@@ -604,11 +609,13 @@ class GenericTerm(MultiplicativeGroupElement):
             (implicit) coefficients in Integer Ring does not support coefficients.
         """
         try:
-            g = self.growth ** exponent
+            g = self.growth**exponent
         except (ValueError, TypeError, ZeroDivisionError) as e:
             from .misc import combine_exceptions
+
             raise combine_exceptions(
-                ValueError('Cannot take %s to the exponent %s.' % (self, exponent)), e)
+                ValueError('Cannot take %s to the exponent %s.' % (self, exponent)), e
+            )
 
         return self.parent()._create_element_in_extension_(g, new_coefficient)
 
@@ -740,9 +747,9 @@ class GenericTerm(MultiplicativeGroupElement):
 
         from sage.structure.element import get_coercion_model
 
-        return get_coercion_model().bin_op(self, other,
-                                           lambda left, right:
-                                           left._absorb_(right))
+        return get_coercion_model().bin_op(
+            self, other, lambda left, right: left._absorb_(right)
+        )
 
     def _absorb_(self, other):
         r"""
@@ -845,8 +852,9 @@ class GenericTerm(MultiplicativeGroupElement):
             :meth:`ExactTerm.log_term`,
             :meth:`OTerm.log_term`.
         """
-        raise NotImplementedError('This method is not implemented in this '
-                                  'abstract base class.')
+        raise NotImplementedError(
+            'This method is not implemented in this abstract base class.'
+        )
 
     def _log_growth_(self, base=None, locals=None):
         r"""
@@ -879,10 +887,10 @@ class GenericTerm(MultiplicativeGroupElement):
             :meth:`ExactTerm.log_term`,
             :meth:`OTerm.log_term`.
         """
-        return tuple(self.parent()._create_element_in_extension_(g, c)
-                     for g, c in
-                     self.growth.log_factor(base=base,
-                                            locals=locals))
+        return tuple(
+            self.parent()._create_element_in_extension_(g, c)
+            for g, c in self.growth.log_factor(base=base, locals=locals)
+        )
 
     _richcmp_ = richcmp_by_eq_and_lt("_eq_", "_lt_")
 
@@ -1122,8 +1130,10 @@ class GenericTerm(MultiplicativeGroupElement):
             is o(1) in the abstract base class
             TermWithCoefficient Monoid x^ZZ with coefficients in Rational Field.
         """
-        raise NotImplementedError('Cannot check whether %s is o(1) in the '
-                                  'abstract base class %s.' % (self, self.parent()))
+        raise NotImplementedError(
+            'Cannot check whether %s is o(1) in the '
+            'abstract base class %s.' % (self, self.parent())
+        )
 
     def rpow(self, base):
         r"""
@@ -1149,8 +1159,10 @@ class GenericTerm(MultiplicativeGroupElement):
             Generic Term with growth x*log(x) in the abstract base class
             GenericTerm Monoid x^ZZ * log(x)^ZZ with (implicit) coefficients in Rational Field.
         """
-        raise NotImplementedError('Cannot take %s to the exponent %s in the '
-                                  'abstract base class %s.' % (base, self, self.parent()))
+        raise NotImplementedError(
+            'Cannot take %s to the exponent %s in the '
+            'abstract base class %s.' % (base, self, self.parent())
+        )
 
     def _repr_(self):
         r"""
@@ -1224,9 +1236,13 @@ class GenericTerm(MultiplicativeGroupElement):
             GenericTerm Monoid x^ZZ with (implicit) coefficients in Integer Ring.
         """
         from .misc import substitute_raise_exception
-        substitute_raise_exception(self, TypeError(
-            'Cannot substitute in the abstract '
-            'base class %s.' % (self.parent(),)))
+
+        substitute_raise_exception(
+            self,
+            TypeError(
+                'Cannot substitute in the abstract base class %s.' % (self.parent(),)
+            ),
+        )
 
     def variable_names(self):
         r"""
@@ -1270,8 +1286,7 @@ class GenericTerm(MultiplicativeGroupElement):
             NotImplementedError: Cannot build the factorial of
             Generic Term with growth x^(1/2).
         """
-        raise NotImplementedError(
-            'Cannot build the factorial of {}.'.format(self))
+        raise NotImplementedError('Cannot build the factorial of {}.'.format(self))
 
     def _singularity_analysis_(self, var, zeta, precision):
         r"""
@@ -1305,8 +1320,9 @@ class GenericTerm(MultiplicativeGroupElement):
             NotImplementedError: singularity analysis of Generic Term with growth x
             not implemented
         """
-        raise NotImplementedError('singularity analysis of {} '
-                                  'not implemented '.format(self))
+        raise NotImplementedError(
+            'singularity analysis of {} not implemented '.format(self)
+        )
 
 
 class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
@@ -1356,9 +1372,9 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
     Element = GenericTerm
 
     @staticmethod
-    def __classcall__(cls, term_monoid_factory,
-                      growth_group, coefficient_ring,
-                      category=None):
+    def __classcall__(
+        cls, term_monoid_factory, growth_group, coefficient_ring, category=None
+    ):
         r"""
         Normalize the input in order to ensure a unique
         representation of the parent.
@@ -1396,7 +1412,9 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         if term_monoid_factory is None:
             raise ValueError('No term monoid factory specified.')
         if not isinstance(term_monoid_factory, TermMonoidFactory):
-            raise TypeError('%s is not a valid term monoid factory.' % (term_monoid_factory,))
+            raise TypeError(
+                '%s is not a valid term monoid factory.' % (term_monoid_factory,)
+            )
 
         if growth_group is None:
             raise ValueError('No growth group specified.')
@@ -1411,10 +1429,12 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         if category is None:
             from sage.categories.monoids import Monoids
             from sage.categories.posets import Posets
+
             category = Monoids() & Posets()
 
         return super().__classcall__(
-            cls, term_monoid_factory, growth_group, coefficient_ring, category)
+            cls, term_monoid_factory, growth_group, coefficient_ring, category
+        )
 
     def __init__(self, term_monoid_factory, growth_group, coefficient_ring, category):
         r"""
@@ -1510,9 +1530,9 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             True
         """
         TermMonoid = self.term_monoid_factory
-        return TermMonoid(type,
-                          growth_group=self.growth_group,
-                          coefficient_ring=self.coefficient_ring)
+        return TermMonoid(
+            type, growth_group=self.growth_group, coefficient_ring=self.coefficient_ring
+        )
 
     @property
     def growth_group(self):
@@ -1583,8 +1603,10 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             growth_group = self.growth_group
         if coefficient_ring is None:
             coefficient_ring = self.coefficient_ring
-        if self.growth_group is growth_group and \
-                self.coefficient_ring is coefficient_ring:
+        if (
+            self.growth_group is growth_group
+            and self.coefficient_ring is coefficient_ring
+        ):
             return self
         return self.term_monoid_factory(self, growth_group, coefficient_ring)
 
@@ -1605,8 +1627,10 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             sage: GenericTermMonoid(TermMonoid, GrowthGroup('x^ZZ'), QQ)._repr_()
             'GenericTerm Monoid x^ZZ with (implicit) coefficients in Rational Field'
         """
-        return 'GenericTerm Monoid %s with (implicit) coefficients in %s' % \
-            (self.growth_group._repr_short_(), self.coefficient_ring)
+        return 'GenericTerm Monoid %s with (implicit) coefficients in %s' % (
+            self.growth_group._repr_short_(),
+            self.coefficient_ring,
+        )
 
     def _coerce_map_from_(self, S):
         r"""
@@ -1660,8 +1684,9 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             False
         """
         if isinstance(S, self.__class__):
-            if self.growth_group.has_coerce_map_from(S.growth_group) and \
-                    self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
+            if self.growth_group.has_coerce_map_from(
+                S.growth_group
+            ) and self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
                 return True
 
     def _element_constructor_(self, data, **kwds):
@@ -1777,33 +1802,33 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         if isinstance(data, GenericTerm):
             return self.from_construction(data.construction(), **kwds)
         if isinstance(data, int) and data == 0:
-            raise ValueError('No input specified. Cannot continue '
-                             'creating an element of %s.' % (self,))
+            raise ValueError(
+                'No input specified. Cannot continue '
+                'creating an element of %s.' % (self,)
+            )
 
         from .misc import combine_exceptions
+
         coefficient = kwds.pop('coefficient', None)
         if coefficient is not None:
             growth = data
             if 'growth' in kwds:
                 raise ValueError(f"Argument 'growth={kwds['growth']}' is ambiguous.")
-            return self.from_construction((None,
-                                           {'growth': growth,
-                                            'coefficient': coefficient}),
-                                          **kwds)
+            return self.from_construction(
+                (None, {'growth': growth, 'coefficient': coefficient}), **kwds
+            )
 
         try:
             growth, coefficient = self._split_growth_and_coefficient_(data)
         except ValueError as e:
-            raise combine_exceptions(
-                ValueError('%s is not in %s.' % (data, self)), e)
+            raise combine_exceptions(ValueError('%s is not in %s.' % (data, self)), e)
 
         if 'growth' in kwds:
             raise ValueError(f"Argument 'growth={kwds['growth']}' is ambiguous.")
 
-        return self.from_construction((None,
-                                       {'growth': growth,
-                                        'coefficient': coefficient}),
-                                      **kwds)
+        return self.from_construction(
+            (None, {'growth': growth, 'coefficient': coefficient}), **kwds
+        )
 
     def _validate_growth_or_error_(self, kwds_construction):
         r"""
@@ -1861,8 +1886,10 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         except (ValueError, TypeError) as e:
             growth = kwds_construction['growth']
             from .misc import combine_exceptions
+
             raise combine_exceptions(
-                ValueError(f'Growth {growth} is not valid in {self}.'), e)
+                ValueError(f'Growth {growth} is not valid in {self}.'), e
+            )
         kwds_construction['growth'] = growth
 
     def _validate_coefficient_or_error_(self, kwds_construction):
@@ -1923,10 +1950,15 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             element_name = self.Element.__name__
             growth = kwds_construction['growth']
             from .misc import combine_exceptions
+
             raise combine_exceptions(
-                ValueError(f'Cannot create {element_name}({growth}) '
-                           f'since given coefficient {coefficient} '
-                           f'is not valid in {self}.'), e)
+                ValueError(
+                    f'Cannot create {element_name}({growth}) '
+                    f'since given coefficient {coefficient} '
+                    f'is not valid in {self}.'
+                ),
+                e,
+            )
         if 'coefficient' in kwds_construction:
             kwds_construction['coefficient'] = coefficient
 
@@ -1989,10 +2021,14 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         """
         coefficient = kwds_construction.pop('coefficient', None)
         if coefficient is not None and coefficient != self.coefficient_ring.one():
-            raise ValueError('Coefficient %s is not 1, but %s does not '
-                             'support coefficients.' % (coefficient, self))
+            raise ValueError(
+                'Coefficient %s is not 1, but %s does not '
+                'support coefficients.' % (coefficient, self)
+            )
 
-        if 'parent' in kwds_construction and isinstance(kwds_construction['parent'], BTermMonoid):
+        if 'parent' in kwds_construction and isinstance(
+            kwds_construction['parent'], BTermMonoid
+        ):
             try:
                 del kwds_construction['valid_from']
             except KeyError:
@@ -2097,16 +2133,19 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             sage: T._create_element_in_extension_(G.an_element(), 3/2).parent()
             Exact Term Monoid z^ZZ with coefficients in Rational Field
         """
-        if (growth.parent() is self.growth_group) and \
-           (coefficient is None or coefficient.parent() is self.coefficient_ring):
+        if (growth.parent() is self.growth_group) and (
+            coefficient is None or coefficient.parent() is self.coefficient_ring
+        ):
             parent = self
         else:
-            parent = self._underlying_class()(self.term_monoid_factory,
-                                              growth.parent(),
-                                              coefficient.parent()
-                                              if coefficient is not None
-                                              else self.coefficient_ring,
-                                              category=self.category())
+            parent = self._underlying_class()(
+                self.term_monoid_factory,
+                growth.parent(),
+                coefficient.parent()
+                if coefficient is not None
+                else self.coefficient_ring,
+                category=self.category(),
+            )
         return parent(growth, coefficient=coefficient)
 
     def _split_growth_and_coefficient_(self, data):
@@ -2181,11 +2220,13 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             except (ValueError, TypeError):
                 pass
 
-            raise ValueError('Factor %s of %s is neither a coefficient (in %s) '
-                             'nor growth (in %s).' %
-                             (f, data, coefficient_ring, growth_group))
+            raise ValueError(
+                'Factor %s of %s is neither a coefficient (in %s) '
+                'nor growth (in %s).' % (f, data, coefficient_ring, growth_group)
+            )
 
         from sage.misc.misc_c import prod
+
         growth = prod(growths) if growths else growth_group.one()
         coefficient = prod(coefficients) if coefficients else coefficient_ring.one()
         return (growth, coefficient)
@@ -2211,6 +2252,7 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         """
         if isinstance(data, str):
             from .misc import split_str_by_op
+
             return split_str_by_op(data, '*')
 
         try:
@@ -2219,8 +2261,10 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             return (data,)
 
         from sage.symbolic.ring import SymbolicRing
+
         if isinstance(P, SymbolicRing):
             from sage.symbolic.operators import mul_vararg
+
             if data.operator() == mul_vararg:
                 return tuple(data.operands())
 
@@ -2362,6 +2406,7 @@ class OTerm(GenericTerm):
         """
         if latex:
             from sage.misc.latex import latex as latex_repr
+
             f = latex_repr
         else:
             f = repr
@@ -2442,6 +2487,7 @@ class OTerm(GenericTerm):
             > *previous* ZeroDivisionError: rational division by zero
         """
         from .misc import strip_symbolic
+
         return self._calculate_pow_test_zero_(strip_symbolic(exponent))
 
     def can_absorb(self, other):
@@ -2651,11 +2697,12 @@ class OTerm(GenericTerm):
             return self
         if base == 1:
             P = self.parent()
-            return P.term_monoid_factory('exact',
-                                         P.growth_group,
-                                         P.coefficient_ring).one()
-        raise ValueError('Cannot take %s to the exponent %s in %s' %
-                         (base, self, self.parent()))
+            return P.term_monoid_factory(
+                'exact', P.growth_group, P.coefficient_ring
+            ).one()
+        raise ValueError(
+            'Cannot take %s to the exponent %s in %s' % (base, self, self.parent())
+        )
 
     def _substitute_(self, rules):
         r"""
@@ -2703,6 +2750,7 @@ class OTerm(GenericTerm):
             g = self.growth._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
         try:
@@ -2728,6 +2776,7 @@ class OTerm(GenericTerm):
             return O(g)
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
     def _factorial_(self):
@@ -2751,8 +2800,10 @@ class OTerm(GenericTerm):
         """
         if not self.growth.is_one():
             raise ValueError(
-                'Cannot build the factorial of {} since it has growth '
-                '!= 1.'.format(self))
+                'Cannot build the factorial of {} since it has growth != 1.'.format(
+                    self
+                )
+            )
 
         return self
 
@@ -2785,8 +2836,7 @@ class OTerm(GenericTerm):
             sage: T('x^(-1)')._singularity_analysis_('n', 2, precision=3)
             O((1/2)^n*n^(-2))
         """
-        return self.growth._singularity_analysis_(
-            var=var, zeta=zeta, precision=0)
+        return self.growth._singularity_analysis_(var=var, zeta=zeta, precision=0)
 
 
 class OTermMonoid(GenericTermMonoid):
@@ -2875,7 +2925,9 @@ class OTermMonoid(GenericTermMonoid):
         except KeyError:
             pass
 
-        if 'parent' in kwds_construction and isinstance(kwds_construction['parent'], BTermMonoid):
+        if 'parent' in kwds_construction and isinstance(
+            kwds_construction['parent'], BTermMonoid
+        ):
             try:
                 del kwds_construction['valid_from']
             except KeyError:
@@ -2930,9 +2982,16 @@ class OTermMonoid(GenericTermMonoid):
             sage: OT_ZZ.has_coerce_map_from(ET)  # indirect doctest
             True
         """
-        if isinstance(S, (ExactTermMonoid, BTermMonoid,)):
-            if self.growth_group.has_coerce_map_from(S.growth_group) and \
-                    self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
+        if isinstance(
+            S,
+            (
+                ExactTermMonoid,
+                BTermMonoid,
+            ),
+        ):
+            if self.growth_group.has_coerce_map_from(
+                S.growth_group
+            ) and self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
                 return True
         else:
             return super()._coerce_map_from_(S)
@@ -2951,8 +3010,10 @@ class OTermMonoid(GenericTermMonoid):
             sage: TermMonoid('O', G, QQ)._repr_()
             'O-Term Monoid x^ZZ with implicit coefficients in Rational Field'
         """
-        return 'O-Term Monoid %s with implicit coefficients in %s' % \
-            (self.growth_group._repr_short_(), self.coefficient_ring)
+        return 'O-Term Monoid %s with implicit coefficients in %s' % (
+            self.growth_group._repr_short_(),
+            self.coefficient_ring,
+        )
 
 
 class TermWithCoefficient(GenericTerm):
@@ -3031,12 +3092,11 @@ class TermWithCoefficient(GenericTerm):
         try:
             coefficient = parent.coefficient_ring(coefficient)
         except (ValueError, TypeError):
-            raise ValueError('%s is not a coefficient in %s.' %
-                             (coefficient, parent))
+            raise ValueError('%s is not a coefficient in %s.' % (coefficient, parent))
         if coefficient == 0:
             raise ZeroCoefficientError(
-                'Zero coefficient %s is not allowed in %s.' %
-                (coefficient, parent))
+                'Zero coefficient %s is not allowed in %s.' % (coefficient, parent)
+            )
 
         self.coefficient = coefficient
 
@@ -3090,8 +3150,10 @@ class TermWithCoefficient(GenericTerm):
             sage: T(x^2, coefficient=5)._repr_()
             'Term with coefficient 5 and growth x^2'
         """
-        return 'Term with coefficient %s and growth %s' % \
-               (self.coefficient, self.growth)
+        return 'Term with coefficient %s and growth %s' % (
+            self.coefficient,
+            self.growth,
+        )
 
     def _repr_product_(self, latex=False):
         r"""
@@ -3118,6 +3180,7 @@ class TermWithCoefficient(GenericTerm):
         """
         if latex:
             from sage.misc.latex import latex as latex_repr
+
             f = latex_repr
         else:
             f = repr
@@ -3141,6 +3204,7 @@ class TermWithCoefficient(GenericTerm):
 
         if latex:
             import re
+
             s = re.sub(r'([0-9])\s+([0-9])', r'\1 \\cdot \2', s)
         return s
 
@@ -3187,8 +3251,9 @@ class TermWithCoefficient(GenericTerm):
             sage: t1 * t2
             6*x^5
         """
-        return self.parent()(self.growth * other.growth,
-                             coefficient=self.coefficient * other.coefficient)
+        return self.parent()(
+            self.growth * other.growth, coefficient=self.coefficient * other.coefficient
+        )
 
     def _calculate_pow_(self, exponent):
         r"""
@@ -3231,13 +3296,18 @@ class TermWithCoefficient(GenericTerm):
             interval strictly containing zero
         """
         try:
-            c = self.coefficient ** exponent
+            c = self.coefficient**exponent
         except (TypeError, ValueError, ZeroDivisionError) as e:
             from .misc import combine_exceptions
+
             raise combine_exceptions(
-                ArithmeticError('Cannot take %s to the exponent %s in %s since its '
-                                'coefficient %s cannot be taken to this exponent.' %
-                                (self, exponent, self.parent(), self.coefficient)), e)
+                ArithmeticError(
+                    'Cannot take %s to the exponent %s in %s since its '
+                    'coefficient %s cannot be taken to this exponent.'
+                    % (self, exponent, self.parent(), self.coefficient)
+                ),
+                e,
+            )
         return super()._calculate_pow_(exponent, new_coefficient=c)
 
     def _log_coefficient_(self, base=None, locals=None):
@@ -3288,9 +3358,11 @@ class TermWithCoefficient(GenericTerm):
         if self.coefficient.is_one():
             return tuple()
         log = self.parent().locals(locals)['log']
-        return (self.parent()._create_element_in_extension_(
-            self.parent().growth_group.one(),
-            log(self.coefficient, base=base)),)
+        return (
+            self.parent()._create_element_in_extension_(
+                self.parent().growth_group.one(), log(self.coefficient, base=base)
+            ),
+        )
 
     def _eq_(self, other):
         r"""
@@ -3387,8 +3459,10 @@ class TermWithCoefficientMonoid(GenericTermMonoid):
             sage: TermWithCoefficientMonoid(TermMonoid, GrowthGroup('x^ZZ'), QQ)._repr_()
             'TermWithCoefficient Monoid x^ZZ with coefficients in Rational Field'
         """
-        return 'TermWithCoefficient Monoid %s with coefficients in %s' % \
-            (self.growth_group._repr_short_(), self.coefficient_ring)
+        return 'TermWithCoefficient Monoid %s with coefficients in %s' % (
+            self.growth_group._repr_short_(),
+            self.coefficient_ring,
+        )
 
     def _validate_coefficient_or_error_(self, kwds_construction):
         r"""
@@ -3444,8 +3518,9 @@ class TermWithCoefficientMonoid(GenericTermMonoid):
         if coefficient is None:
             element_name = self.Element.__name__
             growth = kwds_construction['growth']
-            raise ValueError(f'Cannot create {element_name}({growth}) '
-                             f'since no coefficient is given.')
+            raise ValueError(
+                f'Cannot create {element_name}({growth}) since no coefficient is given.'
+            )
         super()._validate_coefficient_or_error_(kwds_construction)
 
     def _default_kwds_construction_(self):
@@ -3504,7 +3579,9 @@ class TermWithCoefficientMonoid(GenericTermMonoid):
             sage: kwds = {'growth': x, 'coefficient': 3/2}; T._convert_construction_(kwds); kwds
             {'coefficient': 3/2, 'growth': x}
         """
-        if 'parent' in kwds_construction and isinstance(kwds_construction['parent'], BTermMonoid):
+        if 'parent' in kwds_construction and isinstance(
+            kwds_construction['parent'], BTermMonoid
+        ):
             try:
                 del kwds_construction['valid_from']
             except KeyError:
@@ -3529,8 +3606,10 @@ class TermWithCoefficientMonoid(GenericTermMonoid):
             sage: TermMonoid('exact', G, QQ).an_element()  # indirect doctest
             1/2*x
         """
-        return self(self.growth_group.an_element(),
-                    coefficient=self.coefficient_ring.an_element())
+        return self(
+            self.growth_group.an_element(),
+            coefficient=self.coefficient_ring.an_element(),
+        )
 
     def some_elements(self):
         r"""
@@ -3552,9 +3631,14 @@ class TermWithCoefficientMonoid(GenericTermMonoid):
              z^(-2), -z^2, 2*z^(-1/2), -2*z^(1/2))
         """
         from sage.misc.mrange import cantor_product
-        return (self(g, coefficient=c) for g, c in cantor_product(
-            self.growth_group.some_elements(),
-            (c for c in self.coefficient_ring.some_elements() if c != 0)))
+
+        return (
+            self(g, coefficient=c)
+            for g, c in cantor_product(
+                self.growth_group.some_elements(),
+                (c for c in self.coefficient_ring.some_elements() if c != 0),
+            )
+        )
 
 
 class ExactTerm(TermWithCoefficient):
@@ -3724,8 +3808,10 @@ class ExactTerm(TermWithCoefficient):
         try:
             c = ~self.coefficient
         except ZeroDivisionError:
-            raise ZeroDivisionError('Cannot invert %s since its coefficient %s '
-                                    'cannot be inverted.' % (self, self.coefficient))
+            raise ZeroDivisionError(
+                'Cannot invert %s since its coefficient %s '
+                'cannot be inverted.' % (self, self.coefficient)
+            )
         g = ~self.growth
         return self.parent()._create_element_in_extension_(g, c)
 
@@ -3753,6 +3839,7 @@ class ExactTerm(TermWithCoefficient):
             sqrt(2)*z^(1/2)
         """
         from .misc import strip_symbolic
+
         return self._calculate_pow_(strip_symbolic(exponent))
 
     def can_absorb(self, other):
@@ -3882,8 +3969,9 @@ class ExactTerm(TermWithCoefficient):
 
             :meth:`OTerm.log_term`.
         """
-        return (self._log_coefficient_(base=base, locals=locals)
-                + self._log_growth_(base=base, locals=locals))
+        return self._log_coefficient_(base=base, locals=locals) + self._log_growth_(
+            base=base, locals=locals
+        )
 
     def is_constant(self):
         r"""
@@ -4028,11 +4116,13 @@ class ExactTerm(TermWithCoefficient):
             if not hasattr(base, 'parent'):
                 base = P.coefficient_ring(base)
             return P._create_element_in_extension_(
-                P.growth_group.one(), base ** self.coefficient)
+                P.growth_group.one(), base**self.coefficient
+            )
 
         elem = P._create_element_in_extension_(
-            self.growth.rpow(base), P.coefficient_ring.one())
-        return elem ** self.coefficient
+            self.growth.rpow(base), P.coefficient_ring.one()
+        )
+        return elem**self.coefficient
 
     def _substitute_(self, rules):
         r"""
@@ -4073,6 +4163,7 @@ class ExactTerm(TermWithCoefficient):
             g = self.growth._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
         c = self.coefficient
@@ -4081,6 +4172,7 @@ class ExactTerm(TermWithCoefficient):
             return c * g
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
     def _factorial_(self):
@@ -4106,12 +4198,16 @@ class ExactTerm(TermWithCoefficient):
         """
         if not self.growth.is_one():
             raise ValueError(
-                'Cannot build the factorial of {} since it has growth '
-                '!= 1.'.format(self))
+                'Cannot build the factorial of {} since it has growth != 1.'.format(
+                    self
+                )
+            )
 
         from sage.functions.other import factorial
+
         return self.parent()._create_element_in_extension_(
-            self.growth, factorial(self.coefficient))
+            self.growth, factorial(self.coefficient)
+        )
 
     def _singularity_analysis_(self, var, zeta, precision):
         r"""
@@ -4148,7 +4244,8 @@ class ExactTerm(TermWithCoefficient):
             The error term O(0) means 0 for sufficiently large n.
         """
         return self.coefficient * self.growth._singularity_analysis_(
-            var=var, zeta=zeta, precision=precision)
+            var=var, zeta=zeta, precision=precision
+        )
 
 
 class ExactTermMonoid(TermWithCoefficientMonoid):
@@ -4241,7 +4338,9 @@ class ExactTermMonoid(TermWithCoefficientMonoid):
             sage: T(TermMonoid('B', G, QQ)(x, coefficient=42, valid_from={'x': 7}))
             42*x
         """
-        if 'parent' in kwds_construction and isinstance(kwds_construction['parent'], BTermMonoid):
+        if 'parent' in kwds_construction and isinstance(
+            kwds_construction['parent'], BTermMonoid
+        ):
             try:
                 del kwds_construction['valid_from']
             except KeyError:
@@ -4261,8 +4360,10 @@ class ExactTermMonoid(TermWithCoefficientMonoid):
             sage: TermMonoid('exact', G, QQ)._repr_()
             'Exact Term Monoid x^ZZ with coefficients in Rational Field'
         """
-        return 'Exact Term Monoid %s with coefficients in %s' % \
-               (self.growth_group._repr_short_(), self.coefficient_ring)
+        return 'Exact Term Monoid %s with coefficients in %s' % (
+            self.growth_group._repr_short_(),
+            self.coefficient_ring,
+        )
 
 
 class BTerm(TermWithCoefficient):
@@ -4320,6 +4421,7 @@ class BTerm(TermWithCoefficient):
         sage: T(x^3*y^2, coefficient=42, valid_from={'x': 10, 'y': 20})
         B(42*x^3*y^2, x >= 10, y >= 20)
     """
+
     def __init__(self, parent, growth, valid_from, **kwds):
         r"""
         See :class:`BTerm` for more information.
@@ -4380,11 +4482,15 @@ class BTerm(TermWithCoefficient):
 
         for variable_name in valid_from.keys():
             if variable_name not in parent.growth_group.variable_names():
-                raise ValueError('B-Term has valid_from variables defined which do not occur in the term.')
+                raise ValueError(
+                    'B-Term has valid_from variables defined which do not occur in the term.'
+                )
 
         for variable_name in growth.variable_names():
             if variable_name not in valid_from:
-                raise ValueError('B-Term has not defined all variables which occur in the term in valid_from.')
+                raise ValueError(
+                    'B-Term has not defined all variables which occur in the term in valid_from.'
+                )
         self.valid_from = valid_from
 
     def construction(self):
@@ -4445,11 +4551,14 @@ class BTerm(TermWithCoefficient):
             B(4*x^2, x >= 10, y >= 15)
         """
         if latex:
-            valid_from_string = ', '.join(fr'{variable} \ge {value}'
-                                          for variable, value in self.valid_from.items())
-            return fr'B_{{{valid_from_string}}}\left({self._repr_product_(latex=True)}\right)'
-        valid_from_string = ''.join(f', {variable} >= {value}'
-                                    for variable, value in self.valid_from.items())
+            valid_from_string = ', '.join(
+                rf'{variable} \ge {value}'
+                for variable, value in self.valid_from.items()
+            )
+            return rf'B_{{{valid_from_string}}}\left({self._repr_product_(latex=True)}\right)'
+        valid_from_string = ''.join(
+            f', {variable} >= {value}' for variable, value in self.valid_from.items()
+        )
         return f'B({self._repr_product_()}{valid_from_string})'
 
     def _latex_(self):
@@ -4510,9 +4619,11 @@ class BTerm(TermWithCoefficient):
             var: max(self.valid_from.get(var, 0), other.valid_from.get(var, 0))
             for var in set().union(self.valid_from, other.valid_from)
         }
-        return self.parent()(self.growth * other.growth,
-                             coefficient=self.coefficient * other.coefficient,
-                             valid_from=valid_from)
+        return self.parent()(
+            self.growth * other.growth,
+            coefficient=self.coefficient * other.coefficient,
+            valid_from=valid_from,
+        )
 
     def can_absorb(self, other):
         r"""
@@ -4609,16 +4720,24 @@ class BTerm(TermWithCoefficient):
             raise ArithmeticError(f'{self} cannot absorb {other}')
 
         valid_from_new = {}
-        for variable_name in set().union(self.valid_from.keys(), other.valid_from.keys()):
+        for variable_name in set().union(
+            self.valid_from.keys(), other.valid_from.keys()
+        ):
             if variable_name in self.valid_from and other.valid_from:
-                valid_from_new[variable_name] = (max(self.valid_from[variable_name], other.valid_from[variable_name]))
+                valid_from_new[variable_name] = max(
+                    self.valid_from[variable_name], other.valid_from[variable_name]
+                )
             elif variable_name in self.valid_from:
-                valid_from_new[variable_name] = (self.valid_from[variable_name])
+                valid_from_new[variable_name] = self.valid_from[variable_name]
             elif variable_name in other.valid_from:
-                valid_from_new[variable_name] = (other.valid_from[variable_name])
+                valid_from_new[variable_name] = other.valid_from[variable_name]
         q = self.growth / other.growth
-        coeff_new = self.coefficient + (other.coefficient / q._find_minimum_(valid_from_new))
-        return self.parent()(self.growth, valid_from=valid_from_new, coefficient=coeff_new)
+        coeff_new = self.coefficient + (
+            other.coefficient / q._find_minimum_(valid_from_new)
+        )
+        return self.parent()(
+            self.growth, valid_from=valid_from_new, coefficient=coeff_new
+        )
 
 
 class BTermMonoid(TermWithCoefficientMonoid):
@@ -4650,6 +4769,7 @@ class BTermMonoid(TermWithCoefficientMonoid):
         sage: BT is BTermMonoid(TermMonoid, G, QQ)
         True
     """
+
     __init__ = experimental(issue_number=31922)(GenericTermMonoid.__init__)
 
     # enable the category framework for elements
@@ -4669,8 +4789,10 @@ class BTermMonoid(TermWithCoefficientMonoid):
             sage: TermMonoid('B', G, QQ)._repr_()
             'B-Term Monoid x^ZZ with coefficients in Rational Field'
         """
-        return (f'B-Term Monoid {self.growth_group._repr_short_()} with '
-                f'coefficients in {self.coefficient_ring}')
+        return (
+            f'B-Term Monoid {self.growth_group._repr_short_()} with '
+            f'coefficients in {self.coefficient_ring}'
+        )
 
     def _default_kwds_construction_(self):
         r"""
@@ -4699,7 +4821,8 @@ class BTermMonoid(TermWithCoefficientMonoid):
         defaults = {}
         defaults.update(super()._default_kwds_construction_())
         defaults.update(
-            {'valid_from': {v: 0 for v in self.growth_group.variable_names()}})
+            {'valid_from': {v: 0 for v in self.growth_group.variable_names()}}
+        )
         return defaults
 
     def _convert_construction_(self, kwds_construction):
@@ -4820,8 +4943,9 @@ class BTermMonoid(TermWithCoefficientMonoid):
             True
         """
         if isinstance(S, (ExactTermMonoid,)):
-            if self.growth_group.has_coerce_map_from(S.growth_group) and \
-                    self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
+            if self.growth_group.has_coerce_map_from(
+                S.growth_group
+            ) and self.coefficient_ring.has_coerce_map_from(S.coefficient_ring):
                 return True
         else:
             return super()._coerce_map_from_(S)
@@ -4842,10 +4966,12 @@ class BTermMonoid(TermWithCoefficientMonoid):
             B(x, x >= 42)
         """
         from sage.rings.semirings.non_negative_integer_semiring import NN
-        return self(self.growth_group.an_element(),
-                    coefficient=self.coefficient_ring.an_element(),
-                    valid_from={v: NN.an_element()
-                                for v in self.growth_group.variable_names()})
+
+        return self(
+            self.growth_group.an_element(),
+            coefficient=self.coefficient_ring.an_element(),
+            valid_from={v: NN.an_element() for v in self.growth_group.variable_names()},
+        )
 
     def some_elements(self):
         r"""
@@ -4878,13 +5004,21 @@ class BTermMonoid(TermWithCoefficientMonoid):
         from itertools import cycle
         from sage.misc.mrange import cantor_product
         from sage.rings.semirings.non_negative_integer_semiring import NN
-        return (self(g,
-                     coefficient=c,
-                     valid_from={v: f for v in self.growth_group.variable_names()})
-                for (g, c), f in zip(cantor_product(
-                        self.growth_group.some_elements(),
-                        (c for c in self.coefficient_ring.some_elements() if c != 0)),
-                                     cycle(NN.some_elements())))
+
+        return (
+            self(
+                g,
+                coefficient=c,
+                valid_from={v: f for v in self.growth_group.variable_names()},
+            )
+            for (g, c), f in zip(
+                cantor_product(
+                    self.growth_group.some_elements(),
+                    (c for c in self.coefficient_ring.some_elements() if c != 0),
+                ),
+                cycle(NN.some_elements()),
+            )
+        )
 
 
 class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
@@ -5007,10 +5141,13 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
         running ._test_some_elements() . . . pass
     """
 
-    def __init__(self, name,
-                 exact_term_monoid_class=None,
-                 O_term_monoid_class=None,
-                 B_term_monoid_class=None):
+    def __init__(
+        self,
+        name,
+        exact_term_monoid_class=None,
+        O_term_monoid_class=None,
+        B_term_monoid_class=None,
+    ):
         r"""
         See :class:`TermMonoidFactory` for more information.
 
@@ -5053,10 +5190,14 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
             B_term_monoid_class = BTermMonoid
         self.BTermMonoid = B_term_monoid_class
 
-    def create_key_and_extra_args(self, term_monoid,
-                                  growth_group=None, coefficient_ring=None,
-                                  asymptotic_ring=None,
-                                  **kwds):
+    def create_key_and_extra_args(
+        self,
+        term_monoid,
+        growth_group=None,
+        coefficient_ring=None,
+        asymptotic_ring=None,
+        **kwds,
+    ):
         r"""
         Given the arguments and keyword, create a key that uniquely
         determines this object.
@@ -5099,31 +5240,41 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
         elif term_monoid == 'B':
             term_class = self.BTermMonoid
         else:
-            raise ValueError("Term specification '%s' has to be either 'exact', 'O', 'B' "
-                             "or an instance of an existing term." % term_monoid)
+            raise ValueError(
+                "Term specification '%s' has to be either 'exact', 'O', 'B' "
+                "or an instance of an existing term." % term_monoid
+            )
 
-        if asymptotic_ring is not None and \
-                (growth_group is not None or coefficient_ring is not None):
-            raise ValueError("Input ambiguous: asymptotic ring %s as well as "
-                             "growth group %s or coefficient ring %s are given." %
-                             (asymptotic_ring, growth_group, coefficient_ring))
+        if asymptotic_ring is not None and (
+            growth_group is not None or coefficient_ring is not None
+        ):
+            raise ValueError(
+                "Input ambiguous: asymptotic ring %s as well as "
+                "growth group %s or coefficient ring %s are given."
+                % (asymptotic_ring, growth_group, coefficient_ring)
+            )
 
         if asymptotic_ring is not None:
             growth_group = asymptotic_ring.growth_group
             coefficient_ring = asymptotic_ring.coefficient_ring
 
         from .growth_group import GenericGrowthGroup
+
         if not isinstance(growth_group, GenericGrowthGroup):
             if isinstance(growth_group, str):
                 from .growth_group import GrowthGroup
+
                 growth_group = GrowthGroup(growth_group)
             else:
-                raise ValueError('{} has to be an asymptotic growth '
-                                 'group'.format(growth_group))
+                raise ValueError(
+                    '{} has to be an asymptotic growth group'.format(growth_group)
+                )
 
         if coefficient_ring is None:
-            raise ValueError("A coefficient ring has to be specified to "
-                             "create a term monoid of type '%s'" % (term_monoid,))
+            raise ValueError(
+                "A coefficient ring has to be specified to "
+                "create a term monoid of type '%s'" % (term_monoid,)
+            )
 
         return (term_class, growth_group, coefficient_ring), kwds
 
@@ -5169,10 +5320,7 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
              <class 'sage.rings.asymptotic.term_monoid.ExactTermMonoid'>,
              <class 'sage.rings.asymptotic.term_monoid.OTermMonoid'>)
         """
-        return (TermMonoidFactory,
-                self._name,
-                self.ExactTermMonoid,
-                self.OTermMonoid)
+        return (TermMonoidFactory, self._name, self.ExactTermMonoid, self.OTermMonoid)
 
     def __hash__(self):
         r"""
@@ -5187,7 +5335,9 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
         return hash(self._cache_key())
 
 
-DefaultTermMonoidFactory = TermMonoidFactory('sage.rings.asymptotic.term_monoid.DefaultTermMonoidFactory')
+DefaultTermMonoidFactory = TermMonoidFactory(
+    'sage.rings.asymptotic.term_monoid.DefaultTermMonoidFactory'
+)
 r"""
 A factory for asymptotic term monoids.
 This is an instance of :class:`TermMonoidFactory` whose documentation

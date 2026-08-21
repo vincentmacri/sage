@@ -200,8 +200,9 @@ class ClassFunction(SageObject):
             True
         """
         if isinstance(other, ClassFunction):
-            return richcmp((self._group, self.values()),
-                           (other._group, other.values()), op)
+            return richcmp(
+                (self._group, self.values()), (other._group, other.values()), op
+            )
         return NotImplemented
 
     def __reduce__(self) -> tuple:
@@ -428,7 +429,7 @@ class ClassFunction(SageObject):
         """
         if not isinstance(other, (int, Integer)):
             raise NotImplementedError
-        return ClassFunction(self._group, self._gap_classfunction ** other)
+        return ClassFunction(self._group, self._gap_classfunction**other)
 
     def symmetric_power(self, n):
         r"""
@@ -569,8 +570,7 @@ class ClassFunction(SageObject):
             ((3, Character of Symmetric group of order 5! as a permutation group),
              (2, Character of Symmetric group of order 5! as a permutation group))
         """
-        L = [(self.scalar_product(irr), irr)
-             for irr in self.irreducible_constituents()]
+        L = [(self.scalar_product(irr), irr) for irr in self.irreducible_constituents()]
         return tuple(L)
 
     def norm(self):
@@ -635,7 +635,9 @@ class ClassFunction(SageObject):
             sage: t.determinant_character().values()
             [1, -1, 1, 1, -1]
         """
-        return ClassFunction(self._group, self._gap_classfunction.DeterminantOfCharacter())
+        return ClassFunction(
+            self._group, self._gap_classfunction.DeterminantOfCharacter()
+        )
 
     def tensor_product(self, other):
         r"""
@@ -677,6 +679,7 @@ class ClassFunction(SageObject):
             gapH = H.gap()
         except AttributeError:
             from sage.libs.gap.libgap import libgap
+
             gapH = libgap(H)
         rest = self._gap_classfunction.RestrictedClassFunction(gapH)
         return ClassFunction(H, rest)
@@ -711,6 +714,7 @@ class ClassFunction(SageObject):
             gapG = G.gap()
         except AttributeError:
             from sage.libs.gap.libgap import libgap
+
             gapG = libgap(G)
         ind = self._gap_classfunction.InducedClassFunction(gapG)
         return ClassFunction(G, ind)

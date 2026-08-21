@@ -83,6 +83,7 @@ def eisen(p):
         raise ValueError("p must be prime")
     return frac(p - 1, 12).numerator()
 
+
 ##########################################################################
 # Formula of Cohen-Oesterlé for dim S_k(Gamma_1(N),eps).  REF:
 # Springer Lecture notes in math, volume 627, pages 69--78.  The
@@ -123,10 +124,10 @@ def CO_delta(r, p, N, eps):
         return K.zero()
     # interesting case: p=1(mod 4).
     # omega is a primitive 4th root of unity mod p.
-    omega = (IntegerModRing(p).unit_gens()[0])**((p - 1) // 4)
+    omega = (IntegerModRing(p).unit_gens()[0]) ** ((p - 1) // 4)
     # this n is within a p-power root of a "local" 4th root of 1 modulo p.
     n = Mod(int(omega.crt(Mod(1, N // (p**r)))), N)
-    n = n**(p**(r - 1))   # this is correct now
+    n = n ** (p ** (r - 1))  # this is correct now
     t = eps(n)
     if t == K.one():
         return K(2)
@@ -168,10 +169,10 @@ def CO_nu(r, p, N, eps):
         return K.zero()
     # interesting case: p=1(mod 3)
     # omega is a cube root of 1 mod p.
-    omega = (IntegerModRing(p).unit_gens()[0])**((p - 1) // 3)
+    omega = (IntegerModRing(p).unit_gens()[0]) ** ((p - 1) // 3)
     n = Mod(omega.crt(Mod(1, N // (p**r))), N)
     # within a p-power root of a "local" cube root of 1 mod p.
-    n = n**(p**(r - 1))  # this is right now
+    n = n ** (p ** (r - 1))  # this is right now
     t = eps(n)
     if t == K.one():
         return K(2)
@@ -237,21 +238,23 @@ def CohenOesterle(eps, k):
         """
         if 2 * s <= r:
             if r % 2 == 0:
-                return p**(r // 2) + p**((r // 2) - 1)
-            return 2 * p**((r - 1) // 2)
-        return 2 * p**(r - s)
+                return p ** (r // 2) + p ** ((r // 2) - 1)
+            return 2 * p ** ((r - 1) // 2)
+        return 2 * p ** (r - s)
 
     K = eps.base_ring()
-    return K(frac(-1, 2) *
-             prod(_lambda(r, valuation(f, p), p) for p, r in facN) +
-             gamma_k * K.prod(CO_delta(r, p, N, eps) for p, r in facN) +
-             mu_k * K.prod(CO_nu(r, p, N, eps) for p, r in facN))
+    return K(
+        frac(-1, 2) * prod(_lambda(r, valuation(f, p), p) for p, r in facN)
+        + gamma_k * K.prod(CO_delta(r, p, N, eps) for p, r in facN)
+        + mu_k * K.prod(CO_nu(r, p, N, eps) for p, r in facN)
+    )
 
 
 ####################################################################
 # Functions exported to the global namespace.
 # These have very flexible inputs.
 ####################################################################
+
 
 def dimension_new_cusp_forms(X, k=2, p=0):
     """
@@ -311,7 +314,9 @@ def dimension_new_cusp_forms(X, k=2, p=0):
         return Gamma1(N).dimension_new_cusp_forms(k, eps=X, p=p)
     if isinstance(X, (int, Integer)):
         return Gamma0(X).dimension_new_cusp_forms(k, p=p)
-    raise TypeError(f"X (={X}) must be an integer, a Dirichlet character or a congruence subgroup of type Gamma0, Gamma1 or GammaH")
+    raise TypeError(
+        f"X (={X}) must be an integer, a Dirichlet character or a congruence subgroup of type Gamma0, Gamma1 or GammaH"
+    )
 
 
 def dimension_cusp_forms(X, k=2):
@@ -405,8 +410,10 @@ def dimension_cusp_forms(X, k=2):
         return X.dimension_cusp_forms(k)
     if isinstance(X, (int, Integer)):
         return Gamma0(X).dimension_cusp_forms(k)
-    raise TypeError("argument 1 must be a Dirichlet character, an integer "
-                    "or a finite index subgroup of SL2Z")
+    raise TypeError(
+        "argument 1 must be a Dirichlet character, an integer "
+        "or a finite index subgroup of SL2Z"
+    )
 
 
 def dimension_eis(X, k=2):
@@ -477,7 +484,9 @@ def dimension_eis(X, k=2):
         return Gamma1(X.modulus()).dimension_eis(k, X)
     if isinstance(X, (int, Integer)):
         return Gamma0(X).dimension_eis(k)
-    raise TypeError(f"argument in dimension_eis must be an integer, a Dirichlet character, or a finite index subgroup of SL2Z (got {X})")
+    raise TypeError(
+        f"argument in dimension_eis must be an integer, a Dirichlet character, or a finite index subgroup of SL2Z (got {X})"
+    )
 
 
 def dimension_modular_forms(X, k=2):
@@ -525,8 +534,9 @@ def dimension_modular_forms(X, k=2):
         return X.dimension_modular_forms(k)
     if isinstance(X, dirichlet.DirichletCharacter):
         return Gamma1(X.modulus()).dimension_modular_forms(k, eps=X)
-    raise TypeError("argument 1 must be an integer, a Dirichlet character "
-                    "or an arithmetic subgroup")
+    raise TypeError(
+        "argument 1 must be an integer, a Dirichlet character or an arithmetic subgroup"
+    )
 
 
 def sturm_bound(level, weight=2):

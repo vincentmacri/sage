@@ -107,6 +107,7 @@ class pRational:
         sage: z.valuation()
         4
     """
+
     def __init__(self, p, x, exponent=0, valuation=None):
         r"""
         Construct the element ``x * p^exponent``.
@@ -168,21 +169,21 @@ class pRational:
         exp = self.exponent
         if x.parent() is ZZ:
             if prec > exp:
-                x = x % (self.p ** (prec-exp))
+                x = x % (self.p ** (prec - exp))
             else:
                 x = 0
         elif x.parent() is QQ:
             num = x.numerator()
             denom = x.denominator()
             valdenom = denom.valuation(self.p)
-            denom //= self.p ** valdenom
+            denom //= self.p**valdenom
             exp -= valdenom
             if prec > exp:
                 modulo = self.p ** (prec - exp)
                 # probably we should use Newton iteration instead
                 # (but it is actually slower for now - Python implementation)
                 _, inv, _ = denom.xgcd(modulo)
-                x = (num*inv) % modulo
+                x = (num * inv) % modulo
             else:
                 x = 0
         if self.x == 0:
@@ -215,7 +216,7 @@ class pRational:
         v = self.valuation()
         if v is Infinity:
             return self
-        return self.reduce(prec+v)
+        return self.reduce(prec + v)
 
     def normalize(self):
         r"""
@@ -235,7 +236,7 @@ class pRational:
         else:
             val = self.valuation()
             exp = self.exponent
-            self.x /= self.p ** (val-exp)
+            self.x /= self.p ** (val - exp)
             if self.x in ZZ:
                 self.x = ZZ(self.x)
             self.exponent = val
@@ -324,8 +325,12 @@ class pRational:
         else:
             val = None
         if sexp < oexp:
-            return self.__class__(p, self.x + other.x * p**(oexp-sexp), sexp, valuation=val)
-        return self.__class__(p, self.x * p**(sexp-oexp) + other.x, oexp, valuation=val)
+            return self.__class__(
+                p, self.x + other.x * p ** (oexp - sexp), sexp, valuation=val
+            )
+        return self.__class__(
+            p, self.x * p ** (sexp - oexp) + other.x, oexp, valuation=val
+        )
 
     def __sub__(self, other):
         r"""
@@ -375,7 +380,9 @@ class pRational:
             val = None
         else:
             val = self._valuation + other._valuation
-        return self.__class__(self.p, self.x * other.x, self.exponent + other.exponent, valuation=val)
+        return self.__class__(
+            self.p, self.x * other.x, self.exponent + other.exponent, valuation=val
+        )
 
     def __truediv__(self, other):
         r"""
@@ -395,7 +402,9 @@ class pRational:
             val = None
         else:
             val = self._valuation - other._valuation
-        return self.__class__(self.p, self.x / other.x, self.exponent - other.exponent, valuation=val)
+        return self.__class__(
+            self.p, self.x / other.x, self.exponent - other.exponent, valuation=val
+        )
 
     def _quo_rem(self, other):
         """
@@ -428,15 +437,21 @@ class pRational:
         sval = self.exponent
         diff = sval - oval
         if sx == 0:
-            return (self.__class__(self.p, 0, 0, valuation=Infinity),
-                    self.__class__(self.p, 0, 0, valuation=Infinity))
+            return (
+                self.__class__(self.p, 0, 0, valuation=Infinity),
+                self.__class__(self.p, 0, 0, valuation=Infinity),
+            )
         if sval >= oval:
-            return (self.__class__(self.p, sx / ox, diff, valuation=diff),
-                    self.__class__(self.p, 0, 0, valuation=Infinity))
-        pd = self.p**(-diff)
+            return (
+                self.__class__(self.p, sx / ox, diff, valuation=diff),
+                self.__class__(self.p, 0, 0, valuation=Infinity),
+            )
+        pd = self.p ** (-diff)
         sred = sx % pd
-        return (self.__class__(self.p, (sx - sred)/(pd*ox), 0),
-                self.__class__(self.p, sred, sval, valuation=sval))
+        return (
+            self.__class__(self.p, (sx - sred) / (pd * ox), 0),
+            self.__class__(self.p, sred, sval, valuation=sval),
+        )
 
     def __lshift__(self, n):
         r"""
@@ -495,7 +510,7 @@ class pRational:
             raise ValueError("the unit part of zero is not defined")
         p = self.p
         val = self.valuation()
-        x = self.x / (p ** (val-self.exponent))
+        x = self.x / (p ** (val - self.exponent))
         return self.__class__(p, x, 0, valuation=0)
 
     def xgcd(self, other):
@@ -527,10 +542,10 @@ class pRational:
         oexp = other.exponent
         if sexp < oexp:
             a = ZZ(self.x)
-            b = ZZ(other.x * (p ** (oexp-sexp)))
+            b = ZZ(other.x * (p ** (oexp - sexp)))
             exp = sexp
         else:
-            a = ZZ(self.x * (p ** (sexp-oexp)))
+            a = ZZ(self.x * (p ** (sexp - oexp)))
             b = ZZ(other.x)
             exp = oexp
         d, u, v = a.xgcd(b)
@@ -555,7 +570,7 @@ class pRational:
             sage: x.value()
             15802368
         """
-        return (self.p ** self.exponent) * self.x
+        return (self.p**self.exponent) * self.x
 
     def list(self, prec):
         r"""
@@ -591,7 +606,7 @@ class pRational:
         if val is Infinity:
             return []
         p = self.p
-        x = ZZ(self.x * p**(self.exponent - val))
+        x = ZZ(self.x * p ** (self.exponent - val))
         l = []
         for _ in range(val, prec):
             x, digit = x.quo_rem(p)
@@ -622,6 +637,7 @@ class DifferentialPrecisionGeneric(SageObject):
         sage: R.precision()
         Precision lattice on 0 objects (label: init)
     """
+
     def __init__(self, p, label):
         r"""
         TESTS::
@@ -658,7 +674,9 @@ class DifferentialPrecisionGeneric(SageObject):
             ...
             NotImplementedError: pickling/unpickling precision modules is not implemented yet
         """
-        raise NotImplementedError("pickling/unpickling precision modules is not implemented yet")
+        raise NotImplementedError(
+            "pickling/unpickling precision modules is not implemented yet"
+        )
 
     def _repr_(self):
         r"""
@@ -677,7 +695,11 @@ class DifferentialPrecisionGeneric(SageObject):
             Precision lattice on 0 objects (label: mylabel)
         """
         label = "" if self._label is None else " (label: %s)" % (self._label,)
-        count = "1 object" if len(self._elements) == 1 else "%s objects" % len(self._elements)
+        count = (
+            "1 object"
+            if len(self._elements) == 1
+            else "%s objects" % len(self._elements)
+        )
         return "%s on %s%s" % (self._repr_type, count, label)
 
     def threshold_deletion(self, threshold=None):
@@ -731,7 +753,9 @@ class DifferentialPrecisionGeneric(SageObject):
             if threshold is Infinity or (threshold in ZZ and threshold >= 0):
                 self._threshold_deletion = threshold
             else:
-                raise ValueError("The threshold must be a nonnegative integer or Infinity")
+                raise ValueError(
+                    "The threshold must be a nonnegative integer or Infinity"
+                )
         return self._threshold_deletion
 
     def prime(self):
@@ -1050,7 +1074,10 @@ class DifferentialPrecisionGeneric(SageObject):
             return Infinity
         n = M.nrows()
         p = self._p
-        return sum(M[i, i].valuation(p) - min(M[j, i].valuation(p) for j in range(i + 1)) for i in range(n))
+        return sum(
+            M[i, i].valuation(p) - min(M[j, i].valuation(p) for j in range(i + 1))
+            for i in range(n)
+        )
 
     def tracked_elements(self, values=True, dead=True):
         r"""
@@ -1133,8 +1160,7 @@ class DifferentialPrecisionGeneric(SageObject):
             :meth:`history`, :meth:`history_disable`, :meth:`history_clear`
         """
         if self._history is None:
-            self._history_init = (len(self._elements),
-                                  list(self._marked_for_deletion))
+            self._history_init = (len(self._elements), list(self._marked_for_deletion))
             self._history = []
 
     def history_disable(self):
@@ -1210,8 +1236,7 @@ class DifferentialPrecisionGeneric(SageObject):
         """
         if self._history is None:
             raise ValueError("History is not tracked")
-        self._history_init = (len(self._elements),
-                              list(self._marked_for_deletion))
+        self._history_init = (len(self._elements), list(self._marked_for_deletion))
         self._history = []
 
     def _format_history(self, time, status, timings):
@@ -1249,7 +1274,9 @@ class DifferentialPrecisionGeneric(SageObject):
             return s + "  " + status
         return status
 
-    def history(self, compact=True, separate_reduce=False, timings=True, output_type='asciiart'):
+    def history(
+        self, compact=True, separate_reduce=False, timings=True, output_type='asciiart'
+    ):
         r"""
         Show history.
 
@@ -1433,17 +1460,19 @@ class DifferentialPrecisionGeneric(SageObject):
             #  r : partial reduction
             #  R : full Hermite reduction
             (n, mark) = self._history_init
-            status = n*['o']
+            status = n * ['o']
             for index in mark:
                 status[index] = '~'
             hist = [self._format_history(-1, status, timings)]
             oldevent = ''
             total_time = 0
-            for (event, index, tme) in self._history:
+            for event, index, tme in self._history:
                 if event == 'partial reduce' or event == 'full reduce':
                     if separate_reduce:
                         if status:
-                            hist.append(self._format_history(total_time, status, timings))
+                            hist.append(
+                                self._format_history(total_time, status, timings)
+                            )
                         if event == 'partial reduce':
                             code = 'r'
                         else:
@@ -1519,9 +1548,14 @@ class DifferentialPrecisionGeneric(SageObject):
         """
         if self._history is None:
             raise ValueError("History is not tracked")
-        tme_by_event = {'add': 0, 'del': 0, 'mark': 0,
-                        'partial reduce': 0, 'full reduce': 0}
-        for (event, _, tme) in self._history:
+        tme_by_event = {
+            'add': 0,
+            'del': 0,
+            'mark': 0,
+            'partial reduce': 0,
+            'full reduce': 0,
+        }
+        for event, _, tme in self._history:
             tme_by_event[event] += tme
         if action is None:
             return tme_by_event
@@ -1556,6 +1590,7 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
         sage: R.precision()
         Precision lattice on 0 objects (label: init)
     """
+
     def __init__(self, p, label):
         r"""
         TESTS::
@@ -1582,7 +1617,9 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
             ...
             NotImplementedError: pickling/unpickling precision modules is not implemented yet
         """
-        raise NotImplementedError("pickling/unpickling precision modules is not implemented yet")
+        raise NotImplementedError(
+            "pickling/unpickling precision modules is not implemented yet"
+        )
 
     def _index(self, ref):
         r"""
@@ -1659,21 +1696,21 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
             sage: R.precision().del_elements()   # indirect doctest
         """
         n = len(self._elements)
-        if index >= n-1:
+        if index >= n - 1:
             return
         if partial:
             # Partial reduction
             # Cost: O(m^2) with m = n-index
             tme = walltime()
-            diffval = (n-index) * [0]
-            for j in range(n-1, index, -1):
+            diffval = (n - index) * [0]
+            for j in range(n - 1, index, -1):
                 col = self._matrix[self._elements[j]]
-                prec = col[j].valuation() - diffval[j-index]
+                prec = col[j].valuation() - diffval[j - index]
                 for i in range(index, j):
                     col[i] = col[i].reduce(prec)
                     col[i].normalize()
                     dval = col[i].valuation() - prec
-                    diffval[i-index] = min(dval, diffval[i-index])
+                    diffval[i - index] = min(dval, diffval[i - index])
             # We update history
             if self._history is not None:
                 self._history.append(('partial reduce', index, walltime(tme)))
@@ -1681,7 +1718,7 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
             # Full Hermite reduction
             # Cost: O(m^3) with m = n-index
             tme = walltime()
-            for j in range(index+1, n):
+            for j in range(index + 1, n):
                 # In what follows, we assume that col[j] is a power of p
                 col = self._matrix[self._elements[j]]
                 valpivot = col[j].valuation()
@@ -1692,9 +1729,9 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
                         continue
                     col[i] = reduced
                     col[i].normalize()
-                    for j2 in range(j+1, n):
+                    for j2 in range(j + 1, n):
                         col2 = self._matrix[self._elements[j2]]
-                        col2[i] -= scalar*col2[i]
+                        col2[i] -= scalar * col2[i]
                         col2[i].normalize()
             # We update history
             if self._history is not None:
@@ -1857,18 +1894,21 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
             for i in range(index, n):
                 ref = self._elements[i]
                 col = self._matrix[ref]
-                if col[i].valuation() < col[i+1].valuation():
+                if col[i].valuation() < col[i + 1].valuation():
                     self._capped[ref], capped = capped, capped or self._capped[ref]
                 else:
                     capped = capped or self._capped[ref]
 
-                d, u, v = col[i].xgcd(col[i+1])
-                up, vp = col[i+1]/d, col[i]/d
+                d, u, v = col[i].xgcd(col[i + 1])
+                up, vp = col[i + 1] / d, col[i] / d
                 col[i] = d
-                del col[i+1]
-                for j in range(i+1, n):
+                del col[i + 1]
+                for j in range(i + 1, n):
                     col = self._matrix[self._elements[j]]
-                    col[i], col[i+1] = u*col[i] + v*col[i+1], up*col[i] - vp*col[i+1]
+                    col[i], col[i + 1] = (
+                        u * col[i] + v * col[i + 1],
+                        up * col[i] - vp * col[i + 1],
+                    )
 
             # We update history
             if self._history is not None:
@@ -1937,20 +1977,20 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
         vals = sorted(rows_by_val)
         vals.append(prec)
 
-        for t in range(len(vals)-1):
-            v, w = vals[t], vals[t+1]
+        for t in range(len(vals) - 1):
+            v, w = vals[t], vals[t + 1]
             rows = rows_by_val[v]
             piv = max(rows)
             for i in rows:
                 if i == piv:
                     continue
                 # We clear the entry on the i-th row
-                scalar = (col[i]/col[piv]).reduce(prec-v)
-                for j in range(piv,n):
+                scalar = (col[i] / col[piv]).reduce(prec - v)
+                for j in range(piv, n):
                     col_cur = self._matrix[self._elements[j]]
-                    col_cur[i] -= scalar*col_cur[piv]
+                    col_cur[i] -= scalar * col_cur[piv]
             # We rescale the piv-th row
-            for j in range(piv,n):
+            for j in range(piv, n):
                 col_cur = self._matrix[self._elements[j]]
                 col_cur[piv] <<= w - v
             # Now the entry on the piv-th row has valuation w
@@ -2121,11 +2161,12 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
         for ref in elements:
             col = self._matrix[ref]
             row = [x.value() for x in col]
-            valcol = min([ x.valuation() for x in col ])
+            valcol = min([x.valuation() for x in col])
             val = min(valcol, val)
-            row += (n-len(row)) * [ZZ(0)]
+            row += (n - len(row)) * [ZZ(0)]
             rows.append(row)
         from sage.matrix.constructor import matrix
+
         M = matrix(rows).transpose()
         if val < 0:
             M *= self._p ** (-val)
@@ -2134,7 +2175,7 @@ class PrecisionLattice(UniqueRepresentation, DifferentialPrecisionGeneric):
         n = len(elements)
         M = M.submatrix(0, 0, n, n)
         if val < 0:
-            M *= self._p ** val
+            M *= self._p**val
         return M
 
 
@@ -2146,6 +2187,7 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
     The precision module (which is not necessarily a lattice)
     is stored as a matrix whose rows are generators.
     """
+
     def __init__(self, p, label, prec):
         r"""
         Initialize this precision module.
@@ -2189,7 +2231,9 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
             ...
             NotImplementedError: pickling/unpickling precision modules is not implemented yet
         """
-        raise NotImplementedError("pickling/unpickling precision modules is not implemented yet")
+        raise NotImplementedError(
+            "pickling/unpickling precision modules is not implemented yet"
+        )
 
     def internal_prec(self):
         r"""
@@ -2349,7 +2393,7 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
         x_ref = pAdicLatticeElementWeakProxy(x, self._record_collected_element)
         col = n * [self._approx_zero]
         if dx_mode == 'linear_combination':
-            expected_vals = n * [ Infinity ]
+            expected_vals = n * [Infinity]
             for elt, scalar in dx:
                 ref = pAdicLatticeElementWeakProxy(elt)
                 if not isinstance(scalar, pRational):
@@ -2432,7 +2476,7 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
             if index == 0:
                 length_before = 0
             else:
-                length_before = len(self._matrix[self._elements[index-1]])
+                length_before = len(self._matrix[self._elements[index - 1]])
             length = len(self._matrix[ref])
             if length > length_before:
                 self._marked_for_deletion.append(index)
@@ -2442,8 +2486,9 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
                 # if the column is not a pivot, we erase it without delay
                 # (btw, is it a good idea?)
                 del self._elements[index]
-                self._marked_for_deletion = [i if i < index else i - 1
-                                             for i in self._marked_for_deletion]
+                self._marked_for_deletion = [
+                    i if i < index else i - 1 for i in self._marked_for_deletion
+                ]
                 if self._history is not None:
                     self._history.append(('del', index, walltime(tme)))
         del self._collected_references[:count]
@@ -2480,7 +2525,10 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
                     i += 1
                 if val < Infinity:
                     # another pivot has been found, we place it in front
-                    self._elements[start], self._elements[piv] = self._elements[piv], self._elements[start]
+                    self._elements[start], self._elements[piv] = (
+                        self._elements[piv],
+                        self._elements[start],
+                    )
                     break
 
                 # No pivot was found. We re-echelonize
@@ -2490,24 +2538,30 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
                     break
                 # col is the column of index "end"
                 # its size is (length + 1)
-                d, u, v = col[length-1].xgcd(col[length])
-                up, vp = col[length]/d, col[length-1]/d
-                col[length-1] = d.reduce_relative(self._internal_prec)
+                d, u, v = col[length - 1].xgcd(col[length])
+                up, vp = col[length] / d, col[length - 1] / d
+                col[length - 1] = d.reduce_relative(self._internal_prec)
                 del col[length]
                 start = end + 1
                 for j in range(start, n):
                     col = self._matrix[self._elements[j]]
-                    a1 = u*col[length-1]
-                    a2 = v*col[length]
+                    a1 = u * col[length - 1]
+                    a2 = v * col[length]
                     a = a1 + a2
-                    b1 = up*col[length-1]
+                    b1 = up * col[length - 1]
                     b2 = vp * col[length]
                     b = b1 + b2
-                    if a.valuation() > min(a1.valuation(), a2.valuation()) + self._zero_cap:
-                        col[length-1] = self._approx_zero
+                    if (
+                        a.valuation()
+                        > min(a1.valuation(), a2.valuation()) + self._zero_cap
+                    ):
+                        col[length - 1] = self._approx_zero
                     else:
-                        col[length-1] = a.reduce_relative(self._internal_prec)
-                    if b.valuation() > min(b1.valuation(), b2.valuation()) + self._zero_cap:
+                        col[length - 1] = a.reduce_relative(self._internal_prec)
+                    if (
+                        b.valuation()
+                        > min(b1.valuation(), b2.valuation()) + self._zero_cap
+                    ):
                         col[length] = self._approx_zero
                     else:
                         col[length] = b.reduce_relative(self._internal_prec)
@@ -2577,19 +2631,19 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
         vals = sorted(rows_by_val)
         vals.append(prec)
 
-        for t in range(len(vals)-1):
-            v, w = vals[t], vals[t+1]
+        for t in range(len(vals) - 1):
+            v, w = vals[t], vals[t + 1]
             rows = rows_by_val[v]
             piv = max(rows)
             for i in rows:
                 if i == piv:
                     continue
                 # We clear the entry on the i-th row
-                scalar = (col[i]/col[piv]).reduce(prec-v)
+                scalar = (col[i] / col[piv]).reduce(prec - v)
                 for j in range(n):
                     col_cur = self._matrix[self._elements[j]]
                     if len(col_cur) > piv:
-                        col_cur[i] -= scalar*col_cur[piv]
+                        col_cur[i] -= scalar * col_cur[piv]
                         col_cur[i] = col_cur[i].reduce_relative(self._internal_prec)
             # We rescale the piv-th row
             # (if w is Infinity, we delete it)
@@ -2655,7 +2709,7 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
         col = self._matrix[ref]
         if len(col) == 0:
             return Infinity
-        return min( [ c.valuation() for c in col ] )
+        return min([c.valuation() for c in col])
 
     def precision_lattice(self, elements=None):
         r"""
@@ -2716,9 +2770,10 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
             row = [x.value() for x in col]
             valcol = min([x.valuation() for x in col])
             val = min(valcol, val)
-            row += (n-len(row)) * [ZZ(0)]
+            row += (n - len(row)) * [ZZ(0)]
             rows.append(row)
         from sage.matrix.constructor import matrix
+
         M = matrix(rows).transpose()
         if val < 0:
             M *= self._p ** (-val)
@@ -2729,11 +2784,11 @@ class PrecisionModule(UniqueRepresentation, DifferentialPrecisionGeneric):
             raise PrecisionError("the differential is not surjective")
         for i in range(n):
             v = M[i, i].valuation(self._p)
-            M[i, i] = self._p ** v
+            M[i, i] = self._p**v
         M.echelonize()
         M = M.submatrix(0, 0, n, n)
         if val < 0:
-            M *= self._p ** val
+            M *= self._p**val
         return M
 
 
@@ -2764,6 +2819,7 @@ class pAdicLatticeElementWeakProxy:
         sage: isinstance(proxy, pAdicLatticeElementWeakProxy)
         True
     """
+
     _next_id = 0
 
     def __init__(self, element, callback=None):
@@ -2783,6 +2839,7 @@ class pAdicLatticeElementWeakProxy:
             pAdicLatticeElementWeakProxy._next_id += 1
         self._id = element._proxy_id
         from weakref import ref
+
         proxy_callback = callback
         if callback is not None:
             proxy_callback = lambda _: callback(self)
@@ -2869,6 +2926,7 @@ def list_of_padics(elements):
          WeakProxy#...]
     """
     from sage.rings.padics.padic_lattice_element import pAdicLatticeElement
+
     if isinstance(elements, pAdicLatticeElement):
         return [pAdicLatticeElementWeakProxy(elements)]
     try:

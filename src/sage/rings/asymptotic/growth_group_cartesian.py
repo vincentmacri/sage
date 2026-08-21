@@ -172,6 +172,7 @@ class CartesianProductFactory(UniqueFactory):
         sage: cartesian_product([G1, G2], category=G.category()) is G
         True
     """
+
     def create_key_and_extra_args(self, growth_groups, category, **kwds):
         r"""
         Given the arguments and keywords, create a key that uniquely
@@ -190,6 +191,7 @@ class CartesianProductFactory(UniqueFactory):
         # CartesianProductPosets automatically add Posets() to their categories
         from sage.categories.category import Category
         from sage.categories.posets import Posets
+
         if not isinstance(category, tuple):
             category = (category,)
         category = Category.join(category + (Posets(),))
@@ -217,20 +219,26 @@ class CartesianProductFactory(UniqueFactory):
 
         # check if all groups have a variable
         if not all(v for v, _ in vg):
-            raise NotImplementedError('Growth groups %s have no variable.' %
-                                      tuple(g for g in growth_groups
-                                            if not g.variable_names()))
+            raise NotImplementedError(
+                'Growth groups %s have no variable.'
+                % tuple(g for g in growth_groups if not g.variable_names())
+            )
 
         # sort by variables
         from itertools import groupby, product
-        vgs = tuple((v, tuple(gs)) for v, gs in
-                    groupby(sorted(vg, key=lambda k: k[0]), key=lambda k: k[0]))
+
+        vgs = tuple(
+            (v, tuple(gs))
+            for v, gs in groupby(sorted(vg, key=lambda k: k[0]), key=lambda k: k[0])
+        )
 
         # check whether variables are pairwise disjoint
         for u, w in product(iter(v for v, _ in vgs), repeat=2):
             if u != w and not set(u).isdisjoint(set(w)):
-                raise ValueError('The growth groups %s need to have pairwise '
-                                 'disjoint or equal variables.' % (growth_groups,))
+                raise ValueError(
+                    'The growth groups %s need to have pairwise '
+                    'disjoint or equal variables.' % (growth_groups,)
+                )
 
         # build Cartesian products
         u_groups = list()
@@ -310,11 +318,13 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
         order = kwds.pop('order')
         CartesianProductPoset.__init__(self, sets, category, order, **kwds)
 
-        vars = sum(iter(factor.variable_names()
-                        for factor in self.cartesian_factors()),
-                   tuple())
+        vars = sum(
+            iter(factor.variable_names() for factor in self.cartesian_factors()),
+            tuple(),
+        )
         from itertools import groupby
         from .growth_group import Variable
+
         Vars = Variable(tuple(v for v, _ in groupby(vars)), repr=self._repr_short_())
 
         GenericGrowthGroup.__init__(self, sets[0], Vars, self.category(), **kwds)
@@ -347,8 +357,9 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
              x^(-2/3)*log(x)^5*(7/6)^y)
         """
         return iter(
-            self(c) for c in
-            zip(*tuple(F.some_elements() for F in self.cartesian_factors())))
+            self(c)
+            for c in zip(*tuple(F.some_elements() for F in self.cartesian_factors()))
+        )
 
     def _create_element_in_extension_(self, element):
         r"""
@@ -382,14 +393,16 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
         """
         factors = self.cartesian_factors()
         if len(element) != len(factors):
-            raise ValueError('Cannot create %s as a Cartesian product like %s.' %
-                             (element, self))
+            raise ValueError(
+                'Cannot create %s as a Cartesian product like %s.' % (element, self)
+            )
 
         if all(n.parent() is f for n, f in zip(element, factors)):
             parent = self
         else:
-            parent = self._underlying_class()(tuple(n.parent() for n in element),
-                                            category=self.category())
+            parent = self._underlying_class()(
+                tuple(n.parent() for n in element), category=self.category()
+            )
         return parent(element)
 
     def _element_constructor_(self, data):
@@ -473,8 +486,10 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                 return self._convert_factors_(data)
             except ValueError as e:
                 from .misc import combine_exceptions
+
                 raise combine_exceptions(
-                    ValueError('%s is not in %s.' % (raw_data, self)), e)
+                    ValueError('%s is not in %s.' % (raw_data, self)), e
+                )
 
         if data == 1:
             return self.one()
@@ -487,6 +502,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
 
         elif isinstance(data, str):
             from .misc import split_str_by_op
+
             return convert_factors(split_str_by_op(data, '*'), data)
 
         elif hasattr(data, 'parent'):
@@ -497,6 +513,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
 
             if P is SR:
                 from sage.symbolic.operators import mul_vararg
+
                 if data.operator() == mul_vararg:
                     return convert_factors(data.operands(), data)
 
@@ -574,15 +591,22 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                             element, todo = e.element.split()
                         except NotImplementedError as nie:
                             raise combine_exceptions(
-                                ValueError('cannot split {}: no splitting '
-                                           'implemented'.format(e.element)),
-                                nie)
+                                ValueError(
+                                    'cannot split {}: no splitting implemented'.format(
+                                        e.element
+                                    )
+                                ),
+                                nie,
+                            )
                         except ValueError as ve:
                             raise combine_exceptions(
-                                ValueError('cannot split {} after failed '
-                                           'conversion into element of '
-                                           '{}'.format(e.element, factor)),
-                                ve)
+                                ValueError(
+                                    'cannot split {} after failed '
+                                    'conversion into element of '
+                                    '{}'.format(e.element, factor)
+                                ),
+                                ve,
+                            )
                         assert todo is not None
                         result.append((factor, element))
                         data = todo
@@ -591,11 +615,13 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             if not result:
                 raise combine_exceptions(
                     ValueError('%s is not in any of the factors of %s' % (data, self)),
-                    *errors)
+                    *errors,
+                )
             return result
 
-        return prod(self.cartesian_injection(*fs)
-                    for f in factors for fs in get_factors(f))
+        return prod(
+            self.cartesian_injection(*fs) for f in factors for fs in get_factors(f)
+        )
 
     def cartesian_injection(self, factor, element):
         r"""
@@ -616,8 +642,11 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             sage: G.cartesian_injection(G.cartesian_factors()[1], 'y^7')
             y^7
         """
-        return self(tuple((f.one() if f != factor else element)
-                          for f in self.cartesian_factors()))
+        return self(
+            tuple(
+                (f.one() if f != factor else element) for f in self.cartesian_factors()
+            )
+        )
 
     def _coerce_map_from_(self, S):
         r"""
@@ -647,8 +676,10 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
         else:
             factors = (S,)
 
-        if all(any(g.has_coerce_map_from(f) for g in self.cartesian_factors())
-               for f in factors):
+        if all(
+            any(g.has_coerce_map_from(f) for g in self.cartesian_factors())
+            for f in factors
+        ):
             return True
 
     def _pushout_(self, other):
@@ -735,8 +766,9 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             Ofactors = other.cartesian_factors()
         elif isinstance(other, GenericGrowthGroup):
             Ofactors = (other,)
-        elif (other.construction() is not None and
-              isinstance(other.construction()[0], AbstractGrowthGroupFunctor)):
+        elif other.construction() is not None and isinstance(
+            other.construction()[0], AbstractGrowthGroupFunctor
+        ):
             Ofactors = (other,)
         else:
             return
@@ -744,14 +776,16 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
         def pushout_univariate_factors(self, other, var, Sfactors, Ofactors):
             try:
                 return bidirectional_merge_sorted(
-                    Sfactors, Ofactors,
-                    lambda f: (f._underlying_class(), f._var_.var_repr))
+                    Sfactors,
+                    Ofactors,
+                    lambda f: (f._underlying_class(), f._var_.var_repr),
+                )
             except RuntimeError:
                 pass
 
             cm = get_coercion_model()
             try:
-                Z = cm.common_parent(*Sfactors+Ofactors)
+                Z = cm.common_parent(*Sfactors + Ofactors)
                 return (Z,), (Z,)
             except TypeError:
                 pass
@@ -765,17 +799,21 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
 
             try:
                 return bidirectional_merge_sorted(
-                    tuple(subfactors(Sfactors)), tuple(subfactors(Ofactors)),
-                    lambda f: (f._underlying_class(), f._var_.var_repr))
+                    tuple(subfactors(Sfactors)),
+                    tuple(subfactors(Ofactors)),
+                    lambda f: (f._underlying_class(), f._var_.var_repr),
+                )
             except RuntimeError:
                 pass
 
             from sage.structure.coerce_exceptions import CoercionException
+
             raise CoercionException(
                 'Cannot construct the pushout of %s and %s: The factors '
                 'with variables %s are not overlapping, '
                 'no common parent was found, and '
-                'splitting the factors was unsuccessful.' % (self, other, var))
+                'splitting the factors was unsuccessful.' % (self, other, var)
+            )
 
         # A wrapper around an iterator that stores additional intermediate data.
         # This deviates slightly from the iterator protocol:
@@ -796,6 +834,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                     self.factors = tuple()
 
         from itertools import groupby
+
         S = it(groupby(Sfactors, key=lambda k: k.variable_names()))
         O = it(groupby(Ofactors, key=lambda k: k.variable_names()))
 
@@ -814,17 +853,17 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                 newO.extend(O.factors)
                 O.next_custom()
             else:
-                SL, OL = pushout_univariate_factors(self, other, S.var,
-                                                    S.factors, O.factors)
+                SL, OL = pushout_univariate_factors(
+                    self, other, S.var, S.factors, O.factors
+                )
                 newS.extend(SL)
                 newO.extend(OL)
                 S.next_custom()
                 O.next_custom()
 
-        assert (len(newS) == len(newO))
+        assert len(newS) == len(newO)
 
-        if (len(Sfactors) == len(newS) and
-            len(Ofactors) == len(newO)):
+        if len(Sfactors) == len(newS) and len(Ofactors) == len(newO):
             # We had already all factors in each of self and
             # other, thus splitting it in subproblems (one for
             # each factor) is the strategy to use. If a pushout is
@@ -834,6 +873,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
 
         from sage.categories.pushout import pushout
         from sage.categories.cartesian_product import cartesian_product
+
         return pushout(cartesian_product(newS), cartesian_product(newO))
 
     def gens_monomial(self) -> tuple:
@@ -860,10 +900,15 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             sage: all(g.parent() == G for g in G.gens_monomial())
             True
         """
-        return sum(iter(
-            tuple(self.cartesian_injection(factor, g) for g in factor.gens_monomial())
-            for factor in self.cartesian_factors()),
-                   tuple())
+        return sum(
+            iter(
+                tuple(
+                    self.cartesian_injection(factor, g) for g in factor.gens_monomial()
+                )
+                for factor in self.cartesian_factors()
+            ),
+            tuple(),
+        )
 
     def variable_names(self):
         r"""
@@ -877,15 +922,17 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             sage: GrowthGroup('x^ZZ * log(x)^ZZ * y^QQ * log(z)^ZZ').variable_names()
             ('x', 'y', 'z')
         """
-        vars = sum(iter(factor.variable_names()
-                        for factor in self.cartesian_factors()),
-                   tuple())
+        vars = sum(
+            iter(factor.variable_names() for factor in self.cartesian_factors()),
+            tuple(),
+        )
         from itertools import groupby
+
         return tuple(v for v, _ in groupby(vars))
 
     class Element(CartesianProductPoset.Element):
-
         from .growth_group import _is_lt_one_
+
         is_lt_one = _is_lt_one_
 
         def _repr_(self, latex=False):
@@ -909,6 +956,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             """
             if latex:
                 from sage.misc.latex import latex as latex_repr
+
                 f = latex_repr
             else:
                 f = repr
@@ -963,7 +1011,8 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                 x^(1/10)*log(x)^(1/6)
             """
             return self.parent()._create_element_in_extension_(
-                tuple(x ** exponent for x in self.cartesian_factors()))
+                tuple(x**exponent for x in self.cartesian_factors())
+            )
 
         def factors(self):
             r"""
@@ -1002,12 +1051,13 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                 sage: G.one().factors()
                 ()
             """
-            return sum(iter(f.factors()
-                            for f in self.cartesian_factors()
-                            if not f.is_one()),
-                       tuple())
+            return sum(
+                iter(f.factors() for f in self.cartesian_factors() if not f.is_one()),
+                tuple(),
+            )
 
         from .growth_group import _log_factor_, _log_
+
         log = _log_
         log_factor = _log_factor_
 
@@ -1051,20 +1101,29 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                     return g
 
             try:
-                return sum(iter(tuple((try_create_growth(g), c)
-                                      for g, c in
-                                      factor._log_factor_(base=base,
-                                                          locals=locals))
-                                for factor in self.cartesian_factors()
-                                if factor != factor.parent().one()),
-                           tuple())
+                return sum(
+                    iter(
+                        tuple(
+                            (try_create_growth(g), c)
+                            for g, c in factor._log_factor_(base=base, locals=locals)
+                        )
+                        for factor in self.cartesian_factors()
+                        if factor != factor.parent().one()
+                    ),
+                    tuple(),
+                )
             except (ArithmeticError, TypeError, ValueError) as e:
                 from .misc import combine_exceptions
+
                 raise combine_exceptions(
-                    ArithmeticError('Cannot build log(%s) in %s.' %
-                                    (self, self.parent())), e)
+                    ArithmeticError(
+                        'Cannot build log(%s) in %s.' % (self, self.parent())
+                    ),
+                    e,
+                )
 
         from .growth_group import _rpow_
+
         rpow = _rpow_
 
         def _rpow_element_(self, base):
@@ -1100,6 +1159,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             if len(factors) != 1:
                 raise ValueError  # calling method has to deal with it...
             from .growth_group import MonomialGrowthGroup
+
             factor = factors[0]
             if not isinstance(factor.parent(), MonomialGrowthGroup):
                 raise ValueError  # calling method has to deal with it...
@@ -1162,7 +1222,8 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                  Growth Group QQ^x * x^ZZ
             """
             return self.parent()._create_element_in_extension_(
-                tuple(~x for x in self.cartesian_factors()))
+                tuple(~x for x in self.cartesian_factors())
+            )
 
         def _substitute_(self, rules):
             r"""
@@ -1202,12 +1263,14 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             if self.is_one():
                 return rules['_one_']
             from sage.symbolic.operators import mul_vararg
+
             try:
                 return mul_vararg(
-                    *tuple(x._substitute_(rules)
-                           for x in self.cartesian_factors()))
+                    *tuple(x._substitute_(rules) for x in self.cartesian_factors())
+                )
             except (ArithmeticError, TypeError, ValueError) as e:
                 from .misc import substitute_raise_exception
+
                 substitute_raise_exception(self, e)
 
         def _singularity_analysis_(self, var, zeta, precision):
@@ -1268,39 +1331,52 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             if len(factors) == 0:
                 from .asymptotic_expansion_generators import asymptotic_expansions
                 from .misc import NotImplementedOZero
+
                 raise NotImplementedOZero(var=var, exact_part=0)
             elif len(factors) == 1:
                 return factors[0]._singularity_analysis_(
-                    var=var, zeta=zeta, precision=precision)
+                    var=var, zeta=zeta, precision=precision
+                )
             elif len(factors) == 2:
                 from .growth_group import MonomialGrowthGroup
                 from sage.rings.integer_ring import ZZ
 
                 a, b = factors
-                if all(isinstance(f.parent(), MonomialGrowthGroup)
-                       for f in factors) \
-                        and a.parent().gens_monomial() \
-                        and b.parent().gens_logarithmic() \
-                        and a.parent().variable_name() == \
-                            b.parent().variable_name():
+                if (
+                    all(isinstance(f.parent(), MonomialGrowthGroup) for f in factors)
+                    and a.parent().gens_monomial()
+                    and b.parent().gens_logarithmic()
+                    and a.parent().variable_name() == b.parent().variable_name()
+                ):
                     if b.exponent not in ZZ:
                         raise NotImplementedError(
                             'singularity analysis of {} not implemented '
                             'since exponent {} of {} is not an integer'.format(
-                                self, b.exponent, b.parent().gen()))
+                                self, b.exponent, b.parent().gen()
+                            )
+                        )
 
-                    from sage.rings.asymptotic.asymptotic_expansion_generators import \
-                        asymptotic_expansions
+                    from sage.rings.asymptotic.asymptotic_expansion_generators import (
+                        asymptotic_expansions,
+                    )
+
                     return asymptotic_expansions.SingularityAnalysis(
-                        var=var, zeta=zeta, alpha=a.exponent,
-                        beta=ZZ(b.exponent), delta=0,
-                        precision=precision, normalized=False)
+                        var=var,
+                        zeta=zeta,
+                        alpha=a.exponent,
+                        beta=ZZ(b.exponent),
+                        delta=0,
+                        precision=precision,
+                        normalized=False,
+                    )
                 raise NotImplementedError(
-                    'singularity analysis of {} not implemented'.format(self))
+                    'singularity analysis of {} not implemented'.format(self)
+                )
             else:
                 raise NotImplementedError(
                     'singularity analysis of {} not yet implemented '
-                    'since it has more than two factors'.format(self))
+                    'since it has more than two factors'.format(self)
+                )
 
         def variable_names(self):
             r"""
@@ -1323,10 +1399,11 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                 sage: G('m^0').variable_names()
                 ()
             """
-            vars = sum(iter(factor.variable_names()
-                            for factor in self.factors()),
-                       tuple())
+            vars = sum(
+                iter(factor.variable_names() for factor in self.factors()), tuple()
+            )
             from itertools import groupby
+
             return tuple(v for v, _ in groupby(vars))
 
     CartesianProduct = CartesianProductGrowthGroups
@@ -1383,6 +1460,7 @@ class MultivariateProduct(GenericProduct):
         :class:`UnivariateProduct`,
         :class:`GenericProduct`.
     """
+
     def __init__(self, sets, category, **kwargs):
         r"""
 

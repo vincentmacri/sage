@@ -33,6 +33,7 @@ class Line(GraphicPrimitive_xydata):
         sage: Line([1,2,7], [1,5,-1], {})
         Line defined by 3 points
     """
+
     def __init__(self, xdata, ydata, options):
         """
         Initialize a line graphics primitive.
@@ -74,20 +75,21 @@ class Line(GraphicPrimitive_xydata):
              ('thickness', 'How thick the line is.'),
              ('zorder', 'The layer level in which to draw')]
         """
-        return {'alpha': 'How transparent the line is.',
-                'legend_color': 'The color of the legend text.',
-                'legend_label': 'The label for this item in the legend.',
-                'thickness': 'How thick the line is.',
-                'rgbcolor': 'The color as an RGB tuple.',
-                'hue': 'The color given as a hue.',
-                'linestyle': "The style of the line, which is one of '--' (dashed), '-.' (dash dot), '-' (solid), 'steps', ':' (dotted).",
-                'marker': "the marker symbol (see documentation for line2d for details)",
-                'markersize': 'the size of the marker in points',
-                'markeredgecolor': 'the color of the marker edge',
-                'markeredgewidth': 'the size of the marker edge in points',
-                'markerfacecolor': 'the color of the marker face',
-                'zorder': 'The layer level in which to draw'
-                }
+        return {
+            'alpha': 'How transparent the line is.',
+            'legend_color': 'The color of the legend text.',
+            'legend_label': 'The label for this item in the legend.',
+            'thickness': 'How thick the line is.',
+            'rgbcolor': 'The color as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'linestyle': "The style of the line, which is one of '--' (dashed), '-.' (dash dot), '-' (solid), 'steps', ':' (dotted).",
+            'marker': "the marker symbol (see documentation for line2d for details)",
+            'markersize': 'the size of the marker in points',
+            'markeredgecolor': 'the color of the marker edge',
+            'markeredgewidth': 'the size of the marker edge in points',
+            'markerfacecolor': 'the color of the marker face',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _plot3d_options(self, options=None):
         """
@@ -119,8 +121,9 @@ class Line(GraphicPrimitive_xydata):
             del options['zorder']
         if 'linestyle' in options:
             if options['linestyle'] not in ('-', 'solid'):
-                raise NotImplementedError("invalid 3d line style: '%s'" %
-                                          (options['linestyle']))
+                raise NotImplementedError(
+                    "invalid 3d line style: '%s'" % (options['linestyle'])
+                )
             del options['linestyle']
         options_3d.update(GraphicPrimitive_xydata._plot3d_options(self, options))
         return options_3d
@@ -143,6 +146,7 @@ class Line(GraphicPrimitive_xydata):
             sphinx_plot(E+F)
         """
         from sage.plot.plot3d.shapes2 import line3d
+
         options = self._plot3d_options()
         options.update(kwds)
         return line3d([(x, y, z) for x, y in zip(self.xdata, self.ydata)], **options)
@@ -250,9 +254,16 @@ class Line(GraphicPrimitive_xydata):
             Graphics object consisting of 1 graphics primitive
         """
         from matplotlib import lines
+
         options = dict(self.options())
-        for o in ('alpha', 'legend_color', 'legend_label', 'linestyle',
-                  'rgbcolor', 'thickness'):
+        for o in (
+            'alpha',
+            'legend_color',
+            'legend_label',
+            'linestyle',
+            'rgbcolor',
+            'thickness',
+        ):
             if o in options:
                 del options[o]
         p = lines.Line2D(self.xdata, self.ydata, **options)
@@ -266,8 +277,10 @@ class Line(GraphicPrimitive_xydata):
         # pulled off automatically.  This (I think) is a bug in matplotlib 1.0.1
         if 'linestyle' in options:
             from sage.plot.misc import get_matplotlib_linestyle
-            p.set_linestyle(get_matplotlib_linestyle(options['linestyle'],
-                                                     return_type='short'))
+
+            p.set_linestyle(
+                get_matplotlib_linestyle(options['linestyle'], return_type='short')
+            )
         subplot.add_line(p)
 
 
@@ -308,12 +321,19 @@ def line(points, **kwds):
         return line2d(points, **kwds)
     except ValueError:
         from sage.plot.plot3d.shapes2 import line3d
+
         return line3d(points, **kwds)
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, rgbcolor=(0, 0, 1), thickness=1, legend_label=None,
-         legend_color=None, aspect_ratio='automatic')
+@options(
+    alpha=1,
+    rgbcolor=(0, 0, 1),
+    thickness=1,
+    legend_label=None,
+    legend_color=None,
+    aspect_ratio='automatic',
+)
 def line2d(points, **options):
     r"""
     Create the line through the given list of points.
@@ -612,6 +632,7 @@ def line2d(points, **options):
     """
     from sage.plot.graphics import Graphics
     from sage.plot.plot import xydata_from_point_list
+
     points = list(points)  # make sure points is a python list
     if not points:
         return Graphics()

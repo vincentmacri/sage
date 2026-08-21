@@ -5,14 +5,17 @@ AUTHORS:
 
 - Anna Haensch (2014-12-01): added test for rational isometry
 """
+
 from typing import Any
 
-from sage.arith.misc import (hilbert_symbol,
-                             GCD,
-                             is_prime,
-                             legendre_symbol,
-                             prime_divisors,
-                             valuation)
+from sage.arith.misc import (
+    hilbert_symbol,
+    GCD,
+    is_prime,
+    legendre_symbol,
+    prime_divisors,
+    valuation,
+)
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -21,6 +24,7 @@ from sage.rings.rational_field import QQ
 # Routines to test if two quadratic forms over ZZ are globally equivalent.   #
 # (For now, we require both forms to be positive definite.)                  #
 ##############################################################################
+
 
 def is_globally_equivalent_to(self, other, return_matrix=False) -> bool | Any:
     r"""
@@ -100,11 +104,15 @@ def is_globally_equivalent_to(self, other, return_matrix=False) -> bool | Any:
 
     # Check that other is a QuadraticForm
     if not isinstance(other, QuadraticForm):
-        raise TypeError("you must compare two quadratic forms, but the argument is not a quadratic form")
+        raise TypeError(
+            "you must compare two quadratic forms, but the argument is not a quadratic form"
+        )
 
     # only for definite forms
     if not self.is_definite() or not other.is_definite():
-        raise ValueError("not a definite form in QuadraticForm.is_globally_equivalent_to()")
+        raise ValueError(
+            "not a definite form in QuadraticForm.is_globally_equivalent_to()"
+        )
 
     mat = other.__pari__().qfisom(self)
     if not mat:
@@ -115,8 +123,9 @@ def is_globally_equivalent_to(self, other, return_matrix=False) -> bool | Any:
     return True
 
 
-def is_locally_equivalent_to(self, other, check_primes_only=False,
-                             force_jordan_equivalence_test=False) -> bool:
+def is_locally_equivalent_to(
+    self, other, check_primes_only=False, force_jordan_equivalence_test=False
+) -> bool:
     r"""
     Determine if the current quadratic form (defined over `\ZZ`) is
     locally equivalent to the given form over the real numbers and the
@@ -142,7 +151,9 @@ def is_locally_equivalent_to(self, other, check_primes_only=False,
     """
     # TO IMPLEMENT:
     if self.det() == 0:
-        raise NotImplementedError("OOps!  We need to think about whether this still works for degenerate forms...  especially check the signature.")
+        raise NotImplementedError(
+            "OOps!  We need to think about whether this still works for degenerate forms...  especially check the signature."
+        )
 
     # Check that both forms have the same dimension and base ring
     if (self.dim() != other.dim()) or (self.base_ring() != other.base_ring()):
@@ -160,7 +171,6 @@ def is_locally_equivalent_to(self, other, check_primes_only=False,
 
     # Test equivalence over Z_p for all primes
     if (self.base_ring() == ZZ) and (not force_jordan_equivalence_test):
-
         # Test equivalence with Conway-Sloane genus symbols (default over ZZ)
         if self.CS_genus_symbol_list() != other.CS_genus_symbol_list():
             return False
@@ -225,9 +235,16 @@ def has_equivalent_Jordan_decomposition_at_prime(self, other, p) -> bool:
     # Deal with odd primes:  Check that the Jordan component scales, dimensions, and discriminants are the same
     if p != 2:
         for i in range(len(self_jordan)):
-            if (self_jordan[i][0] != other_jordan[i][0]) \
-               or (self_jordan[i][1].dim() != other_jordan[i][1].dim()) \
-               or (legendre_symbol(self_jordan[i][1].det() * other_jordan[i][1].det(), p) != 1):
+            if (
+                (self_jordan[i][0] != other_jordan[i][0])
+                or (self_jordan[i][1].dim() != other_jordan[i][1].dim())
+                or (
+                    legendre_symbol(
+                        self_jordan[i][1].det() * other_jordan[i][1].det(), p
+                    )
+                    != 1
+                )
+            ):
                 return False
 
         # All tests passed for an odd prime.
@@ -235,62 +252,104 @@ def has_equivalent_Jordan_decomposition_at_prime(self, other, p) -> bool:
 
     # For p = 2:  Check that all Jordan Invariants are the same.
     if p == 2:
-
         # Useful definition
-        t = len(self_jordan)          # Define t = Number of Jordan components
+        t = len(self_jordan)  # Define t = Number of Jordan components
 
         # Check that all Jordan Invariants are the same (scale, dim, and norm)
         for i in range(t):
-            if (self_jordan[i][0] != other_jordan[i][0]) \
-               or (self_jordan[i][1].dim() != other_jordan[i][1].dim()) \
-               or (valuation(GCD(self_jordan[i][1].coefficients()), p) != valuation(GCD(other_jordan[i][1].coefficients()), p)):
+            if (
+                (self_jordan[i][0] != other_jordan[i][0])
+                or (self_jordan[i][1].dim() != other_jordan[i][1].dim())
+                or (
+                    valuation(GCD(self_jordan[i][1].coefficients()), p)
+                    != valuation(GCD(other_jordan[i][1].coefficients()), p)
+                )
+            ):
                 return False
 
         # Use O'Meara's isometry test 93:29 on p277.
         # ------------------------------------------
 
         # List of norms, scales, and dimensions for each i
-        scale_list = [ZZ(2)**self_jordan[i][0] for i in range(t)]
-        norm_list = [ZZ(2)**(self_jordan[i][0] + valuation(GCD(self_jordan[i][1].coefficients()), 2)) for i in range(t)]
+        scale_list = [ZZ(2) ** self_jordan[i][0] for i in range(t)]
+        norm_list = [
+            ZZ(2)
+            ** (self_jordan[i][0] + valuation(GCD(self_jordan[i][1].coefficients()), 2))
+            for i in range(t)
+        ]
         dim_list = [(self_jordan[i][1].dim()) for i in range(t)]
 
         # List of Hessian determinants and Hasse invariants for each Jordan (sub)chain
         # (Note: This is not the same as O'Meara's Gram determinants, but ratios are the same!)  -- NOT SO GOOD...
         # But it matters in condition (ii), so we multiply all by 2 (instead of dividing by 2 since only square-factors matter, and it's easier.)
         j = 0
-        self_chain_det_list = [self_jordan[j][1].Gram_det() * (scale_list[j]**dim_list[j])]
-        other_chain_det_list = [other_jordan[j][1].Gram_det() * (scale_list[j]**dim_list[j])]
-        self_hasse_chain_list = [self_jordan[j][1].scale_by_factor(ZZ(2)**self_jordan[j][0]).hasse_invariant__OMeara(2)]
-        other_hasse_chain_list = [other_jordan[j][1].scale_by_factor(ZZ(2)**other_jordan[j][0]).hasse_invariant__OMeara(2)]
+        self_chain_det_list = [
+            self_jordan[j][1].Gram_det() * (scale_list[j] ** dim_list[j])
+        ]
+        other_chain_det_list = [
+            other_jordan[j][1].Gram_det() * (scale_list[j] ** dim_list[j])
+        ]
+        self_hasse_chain_list = [
+            self_jordan[j][1]
+            .scale_by_factor(ZZ(2) ** self_jordan[j][0])
+            .hasse_invariant__OMeara(2)
+        ]
+        other_hasse_chain_list = [
+            other_jordan[j][1]
+            .scale_by_factor(ZZ(2) ** other_jordan[j][0])
+            .hasse_invariant__OMeara(2)
+        ]
 
         for j in range(1, t):
-            self_chain_det_list.append(self_chain_det_list[j-1] * self_jordan[j][1].Gram_det() * (scale_list[j]**dim_list[j]))
-            other_chain_det_list.append(other_chain_det_list[j-1] * other_jordan[j][1].Gram_det() * (scale_list[j]**dim_list[j]))
-            self_hasse_chain_list.append(self_hasse_chain_list[j-1]
-                                         * hilbert_symbol(self_chain_det_list[j-1], self_jordan[j][1].Gram_det(), 2)
-                                         * self_jordan[j][1].hasse_invariant__OMeara(2))
-            other_hasse_chain_list.append(other_hasse_chain_list[j-1]
-                                          * hilbert_symbol(other_chain_det_list[j-1], other_jordan[j][1].Gram_det(), 2)
-                                          * other_jordan[j][1].hasse_invariant__OMeara(2))
+            self_chain_det_list.append(
+                self_chain_det_list[j - 1]
+                * self_jordan[j][1].Gram_det()
+                * (scale_list[j] ** dim_list[j])
+            )
+            other_chain_det_list.append(
+                other_chain_det_list[j - 1]
+                * other_jordan[j][1].Gram_det()
+                * (scale_list[j] ** dim_list[j])
+            )
+            self_hasse_chain_list.append(
+                self_hasse_chain_list[j - 1]
+                * hilbert_symbol(
+                    self_chain_det_list[j - 1], self_jordan[j][1].Gram_det(), 2
+                )
+                * self_jordan[j][1].hasse_invariant__OMeara(2)
+            )
+            other_hasse_chain_list.append(
+                other_hasse_chain_list[j - 1]
+                * hilbert_symbol(
+                    other_chain_det_list[j - 1], other_jordan[j][1].Gram_det(), 2
+                )
+                * other_jordan[j][1].hasse_invariant__OMeara(2)
+            )
 
         # SANITY CHECK -- check that the scale powers are strictly increasing
         for i in range(1, len(scale_list)):
             if scale_list[i - 1] >= scale_list[i]:
-                raise RuntimeError("there is something wrong with the Jordan Decomposition ; the given scales are not strictly increasing")
+                raise RuntimeError(
+                    "there is something wrong with the Jordan Decomposition ; the given scales are not strictly increasing"
+                )
 
         # Test O'Meara's two conditions
         for i in range(t - 1):
-
             # Condition (i): Check that their (unit) ratio is a square (but it suffices to check at most mod 8).
-            modulus = norm_list[i] * norm_list[i+1] / (scale_list[i] ** 2)
+            modulus = norm_list[i] * norm_list[i + 1] / (scale_list[i] ** 2)
             modulus = min(modulus, 8)
-            if (modulus > 1) and (((self_chain_det_list[i] / other_chain_det_list[i]) % modulus) != 1):
+            if (modulus > 1) and (
+                ((self_chain_det_list[i] / other_chain_det_list[i]) % modulus) != 1
+            ):
                 return False
 
             # Check O'Meara's condition (ii) when appropriate
             if norm_list[i + 1] % (4 * norm_list[i]) == 0:
-                if self_hasse_chain_list[i] * hilbert_symbol(norm_list[i] * other_chain_det_list[i], -self_chain_det_list[i], 2) \
-                   != other_hasse_chain_list[i] * hilbert_symbol(norm_list[i], -other_chain_det_list[i], 2):      # Nipp conditions
+                if self_hasse_chain_list[i] * hilbert_symbol(
+                    norm_list[i] * other_chain_det_list[i], -self_chain_det_list[i], 2
+                ) != other_hasse_chain_list[i] * hilbert_symbol(
+                    norm_list[i], -other_chain_det_list[i], 2
+                ):  # Nipp conditions
                     return False
 
         # All tests passed for the prime 2.
@@ -514,7 +573,6 @@ def is_rationally_isometric(self, other, return_matrix=False) -> bool | Any:
         if self.signature() != other.signature():
             return False
     else:
-
         M = self.rational_diagonal_form().Gram_matrix_rational()
         N = other.rational_diagonal_form().Gram_matrix_rational()
         K = self.base_ring()
@@ -523,7 +581,6 @@ def is_rationally_isometric(self, other, return_matrix=False) -> bool | Any:
         Nentries = N.diagonal()
 
         for emb in K.real_embeddings():
-
             Mpos = 0
             for x in Mentries:
                 Mpos += emb(x) >= 0
@@ -635,7 +692,9 @@ def _diagonal_isometry(V, W):
             change_of_basis_matrix.set_column(j, col)
 
             # Orthogonalize the basis.
-            change_of_basis_matrix = _gram_schmidt(change_of_basis_matrix, i, W.bilinear_map)
+            change_of_basis_matrix = _gram_schmidt(
+                change_of_basis_matrix, i, W.bilinear_map
+            )
 
             # Obtain the diagonal gram matrix of F.
             FM = W(change_of_basis_matrix).Gram_matrix_rational()
@@ -700,6 +759,13 @@ def _gram_schmidt(m, fixed_vector_index, inner_product):
 
     for i in range(fixed_vector_index, n):
         for j in range(i + 1, n):
-            vectors[j] = vectors[j] - (inner_product(vectors[j], vectors[i]) / inner_product(vectors[i], vectors[i])) * vectors[i]
+            vectors[j] = (
+                vectors[j]
+                - (
+                    inner_product(vectors[j], vectors[i])
+                    / inner_product(vectors[i], vectors[i])
+                )
+                * vectors[i]
+            )
 
     return column_matrix(vectors)

@@ -55,7 +55,7 @@ def all_monomials_of_degree_d(d, variables):
     res = Monomial(deg_variables)
 
     for i in range(1, len(variables) - d + 1):
-        deg_variables = variables[-d - i:-i]
+        deg_variables = variables[-d - i : -i]
         res = Polynomial(res)
         nav = res.navigation()
         navs = []
@@ -63,7 +63,7 @@ def all_monomials_of_degree_d(d, variables):
             navs.append(BooleSet(nav, ring))
             nav = nav.then_branch()
         acc = Polynomial(1, ring)
-        for (nav, v) in reversed(zip(navs, deg_variables)):
+        for nav, v in reversed(zip(navs, deg_variables)):
             acc = if_then_else(v, acc, nav)
         res = acc
     return res.set()
@@ -84,6 +84,7 @@ def power_set(variables):
 
 if __name__ == '__main__':
     from .blocks import Block, declare_ring
+
     r = declare_ring([Block("x", 10000)], globals())
     print(list(all_monomials_of_degree_d(0, [Variable(i) for i in range(100)])))
     print(list(all_monomials_of_degree_d(1, [Variable(i) for i in range(10)])))
@@ -96,18 +97,32 @@ if __name__ == '__main__':
     print(list(power_set([Variable(i) for i in range(4)])))
     print(list(power_set()))
     # every monomial in the first 8 var, which is at most linear in the first 5
-    print(list(mod_mon_set(
-        power_set([Variable(i) for i in range(8)]),
-        all_monomials_of_degree_d(2, [Variable(i) for i in range(5)]))))
+    print(
+        list(
+            mod_mon_set(
+                power_set([Variable(i) for i in range(8)]),
+                all_monomials_of_degree_d(2, [Variable(i) for i in range(5)]),
+            )
+        )
+    )
 
     # specialized normal form computation
-    print(Polynomial(
-        mod_mon_set(
-            (x(1) * x(2) + x(1) + 1).set(),
-            all_monomials_of_degree_d(2, [Variable(i) for i in range(1000)]))))
-    print(list(mod_mon_set(
-        power_set([Variable(i) for i in range(50)]),
-        all_monomials_of_degree_d(2, [Variable(i) for i in range(1000)]))))
+    print(
+        Polynomial(
+            mod_mon_set(
+                (x(1) * x(2) + x(1) + 1).set(),
+                all_monomials_of_degree_d(2, [Variable(i) for i in range(1000)]),
+            )
+        )
+    )
+    print(
+        list(
+            mod_mon_set(
+                power_set([Variable(i) for i in range(50)]),
+                all_monomials_of_degree_d(2, [Variable(i) for i in range(1000)]),
+            )
+        )
+    )
 
 
 def monomial_from_indices(ring, indices):

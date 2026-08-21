@@ -1,13 +1,13 @@
 r"""
 Graded modules with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2008-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.quotients import QuotientsCategory
@@ -31,6 +31,7 @@ class GradedModulesWithBasis(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         def degree_negation(self, element):
             r"""
@@ -62,16 +63,28 @@ class GradedModulesWithBasis(GradedModulesCategory):
                 -4*P[1] - 2*P[2] + P[3, 1]
             """
             base_one = self.base_ring().one()
-            base_minusone = - base_one
-            diag = lambda x: (base_one if self.degree_on_basis(x) % 2 == 0
-                              else base_minusone)
-            return self.sum_of_terms([(key, diag(key) * value)
-                                      for key, value in
-                                      element.monomial_coefficients(copy=False).items()])
+            base_minusone = -base_one
+            diag = lambda x: (
+                base_one if self.degree_on_basis(x) % 2 == 0 else base_minusone
+            )
+            return self.sum_of_terms(
+                [
+                    (key, diag(key) * value)
+                    for key, value in element.monomial_coefficients(copy=False).items()
+                ]
+            )
 
-        def submodule(self, gens, check=True, already_echelonized=False,
-                      unitriangular=False, support_order=None, category=None,
-                      *args, **opts):
+        def submodule(
+            self,
+            gens,
+            check=True,
+            already_echelonized=False,
+            unitriangular=False,
+            support_order=None,
+            category=None,
+            *args,
+            **opts,
+        ):
             r"""
             Return the submodule spanned by a finite set of elements.
 
@@ -179,6 +192,7 @@ class GradedModulesWithBasis(GradedModulesCategory):
             """
             # Make sure gens consists of elements of ``self``
             from sage.sets.family import Family, AbstractFamily
+
             if isinstance(gens, AbstractFamily):
                 gens = gens.map(self)
             elif isinstance(gens, dict):
@@ -193,17 +207,26 @@ class GradedModulesWithBasis(GradedModulesCategory):
             if category is None:
                 if all(g.is_homogeneous() for g in gens):
                     category = GMod.Subobjects()
-            elif (category.is_subcategory(GMod.Subobjects())
-                  and not all(g.is_homogeneous() for g in gens)):
+            elif category.is_subcategory(GMod.Subobjects()) and not all(
+                g.is_homogeneous() for g in gens
+            ):
                 raise ValueError("all of the generators must be homogeneous")
 
             from sage.modules.with_basis.subquotient import SubmoduleWithBasis
-            return SubmoduleWithBasis(gens, ambient=self,
-                                      support_order=support_order,
-                                      unitriangular=unitriangular,
-                                      category=category, *args, **opts)
 
-        def quotient_module(self, submodule, check=True, already_echelonized=False, category=None):
+            return SubmoduleWithBasis(
+                gens,
+                ambient=self,
+                support_order=support_order,
+                unitriangular=unitriangular,
+                category=category,
+                *args,
+                **opts,
+            )
+
+        def quotient_module(
+            self, submodule, check=True, already_echelonized=False, category=None
+        ):
             r"""
             Construct the quotient module ``self`` / ``submodule``.
 
@@ -242,18 +265,26 @@ class GradedModulesWithBasis(GradedModulesCategory):
                  - :meth:`Rings.ParentMethods.quotient`
                  - :class:`sage.modules.with_basis.subquotient.QuotientModuleWithBasis`
             """
-            from sage.modules.with_basis.subquotient import SubmoduleWithBasis, QuotientModuleWithBasis
+            from sage.modules.with_basis.subquotient import (
+                SubmoduleWithBasis,
+                QuotientModuleWithBasis,
+            )
+
             if not isinstance(submodule, SubmoduleWithBasis):
-                submodule = self.submodule(submodule, check=check,
-                                           unitriangular=True,
-                                           already_echelonized=already_echelonized)
+                submodule = self.submodule(
+                    submodule,
+                    check=check,
+                    unitriangular=True,
+                    already_echelonized=already_echelonized,
+                )
 
             GMod = GradedModulesWithBasis(self.category().base_ring())
             if category is None:
                 if all(g.is_homogeneous() for g in submodule.basis()):
                     category = GMod.Quotients()
-            elif (category.is_subcategory(GMod.Quotients())
-                  and not all(g.is_homogeneous() for g in submodule.basis())):
+            elif category.is_subcategory(GMod.Quotients()) and not all(
+                g.is_homogeneous() for g in submodule.basis()
+            ):
                 raise ValueError("all of the basis elements must be homogeneous")
 
             return QuotientModuleWithBasis(submodule, category=category)

@@ -1,13 +1,13 @@
 r"""
 Graded algebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2008-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.signed_tensor import SignedTensorProductsCategory, tensor_signed
@@ -32,6 +32,7 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         # This needs to be copied in GradedAlgebras because we need to have
         #   FilteredAlgebrasWithBasis as an extra super category
@@ -128,9 +129,12 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
                 (xy, z)
             """
             try:
-                return self._free_graded_module_class(self, generator_degrees, names=names)
+                return self._free_graded_module_class(
+                    self, generator_degrees, names=names
+                )
             except AttributeError:
                 from sage.modules.fp_graded.free_module import FreeGradedModule
+
                 return FreeGradedModule(self, generator_degrees, names=names)
 
         def formal_series_ring(self):
@@ -150,6 +154,7 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
                  the Rational Field in the Complete basis
             """
             from sage.rings.lazy_series_ring import LazyCompletionGradedAlgebra
+
             return LazyCompletionGradedAlgebra(self)
 
         completion = formal_series_ring
@@ -180,6 +185,7 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
         The category of algebras with basis constructed by signed tensor
         product of algebras with basis.
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -199,6 +205,7 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
             Implement operations on tensor products of super algebras
             with basis.
             """
+
             @cached_method
             def one_basis(self):
                 """
@@ -246,13 +253,18 @@ class GradedAlgebrasWithBasis(GradedModulesCategory):
 
                 TODO: optimize this implementation!
                 """
-                basic = tensor_signed(module.monomial(x0) * module.monomial(x1)
-                                      for (module, x0, x1) in zip(self._sets, t0, t1))
+                basic = tensor_signed(
+                    module.monomial(x0) * module.monomial(x1)
+                    for (module, x0, x1) in zip(self._sets, t0, t1)
+                )
                 n = len(self._sets)
-                parity0 = [self._sets[idx].degree_on_basis(x0)
-                           for (idx, x0) in enumerate(t0)]
-                parity1 = [self._sets[idx].degree_on_basis(x1)
-                           for (idx, x1) in enumerate(t1)]
-                parity = sum(parity0[i] * parity1[j]
-                             for j in range(n) for i in range(j+1,n))
-                return (-1)**parity * basic
+                parity0 = [
+                    self._sets[idx].degree_on_basis(x0) for (idx, x0) in enumerate(t0)
+                ]
+                parity1 = [
+                    self._sets[idx].degree_on_basis(x1) for (idx, x1) in enumerate(t1)
+                ]
+                parity = sum(
+                    parity0[i] * parity1[j] for j in range(n) for i in range(j + 1, n)
+                )
+                return (-1) ** parity * basic

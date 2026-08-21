@@ -38,7 +38,7 @@ AUTHORS:
   for quadratic algorithm (see :issue:`15855`)
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 William Stein <wstein@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.laurent_series_ring import LaurentSeriesRing
 from sage.rings.power_series_ring import PowerSeriesRing
@@ -136,12 +136,17 @@ def weierstrass_p(E, prec=20, algorithm=None):
     # if the algorithm is not set, try to determine algorithm from input
     if algorithm is None:
         if 0 < p <= prec + 2:
-            raise NotImplementedError("currently no algorithms for computing the Weierstrass p-function for that characteristic / precision pair is implemented. Lower the precision below char(k) - 2")
+            raise NotImplementedError(
+                "currently no algorithms for computing the Weierstrass p-function for that characteristic / precision pair is implemented. Lower the precision below char(k) - 2"
+            )
         algorithm = "pari"
 
     if algorithm == "pari":
         if 0 < p <= prec + 2:
-            raise ValueError("for computing the Weierstrass p-function via pari, the characteristic (%s) of the underlying field must be greater than prec + 2 = %s" % (p,prec+2))
+            raise ValueError(
+                "for computing the Weierstrass p-function via pari, the characteristic (%s) of the underlying field must be greater than prec + 2 = %s"
+                % (p, prec + 2)
+            )
         return compute_wp_pari(E, prec)
 
     # quadratic and fast algorithms require short Weierstrass model
@@ -152,11 +157,17 @@ def weierstrass_p(E, prec=20, algorithm=None):
 
     if algorithm == "quadratic":
         if 0 < p <= prec + 2:
-            raise ValueError("for computing the Weierstrass p-function via the quadratic algorithm, the characteristic (%s) of the underlying field must be greater than prec + 2 = %s" % (p,prec+2))
+            raise ValueError(
+                "for computing the Weierstrass p-function via the quadratic algorithm, the characteristic (%s) of the underlying field must be greater than prec + 2 = %s"
+                % (p, prec + 2)
+            )
         wp = compute_wp_quadratic(k, A, B, prec)
     elif algorithm == "fast":
         if 0 < p <= prec + 4:
-            raise ValueError("for computing the Weierstrass p-function via the fast algorithm, the characteristic (%s) of the underlying field must be greater than prec + 4 = %s" % (p,prec+4))
+            raise ValueError(
+                "for computing the Weierstrass p-function via the fast algorithm, the characteristic (%s) of the underlying field must be greater than prec + 4 = %s"
+                % (p, prec + 4)
+            )
         wp = compute_wp_fast(k, A, B, prec)
     else:
         raise ValueError("unknown algorithm for computing the Weierstrass p-function")
@@ -164,7 +175,7 @@ def weierstrass_p(E, prec=20, algorithm=None):
     R = wp.parent()
     z = R.gen()
     u = E.isomorphism_to(Esh).u
-    return wp(z*u) * u**2
+    return wp(z * u) * u**2
 
 
 def compute_wp_pari(E, prec):
@@ -185,9 +196,9 @@ def compute_wp_pari(E, prec):
     ep = E.__pari__()
     wpp = ep.ellwp(n=prec)
     k = E.base_ring()
-    R = LaurentSeriesRing(k,'z')
+    R = LaurentSeriesRing(k, 'z')
     z = R.gen()
-    wp = z**(-2)
+    wp = z ** (-2)
     for i in range(prec):
         wp += k(wpp[i]) * z**i
     wp = wp.add_bigoh(prec)
@@ -233,23 +244,23 @@ def compute_wp_quadratic(k, A, B, prec):
         sage: compute_wp_quadratic(E.base_ring(), E.a4(), E.a6(), prec=10)
         z^-2 + 41*z^2 + 88*z^4 + 11*z^6 + 57*z^8 + O(z^10)
     """
-    m = (prec + 1)//2
+    m = (prec + 1) // 2
     c = [0 for j in range(m)]
-    c[0] = -A/5
-    c[1] = -B/7
+    c[0] = -A / 5
+    c[1] = -B / 7
 
     # first Z represent z^2
-    R = LaurentSeriesRing(k,'z')
+    R = LaurentSeriesRing(k, 'z')
     Z = R.gen()
-    pe = Z**-1 + c[0]*Z + c[1]*Z**2
+    pe = Z**-1 + c[0] * Z + c[1] * Z**2
 
     for i in range(3, m):
         t = 0
         for j in range(1, i - 1):
-            t += c[j-1]*c[i-2-j]
-        ci = (3*t)/((i-2)*(2*i+3))
+            t += c[j - 1] * c[i - 2 - j]
+        ci = (3 * t) / ((i - 2) * (2 * i + 3))
         pe += ci * Z**i
-        c[i-1] = ci
+        c[i - 1] = ci
 
     return pe(Z**2).add_bigoh(prec)
 
@@ -286,20 +297,20 @@ def compute_wp_fast(k, A, B, m):
         sage: compute_wp_fast(k, k(1), k(8), 5)
         z^-2 + 22*z^2 + 20*z^4 + O(z^5)
     """
-    R = PowerSeriesRing(k,'z',default_prec=m+5)
+    R = PowerSeriesRing(k, 'z', default_prec=m + 5)
     z = R.gen()
     s = 2
-    f1 = z.add_bigoh(m+3)
-    n = 2*m + 4
+    f1 = z.add_bigoh(m + 3)
+    n = 2 * m + 4
 
     # solve the nonlinear differential equation
-    while (s < n):
+    while s < n:
         f1pr = f1.derivative()
-        next_s = 2*s - 1
+        next_s = 2 * s - 1
 
-        a = 2*f1pr
-        b = -(6*B*(f1**5) + 4*A*(f1**3))
-        c = B*(f1**6) + A*f1**4 + 1 - (f1pr**2)
+        a = 2 * f1pr
+        b = -(6 * B * (f1**5) + 4 * A * (f1**3))
+        c = B * (f1**6) + A * f1**4 + 1 - (f1pr**2)
 
         # we should really be computing only mod z^next_s here.
         # but we loose only a factor 2
@@ -312,7 +323,7 @@ def compute_wp_fast(k, A, B, m):
 
     R = f1
     Q = R**2
-    pe = 1/Q
+    pe = 1 / Q
 
     return pe
 

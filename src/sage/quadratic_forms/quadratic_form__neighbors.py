@@ -48,7 +48,7 @@ def find_primitive_p_divisible_vector__random(self, p):
         if a in ZZ and (a % p == 0) and (v != 0):
             return v
         v[ZZ.random_element(n)] = ZZ.random_element(p)
-            # Replace a random entry and try again.
+        # Replace a random entry and try again.
     raise RuntimeError("unable to find a p divisible vector")
 
 
@@ -103,11 +103,12 @@ def find_primitive_p_divisible_vector__next(self, p, v=None):
 
     # Test that the last nonzero entry is 1 (to detect tampering).
     if w[nz] != 1:
-        print("Warning: The input vector to QuadraticForm.find_primitive_p_divisible_vector__next() is not normalized properly.")
+        print(
+            "Warning: The input vector to QuadraticForm.find_primitive_p_divisible_vector__next() is not normalized properly."
+        )
 
     # Look for the next vector, until w == 0
     while True:
-
         # Look for the first non-maximal (non-normalized) entry
         ind = 0
         while (ind < nz) and (w[ind] == p - 1):
@@ -119,7 +120,7 @@ def find_primitive_p_divisible_vector__next(self, p, v=None):
             for j in range(ind):
                 w[j] = 0
         else:
-            for j in range(ind + 1):    # Clear all entries
+            for j in range(ind + 1):  # Clear all entries
                 w[j] = 0
 
             if nz != 0:
@@ -189,7 +190,9 @@ def find_p_neighbor_from_vec(self, p, y, return_matrix=False):
     if not p.divides(self(y)):
         raise ValueError(f"y={y} must be of square divisible by p={p}")
     if self.base_ring() not in [ZZ, QQ]:
-        raise NotImplementedError("the base ring of this form must be the integers or the rationals")
+        raise NotImplementedError(
+            "the base ring of this form must be the integers or the rationals"
+        )
 
     from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
 
@@ -200,7 +203,9 @@ def find_p_neighbor_from_vec(self, p, y, return_matrix=False):
     if R is QQ:
         odd = True
         if G.denominator() != 1:
-            raise ValueError("the associated bilinear form q(x+y)-q(x)-q(y) must be integral.")
+            raise ValueError(
+                "the associated bilinear form q(x+y)-q(x)-q(y) must be integral."
+            )
     b = y * G * y
     if not b % p == 0:
         raise ValueError("y^2 must be divisible by p=%s" % p)
@@ -211,7 +216,9 @@ def find_p_neighbor_from_vec(self, p, y, return_matrix=False):
                 z = (ZZ**n).gen(k)
                 break
         else:
-            raise ValueError("either y is not primitive or self is not maximal at %s" % p)
+            raise ValueError(
+                "either y is not primitive or self is not maximal at %s" % p
+            )
         z *= (2 * y * G * z).inverse_mod(p)
         y = y - b * z
         # assert y*G*y % p^2 == 0
@@ -226,7 +233,9 @@ def find_p_neighbor_from_vec(self, p, y, return_matrix=False):
                     z = (ZZ**n).gen(k)
                     break
             else:
-                raise ValueError("either y is not primitive or self is not even, maximal at 2")
+                raise ValueError(
+                    "either y is not primitive or self is not even, maximal at 2"
+                )
             y += 2 * z
             # assert y*G*y % 8 == 0
 
@@ -248,8 +257,15 @@ def find_p_neighbor_from_vec(self, p, y, return_matrix=False):
     return QF(Gnew)
 
 
-def neighbor_iteration(seeds, p, mass=None, max_classes=None,
-                       algorithm=None, max_neighbors=1000, verbose=False):
+def neighbor_iteration(
+    seeds,
+    p,
+    mass=None,
+    max_classes=None,
+    algorithm=None,
+    max_neighbors=1000,
+    verbose=False,
+):
     r"""
     Return all classes in the `p`-neighbor graph of ``self``.
 
@@ -309,6 +325,7 @@ def neighbor_iteration(seeds, p, mass=None, max_classes=None,
     """
     from sage.quadratic_forms.quadratic_form import QuadraticForm
     from warnings import warn
+
     p = ZZ(p)
     if max_classes is None:
         max_classes = 1000
@@ -316,18 +333,23 @@ def neighbor_iteration(seeds, p, mass=None, max_classes=None,
         raise ValueError("seeds must be a list of quadratic forms")
     if algorithm is None:
         n = seeds[0].dim()
-        if p**n > ZZ(2)**18:
+        if p**n > ZZ(2) ** 18:
             # too many lines to compute the orbits fast
             algorithm = 'random'
         else:
             algorithm = 'orbits'
 
     if algorithm == 'orbits':
+
         def p_divisible_vectors(Q, max_neighbors):
-            yield from iter(v.lift() for v in Q.orbits_lines_mod_p(p)
-                            if v != 0 and Q(v.lift()).valuation(p) > 0)
+            yield from iter(
+                v.lift()
+                for v in Q.orbits_lines_mod_p(p)
+                if v != 0 and Q(v.lift()).valuation(p) > 0
+            )
 
     elif algorithm == 'exhaustion':
+
         def p_divisible_vectors(Q, max_neighbors):
             k = 0
             v = Q.find_primitive_p_divisible_vector__next(p)
@@ -337,6 +359,7 @@ def neighbor_iteration(seeds, p, mass=None, max_classes=None,
                 if v is not None:
                     yield v
     elif algorithm == 'random':
+
         def p_divisible_vectors(Q, max_neighbors):
             k = 0
             while k < max_neighbors:
@@ -359,7 +382,7 @@ def neighbor_iteration(seeds, p, mass=None, max_classes=None,
                 isom_classes.append(Q_neighbor)
                 waiting_list.append(Q_neighbor)
                 n_isom_classes += 1
-                mass_count += Q_neighbor.number_of_automorphisms()**(-1)
+                mass_count += Q_neighbor.number_of_automorphisms() ** (-1)
                 if verbose:
                     print(max_neighbors)
                     print(len(waiting_list))
@@ -367,7 +390,10 @@ def neighbor_iteration(seeds, p, mass=None, max_classes=None,
                     break
 
     if len(isom_classes) >= max_classes:
-        warn("reached the maximum number of isometry classes=%s. Increase the optional argument max_classes to obtain more." % max_classes)
+        warn(
+            "reached the maximum number of isometry classes=%s. Increase the optional argument max_classes to obtain more."
+            % max_classes
+        )
 
     if mass is not None:
         assert mass_count <= mass
@@ -418,5 +444,5 @@ def orbits_lines_mod_p(self, p):
         return reps;
         end;""")
     orbs_reps = orbs(gens, p)
-    M = GF(p)**self.dim()
+    M = GF(p) ** self.dim()
     return [M(m.sage()) for m in orbs_reps if not m.IsZero()]

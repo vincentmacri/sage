@@ -3,6 +3,7 @@ from sage.rings.padics.factory import ZpLC, ZpLF, QpLC, QpLF
 
 # ZpLC, ZpLF, QpLC, and QpLF all raise FutureWarnings
 from warnings import filterwarnings
+
 filterwarnings("ignore", category=FutureWarning)
 
 
@@ -49,7 +50,6 @@ def test_padic_lattice_element(e, request):
     e = request.getfixturevalue(e)
 
     # Only do a few runs, _test_matrix_smith() in particular is slow.
-    TestSuite(e).run(verbose=True,
-                     raise_on_failure=True,
-                     skip="_test_teichmuller",
-                     max_runs=8)
+    TestSuite(e).run(
+        verbose=True, raise_on_failure=True, skip="_test_teichmuller", max_runs=8
+    )

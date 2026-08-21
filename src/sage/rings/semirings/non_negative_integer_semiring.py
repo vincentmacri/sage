@@ -60,6 +60,7 @@ class NonNegativeIntegerSemiring(NonNegativeIntegers):
         sage: x+3
         18
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -70,8 +71,9 @@ class NonNegativeIntegerSemiring(NonNegativeIntegers):
             Category of facade infinite enumerated commutative semirings
             sage: TestSuite(NN).run()
         """
-        NonNegativeIntegers.__init__(self, category=(Semirings().Commutative(),
-                                                     InfiniteEnumeratedSets()))
+        NonNegativeIntegers.__init__(
+            self, category=(Semirings().Commutative(), InfiniteEnumeratedSets())
+        )
 
     def _repr_(self) -> str:
         r"""

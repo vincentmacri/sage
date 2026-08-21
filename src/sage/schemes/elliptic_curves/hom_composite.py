@@ -94,7 +94,10 @@ from sage.arith.misc import prod
 from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
 from sage.schemes.elliptic_curves.hom import EllipticCurveHom, compare_via_evaluation
 from sage.schemes.elliptic_curves.ell_curve_isogeny import EllipticCurveIsogeny
-from sage.schemes.elliptic_curves.weierstrass_morphism import WeierstrassIsomorphism, identity_morphism
+from sage.schemes.elliptic_curves.weierstrass_morphism import (
+    WeierstrassIsomorphism,
+    identity_morphism,
+)
 
 
 def _eval_factored_isogeny(phis, P):
@@ -123,7 +126,7 @@ def _eval_factored_isogeny(phis, P):
     return P
 
 
-def _compute_factored_isogeny_prime_power(P, l, n, split=.8, velu_sqrt_bound=None):
+def _compute_factored_isogeny_prime_power(P, l, n, split=0.8, velu_sqrt_bound=None):
     r"""
     This method takes a point `P` of order `\ell^n` and returns
     a sequence of degree-`\ell` isogenies whose composition has
@@ -203,16 +206,17 @@ def _compute_factored_isogeny_prime_power(P, l, n, split=.8, velu_sqrt_bound=Non
         sage: phis == hom_composite._compute_factored_isogeny_prime_power(P,l,n, split=1)
         True
     """
+
     def rec(Q, k):
 
         if k == 1:
             # base case: Q has order l
-            Q._order = l # This was not cached before
+            Q._order = l  # This was not cached before
             return [Q.curve().isogeny(kernel=Q, velu_sqrt_bound=velu_sqrt_bound)]
 
         # recursive case: k > 1 and Q has order l^k
 
-        k1 = int(k * split + .5)
+        k1 = int(k * split + 0.5)
         k1 = max(1, min(k - 1, k1))  # clamp to [1, k - 1]
 
         Q1 = l**k1 * Q
@@ -264,9 +268,11 @@ def _compute_factored_isogeny_single_generator(P, velu_sqrt_bound=None):
     """
     phis = []
     h = P.order()
-    for l,e in P.order().factor():
+    for l, e in P.order().factor():
         h //= l**e
-        psis = _compute_factored_isogeny_prime_power(h*P, l, e, velu_sqrt_bound=velu_sqrt_bound)
+        psis = _compute_factored_isogeny_prime_power(
+            h * P, l, e, velu_sqrt_bound=velu_sqrt_bound
+        )
         P = _eval_factored_isogeny(psis, P)
         phis += psis
     return phis
@@ -298,14 +304,15 @@ def _compute_factored_isogeny(kernel, velu_sqrt_bound=None):
     ker = list(kernel)
     while ker:
         K = ker.pop(0)
-        psis = _compute_factored_isogeny_single_generator(K, velu_sqrt_bound=velu_sqrt_bound)
+        psis = _compute_factored_isogeny_single_generator(
+            K, velu_sqrt_bound=velu_sqrt_bound
+        )
         ker = [_eval_factored_isogeny(psis, P) for P in ker]
         phis += psis
     return phis
 
 
 class EllipticCurveHom_composite(EllipticCurveHom):
-
     _degree = None
     _phis = None
 
@@ -400,9 +407,12 @@ class EllipticCurveHom_composite(EllipticCurveHom):
 
         if model is not None:
             if codomain is not None:
-                raise ValueError("cannot specify a codomain curve and model name simultaneously")
+                raise ValueError(
+                    "cannot specify a codomain curve and model name simultaneously"
+                )
 
             from sage.schemes.elliptic_curves.ell_field import compute_model
+
             codomain = compute_model(self._phis[-1].codomain(), model)
 
         if codomain is not None:
@@ -590,16 +600,21 @@ class EllipticCurveHom_composite(EllipticCurveHom):
               To:   Elliptic Curve defined by y^2 = x^3 + x over Finite Field of size 43
         """
         from itertools import groupby
+
         degs = [phi.degree() for phi in self._phis]
         if len(degs) == 1:
-            return f'Composite morphism of degree {self._degree}:' \
-                    f'\n  From: {self._domain}' \
-                    f'\n  To:   {self._codomain}'
-        grouped = [(d, sum(1 for _ in g)) for d,g in groupby(degs)]
-        degs_str = '*'.join(str(d) + (f'^{e}' if e > 1 else '') for d,e in grouped)
-        return f'Composite morphism of degree {self._degree} = {degs_str}:' \
-                f'\n  From: {self._domain}' \
+            return (
+                f'Composite morphism of degree {self._degree}:'
+                f'\n  From: {self._domain}'
                 f'\n  To:   {self._codomain}'
+            )
+        grouped = [(d, sum(1 for _ in g)) for d, g in groupby(degs)]
+        degs_str = '*'.join(str(d) + (f'^{e}' if e > 1 else '') for d, e in grouped)
+        return (
+            f'Composite morphism of degree {self._degree} = {degs_str}:'
+            f'\n  From: {self._domain}'
+            f'\n  To:   {self._codomain}'
+        )
 
     def factors(self):
         r"""
@@ -675,14 +690,24 @@ class EllipticCurveHom_composite(EllipticCurveHom):
         """
         if isinstance(left, EllipticCurveHom_composite):
             if isinstance(right, EllipticCurveHom_composite):
-                return EllipticCurveHom_composite.from_factors(right.factors() + left.factors())
+                return EllipticCurveHom_composite.from_factors(
+                    right.factors() + left.factors()
+                )
             if isinstance(right, EllipticCurveHom):
-                return EllipticCurveHom_composite.from_factors((right,) + left.factors())
+                return EllipticCurveHom_composite.from_factors(
+                    (right,) + left.factors()
+                )
         if isinstance(right, EllipticCurveHom_composite):
-            if isinstance(left, WeierstrassIsomorphism) and hasattr(right.factors()[-1], '_set_post_isomorphism'):  # XXX bit of a hack
-                return EllipticCurveHom_composite.from_factors(right.factors()[:-1] + (left * right.factors()[-1],), strict=False)
+            if isinstance(left, WeierstrassIsomorphism) and hasattr(
+                right.factors()[-1], '_set_post_isomorphism'
+            ):  # XXX bit of a hack
+                return EllipticCurveHom_composite.from_factors(
+                    right.factors()[:-1] + (left * right.factors()[-1],), strict=False
+                )
             if isinstance(left, EllipticCurveHom):
-                return EllipticCurveHom_composite.from_factors(right.factors() + (left,))
+                return EllipticCurveHom_composite.from_factors(
+                    right.factors() + (left,)
+                )
         return NotImplemented
 
     @staticmethod
@@ -1045,7 +1070,11 @@ class EllipticCurveHom_composite(EllipticCurveHom):
         if len(self._phis) == 1:
             return self._phis[0].inverse_image(Q, all=all)
         if all:
-            return (R for P in self._rest.inverse_image(Q, all=True) for R in self._phis[0].inverse_image(P, all=True))
+            return (
+                R
+                for P in self._rest.inverse_image(Q, all=True)
+                for R in self._phis[0].inverse_image(P, all=True)
+            )
         try:
             return next(self.inverse_image(Q, all=True))
         except StopIteration:

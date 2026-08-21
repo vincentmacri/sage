@@ -32,6 +32,7 @@ M. Brickenstein, A. Dreyer, PolyBoRi:
 Electronic Proceedings of the MEGA 2007 - Effective Methods in Algebraic Geometry, Strobl, Austria, June 2007.
 http://www.ricam.oeaw.ac.at/mega2007/electronic/electronic.html
 """
+
 from .PyPolyBoRi import Ring, Polynomial, Monomial, Variable
 
 # Get all-inclusive groebner routine

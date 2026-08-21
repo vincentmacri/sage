@@ -255,6 +255,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
         sage: s.matrix(f) == a.matrix(f) + b.matrix(f)
         True
     """
+
     def __init__(self, fmodule, name=None, latex_name=None):
         r"""
         TESTS::
@@ -285,14 +286,19 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             sage: b = M.general_linear_group().an_element()
             sage: TestSuite(b).run()
         """
-        FreeModuleTensor.__init__(self, fmodule, (1,1), name=name,
-                                  latex_name=latex_name,
-                                  parent=fmodule.general_linear_group())
+        FreeModuleTensor.__init__(
+            self,
+            fmodule,
+            (1, 1),
+            name=name,
+            latex_name=latex_name,
+            parent=fmodule.general_linear_group(),
+        )
         # MultiplicativeGroupElement attributes:
         # - none
         # Local attributes:
-        self._is_identity = False # a priori
-        self._inverse = None    # inverse automorphism not set yet
+        self._is_identity = False  # a priori
+        self._inverse = None  # inverse automorphism not set yet
         self._matrices = {}
 
     #### SageObject methods ####
@@ -477,8 +483,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             Kronecker delta of size 3x3
         """
         if self._is_identity:
-            raise ValueError("the components of the identity map cannot be "
-                             "changed")
+            raise ValueError("the components of the identity map cannot be changed")
         return FreeModuleTensor._set_comp_unsafe(self, basis=basis)
 
     def add_comp(self, basis=None):
@@ -548,8 +553,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             Kronecker delta of size 3x3
         """
         if self._is_identity:
-            raise ValueError("the components of the identity map cannot be "
-                             "changed")
+            raise ValueError("the components of the identity map cannot be changed")
         return FreeModuleTensor._add_comp_unsafe(self, basis=basis)
 
     def __call__(self, *arg):
@@ -609,6 +613,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             True
         """
         from .free_module_element import FiniteRankFreeModuleElement
+
         if len(arg) > 1:
             # The automorphism acting as a type-(1,1) tensor on a pair
             # (linear form, module element), returning a scalar:
@@ -616,12 +621,11 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
                 if len(arg) != 2:
                     raise TypeError("wrong number of arguments")
                 linform = arg[0]
-                if linform._tensor_type != (0,1):
+                if linform._tensor_type != (0, 1):
                     raise TypeError("the first argument must be a linear form")
                 vector = arg[1]
                 if not isinstance(vector, FiniteRankFreeModuleElement):
-                    raise TypeError("the second argument must be a module" +
-                                    " element")
+                    raise TypeError("the second argument must be a module" + " element")
                 return linform(vector)
             # self is not the identity automorphism:
             return FreeModuleTensor.__call__(self, *arg)
@@ -640,7 +644,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
         for i in fmodule.irange():
             res = 0
             for j in fmodule.irange():
-                res += t[[i,j]]*v[[j]]
+                res += t[[i, j]] * v[[j]]
             result.set_comp(basis)[i] = res
         # Name of the output:
         result._name = None
@@ -649,8 +653,9 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
         # LaTeX symbol for the output:
         result._latex_name = None
         if self._latex_name is not None and vector._latex_name is not None:
-            result._latex_name = self._latex_name + r"\left(" + \
-                              vector._latex_name + r"\right)"
+            result._latex_name = (
+                self._latex_name + r"\left(" + vector._latex_name + r"\right)"
+            )
         return result
 
     #### End of FreeModuleTensor methods ####
@@ -747,10 +752,12 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
              Integer Ring
         """
         from .comp import Components
+
         if self._is_identity:
             return self
         if self._inverse is None:
             from sage.tensor.modules.format_utilities import is_atomic
+
             if self._name is None:
                 inv_name = None
             else:
@@ -764,8 +771,7 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
                 if is_atomic(self._latex_name, ['\\circ', '\\otimes']):
                     inv_latex_name = self._latex_name + r'^{-1}'
                 else:
-                    inv_latex_name = r'\left(' + self._latex_name + \
-                                     r'\right)^{-1}'
+                    inv_latex_name = r'\left(' + self._latex_name + r'\right)^{-1}'
             fmodule = self._fmodule
             si = fmodule._sindex
             nsi = fmodule._rank + si
@@ -776,11 +782,16 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
                 except (KeyError, ValueError):
                     continue
                 mat_inv = mat.inverse()
-                cinv = Components(fmodule._ring, basis, 2, start_index=si,
-                                  output_formatter=fmodule._output_formatter)
+                cinv = Components(
+                    fmodule._ring,
+                    basis,
+                    2,
+                    start_index=si,
+                    output_formatter=fmodule._output_formatter,
+                )
                 for i in range(si, nsi):
                     for j in range(si, nsi):
-                        cinv[i, j] = mat_inv[i-si,j-si]
+                        cinv[i, j] = mat_inv[i - si, j - si]
                 self._inverse._components[basis] = cinv
             self._inverse._inverse = self
         return self._inverse
@@ -857,8 +868,9 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             raise ValueError("no common basis for the composition")
         # The composition is performed as a tensor contraction of the last
         # index of self (position=1) and the first index of other (position=0):
-        resu._components[basis] = self._components[basis].contract(1,
-                                                    other._components[basis],0)
+        resu._components[basis] = self._components[basis].contract(
+            1, other._components[basis], 0
+        )
         return resu
 
     #### End of MultiplicativeGroupElement methods ####
@@ -1019,22 +1031,22 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             [0 0 1]
         """
         from sage.matrix.constructor import matrix
+
         fmodule = self._fmodule
         if basis1 is None:
             basis1 = fmodule.default_basis()
         elif basis1 not in fmodule.bases():
-            raise TypeError("{} is not a basis on the {}".format(basis1,
-                                                                 fmodule))
+            raise TypeError("{} is not a basis on the {}".format(basis1, fmodule))
         if basis2 is None:
             basis2 = basis1
         elif basis2 not in fmodule.bases():
-            raise TypeError("{} is not a basis on the {}".format(basis2,
-                                                                 fmodule))
+            raise TypeError("{} is not a basis on the {}".format(basis2, fmodule))
         if (basis1, basis2) not in self._matrices:
             if basis2 == basis1:
                 comp = self.components(basis1)
-                mat = [[comp[[i,j]] for j in fmodule.irange()]
-                                                     for i in fmodule.irange()]
+                mat = [
+                    [comp[[i, j]] for j in fmodule.irange()] for i in fmodule.irange()
+                ]
                 self._matrices[(basis1, basis1)] = matrix(mat)
             else:
                 # 1/ determine the matrix w.r.t. basis1:
@@ -1057,8 +1069,8 @@ class FreeModuleAutomorphism(FreeModuleTensor, MultiplicativeGroupElement):
             [0 2]
         """
         self.matrix()  # forces the update of the matrix in the module's default
-                       # basis, to make sure that the dictionary self._matrices
-                       # is not empty
+        # basis, to make sure that the dictionary self._matrices
+        # is not empty
         return next(iter(self._matrices.values()))
 
     @lazy_attribute

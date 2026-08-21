@@ -21,7 +21,7 @@ AUTHORS:
 
 - Dima Pasechnik (2019-11): port to libgap
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Joyner <wdj@usna.edu>
 #                     2006 Nick Alexander <ncalexan@math.uci.edu>
 #                     2019 Dima Pasechnik <dima@pasechnik.info>
@@ -29,7 +29,7 @@ AUTHORS:
 #  Distributed under the terms of the GNU General Public License (GPL)
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.libs.gap.libgap import libgap
 from sage.misc.randstate import current_randstate
@@ -100,7 +100,7 @@ def RandomLinearCodeGuava(n, k, F):
 
     GapPackage('guava', spkg='gap_packages').require()
     libgap.load_package('guava')
-    C = libgap.RandomLinearCode(n,k,F)
+    C = libgap.RandomLinearCode(n, k, F)
     G = C.GeneratorMat()
     MS = MatrixSpace(F, len(G), len(G[0]))
     return LinearCode(MS(G))

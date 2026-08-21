@@ -19,11 +19,9 @@ from sage.ext.fast_callable import FastCallableFloatWrapper
 from collections.abc import Iterable
 
 
-def setup_for_eval_on_grid(funcs,
-                           ranges,
-                           plot_points=None,
-                           return_vars=False,
-                           imaginary_tolerance=1e-8):
+def setup_for_eval_on_grid(
+    funcs, ranges, plot_points=None, return_vars=False, imaginary_tolerance=1e-8
+):
     r"""
     Calculate the necessary parameters to construct a list of points,
     and make the functions fast_callable.
@@ -126,7 +124,9 @@ def setup_for_eval_on_grid(funcs,
         Graphics object consisting of 1 graphics primitive
     """
     if max(map(len, ranges)) > 3:
-        raise ValueError("At least one variable range has more than 3 entries: each should either have 2 or 3 entries, with one of the forms (xmin, xmax) or (x, xmin, xmax)")
+        raise ValueError(
+            "At least one variable range has more than 3 entries: each should either have 2 or 3 entries, with one of the forms (xmin, xmax) or (x, xmin, xmax)"
+        )
     if max(map(len, ranges)) != min(map(len, ranges)):
         raise ValueError("Some variable ranges specify variables while others do not")
 
@@ -134,7 +134,9 @@ def setup_for_eval_on_grid(funcs,
         vars = [r[0] for r in ranges]
         ranges = [r[1:] for r in ranges]
         if len(set(vars)) < len(vars):
-            raise ValueError("range variables should be distinct, but there are duplicates")
+            raise ValueError(
+                "range variables should be distinct, but there are duplicates"
+            )
     else:
         vars, free_vars = unify_arguments(funcs)
 
@@ -159,11 +161,14 @@ def setup_for_eval_on_grid(funcs,
     if not isinstance(plot_points, (list, tuple)):
         plot_points = [plot_points] * len(ranges)
     elif len(plot_points) != nargs:
-        raise ValueError("plot_points must be either an integer or a list of integers, one for each range")
+        raise ValueError(
+            "plot_points must be either an integer or a list of integers, one for each range"
+        )
 
     plot_points = [int(p) if p >= 2 else 2 for p in plot_points]
-    range_steps = [abs(range[1] - range[0]) / (p - 1)
-                   for range, p in zip(ranges, plot_points)]
+    range_steps = [
+        abs(range[1] - range[0]) / (p - 1) for range, p in zip(ranges, plot_points)
+    ]
     if min(range_steps) == float(0):
         raise ValueError("plot start point and end point must be different")
 
@@ -198,10 +203,8 @@ def setup_for_eval_on_grid(funcs,
             return f
         # Convert things like ZZ(0) into constant functions.
         from sage.symbolic.ring import SR
-        ff = fast_callable(SR(f),
-                           vars=vars,
-                           expect_one_var=eov,
-                           domain=CDF)
+
+        ff = fast_callable(SR(f), vars=vars, expect_one_var=eov, domain=CDF)
         return FastCallablePlotWrapper(ff, imag_tol=imaginary_tolerance)
 
     # Handle vectors, lists, tuples, etc.
@@ -214,13 +217,21 @@ def setup_for_eval_on_grid(funcs,
     # takes more values than we have ranges
 
     if return_vars:
-        return (funcs,
-                [tuple(_range + [range_step])
-                 for _range, range_step in zip(ranges, range_steps)],
-                vars)
-    return (funcs,
-            [tuple(_range + [range_step])
-             for _range, range_step in zip(ranges, range_steps)])
+        return (
+            funcs,
+            [
+                tuple(_range + [range_step])
+                for _range, range_step in zip(ranges, range_steps)
+            ],
+            vars,
+        )
+    return (
+        funcs,
+        [
+            tuple(_range + [range_step])
+            for _range, range_step in zip(ranges, range_steps)
+        ],
+    )
 
 
 def unify_arguments(funcs):
@@ -263,6 +274,7 @@ def unify_arguments(funcs):
         funcs = [funcs]
 
     from sage.structure.element import Expression
+
     for f in funcs:
         if isinstance(f, Expression) and f.is_callable():
             f_args = set(f.arguments())
@@ -313,6 +325,7 @@ def _multiple_of_constant(n, pos, const):
     from sage.misc.latex import latex
     from sage.rings.continued_fraction import continued_fraction
     from sage.rings.infinity import Infinity
+
     cf = continued_fraction(n / const)
     k = 1
     while cf.quotient(k) != Infinity and cf.denominator(k) < 12:
@@ -403,14 +416,8 @@ def get_matplotlib_linestyle(linestyle, return_type):
         {'solid', 'dashed', 'dotted', dashdot', 'None'}, respectively {'-',
         '--', ':', '-.', ''}
     """
-    long_to_short_dict = {'solid': '-',
-                          'dashed': '--',
-                          'dotted': ':',
-                          'dashdot': '-.'}
-    short_to_long_dict = {'-': 'solid',
-                          '--': 'dashed',
-                          ':': 'dotted',
-                          '-.': 'dashdot'}
+    long_to_short_dict = {'solid': '-', 'dashed': '--', 'dotted': ':', 'dashdot': '-.'}
+    short_to_long_dict = {'-': 'solid', '--': 'dashed', ':': 'dotted', '-.': 'dashdot'}
 
     # We need this to take care of region plot. Essentially, if None is
     # passed, then we just return back the same thing.
@@ -422,15 +429,19 @@ def get_matplotlib_linestyle(linestyle, return_type):
     if linestyle.startswith("steps"):
         if linestyle.startswith("steps-mid"):
             return "steps-mid" + get_matplotlib_linestyle(
-                linestyle.removeprefix("steps-mid"), "short")
+                linestyle.removeprefix("steps-mid"), "short"
+            )
         if linestyle.startswith("steps-post"):
             return "steps-post" + get_matplotlib_linestyle(
-                linestyle.removeprefix("steps-post"), "short")
+                linestyle.removeprefix("steps-post"), "short"
+            )
         if linestyle.startswith("steps-pre"):
             return "steps-pre" + get_matplotlib_linestyle(
-                linestyle.removeprefix("steps-pre"), "short")
+                linestyle.removeprefix("steps-pre"), "short"
+            )
         return "steps" + get_matplotlib_linestyle(
-            linestyle.removeprefix("steps"), "short")
+            linestyle.removeprefix("steps"), "short"
+        )
 
     if return_type == 'short':
         if linestyle in short_to_long_dict.keys():
@@ -439,11 +450,12 @@ def get_matplotlib_linestyle(linestyle, return_type):
             return ''
         if linestyle in long_to_short_dict.keys():
             return long_to_short_dict[linestyle]
-        raise ValueError("WARNING: Unrecognized linestyle '%s'. "
-                         "Possible linestyle options are:\n{'solid', "
-                         "'dashed', 'dotted', dashdot', 'None'}, "
-                         "respectively {'-', '--', ':', '-.', ''}" %
-                         (linestyle))
+        raise ValueError(
+            "WARNING: Unrecognized linestyle '%s'. "
+            "Possible linestyle options are:\n{'solid', "
+            "'dashed', 'dotted', dashdot', 'None'}, "
+            "respectively {'-', '--', ':', '-.', ''}" % (linestyle)
+        )
 
     elif return_type == 'long':
         if linestyle in long_to_short_dict.keys():
@@ -452,11 +464,12 @@ def get_matplotlib_linestyle(linestyle, return_type):
             return "None"
         if linestyle in short_to_long_dict.keys():
             return short_to_long_dict[linestyle]
-        raise ValueError("WARNING: Unrecognized linestyle '%s'. "
-                         "Possible linestyle options are:\n{'solid', "
-                         "'dashed', 'dotted', dashdot', 'None'}, "
-                         "respectively {'-', '--', ':', '-.', ''}" %
-                         (linestyle))
+        raise ValueError(
+            "WARNING: Unrecognized linestyle '%s'. "
+            "Possible linestyle options are:\n{'solid', "
+            "'dashed', 'dotted', dashdot', 'None'}, "
+            "respectively {'-', '--', ':', '-.', ''}" % (linestyle)
+        )
 
 
 class FastCallablePlotWrapper(FastCallableFloatWrapper):
@@ -481,6 +494,7 @@ class FastCallablePlotWrapper(FastCallableFloatWrapper):
         sage: fff(-1)
         nan
     """
+
     def __call__(self, *args):
         r"""
         Evaluate the underlying fast-callable and convert the result to

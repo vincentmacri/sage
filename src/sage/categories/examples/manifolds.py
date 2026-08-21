@@ -1,6 +1,7 @@
 """
 Examples of manifolds
 """
+
 # ****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -57,7 +58,8 @@ class Plane(UniqueRepresentation, Parent):
             An example of a Rational Field manifold: the 3-dimensional plane
         """
         return "An example of a {} manifold: the {}-dimensional plane".format(
-                self.base_ring(), self._n)
+            self.base_ring(), self._n
+        )
 
     def dimension(self):
         """
@@ -85,7 +87,7 @@ class Plane(UniqueRepresentation, Parent):
             (0, 0, 0)
         """
         zero = self.base_ring().zero()
-        return self(tuple([zero]*self._n))
+        return self(tuple([zero] * self._n))
 
     Element = ElementWrapper
 

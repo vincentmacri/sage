@@ -118,6 +118,7 @@ class FunctionFieldIdeal(Element):
         sage: O.ideal(x^3 + 1)
         Ideal (x^3 + 1) of Maximal order of Rational function field in x over Finite Field of size 7
     """
+
     def __init__(self, ring) -> None:
         """
         Initialize.
@@ -149,7 +150,7 @@ class FunctionFieldIdeal(Element):
         if self.is_zero():
             return "(0)"
 
-        return "(%s)" % (', '.join([repr(g) for g in self.gens_reduced()]), )
+        return "(%s)" % (', '.join([repr(g) for g in self.gens_reduced()]),)
 
     def _repr_(self) -> str:
         """
@@ -266,11 +267,10 @@ class FunctionFieldIdeal(Element):
             return gens
 
         # this is probably terribly slow
-        candidate_gensets = [genset for genset in powerset(gens)
-                             if self.parent()(genset) == self]
-        candidate_gensets.sort(key=lambda item: (len(item),
-                                                 len(repr(item)),
-                                                 item))
+        candidate_gensets = [
+            genset for genset in powerset(gens) if self.parent()(genset) == self
+        ]
+        candidate_gensets.sort(key=lambda item: (len(item), len(repr(item)), item))
         return tuple(candidate_gensets[0])
 
     def ring(self):
@@ -513,7 +513,11 @@ class FunctionFieldIdeal(Element):
             raise ValueError("not defined for zero ideal")
 
         F = self.ring().fraction_field()
-        data = {prime.place(): multiplicity for prime, multiplicity in self._factor() if multiplicity > 0}
+        data = {
+            prime.place(): multiplicity
+            for prime, multiplicity in self._factor()
+            if multiplicity > 0
+        }
         return divisor(F, data)
 
     def divisor_of_poles(self):
@@ -547,7 +551,11 @@ class FunctionFieldIdeal(Element):
             raise ValueError("not defined for zero ideal")
 
         F = self.ring().fraction_field()
-        data = {prime.place(): - multiplicity for prime, multiplicity in self._factor() if multiplicity < 0}
+        data = {
+            prime.place(): -multiplicity
+            for prime, multiplicity in self._factor()
+            if multiplicity < 0
+        }
         return divisor(F, data)
 
 
@@ -575,6 +583,7 @@ class FunctionFieldIdeal_module(FunctionFieldIdeal, Ideal_generic):
         sage: I^2
         Ideal (x^3 + 1, (-x^3 - 1)*y) of Order in Function field in y defined by y^2 - x^3 - 1
     """
+
     def __init__(self, ring, module) -> None:
         """
         Initialize.
@@ -741,8 +750,9 @@ class FunctionFieldIdeal_module(FunctionFieldIdeal, Ideal_generic):
         if self.is_zero():
             return self.ring().function_field().base_field().zero()
 
-        return (prod(self.module().basis_matrix().diagonal())
-                / prod(self.ring().free_module().basis_matrix().diagonal()))
+        return prod(self.module().basis_matrix().diagonal()) / prod(
+            self.ring().free_module().basis_matrix().diagonal()
+        )
 
     def gens(self) -> tuple:
         """
@@ -902,6 +912,7 @@ class FunctionFieldIdealInfinite(FunctionFieldIdeal):
     """
     Base class of ideals of maximal infinite orders
     """
+
     pass
 
 
@@ -924,6 +935,7 @@ class FunctionFieldIdealInfinite_module(FunctionFieldIdealInfinite, Ideal_generi
         sage: O.ideal(y)
         Ideal (x^3 + 1, -y) of Order in Function field in y defined by y^2 - x^3 - 1
     """
+
     def __init__(self, ring, module) -> None:
         """
         Initialize.
@@ -1008,8 +1020,9 @@ class FunctionFieldIdealInfinite_module(FunctionFieldIdealInfinite, Ideal_generi
         if self.ring() != other.ring():
             raise ValueError("rings must be the same")
 
-        return (self.module().is_submodule(other.module()) and
-                other.module().is_submodule(self.module()))
+        return self.module().is_submodule(
+            other.module()
+        ) and other.module().is_submodule(self.module())
 
     def module(self):
         """

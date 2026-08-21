@@ -44,8 +44,10 @@ def BezoutianQuadraticForm(f, g):
     # Check that f and g are polynomials with a common base ring
     if not isinstance(f, Polynomial) or not isinstance(g, Polynomial):
         raise TypeError("one of your inputs is not a polynomial")
-    if f.base_ring() != g.base_ring():   # TO DO:  Change this to allow coercion!
-        raise TypeError("these polynomials are not defined over the same coefficient ring")
+    if f.base_ring() != g.base_ring():  # TO DO:  Change this to allow coercion!
+        raise TypeError(
+            "these polynomials are not defined over the same coefficient ring"
+        )
 
     # Initialize the quadratic form
     R = f.base_ring()
@@ -55,7 +57,7 @@ def BezoutianQuadraticForm(f, g):
     Q = QuadraticForm(R, n)
 
     # Set the coefficients of Bezoutian
-    bez_poly = (f(a) * g(b) - f(b) * g(a)) // (b - a)    # Truncated (exact) division here
+    bez_poly = (f(a) * g(b) - f(b) * g(a)) // (b - a)  # Truncated (exact) division here
     for i in range(n):
         for j in range(i, n):
             if i == j:

@@ -273,6 +273,7 @@ class OreModuleMorphism(Morphism):
     r"""
     Generic class for morphism between Ore modules.
     """
+
     def __init__(self, parent, im_gens, check=True):
         r"""
         Initialize this Ore module.
@@ -335,8 +336,7 @@ class OreModuleMorphism(Morphism):
         sd = den / dd
         sc = den / dc
 
-        if (isinstance(im_gens, Element)
-            and base.has_coerce_map_from(im_gens.parent())):
+        if isinstance(im_gens, Element) and base.has_coerce_map_from(im_gens.parent()):
             self._matrix = MS(im_gens)
         elif isinstance(im_gens, Matrix):
             self._matrix = MS(im_gens)
@@ -358,8 +358,8 @@ class OreModuleMorphism(Morphism):
             dimc = codomain.rank()
             d = dimc + dimd
             vs = [domain(x).list() + codomain(y).list() for x, y in im_gens.items()]
-            if len(vs) < 2*d:
-                vs += (2*d - len(vs)) * [d * [zero]]
+            if len(vs) < 2 * d:
+                vs += (2 * d - len(vs)) * [d * [zero]]
             M = matrix(vs)
             M.echelonize()
             oldr = 0
@@ -377,7 +377,7 @@ class OreModuleMorphism(Morphism):
                         y = sc * fc(y)
                     v = x.list() + y.list()
                     for j in range(d):
-                        M[i+r,j] = v[j]
+                        M[i + r, j] = v[j]
                 M.echelonize()
                 oldr = r
                 r = M.rank()
@@ -443,7 +443,9 @@ class OreModuleMorphism(Morphism):
         """
         s = "\\begin{array}{l}\n"
         s += "\\text{\\texttt{%s morphism:}} \\\\\n" % self._repr_type()
-        s += "\\text{\\texttt{{ }{ }From:}}\\hspace{1ex} %s \\\\\n" % latex(self.domain())
+        s += "\\text{\\texttt{{ }{ }From:}}\\hspace{1ex} %s \\\\\n" % latex(
+            self.domain()
+        )
         s += "\\text{\\texttt{{ }{ }To:}}\\hspace{3ex} %s\n" % latex(self.codomain())
         s += "\\end{array}"
         return s
@@ -601,7 +603,7 @@ class OreModuleMorphism(Morphism):
             True
         """
         H = self.parent()
-        return H(a*self._matrix, check=False)
+        return H(a * self._matrix, check=False)
 
     def __eq__(self, other):
         r"""
@@ -877,7 +879,9 @@ class OreModuleMorphism(Morphism):
             [m3, m4, m5]
         """
         codomain = self.codomain()
-        return codomain._quotientModule_class(codomain, self._matrix, remove_torsion, names)
+        return codomain._quotientModule_class(
+            codomain, self._matrix, remove_torsion, names
+        )
 
     def coimage(self, names=None):
         r"""
@@ -976,7 +980,9 @@ class OreModuleMorphism(Morphism):
             ValueError: characteristic polynomials are only defined for endomorphisms
         """
         if self.domain() is not self.codomain():
-            raise ValueError("characteristic polynomials are only defined for endomorphisms")
+            raise ValueError(
+                "characteristic polynomials are only defined for endomorphisms"
+            )
         return self._matrix.charpoly(var)
 
     charpoly = characteristic_polynomial
@@ -987,6 +993,7 @@ class OreModuleRetraction(Map):
     Conversion (partially defined) map from an ambient module
     to one of its submodule.
     """
+
     def _call_(self, y):
         r"""
         TESTS::
@@ -1024,6 +1031,7 @@ class OreModuleSection(Map):
     Section map of the projection onto a quotient.
     It is not necessarily compatible with the Ore action.
     """
+
     def _call_(self, y):
         r"""
         TESTS::

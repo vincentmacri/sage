@@ -83,6 +83,7 @@ class Parallelism(Singleton, SageObject):
 
         sage: Parallelism().set(nproc=1)
     """
+
     def __init__(self):
         r"""
         Construct the single instance of class Parallelism (singleton model).
@@ -235,8 +236,10 @@ class Parallelism(Singleton, SageObject):
                 self.set(field=fi, nproc=nproc)
         else:
             if field not in self._nproc:
-                raise KeyError("entry for field {} is not ".format(field) +
-                               "implemented in Parallelism")
+                raise KeyError(
+                    "entry for field {} is not ".format(field)
+                    + "implemented in Parallelism"
+                )
             if nproc is None:
                 self._nproc[field] = self._default
             else:
@@ -274,8 +277,10 @@ class Parallelism(Singleton, SageObject):
             4
         """
         if field not in self._nproc:
-            raise KeyError("entry for field {} is not ".format(field) +
-                           "implemented in Parallelism()")
+            raise KeyError(
+                "entry for field {} is not ".format(field)
+                + "implemented in Parallelism()"
+            )
         return self._nproc[field]
 
     def get_all(self):

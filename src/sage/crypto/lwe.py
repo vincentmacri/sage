@@ -105,8 +105,12 @@ from sage.numerical.optimize import find_root
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.rings.integer_ring import ZZ
 from sage.rings.real_mpfr import RR
-from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler
-from sage.stats.distributions.discrete_gaussian_polynomial import DiscreteGaussianDistributionPolynomialSampler
+from sage.stats.distributions.discrete_gaussian_integer import (
+    DiscreteGaussianDistributionIntegerSampler,
+)
+from sage.stats.distributions.discrete_gaussian_polynomial import (
+    DiscreteGaussianDistributionPolynomialSampler,
+)
 from sage.structure.element import parent
 from sage.structure.sage_object import SageObject
 from sage.symbolic.constants import pi
@@ -128,6 +132,7 @@ class UniformSampler(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, lower_bound, upper_bound):
         """
         Construct a uniform sampler with bounds ``lower_bound`` and
@@ -186,6 +191,7 @@ class UniformPolynomialSampler(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, P, n, lower_bound, upper_bound):
         """
         Construct a sampler for univariate polynomials of degree ``n-1`` where
@@ -236,7 +242,11 @@ class UniformPolynomialSampler(SageObject):
             sage: UniformPolynomialSampler(ZZ['x'], 8, -3, 3)
             UniformPolynomialSampler(8, -3, 3)
         """
-        return "UniformPolynomialSampler(%d, %d, %d)" % (self.n, self.lower_bound, self.upper_bound)
+        return "UniformPolynomialSampler(%d, %d, %d)" % (
+            self.n,
+            self.lower_bound,
+            self.upper_bound,
+        )
 
 
 class LWE(SageObject):
@@ -246,6 +256,7 @@ class LWE(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, n, q, D, secret_dist='uniform', m=None):
         r"""
         Construct an LWE oracle in dimension ``n`` over a ring of order
@@ -328,9 +339,11 @@ class LWE(SageObject):
         else:
             try:
                 lb, ub = map(ZZ, secret_dist)
-                self.__s = vector(self.K, self.n, [randint(lb,ub) for _ in range(n)])
+                self.__s = vector(self.K, self.n, [randint(lb, ub) for _ in range(n)])
             except (IndexError, TypeError):
-                raise TypeError("Parameter secret_dist=%s not understood." % (secret_dist))
+                raise TypeError(
+                    "Parameter secret_dist=%s not understood." % (secret_dist)
+                )
 
     def _repr_(self):
         """
@@ -346,8 +359,20 @@ class LWE(SageObject):
             LWE(20, 401, Discrete Gaussian sampler over the Integers with sigma = 3.000000 and c = 0.000000, (-3, 3), None)
         """
         if isinstance(self.secret_dist, str):
-            return "LWE(%d, %d, %s, '%s', %s)" % (self.n,self.K.order(),self.D,self.secret_dist, self.m)
-        return "LWE(%d, %d, %s, %s, %s)" % (self.n,self.K.order(),self.D,self.secret_dist, self.m)
+            return "LWE(%d, %d, %s, '%s', %s)" % (
+                self.n,
+                self.K.order(),
+                self.D,
+                self.secret_dist,
+                self.m,
+            )
+        return "LWE(%d, %d, %s, %s, %s)" % (
+            self.n,
+            self.K.order(),
+            self.D,
+            self.secret_dist,
+            self.m,
+        )
 
     def __call__(self):
         """
@@ -373,6 +398,7 @@ class Regev(LWE):
 
     .. automethod:: __init__
     """
+
     def __init__(self, n, secret_dist='uniform', m=None):
         """
         Construct LWE instance parameterised by security parameter ``n`` where
@@ -394,8 +420,8 @@ class Regev(LWE):
             LWE(20, 401, Discrete Gaussian sampler over the Integers with sigma = 1.915069 and c = 401.000000, 'uniform', None)
         """
         q = ZZ(next_prime(n**2))
-        s = RR(1/(RR(n).sqrt() * log(n, 2)**2) * q)
-        D = DiscreteGaussianDistributionIntegerSampler(s/sqrt(2*pi.n()), q)
+        s = RR(1 / (RR(n).sqrt() * log(n, 2) ** 2) * q)
+        D = DiscreteGaussianDistributionIntegerSampler(s / sqrt(2 * pi.n()), q)
         LWE.__init__(self, n=n, q=q, D=D, secret_dist=secret_dist, m=m)
 
 
@@ -405,6 +431,7 @@ class LindnerPeikert(LWE):
 
     .. automethod:: __init__
     """
+
     def __init__(self, n, delta=0.01, m=None):
         """
         Construct LWE instance parameterised by security parameter ``n`` where
@@ -425,7 +452,7 @@ class LindnerPeikert(LWE):
             LWE(20, 2053, Discrete Gaussian sampler over the Integers with sigma = 3.600954 and c = 0.000000, 'noise', 168)
         """
         if m is None:
-            m = 2*n + 128
+            m = 2 * n + 128
         # Find c>=1 such that c*exp((1-c**2)/2))**(2*n) == 2**-40
         #         (c*exp((1-c**2)/2))**(2*n) == 2**-40
         #    log((c*exp((1-c**2)/2))**(2*n)) == -40*log(2)
@@ -435,15 +462,15 @@ class LindnerPeikert(LWE):
         #              2*n*log(c)+n*(1-c**2) == -40*log(2)
         #  2*n*log(c)+n*(1-c**2) + 40*log(2) == 0
         c = SR.var('c')
-        c = find_root(2*n*log(c)+n*(1-c**2) + 40*log(2) == 0, 1, 10)
+        c = find_root(2 * n * log(c) + n * (1 - c**2) + 40 * log(2) == 0, 1, 10)
         # Upper bound on s**2/t
-        s_t_bound = (sqrt(2) * pi / c / sqrt(2*n*log(2/delta))).n()
+        s_t_bound = (sqrt(2) * pi / c / sqrt(2 * n * log(2 / delta))).n()
         # Interpretation of "choose q just large enough to allow for a Gaussian parameter s>=8" in [LP2011]_
-        q = next_prime(floor(2**round(log(256 / s_t_bound, 2))))
+        q = next_prime(floor(2 ** round(log(256 / s_t_bound, 2))))
         # Gaussian parameter as defined in [LP2011]_
-        s = sqrt(s_t_bound*floor(q/4))
+        s = sqrt(s_t_bound * floor(q / 4))
         # Transform s into stddev
-        stddev = s/sqrt(2*pi.n())
+        stddev = s / sqrt(2 * pi.n())
         D = DiscreteGaussianDistributionIntegerSampler(stddev)
         LWE.__init__(self, n=n, q=q, D=D, secret_dist='noise', m=m)
 
@@ -454,6 +481,7 @@ class UniformNoiseLWE(LWE):
 
     .. automethod:: __init__
     """
+
     def __init__(self, n, instance='key', m=None):
         """
         Construct LWE instance parameterised by security parameter ``n`` where
@@ -485,29 +513,33 @@ class UniformNoiseLWE(LWE):
             raise TypeError("Parameter too small")
 
         n2 = n
-        C = 4/sqrt(2*pi)
-        kk = floor((n2-2*log(n2, 2)**2)/5)
-        n1 = (3*n2-5*kk) // 2
-        ke = floor((n1-2*log(n1, 2)**2)/5)
-        l = (3*n1-5*ke) // 2 - n2
-        sk = ceil((C*(n1+n2))**(ZZ(3)/2))
-        se = ceil((C*(n1+n2+l))**(ZZ(3)/2))
-        q = next_prime(max(ceil((4*sk)**(ZZ(n1+n2)/n1)),
-                           ceil((4*se)**(ZZ(n1+n2+l)/(n2+l))),
-                           ceil(4*(n1+n2)*se*sk+4*se+1)))
+        C = 4 / sqrt(2 * pi)
+        kk = floor((n2 - 2 * log(n2, 2) ** 2) / 5)
+        n1 = (3 * n2 - 5 * kk) // 2
+        ke = floor((n1 - 2 * log(n1, 2) ** 2) / 5)
+        l = (3 * n1 - 5 * ke) // 2 - n2
+        sk = ceil((C * (n1 + n2)) ** (ZZ(3) / 2))
+        se = ceil((C * (n1 + n2 + l)) ** (ZZ(3) / 2))
+        q = next_prime(
+            max(
+                ceil((4 * sk) ** (ZZ(n1 + n2) / n1)),
+                ceil((4 * se) ** (ZZ(n1 + n2 + l) / (n2 + l))),
+                ceil(4 * (n1 + n2) * se * sk + 4 * se + 1),
+            )
+        )
 
         if kk <= 0:
             raise TypeError("Parameter too small")
 
         if instance == 'key':
-            D = UniformSampler(0, sk-1)
+            D = UniformSampler(0, sk - 1)
             if m is None:
                 m = n1
             LWE.__init__(self, n=n2, q=q, D=D, secret_dist='noise', m=m)
         elif instance == 'encrypt':
-            D = UniformSampler(0, se-1)
+            D = UniformSampler(0, se - 1)
             if m is None:
-                m = n2+l
+                m = n2 + l
             LWE.__init__(self, n=n1, q=q, D=D, secret_dist='noise', m=m)
         else:
             raise TypeError("Parameter instance=%s not understood." % (instance))
@@ -520,6 +552,7 @@ class RingLWE(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, N, q, D, poly=None, secret_dist='uniform', m=None):
         """
         Construct a Ring-LWE oracle in dimension ``n=phi(N)`` over a ring of order
@@ -553,7 +586,9 @@ class RingLWE(SageObject):
         self.K = IntegerModRing(q)
 
         if self.n != D.n:
-            raise ValueError("Noise distribution has dimensions %d != %d" % (D.n, self.n))
+            raise ValueError(
+                "Noise distribution has dimensions %d != %d" % (D.n, self.n)
+            )
 
         self.D = D
         self.q = q
@@ -582,8 +617,22 @@ class RingLWE(SageObject):
             RingLWE(16, 401, Discrete Gaussian sampler for polynomials of degree < 8 with σ=3.000000 in each component, x^8 + 1, 'uniform', None)
         """
         if isinstance(self.secret_dist, str):
-            return "RingLWE(%d, %d, %s, %s, '%s', %s)" % (self.N, self.K.order(), self.D, self.poly, self.secret_dist, self.m)
-        return "RingLWE(%d, %d, %s, %s, %s, %s)" % (self.N, self.K.order(), self.D, self.poly, self.secret_dist, self.m)
+            return "RingLWE(%d, %d, %s, %s, '%s', %s)" % (
+                self.N,
+                self.K.order(),
+                self.D,
+                self.poly,
+                self.secret_dist,
+                self.m,
+            )
+        return "RingLWE(%d, %d, %s, %s, %s, %s)" % (
+            self.N,
+            self.K.order(),
+            self.D,
+            self.poly,
+            self.secret_dist,
+            self.m,
+        )
 
     def __call__(self):
         """
@@ -614,6 +663,7 @@ class RingLindnerPeikert(RingLWE):
 
     .. automethod:: __init__
     """
+
     def __init__(self, N, delta=0.01, m=None):
         """
         Construct a Ring-LWE oracle in dimension ``n=phi(N)`` where
@@ -635,19 +685,19 @@ class RingLindnerPeikert(RingLWE):
         """
         n = euler_phi(N)
         if m is None:
-            m = 3*n
+            m = 3 * n
         # Find c>=1 such that c*exp((1-c**2)/2))**(2*n) == 2**-40
         #  i.e c>=1 such that 2*n*log(c)+n*(1-c**2) + 40*log(2) == 0
         c = SR.var('c')
-        c = find_root(2*n*log(c)+n*(1-c**2) + 40*log(2) == 0, 1, 10)
+        c = find_root(2 * n * log(c) + n * (1 - c**2) + 40 * log(2) == 0, 1, 10)
         # Upper bound on s**2/t
-        s_t_bound = (sqrt(2) * pi / c / sqrt(2*n*log(2/delta))).n()
+        s_t_bound = (sqrt(2) * pi / c / sqrt(2 * n * log(2 / delta))).n()
         # Interpretation of "choose q just large enough to allow for a Gaussian parameter s>=8" in [LP2011]_
-        q = next_prime(floor(2**round(log(256 / s_t_bound, 2))))
+        q = next_prime(floor(2 ** round(log(256 / s_t_bound, 2))))
         # Gaussian parameter as defined in [LP2011]_
-        s = sqrt(s_t_bound*floor(q/4))
+        s = sqrt(s_t_bound * floor(q / 4))
         # Transform s into stddev
-        stddev = s/sqrt(2*pi.n())
+        stddev = s / sqrt(2 * pi.n())
         D = DiscreteGaussianDistributionPolynomialSampler(ZZ['x'], n, stddev)
         RingLWE.__init__(self, N=N, q=q, D=D, poly=None, secret_dist='noise', m=m)
 
@@ -660,6 +710,7 @@ class RingLWEConverter(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     def __init__(self, ringlwe):
         """
         INPUT:
@@ -698,7 +749,10 @@ class RingLWEConverter(SageObject):
             self._ac = self.ringlwe()
         a, c = self._ac
         x = R_q.gen()
-        r = vector((x**(self._i % self.n) * R_q(a.list())).list()), c[self._i % self.n]
+        r = (
+            vector((x ** (self._i % self.n) * R_q(a.list())).list()),
+            c[self._i % self.n],
+        )
         self._i += 1
         return r
 
@@ -763,7 +817,10 @@ def samples(m, n, lwe, seed=None, balanced=False, **kwds):
         lwe = lwe(n, m=m, **kwds)
     else:
         if lwe.n != n:
-            raise ValueError("Passed LWE instance has n=%d, but n=%d was passed to this function." % (lwe.n, n))
+            raise ValueError(
+                "Passed LWE instance has n=%d, but n=%d was passed to this function."
+                % (lwe.n, n)
+            )
 
     if balanced is False:
         f = lambda a_c: a_c
@@ -818,7 +875,7 @@ def balance_sample(s, q=None):
         c[0]
         scalar = False
     except TypeError:
-        c = vector(c.parent(),[c])
+        c = vector(c.parent(), [c])
         scalar = True
 
     if q is None:
@@ -830,8 +887,12 @@ def balance_sample(s, q=None):
         a = a.change_ring(K).change_ring(ZZ)
         c = c.change_ring(K).change_ring(ZZ)
 
-    q2 = q//2
+    q2 = q // 2
 
     if scalar:
-        return vector(ZZ, len(a), [e if e <= q2 else e-q for e in a]), c[0] if c[0] <= q2 else c[0]-q
-    return vector(ZZ, len(a), [e if e <= q2 else e-q for e in a]), vector(ZZ, len(c), [e if e <= q2 else e-q for e in c])
+        return vector(ZZ, len(a), [e if e <= q2 else e - q for e in a]), c[0] if c[
+            0
+        ] <= q2 else c[0] - q
+    return vector(ZZ, len(a), [e if e <= q2 else e - q for e in a]), vector(
+        ZZ, len(c), [e if e <= q2 else e - q for e in c]
+    )

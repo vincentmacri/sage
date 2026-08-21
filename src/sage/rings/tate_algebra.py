@@ -155,6 +155,7 @@ from sage.rings.polynomial.polydict import ETuple
 # Factory
 #########
 
+
 class TateAlgebraFactory(UniqueFactory):
     r"""
     Construct a Tate algebra over a `p`-adic field.
@@ -245,7 +246,10 @@ class TateAlgebraFactory(UniqueFactory):
 
     - Xavier Caruso, Thibaut Verron (2018-09)
     """
-    def create_key(self, base, prec=None, log_radii=ZZ(0), names=None, order='degrevlex'):
+
+    def create_key(
+        self, base, prec=None, log_radii=ZZ(0), names=None, order='degrevlex'
+    ):
         """
         Create a key from the input parameters.
 
@@ -308,10 +312,12 @@ class TateAlgebraFactory(UniqueFactory):
             except TypeError:
                 raise NotImplementedError("only integral log_radii are implemented")
         elif len(log_radii) != ngens:
-            raise ValueError("the number of radii does not match the number of variables")
+            raise ValueError(
+                "the number of radii does not match the number of variables"
+            )
         else:
             try:
-                log_radii = [ ZZ(r) for r in log_radii ]
+                log_radii = [ZZ(r) for r in log_radii]
             except TypeError:
                 raise NotImplementedError("only integral log_radii are implemented")
         order = TermOrder(order, ngens)
@@ -340,6 +346,7 @@ TateAlgebra = TateAlgebraFactory("TateAlgebra")
 # Parent for terms
 ##################
 
+
 class TateTermMonoid(Monoid_class, UniqueRepresentation):
     r"""
     A base class for Tate algebra terms.
@@ -350,6 +357,7 @@ class TateTermMonoid(Monoid_class, UniqueRepresentation):
     Those terms form a pre-ordered monoid, with term multiplication and the
     term order of the parent Tate algebra.
     """
+
     Element = TateAlgebraTerm
 
     def __init__(self, A):
@@ -401,8 +409,9 @@ class TateTermMonoid(Monoid_class, UniqueRepresentation):
         """
         if self._ngens == 0:
             return "Monoid of terms over %s" % self._base
-        vars = ", ".join("%s (val >= %s)" % (var, -r)
-                         for var, r in zip(self._names, self._log_radii))
+        vars = ", ".join(
+            "%s (val >= %s)" % (var, -r) for var, r in zip(self._names, self._log_radii)
+        )
         return "Monoid of terms in %s over %s" % (vars, self._base)
 
     def _latex_(self):
@@ -668,13 +677,14 @@ class TateTermMonoid(Monoid_class, UniqueRepresentation):
             sage: T.some_elements()
             [...00000000010, ...0000000001*x, ...0000000001*y, ...00000000010*x*y]
         """
-        elts = [ self(self._field.uniformizer()) ] + list(self.gens())
+        elts = [self(self._field.uniformizer())] + list(self.gens())
         elts.append(prod(elts))
         return elts
 
 
 # Tate algebras
 ###############
+
 
 class TateAlgebra_generic(Parent):
     def __init__(self, field, prec, log_radii, names, order, integral=False):
@@ -692,6 +702,7 @@ class TateAlgebra_generic(Parent):
         """
         from sage.misc.latex import latex_variable_name
         from sage.rings.polynomial.polynomial_ring_constructor import _multi_variate
+
         self.element_class = TateAlgebraElement
         self._field = field
         self._cap = prec
@@ -708,20 +719,29 @@ class TateAlgebra_generic(Parent):
             base = field.integer_ring()
         else:
             base = field
-        Parent.__init__(self, base=base, names=names,
-                        category=Algebras(base).Commutative())
+        Parent.__init__(
+            self, base=base, names=names, category=Algebras(base).Commutative()
+        )
         self._polynomial_ring = _multi_variate(field, names, order=order)
         one = field.one()
         self._parent_terms = TateTermMonoid(self)
-        self._oneterm = self._parent_terms(one, ETuple([0]*self._ngens))
+        self._oneterm = self._parent_terms(one, ETuple([0] * self._ngens))
         if integral:
             # This needs to be update if log_radii are allowed to be non-integral
-            self._gens = [self.element_class(self, (one << log_radii[i]) * self._polynomial_ring.gen(i)) for i in range(self._ngens)]
+            self._gens = [
+                self.element_class(
+                    self, (one << log_radii[i]) * self._polynomial_ring.gen(i)
+                )
+                for i in range(self._ngens)
+            ]
             self._integer_ring = self
         else:
-            self._gens = [self.element_class(self, g)
-                          for g in self._polynomial_ring.gens()]
-            self._integer_ring = TateAlgebra_generic(field, prec, log_radii, names, order, integral=True)
+            self._gens = [
+                self.element_class(self, g) for g in self._polynomial_ring.gens()
+            ]
+            self._integer_ring = TateAlgebra_generic(
+                field, prec, log_radii, names, order, integral=True
+            )
             self._integer_ring._rational_ring = self._rational_ring = self
 
     def _an_element_(self):
@@ -808,9 +828,11 @@ class TateAlgebra_generic(Parent):
             Rbase = R.base_ring()
             logs = self._log_radii
             Rlogs = R.log_radii()
-            if (base.has_coerce_map_from(Rbase)
+            if (
+                base.has_coerce_map_from(Rbase)
                 and self._names == R.variable_names()
-                and self._order == R.term_order()):
+                and self._order == R.term_order()
+            ):
                 ratio = base.absolute_e() // Rbase.absolute_e()
                 return all(logs[i] == ratio * Rlogs[i] for i in range(self._ngens))
         return False
@@ -862,7 +884,7 @@ class TateAlgebra_generic(Parent):
             base = pushout(self._base, R)
             ratio = base.absolute_e() // self._base.absolute_e()
             cap = ratio * self._cap
-            log_radii = [ ratio * r for r in self._log_radii ]
+            log_radii = [ratio * r for r in self._log_radii]
             A = TateAlgebra(base, cap, log_radii, self._names, self._order)
             if base.is_field():
                 return A
@@ -888,6 +910,7 @@ class TateAlgebra_generic(Parent):
             The argument ``n`` is disregarded in the current implementation.
         """
         from sage.rings.tate_algebra_ideal import TateAlgebraIdeal
+
         return TateAlgebraIdeal
 
     def prime(self):
@@ -983,8 +1006,12 @@ class TateAlgebra_generic(Parent):
              ...0000000001*y + ...00000000010*x*y,
              ...00000000100*x*y]
         """
-        terms = [ self.zero() ] + [ self(t) for t in self.monoid_of_terms().some_elements() ]
-        return [ terms[i] + terms[j] for i in range(len(terms)) for j in range(i, len(terms)) ]
+        terms = [self.zero()] + [
+            self(t) for t in self.monoid_of_terms().some_elements()
+        ]
+        return [
+            terms[i] + terms[j] for i in range(len(terms)) for j in range(i, len(terms))
+        ]
 
     def _repr_(self):
         """
@@ -1000,10 +1027,14 @@ class TateAlgebra_generic(Parent):
             sage: A.integer_ring()
             Integer ring of the Tate Algebra in x (val >= 0), y (val >= 0) over 2-adic Field with capped relative precision 10
         """
-        vars = ", ".join("%s (val >= %s)" % (var, -r)
-                         for var, r in zip(self._names, self._log_radii))
+        vars = ", ".join(
+            "%s (val >= %s)" % (var, -r) for var, r in zip(self._names, self._log_radii)
+        )
         if self._integral:
-            return "Integer ring of the Tate Algebra in %s over %s" % (vars, self._field)
+            return "Integer ring of the Tate Algebra in %s over %s" % (
+                vars,
+                self._field,
+            )
         return "Tate Algebra in %s over %s" % (vars, self._field)
 
     def _latex_(self):
@@ -1024,6 +1055,7 @@ class TateAlgebra_generic(Parent):
             '\\Bold{Q}_{2}\\{u_{1},u_{2}\\}_{(1,2)}'
         """
         from sage.misc.latex import latex
+
         s = r"%s\{%s\}" % (latex(self._field), ",".join(self._latex_names))
         if self._integral:
             s += r"^{\circ}"
@@ -1249,7 +1281,9 @@ class TateAlgebra_generic(Parent):
         else:
             polring = self._polynomial_ring
             gens = [self.element_class(self, g) for g in self._integer_ring._gens]
-        return self.element_class(self, polring.random_element(degree, terms)(*gens), prec)
+        return self.element_class(
+            self, polring.random_element(degree, terms)(*gens), prec
+        )
 
     def is_integral_domain(self, proof=True):
         r"""

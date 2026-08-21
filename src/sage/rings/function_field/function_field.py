@@ -267,7 +267,10 @@ class FunctionField(Field):
         sage: K
         Rational function field in x over Rational Field
     """
-    _differentials_space = LazyImport('sage.rings.function_field.differential', 'DifferentialsSpace')
+
+    _differentials_space = LazyImport(
+        'sage.rings.function_field.differential', 'DifferentialsSpace'
+    )
 
     def __init__(self, base_field, names, category=FunctionFields()) -> None:
         """
@@ -284,7 +287,10 @@ class FunctionField(Field):
 
         # allow conversion into the constant base field
         from .maps import FunctionFieldConversionToConstantBaseField
-        to_constant_base_field = FunctionFieldConversionToConstantBaseField(Hom(self, self.constant_base_field()))
+
+        to_constant_base_field = FunctionFieldConversionToConstantBaseField(
+            Hom(self, self.constant_base_field())
+        )
         # the conversion map must not keep the field alive if that is the only reference to it
         to_constant_base_field._make_weak_references()
         self.constant_base_field().register_conversion(to_constant_base_field)
@@ -452,6 +458,7 @@ class FunctionField(Field):
             True
         """
         from . import constructor
+
         return constructor.FunctionFieldExtension(f.change_ring(self), names)
 
     def order_with_basis(self, basis, check: bool = True):
@@ -500,6 +507,7 @@ class FunctionField(Field):
             ValueError: the identity element must be in the module spanned by basis (x, x*y + x^2, 2/3*y^2)
         """
         from .order_basis import FunctionFieldOrder_basis
+
         return FunctionFieldOrder_basis(tuple([self(a) for a in basis]), check=check)
 
     def order(self, x, check: bool = True):
@@ -591,7 +599,10 @@ class FunctionField(Field):
             ValueError: the identity element must be in the module spanned by basis (1/x, 1/x*y, 1/x^2*y^2)
         """
         from .order_basis import FunctionFieldOrderInfinite_basis
-        return FunctionFieldOrderInfinite_basis(tuple([self(g) for g in basis]), check=check)
+
+        return FunctionFieldOrderInfinite_basis(
+            tuple([self(g) for g in basis]), check=check
+        )
 
     def order_infinite(self, x, check: bool = True):
         """
@@ -680,6 +691,7 @@ class FunctionField(Field):
             2*t + 1
         """
         from .order import FunctionFieldOrder_base
+
         if isinstance(source, FunctionFieldOrder_base):
             K = source.fraction_field()
             if K is self:
@@ -694,7 +706,9 @@ class FunctionField(Field):
                     # source and self are rational function fields
                     if source.variable_name() == self.variable_name():
                         # ... in the same variable
-                        base_coercion = self.constant_field().coerce_map_from(source.constant_field())
+                        base_coercion = self.constant_field().coerce_map_from(
+                            source.constant_field()
+                        )
                         if base_coercion is not None:
                             return source.hom([self.gen()], base_morphism=base_coercion)
             else:
@@ -702,7 +716,9 @@ class FunctionField(Field):
                 base_coercion = self.coerce_map_from(source.base_field())
                 if base_coercion is not None and base_coercion.is_injective():
                     # the base field of source coerces into the base field of self
-                    self_polynomial = source.polynomial().map_coefficients(base_coercion)
+                    self_polynomial = source.polynomial().map_coefficients(
+                        base_coercion
+                    )
                     # try to find a root of the defining polynomial in self
                     if self_polynomial(self.gen()) == 0:
                         # The defining polynomial of source has a root in self,
@@ -722,7 +738,9 @@ class FunctionField(Field):
                             # The defining polynomial of source has a root in self,
                             # therefore there is a map. To be sure that it is
                             # canonical, we require the names of the roots to match
-                            return source.hom([sourcegen_in_self], base_morphism=base_coercion)
+                            return source.hom(
+                                [sourcegen_in_self], base_morphism=base_coercion
+                            )
 
     def _test_derivation(self, **options) -> None:
         """
@@ -742,6 +760,7 @@ class FunctionField(Field):
         except ImportError:
             return
         from itertools import product
+
         # Non-zero
         tester.assertFalse(d.is_zero())
         # Well-defined
@@ -784,7 +803,10 @@ class FunctionField(Field):
             base_conversion = self.convert_map_from(R.base_field())
             if base_conversion is not None:
                 from sage.categories.morphism import SetMorphism
-                return base_conversion * SetMorphism(R.Hom(R.base_field()), R._to_base_field)
+
+                return base_conversion * SetMorphism(
+                    R.Hom(R.base_field()), R._to_base_field
+                )
 
     def _intermediate_fields(self, base):
         """
@@ -838,7 +860,9 @@ class FunctionField(Field):
         while ret[-1] is not base:
             ret.append(ret[-1].base_field())
             if ret[-1] is ret[-2]:
-                raise ValueError("field has not been constructed as a finite extension of base")
+                raise ValueError(
+                    "field has not been constructed as a finite extension of base"
+                )
         return ret
 
     def rational_function_field(self) -> RationalFunctionField:
@@ -864,7 +888,11 @@ class FunctionField(Field):
         """
         from .function_field_rational import RationalFunctionField
 
-        return self if isinstance(self, RationalFunctionField) else self.base_field().rational_function_field()
+        return (
+            self
+            if isinstance(self, RationalFunctionField)
+            else self.base_field().rational_function_field()
+        )
 
     def valuation(self, prime) -> FunctionFieldValuation_base:
         r"""
@@ -982,6 +1010,7 @@ class FunctionField(Field):
             (x)-adic valuation
         """
         from sage.rings.function_field.valuation import FunctionFieldValuation
+
         return FunctionFieldValuation(self, prime)
 
     def space_of_differentials(self):
@@ -1078,6 +1107,7 @@ class FunctionField(Field):
             Divisor group of Function field in y defined by y^3 + (4*x^3 + 1)/(x^3 + 3)
         """
         from .divisor import DivisorGroup
+
         return DivisorGroup(self)
 
     def place_set(self) -> PlaceSet:
@@ -1100,10 +1130,13 @@ class FunctionField(Field):
             Set of places of Function field in y defined by y^2 + y + (x^2 + 1)/x
         """
         from .place import PlaceSet
+
         return PlaceSet(self)
 
     @cached_method
-    def completion(self, place, name=None, prec=None, gen_name=None) -> FunctionFieldCompletion:
+    def completion(
+        self, place, name=None, prec=None, gen_name=None
+    ) -> FunctionFieldCompletion:
         """
         Return the completion of the function field at the place.
 
@@ -1200,7 +1233,10 @@ class FunctionField(Field):
             True
         """
         from .maps import FunctionFieldCompletion
-        return FunctionFieldCompletion(self, place, name=name, prec=prec, gen_name=gen_name)
+
+        return FunctionFieldCompletion(
+            self, place, name=name, prec=prec, gen_name=gen_name
+        )
 
     def hilbert_symbol(self, a, b, P) -> Integer:
         r"""
@@ -1280,8 +1316,9 @@ class FunctionField(Field):
             raise NotImplementedError('only supported for global function fields')
 
         if self.characteristic() == 2:
-            raise ValueError('Hilbert symbol is only defined for'
-                            ' odd characteristic function fields')
+            raise ValueError(
+                'Hilbert symbol is only defined for odd characteristic function fields'
+            )
 
         if not (a in self and b in self):
             raise ValueError('a and b must be elements of the function field')
@@ -1311,11 +1348,11 @@ class FunctionField(Field):
         e = (k.order() - 1) // 2
 
         # Use Euler's criterion to compute the powers of Legendre symbols
-        a_rd_pw = a0**(v_b * e)
-        b_rd_pw = b0**(v_a * e)
+        a_rd_pw = a0 ** (v_b * e)
+        b_rd_pw = b0 ** (v_a * e)
 
         # Finally, put the result together and transform it into the correct output
-        res = k(-1)**(v_a * v_b * e) * a_rd_pw * b_rd_pw
+        res = k(-1) ** (v_a * v_b * e) * a_rd_pw * b_rd_pw
 
         return Integer(1) if res.is_one() else Integer(-1)
 
@@ -1338,6 +1375,7 @@ class FunctionField(Field):
             Finite Field in z4 of size 2^4
         """
         from .extensions import ConstantFieldExtension
+
         return ConstantFieldExtension(self, k)
 
     def places_finite(self, degree=1) -> list[FunctionFieldPlace]:
@@ -1418,12 +1456,18 @@ class FunctionField(Field):
             Place (x^7 + x + 1, y + x^6 + x^5 + x^4 + x^3 + x)
             sage: L.get_place(8)
         """
-        if (place := self.get_finite_place(degree)):
+        if place := self.get_finite_place(degree):
             return place
         return self.get_infinite_place(degree)
 
     @cached_method
-    def jacobian(self, model: str = 'hess', base_div: FunctionFieldPlace | FunctionFieldDivisor | None = None, extra_caching: bool = True, **kwds) -> Jacobian_base:
+    def jacobian(
+        self,
+        model: str = 'hess',
+        base_div: FunctionFieldPlace | FunctionFieldDivisor | None = None,
+        extra_caching: bool = True,
+        **kwds,
+    ) -> Jacobian_base:
         """
         Return the Jacobian of the function field.
 
@@ -1481,7 +1525,9 @@ class FunctionField(Field):
                 try:
                     base_place = self.get_place(1)
                 except AttributeError:
-                    raise ValueError('failed to obtain a rational place; provide a base divisor')
+                    raise ValueError(
+                        'failed to obtain a rational place; provide a base divisor'
+                    )
                 if base_place is None:
                     raise ValueError('the function field has no rational place')
                 # appropriate base divisor is constructed below.
@@ -1493,42 +1539,55 @@ class FunctionField(Field):
 
         if model.startswith('km'):
             from .jacobian_khuri_makdisi import Jacobian as JacobianKhuriMakdisi
+
             if model == 'km' or model.endswith('large'):
                 if base_div is None:
                     base_div = (2 * g + 1) * base_place
                 if not base_div.degree() >= 2 * g + 1:
-                    raise ValueError("Khuri-Makdisi large model requires base divisor of degree "
-                                     "at least 2*g + 1 for genus g")
+                    raise ValueError(
+                        "Khuri-Makdisi large model requires base divisor of degree "
+                        "at least 2*g + 1 for genus g"
+                    )
                 return JacobianKhuriMakdisi(self, base_div, model='large', curve=curve)
             if model.endswith('medium'):
                 if base_div is None:
                     base_div = (2 * g + 1) * base_place
                 if not base_div.degree() >= 2 * g + 1:
-                    raise ValueError("Khuri-Makdisi medium model requires base divisor of degree "
-                                     "at least 2*g + 1 for genus g")
+                    raise ValueError(
+                        "Khuri-Makdisi medium model requires base divisor of degree "
+                        "at least 2*g + 1 for genus g"
+                    )
                 return JacobianKhuriMakdisi(self, base_div, model='medium', curve=curve)
             if model.endswith('small'):
                 if base_div is None:
                     base_div = (g + 1) * base_place
                 if not base_div.degree() >= g + 1:
-                    raise ValueError("Khuri-Makdisi small model requires base divisor of degree "
-                                     "at least g + 1 for genus g")
+                    raise ValueError(
+                        "Khuri-Makdisi small model requires base divisor of degree "
+                        "at least g + 1 for genus g"
+                    )
                 return JacobianKhuriMakdisi(self, base_div, model='small', curve=curve)
         elif model == 'hess':
             from .jacobian_hess import Jacobian as JacobianHess
+
             if base_div is None:
                 base_div = g * base_place
             if base_div.degree() != g:
-                raise ValueError("Hess model requires base divisor of degree g for genus g")
+                raise ValueError(
+                    "Hess model requires base divisor of degree g for genus g"
+                )
             return JacobianHess(self, base_div, curve=curve)
         elif model == 'unique_hess':
             from .jacobian_unique_hess import Jacobian as JacobianUniqueHess
+
             if base_div is None:
                 base_div = self.get_infinite_place(1)
             if base_div is None:
                 base_div = self.get_finite_place(1)
             if base_div is None:
                 raise ValueError('the function field has no degree 1 place')
-            return JacobianUniqueHess(self, base_div, cache_infinite_ideals=extra_caching, curve=curve)
+            return JacobianUniqueHess(
+                self, base_div, cache_infinite_ideals=extra_caching, curve=curve
+            )
 
         raise ValueError("unknown model")

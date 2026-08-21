@@ -156,6 +156,7 @@ from sage.plot.plot3d.shapes import arrow3d
 from sage.plot.plot3d.texture import Texture
 from sage.plot.plot3d.tri_plot import TrianglePlot
 from . import parametric_plot3d
+
 lazy_import("sage.functions.trig", ["cos", "sin"])
 
 
@@ -174,6 +175,7 @@ class Coordinates:
     - ``indep_vars`` -- list of independent variables (the parameters will be
       substituted for these)
     """
+
     def __init__(self, dep_var, indep_vars):
         """
         Initialize.
@@ -193,9 +195,11 @@ class Coordinates:
         A = set(all_vars)
         B = set(indep_vars + [dep_var])
         if A != B:
-            raise ValueError('variables were specified incorrectly for this '
-                             'coordinate system; incorrect variables '
-                             'were %s' % list(A.symmetric_difference(B)))
+            raise ValueError(
+                'variables were specified incorrectly for this '
+                'coordinate system; incorrect variables '
+                'were %s' % list(A.symmetric_difference(B))
+            )
         self.dep_var = dep_var
         self.indep_vars = indep_vars
 
@@ -324,24 +328,28 @@ class Coordinates:
         from sage.structure.element import Expression
         from sage.rings.real_mpfr import RealNumber
         from sage.rings.integer import Integer
-        if params is not None and isinstance(func, (Expression,
-                                                    RealNumber,
-                                                    Integer)):
-            return self.transform(**{
-                self.dep_var: func,
-                self.indep_vars[0]: params[0],
-                self.indep_vars[1]: params[1]
-            })
+
+        if params is not None and isinstance(func, (Expression, RealNumber, Integer)):
+            return self.transform(
+                **{
+                    self.dep_var: func,
+                    self.indep_vars[0]: params[0],
+                    self.indep_vars[1]: params[1],
+                }
+            )
         # func might be a lambda or a Python callable; this makes it slightly
         # more complex.
         import sage.symbolic.ring
+
         dep_var_dummy = sage.symbolic.ring.var(self.dep_var)
         indep_var_dummies = sage.symbolic.ring.var(','.join(self.indep_vars))
-        transformation = self.transform(**{
-            self.dep_var: dep_var_dummy,
-            self.indep_vars[0]: indep_var_dummies[0],
-            self.indep_vars[1]: indep_var_dummies[1]
-        })
+        transformation = self.transform(
+            **{
+                self.dep_var: dep_var_dummy,
+                self.indep_vars[0]: indep_var_dummies[0],
+                self.indep_vars[1]: indep_var_dummies[1],
+            }
+        )
         if params is None:
             if callable(func):
                 params = _find_arguments_for_callable(func)
@@ -358,9 +366,16 @@ class Coordinates:
                     indep_var_dummies[0]: float({params[0]}),
                     indep_var_dummies[1]: float({params[1]})
                 }})"""
-            return eval(ll, {'t': t, 'func': func,
-                             'dep_var_dummy': dep_var_dummy,
-                             'indep_var_dummies': indep_var_dummies})
+            return eval(
+                ll,
+                {
+                    't': t,
+                    'func': func,
+                    'dep_var_dummy': dep_var_dummy,
+                    'indep_var_dummies': indep_var_dummies,
+                },
+            )
+
         return [subs_func(m) for m in transformation]
 
     def __repr__(self):
@@ -378,7 +393,9 @@ class Coordinates:
             sage: c
             My Special Coordinates coordinate transform (z in terms of x, y)
         """
-        return '{} coordinate transform ({} in terms of {})'.format(self._name, self.dep_var, ', '.join(self.indep_vars))
+        return '{} coordinate transform ({} in terms of {})'.format(
+            self._name, self.dep_var, ', '.join(self.indep_vars)
+        )
 
 
 def _find_arguments_for_callable(func):
@@ -422,7 +439,7 @@ def _find_arguments_for_callable(func):
     if f_args.defaults is None:
         params = f_args.args
     else:
-        params = f_args.args[:-len(f_args.defaults)]
+        params = f_args.args[: -len(f_args.defaults)]
 
     return params
 
@@ -434,6 +451,7 @@ class _ArbitraryCoordinates(Coordinates):
     """
     An arbitrary coordinate system.
     """
+
     _name = "Arbitrary Coordinates"
 
     def __init__(self, custom_trans, dep_var, indep_vars):
@@ -546,9 +564,11 @@ class Spherical(Coordinates):
             sage: T.transform(radius=var('r'), azimuth=var('theta'), inclination=var('phi'))
             (r*cos(theta)*sin(phi), r*sin(phi)*sin(theta), r*cos(phi))
         """
-        return (radius * sin(inclination) * cos(azimuth),
-                radius * sin(inclination) * sin(azimuth),
-                radius * cos(inclination))
+        return (
+            radius * sin(inclination) * cos(azimuth),
+            radius * sin(inclination) * sin(azimuth),
+            radius * cos(inclination),
+        )
 
 
 class SphericalElevation(Coordinates):
@@ -665,9 +685,11 @@ class SphericalElevation(Coordinates):
             sage: T.transform(radius=var('r'), azimuth=var('theta'), elevation=var('phi'))
             (r*cos(phi)*cos(theta), r*cos(phi)*sin(theta), r*sin(phi))
         """
-        return (radius * cos(elevation) * cos(azimuth),
-                radius * cos(elevation) * sin(azimuth),
-                radius * sin(elevation))
+        return (
+            radius * cos(elevation) * cos(azimuth),
+            radius * cos(elevation) * sin(azimuth),
+            radius * sin(elevation),
+        )
 
 
 class Cylindrical(Coordinates):
@@ -736,9 +758,7 @@ class Cylindrical(Coordinates):
             sage: T.transform(radius=var('r'), azimuth=var('theta'), height=var('z'))
             (r*cos(theta), r*sin(theta), z)
         """
-        return (radius * cos(azimuth),
-                radius * sin(azimuth),
-                height)
+        return (radius * cos(azimuth), radius * sin(azimuth), height)
 
 
 class TrivialTriangleFactory:
@@ -747,6 +767,7 @@ class TrivialTriangleFactory:
     but simply returning a list of vertices for both regular and
     smooth triangles.
     """
+
     def triangle(self, a, b, c, color=None):
         """
         Function emulating behavior of
@@ -1079,6 +1100,7 @@ def plot3d(f, urange, vrange, adaptive=False, transformation=None, **kwds):
     if transformation is not None:
         params = None
         from sage.structure.element import Expression
+
         # First, determine the parameters for f (from the first item of urange
         # and vrange, preferably).
         if len(urange) == 3 and len(vrange) == 3:
@@ -1086,11 +1108,16 @@ def plot3d(f, urange, vrange, adaptive=False, transformation=None, **kwds):
         elif isinstance(f, Expression) and f.is_callable():
             params = f.variables()
 
-        from sage.modules.vector_callable_symbolic_dense import Vector_callable_symbolic_dense
+        from sage.modules.vector_callable_symbolic_dense import (
+            Vector_callable_symbolic_dense,
+        )
+
         if isinstance(transformation, (tuple, list, Vector_callable_symbolic_dense)):
             if len(transformation) == 3:
                 if params is None:
-                    raise ValueError("must specify independent variable names in the ranges when using generic transformation")
+                    raise ValueError(
+                        "must specify independent variable names in the ranges when using generic transformation"
+                    )
                 indep_vars = params
             elif len(transformation) == 4:
                 indep_vars = transformation[3]
@@ -1103,9 +1130,13 @@ def plot3d(f, urange, vrange, adaptive=False, transformation=None, **kwds):
             dep_var = all_vars - set(indep_vars)
             if len(dep_var) == 1:
                 dep_var = dep_var.pop()
-                transformation = _ArbitraryCoordinates(transformation, dep_var, indep_vars)
+                transformation = _ArbitraryCoordinates(
+                    transformation, dep_var, indep_vars
+                )
             else:
-                raise ValueError("unable to determine the function variable in the transform")
+                raise ValueError(
+                    "unable to determine the function variable in the transform"
+                )
 
         if isinstance(transformation, Coordinates):
             R = transformation.to_cartesian(f, params)
@@ -1116,17 +1147,23 @@ def plot3d(f, urange, vrange, adaptive=False, transformation=None, **kwds):
     else:
         arg1 = lambda u, v: u
         arg2 = lambda u, v: v
-        P = parametric_plot3d.parametric_plot3d((arg1, arg2, f),
-                                                urange,
-                                                vrange,
-                                                **kwds)
+        P = parametric_plot3d.parametric_plot3d((arg1, arg2, f), urange, vrange, **kwds)
     P.frame_aspect_ratio([1.0, 1.0, 0.5])
     return P
 
 
-def plot3d_adaptive(f, x_range, y_range, color='automatic',
-                    grad_f=None,
-                    max_bend=.5, max_depth=5, initial_depth=4, num_colors=128, **kwds):
+def plot3d_adaptive(
+    f,
+    x_range,
+    y_range,
+    color='automatic',
+    grad_f=None,
+    max_bend=0.5,
+    max_depth=5,
+    initial_depth=4,
+    num_colors=128,
+    **kwds,
+):
     r"""
     Adaptive 3d plotting of a function of two variables.
 
@@ -1176,6 +1213,7 @@ def plot3d_adaptive(f, x_range, y_range, color='automatic',
     max_depth = max(max_depth, initial_depth)
 
     from sage.plot.misc import setup_for_eval_on_grid
+
     g, ranges = setup_for_eval_on_grid(f, [x_range, y_range], plot_points=2)
     xmin, xmax = ranges[0][:2]
     ymin, ymax = ranges[1][:2]
@@ -1192,9 +1230,17 @@ def plot3d_adaptive(f, x_range, y_range, color='automatic',
             texture = Texture(kwds)
 
     factory = TrivialTriangleFactory()
-    plot = TrianglePlot(factory, g, (xmin, xmax), (ymin, ymax), g=grad_f,
-                        min_depth=initial_depth, max_depth=max_depth,
-                        max_bend=max_bend, num_colors=None)
+    plot = TrianglePlot(
+        factory,
+        g,
+        (xmin, xmax),
+        (ymin, ymax),
+        g=grad_f,
+        min_depth=initial_depth,
+        max_depth=max_depth,
+        max_bend=max_bend,
+        num_colors=None,
+    )
 
     P = IndexFaceSet(plot._objects)
     if isinstance(texture, (list, tuple)):
@@ -1202,7 +1248,11 @@ def plot3d_adaptive(f, x_range, y_range, color='automatic',
             # do a grid coloring
             xticks = (xmax - xmin) / 2**initial_depth
             yticks = (ymax - ymin) / 2**initial_depth
-            parts = P.partition(lambda x, y, z: (int((x - xmin) / xticks) + int((y - ymin) / yticks)) % 2)
+            parts = P.partition(
+                lambda x, y, z: (
+                    (int((x - xmin) / xticks) + int((y - ymin) / yticks)) % 2
+                )
+            )
         else:
             # do a topo coloring
             bounds = P.bounding_box()
@@ -1211,7 +1261,9 @@ def plot3d_adaptive(f, x_range, y_range, color='automatic',
             if max_z == min_z:
                 span = 0
             else:
-                span = (len(texture) - 1) / (max_z - min_z)  # max to avoid dividing by 0
+                span = (len(texture) - 1) / (
+                    max_z - min_z
+                )  # max to avoid dividing by 0
             parts = P.partition(lambda x, y, z: int((z - min_z) * span))
         all = []
         for k, G in parts.items():
@@ -1323,7 +1375,13 @@ def spherical_plot3d(f, urange, vrange, **kwds):
         x, y = var('x,y')
         sphinx_plot(spherical_plot3d(1 + 2*cos(2*y), (x, 0, 3*pi/2), (y, 0, pi)))
     """
-    return plot3d(f, urange, vrange, transformation=Spherical('radius', ['azimuth', 'inclination']), **kwds)
+    return plot3d(
+        f,
+        urange,
+        vrange,
+        transformation=Spherical('radius', ['azimuth', 'inclination']),
+        **kwds,
+    )
 
 
 def cylindrical_plot3d(f, urange, vrange, **kwds):
@@ -1398,7 +1456,13 @@ def cylindrical_plot3d(f, urange, vrange, **kwds):
         P.aspect_ratio([1, 1, 1])
         sphinx_plot(P)
     """
-    return plot3d(f, urange, vrange, transformation=Cylindrical('radius', ['azimuth', 'height']), **kwds)
+    return plot3d(
+        f,
+        urange,
+        vrange,
+        transformation=Cylindrical('radius', ['azimuth', 'height']),
+        **kwds,
+    )
 
 
 def axes(scale=1, radius=None, **kwds):
@@ -1438,6 +1502,10 @@ def axes(scale=1, radius=None, **kwds):
     """
     if radius is None:
         radius = scale / 100.0
-    return Graphics3dGroup([arrow3d((0, 0, 0), (scale, 0, 0), radius, **kwds),
-                            arrow3d((0, 0, 0), (0, scale, 0), radius, **kwds),
-                            arrow3d((0, 0, 0), (0, 0, scale), radius, **kwds)])
+    return Graphics3dGroup(
+        [
+            arrow3d((0, 0, 0), (scale, 0, 0), radius, **kwds),
+            arrow3d((0, 0, 0), (0, scale, 0), radius, **kwds),
+            arrow3d((0, 0, 0), (0, 0, scale), radius, **kwds),
+        ]
+    )

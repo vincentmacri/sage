@@ -172,7 +172,11 @@ def warning(issue_number, message, warning_class=Warning, stacklevel=3):
         :exc:`Warning`.
     """
     _check_issue_number(issue_number)
-    message += '\nSee https://github.com/sagemath/sage/issues/' + str(issue_number) + ' for details.'
+    message += (
+        '\nSee https://github.com/sagemath/sage/issues/'
+        + str(issue_number)
+        + ' for details.'
+    )
 
     # Stack level 3 to get the line number of the code which called
     # the deprecated function which called this function.
@@ -305,14 +309,17 @@ class experimental:
         @sage_wraps(func)
         def wrapper(*args, **kwds):
             if not wrapper._already_issued:
-                experimental_warning(self.issue_number,
-                            'This class/method/function is marked as '
-                            'experimental. It, its functionality or its '
-                            'interface might change without a '
-                            'formal deprecation.',
-                            self.stacklevel)
+                experimental_warning(
+                    self.issue_number,
+                    'This class/method/function is marked as '
+                    'experimental. It, its functionality or its '
+                    'interface might change without a '
+                    'formal deprecation.',
+                    self.stacklevel,
+                )
                 wrapper._already_issued = True
             return func(*args, **kwds)
+
         wrapper._already_issued = False
 
         return wrapper
@@ -334,6 +341,7 @@ class __experimental_self_test:
         sage: _ = __experimental_self_test("B")
         I'm B
     """
+
     @experimental(issue_number=88888)
     def __init__(self, x):
         print("I'm " + x)
@@ -349,7 +357,18 @@ class DeprecatedFunctionAlias:
     - Florent Hivert (2009-11-23), with the help of Mike Hansen.
     - Luca De Feo (2011-07-11), printing the full module path when different from old path
     """
-    def __init__(self, issue_number, func, module, instance=None, unbound=None, *, replacement=None, replacement_rst_doc=None):
+
+    def __init__(
+        self,
+        issue_number,
+        func,
+        module,
+        instance=None,
+        unbound=None,
+        *,
+        replacement=None,
+        replacement_rst_doc=None,
+    ):
         r"""
         TESTS::
 
@@ -418,6 +437,7 @@ class DeprecatedFunctionAlias:
         # then search object that contains self as method
         import gc
         import copy
+
         gc.collect()
 
         def is_class(gc_ref):
@@ -426,6 +446,7 @@ class DeprecatedFunctionAlias:
             is_python_class = '__module__' in gc_ref or '__package__' in gc_ref
             is_cython_class = '__new__' in gc_ref
             return is_python_class or is_cython_class
+
         search_for = self if (self.unbound is None) else self.unbound
         for ref in gc.get_referrers(search_for):
             if is_class(ref) and ref is not self.__dict__:
@@ -433,7 +454,9 @@ class DeprecatedFunctionAlias:
                 for key, val in ref_copy.items():
                     if val is search_for:
                         return key
-        raise AttributeError("The name of this deprecated function cannot be determined")
+        raise AttributeError(
+            "The name of this deprecated function cannot be determined"
+        )
 
     def __call__(self, *args, **kwds):
         """
@@ -459,8 +482,10 @@ class DeprecatedFunctionAlias:
             else:
                 replacement = self.func.__name__
 
-        deprecation(self.issue_number,
-                    f"{self.__name__} is deprecated. Please use {replacement} instead.")
+        deprecation(
+            self.issue_number,
+            f"{self.__name__} is deprecated. Please use {replacement} instead.",
+        )
         if self.instance is None:
             return self.func(*args, **kwds)
         return self.func(self.instance, *args, **kwds)
@@ -498,12 +523,14 @@ class DeprecatedFunctionAlias:
         if inst is None:
             return self  # Unbound method lookup on class
         # Return a bound method wrapper
-        return DeprecatedFunctionAlias(self.issue_number, self.func,
-                                       self.__module__, instance=inst,
-                                       unbound=self)
+        return DeprecatedFunctionAlias(
+            self.issue_number, self.func, self.__module__, instance=inst, unbound=self
+        )
 
 
-def deprecated_function_alias(issue_number, func, *, replacement=None, replacement_rst_doc=None):
+def deprecated_function_alias(
+    issue_number, func, *, replacement=None, replacement_rst_doc=None
+):
     """
     Create an aliased version of a function or a method which raises a
     deprecation warning message.
@@ -569,5 +596,10 @@ def deprecated_function_alias(issue_number, func, *, replacement=None, replaceme
             module_name = inspect.getmodulename(frame1.f_code.co_filename)
     if module_name is None:
         module_name = '__main__'
-    return DeprecatedFunctionAlias(issue_number, func, module_name,
-                                   replacement=replacement, replacement_rst_doc=replacement_rst_doc)
+    return DeprecatedFunctionAlias(
+        issue_number,
+        func,
+        module_name,
+        replacement=replacement,
+        replacement_rst_doc=replacement_rst_doc,
+    )

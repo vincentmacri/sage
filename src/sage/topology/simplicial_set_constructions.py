@@ -79,12 +79,17 @@ from sage.sets.set import Set
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .simplicial_set import AbstractSimplex, \
-    SimplicialSet_arbitrary, SimplicialSet_finite, \
-    standardize_degeneracies, face_degeneracies
+from .simplicial_set import (
+    AbstractSimplex,
+    SimplicialSet_arbitrary,
+    SimplicialSet_finite,
+    standardize_degeneracies,
+    face_degeneracies,
+)
 from .simplicial_set_examples import Empty, Point
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.categories.simplicial_sets', 'SimplicialSets')
 
 
@@ -97,6 +102,7 @@ lazy_import('sage.categories.simplicial_sets', 'SimplicialSets')
 # along with its dimension, so for example, the starting value is
 # often (-1, Empty()): the (-1)-skeleton is the empty simplicial
 # set. It gets used and updated in the n_skeleton method.
+
 
 class SubSimplicialSet(SimplicialSet_finite, UniqueRepresentation):
     @staticmethod
@@ -169,9 +175,11 @@ class SubSimplicialSet(SimplicialSet_finite, UniqueRepresentation):
         data = dict(data)
         if ambient is None:
             ambient = self
-        if (ambient.is_pointed()
-                and hasattr(ambient, '_basepoint')
-                and ambient.base_point() in data):
+        if (
+            ambient.is_pointed()
+            and hasattr(ambient, '_basepoint')
+            and ambient.base_point() in data
+        ):
             SimplicialSet_finite.__init__(self, data, base_point=ambient.base_point())
         else:
             SimplicialSet_finite.__init__(self, data)
@@ -291,6 +299,7 @@ class PullbackOfSimplicialSets(SimplicialSet_arbitrary, UniqueRepresentation):
         """
         # Import this here to prevent circular imports.
         from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
+
         if maps and any(not isinstance(f, SimplicialSetMorphism) for f in maps):
             raise ValueError('the maps must be morphisms of simplicial sets')
 
@@ -340,7 +349,9 @@ class PullbackOfSimplicialSets(SimplicialSet_arbitrary, UniqueRepresentation):
             if maps:
                 codomain = SimplicialSet_finite.n_skeleton(maps[0].codomain(), n)
                 domains = [SimplicialSet_finite.n_skeleton(f.domain(), n) for f in maps]
-                new_maps = [f.n_skeleton(n, d, codomain) for (f, d) in zip(maps, domains)]
+                new_maps = [
+                    f.n_skeleton(n, d, codomain) for (f, d) in zip(maps, domains)
+                ]
                 return PullbackOfSimplicialSets_finite(new_maps)
             return PullbackOfSimplicialSets_finite(maps)
         start, skel = self._n_skeleton
@@ -414,6 +425,7 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
     the pullback and the pullback's universal property: see
     :meth:`structure_map` and :meth:`universal_property`.
     """
+
     @staticmethod
     def __classcall_private__(self, maps=None):
         """
@@ -468,19 +480,23 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
         """
         # Import this here to prevent circular imports.
         from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
+
         if maps and any(not isinstance(f, SimplicialSetMorphism) for f in maps):
             raise ValueError('the maps must be morphisms of simplicial sets')
         if not maps:
             star = AbstractSimplex(0, name='*')
-            SimplicialSet_finite.__init__(self, {star: None}, base_point=star, name='Point')
+            SimplicialSet_finite.__init__(
+                self, {star: None}, base_point=star, name='Point'
+            )
             self._maps = ()
             self._translation = {}
             return
         if len(maps) == 1:
             f = maps[0]
             if f.is_pointed():
-                SimplicialSet_finite.__init__(self, f.domain().face_data(),
-                                              base_point=f.domain().base_point())
+                SimplicialSet_finite.__init__(
+                    self, f.domain().face_data(), base_point=f.domain().base_point()
+                )
             else:
                 SimplicialSet_finite.__init__(self, f.domain().face_data())
             self._maps = (f,)
@@ -523,15 +539,29 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
 
                     sigma = simplices[0].apply_degeneracies(*degens[0])
                     target = maps[0](sigma)
-                    if any(target != f(tau.apply_degeneracies(*degen))
-                           for (f, tau, degen) in zip(maps[1:], simplices[1:], degens[1:])):
+                    if any(
+                        target != f(tau.apply_degeneracies(*degen))
+                        for (f, tau, degen) in zip(maps[1:], simplices[1:], degens[1:])
+                    ):
                         continue
 
                     simplex_factors = tuple(zip(simplices, tuple(degens)))
-                    s = '(' + ', '.join('{}'.format(_[0].apply_degeneracies(*_[1]))
-                                        for _ in simplex_factors) + ')'
-                    ls = '(' + ', '.join('{}'.format(latex(_[0].apply_degeneracies(*_[1])))
-                                         for _ in simplex_factors) + ')'
+                    s = (
+                        '('
+                        + ', '.join(
+                            '{}'.format(_[0].apply_degeneracies(*_[1]))
+                            for _ in simplex_factors
+                        )
+                        + ')'
+                    )
+                    ls = (
+                        '('
+                        + ', '.join(
+                            '{}'.format(latex(_[0].apply_degeneracies(*_[1])))
+                            for _ in simplex_factors
+                        )
+                        + ')'
+                    )
                     simplex = AbstractSimplex(d, name=s, latex_name=ls)
                     translate[simplex_factors] = simplex
                     # Now compute the faces of simplex.
@@ -540,7 +570,7 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
                         faces = None
                     else:
                         faces = []
-                        for i in range(d+1):
+                        for i in range(d + 1):
                             # Compute d_i on simplex.
                             #
                             # face_degens: tuple of pairs (J, t): J is the
@@ -550,7 +580,9 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
                             face_degens = [face_degeneracies(i, _) for _ in degens]
                             face_factors = []
                             new_degens = []
-                            for x, Face, face_dict in zip(simplices, face_degens, data_factors):
+                            for x, Face, face_dict in zip(
+                                simplices, face_degens, data_factors
+                            ):
                                 J = Face[0]
                                 t = Face[1]
                                 if t is None:
@@ -559,7 +591,9 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
                                     underlying = face_dict[x][t]
                                     temp_degens = underlying.degeneracies()
                                     underlying = underlying.nondegenerate()
-                                    J = standardize_degeneracies(*(J + list(temp_degens)))
+                                    J = standardize_degeneracies(
+                                        *(J + list(temp_degens))
+                                    )
                                     face_factors.append(underlying)
                                 new_degens.append(J)
 
@@ -587,7 +621,9 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
                                         new_J.append(j - q)
                                 face_degens.append(tuple(new_J))
                             K = sorted(K, reverse=True)
-                            underlying_face = translate[tuple(zip(tuple(face_factors), tuple(face_degens)))]
+                            underlying_face = translate[
+                                tuple(zip(tuple(face_factors), tuple(face_degens)))
+                            ]
                             faces.append(underlying_face.apply_degeneracies(*K))
                         data[simplex] = faces
 
@@ -692,21 +728,29 @@ class PullbackOfSimplicialSets_finite(PullbackOfSimplicialSets, SimplicialSet_fi
         if any(g.domain() != domain for g in maps[1:]):
             raise ValueError('the maps do not all have the same codomain')
         composite = self._maps[0] * maps[0]
-        if any(f*g != composite for f, g in zip(self._maps[1:], maps[1:])):
+        if any(f * g != composite for f, g in zip(self._maps[1:], maps[1:])):
             raise ValueError('the maps are not compatible')
         data = {}
         translate = dict(self._translation)
         for sigma in domain.nondegenerate_simplices():
-            target = tuple([(f(sigma).nondegenerate(), tuple(f(sigma).degeneracies()))
-                            for f in maps])
+            target = tuple(
+                [
+                    (f(sigma).nondegenerate(), tuple(f(sigma).degeneracies()))
+                    for f in maps
+                ]
+            )
             # If there any degeneracies in common, remove them: the
             # dictionary "translate" has nondegenerate simplices as
             # its keys.
             in_common = set.intersection(*[set(_[1]) for _ in target])
             if in_common:
-                target = tuple((tau, tuple(sorted(set(degens).difference(in_common),
-                                                  reverse=True)))
-                               for tau, degens in target)
+                target = tuple(
+                    (
+                        tau,
+                        tuple(sorted(set(degens).difference(in_common), reverse=True)),
+                    )
+                    for tau, degens in target
+                )
             in_common = sorted(in_common, reverse=True)
             data[sigma] = translate[target].apply_degeneracies(*in_common)
         return domain.Hom(self)(data)
@@ -720,6 +764,7 @@ class Factors:
     :class:`WedgeOfSimplicialSets`, and
     :class:`DisjointUnionOfSimplicialSets`.
     """
+
     def factors(self):
         """
         Return the factors involved in this construction of simplicial sets.
@@ -870,8 +915,9 @@ class ProductOfSimplicialSets(PullbackOfSimplicialSets, Factors):
              3: Vector space of dimension 2 over Finite Field of size 2,
              4: Vector space of dimension 2 over Finite Field of size 2}
         """
-        PullbackOfSimplicialSets.__init__(self, [space.constant_map()
-                                                 for space in factors])
+        PullbackOfSimplicialSets.__init__(
+            self, [space.constant_map() for space in factors]
+        )
         self._factors = factors
 
     def n_skeleton(self, n):
@@ -912,7 +958,9 @@ class ProductOfSimplicialSets(PullbackOfSimplicialSets, Factors):
             return skel
         if start > n:
             return skel.n_skeleton(n)
-        ans = n_skel(ProductOfSimplicialSets_finite([X.n_skeleton(n) for X in self._factors]), n)
+        ans = n_skel(
+            ProductOfSimplicialSets_finite([X.n_skeleton(n) for X in self._factors]), n
+        )
         self._n_skeleton = (n, ans)
         return ans
 
@@ -956,16 +1004,17 @@ class ProductOfSimplicialSets(PullbackOfSimplicialSets, Factors):
         """
         if as_subset:
             if any(not _.is_pointed() for _ in self.factors()):
-                raise ValueError('"as_subset=True" is only valid '
-                                 'if each factor is pointed')
+                raise ValueError(
+                    '"as_subset=True" is only valid if each factor is pointed'
+                )
 
             basept_factors = [sset.base_point() for sset in self.factors()]
-            basept_factors = basept_factors[:i] + basept_factors[i+1:]
+            basept_factors = basept_factors[:i] + basept_factors[i + 1 :]
             to_factors = {v: k for k, v in self._translation}
             simps = []
             for x in self.nondegenerate_simplices():
                 simplices = [sigma[0] for sigma in to_factors[x]]
-                if simplices[:i] + simplices[i+1:] == basept_factors:
+                if simplices[:i] + simplices[i + 1 :] == basept_factors:
                     simps.append(x)
             return self.subsimplicial_set(simps)
         return self.factors()[i]
@@ -1003,7 +1052,9 @@ class ProductOfSimplicialSets(PullbackOfSimplicialSets, Factors):
         return ' \\times '.join(latex(X) for X in self._factors)
 
 
-class ProductOfSimplicialSets_finite(ProductOfSimplicialSets, PullbackOfSimplicialSets_finite):
+class ProductOfSimplicialSets_finite(
+    ProductOfSimplicialSets, PullbackOfSimplicialSets_finite
+):
     r"""
     The product of finite simplicial sets.
 
@@ -1013,6 +1064,7 @@ class ProductOfSimplicialSets_finite(ProductOfSimplicialSets, PullbackOfSimplici
     wedge as a subcomplex. See :meth:`projection_map`,
     :meth:`wedge_as_subset`, and :meth:`fat_wedge_as_subset`
     """
+
     def __init__(self, factors=None):
         r"""
         Return the product of finite simplicial sets.
@@ -1041,8 +1093,9 @@ class ProductOfSimplicialSets_finite(ProductOfSimplicialSets, PullbackOfSimplici
             sage: Z.base_point()
             (w, v)
         """
-        PullbackOfSimplicialSets_finite.__init__(self, [space.constant_map()
-                                                 for space in factors])
+        PullbackOfSimplicialSets_finite.__init__(
+            self, [space.constant_map() for space in factors]
+        )
         self._factors = tuple([f.domain() for f in self._maps])
 
     def projection_map(self, i):
@@ -1148,8 +1201,7 @@ class PushoutOfSimplicialSets(SimplicialSet_arbitrary, UniqueRepresentation):
             True
         """
         if maps:
-            return super().__classcall__(cls, maps=tuple(maps),
-                                         vertex_name=vertex_name)
+            return super().__classcall__(cls, maps=tuple(maps), vertex_name=vertex_name)
         return super().__classcall__(cls, vertex_name=vertex_name)
 
     def __init__(self, maps=None, vertex_name=None):
@@ -1271,6 +1323,7 @@ class PushoutOfSimplicialSets(SimplicialSet_arbitrary, UniqueRepresentation):
         """
         # Import this here to prevent circular imports.
         from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
+
         if maps and any(not isinstance(f, SimplicialSetMorphism) for f in maps):
             raise ValueError('the maps must be morphisms of simplicial sets')
         Cat = SimplicialSets()
@@ -1320,19 +1373,24 @@ class PushoutOfSimplicialSets(SimplicialSet_arbitrary, UniqueRepresentation):
             maps = self._maps
             if maps:
                 domain = SimplicialSet_finite.n_skeleton(maps[0].domain(), n)
-                codomains = [SimplicialSet_finite.n_skeleton(f.codomain(), n) for f in maps]
-                new_maps = [f.n_skeleton(n, domain, c) for (f, c) in zip(maps, codomains)]
-                return PushoutOfSimplicialSets_finite(new_maps,
-                                                      vertex_name=self._vertex_name)
-            return PushoutOfSimplicialSets_finite(maps,
-                                                  vertex_name=self._vertex_name)
+                codomains = [
+                    SimplicialSet_finite.n_skeleton(f.codomain(), n) for f in maps
+                ]
+                new_maps = [
+                    f.n_skeleton(n, domain, c) for (f, c) in zip(maps, codomains)
+                ]
+                return PushoutOfSimplicialSets_finite(
+                    new_maps, vertex_name=self._vertex_name
+                )
+            return PushoutOfSimplicialSets_finite(maps, vertex_name=self._vertex_name)
         start, skel = self._n_skeleton
         if start == n:
             return skel
         if start > n:
             return skel.n_skeleton(n)
-        ans = PushoutOfSimplicialSets_finite([f.n_skeleton(n) for f in self._maps],
-                                             vertex_name=self._vertex_name)
+        ans = PushoutOfSimplicialSets_finite(
+            [f.n_skeleton(n) for f in self._maps], vertex_name=self._vertex_name
+        )
         self._n_skeleton = (n, ans)
         return ans
 
@@ -1403,6 +1461,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
     pushout and the pushout's universal property: see
     :meth:`structure_map` and :meth:`universal_property`.
     """
+
     @staticmethod
     def __classcall_private__(cls, maps=None, vertex_name=None):
         """
@@ -1415,8 +1474,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
             True
         """
         if maps:
-            return super().__classcall__(cls, maps=tuple(maps),
-                                         vertex_name=vertex_name)
+            return super().__classcall__(cls, maps=tuple(maps), vertex_name=vertex_name)
         return super().__classcall__(cls, vertex_name=vertex_name)
 
     def __init__(self, maps=None, vertex_name=None):
@@ -1444,6 +1502,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
 
         # Import this here to prevent circular imports.
         from sage.topology.simplicial_set_morphism import SimplicialSetMorphism
+
         if maps and any(not isinstance(f, SimplicialSetMorphism) for f in maps):
             raise ValueError('the maps must be morphisms of simplicial sets')
         if not maps:
@@ -1460,22 +1519,25 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
                 base_point = codomain.base_point()
                 if vertex_name is not None:
                     base_point.rename(vertex_name)
-                SimplicialSet_finite.__init__(self, codomain.face_data(),
-                                              base_point=base_point)
+                SimplicialSet_finite.__init__(
+                    self, codomain.face_data(), base_point=base_point
+                )
             elif len(domain.nondegenerate_simplices()) == 1:
                 # X is a point.
                 base_point = f(domain().n_cells(0)[0])
                 if vertex_name is not None:
                     base_point.rename(vertex_name)
-                SimplicialSet_finite.__init__(self, codomain.face_data(),
-                                              base_point=base_point)
+                SimplicialSet_finite.__init__(
+                    self, codomain.face_data(), base_point=base_point
+                )
             elif len(codomain.nondegenerate_simplices()) == 1:
                 # Y is a point.
                 base_point = codomain.n_cells(0)[0]
                 if vertex_name is not None:
                     base_point.rename(vertex_name)
-                SimplicialSet_finite.__init__(self, codomain.face_data(),
-                                              base_point=base_point)
+                SimplicialSet_finite.__init__(
+                    self, codomain.face_data(), base_point=base_point
+                )
             else:
                 SimplicialSet_finite.__init__(self, codomain.face_data())
             self._maps = (f,)
@@ -1489,7 +1551,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
         # spaces: indexed list of spaces. Entries are of the form
         # (space, int) where int=-1 for the domain, and for the
         # codomains, int is the corresponding index.
-        spaces = [(Y, i-1) for i, Y in enumerate([domain] + codomains)]
+        spaces = [(Y, i - 1) for i, Y in enumerate([domain] + codomains)]
         # Dictionaries to translate from simplices in domain,
         # codomains to simplices in the pushout. The keys are of the
         # form (space, int). int=-1 for the domain, and for the
@@ -1524,14 +1586,14 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
                 if degenerate:
                     # Identify the degeneracies involved.
                     degens = []
-                    for (sigma, j) in s:
+                    for sigma, j in s:
                         if len(sigma.degeneracies()) > len(degens):
                             degens = sigma.degeneracies()
-                            space = spaces[j+1]
+                            space = spaces[j + 1]
                             old = _to_P[space][sigma.nondegenerate()]
                     for sigma, j in s:
                         # Now update the _to_P[space] dictionaries.
-                        space = spaces[j+1]
+                        space = spaces[j + 1]
                         _to_P[space][sigma] = old.apply_degeneracies(*degens)
                 else:  # nondegenerate
                     if len(s) == 1:
@@ -1544,16 +1606,19 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
                                 name = str(sigma)
                                 latex_name = latex(sigma)
                                 break
-                    new = AbstractSimplex(dim, name=name,
-                                          latex_name=latex_name)
+                    new = AbstractSimplex(dim, name=name, latex_name=latex_name)
                     if dim == 0:
                         faces = None
                     for sigma, j in s:
-                        space = spaces[j+1]
+                        space = spaces[j + 1]
                         _to_P[space][sigma] = new
                         if dim > 0:
-                            faces = [_to_P[space][tau.nondegenerate()].apply_degeneracies(*tau.degeneracies())
-                                     for tau in space[0].faces(sigma)]
+                            faces = [
+                                _to_P[space][tau.nondegenerate()].apply_degeneracies(
+                                    *tau.degeneracies()
+                                )
+                                for tau in space[0].faces(sigma)
+                            ]
                     simplices[new] = faces
 
         some_Y_is_pt = False
@@ -1578,8 +1643,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
         elif all(f.is_pointed() for f in maps):
             pt = _to_P[(codomains[0], 0)][codomains[0].base_point()]
             if any(_to_P[(Y, i)][Y.base_point()] != pt for Y, i in spaces[2:]):
-                raise ValueError('something unexpected went wrong '
-                                 'with base points')
+                raise ValueError('something unexpected went wrong with base points')
             base_point = _to_P[(domain, -1)][domain.base_point()]
             if vertex_name is not None:
                 base_point.rename(vertex_name)
@@ -1588,8 +1652,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
             SimplicialSet_finite.__init__(self, simplices)
         # The relevant maps:
         self._maps = maps
-        self._structure = tuple([Y.Hom(self)(_to_P[(Y, i)])
-                                 for Y, i in spaces[1:]])
+        self._structure = tuple([Y.Hom(self)(_to_P[(Y, i)]) for Y, i in spaces[1:]])
         self._vertex_name = vertex_name
 
     def structure_map(self, i):
@@ -1674,7 +1737,7 @@ class PushoutOfSimplicialSets_finite(PushoutOfSimplicialSets, SimplicialSet_fini
         if any(g.codomain() != codomain for g in maps[1:]):
             raise ValueError('the maps do not all have the same codomain')
         composite = maps[0] * self._maps[0]
-        if any(g*f != composite for g, f in zip(maps[1:], self._maps[1:])):
+        if any(g * f != composite for g, f in zip(maps[1:], self._maps[1:])):
             raise ValueError('the maps are not compatible')
         data = {}
         for i, g in enumerate(maps):
@@ -1722,9 +1785,9 @@ class QuotientOfSimplicialSet(PushoutOfSimplicialSets):
                     --> [*, s_0 *, s_1 s_0 *, f * f * f, f * f * f * f, f * f * f * f * f]
         """
         subcomplex = inclusion.domain()
-        PushoutOfSimplicialSets.__init__(self, [inclusion,
-                                                subcomplex.constant_map()],
-                                         vertex_name=vertex_name)
+        PushoutOfSimplicialSets.__init__(
+            self, [inclusion, subcomplex.constant_map()], vertex_name=vertex_name
+        )
 
         ambient = inclusion.codomain()
         if ambient.is_pointed() and ambient.is_finite():
@@ -1813,17 +1876,21 @@ class QuotientOfSimplicialSet(PushoutOfSimplicialSets):
             ambient = SimplicialSet_finite.n_skeleton(self.ambient(), n)
             subcomplex = SimplicialSet_finite.n_skeleton(self.subcomplex(), n)
             subcomplex = ambient.subsimplicial_set(subcomplex.nondegenerate_simplices())
-            return QuotientOfSimplicialSet_finite(subcomplex.inclusion_map(),
-                                                  vertex_name=self._vertex_name)
+            return QuotientOfSimplicialSet_finite(
+                subcomplex.inclusion_map(), vertex_name=self._vertex_name
+            )
         start, skel = self._n_skeleton
         if start == n:
             return skel
         if start > n:
             return skel.n_skeleton(n)
         ambient = self.ambient().n_skeleton(n)
-        subcomplex = ambient.subsimplicial_set(self.subcomplex().nondegenerate_simplices(n))
-        ans = QuotientOfSimplicialSet_finite(subcomplex.inclusion_map(),
-                                             vertex_name=self._vertex_name)
+        subcomplex = ambient.subsimplicial_set(
+            self.subcomplex().nondegenerate_simplices(n)
+        )
+        ans = QuotientOfSimplicialSet_finite(
+            subcomplex.inclusion_map(), vertex_name=self._vertex_name
+        )
         self._n_skeleton = (n, ans)
         return ans
 
@@ -1855,14 +1922,16 @@ class QuotientOfSimplicialSet(PushoutOfSimplicialSets):
         return '{} / {}'.format(latex(self.ambient()), latex(self.subcomplex()))
 
 
-class QuotientOfSimplicialSet_finite(QuotientOfSimplicialSet,
-                                     PushoutOfSimplicialSets_finite):
+class QuotientOfSimplicialSet_finite(
+    QuotientOfSimplicialSet, PushoutOfSimplicialSets_finite
+):
     """
     The quotient of finite simplicial sets.
 
     When the simplicial sets involved are finite, there is a
     :meth:`quotient_map` method available.
     """
+
     def __init__(self, inclusion, vertex_name='*'):
         r"""
         Return the quotient of a simplicial set by a subsimplicial set.
@@ -1884,9 +1953,9 @@ class QuotientOfSimplicialSet_finite(QuotientOfSimplicialSet,
                     --> [*, s_0 *, s_1 s_0 *, f * f * f, f * f * f * f, f * f * f * f * f]
         """
         subcomplex = inclusion.domain()
-        PushoutOfSimplicialSets_finite.__init__(self, [inclusion,
-                                                       subcomplex.constant_map()],
-                                                vertex_name=vertex_name)
+        PushoutOfSimplicialSets_finite.__init__(
+            self, [inclusion, subcomplex.constant_map()], vertex_name=vertex_name
+        )
         ambient = inclusion.codomain()
         if ambient.is_pointed():
             if ambient.base_point() not in subcomplex:
@@ -1915,8 +1984,7 @@ class QuotientOfSimplicialSet_finite(QuotientOfSimplicialSet,
         return self.structure_map(0)
 
 
-class SmashProductOfSimplicialSets_finite(QuotientOfSimplicialSet_finite,
-                                          Factors):
+class SmashProductOfSimplicialSets_finite(QuotientOfSimplicialSet_finite, Factors):
     @staticmethod
     def __classcall__(cls, factors=None):
         """
@@ -2057,11 +2125,13 @@ class WedgeOfSimplicialSets(PushoutOfSimplicialSets, Factors):
         """
         if any(not space.is_pointed() for space in factors):
             raise ValueError('the simplicial sets must be pointed')
-        PushoutOfSimplicialSets.__init__(self, [space.base_point_map()
-                                                for space in factors])
+        PushoutOfSimplicialSets.__init__(
+            self, [space.base_point_map() for space in factors]
+        )
         if factors:
-            vertices = PushoutOfSimplicialSets_finite([space.n_skeleton(0).base_point_map()
-                                                       for space in factors])
+            vertices = PushoutOfSimplicialSets_finite(
+                [space.n_skeleton(0).base_point_map() for space in factors]
+            )
             self._basepoint = vertices.base_point()
         self.base_point().rename('*')
         self._factors = factors
@@ -2098,10 +2168,13 @@ class WedgeOfSimplicialSets(PushoutOfSimplicialSets, Factors):
         return ' \\vee '.join(latex(X) for X in self._factors)
 
 
-class WedgeOfSimplicialSets_finite(WedgeOfSimplicialSets, PushoutOfSimplicialSets_finite):
+class WedgeOfSimplicialSets_finite(
+    WedgeOfSimplicialSets, PushoutOfSimplicialSets_finite
+):
     """
     The wedge sum of finite pointed simplicial sets.
     """
+
     def __init__(self, factors=None):
         r"""
         Return the wedge sum of finite pointed simplicial sets.
@@ -2129,8 +2202,9 @@ class WedgeOfSimplicialSets_finite(WedgeOfSimplicialSets, PushoutOfSimplicialSet
         else:
             if any(not space.is_pointed() for space in factors):
                 raise ValueError('the simplicial sets must be pointed')
-            PushoutOfSimplicialSets_finite.__init__(self, [space.base_point_map()
-                                                           for space in factors])
+            PushoutOfSimplicialSets_finite.__init__(
+                self, [space.base_point_map() for space in factors]
+            )
         self.base_point().rename('*')
         self._factors = factors
 
@@ -2176,10 +2250,12 @@ class WedgeOfSimplicialSets_finite(WedgeOfSimplicialSets, PushoutOfSimplicialSet
             Z
         """
         m = len(self._factors)
-        simplices = ([self.inclusion_map(j).image().nondegenerate_simplices()
-                      for j in range(i)]
-                     + [self.inclusion_map(j).image().nondegenerate_simplices()
-                        for j in range(i+1, m)])
+        simplices = [
+            self.inclusion_map(j).image().nondegenerate_simplices() for j in range(i)
+        ] + [
+            self.inclusion_map(j).image().nondegenerate_simplices()
+            for j in range(i + 1, m)
+        ]
         return self.quotient(list(itertools.chain(*simplices))).quotient_map()
 
 
@@ -2232,8 +2308,9 @@ class DisjointUnionOfSimplicialSets(PushoutOfSimplicialSets, Factors):
               Defn: [Delta_{0,0}, Delta_{1,0}, Delta_{1,1}, Delta_{1,2}, Delta_{2,0}, Delta_{2,1}]
                     --> [Delta_{0,0}, Delta_{1,0}, Delta_{1,1}, Delta_{1,2}, Delta_{2,0}, Delta_{2,1}]
         """
-        PushoutOfSimplicialSets.__init__(self, [space._map_from_empty_set()
-                                                for space in factors])
+        PushoutOfSimplicialSets.__init__(
+            self, [space._map_from_empty_set() for space in factors]
+        )
         self._factors = factors
         self._n_skeleton = (-1, Empty())
 
@@ -2263,15 +2340,17 @@ class DisjointUnionOfSimplicialSets(PushoutOfSimplicialSets, Factors):
             {0: Z, 1: Z x Z x C2, 2: Z, 3: Z}
         """
         if self.is_finite():
-            return DisjointUnionOfSimplicialSets_finite(tuple([X.n_skeleton(n)
-                                                               for X in self._factors]))
+            return DisjointUnionOfSimplicialSets_finite(
+                tuple([X.n_skeleton(n) for X in self._factors])
+            )
         start, skel = self._n_skeleton
         if start == n:
             return skel
         if start > n:
             return skel.n_skeleton(n)
-        ans = DisjointUnionOfSimplicialSets_finite(tuple([X.n_skeleton(n)
-                                                          for X in self._factors]))
+        ans = DisjointUnionOfSimplicialSets_finite(
+            tuple([X.n_skeleton(n) for X in self._factors])
+        )
         self._n_skeleton = (n, ans)
         return ans
 
@@ -2308,11 +2387,13 @@ class DisjointUnionOfSimplicialSets(PushoutOfSimplicialSets, Factors):
         return ' \\amalg '.join(latex(X) for X in self._factors)
 
 
-class DisjointUnionOfSimplicialSets_finite(DisjointUnionOfSimplicialSets,
-                                           PushoutOfSimplicialSets_finite):
+class DisjointUnionOfSimplicialSets_finite(
+    DisjointUnionOfSimplicialSets, PushoutOfSimplicialSets_finite
+):
     """
     The disjoint union of finite simplicial sets.
     """
+
     def __init__(self, factors=None):
         r"""
         Return the disjoint union of finite simplicial sets.
@@ -2339,8 +2420,9 @@ class DisjointUnionOfSimplicialSets_finite(DisjointUnionOfSimplicialSets,
         if not factors:
             PushoutOfSimplicialSets_finite.__init__(self)
         else:
-            PushoutOfSimplicialSets_finite.__init__(self, [space._map_from_empty_set()
-                                                           for space in factors])
+            PushoutOfSimplicialSets_finite.__init__(
+                self, [space._map_from_empty_set() for space in factors]
+            )
         self._factors = factors
 
     def inclusion_map(self, i):
@@ -2494,18 +2576,24 @@ class ConeOfSimplicialSet_finite(ConeOfSimplicialSet, SimplicialSet_finite):
         # (sigma, *).
         new_simplices = {'cone': star}
         for sigma in base.nondegenerate_simplices():
-            new = AbstractSimplex(sigma.dimension()+1,
-                                  name='({},*)'.format(sigma),
-                                  latex_name='({},*)'.format(latex(sigma)))
+            new = AbstractSimplex(
+                sigma.dimension() + 1,
+                name='({},*)'.format(sigma),
+                latex_name='({},*)'.format(latex(sigma)),
+            )
             if sigma.dimension() == 0:
                 data[sigma] = None
                 data[new] = (star, sigma)
             else:
                 sigma_faces = base.face_data()[sigma]
                 data[sigma] = sigma_faces
-                new_faces = [new_simplices[face.nondegenerate()].apply_degeneracies(*face.degeneracies())
-                             for face in sigma_faces]
-                data[new] = (new_faces + [sigma])
+                new_faces = [
+                    new_simplices[face.nondegenerate()].apply_degeneracies(
+                        *face.degeneracies()
+                    )
+                    for face in sigma_faces
+                ]
+                data[new] = new_faces + [sigma]
             new_simplices[sigma] = new
         SimplicialSet_finite.__init__(self, data, base_point=star)
         # self._base: original simplicial set.
@@ -2651,8 +2739,9 @@ class ReducedConeOfSimplicialSet(QuotientOfSimplicialSet):
         return 'C {}'.format(latex(self._base))
 
 
-class ReducedConeOfSimplicialSet_finite(ReducedConeOfSimplicialSet,
-                                        QuotientOfSimplicialSet_finite):
+class ReducedConeOfSimplicialSet_finite(
+    ReducedConeOfSimplicialSet, QuotientOfSimplicialSet_finite
+):
     def __init__(self, base):
         r"""
         Return the reduced cone on a simplicial set.
@@ -2772,9 +2861,10 @@ class SuspensionOfSimplicialSet(SimplicialSet_arbitrary, UniqueRepresentation):
         Cat = SimplicialSets()
         if base.is_finite():
             Cat = Cat.Finite()
-        reduced = (base.is_pointed()
-                   and (not hasattr(base, '_reduced')
-                        or (hasattr(base, '_reduced') and base._reduced)))
+        reduced = base.is_pointed() and (
+            not hasattr(base, '_reduced')
+            or (hasattr(base, '_reduced') and base._reduced)
+        )
         if reduced:
             Cat = Cat.Pointed()
         Parent.__init__(self, category=Cat)
@@ -2842,7 +2932,7 @@ class SuspensionOfSimplicialSet(SimplicialSet_arbitrary, UniqueRepresentation):
             sage: K.__repr_or_latex__('latex')
             '\\Sigma^{10}(S^{1} \\times S^{1})'
         """
-        latex_output = (output_type == 'latex')
+        latex_output = output_type == 'latex'
         base = self._base
         if self._reduced:
             # Reduced suspension.
@@ -2907,13 +2997,15 @@ class SuspensionOfSimplicialSet(SimplicialSet_arbitrary, UniqueRepresentation):
         return self.__repr_or_latex__('latex')
 
 
-class SuspensionOfSimplicialSet_finite(SuspensionOfSimplicialSet,
-                                       QuotientOfSimplicialSet_finite):
+class SuspensionOfSimplicialSet_finite(
+    SuspensionOfSimplicialSet, QuotientOfSimplicialSet_finite
+):
     """
     The (reduced) suspension of a finite simplicial set.
 
     See :class:`SuspensionOfSimplicialSet` for more information.
     """
+
     def __init__(self, base):
         r"""
         INPUT:
@@ -2932,9 +3024,10 @@ class SuspensionOfSimplicialSet_finite(SuspensionOfSimplicialSet,
             S^2(Simplicial set with 2 non-degenerate simplices)
         """
         self._base = base
-        reduced = (base.is_pointed()
-                   and (not hasattr(base, '_reduced')
-                        or (hasattr(base, '_reduced') and base._reduced)))
+        reduced = base.is_pointed() and (
+            not hasattr(base, '_reduced')
+            or (hasattr(base, '_reduced') and base._reduced)
+        )
         if reduced:
             C = ReducedConeOfSimplicialSet_finite(base)
             subcomplex = C.map_from_base().image()

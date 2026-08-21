@@ -2,6 +2,7 @@
 """
 Ambient Hecke modules
 """
+
 # ****************************************************************************
 #       Sage: Open Source Mathematical Software
 #
@@ -30,7 +31,9 @@ import sage.arith.misc as arith
 from sage.matrix import matrix_space
 from sage.matrix.constructor import matrix
 
-from sage.modular.arithgroup.congroup_gamma0 import Gamma0_constructor as Gamma0  # for Sturm bound
+from sage.modular.arithgroup.congroup_gamma0 import (
+    Gamma0_constructor as Gamma0,
+)  # for Sturm bound
 
 
 class AmbientHeckeModule(module.HeckeModule_free_module):
@@ -40,6 +43,7 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
     is the base class for ambient spaces of modular forms and modular symbols,
     and for Brandt modules.
     """
+
     def __init__(self, base_ring, rank, level, weight, category=None):
         r"""
         Create an ambient Hecke module.
@@ -55,8 +59,9 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
         if rank < 0:
             raise ValueError("rank (=%s) must be nonnegative" % rank)
         self.__rank = rank
-        module.HeckeModule_free_module.__init__(self, base_ring, level,
-                                                weight, category=category)
+        module.HeckeModule_free_module.__init__(
+            self, base_ring, level, weight, category=category
+        )
 
     def rank(self):
         """
@@ -95,7 +100,9 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
             raise TypeError("other (=%s) must be a Hecke module" % other)
         if other.ambient_hecke_module() == self:
             return self
-        raise ArithmeticError("sum only defined for subspaces of a common ambient Hecke module")
+        raise ArithmeticError(
+            "sum only defined for subspaces of a common ambient Hecke module"
+        )
 
     def _repr_(self):
         r"""
@@ -108,7 +115,10 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
             sage: sage.modular.hecke.ambient_module.AmbientHeckeModule(QQ, 3, 2, 4)._repr_()
             'Generic ambient Hecke module of rank 3, level 2 and weight 4 over Rational Field'
         """
-        return "Generic ambient Hecke module of rank %s, level %s and weight %s over %s" % (self.rank(), self.level(), self.weight(), self.base_ring())
+        return (
+            "Generic ambient Hecke module of rank %s, level %s and weight %s over %s"
+            % (self.rank(), self.level(), self.weight(), self.base_ring())
+        )
 
     def _degeneracy_raising_matrix(self, codomain):
         """
@@ -217,8 +227,7 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
         try:
             return self.__decomposition_matrix_cache
         except AttributeError:
-            rows = [x.list() for A in self.decomposition()
-                    for x in A.basis()]
+            rows = [x.list() for A in self.decomposition() for x in A.basis()]
             A = matrix_space.MatrixSpace(self.base_ring(), self.rank())(rows)
             self.__decomposition_matrix_cache = A
             return self.__decomposition_matrix_cache
@@ -367,13 +376,20 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
         else:
             err = True
         if err:
-            raise ValueError(("the level of self (=%s) must be a divisor or multiple of "
-                              "level (=%s) and t (=%s) must be a divisor of the quotient") % (self.level(), level, t))
+            raise ValueError(
+                (
+                    "the level of self (=%s) must be a divisor or multiple of "
+                    "level (=%s) and t (=%s) must be a divisor of the quotient"
+                )
+                % (self.level(), level, t)
+            )
 
         eps = self.character()
         if eps is not None and level % eps.conductor() != 0:
-            raise ArithmeticError("the conductor of the character of this space "
-                                  "(=%s) must be divisible by the level (=%s)" % (eps.conductor(), level))
+            raise ArithmeticError(
+                "the conductor of the character of this space "
+                "(=%s) must be divisible by the level (=%s)" % (eps.conductor(), level)
+            )
 
         if M is None:
             M = self.hecke_module_of_level(level)
@@ -495,13 +511,18 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
             15
         """
         from sage.misc.verbose import verbose
+
         try:
             if self.is_cuspidal():
                 return Gamma0(self.level()).sturm_bound(self.weight())
         except AttributeError:
             pass
         verbose("WARNING: ambient.py -- hecke_bound; returning unproven guess.")
-        return Gamma0(self.level()).sturm_bound(self.weight()) + 2 * Gamma0(self.level()).dimension_eis(self.weight()) + 5
+        return (
+            Gamma0(self.level()).sturm_bound(self.weight())
+            + 2 * Gamma0(self.level()).dimension_eis(self.weight())
+            + 5
+        )
 
     def hecke_module_of_level(self, level):
         r"""
@@ -569,7 +590,9 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
         if not isinstance(other, module.HeckeModule_free_module):
             raise TypeError("other (=%s) must be a Hecke module" % other)
         if self.ambient_hecke_module() != other.ambient_hecke_module():
-            raise ArithmeticError("intersection only defined for subspaces of a common ambient Hecke module")
+            raise ArithmeticError(
+                "intersection only defined for subspaces of a common ambient Hecke module"
+            )
         return other  # since self is ambient, so the intersection must equal other.
 
     def is_ambient(self) -> bool:
@@ -885,7 +908,7 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
         else:
             os = self.submodule(d.image(), check=False)
 
-        self.__is_old[p] = (os == self)
+        self.__is_old[p] = os == self
 
         os.__is_old = {p: True}
         os._is_full_hecke_module = True
@@ -913,7 +936,9 @@ class AmbientHeckeModule(module.HeckeModule_free_module):
                 else:
                     M = V.span(M)
             if not M.is_submodule(self.free_module()):
-                raise TypeError("M must be a submodule of the free module associated to this module")
+                raise TypeError(
+                    "M must be a submodule of the free module associated to this module"
+                )
             if M == self.free_module():
                 return self
         return self._submodule_class()(self, M, Mdual, check=check)

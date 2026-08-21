@@ -70,6 +70,7 @@ class ModularParameterization:
            to Elliptic Curve defined by y^2 + y = x^3 - x^2 - 10*x - 20
               over Rational Field
     """
+
     def __init__(self, E):
         r"""
         EXAMPLES::
@@ -187,6 +188,7 @@ class ModularParameterization:
         curve itself.
         """
         from sage.misc.verbose import verbose
+
         if isinstance(z, heegner.HeegnerPointOnX0N):
             return z.map_to_curve(self.curve())
         # Map to the CC of CC/PeriodLattice.

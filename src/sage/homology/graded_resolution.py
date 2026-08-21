@@ -83,9 +83,11 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
 from sage.rings.ideal import Ideal_generic
 
-from sage.homology.free_resolution import (FiniteFreeResolution,
-                                           FiniteFreeResolution_free_module,
-                                           FiniteFreeResolution_singular)
+from sage.homology.free_resolution import (
+    FiniteFreeResolution,
+    FiniteFreeResolution_free_module,
+    FiniteFreeResolution_singular,
+)
 
 
 class GradedFiniteFreeResolution(FiniteFreeResolution):
@@ -106,8 +108,8 @@ class GradedFiniteFreeResolution(FiniteFreeResolution):
 
     - ``name`` -- string; name of the base ring
     """
-    def __init__(self, module, degrees=None, shifts=None, name='S',
-                 **kwds) -> None:
+
+    def __init__(self, module, degrees=None, shifts=None, name='S', **kwds) -> None:
         r"""
         Initialize ``self``.
 
@@ -137,7 +139,9 @@ class GradedFiniteFreeResolution(FiniteFreeResolution):
             degrees = nvars * (1,)  # standard grading
 
         if len(degrees) != nvars:
-            raise ValueError('the length of degrees does not match the number of generators')
+            raise ValueError(
+                'the length of degrees does not match the number of generators'
+            )
 
         if degrees[0] in ZZ:
             zero_deg = 0
@@ -194,8 +198,7 @@ class GradedFiniteFreeResolution(FiniteFreeResolution):
         if not shifts:
             return '0'
 
-        return '\u2295'.join(f'{self._name}' + '({})'.format(-sh)
-                             for sh in shifts)
+        return '\u2295'.join(f'{self._name}' + '({})'.format(-sh) for sh in shifts)
 
     def shifts(self, i):
         r"""
@@ -309,7 +312,9 @@ class GradedFiniteFreeResolution(FiniteFreeResolution):
         return kpoly
 
 
-class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteFreeResolution_free_module):
+class GradedFiniteFreeResolution_free_module(
+    GradedFiniteFreeResolution, FiniteFreeResolution_free_module
+):
     r"""
     Graded free resolution of free modules.
 
@@ -322,6 +327,7 @@ class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteF
         sage: res = FreeResolution(M, graded=True); res
         S(0)⊕S(0)⊕S(0) <-- S(-3)⊕S(-1) <-- 0
     """
+
     def __init__(self, module, degrees=None, *args, **kwds) -> None:
         """
         Initialize ``self``.
@@ -338,8 +344,9 @@ class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteF
         super().__init__(module, degrees=degrees, *args, **kwds)
 
         if len(self._degrees) > 1 and any(d != 1 for d in self._degrees):
-            raise NotImplementedError("only the natural grading supported "
-                                      "when more than one generator")
+            raise NotImplementedError(
+                "only the natural grading supported when more than one generator"
+            )
 
     @lazy_attribute
     def _maps(self):
@@ -373,6 +380,7 @@ class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteF
             sage: res._res_shifts
             [[9]]
         """
+
         def compute_degree(base, i):
             """
             Compute the degree by ``base * deg + shift``,
@@ -387,6 +395,7 @@ class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteF
 
         if isinstance(self._module, Ideal_generic):
             from sage.matrix.constructor import matrix
+
             val = self._module.gen(0)
             self._res_shifts = [[compute_degree(val.degree(), 0)]]
             return [matrix([[val]])]
@@ -400,13 +409,13 @@ class GradedFiniteFreeResolution_free_module(GradedFiniteFreeResolution, FiniteF
                     return ret
             raise NotImplementedError("a generator maps to 0")
 
-        self._res_shifts = [[compute_degree(find_deg(i), i)
-                             for i in range(M.ncols())]]
+        self._res_shifts = [[compute_degree(find_deg(i), i) for i in range(M.ncols())]]
         return [M]
 
 
-class GradedFiniteFreeResolution_singular(GradedFiniteFreeResolution,
-                                          FiniteFreeResolution_singular):
+class GradedFiniteFreeResolution_singular(
+    GradedFiniteFreeResolution, FiniteFreeResolution_singular
+):
     r"""
     Graded free resolutions of submodules and ideals of multivariate
     polynomial rings implemented using Singular.
@@ -469,8 +478,10 @@ class GradedFiniteFreeResolution_singular(GradedFiniteFreeResolution,
         sage: r = I.graded_free_resolution(); r
         S(0) <-- S(-1)⊕S(-2)⊕S(-2) <-- S(-3)⊕S(-3)⊕S(-4) <-- S(-5) <-- 0
     """
-    def __init__(self, module, degrees=None, shifts=None, name='S',
-                 algorithm='heuristic', **kwds) -> None:
+
+    def __init__(
+        self, module, degrees=None, shifts=None, name='S', algorithm='heuristic', **kwds
+    ) -> None:
         """
         Initialize.
 
@@ -531,7 +542,7 @@ class GradedFiniteFreeResolution_singular(GradedFiniteFreeResolution,
             r = minres(nres(mod, 0))
         elif self._algorithm == 'heuristic':
             std = singular_function('std')
-            res = singular_function('res')    # heuristic method
+            res = singular_function('res')  # heuristic method
             minres = singular_function('minres')
             r = minres(res(std(mod), 0))
 

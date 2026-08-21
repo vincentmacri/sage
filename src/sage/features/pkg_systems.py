@@ -24,6 +24,7 @@ class PackageSystem(Feature):
         sage: PackageSystem('conda')
         Feature('conda')
     """
+
     def _is_present(self):
         r"""
         Test whether ``self`` appears in the list of available package systems.
@@ -36,6 +37,7 @@ class PackageSystem(Feature):
             True
         """
         from . import package_systems
+
         return self in package_systems()
 
     def spkg_installation_hint(self, spkgs, *, prompt="  !", feature=None):
@@ -69,18 +71,26 @@ class PackageSystem(Feature):
             'To install openblas using the fedora package manager, you can try to run:\n!sudo yum install openblas-devel'
         """
         from subprocess import run, CalledProcessError
+
         lines = []
         system = self.name
         try:
-            proc = run(f'sage-get-system-packages {system} {spkgs}',
-                       shell=True, capture_output=True, text=True, check=True)
+            proc = run(
+                f'sage-get-system-packages {system} {spkgs}',
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             system_packages = proc.stdout.strip()
             print_sys = f'sage-print-system-package-command {system} --verbose --sudo --prompt="{prompt}"'
             command = f'{print_sys} update && {print_sys} install {system_packages}'
             proc = run(command, shell=True, capture_output=True, text=True, check=True)
             command = proc.stdout.strip()
             if command:
-                lines.append(f'To install {feature} using the {system} package manager, you can try to run:')
+                lines.append(
+                    f'To install {feature} using the {system} package manager, you can try to run:'
+                )
                 lines.append(command)
                 return '\n'.join(lines)
         except CalledProcessError:
@@ -98,6 +108,7 @@ class SagePackageSystem(PackageSystem):
         sage: SagePackageSystem()
         Feature('sage_spkg')
     """
+
     @staticmethod
     def __classcall__(cls):
         r"""
@@ -122,6 +133,7 @@ class SagePackageSystem(PackageSystem):
             True
         """
         from subprocess import run, DEVNULL, CalledProcessError
+
         try:
             # "sage -p" is a fast way of checking whether sage-spkg is available.
             run('sage -p', shell=True, stdout=DEVNULL, stderr=DEVNULL, check=True)
@@ -148,7 +160,9 @@ class SagePackageSystem(PackageSystem):
             ### sage -i foo bar
         """
         lines = []
-        lines.append(f'To install {feature} using the Sage package manager, you can try to run:')
+        lines.append(
+            f'To install {feature} using the Sage package manager, you can try to run:'
+        )
         lines.append(f'{prompt}sage -i {spkgs}')
         return '\n'.join(lines)
 
@@ -163,6 +177,7 @@ class PipPackageSystem(PackageSystem):
         sage: PipPackageSystem()
         Feature('pip')
     """
+
     @staticmethod
     def __classcall__(cls):
         r"""
@@ -187,6 +202,7 @@ class PipPackageSystem(PackageSystem):
             True
         """
         from subprocess import run, DEVNULL, CalledProcessError
+
         try:
             # The command below is missing the arguments to pip, but
             # when run from within the sage distribution, it will

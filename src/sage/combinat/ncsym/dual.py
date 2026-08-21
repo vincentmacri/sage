@@ -47,7 +47,9 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
             sage: TestSuite(SymmetricFunctionsNonCommutingVariables(QQ).dual()).run()
         """
         # change the line below to assert R in Rings() once MRO issues from #15536, #15475 are resolved
-        assert R in Fields() or R in Rings()  # side effect of this statement assures MRO exists for R
+        assert (
+            R in Fields() or R in Rings()
+        )  # side effect of this statement assures MRO exists for R
         self._base = R  # Won't be needed once CategoryObject won't override base_ring
         category = GradedHopfAlgebras(R).Commutative()
         Parent.__init__(self, category=category.WithRealizations())
@@ -57,10 +59,13 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
 
         # Embedding of Sym in the homogeneous bases into DNCSym in the w basis
         Sym = SymmetricFunctions(self.base_ring())
-        Sym_h_to_w = Sym.h().module_morphism(w.sum_of_partitions,
-                                             triangular='lower',
-                                             inverse_on_support=w._set_par_to_par,
-                                             codomain=w, category=category)
+        Sym_h_to_w = Sym.h().module_morphism(
+            w.sum_of_partitions,
+            triangular='lower',
+            inverse_on_support=w._set_par_to_par,
+            codomain=w,
+            category=category,
+        )
         Sym_h_to_w.register_as_coercion()
         self.to_symmetric_function = Sym_h_to_w.section()
 
@@ -71,7 +76,10 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
             sage: SymmetricFunctionsNonCommutingVariables(ZZ).dual()
             Dual symmetric functions in non-commuting variables over the Integer Ring
         """
-        return "Dual symmetric functions in non-commuting variables over the %s" % self.base_ring()
+        return (
+            "Dual symmetric functions in non-commuting variables over the %s"
+            % self.base_ring()
+        )
 
     def a_realization(self):
         r"""
@@ -98,6 +106,7 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
             Symmetric functions in non-commuting variables over the Rational Field
         """
         from sage.combinat.ncsym.ncsym import SymmetricFunctionsNonCommutingVariables
+
         return SymmetricFunctionsNonCommutingVariables(self.base_ring())
 
     class w(NCSymBasis_abstract):
@@ -131,16 +140,22 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                 sage: w = SymmetricFunctionsNonCommutingVariables(QQ).dual().w()
                 sage: TestSuite(w).run()
             """
+
             def key_func_set_part(A):
                 return sorted(map(sorted, A))
 
             R = NCSymD.base_ring()
             category = GradedHopfAlgebras(R).Commutative()
             category &= NCSymDualBases(NCSymD)
-            CombinatorialFreeModule.__init__(self, R, SetPartitions(),
-                                             prefix='w', bracket=False,
-                                             sorting_key=key_func_set_part,
-                                             category=category)
+            CombinatorialFreeModule.__init__(
+                self,
+                R,
+                SetPartitions(),
+                prefix='w',
+                bracket=False,
+                sorting_key=key_func_set_part,
+                category=category,
+            )
 
         @lazy_attribute
         def to_symmetric_function(self):
@@ -240,8 +255,7 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                 ret.extend([b[i - 1] for i in sorted(part)] for part in B)
                 return P(ret)
 
-            return self.sum_of_terms([(unions(s), 1)
-                                      for s in Subsets(m, n)])
+            return self.sum_of_terms([(unions(s), 1) for s in Subsets(m, n)])
 
         def coproduct_on_basis(self, A):
             r"""
@@ -272,10 +286,19 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                 w{} # w{}
             """
             n = A.size()
-            return self.tensor_square().sum_of_terms([
-                ((A.restriction(range(1, i + 1)).standardization(),
-                  A.restriction(range(i + 1, n + 1)).standardization()), 1)
-                for i in range(n + 1)], distinct=True)
+            return self.tensor_square().sum_of_terms(
+                [
+                    (
+                        (
+                            A.restriction(range(1, i + 1)).standardization(),
+                            A.restriction(range(i + 1, n + 1)).standardization(),
+                        ),
+                        1,
+                    )
+                    for i in range(n + 1)
+                ],
+                distinct=True,
+            )
 
         def antipode_on_basis(self, A):
             r"""
@@ -301,8 +324,11 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
             if A.size() == 1:
                 return -self(A)
             cpr = self.coproduct_on_basis(A)
-            return -sum(c * self.monomial(B1) * self.antipode_on_basis(B2)
-                        for (B1, B2), c in cpr if B2 != A)
+            return -sum(
+                c * self.monomial(B1) * self.antipode_on_basis(B2)
+                for (B1, B2), c in cpr
+                if B2 != A
+            )
 
         def duality_pairing(self, x, y):
             r"""
@@ -367,7 +393,9 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
             la = Partition(la)
             c = prod([factorial(i) for i in la.to_exp()])
             P = SetPartitions()
-            return self.sum_of_terms([(P(m), c) for m in SetPartitions(sum(la), la)], distinct=True)
+            return self.sum_of_terms(
+                [(P(m), c) for m in SetPartitions(sum(la), la)], distinct=True
+            )
 
         def _set_par_to_par(self, A):
             r"""
@@ -468,13 +496,17 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                 m = self.parent()
                 names = [f'{letter}{i}{j}' for i in range(n) for j in range(n)]
                 R = PolynomialRing(m.base_ring(), n * n, names)
-                x = [[R.gens()[i * n + j]
-                      for j in range(n)] for i in range(n)]
-                I = R.ideal([x[i][j] * x[i][k]
-                             for j in range(n) for k in range(n) for i in range(n)])
+                x = [[R.gens()[i * n + j] for j in range(n)] for i in range(n)]
+                I = R.ideal(
+                    [
+                        x[i][j] * x[i][k]
+                        for j in range(n)
+                        for k in range(n)
+                        for i in range(n)
+                    ]
+                )
                 Q = R.quotient(I, names)
-                x = [[Q.gens()[i * n + j]
-                      for j in range(n)] for i in range(n)]
+                x = [[Q.gens()[i * n + j] for j in range(n)] for i in range(n)]
                 P = SetPartitions()
 
                 def on_basis(A):
@@ -486,9 +518,10 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                     for p in Permutations(k):
                         if P(p.to_cycles()) == A:
                             # -1 for indexing
-                            ret += R.sum(prod(x[I[i]][I[p[i] - 1]]
-                                              for i in range(k))
-                                         for I in Subsets(range(n), k))
+                            ret += R.sum(
+                                prod(x[I[i]][I[p[i] - 1]] for i in range(k))
+                                for I in Subsets(range(n), k)
+                            )
                     return ret
 
                 return m._apply_module_morphism(self, on_basis, codomain=R)
@@ -550,7 +583,9 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                             return False
                         d[la][1] += 1
                 # Make sure we've seen each set partition of the shape
-                return all(d[la][1] == SetPartitions(la.size(), la).cardinality() for la in d)
+                return all(
+                    d[la][1] == SetPartitions(la.size(), la).cardinality() for la in d
+                )
 
             def to_symmetric_function(self):
                 r"""
@@ -588,5 +623,10 @@ class SymmetricFunctionsNonCommutingVariablesDual(UniqueRepresentation, Parent):
                     raise ValueError("not a symmetric function")
                 h = SymmetricFunctions(self.parent().base_ring()).homogeneous()
                 d = {A.shape(): c for A, c in self}
-                return h.sum_of_terms([(AA, cc / prod(factorial(i) for i in AA.to_exp()))
-                                       for AA, cc in d.items()], distinct=True)
+                return h.sum_of_terms(
+                    [
+                        (AA, cc / prod(factorial(i) for i in AA.to_exp()))
+                        for AA, cc in d.items()
+                    ],
+                    distinct=True,
+                )

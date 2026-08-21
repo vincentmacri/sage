@@ -22,16 +22,26 @@ We need to setup a proper test environment for widgets::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
-from ipywidgets.widgets import (IntSlider, IntRangeSlider,
-                                FloatSlider, FloatRangeSlider, Text,
-                                Textarea, ColorPicker, HTMLMath, Label,
-                                HBox, VBox, ValueWidget)
+from ipywidgets.widgets import (
+    IntSlider,
+    IntRangeSlider,
+    FloatSlider,
+    FloatRangeSlider,
+    Text,
+    Textarea,
+    ColorPicker,
+    HTMLMath,
+    Label,
+    HBox,
+    VBox,
+    ValueWidget,
+)
 from traitlets import List, Unicode, link
 
 from sage.misc.sage_eval import sage_eval
 from sage.repl.user_globals import get_globals
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.colors", "Color")
 
 
@@ -53,6 +63,7 @@ class HTMLText(HTMLMath):
         sage: w.description
         ''
     """
+
     @property
     def description(self):
         """
@@ -106,6 +117,7 @@ class TransformWidget:
         sage: w.get_interact_value()
         'pipi'
     """
+
     def __init__(self, *args, **kwds):
         """
         Construct a :class:`TransformWidget`.
@@ -175,6 +187,7 @@ class EvalWidget(TransformWidget):
         sage: w.get_interact_value()
         2*pi
     """
+
     def get_value(self):
         """
         Evaluate the bare widget value using :func:`sage_eval`.
@@ -210,6 +223,7 @@ class TransformIntSlider(TransformWidget, IntSlider):
         sage: w.get_interact_value()
         49
     """
+
     pass
 
 
@@ -227,6 +241,7 @@ class TransformFloatSlider(TransformWidget, FloatSlider):
         sage: w.get_interact_value()
         2.6457513110645907
     """
+
     pass
 
 
@@ -245,6 +260,7 @@ class TransformIntRangeSlider(TransformWidget, IntRangeSlider):
         sage: w.get_interact_value()
         2
     """
+
     pass
 
 
@@ -263,6 +279,7 @@ class TransformFloatRangeSlider(TransformWidget, FloatRangeSlider):
         sage: w.get_interact_value()
         2.0
     """
+
     pass
 
 
@@ -280,6 +297,7 @@ class TransformText(TransformWidget, Text):
         sage: w.get_interact_value()
         'hellohello'
     """
+
     pass
 
 
@@ -297,6 +315,7 @@ class TransformTextarea(TransformWidget, Textarea):
         sage: w.get_interact_value()
         'hellohello'
     """
+
     pass
 
 
@@ -314,6 +333,7 @@ class EvalText(EvalWidget, Text):
         sage: w.get_interact_value()
         pi^2
     """
+
     pass
 
 
@@ -331,6 +351,7 @@ class EvalTextarea(EvalWidget, Textarea):
         sage: w.get_interact_value()
         pi^2
     """
+
     pass
 
 
@@ -344,6 +365,7 @@ class SageColorPicker(ColorPicker):
         sage: SageColorPicker()
         SageColorPicker(value='black')
     """
+
     def get_interact_value(self):
         """
         Return a Sage :class:`Color` corresponding to the value of this
@@ -379,6 +401,7 @@ class Grid(TransformWidget, HBox, ValueWidget):
         sage: w.get_interact_value()
         [['0,0', '0,1'], ['1,0', '1,1']]
     """
+
     value = List()
     description = Unicode()
 

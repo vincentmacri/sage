@@ -72,14 +72,16 @@ def T(F):
 #
 #   https://github.com/pytest-dev/pytest/issues/349
 #
-pairs = [("J", None),
-         ("K", 16),
-         ("L", 2),
-         ("M", 1),
-         ("N", 1),
-         ("O", None),
-         ("T", None),
-         ("S", 8)]
+pairs = [
+    ("J", None),
+    ("K", 16),
+    ("L", 2),
+    ("M", 1),
+    ("N", 1),
+    ("O", None),
+    ("T", None),
+    ("S", 8),
+]
 
 
 @pytest.mark.long

@@ -62,6 +62,7 @@ class ChainComplexMorphism(Morphism):
     """
     An element of this class is a morphism of chain complexes.
     """
+
     def __init__(self, matrices, C, D, check=True) -> None:
         """
         Create a morphism from a dictionary of matrices.
@@ -116,8 +117,10 @@ class ChainComplexMorphism(Morphism):
               To: Chain complex with at most 1 nonzero terms over Integer Ring
         """
         if not C.base_ring() == D.base_ring():
-            raise NotImplementedError('morphisms between chain complexes of different'
-                                      ' base rings are not implemented')
+            raise NotImplementedError(
+                'morphisms between chain complexes of different'
+                ' base rings are not implemented'
+            )
         d = C.degree_of_differential()
         if d != D.degree_of_differential():
             raise ValueError('degree of differential does not match')
@@ -129,35 +132,47 @@ class ChainComplexMorphism(Morphism):
         for i in degrees:
             if i - d not in degrees:
                 if not (C.free_module_rank(i) == D.free_module_rank(i) == 0):
-                    raise ValueError('{} and {} are not rank 0 in degree {}'.format(C, D, i))
+                    raise ValueError(
+                        '{} and {} are not rank 0 in degree {}'.format(C, D, i)
+                    )
                 continue
             try:
                 matrices[i] = initial_matrices.pop(i)
             except KeyError:
-                matrices[i] = zero_matrix(C.base_ring(),
-                                          D.differential(i).ncols(),
-                                          C.differential(i).ncols(), sparse=True)
+                matrices[i] = zero_matrix(
+                    C.base_ring(),
+                    D.differential(i).ncols(),
+                    C.differential(i).ncols(),
+                    sparse=True,
+                )
         if check:
             # All remaining matrices given must be 0x0.
             if not all(m.ncols() == m.nrows() == 0 for m in initial_matrices.values()):
                 raise ValueError('the remaining matrices are not empty')
             # Check sizes of matrices.
             for i in matrices:
-                if (matrices[i].nrows() != D.free_module_rank(i) or
-                        matrices[i].ncols() != C.free_module_rank(i)):
+                if matrices[i].nrows() != D.free_module_rank(i) or matrices[
+                    i
+                ].ncols() != C.free_module_rank(i):
                     raise ValueError(f'matrix in degree {i} is not the right size')
             # Check commutativity.
             for i in degrees:
                 if i - d not in degrees:
                     if not (C.free_module_rank(i) == D.free_module_rank(i) == 0):
-                        raise ValueError('{} and {} are not rank 0 in degree {}'.format(C, D, i))
+                        raise ValueError(
+                            '{} and {} are not rank 0 in degree {}'.format(C, D, i)
+                        )
                     continue
                 if i + d not in degrees:
-                    if not (C.free_module_rank(i+d) == D.free_module_rank(i+d) == 0):
-                        raise ValueError('{} and {} are not rank 0 in degree {}'.format(C, D, i+d))
+                    if not (
+                        C.free_module_rank(i + d) == D.free_module_rank(i + d) == 0
+                    ):
+                        raise ValueError(
+                            '{} and {} are not rank 0 in degree {}'.format(C, D, i + d)
+                        )
                     continue
                 Dm = D.differential(i) * matrices[i]
-                mC = matrices[i+d] * C.differential(i)
+                mC = matrices[i + d] * C.differential(i)
                 if mC != Dm:
                     raise ValueError('matrices must define a chain complex morphism')
         self._matrix_dictionary = {}
@@ -231,8 +246,7 @@ class ChainComplexMorphism(Morphism):
         """
         if deg is not None:
             return self.in_degree(deg)
-        blocks = [self._matrix_dictionary[n]
-                  for n in sorted(self._matrix_dictionary)]
+        blocks = [self._matrix_dictionary[n] for n in sorted(self._matrix_dictionary)]
         return block_diagonal_matrix(blocks)
 
     def dual(self):
@@ -269,7 +283,9 @@ class ChainComplexMorphism(Morphism):
         """
         matrix_dict = self._matrix_dictionary
         matrices = {i: matrix_dict[i].transpose() for i in matrix_dict}
-        return ChainComplexMorphism(matrices, self.codomain().dual(), self.domain().dual())
+        return ChainComplexMorphism(
+            matrices, self.codomain().dual(), self.domain().dual()
+        )
 
     def __neg__(self):
         """
@@ -332,7 +348,12 @@ class ChainComplexMorphism(Morphism):
                 [0 0 2 0]
                 [0 0 0 2]}
         """
-        if not isinstance(x, ChainComplexMorphism) or self.codomain() != x.codomain() or self.domain() != x.domain() or self._matrix_dictionary.keys() != x._matrix_dictionary.keys():
+        if (
+            not isinstance(x, ChainComplexMorphism)
+            or self.codomain() != x.codomain()
+            or self.domain() != x.domain()
+            or self._matrix_dictionary.keys() != x._matrix_dictionary.keys()
+        ):
             raise TypeError("unsupported operation")
         f = dict()
         for i in self._matrix_dictionary.keys():
@@ -424,7 +445,7 @@ class ChainComplexMorphism(Morphism):
             return ChainComplexMorphism(f, self.domain(), self.codomain())
         f = {}
         for i in self._matrix_dictionary:
-            f[i] = self._matrix_dictionary[i]*x.in_degree(i)
+            f[i] = self._matrix_dictionary[i] * x.in_degree(i)
         return ChainComplexMorphism(f, x.domain(), self.codomain())
 
     def __rmul__(self, x):
@@ -503,10 +524,12 @@ class ChainComplexMorphism(Morphism):
             sage: x == y
             True
         """
-        return isinstance(x, ChainComplexMorphism) \
-            and self.codomain() == x.codomain() \
-            and self.domain() == x.domain() \
+        return (
+            isinstance(x, ChainComplexMorphism)
+            and self.codomain() == x.codomain()
+            and self.domain() == x.domain()
             and self._matrix_dictionary == x._matrix_dictionary
+        )
 
     def is_identity(self) -> bool:
         """
@@ -581,7 +604,11 @@ class ChainComplexMorphism(Morphism):
             sage: hash(f)  # random
             17
         """
-        return hash(self.domain()) ^ hash(self.codomain()) ^ hash(tuple(self._matrix_dictionary.items()))
+        return (
+            hash(self.domain())
+            ^ hash(self.codomain())
+            ^ hash(tuple(self._matrix_dictionary.items()))
+        )
 
     def _repr_type(self) -> str:
         """

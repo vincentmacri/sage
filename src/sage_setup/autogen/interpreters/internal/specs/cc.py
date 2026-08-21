@@ -56,10 +56,15 @@ class MemoryChunkCCRetval(MemoryChunk):
             sage: mc.declare_call_locals()
             '        cdef ComplexNumber retval = (self.domain_element._new())\n'
         """
-        return je(ri(8,
-            """
+        return je(
+            ri(
+                8,
+                """
             cdef ComplexNumber {{ myself.name }} = (self.domain_element._new())
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def declare_parameter(self):
         r"""
@@ -166,27 +171,42 @@ class CCInterpreter(StackInterpreter):
         self.err_return = '0'
         self.mc_py_constants = MemoryChunkConstants('py_constants', ty_python)
         self.mc_domain = MemoryChunkPyConstant('domain')
-        self.chunks = [self.mc_args, self.mc_retval, self.mc_constants,
-                       self.mc_py_constants,
-                       self.mc_stack, self.mc_code, self.mc_domain]
-        pg = params_gen(A=self.mc_args, C=self.mc_constants, D=self.mc_code,
-                        S=self.mc_stack,
-                        P=self.mc_py_constants)
+        self.chunks = [
+            self.mc_args,
+            self.mc_retval,
+            self.mc_constants,
+            self.mc_py_constants,
+            self.mc_stack,
+            self.mc_code,
+            self.mc_domain,
+        ]
+        pg = params_gen(
+            A=self.mc_args,
+            C=self.mc_constants,
+            D=self.mc_code,
+            S=self.mc_stack,
+            P=self.mc_py_constants,
+        )
         self.pg = pg
-        self.c_header = ri(0,
+        self.c_header = ri(
+            0,
             '''
             #include <mpc.h>
-            ''')
+            ''',
+        )
 
-        self.pxd_header = ri(0,
+        self.pxd_header = ri(
+            0,
             """
             from sage.rings.real_mpfr cimport RealNumber
             from sage.libs.mpfr cimport *
             from sage.rings.complex_mpfr cimport ComplexNumber
             from sage.libs.mpc cimport *
-            """)
+            """,
+        )
 
-        self.pyx_header = ri(0,
+        self.pyx_header = ri(
+            0,
             """\
             # distutils: libraries = mpfr mpc gmp
 
@@ -205,46 +225,69 @@ class CCInterpreter(StackInterpreter):
                 cdef ComplexNumber result = domain(fn(*py_args))
                 mpc_set_fr_fr(retval, result.__re,result.__im, MPC_RNDNN)
                 return 1
-            """)
+            """,
+        )
 
         instrs = [
-            InstrSpec('load_arg', pg('A[D]', 'S'),
-                       code='mpc_set(o0, i0, MPC_RNDNN);'),
-            InstrSpec('load_const', pg('C[D]', 'S'),
-                       code='mpc_set(o0, i0, MPC_RNDNN);'),
-            InstrSpec('return', pg('S', ''),
-                       code='mpc_set(retval, i0, MPC_RNDNN);\nreturn 1;\n'),
-            InstrSpec('py_call', pg('P[D]S@D', 'S'),
-                       uses_error_handler=True,
-                       code="""
+            InstrSpec('load_arg', pg('A[D]', 'S'), code='mpc_set(o0, i0, MPC_RNDNN);'),
+            InstrSpec(
+                'load_const', pg('C[D]', 'S'), code='mpc_set(o0, i0, MPC_RNDNN);'
+            ),
+            InstrSpec(
+                'return',
+                pg('S', ''),
+                code='mpc_set(retval, i0, MPC_RNDNN);\nreturn 1;\n',
+            ),
+            InstrSpec(
+                'py_call',
+                pg('P[D]S@D', 'S'),
+                uses_error_handler=True,
+                code="""
   if (!cc_py_call_helper(domain, i0, n_i1, i1, o0)) {
   goto error;
 }
-""")
-            ]
-        for (name, op) in [('add', 'mpc_add'), ('sub', 'mpc_sub'),
-                           ('mul', 'mpc_mul'), ('div', 'mpc_div'),
-                           ('pow', 'mpc_pow')]:
+""",
+            ),
+        ]
+        for name, op in [
+            ('add', 'mpc_add'),
+            ('sub', 'mpc_sub'),
+            ('mul', 'mpc_mul'),
+            ('div', 'mpc_div'),
+            ('pow', 'mpc_pow'),
+        ]:
             instrs.append(instr_funcall_2args_mpc(name, pg('SS', 'S'), op))
         instrs.append(instr_funcall_2args_mpc('ipow', pg('SD', 'S'), 'mpc_pow_si'))
-        for name in ['neg',
-                     'log', 'log10',
-                     'exp',
-                     'cos', 'sin', 'tan',
-                     'acos', 'asin', 'atan',
-                     'cosh', 'sinh', 'tanh',
-                     'acosh', 'asinh', 'atanh']:
+        for name in [
+            'neg',
+            'log',
+            'log10',
+            'exp',
+            'cos',
+            'sin',
+            'tan',
+            'acos',
+            'asin',
+            'atan',
+            'cosh',
+            'sinh',
+            'tanh',
+            'acosh',
+            'asinh',
+            'atanh',
+        ]:
             instrs.append(instr_funcall_1arg_mpc(name, pg('S', 'S'), 'mpc_' + name))
         # mpc_ui_div constructs a temporary mpc_t and then calls mpc_div;
         # it would probably be (slightly) faster to use a permanent copy
         # of "one" (on the other hand, the constructed temporary copy is
         # on the stack, so it's very likely to be in the cache).
-        instrs.append(InstrSpec('invert', pg('S', 'S'),
-                             code='mpc_ui_div(o0, 1, i0, MPC_RNDNN);'))
+        instrs.append(
+            InstrSpec('invert', pg('S', 'S'), code='mpc_ui_div(o0, 1, i0, MPC_RNDNN);')
+        )
         self.instr_descs = instrs
         self._set_opcodes()
         # Supported for exponents that fit in a long, so we could use
         # a much wider range on a 64-bit machine.  On the other hand,
         # it's easier to write the code this way, and constant integer
         # exponents outside this range probably aren't very common anyway.
-        self.ipow_range = (int(-2**31), int(2**31-1))
+        self.ipow_range = (int(-(2**31)), int(2**31 - 1))

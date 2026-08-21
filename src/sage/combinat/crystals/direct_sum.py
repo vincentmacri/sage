@@ -83,6 +83,7 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
 
         sage: TestSuite(C).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, crystals, facade=True, keepkey=False, category=None):
         """
@@ -116,8 +117,9 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
             else:
                 ret.append(x)
         category = Category.meet([Category.join(c.categories()) for c in ret])
-        return super().__classcall__(cls,
-            Family(ret), facade=facade, keepkey=keepkey, category=category)
+        return super().__classcall__(
+            cls, Family(ret), facade=facade, keepkey=keepkey, category=category
+        )
 
     def __init__(self, crystals, facade, keepkey, category, **options):
         """
@@ -134,22 +136,32 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
             sage: isinstance(B, DirectSumOfCrystals)
             True
         """
-        DisjointUnionEnumeratedSets.__init__(self, crystals, keepkey=keepkey,
-                                             facade=facade, category=category)
+        DisjointUnionEnumeratedSets.__init__(
+            self, crystals, keepkey=keepkey, facade=facade, category=category
+        )
         self.rename("Direct sum of the crystals {}".format(crystals))
         self._keepkey = keepkey
         self.crystals = crystals
         if len(crystals) == 0:
             raise ValueError("the direct sum is empty")
         else:
-            assert all(crystal.cartan_type() == crystals[0].cartan_type() for crystal in crystals)
+            assert all(
+                crystal.cartan_type() == crystals[0].cartan_type()
+                for crystal in crystals
+            )
             self._cartan_type = crystals[0].cartan_type()
         if keepkey:
-            self.module_generators = tuple([self((i, b))
-                                            for i, B in enumerate(crystals)
-                                            for b in B.module_generators])
+            self.module_generators = tuple(
+                [
+                    self((i, b))
+                    for i, B in enumerate(crystals)
+                    for b in B.module_generators
+                ]
+            )
         else:
-            self.module_generators = sum((tuple(B.module_generators) for B in crystals), ())
+            self.module_generators = sum(
+                (tuple(B.module_generators) for B in crystals), ()
+            )
 
     def weight_lattice_realization(self):
         r"""
@@ -174,8 +186,9 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
             Extended weight space over the Rational Field of the Root system of type ['A', 2, 1]
         """
         cm = get_coercion_model()
-        return cm.common_parent(*[crystal.weight_lattice_realization()
-                                  for crystal in self.crystals])
+        return cm.common_parent(
+            *[crystal.weight_lattice_realization() for crystal in self.crystals]
+        )
 
     class Element(ElementWrapper):
         r"""
@@ -197,7 +210,7 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
             vn = v[1].e(i)
             if vn is None:
                 return None
-            return self.parent()(tuple([v[0],vn]))
+            return self.parent()(tuple([v[0], vn]))
 
         def f(self, i):
             r"""
@@ -214,7 +227,7 @@ class DirectSumOfCrystals(DisjointUnionEnumeratedSets):
             vn = v[1].f(i)
             if vn is None:
                 return None
-            return self.parent()(tuple([v[0],vn]))
+            return self.parent()(tuple([v[0], vn]))
 
         def weight(self):
             r"""

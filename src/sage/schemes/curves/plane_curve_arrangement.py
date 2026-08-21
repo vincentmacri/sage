@@ -60,17 +60,22 @@ from sage.schemes.affine.affine_space import AffineSpace
 from sage.schemes.curves.affine_curve import AffinePlaneCurve
 from sage.schemes.curves.constructor import Curve
 from sage.schemes.curves.projective_curve import ProjectiveSpace, ProjectivePlaneCurve
-from sage.schemes.curves.zariski_vankampen import braid_monodromy, fundamental_group_arrangement
+from sage.schemes.curves.zariski_vankampen import (
+    braid_monodromy,
+    fundamental_group_arrangement,
+)
 from sage.structure.category_object import normalize_names
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
+
 class PlaneCurveArrangementElement(Element):
     """
     An ordered plane curve arrangement.
     """
+
     def __init__(self, parent, curves, check=True) -> None:
         """
         Construct a plane curve arrangement.
@@ -99,8 +104,7 @@ class PlaneCurveArrangementElement(Element):
             projective = all(isinstance(h, ProjectivePlaneCurve) for h in curves)
             if not (affine or projective):
                 raise ValueError("not all elements are curves")
-            if not all(h.ambient_space() is parent.ambient_space()
-                       for h in curves):
+            if not all(h.ambient_space() is parent.ambient_space() for h in curves):
                 raise ValueError("not all curves are in the same ambient space")
 
     def __getitem__(self, i):
@@ -192,12 +196,13 @@ class PlaneCurveArrangementElement(Element):
         if not self:
             return 'Empty curve arrangement in {}'.format(self.parent().ambient_space())
         if len(self) < 5:
-            curves = ', '.join(h.defining_polynomial()._repr_()
-                               for h in self._curves)
-            return 'Arrangement ({}) in {}'.format(curves,
-                                                   self.parent().ambient_space())
-        return 'Arrangement of {} curves in {}'.format(len(self),
-                                                       self.parent().ambient_space())
+            curves = ', '.join(h.defining_polynomial()._repr_() for h in self._curves)
+            return 'Arrangement ({}) in {}'.format(
+                curves, self.parent().ambient_space()
+            )
+        return 'Arrangement of {} curves in {}'.format(
+            len(self), self.parent().ambient_space()
+        )
 
     def _richcmp_(self, other, op) -> bool:
         """
@@ -278,7 +283,7 @@ class PlaneCurveArrangementElement(Element):
             Traceback (most recent call last):
             ...
             ValueError: curve is not in the arrangement
-            """
+        """
         parent = self.parent()
         curves = parent(curves)
         planes = list(self)
@@ -428,6 +433,7 @@ class AffinePlaneCurveArrangementElement(PlaneCurveArrangementElement):
     """
     An ordered affine plane curve arrangement.
     """
+
     def __init__(self, parent, curves, check=True) -> None:
         """
         Construct an ordered affine plane curve arrangement.
@@ -450,8 +456,9 @@ class AffinePlaneCurveArrangementElement(PlaneCurveArrangementElement):
         if check:
             if not all(isinstance(h, AffinePlaneCurve) for h in curves):
                 raise ValueError("not all elements are curves")
-            if not all(h.ambient_space() is self.parent().ambient_space()
-                       for h in curves):
+            if not all(
+                h.ambient_space() is self.parent().ambient_space() for h in curves
+            ):
                 raise ValueError("not all curves are in the same ambient space")
         self._braid_monodromy_non_vertical = None
         self._braid_monodromy_vertical = None
@@ -468,8 +475,7 @@ class AffinePlaneCurveArrangementElement(PlaneCurveArrangementElement):
         self._vertical_lines_in_braid_mon = None
         self._base_point = None
 
-    def fundamental_group(self, simplified=True, vertical=True,
-                          projective=False):
+    def fundamental_group(self, simplified=True, vertical=True, projective=False):
         r"""
         Return the fundamental group of the complement of the union
         of affine plane curves in `\CC^2`.
@@ -566,11 +572,14 @@ class AffinePlaneCurveArrangementElement(PlaneCurveArrangementElement):
                 bd = (bm, st, self._vertical_lines_in_braid_mon, d1)
         else:
             bd = None
-        G, dic = fundamental_group_arrangement(L, simplified=simplified,
-                                               puiseux=True,
-                                               projective=projective,
-                                               vertical=vertical,
-                                               braid_data=bd)
+        G, dic = fundamental_group_arrangement(
+            L,
+            simplified=simplified,
+            puiseux=True,
+            projective=projective,
+            vertical=vertical,
+            braid_data=bd,
+        )
         if simplified and vertical:
             self._fundamental_group_simpl_vertical = G
             self._meridians_simpl_vertical = dic
@@ -710,8 +719,7 @@ class AffinePlaneCurveArrangementElement(PlaneCurveArrangementElement):
         if not K.is_subring(QQbar):
             raise TypeError('the base field is not in QQbar')
         L = self.defining_polynomials()
-        bm, dic, dv, d1, p1 = braid_monodromy(prod(L), arrangement=L,
-                                          vertical=vertical)
+        bm, dic, dv, d1, p1 = braid_monodromy(prod(L), arrangement=L, vertical=vertical)
         self._base_point = p1
         if vertical:
             self._braid_monodromy_vertical = bm
@@ -810,6 +818,7 @@ class ProjectivePlaneCurveArrangementElement(PlaneCurveArrangementElement):
     """
     An ordered projective plane curve arrangement.
     """
+
     def __init__(self, parent, curves, check=True):
         """
         Construct an ordered projective plane curve arrangement.
@@ -832,8 +841,9 @@ class ProjectivePlaneCurveArrangementElement(PlaneCurveArrangementElement):
         if check:
             if not all(isinstance(h, ProjectivePlaneCurve) for h in curves):
                 raise ValueError("not all elements are curves")
-            if not all(h.ambient_space() is self.parent().ambient_space()
-                       for h in curves):
+            if not all(
+                h.ambient_space() is self.parent().ambient_space() for h in curves
+            ):
                 raise ValueError("not all curves are in the same ambient space")
         self._fundamental_group_nonsimpl = None
         self._fundamental_group_simpl = None
@@ -925,14 +935,14 @@ class ProjectivePlaneCurveArrangementElement(PlaneCurveArrangementElement):
             return G
         if infinity_in_C:
             j = C.curves().index(infinity)
-            C = H(C.curves()[:j] + C.curves()[j + 1:])
+            C = H(C.curves()[:j] + C.curves()[j + 1 :])
         infinity_divides = False
         for j, c in enumerate(C):
             g = c.defining_polynomial()
             infinity_divides = z.divides(g)
             if infinity_divides:
                 h = R(g / z)
-                C = H(C.curves()[:j] + (h, ) + C.curves()[j + 1:])
+                C = H(C.curves()[:j] + (h,) + C.curves()[j + 1 :])
                 break
         affine = AffinePlaneCurveArrangements(K, names=('u', 'v'))
         affine_ring = affine.coordinate_ring()
@@ -946,8 +956,9 @@ class ProjectivePlaneCurveArrangementElement(PlaneCurveArrangementElement):
             changes = any(g.degree(v) < g.degree() > 1 for g in affines)
         C_affine = affine(affines)
         proj = not (infinity_divides or infinity_in_C)
-        G = C_affine.fundamental_group(simplified=simplified, vertical=True,
-                                       projective=proj)
+        G = C_affine.fundamental_group(
+            simplified=simplified, vertical=True, projective=proj
+        )
         dic = C_affine.meridians(simplified=simplified, vertical=True)
         if infinity_in_C:
             dic1 = {}
@@ -1035,6 +1046,7 @@ class PlaneCurveArrangements(UniqueRepresentation, Parent):
         Arrangement (x, y^2, x - 1, y - 1) in Affine Space
         of dimension 2 over Rational Field
     """
+
     Element = PlaneCurveArrangementElement
 
     @staticmethod
@@ -1163,10 +1175,10 @@ class PlaneCurveArrangements(UniqueRepresentation, Parent):
             True
             sage: L(y, x) == A
             False
-       """
+        """
         if len(args) == 1:
             if not isinstance(args[0], (tuple, list)):
-                arg = (args[0], )
+                arg = (args[0],)
             else:
                 arg = tuple(args[0])
         else:
@@ -1178,13 +1190,13 @@ class PlaneCurveArrangements(UniqueRepresentation, Parent):
             try:
                 ambient = h.ambient_space()
                 if ambient == ambient_space:
-                    curves += (h, )
+                    curves += (h,)
                 else:
                     raise TypeError('the curves do not have the same ambient space')
             except AttributeError:
                 try:
                     h = R(h)
-                    curves += (Curve(h), )
+                    curves += (Curve(h),)
                 except TypeError:
                     raise TypeError('elements are not curves')
         return self.element_class(self, curves)
@@ -1278,6 +1290,7 @@ class AffinePlaneCurveArrangements(PlaneCurveArrangements):
         Arrangement (x, y^2, x - 1, y - 1) in Affine Space
         of dimension 2 over Rational Field
     """
+
     Element = AffinePlaneCurveArrangementElement
 
     def ambient_space(self):
@@ -1310,6 +1323,7 @@ class ProjectivePlaneCurveArrangements(PlaneCurveArrangements):
         Arrangement (x, y^2, x - z, y - z) in Projective Space
         of dimension 2 over Rational Field
     """
+
     Element = ProjectivePlaneCurveArrangementElement
 
     def ambient_space(self):

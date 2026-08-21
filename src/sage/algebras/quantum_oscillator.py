@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2023-12): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2023 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
@@ -121,6 +121,7 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
 
     - [Kuniba2022]_ Section 3.2
     """
+
     @staticmethod
     def __classcall_private__(cls, q=None, R=None):
         r"""
@@ -171,7 +172,8 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
              Fraction Field of Univariate Polynomial Ring in q over Integer Ring
         """
         return "Quantum oscillator algebra with q={} over {}".format(
-            self._q, self.base_ring())
+            self._q, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -211,10 +213,12 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
             sage: O.algebra_generators()
             Finite family {'am': a-, 'ap': a+, 'k': k, 'ki': k^-1}
         """
-        d = {'ap': self.monomial((ZZ.one(), ZZ.zero())),
-             'am': self.monomial((-ZZ.one(), ZZ.zero())),
-             'k': self.monomial((ZZ.zero(), ZZ.one())),
-             'ki': self.monomial((ZZ.zero(), -ZZ.one()))}
+        d = {
+            'ap': self.monomial((ZZ.one(), ZZ.zero())),
+            'am': self.monomial((-ZZ.one(), ZZ.zero())),
+            'k': self.monomial((ZZ.zero(), ZZ.one())),
+            'ki': self.monomial((ZZ.zero(), -ZZ.one())),
+        }
         return Family(d)
 
     @cached_method
@@ -255,9 +259,20 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
              a-^4*k^-3, 1 + 3*k + 2*a+ + a+*k)
         """
         ap, am, k, ki = self.gens()
-        return (ap, am, k, ki, self.one(),
-                ap**3, am**4, k**2, ki**5, ap*k, am**4*ki**3,
-                self.an_element())
+        return (
+            ap,
+            am,
+            k,
+            ki,
+            self.one(),
+            ap**3,
+            am**4,
+            k**2,
+            ki**5,
+            ap * k,
+            am**4 * ki**3,
+            self.an_element(),
+        )
 
     def fock_space_representation(self):
         r"""
@@ -432,11 +447,17 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
             return self.element_class(self, {(al + ar, kl + kr): coeff})
         # now al and ar have different signs
         if al < 0:  # a^- * a^+ case
-            kp = self._k_poly.prod(1 - q**(2*(ar-i)) * k**2 for i in range(min(-al,ar)))
+            kp = self._k_poly.prod(
+                1 - q ** (2 * (ar - i)) * k**2 for i in range(min(-al, ar))
+            )
         else:  # a^+ * a^- case
-            kp = self._k_poly.prod(1 - q**(2*(ar+i)) * k**2 for i in range(1,min(al,-ar)+1))
+            kp = self._k_poly.prod(
+                1 - q ** (2 * (ar + i)) * k**2 for i in range(1, min(al, -ar) + 1)
+            )
         a = al + ar
-        return self.element_class(self, {(a, kl+kr+i): c * coeff for i, c in enumerate(kp) if c})
+        return self.element_class(
+            self, {(a, kl + kr + i): c * coeff for i, c in enumerate(kp) if c}
+        )
 
     class Element(CombinatorialFreeModule.Element):
         def __invert__(self):
@@ -471,7 +492,7 @@ class QuantumOscillatorAlgebra(CombinatorialFreeModule):
             if len(self) != 1 or self.leading_support()[0] != 0:
                 raise NotImplementedError("only implemented for monomials in k")
 
-            ((a, k), coeff), = list(self._monomial_coefficients.items())
+            (((a, k), coeff),) = list(self._monomial_coefficients.items())
             O = self.parent()
             return O.element_class(O, {(a, -k): coeff.inverse_of_unit()})
 
@@ -481,6 +502,7 @@ class FockSpaceRepresentation(CombinatorialFreeModule):
     The unique Fock space representation of the
     :class:`~sage.algebras.quantum_oscillator.QuantumOscillatorAlgebra`.
     """
+
     def __init__(self, oscillator_algebra):
         r"""
         Initialize ``self``.
@@ -493,8 +515,14 @@ class FockSpaceRepresentation(CombinatorialFreeModule):
         """
         self._O = oscillator_algebra
         ind = NonNegativeIntegers()
-        CombinatorialFreeModule.__init__(self, oscillator_algebra.base_ring(), ind, prefix='', bracket=['|', '>'],
-                                         latex_bracket=[r'\lvert', r'\rangle'])
+        CombinatorialFreeModule.__init__(
+            self,
+            oscillator_algebra.base_ring(),
+            ind,
+            prefix='',
+            bracket=['|', '>'],
+            latex_bracket=[r'\lvert', r'\rangle'],
+        )
 
     def _test_representation(self, **options):
         r"""
@@ -511,12 +539,13 @@ class FockSpaceRepresentation(CombinatorialFreeModule):
         S = self._O.some_elements()
         num_trials = 0
         from itertools import product
+
         for a, b in product(S, repeat=2):
             for elt in tester.some_elements():
                 num_trials += 1
                 if num_trials > tester._max_runs:
                     return
-                tester.assertEqual((a*b)*elt, a*(b*elt))
+                tester.assertEqual((a * b) * elt, a * (b * elt))
 
     def _repr_(self) -> str:
         r"""
@@ -613,9 +642,9 @@ class FockSpaceRepresentation(CombinatorialFreeModule):
                 for fm, fc in self:
                     if fm < -a:  # the result will be 0
                         continue
-                    c = q ** (fm*k)
+                    c = q ** (fm * k)
                     if a < 0:
-                        c *= prod(1 - q**(2*(fm-i)) for i in range(-a))
+                        c *= prod(1 - q ** (2 * (fm - i)) for i in range(-a))
                     if c:
-                        ret.append((fm+a, oc * fc * c))
+                        ret.append((fm + a, oc * fc * c))
             return P.sum_of_terms(ret)

@@ -2,6 +2,7 @@
 """
 Symmetric functions, with their multiple realizations
 """
+
 # ***************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>
 #                     2009-2012 Jason Bandlow <jbandlow@gmail.com>
@@ -851,6 +852,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
         - Devise a mechanism so that pickling bases of symmetric
           functions pickles the coercions which have a cache.
     """
+
     def __init__(self, R):
         r"""
         Initialization of ``self``.
@@ -870,8 +872,12 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             sage: TestSuite(Sym).run(skip="_test_fraction_field")
         """
         # change the line below to assert(R in Rings()) once MRO issues from #15536, #15475 are resolved
-        assert R in Fields() or R in Rings()  # side effect of this statement assures MRO exists for R
-        self._base = R  # Won't be needed when CategoryObject won't override anymore base_ring
+        assert (
+            R in Fields() or R in Rings()
+        )  # side effect of this statement assures MRO exists for R
+        self._base = (
+            R  # Won't be needed when CategoryObject won't override anymore base_ring
+        )
         cat = GradedHopfAlgebras(R).Commutative().Cocommutative()
         if R in PrincipalIdealDomains():
             cat &= UniqueFactorizationDomains()
@@ -910,6 +916,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the Schur basis
         """
         return schur.SymmetricFunctionAlgebra_schur(self)
+
     s = schur
     Schur = schur  # Currently needed by SymmetricFunctions.__init_extra__
 
@@ -923,6 +930,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the powersum basis
         """
         return powersum.SymmetricFunctionAlgebra_power(self)
+
     p = powersum
     power = powersum
     # Todo: get rid of the line above when it won't be needed anymore
@@ -937,6 +945,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the homogeneous basis
         """
         return homogeneous.SymmetricFunctionAlgebra_homogeneous(self)
+
     h = complete
     homogeneous = complete
 
@@ -950,6 +959,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the elementary basis
         """
         return elementary.SymmetricFunctionAlgebra_elementary(self)
+
     e = elementary
 
     def monomial(self):
@@ -962,6 +972,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the monomial basis
         """
         return monomial.SymmetricFunctionAlgebra_monomial(self)
+
     m = monomial
 
     def witt(self):
@@ -974,6 +985,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the Witt basis
         """
         from . import witt
+
         return witt.SymmetricFunctionAlgebra_witt(self)
 
     w = witt
@@ -1020,6 +1032,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             [4, 2, 0, 1, -1, 0, -1]
         """
         from .character import IrreducibleCharacterBasis
+
         return IrreducibleCharacterBasis(self)
 
     st = irreducible_symmetric_group_character
@@ -1076,6 +1089,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             [0, 1, 0, 2, 1, 3, 5]
         """
         from .character import InducedTrivialCharacterBasis
+
         return InducedTrivialCharacterBasis(self)
 
     ht = induced_trivial_character
@@ -1138,6 +1152,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             -s[1] + s[1, 1] - s[1, 1, 1] + 2*s[2] - 2*s[2, 1] - s[3] + s[3, 1]
         """
         from .character import RookIrreducibleCharacterBasis
+
         return RookIrreducibleCharacterBasis(self)
 
     xt = irreducible_rook_character
@@ -1225,6 +1240,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
         integral coefficients whenever `\lambda` is a strict partition.
         """
         return self.elementary().dual_basis()
+
     f = forgotten
 
     def symplectic(self):
@@ -1239,7 +1255,9 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the symplectic basis
         """
         from . import symplectic
+
         return symplectic.SymmetricFunctionAlgebra_symplectic(self)
+
     sp = symplectic
 
     def orthogonal(self):
@@ -1254,7 +1272,9 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the orthogonal basis
         """
         from . import orthogonal
+
         return orthogonal.SymmetricFunctionAlgebra_orthogonal(self)
+
     o = orthogonal
 
     def hecke_character(self, q='q'):
@@ -1272,7 +1292,9 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Rational Field in the Hecke character with q=1/2 basis
         """
         from sage.combinat.sf.hecke import HeckeCharacter
+
         return HeckeCharacter(self, q)
+
     qbar = hecke_character
 
     def macdonald(self, q='q', t='t'):
@@ -1394,6 +1416,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             Symmetric Functions over Fraction Field of Univariate Polynomial Ring in q over Integer Ring in the Abreu-Nigro basis
         """
         from sage.combinat.sf.abreu_nigro import SymmetricFunctionAlgebra_AbreuNigro
+
         return SymmetricFunctionAlgebra_AbreuNigro(self, q)
 
     def zonal(self):
@@ -1527,19 +1550,28 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
 
         from sage.combinat.sf.classical import conversion_functions
 
-        for (basis1_name, basis2_name) in conversion_functions:
+        for basis1_name, basis2_name in conversion_functions:
             basis1 = getattr(self, basis1_name)()
             basis2 = getattr(self, basis2_name)()
-            on_basis = SymmetricaConversionOnBasis(t=conversion_functions[basis1_name, basis2_name], domain=basis1, codomain=basis2)
+            on_basis = SymmetricaConversionOnBasis(
+                t=conversion_functions[basis1_name, basis2_name],
+                domain=basis1,
+                codomain=basis2,
+            )
             from sage.rings.rational_field import RationalField
-            if basis2_name != "powersum" or self._base.has_coerce_map_from(RationalField()):
+
+            if basis2_name != "powersum" or self._base.has_coerce_map_from(
+                RationalField()
+            ):
                 iso(basis1._module_morphism(on_basis, codomain=basis2))
             else:
                 # Don't register conversions to powersums as coercions,
                 # unless the base ring is a `\QQ`-algebra
                 # (otherwise the coercion graph loses commutativity).
-                iso(basis1._module_morphism(on_basis, codomain=basis2),
-                    only_conversion=True)
+                iso(
+                    basis1._module_morphism(on_basis, codomain=basis2),
+                    only_conversion=True,
+                )
 
         # Todo: fill in with other conversion functions on the classical bases
 
@@ -1577,6 +1609,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             3-bounded Symmetric Functions over Univariate Polynomial Ring in z over Rational Field with t=z
         """
         from sage.combinat.sf.new_kschur import KBoundedSubspace
+
         return KBoundedSubspace(self, k, t=t)
 
     def kschur(self, k, t='t'):
@@ -1660,6 +1693,7 @@ class SymmetricFunctions(UniqueRepresentation, Parent):
             3-Bounded Quotient of Symmetric Functions over Fraction Field of Univariate Polynomial Ring in t over Rational Field
         """
         from sage.combinat.sf.k_dual import KBoundedQuotient
+
         return KBoundedQuotient(self, k, t)
 
 
@@ -1707,4 +1741,6 @@ class SymmetricaConversionOnBasis:
         # TODO: use self._codomain.sum_of_monomials, when the later
         # will have an optional optimization for the case when there
         # is no repetition in the support
-        return self._codomain._from_dict(dict(self._t(self.fake_sym.monomial(partition))), coerce=True)
+        return self._codomain._from_dict(
+            dict(self._t(self.fake_sym.monomial(partition))), coerce=True
+        )

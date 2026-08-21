@@ -98,7 +98,6 @@ def MultiFilteredVectorSpace(arg, base_ring=None, check=True):
 
 
 class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
-
     def __init__(self, base_ring, dim, filtrations, check=True):
         """
         Python constructor.
@@ -152,6 +151,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             {1, 2}
         """
         from sage.sets.set import Set
+
         return Set(self._filt.keys())
 
     def change_ring(self, base_ring):
@@ -185,8 +185,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             Unfiltered RR^3
         """
         if not self._filt:
-            return MultiFilteredVectorSpace(self.dimension(),
-                                            base_ring=base_ring)
+            return MultiFilteredVectorSpace(self.dimension(), base_ring=base_ring)
         filtrations = {}
         for key, F in self._filt.items():
             filtrations[key] = F.change_ring(base_ring)
@@ -441,8 +440,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             Unfiltered RR^123
         """
         if not self._filt:
-            F = FilteredVectorSpace(self.dimension(),
-                                    base_ring=self.base_ring())
+            F = FilteredVectorSpace(self.dimension(), base_ring=self.base_ring())
             return 'Unfiltered ' + repr(F)
         rows = []
         min_deg, max_deg = self.min_degree(), self.max_degree()
@@ -451,6 +449,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             r = [str(key)] + F._repr_degrees(min_deg, max_deg - 1)
             rows.append(r)
         from sage.misc.table import table
+
         t = table(rows)
         w = t._widths()
         lines = ['Filtrations']
@@ -527,8 +526,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
                 b: QQ^3 >= QQ^2 >= QQ^2 >= QQ^2 >= 0
         """
         if not self.index_set() == other.index_set():
-            raise ValueError('the index sets of the two summands'
-                             ' must be the same')
+            raise ValueError('the index sets of the two summands must be the same')
         filtrations = {}
         for key in self.index_set():
             filtrations[key] = self._filt[key] + other._filt[key]
@@ -569,8 +567,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
                 b: QQ^2 >= QQ^2 >= QQ^1 >= QQ^1 >= QQ^1 >= 0
         """
         if not self.index_set() == other.index_set():
-            raise ValueError('the index sets of the two summands'
-                             ' must be the same')
+            raise ValueError('the index sets of the two summands must be the same')
         filtrations = {}
         for key in self.index_set():
             filtrations[key] = self._filt[key] * other._filt[key]
@@ -601,8 +598,9 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
                 a: QQ^1 >=  0   >= 0
                 b: QQ^1 >= QQ^1 >= 0
         """
-        filtrations = {key: value.exterior_power(n)
-                       for key, value in self._filt.items()}
+        filtrations = {
+            key: value.exterior_power(n) for key, value in self._filt.items()
+        }
         return MultiFilteredVectorSpace(filtrations)
 
     wedge = exterior_power
@@ -630,8 +628,9 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
                 a: QQ^3 >= QQ^3 >= QQ^3 >=  0   >=  0   >=  0   >=  0   >= 0
                 b: QQ^3 >= QQ^2 >= QQ^2 >= QQ^2 >= QQ^1 >= QQ^1 >= QQ^1 >= 0
         """
-        filtrations = {key: value.symmetric_power(n)
-                       for key, value in self._filt.items()}
+        filtrations = {
+            key: value.symmetric_power(n) for key, value in self._filt.items()
+        }
         return MultiFilteredVectorSpace(filtrations)
 
     def dual(self):
@@ -653,8 +652,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
                 a: QQ^2 >= QQ^2 >= QQ^2 >=  0   >= 0
                 b: QQ^2 >= QQ^1 >= QQ^1 >= QQ^1 >= 0
         """
-        filtrations = {key: value.dual()
-                       for key, value in self._filt.items()}
+        filtrations = {key: value.dual() for key, value in self._filt.items()}
         return MultiFilteredVectorSpace(filtrations)
 
     def shift(self, deg):
@@ -676,8 +674,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             sage: V.shift(-5).support()
             (-5, -4, -2)
         """
-        filtrations = {key: value.shift(deg)
-                       for key, value in self._filt.items()}
+        filtrations = {key: value.shift(deg) for key, value in self._filt.items()}
         return MultiFilteredVectorSpace(filtrations)
 
     def random_deformation(self, epsilon=None):
@@ -713,6 +710,7 @@ class MultiFilteredVectorSpace_class(FreeModule_ambient_field):
             sage: while V.random_deformation(1/100).get_degree('b',1).matrix() == matrix([1, 0]):
             ....:     pass
         """
-        filtrations = {key: value.random_deformation(epsilon)
-                       for key, value in self._filt.items()}
+        filtrations = {
+            key: value.random_deformation(epsilon) for key, value in self._filt.items()
+        }
         return MultiFilteredVectorSpace(filtrations)

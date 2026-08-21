@@ -1,14 +1,14 @@
 r"""
 Modular abelian varieties
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_over_base
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -26,6 +26,7 @@ class ModularAbelianVarieties(Category_over_base):
         sage: ModularAbelianVarieties(QQ)
         Category of modular abelian varieties over Rational Field
     """
+
     def __init__(self, Y):
         """
         TESTS::
@@ -60,10 +61,9 @@ class ModularAbelianVarieties(Category_over_base):
             sage: ModularAbelianVarieties(QQ).super_categories()
             [Category of sets]
         """
-        return [Sets()] # FIXME
+        return [Sets()]  # FIXME
 
     class Homsets(HomsetsCategory):
-
         class Endset(CategoryWithAxiom):
             def extra_super_categories(self):
                 """

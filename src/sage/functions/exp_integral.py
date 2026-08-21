@@ -63,10 +63,21 @@ lazy_import('sage.rings.real_mpfr', 'RealField')
 lazy_import('sage.symbolic.ring', 'SR')
 
 lazy_import('sage.libs.mpmath.utils', 'call', as_='_mpmath_utils_call')
-lazy_import('mpmath',
-            ['chi', 'ci', 'e1', 'ei', 'expint', 'ei', 'li', 'shi', 'si'],
-            as_=['_mpmath_chi', '_mpmath_ci', '_mpmath_e1', '_mpmath_ei', '_mpmath_expint',
-                 '_mpmath_ei', '_mpmath_li', '_mpmath_shi', '_mpmath_si'])
+lazy_import(
+    'mpmath',
+    ['chi', 'ci', 'e1', 'ei', 'expint', 'ei', 'li', 'shi', 'si'],
+    as_=[
+        '_mpmath_chi',
+        '_mpmath_ci',
+        '_mpmath_e1',
+        '_mpmath_ei',
+        '_mpmath_expint',
+        '_mpmath_ei',
+        '_mpmath_li',
+        '_mpmath_shi',
+        '_mpmath_si',
+    ],
+)
 
 
 class Function_exp_integral_e(BuiltinFunction):
@@ -149,6 +160,7 @@ class Function_exp_integral_e(BuiltinFunction):
     Numerical evaluation is handled using mpmath, but symbolics are handled
     by Sage and Maxima.
     """
+
     def __init__(self):
         """
         See the docstring for :meth:`Function_exp_integral_e`.
@@ -160,9 +172,12 @@ class Function_exp_integral_e(BuiltinFunction):
             sage: exp_integral_e(1, x)._sympy_()                                        # needs sage.symbolic
             expint(1, x)
         """
-        BuiltinFunction.__init__(self, "exp_integral_e", nargs=2,
-                                 conversions=dict(maxima='expintegral_e',
-                                                  sympy='expint'))
+        BuiltinFunction.__init__(
+            self,
+            "exp_integral_e",
+            nargs=2,
+            conversions=dict(maxima='expintegral_e', sympy='expint'),
+        )
 
     def _eval_(self, n, z):
         """
@@ -188,24 +203,24 @@ class Function_exp_integral_e(BuiltinFunction):
             if z.is_trivial_zero():
                 z_zero = True  # for later
                 if n > 1:
-                    return 1/(n-1)
+                    return 1 / (n - 1)
         else:
             if not z:
                 z_zero = True
                 if n > 1:
-                    return 1/(n-1)
+                    return 1 / (n - 1)
 
         # special case: n == 0
         if isinstance(n, Expression):
             if n.is_trivial_zero():
                 if z_zero:
                     return None
-                return exp(-z)/z
+                return exp(-z) / z
         else:
             if not n:
                 if z_zero:
                     return None
-                return exp(-z)/z
+                return exp(-z) / z
 
         return None  # leaves the expression unevaluated
 
@@ -251,8 +266,10 @@ class Function_exp_integral_e(BuiltinFunction):
             -1/2*exp_integral_e(1, sqrt(x))/sqrt(x)
         """
         if n in ZZ and n > 0:
-            return -1*exp_integral_e(n-1, z)
-        raise NotImplementedError("The derivative of this function is only implemented for n = 1, 2, 3, ...")
+            return -1 * exp_integral_e(n - 1, z)
+        raise NotImplementedError(
+            "The derivative of this function is only implemented for n = 1, 2, 3, ..."
+        )
 
 
 exp_integral_e = Function_exp_integral_e()
@@ -305,6 +322,7 @@ class Function_exp_integral_e1(BuiltinFunction):
     Numerical evaluation is handled using mpmath, but symbolics are handled
     by Sage and Maxima.
     """
+
     def __init__(self):
         """
         See the docstring for :class:`Function_exp_integral_e1`.
@@ -316,9 +334,12 @@ class Function_exp_integral_e1(BuiltinFunction):
             sage: exp_integral_e1(x)._sympy_()                                          # needs sympy sage.symbolic
             expint(1, x)
         """
-        BuiltinFunction.__init__(self, "exp_integral_e1", nargs=1,
-                                 conversions=dict(maxima='expintegral_e1',
-                                                  sympy='E1'))
+        BuiltinFunction.__init__(
+            self,
+            "exp_integral_e1",
+            nargs=1,
+            conversions=dict(maxima='expintegral_e1', sympy='E1'),
+        )
 
     def _evalf_(self, z, parent=None, algorithm=None):
         """
@@ -359,7 +380,7 @@ class Function_exp_integral_e1(BuiltinFunction):
             sage: f.diff(x)
             -2*e^(-x^2)/x
         """
-        return -exp(-z)/z
+        return -exp(-z) / z
 
 
 exp_integral_e1 = Function_exp_integral_e1()
@@ -417,6 +438,7 @@ class Function_log_integral(BuiltinFunction):
 
     .. _`logarithmic-integral`: http://mpmath.org/doc/current/functions/expintegrals.html#logarithmic-integral
     """
+
     def __init__(self):
         r"""
         See the docstring for ``Function_log_integral``.
@@ -437,11 +459,13 @@ class Function_log_integral(BuiltinFunction):
             sage: latex(log_integral(x))                                                # needs sage.symbolic
             \operatorname{log\_integral}\left(x\right)
         """
-        BuiltinFunction.__init__(self, "log_integral", nargs=1,
-                                 latex_name=r'\operatorname{log\_integral}',
-                                 conversions=dict(maxima='expintegral_li',
-                                                  sympy='li',
-                                                  fricas='li'))
+        BuiltinFunction.__init__(
+            self,
+            "log_integral",
+            nargs=1,
+            latex_name=r'\operatorname{log\_integral}',
+            conversions=dict(maxima='expintegral_li', sympy='li', fricas='li'),
+        )
 
     def _eval_(self, z):
         """
@@ -488,7 +512,7 @@ class Function_log_integral(BuiltinFunction):
             sage: f.diff(x)
             2*x/log(x^2)
         """
-        return 1/log(z)
+        return 1 / log(z)
 
 
 li = log_integral = Function_log_integral()
@@ -630,9 +654,13 @@ class Function_log_integral_offset(BuiltinFunction):
             sage: latex(log_integral_offset)
             \operatorname{log\_integral\_offset}
         """
-        BuiltinFunction.__init__(self, "log_integral_offset", nargs=1,
-                                 latex_name=r'\operatorname{log\_integral\_offset}',
-                                 conversions=dict(sympy='Li'))
+        BuiltinFunction.__init__(
+            self,
+            "log_integral_offset",
+            nargs=1,
+            latex_name=r'\operatorname{log\_integral\_offset}',
+            conversions=dict(sympy='Li'),
+        )
 
     def _eval_(self, z):
         """
@@ -648,7 +676,7 @@ class Function_log_integral_offset(BuiltinFunction):
         """
         if z == 2:
             return SR(0)
-        return li(z)-li(2)
+        return li(z) - li(2)
         # If we return:(li(z)-li(2)) we get correct symbolic integration.
         # But on definite integration it returns x.xxxx-li(2).
 
@@ -680,7 +708,7 @@ class Function_log_integral_offset(BuiltinFunction):
             sage: f.diff(x)
             2*x/log(x^2)
         """
-        return 1/log(z)
+        return 1 / log(z)
 
 
 Li = log_integral_offset = Function_log_integral_offset()
@@ -785,6 +813,7 @@ class Function_sin_integral(BuiltinFunction):
 
     .. _`si`: http://mpmath.org/doc/current/functions/expintegrals.html#si
     """
+
     def __init__(self):
         """
         See the docstring for ``Function_sin_integral``.
@@ -801,11 +830,15 @@ class Function_sin_integral(BuiltinFunction):
             sage: sin_integral(x)._giac_()                                              # needs giac
             Si(sageVARx)
         """
-        BuiltinFunction.__init__(self, "sin_integral", nargs=1,
-                                 latex_name=r'\operatorname{Si}',
-                                 conversions=dict(maxima='expintegral_si',
-                                                  sympy='Si',
-                                                  fricas='Si', giac='Si'))
+        BuiltinFunction.__init__(
+            self,
+            "sin_integral",
+            nargs=1,
+            latex_name=r'\operatorname{Si}',
+            conversions=dict(
+                maxima='expintegral_si', sympy='Si', fricas='Si', giac='Si'
+            ),
+        )
 
     def _eval_(self, z):
         """
@@ -871,7 +904,7 @@ class Function_sin_integral(BuiltinFunction):
             sage: f.diff(x)
             2*sin(x^2)/x
         """
-        return sin(z)/z
+        return sin(z) / z
 
 
 Si = sin_integral = Function_sin_integral()
@@ -960,6 +993,7 @@ class Function_cos_integral(BuiltinFunction):
 
     .. _`ci`: http://mpmath.org/doc/current/functions/expintegrals.html#ci
     """
+
     def __init__(self):
         """
         See the docstring for :class:`Function_cos_integral`.
@@ -976,11 +1010,15 @@ class Function_cos_integral(BuiltinFunction):
             sage: cos_integral(x)._giac_()                                              # needs giac
             Ci(sageVARx)
         """
-        BuiltinFunction.__init__(self, "cos_integral", nargs=1,
-                                 latex_name=r'\operatorname{Ci}',
-                                 conversions=dict(maxima='expintegral_ci',
-                                                  sympy='Ci',
-                                                  fricas='Ci', giac='Ci'))
+        BuiltinFunction.__init__(
+            self,
+            "cos_integral",
+            nargs=1,
+            latex_name=r'\operatorname{Ci}',
+            conversions=dict(
+                maxima='expintegral_ci', sympy='Ci', fricas='Ci', giac='Ci'
+            ),
+        )
 
     def _evalf_(self, z, parent=None, algorithm=None):
         """
@@ -1010,7 +1048,7 @@ class Function_cos_integral(BuiltinFunction):
             sage: f.diff(x)
             2*cos(x^2)/x
         """
-        return cos(z)/z
+        return cos(z) / z
 
 
 Ci = cos_integral = Function_cos_integral()
@@ -1095,6 +1133,7 @@ class Function_sinh_integral(BuiltinFunction):
 
     .. _`shi`: http://mpmath.org/doc/current/functions/expintegrals.html#shi
     """
+
     def __init__(self):
         """
         See the docstring for ``Function_sinh_integral``.
@@ -1106,11 +1145,13 @@ class Function_sinh_integral(BuiltinFunction):
             sage: sinh_integral(x)._sympy_()                                            # needs sympy sage.symbolic
             Shi(x)
         """
-        BuiltinFunction.__init__(self, "sinh_integral", nargs=1,
-                                 latex_name=r'\operatorname{Shi}',
-                                 conversions=dict(maxima='expintegral_shi',
-                                                  sympy='Shi',
-                                                  fricas='Shi'))
+        BuiltinFunction.__init__(
+            self,
+            "sinh_integral",
+            nargs=1,
+            latex_name=r'\operatorname{Shi}',
+            conversions=dict(maxima='expintegral_shi', sympy='Shi', fricas='Shi'),
+        )
 
     def _eval_(self, z):
         """
@@ -1157,7 +1198,7 @@ class Function_sinh_integral(BuiltinFunction):
             sage: f.diff(x)
             1/2*(x^2 - 1)/(x^2*log(x))
         """
-        return sinh(z)/z
+        return sinh(z) / z
 
 
 Shi = sinh_integral = Function_sinh_integral()
@@ -1238,6 +1279,7 @@ class Function_cosh_integral(BuiltinFunction):
 
     .. _`chi`: http://mpmath.org/doc/current/functions/expintegrals.html#chi
     """
+
     def __init__(self):
         """
         See the docstring for ``Function_cosh_integral``.
@@ -1249,11 +1291,13 @@ class Function_cosh_integral(BuiltinFunction):
             sage: cosh_integral(x)._sympy_()                                            # needs sage.symbolic
             Chi(x)
         """
-        BuiltinFunction.__init__(self, "cosh_integral", nargs=1,
-                                 latex_name=r'\operatorname{Chi}',
-                                 conversions=dict(maxima='expintegral_chi',
-                                                  sympy='Chi',
-                                                  fricas='Chi'))
+        BuiltinFunction.__init__(
+            self,
+            "cosh_integral",
+            nargs=1,
+            latex_name=r'\operatorname{Chi}',
+            conversions=dict(maxima='expintegral_chi', sympy='Chi', fricas='Chi'),
+        )
 
     def _evalf_(self, z, parent=None, algorithm=None):
         """
@@ -1281,7 +1325,7 @@ class Function_cosh_integral(BuiltinFunction):
             sage: f.diff(x)
             1/2*(x^2 + 1)/(x^2*log(x))
         """
-        return cosh(z)/z
+        return cosh(z) / z
 
 
 Chi = cosh_integral = Function_cosh_integral()
@@ -1291,6 +1335,7 @@ Chi = cosh_integral = Function_cosh_integral()
 # Code below here was moved from sage/functions/transcendental.py
 # This occurred as part of Issue #11143.
 ###################################################################
+
 
 # This class has a name which is not specific enough
 # see Function_exp_integral_e above, for example, which
@@ -1355,6 +1400,7 @@ class Function_exp_integral(BuiltinFunction):
         sage: (Ei(-Z)).limit(Z=1000).n()
         -5.07089306023517e-438
     """
+
     def __init__(self):
         """
         TESTS::
@@ -1364,10 +1410,11 @@ class Function_exp_integral(BuiltinFunction):
             sage: Ei(x)._sympy_()                                                       # needs sympy sage.symbolic
             Ei(x)
         """
-        BuiltinFunction.__init__(self, "Ei",
-                                 conversions=dict(maxima='expintegral_ei',
-                                                  sympy='Ei',
-                                                  fricas='Ei'))
+        BuiltinFunction.__init__(
+            self,
+            "Ei",
+            conversions=dict(maxima='expintegral_ei', sympy='Ei', fricas='Ei'),
+        )
 
     def _evalf_(self, x, parent=None, algorithm=None):
         """
@@ -1400,7 +1447,7 @@ class Function_exp_integral(BuiltinFunction):
             sage: Ei(f(x)).diff(x)
             e^f(x)*diff(f(x), x)/f(x)
         """
-        return exp(x)/x
+        return exp(x) / x
 
 
 Ei = exp_integral_ei = Function_exp_integral()
@@ -1496,8 +1543,9 @@ def exponential_integral_1(x, n=0):
     if isinstance(x, Expression):
         if x.is_trivial_zero():
             return Infinity
-        raise NotImplementedError("Use the symbolic exponential integral " +
-                                  "function: exp_integral_e1.")
+        raise NotImplementedError(
+            "Use the symbolic exponential integral " + "function: exp_integral_e1."
+        )
 
     # x == 0  =>  return Infinity
     if not x:

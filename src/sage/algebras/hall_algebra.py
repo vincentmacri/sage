@@ -72,6 +72,7 @@ def transpose_cmp(x, y):
             if s1 > s2:
                 return False
         return sum(l) <= sum(m)
+
     if check(xexp, yexp):
         return 1
     if check(yexp, xexp):
@@ -210,6 +211,7 @@ class HallAlgebra(CombinatorialFreeModule):
         sage: e(H[1,1,1])
         (q^-3)*e[3]
     """
+
     def __init__(self, base_ring, q, prefix='H'):
         """
         Initialize ``self``.
@@ -240,17 +242,26 @@ class HallAlgebra(CombinatorialFreeModule):
             category = HopfAlgebrasWithBasis(base_ring)
         else:
             category = AlgebrasWithBasis(base_ring)
-        CombinatorialFreeModule.__init__(self, base_ring, Partitions(),
-                                         prefix=prefix, bracket=False,
-                                         sorting_key=cmp_to_key(transpose_cmp),
-                                         category=category)
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            Partitions(),
+            prefix=prefix,
+            bracket=False,
+            sorting_key=cmp_to_key(transpose_cmp),
+            category=category,
+        )
 
         # Coercions
         I = self.monomial_basis()
-        M = I.module_morphism(I._to_natural_on_basis, codomain=self,
-                              triangular='upper', unitriangular=True,
-                              inverse_on_support=lambda x: x.conjugate(),
-                              invertible=True)
+        M = I.module_morphism(
+            I._to_natural_on_basis,
+            codomain=self,
+            triangular='upper',
+            unitriangular=True,
+            inverse_on_support=lambda x: x.conjugate(),
+            invertible=True,
+        )
         M.register_as_coercion()
         (~M).register_as_coercion()
 
@@ -311,9 +322,13 @@ class HallAlgebra(CombinatorialFreeModule):
             return self.monomial(mu)
 
         if all(x == 1 for x in la):
-            return self.sum_of_terms([(p, hall_polynomial(p, mu, la, self._q))
-                                      for p in Partitions(sum(mu) + len(la))],
-                                     distinct=True)
+            return self.sum_of_terms(
+                [
+                    (p, hall_polynomial(p, mu, la, self._q))
+                    for p in Partitions(sum(mu) + len(la))
+                ],
+                distinct=True,
+            )
 
         I = HallAlgebraMonomials(self.base_ring(), self._q)
         mu = self.monomial(mu)
@@ -348,8 +363,16 @@ class HallAlgebra(CombinatorialFreeModule):
         S = self.tensor_square()
         if all(x == 1 for x in la):
             n = len(la)
-            return S.sum_of_terms([((Partition([1]*r), Partition([1]*(n-r))), self._q**(-r*(n-r)))
-                                   for r in range(n+1)], distinct=True)
+            return S.sum_of_terms(
+                [
+                    (
+                        (Partition([1] * r), Partition([1] * (n - r))),
+                        self._q ** (-r * (n - r)),
+                    )
+                    for r in range(n + 1)
+                ],
+                distinct=True,
+            )
 
         I = HallAlgebraMonomials(self.base_ring(), self._q)
         la = self.monomial(la)
@@ -481,9 +504,14 @@ class HallAlgebra(CombinatorialFreeModule):
                 (4*q^2 + 9)/(q^2 - q)
             """
             q = self.parent()._q
-            f = lambda la: ~(q**(sum(la) + 2*la.weighted_size())
-                              * prod(prod((1 - q**-i) for i in range(1,k+1))
-                                     for k in la.to_exp()))
+            f = lambda la: (
+                ~(
+                    q ** (sum(la) + 2 * la.weighted_size())
+                    * prod(
+                        prod((1 - q**-i) for i in range(1, k + 1)) for k in la.to_exp()
+                    )
+                )
+            )
             y = self.parent()(y)
             ret = q.parent().zero()
             for mx, cx in self:
@@ -561,6 +589,7 @@ class HallAlgebraMonomials(CombinatorialFreeModule):
         H[4, 1] + 7*H[3, 2] + 37*H[3, 1, 1] + 136*H[2, 2, 1]
          + 1495*H[2, 1, 1, 1] + 62920*H[1, 1, 1, 1, 1]
     """
+
     def __init__(self, base_ring, q, prefix='I'):
         """
         Initialize ``self``.
@@ -591,9 +620,14 @@ class HallAlgebraMonomials(CombinatorialFreeModule):
             category = HopfAlgebrasWithBasis(base_ring)
         else:
             category = AlgebrasWithBasis(base_ring)
-        CombinatorialFreeModule.__init__(self, base_ring, Partitions(),
-                                         prefix=prefix, bracket=False,
-                                         category=category)
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            Partitions(),
+            prefix=prefix,
+            bracket=False,
+            category=category,
+        )
 
         # Coercions
         if hopf_structure:
@@ -620,7 +654,7 @@ class HallAlgebraMonomials(CombinatorialFreeModule):
              + (q^5+2*q^4+3*q^3+3*q^2+2*q+1)*H[1, 1, 1, 1]
         """
         H = HallAlgebra(self.base_ring(), self._q)
-        return reduce(lambda cur,r: cur * H.monomial(Partition([1]*r)), a, H.one())
+        return reduce(lambda cur, r: cur * H.monomial(Partition([1] * r)), a, H.one())
 
     def _repr_(self) -> str:
         """
@@ -633,7 +667,9 @@ class HallAlgebraMonomials(CombinatorialFreeModule):
             Hall algebra with q=q over Univariate Polynomial Ring in q over
              Integer Ring in the monomial basis
         """
-        return "Hall algebra with q={} over {} in the monomial basis".format(self._q, self.base_ring())
+        return "Hall algebra with q={} over {} in the monomial basis".format(
+            self._q, self.base_ring()
+        )
 
     def one_basis(self):
         """
@@ -686,8 +722,16 @@ class HallAlgebraMonomials(CombinatorialFreeModule):
              + (q^-1)*I[1, 1] # I[1] + I[2] # I[1] + I[2, 1] # I[]
         """
         S = self.tensor_square()
-        return S.prod(S.sum_of_terms([((Partition([r]), Partition([n-r])), self._q**(-r*(n-r)))
-                                      for r in range(n+1)], distinct=True) for n in a)
+        return S.prod(
+            S.sum_of_terms(
+                [
+                    ((Partition([r]), Partition([n - r])), self._q ** (-r * (n - r)))
+                    for r in range(n + 1)
+                ],
+                distinct=True,
+            )
+            for n in a
+        )
 
     def antipode_on_basis(self, a):
         """

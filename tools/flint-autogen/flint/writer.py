@@ -1,7 +1,7 @@
 r"""
 Write flint header files.
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2023 Vincent Delecroix <20100.delecroix@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@ Write flint header files.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from collections import defaultdict
 import os
@@ -31,10 +31,10 @@ def write_flint_cython_headers(output_dir, documentation=False):
         raise ValueError(f"FLINT_GIT_DIR(={FLINT_GIT_DIR}) is not a Git repository")
 
     import git
+
     repo = git.Repo(FLINT_GIT_DIR)
     commit = repo.head.commit
     print(f"Generating cython headers from {commit}")
-
 
     header_list = []
     pxd_list = []
@@ -56,12 +56,16 @@ def write_flint_cython_headers(output_dir, documentation=False):
         absolute_header = os.path.join(FLINT_INCLUDE_DIR, header)
 
         if not os.path.isfile(absolute_header):
-            print('Warning: skipping {} because no associated .h found'.format(filename))
+            print(
+                'Warning: skipping {} because no associated .h found'.format(filename)
+            )
             continue
 
         # TODO: below are some exceptions for which we do not create .pxd file
         if prefix == 'machine_vectors' or prefix == 'fft_small':
-            print('Warning: ignoring machine_vectors and fft_small because architecture dependent')
+            print(
+                'Warning: ignoring machine_vectors and fft_small because architecture dependent'
+            )
             continue
 
         header_file = prefix + '.h'
@@ -117,13 +121,28 @@ def write_flint_cython_headers(output_dir, documentation=False):
     with open(os.path.join(AUTOGEN_DIR, 'templates', 'types.pxd.template')) as f:
         text = f.read()
     with open(os.path.join(output_dir, 'types.pxd'), 'w') as output:
-        output.write(text.format(HEADER_LIST=' '.join('flint/{}'.format(header) for header in header_list)))
+        output.write(
+            text.format(
+                HEADER_LIST=' '.join(
+                    'flint/{}'.format(header) for header in header_list
+                )
+            )
+        )
 
     for filename in os.listdir(os.path.join(AUTOGEN_DIR, 'macros')):
         prefix = filename[:-4]
-        shutil.copy(os.path.join(AUTOGEN_DIR, 'macros', filename), os.path.join(output_dir, filename))
+        shutil.copy(
+            os.path.join(AUTOGEN_DIR, 'macros', filename),
+            os.path.join(output_dir, filename),
+        )
 
     with open(os.path.join(AUTOGEN_DIR, 'templates', 'flint_sage.pyx.template')) as f:
         text = f.read()
     with open(os.path.join(output_dir, 'flint_sage.pyx'), 'w') as output:
-        output.write(text.format(CYTHON_IMPORTS='\n'.join('from .{} cimport *'.format(header[:-4]) for header in pxd_list)))
+        output.write(
+            text.format(
+                CYTHON_IMPORTS='\n'.join(
+                    'from .{} cimport *'.format(header[:-4]) for header in pxd_list
+                )
+            )
+        )

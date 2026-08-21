@@ -160,14 +160,18 @@ class PathAlgebra(CombinatorialFreeModule):
         #       Shortcut for _quiver.semigroup()
 
         from sage.categories.graded_algebras_with_basis import GradedAlgebrasWithBasis
+
         self._quiver = P.quiver()
         self._semigroup = P
         self._ordstr = order
-        super().__init__(k, self._semigroup,
-                         prefix='',
-                         # element_class=self.Element,
-                         category=GradedAlgebrasWithBasis(k),
-                         bracket=False)
+        super().__init__(
+            k,
+            self._semigroup,
+            prefix='',
+            # element_class=self.Element,
+            category=GradedAlgebrasWithBasis(k),
+            bracket=False,
+        )
         self._assign_names(self._semigroup.variable_names())
 
     def order_string(self) -> str:
@@ -220,9 +224,10 @@ class PathAlgebra(CombinatorialFreeModule):
             sage: A.arrows()
             (a, b, c)
         """
-        return tuple(self._from_dict({index: self.base_ring().one()},
-                                     remove_zeros=False)
-                     for index in self._semigroup.arrows())
+        return tuple(
+            self._from_dict({index: self.base_ring().one()}, remove_zeros=False)
+            for index in self._semigroup.arrows()
+        )
 
     @cached_method
     def idempotents(self):
@@ -237,9 +242,10 @@ class PathAlgebra(CombinatorialFreeModule):
             sage: A.idempotents()
             (e_1, e_2, e_3, e_4)
         """
-        return tuple(self._from_dict({index: self.base_ring().one()},
-                                     remove_zeros=False)
-                     for index in self._semigroup.idempotents())
+        return tuple(
+            self._from_dict({index: self.base_ring().one()}, remove_zeros=False)
+            for index in self._semigroup.idempotents()
+        )
 
     @cached_method
     def gen(self, i):
@@ -261,8 +267,9 @@ class PathAlgebra(CombinatorialFreeModule):
             sage: A.gen(5)
             b
         """
-        return self._from_dict({self._semigroup.gen(i): self.base_ring().one()},
-                               remove_zeros=False)
+        return self._from_dict(
+            {self._semigroup.gen(i): self.base_ring().one()}, remove_zeros=False
+        )
 
     def ngens(self):
         """
@@ -298,6 +305,7 @@ class PathAlgebra(CombinatorialFreeModule):
             a*c
         """
         from sage.quivers.paths import QuiverPath
+
         # If it's an element of another path algebra, do a linear combination
         # of the basis
         if isinstance(x, PathAlgebraElement) and isinstance(x.parent(), PathAlgebra):
@@ -318,7 +326,9 @@ class PathAlgebra(CombinatorialFreeModule):
         # If it's a tuple or a list, try and create a QuiverPath from it and
         # then return the associated basis element
         if isinstance(x, (tuple, list, str)):
-            return self.element_class(self, {self._semigroup(x): self.base_ring().one()})
+            return self.element_class(
+                self, {self._semigroup(x): self.base_ring().one()}
+            )
 
         if isinstance(x, dict):
             return self.element_class(self, x)
@@ -395,11 +405,15 @@ class PathAlgebra(CombinatorialFreeModule):
             sage: B(2)*x*B(3)  # indirect doctest
             e_2 + b + e_3
         """
-        if isinstance(other, PathAlgebra) and self._base.has_coerce_map_from(other._base):
+        if isinstance(other, PathAlgebra) and self._base.has_coerce_map_from(
+            other._base
+        ):
             OQ = other._quiver
             SQ = self._quiver
             SQE = self._semigroup._sorted_edges
-            if all(v in SQ for v in OQ.vertex_iterator()) and all(e in SQE for e in other._semigroup._sorted_edges):
+            if all(v in SQ for v in OQ.vertex_iterator()) and all(
+                e in SQE for e in other._semigroup._sorted_edges
+            ):
                 return True
         if self._semigroup.has_coerce_map_from(other):
             return True
@@ -613,10 +627,10 @@ class PathAlgebra(CombinatorialFreeModule):
             5*e_0 + a - a*d + 2*b + 3*e_2
         """
         if factor_on_left:
-            return self.sum(coeff * element
-                            for element, coeff in iter_of_elements_coeff)
-        return self.sum(element * coeff
-                        for element, coeff in iter_of_elements_coeff)
+            return self.sum(
+                coeff * element for element, coeff in iter_of_elements_coeff
+            )
+        return self.sum(element * coeff for element, coeff in iter_of_elements_coeff)
 
     def homogeneous_component(self, n):
         """

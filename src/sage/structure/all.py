@@ -11,7 +11,7 @@ from sage.structure.element import (
     coercion_model,
     get_coercion_model,
     coercion_traceback,
-    parent
+    parent,
 )
 
 from sage.structure.parent import Parent
@@ -25,5 +25,6 @@ from sage.structure.mutability import Mutability
 from sage.structure.element_wrapper import ElementWrapper
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.structure.formal_sum', ['FormalSums', 'FormalSum'])
 del lazy_import

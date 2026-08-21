@@ -14,11 +14,12 @@ from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category, JoinCategory, CategoryWithParameters
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.category_with_axiom import CategoryWithAxiom
-from sage.categories.covariant_functorial_construction import FunctorialConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    FunctorialConstructionCategory,
+)
 
 
 class HomsetsCategory(FunctorialConstructionCategory, CategoryWithParameters):
-
     _functor_category = "Homsets"
 
     @classmethod
@@ -112,10 +113,16 @@ class HomsetsCategory(FunctorialConstructionCategory, CategoryWithParameters):
             [Category of homsets]
         """
         if category.full_super_categories():
-            return Category.join([getattr(cat, cls._functor_category)()
-                                  for cat in category.full_super_categories()])
+            return Category.join(
+                [
+                    getattr(cat, cls._functor_category)()
+                    for cat in category.full_super_categories()
+                ]
+            )
         functor_category = getattr(category.__class__, cls._functor_category)
-        if isinstance(functor_category, type) and issubclass(functor_category, Category):
+        if isinstance(functor_category, type) and issubclass(
+            functor_category, Category
+        ):
             return Homsets()
         return HomsetsOf(Category.join(category.structure()))
 
@@ -130,10 +137,14 @@ class HomsetsCategory(FunctorialConstructionCategory, CategoryWithParameters):
             sage: Sets().Homsets()._test_homsets_category()
         """
         # TODO: remove if unneeded
-        #from sage.categories.objects    import Objects
-        #from sage.categories.sets_cat import Sets
+        # from sage.categories.objects    import Objects
+        # from sage.categories.sets_cat import Sets
         tester = self._tester(**options)
-        tester.assertTrue(self.is_subcategory(Category.join(self.base_category().structure()).Homsets()))
+        tester.assertTrue(
+            self.is_subcategory(
+                Category.join(self.base_category().structure()).Homsets()
+            )
+        )
         tester.assertTrue(self.is_subcategory(Homsets()))
 
     @cached_method
@@ -149,8 +160,9 @@ class HomsetsCategory(FunctorialConstructionCategory, CategoryWithParameters):
             Integer Ring
         """
         from sage.categories.category_types import Category_over_base
+
         for C in self._all_super_categories_proper:
-            if isinstance(C,Category_over_base):
+            if isinstance(C, Category_over_base):
                 return C.base()
         raise AttributeError("This hom category has no base")
 
@@ -195,6 +207,7 @@ class HomsetsOf(HomsetsCategory):
         sage: TestSuite(C).run(skip=['_test_category_graph'])
         sage: TestSuite(C).run()
     """
+
     _base_category_class = (Category,)
 
     def _repr_object_names(self):
@@ -213,7 +226,9 @@ class HomsetsOf(HomsetsCategory):
             object_names = base_category._repr_object_names()
         except ValueError:
             assert isinstance(base_category, JoinCategory)
-            object_names = ' and '.join(cat._repr_object_names() for cat in base_category.super_categories())
+            object_names = ' and '.join(
+                cat._repr_object_names() for cat in base_category.super_categories()
+            )
         return "homsets of %s" % (object_names)
 
     def super_categories(self):
@@ -267,6 +282,7 @@ class Homsets(Category_singleton):
     This is tested in
     :meth:`~sage.categories.homsets.HomsetsCategory._test_homsets_category`.
     """
+
     def super_categories(self):
         """
         Return the super categories of ``self``.
@@ -278,10 +294,10 @@ class Homsets(Category_singleton):
             Category of homsets
         """
         from .sets_cat import Sets
+
         return [Sets()]
 
     class SubcategoryMethods:
-
         def Endset(self):
             """
             Return the subcategory of the homsets of ``self`` that are endomorphism sets.
@@ -311,6 +327,7 @@ class Homsets(Category_singleton):
             sage: Homsets().Endset()
             Category of endsets
         """
+
         def extra_super_categories(self):
             """
             Implement the fact that endsets are monoids.
@@ -324,6 +341,7 @@ class Homsets(Category_singleton):
                 [Category of monoids]
             """
             from .monoids import Monoids
+
             return [Monoids()]
 
         class ParentMethods:
@@ -360,5 +378,7 @@ class Homsets(Category_singleton):
             sD = self.domain()
             sC = self.codomain()
             if sC is None or sD is None:
-                raise RuntimeError("Domain or codomain of this homset have been deallocated")
+                raise RuntimeError(
+                    "Domain or codomain of this homset have been deallocated"
+                )
             return sD is sC

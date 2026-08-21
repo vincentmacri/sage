@@ -134,6 +134,7 @@ class FusionDouble(CombinatorialFreeModule):
         sage: b13^2 # long time (4s)
         b0 + b3 + b37
     """
+
     @staticmethod
     def __classcall_private__(cls, G, prefix='s', inject_variables=False):
         """
@@ -177,7 +178,10 @@ class FusionDouble(CombinatorialFreeModule):
         self._unit_index = None  # index of the unit element
         count = ZZ.zero()
         for g in sorted(G.conjugacy_classes_representatives(), key=str):
-            for chi in sorted(G.centralizer(g).irreducible_characters(), key=lambda chi:str(chi.values())):
+            for chi in sorted(
+                G.centralizer(g).irreducible_characters(),
+                key=lambda chi: str(chi.values()),
+            ):
                 # NOTE: the trivial char is not necessarily the first one
                 self._names[count] = "%s%s" % (prefix, count)
                 self._elt[count] = g
@@ -190,8 +194,9 @@ class FusionDouble(CombinatorialFreeModule):
         self._fusion_labels = None
         self._field = None
         cat = AlgebrasWithBasis(ZZ)
-        CombinatorialFreeModule.__init__(self, ZZ, list(self._names),
-                                         prefix=prefix, bracket=False, category=cat)
+        CombinatorialFreeModule.__init__(
+            self, ZZ, list(self._names), prefix=prefix, bracket=False, category=cat
+        )
 
     def _repr_(self) -> str:
         """
@@ -258,8 +263,8 @@ class FusionDouble(CombinatorialFreeModule):
         """
         sum_val = ZZ.zero()
         G = self._G
-        i, = list(i._monomial_coefficients)
-        j, = list(j._monomial_coefficients)
+        (i,) = list(i._monomial_coefficients)
+        (j,) = list(j._monomial_coefficients)
         a = self._elt[i]
         b = self._elt[j]
         for g in G:
@@ -329,9 +334,15 @@ class FusionDouble(CombinatorialFreeModule):
             [ 1/3  1/3 -1/3    0    0  2/3 -1/3 -1/3]
         """
         b = self.basis()
-        return matrix([[self.s_ij(b[x], b[y], unitary=unitary,
-                                  base_coercion=base_coercion)
-                        for x in self.get_order()] for y in self.get_order()])
+        return matrix(
+            [
+                [
+                    self.s_ij(b[x], b[y], unitary=unitary, base_coercion=base_coercion)
+                    for x in self.get_order()
+                ]
+                for y in self.get_order()
+            ]
+        )
 
     @cached_method
     def N_ijk(self, i, j, k):
@@ -364,9 +375,15 @@ class FusionDouble(CombinatorialFreeModule):
             True
         """
         sz = self.one()
-        return ZZ(sum(self.s_ij(i, r, unitary=True) * self.s_ij(j, r, unitary=True)
-                      * self.s_ij(k, r, unitary=True) / self.s_ij(sz, r, unitary=True)
-                      for r in self.basis()))
+        return ZZ(
+            sum(
+                self.s_ij(i, r, unitary=True)
+                * self.s_ij(j, r, unitary=True)
+                * self.s_ij(k, r, unitary=True)
+                / self.s_ij(sz, r, unitary=True)
+                for r in self.basis()
+            )
+        )
 
     @cached_method
     def Nk_ij(self, i, j, k, use_characters=False):
@@ -445,7 +462,9 @@ class FusionDouble(CombinatorialFreeModule):
         CK = G.centralizer(k.g())
 
         c = K.cardinality() / G.order()
-        summands = [(I_elem, J_elem) for I_elem in I for J_elem in J if I_elem * J_elem == k.g()]
+        summands = [
+            (I_elem, J_elem) for I_elem in I for J_elem in J if I_elem * J_elem == k.g()
+        ]
         res = ZZ.zero()
         ichar = i.char()
         jchar = j.char()
@@ -463,8 +482,12 @@ class FusionDouble(CombinatorialFreeModule):
             inner_summands = A.intersection(B).intersection(Set(CK))
             i_twist_inv = i_twist.inverse()
             j_twist_inv = j_twist.inverse()
-            res += sum(ichar(i_twist * x * i_twist_inv) * jchar(j_twist * x * j_twist_inv) * kchar(x).conjugate()
-                       for x in inner_summands)
+            res += sum(
+                ichar(i_twist * x * i_twist_inv)
+                * jchar(j_twist * x * j_twist_inv)
+                * kchar(x).conjugate()
+                for x in inner_summands
+            )
         return c * res
 
     @cached_method
@@ -495,7 +518,9 @@ class FusionDouble(CombinatorialFreeModule):
         """
         if self.is_multiplicity_free(verbose=False):
             return self.get_fmatrix().field()
-        raise NotImplementedError("method is only available for multiplicity free fusion rings")
+        raise NotImplementedError(
+            "method is only available for multiplicity free fusion rings"
+        )
 
     def root_of_unity(self, r, base_coercion=True):
         r"""
@@ -554,17 +579,30 @@ class FusionDouble(CombinatorialFreeModule):
             [-1, 1, 1]
         """
         if self.Nk_ij(i, j, k) == 0:
-            return self.field().zero() if (not base_coercion) or (self._basecoer is None) else self.fvars_field().zero()
+            return (
+                self.field().zero()
+                if (not base_coercion) or (self._basecoer is None)
+                else self.fvars_field().zero()
+            )
 
         if i != j:
             ret = self.root_of_unity((k.twist() - i.twist() - j.twist()) / 2)
         else:
             i0 = self.one()
             B = self.basis()
-            ret = sum(y.ribbon()**2 / (i.ribbon() * x.ribbon()**2)
-                      * self.s_ij(i0, y) * self.s_ij(i, z) * self.s_ijconj(x, z)
-                      * self.s_ijconj(k, x) * self.s_ijconj(y, z) / self.s_ij(i0, z)
-                      for x in B for y in B for z in B) / (self.total_q_order()**4)
+            ret = sum(
+                y.ribbon() ** 2
+                / (i.ribbon() * x.ribbon() ** 2)
+                * self.s_ij(i0, y)
+                * self.s_ij(i, z)
+                * self.s_ijconj(x, z)
+                * self.s_ijconj(k, x)
+                * self.s_ijconj(y, z)
+                / self.s_ij(i0, z)
+                for x in B
+                for y in B
+                for z in B
+            ) / (self.total_q_order() ** 4)
 
         if (not base_coercion) or (self._basecoer is None):
             return ret
@@ -636,14 +674,19 @@ class FusionDouble(CombinatorialFreeModule):
         if verbose:
             print("Checking multiplicity freeness")
             from itertools import product
-            for (i, j, k) in product(self.basis(), repeat=3):
+
+            for i, j, k in product(self.basis(), repeat=3):
                 if self.N_ijk(i, j, k) > 1:
                     print("N(%s,%s,%s) = %s" % (i, j, k, self.N_ijk(i, j, k)))
                     return False
             return True
 
-        return all(self.N_ijk(i, j, k) <= 1 for i in self.basis()
-                   for j in self.basis() for k in self.basis())
+        return all(
+            self.N_ijk(i, j, k) <= 1
+            for i in self.basis()
+            for j in self.basis()
+            for k in self.basis()
+        )
 
     @cached_method
     def one_basis(self):
@@ -704,9 +747,11 @@ class FusionDouble(CombinatorialFreeModule):
             sage: Q.product_on_basis(3,4)
             q0 + q2 + q5 + q6 + q7
         """
-        d = {k.support_of_term(): val for k in self.basis()
-             if (val := self.N_ijk(self.monomial(a), self.monomial(b),
-                                   self.dual(k)))}
+        d = {
+            k.support_of_term(): val
+            for k in self.basis()
+            if (val := self.N_ijk(self.monomial(a), self.monomial(b), self.dual(k)))
+        }
         return self._from_dict(d, remove_zeros=False)
 
     def group(self):
@@ -735,6 +780,7 @@ class FusionDouble(CombinatorialFreeModule):
         if not hasattr(self, 'fmats') or kwargs.get('new', False):
             kwargs.pop('new', None)
             from sage.algebras.fusion_rings.f_matrix import FMatrix
+
             self.fmats = FMatrix(self, *args, **kwargs)
         return self.fmats
 
@@ -843,7 +889,7 @@ class FusionDouble(CombinatorialFreeModule):
             rib = self.ribbon()
             norm = 2 * P._cyclotomic_order
             for k in range(4 * P._cyclotomic_order):
-                if zeta ** k == rib:
+                if zeta**k == rib:
                     return k / norm
 
         def dual(self):
@@ -896,5 +942,7 @@ class FusionDouble(CombinatorialFreeModule):
                 ValueError: quantum dimension is only available for simple objects
             """
             if not self.is_simple_object():
-                raise ValueError("quantum dimension is only available for simple objects")
+                raise ValueError(
+                    "quantum dimension is only available for simple objects"
+                )
             return self.parent().s_ij(self, self.parent().one())

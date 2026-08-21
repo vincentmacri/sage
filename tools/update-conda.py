@@ -95,8 +95,7 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
         for tag in tags:
             # Pin Python version
             pinned_dependencies = {
-                f"python={python}" if dep == "python" else dep
-                for dep in dependencies
+                f"python={python}" if dep == "python" else dep for dep in dependencies
             }
             pinned_dependencies = sorted(pinned_dependencies)
 
@@ -106,9 +105,7 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
             lock_file_gen = (
                 source_dir / f"environment{tag}-{python}-{platform_value}.yml"
             )
-            print(
-                f"Updating lock file for {env_file} at {lock_file_gen}", flush=True
-            )
+            print(f"Updating lock file for {env_file} at {lock_file_gen}", flush=True)
             subprocess.run(
                 [
                     "conda-lock",
@@ -137,13 +134,16 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
 
     with ThreadPoolExecutor(max_workers=3) as executor:
         futures = [
-            executor.submit(process_platform_python, platform_key, platform_value, python)
+            executor.submit(
+                process_platform_python, platform_key, platform_value, python
+            )
             for platform_key, platform_value in platforms.items()
             for python in pythons
             if not (systems and platform_key not in systems)
         ]
         for future in futures:
             future.result()
+
 
 def get_dependencies(pyproject_toml: Path, python: str, platform: str) -> set[str]:
     grayskull_config = Configuration("sagemath")
@@ -174,7 +174,7 @@ def get_dependencies(pyproject_toml: Path, python: str, platform: str) -> set[st
         .replace("pkg:generic/sagemath-polytopes-db", "sagemath-db-polytopes")
         .replace("pkg:generic/tachyon", "tachyon")
         .replace("pkg:generic/highs", "highs")
-        .replace("brial", "libbrial") # on Conda, 'brial' refers to the Python package
+        .replace("brial", "libbrial")  # on Conda, 'brial' refers to the Python package
         for req in all_requirements
     }
     # Exclude requirements not available on conda (for a given platform)

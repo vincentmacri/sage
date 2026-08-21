@@ -16,7 +16,9 @@ from sage.misc.cachefunc import cached_method
 from sage.sets.non_negative_integers import NonNegativeIntegers
 
 
-class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(CombinatorialFreeModule):
+class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(
+    CombinatorialFreeModule
+):
     r"""
     This class illustrates an implementation of a graded Hopf algebra
     with basis that has one primitive generator of degree 1 and basis
@@ -33,6 +35,7 @@ class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(Combinatoria
 
     where `\tau(x\otimes y) = y\otimes x`.
     """
+
     def __init__(self, base_ring):
         """
         EXAMPLES::
@@ -40,8 +43,12 @@ class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(Combinatoria
             sage: H = GradedHopfAlgebrasWithBasis(QQ).Connected().example()
             sage: TestSuite(H).run()
         """
-        CombinatorialFreeModule.__init__(self, base_ring, NonNegativeIntegers(),
-                                         category=GradedHopfAlgebrasWithBasis(base_ring).Connected())
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            NonNegativeIntegers(),
+            category=GradedHopfAlgebrasWithBasis(base_ring).Connected(),
+        )
 
     @cached_method
     def one_basis(self):
@@ -87,7 +94,10 @@ class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(Combinatoria
             sage: GradedHopfAlgebrasWithBasis(QQ).Connected().example()
             An example of a graded connected Hopf algebra with basis over Rational Field
         """
-        return "An example of a graded connected Hopf algebra with basis over %s" % self.base_ring()
+        return (
+            "An example of a graded connected Hopf algebra with basis over %s"
+            % self.base_ring()
+        )
 
     def _repr_term(self, i):
         """
@@ -120,7 +130,7 @@ class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(Combinatoria
             sage: H.monomial(4) * H.monomial(5)
             P9
         """
-        return self.monomial(i+j)
+        return self.monomial(i + j)
 
     def coproduct_on_basis(self, i):
         r"""
@@ -143,8 +153,7 @@ class GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(Combinatoria
             P0 # P3 + 3*P1 # P2 + 3*P2 # P1 + P3 # P0
         """
         return self.sum_of_terms(
-            ((i - j, j), Integer(i).binomial(j))
-            for j in range(i + 1)
+            ((i - j, j), Integer(i).binomial(j)) for j in range(i + 1)
         )
 
 

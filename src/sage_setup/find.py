@@ -30,8 +30,9 @@ from sage.misc.package_dir import (
 assert read_distribution  # unused in this file, re-export for compatibility
 
 
-def find_python_sources(src_dir, modules=['sage'], distributions=None,
-                        exclude_distributions=None):
+def find_python_sources(
+    src_dir, modules=['sage'], distributions=None, exclude_distributions=None
+):
     """
     Find all Python packages and Python/Cython modules in the sources.
 
@@ -160,8 +161,12 @@ def find_python_sources(src_dir, modules=['sage'], distributions=None,
                             python_modules.append(package + '.' + base)
                     if ext == '.pyx':
                         if filepath in distribution_filter:
-                            cython_modules.append(Extension(package + '.' + base,
-                                                            sources=[os.path.join(dirpath, filename)]))
+                            cython_modules.append(
+                                Extension(
+                                    package + '.' + base,
+                                    sources=[os.path.join(dirpath, filename)],
+                                )
+                            )
 
     finally:
         os.chdir(cwd)
@@ -222,6 +227,7 @@ def _cythonized_dir(src_dir=None, editable_install=None):
     from pathlib import Path
 
     from sage.env import SAGE_ROOT, SAGE_SRC
+
     if editable_install is None:
         if src_dir is None:
             src_dir = SAGE_SRC
@@ -233,11 +239,14 @@ def _cythonized_dir(src_dir=None, editable_install=None):
     if editable_install:
         # Editable install: Cython generates files in the source tree
         return src_dir
-    return Path(SAGE_ROOT) / "build" / "pkgs" / "sagelib" / "src" / "build" / "cythonized"
+    return (
+        Path(SAGE_ROOT) / "build" / "pkgs" / "sagelib" / "src" / "build" / "cythonized"
+    )
 
 
-def find_extra_files(src_dir, modules, cythonized_dir, special_filenames=[], *,
-                     distributions=None):
+def find_extra_files(
+    src_dir, modules, cythonized_dir, special_filenames=[], *, distributions=None
+):
     """
     Find all extra files which should be installed.
 
@@ -298,18 +307,24 @@ def find_extra_files(src_dir, modules, cythonized_dir, special_filenames=[], *,
                 sdir = os.path.join(src_dir, dir)
                 cydir = os.path.join(cythonized_dir, dir)
 
-                files = [os.path.join(sdir, f) for f in filenames
-                         if f.endswith(cy_exts) or f in special_filenames]
+                files = [
+                    os.path.join(sdir, f)
+                    for f in filenames
+                    if f.endswith(cy_exts) or f in special_filenames
+                ]
                 if os.path.isdir(cydir):  # Not every directory contains Cython files
-                    files += [os.path.join(cydir, f) for f in os.listdir(cydir)
-                              if f.endswith(".h")]
+                    files += [
+                        os.path.join(cydir, f)
+                        for f in os.listdir(cydir)
+                        if f.endswith(".h")
+                    ]
                 else:
-                    files += [os.path.join(sdir, f) for f in filenames
-                              if f.endswith(".h")]
+                    files += [
+                        os.path.join(sdir, f) for f in filenames if f.endswith(".h")
+                    ]
 
                 if distributions is not None:
-                    files = [f for f in files
-                             if read_distribution(f) in distributions]
+                    files = [f for f in files if read_distribution(f) in distributions]
 
                 if files:
                     data_files[dir] = files
@@ -374,7 +389,7 @@ def installed_files_by_module(site_packages, modules=('sage',)):
         if not best_ext:
             return
 
-        base = filename[:-len(best_ext)]
+        base = filename[: -len(best_ext)]
         filename = os.path.join(dirpath, filename)
 
         if base != '__init__':
@@ -439,7 +454,8 @@ def get_extensions(type=None):
             raise ValueError(
                 "type must by one of 'source' (for Python sources), "
                 "'bytecode' (for compiled Python bytecoe), or 'extension' "
-                "(for C extension modules).")
+                "(for C extension modules)."
+            )
 
     # Note: There is at least one case, for extension modules, where the
     # 'extension' does not begin with '.', but rather with 'module', for cases
@@ -456,8 +472,10 @@ def _get_extensions(type):
     """
 
     if type:
-        return {'source': importlib.machinery.SOURCE_SUFFIXES,
-                'bytecode': importlib.machinery.BYTECODE_SUFFIXES,
-                'extension': importlib.machinery.EXTENSION_SUFFIXES}[type]
+        return {
+            'source': importlib.machinery.SOURCE_SUFFIXES,
+            'bytecode': importlib.machinery.BYTECODE_SUFFIXES,
+            'extension': importlib.machinery.EXTENSION_SUFFIXES,
+        }[type]
 
     return importlib.machinery.all_suffixes()

@@ -13,6 +13,7 @@ Features for testing the presence of ``cython``
 
 from sage.features import Feature
 
+
 class sage__misc__cython(Feature):
     r"""
     A :class:`~sage.features.Feature` that is always present,
@@ -21,6 +22,7 @@ class sage__misc__cython(Feature):
     This class can be removed once all ``needs sage.misc.cython``
     tags have been eliminated from the doctests.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -41,6 +43,7 @@ class sage__misc__cython(Feature):
 
         """
         from sage.features import FeatureTestResult
+
         return FeatureTestResult(self, True)
 
 

@@ -121,6 +121,7 @@ class TangentVector(FiniteRankFreeModuleElement):
         :class:`~sage.tensor.modules.free_module_element.FiniteRankFreeModuleElement`
         for more documentation.
     """
+
     def __init__(self, parent, name=None, latex_name=None):
         r"""
         Construct a tangent vector.
@@ -137,8 +138,9 @@ class TangentVector(FiniteRankFreeModuleElement):
             sage: v[:] = 5, -3/2
             sage: TestSuite(v).run()
         """
-        FiniteRankFreeModuleElement.__init__(self, parent, name=name,
-                                             latex_name=latex_name)
+        FiniteRankFreeModuleElement.__init__(
+            self, parent, name=name, latex_name=latex_name
+        )
         # Extra data (with respect to FiniteRankFreeModuleElement):
         self._point = parent._point
 
@@ -159,6 +161,7 @@ class TangentVector(FiniteRankFreeModuleElement):
             'Tangent vector v at Point p on the 2-dimensional differentiable manifold M'
         """
         from sage.manifolds.differentiable.examples.euclidean import EuclideanSpace
+
         if isinstance(self._point.parent(), EuclideanSpace):
             desc = "Vector"
         else:
@@ -169,9 +172,20 @@ class TangentVector(FiniteRankFreeModuleElement):
         return desc
 
     @options(scale=1)
-    def plot(self, chart=None, ambient_coords=None, mapping=None,
-             color='blue', print_label=True, label=None, label_color=None,
-             fontsize=10, label_offset=0.1, parameters=None, **extra_options):
+    def plot(
+        self,
+        chart=None,
+        ambient_coords=None,
+        mapping=None,
+        color='blue',
+        print_label=True,
+        label=None,
+        label_color=None,
+        fontsize=10,
+        label_offset=0.1,
+        parameters=None,
+        **extra_options,
+    ):
         r"""
         Plot the vector in a Cartesian graph based on the coordinates of some
         ambient chart.
@@ -484,8 +498,10 @@ class TangentVector(FiniteRankFreeModuleElement):
             ambient_coords = chart[:]  # all chart coordinates are used
         n_pc = len(ambient_coords)
         if n_pc != 2 and n_pc != 3:
-            raise ValueError("the number of coordinates involved in the " +
-                             "plot must be either 2 or 3, not {}".format(n_pc))
+            raise ValueError(
+                "the number of coordinates involved in the "
+                + "plot must be either 2 or 3, not {}".format(n_pc)
+            )
         # indices coordinates involved in the plot:
         ind_pc = [chart[:].index(pc) for pc in ambient_coords]
         #
@@ -500,21 +516,25 @@ class TangentVector(FiniteRankFreeModuleElement):
         resu = Graphics()
         if parameters is None:
             coord_tail = [numerical_approx(xp[i]) for i in ind_pc]
-            coord_head = [numerical_approx(xp[i] + scale*vcomp[i])
-                          for i in ind_pc]
+            coord_head = [numerical_approx(xp[i] + scale * vcomp[i]) for i in ind_pc]
         else:
-            coord_tail = [numerical_approx(xp[i].substitute(parameters))
-                          for i in ind_pc]
-            coord_head = [numerical_approx(
-                           (xp[i] + scale*vcomp[i]).substitute(parameters))
-                          for i in ind_pc]
+            coord_tail = [
+                numerical_approx(xp[i].substitute(parameters)) for i in ind_pc
+            ]
+            coord_head = [
+                numerical_approx((xp[i] + scale * vcomp[i]).substitute(parameters))
+                for i in ind_pc
+            ]
         if coord_head != coord_tail:
             if n_pc == 2:
-                resu += arrow2d(tailpoint=coord_tail, headpoint=coord_head,
-                                color=color, **extra_options)
+                resu += arrow2d(
+                    tailpoint=coord_tail,
+                    headpoint=coord_head,
+                    color=color,
+                    **extra_options,
+                )
             else:
-                resu += arrow3d(coord_tail, coord_head, color=color,
-                                **extra_options)
+                resu += arrow3d(coord_tail, coord_head, color=color, **extra_options)
         #
         # The label
         #
@@ -529,11 +549,9 @@ class TangentVector(FiniteRankFreeModuleElement):
                 if label_color is None:
                     label_color = color
                 if n_pc == 2:
-                    resu += text(label, xlab, fontsize=fontsize,
-                                 color=label_color)
+                    resu += text(label, xlab, fontsize=fontsize, color=label_color)
                 else:
-                    resu += text3d(label, xlab, fontsize=fontsize,
-                                   color=label_color)
+                    resu += text3d(label, xlab, fontsize=fontsize, color=label_color)
         return resu
 
     def __call__(self, f):
@@ -605,11 +623,14 @@ class TangentVector(FiniteRankFreeModuleElement):
         if isinstance(f, FreeModuleAltForm):
             # Case of self acting on a linear form
             if f.tensor_type() != (0, 1):
-                raise TypeError("the argument of __call__ must be a linear form, "
-                                "not {}".format(f))
+                raise TypeError(
+                    "the argument of __call__ must be a linear form, not {}".format(f)
+                )
             return f(self)
         if not isinstance(f, DiffScalarField):
-            raise TypeError("the argument of __call__ must be either a linear "
-                            "form or a scalar field, not {}".format(f))
+            raise TypeError(
+                "the argument of __call__ must be either a linear "
+                "form or a scalar field, not {}".format(f)
+            )
         # Case of self acting on a scalar field
         return f.differential().at(self._point)(self)

@@ -49,11 +49,12 @@ def local_density(self, p, m):
     if n == 1:
         p_valuation = valuation(Q_local[0, 0], p)
     else:
-        p_valuation = min(valuation(Q_local[0, 0], p),
-                          valuation(Q_local[0, 1], p))
+        p_valuation = min(valuation(Q_local[0, 0], p), valuation(Q_local[0, 1], p))
 
     # If m is less p-divisible than the matrix, return zero
-    if ((m != 0) and (valuation(m, p) < p_valuation)):   # Note: The (m != 0) condition protects taking the valuation of zero.
+    if (m != 0) and (
+        valuation(m, p) < p_valuation
+    ):  # Note: The (m != 0) condition protects taking the valuation of zero.
         return QQ(0)
 
     # If the form is imprimitive, rescale it and call the local density routine
@@ -122,11 +123,12 @@ def local_primitive_density(self, p, m):
     if n == 1:
         p_valuation = valuation(Q_local[0, 0], p)
     else:
-        p_valuation = min(valuation(Q_local[0, 0], p),
-                          valuation(Q_local[0, 1], p))
+        p_valuation = min(valuation(Q_local[0, 0], p), valuation(Q_local[0, 1], p))
 
     # If m is less p-divisible than the matrix, return zero
-    if m != 0 and valuation(m, p) < p_valuation:   # Note: The (m != 0) condition protects taking the valuation of zero.
+    if (
+        m != 0 and valuation(m, p) < p_valuation
+    ):  # Note: The (m != 0) condition protects taking the valuation of zero.
         return QQ.zero()
 
     # If the form is imprimitive, rescale it and call the local density routine

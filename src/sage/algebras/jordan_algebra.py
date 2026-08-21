@@ -162,6 +162,7 @@ class JordanAlgebra(UniqueRepresentation, Parent):
     - [McC1978]_
     - [Al1947]_
     """
+
     @staticmethod
     def __classcall_private__(self, arg0, arg1=None, names=None):
         """
@@ -209,6 +210,7 @@ class JordanAlgebra(UniqueRepresentation, Parent):
         if arg1 is None:
             if not isinstance(arg0, Matrix):
                 from sage.algebras.octonion_algebra import OctonionAlgebra
+
                 if isinstance(arg0, OctonionAlgebra):
                     return ExceptionalJordanAlgebra(arg0)
                 if arg0.base_ring().characteristic() == 2:
@@ -244,6 +246,7 @@ class JordanAlgebra(UniqueRepresentation, Parent):
         tester = self._tester(**options)
         S = tester.some_elements()
         from sage.misc.misc import some_tuples
+
         for x, y in some_tuples(S, 2, tester._max_runs):
             tester.assertEqual(x * y, y * x)
             tester.assertEqual((x * y) * (x * x), x * (y * (x * x)))
@@ -253,6 +256,7 @@ class SpecialJordanAlgebra(JordanAlgebra):
     r"""
     A (special) Jordan algebra `A^+` from an associative algebra `A`.
     """
+
     def __init__(self, A, names=None) -> None:
         """
         Initialize ``self``.
@@ -338,8 +342,9 @@ class SpecialJordanAlgebra(JordanAlgebra):
             Lazy family (Term map(i))_{i in Free monoid on 3 generators (x, y, z)}
         """
         B = self._A.basis()
-        return Family(B.keys(), lambda x: self.element_class(self, B[x]),
-                      name="Term map")
+        return Family(
+            B.keys(), lambda x: self.element_class(self, B[x]), name="Term map"
+        )
 
     algebra_generators = basis
 
@@ -403,6 +408,7 @@ class SpecialJordanAlgebra(JordanAlgebra):
         """
         An element of a special Jordan algebra.
         """
+
         def __init__(self, parent, x) -> None:
             """
             Initialize ``self``.
@@ -449,7 +455,7 @@ class SpecialJordanAlgebra(JordanAlgebra):
                 sage: hash(J.one()) in ZZ
                 True
             """
-            return hash( (self.parent(), self._x) )
+            return hash((self.parent(), self._x))
 
         def _repr_(self) -> str:
             """
@@ -478,6 +484,7 @@ class SpecialJordanAlgebra(JordanAlgebra):
                 x_{0} + 2 x_{1} - x_{2}
             """
             from sage.misc.latex import latex
+
             return latex(self._x)
 
         def __bool__(self) -> bool:
@@ -600,7 +607,7 @@ class SpecialJordanAlgebra(JordanAlgebra):
             y = other._x
             # This is safer than dividing by 2
             R = self.parent().base_ring()
-            return self.__class__(self.parent(), (x*y + y*x) * ~R(2))
+            return self.__class__(self.parent(), (x * y + y * x) * ~R(2))
 
         def _lmul_(self, other):
             """
@@ -667,6 +674,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
         sage: J.gens()
         (1 + (0, 0), 0 + (1, 0), 0 + (0, 1))
     """
+
     def __init__(self, R, form, names=None) -> None:
         """
         Initialize ``self``.
@@ -694,8 +702,11 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
             [-2  3]
             [ 3  4]
         """
-        return "Jordan algebra over {} given by the symmetric bilinear" \
-               " form:\n{}".format(self.base_ring(), self._form)
+        return (
+            "Jordan algebra over {} given by the symmetric bilinear form:\n{}".format(
+                self.base_ring(), self._form
+            )
+        )
 
     def _element_constructor_(self, *args):
         """
@@ -770,8 +781,9 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
 
             return self.element_class(self, R(s), self._M.zero())
 
-        if len(args) == 2 and (isinstance(args[1], (list, tuple))
-                               or args[1] in self._M):
+        if len(args) == 2 and (
+            isinstance(args[1], (list, tuple)) or args[1] in self._M
+        ):
             return self.element_class(self, R(args[0]), self._M(args[1]))
 
         if len(args) == self._form.ncols() + 1:
@@ -821,8 +833,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
         """
         R = self.base_ring()
         ret = (self.element_class(self, R.one(), self._M.zero()),)
-        ret += tuple(self.element_class(self, R.zero(), x)
-                     for x in self._M.basis())
+        ret += tuple(self.element_class(self, R.zero(), x) for x in self._M.basis())
         return Family(ret)
 
     algebra_generators = basis
@@ -859,6 +870,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
         """
         An element of a Jordan algebra defined by a symmetric bilinear form.
         """
+
         def __init__(self, parent, s, v) -> None:
             """
             Initialize ``self``.
@@ -882,7 +894,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
                 sage: hash(J.one()) in ZZ
                 True
             """
-            return hash( (self.parent(), self._s, self._v) )
+            return hash((self.parent(), self._s, self._v))
 
         def _repr_(self) -> str:
             """
@@ -909,6 +921,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
                 1 + \left(2,\,-1\right)
             """
             from sage.misc.latex import latex
+
             return "{} + {}".format(latex(self._s), latex(self._v))
 
         def __bool__(self) -> bool:
@@ -1034,10 +1047,11 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
                 21 + (6, 2)
             """
             P = self.parent()
-            return self.__class__(P,
-                                  self._s * other._s
-                                  + (self._v * P._form * other._v.column())[0],
-                                  other._s * self._v + self._s * other._v)
+            return self.__class__(
+                P,
+                self._s * other._s + (self._v * P._form * other._v.column())[0],
+                other._s * self._v + self._s * other._v,
+            )
 
         def _lmul_(self, other):
             """
@@ -1086,7 +1100,7 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
             """
             d = {0: self._s}
             for i, c in enumerate(self._v):
-                d[i+1] = c
+                d[i + 1] = c
             return d
 
         def trace(self):
@@ -1122,8 +1136,10 @@ class JordanAlgebraSymmetricBilinear(JordanAlgebra):
                 sage: x.norm()
                 13
             """
-            return self._s * self._s - (self._v * self.parent()._form
-                                        * self._v.column())[0]
+            return (
+                self._s * self._s
+                - (self._v * self.parent()._form * self._v.column())[0]
+            )
 
         def bar(self):
             r"""
@@ -1212,6 +1228,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
     - :wikipedia:`Hurwitz's_theorem_(composition_algebras)#Applications_to_Jordan_algebras`
     - `<https://math.ucr.edu/home/baez/octonions/octonions.pdf>`_
     """
+
     def __init__(self, Octo) -> None:
         r"""
         Initialize ``self``.
@@ -1263,6 +1280,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
         self._half = R(2).inverse_of_unit()
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         Onames = list(Octo.variable_names())
         Onames.extend(Onames[3] + Onames[i] for i in range(3))
         self._repr_poly_ring = PolynomialRing(R, Onames)
@@ -1313,7 +1331,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
         R = self.base_ring()
         for i in range(3):
             x[i] = R(x[i])
-            x[3+i] = self._O(x[3+i])
+            x[3 + i] = self._O(x[3 + i])
         return self.element_class(self, x)
 
     def _test_multiplication_self_adjoint(self, **options):
@@ -1331,22 +1349,36 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
         data_pairs = [(0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)]
         zerO = self._O.zero()
         from sage.misc.misc import some_tuples
+
         for x, y in some_tuples(S, 2, tester._max_runs):
             SD = x._data
             OD = y._data
-            X = [[SD[0], SD[3], SD[4]],
-                 [SD[3].conjugate(), SD[1], SD[5]],
-                 [SD[4].conjugate(), SD[5].conjugate(), SD[2]]]
-            Y = [[OD[0], OD[3], OD[4]],
-                 [OD[3].conjugate(), OD[1], OD[5]],
-                 [OD[4].conjugate(), OD[5].conjugate(), OD[2]]]
+            X = [
+                [SD[0], SD[3], SD[4]],
+                [SD[3].conjugate(), SD[1], SD[5]],
+                [SD[4].conjugate(), SD[5].conjugate(), SD[2]],
+            ]
+            Y = [
+                [OD[0], OD[3], OD[4]],
+                [OD[3].conjugate(), OD[1], OD[5]],
+                [OD[4].conjugate(), OD[5].conjugate(), OD[2]],
+            ]
             for r, c in data_pairs:
                 if r != c:
-                    val = sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3)) * self._half
-                    val_opp = sum(X[c][i] * Y[i][r] + Y[c][i] * X[i][r] for i in range(3)) * self._half
+                    val = (
+                        sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3))
+                        * self._half
+                    )
+                    val_opp = (
+                        sum(X[c][i] * Y[i][r] + Y[c][i] * X[i][r] for i in range(3))
+                        * self._half
+                    )
                     tester.assertEqual(val, val_opp.conjugate())
                 else:
-                    val = sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3)) * self._half
+                    val = (
+                        sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3))
+                        * self._half
+                    )
                     tester.assertEqual(val.imag_part(), zerO)
 
     @cached_method
@@ -1389,7 +1421,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
         for i in range(3):
             for b in OB:
                 temp = list(base)
-                temp[3+i] = b
+                temp[3 + i] = b
                 ret.append(self.element_class(self, temp))
         return Family(ret)
 
@@ -1508,18 +1540,25 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
              [ k -j  0]]
         """
         B = self.basis()
-        S = [self.an_element(), self.one(), self.zero(),
-             B[1], B[5], B[17], B[1] + self._half*B[25],
-             self.one() + B[13] + 2*B[16]]
+        S = [
+            self.an_element(),
+            self.one(),
+            self.zero(),
+            B[1],
+            B[5],
+            B[17],
+            B[1] + self._half * B[25],
+            self.one() + B[13] + 2 * B[16],
+        ]
         S.append(sum(B[::5]))
-        S.append(sum(self._half * ind * b
-                     for ind, b in enumerate(B[::7], start=2)))
+        S.append(sum(self._half * ind * b for ind, b in enumerate(B[::7], start=2)))
         return S
 
     class Element(AlgebraElement):
         r"""
         An element of an exceptional Jordan algebra.
         """
+
         def __init__(self, parent, data) -> None:
             """
             Initialize ``self``.
@@ -1543,7 +1582,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 sage: hash(J.one()) in ZZ
                 True
             """
-            return hash( (self.parent(), self._data) )
+            return hash((self.parent(), self._data))
 
         def _to_print_matrix(self):
             r"""
@@ -1562,18 +1601,25 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
             PR = self.parent()._repr_poly_ring
             gens = [PR.one()] + list(PR.gens())
             data = [PR(self._data[i]) for i in range(3)]
-            data.extend(PR.sum(c * g
-                               for c, g in zip(self._data[3+i].vector(), gens))
-                        for i in range(3))
+            data.extend(
+                PR.sum(c * g for c, g in zip(self._data[3 + i].vector(), gens))
+                for i in range(3)
+            )
             # add the conjugates
             for i in range(1, 8):
                 gens[i] = -gens[i]
-            data.extend(PR.sum(c * g
-                               for c, g in zip(self._data[3+i].vector(), gens))
-                        for i in range(3))
-            return matrix(PR, [[data[0], data[3], data[4]],
-                               [data[6], data[1], data[5]],
-                               [data[7], data[8], data[2]]])
+            data.extend(
+                PR.sum(c * g for c, g in zip(self._data[3 + i].vector(), gens))
+                for i in range(3)
+            )
+            return matrix(
+                PR,
+                [
+                    [data[0], data[3], data[4]],
+                    [data[6], data[1], data[5]],
+                    [data[7], data[8], data[2]],
+                ],
+            )
 
         def _repr_(self) -> str:
             r"""
@@ -1606,6 +1652,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 \end{array}\right)
             """
             from sage.misc.latex import latex
+
             return latex(self._to_print_matrix())
 
         def _ascii_art_(self):
@@ -1622,6 +1669,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 [  0   0 6/5]
             """
             from sage.typeset.ascii_art import ascii_art
+
             return ascii_art(self._to_print_matrix())
 
         def _unicode_art_(self):
@@ -1638,6 +1686,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 ⎝  0   0 6/5⎠
             """
             from sage.typeset.unicode_art import unicode_art
+
             return unicode_art(self._to_print_matrix())
 
         def __bool__(self) -> bool:
@@ -1695,7 +1744,9 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 [ -j - k - lk            0  i + li + lj]
                 [ -i - l - lk -i - li - lj            0]
             """
-            return self.__class__(self.parent(), [a + b for a, b in zip(self._data, other._data)])
+            return self.__class__(
+                self.parent(), [a + b for a, b in zip(self._data, other._data)]
+            )
 
         def _neg_(self):
             """
@@ -1732,7 +1783,9 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
                 [  j - k + lk            0 -i + li - lj]
                 [ -i + l - lk  i - li + lj            0]
             """
-            return self.__class__(self.parent(), [a - b for a, b in zip(self._data, other._data)])
+            return self.__class__(
+                self.parent(), [a - b for a, b in zip(self._data, other._data)]
+            )
 
         def _mul_(self, other):
             """
@@ -1752,19 +1805,33 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
             P = self.parent()
             SD = self._data
             OD = other._data
-            X = [[SD[0], SD[3], SD[4]],
-                 [SD[3].conjugate(), SD[1], SD[5]],
-                 [SD[4].conjugate(), SD[5].conjugate(), SD[2]]]
-            Y = [[OD[0], OD[3], OD[4]],
-                 [OD[3].conjugate(), OD[1], OD[5]],
-                 [OD[4].conjugate(), OD[5].conjugate(), OD[2]]]
+            X = [
+                [SD[0], SD[3], SD[4]],
+                [SD[3].conjugate(), SD[1], SD[5]],
+                [SD[4].conjugate(), SD[5].conjugate(), SD[2]],
+            ]
+            Y = [
+                [OD[0], OD[3], OD[4]],
+                [OD[3].conjugate(), OD[1], OD[5]],
+                [OD[4].conjugate(), OD[5].conjugate(), OD[2]],
+            ]
             # we do a simplified multiplication for the diagonal entries since
             # we have, e.g., \alpha * \alpha' + (x (x')^* + x' x^* + y (y')^* + y' y^*) / 2
-            ret = [X[0][0] * Y[0][0] + (X[0][1] * Y[1][0]).real_part() + (X[0][2] * Y[2][0]).real_part(),
-                   X[1][1] * Y[1][1] + (X[1][0] * Y[0][1]).real_part() + (X[1][2] * Y[2][1]).real_part(),
-                   X[2][2] * Y[2][2] + (X[2][0] * Y[0][2]).real_part() + (X[2][1] * Y[1][2]).real_part()]
-            ret += [sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3)) * P._half
-                    for r, c in [(0, 1), (0, 2), (1, 2)]]
+            ret = [
+                X[0][0] * Y[0][0]
+                + (X[0][1] * Y[1][0]).real_part()
+                + (X[0][2] * Y[2][0]).real_part(),
+                X[1][1] * Y[1][1]
+                + (X[1][0] * Y[0][1]).real_part()
+                + (X[1][2] * Y[2][1]).real_part(),
+                X[2][2] * Y[2][2]
+                + (X[2][0] * Y[0][2]).real_part()
+                + (X[2][1] * Y[1][2]).real_part(),
+            ]
+            ret += [
+                sum(X[r][i] * Y[i][c] + Y[r][i] * X[i][c] for i in range(3)) * P._half
+                for r, c in [(0, 1), (0, 2), (1, 2)]
+            ]
             return self.__class__(P, ret)
 
         def _lmul_(self, other):
@@ -1838,7 +1905,7 @@ class ExceptionalJordanAlgebra(JordanAlgebra):
             for i in range(3):
                 if self._data[i]:
                     ret[i] = self._data[i]
-                mc = self._data[3+i].monomial_coefficients()
+                mc = self._data[3 + i].monomial_coefficients()
                 for k, coeff in mc.items():
-                    ret[3+i*8+k] = coeff
+                    ret[3 + i * 8 + k] = coeff
             return ret

@@ -32,8 +32,10 @@ If you are looking for Poset-related :mod:`categories
 :class:`~sage.categories.lattice_posets.LatticePosets` and
 :class:`~sage.categories.finite_lattice_posets.FiniteLatticePosets`.
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
+
 install_doc(__package__, __doc__)
 
 from sage.combinat.posets.posets import Poset

@@ -1,6 +1,7 @@
 """
 Linear-order species
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
@@ -34,7 +35,9 @@ class LinearOrderSpeciesStructure(GenericSpeciesStructure):
             sage: s.canonical_label()
             ['a', 'b', 'c']
         """
-        return self.__class__(self.parent(), self._labels, range(1, len(self._labels)+1))
+        return self.__class__(
+            self.parent(), self._labels, range(1, len(self._labels) + 1)
+        )
 
     def transport(self, perm):
         """
@@ -50,7 +53,9 @@ class LinearOrderSpeciesStructure(GenericSpeciesStructure):
             sage: a.transport(p)                                                        # needs sage.groups
             ['b', 'a', 'c']
         """
-        return LinearOrderSpeciesStructure(self.parent(), self._labels, [perm(i) for i in self._list])
+        return LinearOrderSpeciesStructure(
+            self.parent(), self._labels, [perm(i) for i in self._list]
+        )
 
     def automorphism_group(self):
         """
@@ -67,6 +72,7 @@ class LinearOrderSpeciesStructure(GenericSpeciesStructure):
             Symmetric group of order 1! as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         return SymmetricGroup(1)
 
 
@@ -112,6 +118,7 @@ class LinearOrderSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
         """
         from sage.combinat.permutation import Permutations
+
         for p in Permutations(len(labels)):
             yield structure_class(self, labels, p._list)
 
@@ -123,7 +130,7 @@ class LinearOrderSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: L.isotypes([1,2,3]).list()
             [[1, 2, 3]]
         """
-        yield structure_class(self, labels, range(1, len(labels)+1))
+        yield structure_class(self, labels, range(1, len(labels) + 1))
 
     def _gs_list(self, base_ring, n):
         r"""
@@ -163,9 +170,10 @@ class LinearOrderSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [p[], p[1], p[1, 1], p[1, 1, 1], p[1, 1, 1, 1]]
         """
         from sage.combinat.sf.sf import SymmetricFunctions
+
         p = SymmetricFunctions(base_ring).power()
-        return p([1]*n)
+        return p([1] * n)
 
 
-#Backward compatibility
+# Backward compatibility
 LinearOrderSpecies_class = LinearOrderSpecies

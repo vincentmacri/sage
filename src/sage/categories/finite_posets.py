@@ -46,7 +46,6 @@ class FinitePosets(CategoryWithAxiom):
     """
 
     class ParentMethods:
-
         ##########################################################################
         # Properties of this poset
 
@@ -88,8 +87,9 @@ class FinitePosets(CategoryWithAxiom):
                 - Weaker properties: :meth:`~sage.combinat.posets.posets.FinitePoset.is_join_semilattice`,
                   :meth:`~sage.combinat.posets.posets.FinitePoset.is_meet_semilattice`
             """
-            return (self.cardinality() == 0 or
-                     (self.has_bottom() and self.is_join_semilattice()))
+            return self.cardinality() == 0 or (
+                self.has_bottom() and self.is_join_semilattice()
+            )
 
         def is_self_dual(self):
             r"""
@@ -119,7 +119,9 @@ class FinitePosets(CategoryWithAxiom):
                 - Other: :meth:`~sage.combinat.posets.posets.FinitePoset.dual`
             """
             # Two quick checks before full isomorphic test.
-            if sorted(self._hasse_diagram.in_degree()) != sorted(self._hasse_diagram.out_degree()):
+            if sorted(self._hasse_diagram.in_degree()) != sorted(
+                self._hasse_diagram.out_degree()
+            ):
                 return False
             levels_orig = [len(x) for x in self._hasse_diagram.level_sets()]
             dual_poset_hasse = self._hasse_diagram.reverse()
@@ -193,7 +195,9 @@ class FinitePosets(CategoryWithAxiom):
                 # Not surjective
                 return False
             for x in self:
-                if {f(y) for y in self.upper_covers(x)} != set(codomain.upper_covers(f(x))):
+                if {f(y) for y in self.upper_covers(x)} != set(
+                    codomain.upper_covers(f(x))
+                ):
                     return False
             return True
 
@@ -266,7 +270,7 @@ class FinitePosets(CategoryWithAxiom):
             """
             for x in self:
                 for y in self.upper_covers(x):
-                    if not codomain.is_lequal(f(x),f(y)):
+                    if not codomain.is_lequal(f(x), f(y)):
                         return False
             return True
 
@@ -328,8 +332,10 @@ class FinitePosets(CategoryWithAxiom):
                 covers = self.lower_covers
             ideal_as_set = set(ideal)
             from sage.sets.set import Set
-            return Set(x for x in ideal if all(y not in ideal_as_set
-                                               for y in covers(x)))
+
+            return Set(
+                x for x in ideal if all(y not in ideal_as_set for y in covers(x))
+            )
 
         def order_filter_generators(self, filter):
             r"""
@@ -469,12 +475,17 @@ class FinitePosets(CategoryWithAxiom):
                 result = self.order_ideal_toggle(result, i)
             return result
 
-        def birational_free_labelling(self, linear_extension=None,
-                                      prefix='x', base_field=None,
-                                      reduced=False, addvars=None,
-                                      labels=None,
-                                      min_label=None,
-                                      max_label=None):
+        def birational_free_labelling(
+            self,
+            linear_extension=None,
+            prefix='x',
+            base_field=None,
+            reduced=False,
+            addvars=None,
+            labels=None,
+            min_label=None,
+            max_label=None,
+        ):
             r"""
             Return the birational free labelling of ``self``.
 
@@ -865,6 +876,7 @@ class FinitePosets(CategoryWithAxiom):
             """
             if base_field is None:
                 from sage.rings.rational_field import QQ
+
                 base_field = QQ
             if linear_extension is None:
                 linear_extension = self.linear_extension()
@@ -878,7 +890,9 @@ class FinitePosets(CategoryWithAxiom):
                     if len(label_list) > n:
                         label_list = label_list[:n]
                     elif len(label_list) < n:
-                        label_list += [prefix + str(i) for i in range(1, n + 1 - len(label_list))]
+                        label_list += [
+                            prefix + str(i) for i in range(1, n + 1 - len(label_list))
+                        ]
             else:
                 label_list = [prefix + str(i) for i in range(1, n + 1)]
             if not reduced:
@@ -893,6 +907,7 @@ class FinitePosets(CategoryWithAxiom):
             varnum = len(label_list)
 
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             PR = PolynomialRing(base_field, varstring, varnum)
             # Now, ``PR`` is the polynomial ring in `n + 2` indeterminates
             # (or more, if ``addvars`` was set; or less, if ``reduced`` is
@@ -901,7 +916,7 @@ class FinitePosets(CategoryWithAxiom):
             # ``a, x1, x2, ..., xn, b`` (if ``reduced`` is ``False``).
             # These will label the vertices of `\widehat{P}`.
             if reduced:
-                xs = tuple(PR.gens()[: n])
+                xs = tuple(PR.gens()[:n])
             else:
                 xs = tuple(PR.gens()[1 : n + 1])
             # So ``xs`` is the list ``[x1, x2, ..., xn]``.
@@ -1113,8 +1128,8 @@ class FinitePosets(CategoryWithAxiom):
                 sage: t8[1][8]
                 a*b/x1
             """
-            FF = labelling[0]       # base field
-            a = labelling[2]        # label at `0 \in \widehat{P}`
+            FF = labelling[0]  # base field
+            a = labelling[2]  # label at `0 \in \widehat{P}`
             b = labelling[3]
             newdict = labelling[1].copy()
             # Construct the harmonic sum ``x`` of the labels at the
@@ -1453,8 +1468,10 @@ class FinitePosets(CategoryWithAxiom):
                 [[()]]
             """
             pan_orbits = self.panyushev_orbits(element_constructor=list)
-            return [[element_constructor(self.order_ideal(oideal))
-                     for oideal in orbit] for orbit in pan_orbits]
+            return [
+                [element_constructor(self.order_ideal(oideal)) for oideal in orbit]
+                for orbit in pan_orbits
+            ]
 
         def rowmotion_orbits_plots(self):
             r"""
@@ -1474,6 +1491,7 @@ class FinitePosets(CategoryWithAxiom):
                 Graphics Array of size 1 x 1
             """
             from sage.plot.plot import graphics_array
+
             plot_of_orb_plots = []
             max_orbit_size = 0
             for orb in self.rowmotion_orbits():
@@ -1530,13 +1548,13 @@ class FinitePosets(CategoryWithAxiom):
             orbits = []
             while OI:
                 A = OI.pop()
-                orbit = [ A ]
+                orbit = [A]
                 while True:
                     A = self.order_ideal_toggles(A, vs)
                     if A not in OI:
                         break
-                    orbit.append( A )
-                    OI.remove( A )
+                    orbit.append(A)
+                    OI.remove(A)
                 orbits.append([element_constructor(_) for _ in orbit])
             return orbits
 
@@ -1559,6 +1577,7 @@ class FinitePosets(CategoryWithAxiom):
                 Graphics Array of size 1 x 1
             """
             from sage.plot.plot import graphics_array
+
             plot_of_orb_plots = []
             max_orbit_size = 0
             for orb in self.toggling_orbits(vs):
@@ -1570,8 +1589,9 @@ class FinitePosets(CategoryWithAxiom):
                 plot_of_orb_plots.append(orb_plots)
             return graphics_array(plot_of_orb_plots, ncols=max_orbit_size)
 
-        def panyushev_orbit_iter(self, antichain, element_constructor=set,
-                                 stop=True, check=True):
+        def panyushev_orbit_iter(
+            self, antichain, element_constructor=set, stop=True, check=True
+        ):
             r"""
             Iterate over the Panyushev orbit of an antichain
             ``antichain`` of ``self``.
@@ -1646,7 +1666,7 @@ class FinitePosets(CategoryWithAxiom):
             if check:
                 if not self.is_antichain_of_poset(antichain):
                     raise ValueError("the given antichain is not an antichain")
-            starter = set(antichain)     # sanitize input
+            starter = set(antichain)  # sanitize input
             yield element_constructor(starter)
             next = starter
             if stop:
@@ -1660,7 +1680,9 @@ class FinitePosets(CategoryWithAxiom):
                     next = self.order_ideal_complement_generators(next)
                     yield element_constructor(next)
 
-        def rowmotion_orbit_iter(self, oideal, element_constructor=set, stop=True, check=True):
+        def rowmotion_orbit_iter(
+            self, oideal, element_constructor=set, stop=True, check=True
+        ):
             r"""
             Iterate over the rowmotion orbit of an order ideal
             ``oideal`` of ``self``.
@@ -1741,7 +1763,7 @@ class FinitePosets(CategoryWithAxiom):
             if check:
                 if not self.is_order_ideal(oideal):
                     raise ValueError("the given order ideal is not an order ideal")
-            starter = set(oideal)     # sanitize input
+            starter = set(oideal)  # sanitize input
             yield element_constructor(starter)
             next = starter
             if stop:
@@ -1755,7 +1777,9 @@ class FinitePosets(CategoryWithAxiom):
                     next = self.rowmotion(next)
                     yield element_constructor(next)
 
-        def toggling_orbit_iter(self, vs, oideal, element_constructor=set, stop=True, check=True):
+        def toggling_orbit_iter(
+            self, vs, oideal, element_constructor=set, stop=True, check=True
+        ):
             r"""
             Iterate over the orbit of an order ideal ``oideal`` of
             ``self`` under the operation of toggling the vertices
@@ -1854,7 +1878,7 @@ class FinitePosets(CategoryWithAxiom):
             if check:
                 if not self.is_order_ideal(oideal):
                     raise ValueError("the given order ideal is not an order ideal")
-            starter = set(oideal)     # sanitize input
+            starter = set(oideal)  # sanitize input
             yield element_constructor(starter)
             next = starter
             if stop:
@@ -1930,20 +1954,26 @@ class FinitePosets(CategoryWithAxiom):
             """
             from sage.combinat.posets.lattices import LatticePoset
             from sage.categories.finite_lattice_posets import FiniteLatticePosets
+
             if facade is None:
                 facade = self._is_facade
 
             if as_ideals:
                 from sage.misc.call import attrcall
                 from sage.sets.set import Set
-                ideals = [Set(self.order_ideal(antichain))
-                          for antichain in self.antichains()]
-                T = LatticePoset((ideals, attrcall("issubset")),
-                                 facade=facade,
-                                 category=FiniteLatticePosets().Distributive())
+
+                ideals = [
+                    Set(self.order_ideal(antichain)) for antichain in self.antichains()
+                ]
+                T = LatticePoset(
+                    (ideals, attrcall("issubset")),
+                    facade=facade,
+                    category=FiniteLatticePosets().Distributive(),
+                )
                 return T
 
             from sage.misc.cachefunc import cached_function
+
             antichains = [tuple(a) for a in self.antichains()]
 
             @cached_function
@@ -1953,8 +1983,11 @@ class FinitePosets(CategoryWithAxiom):
             def compare(a, b):
                 return all(is_above(a, xb) for xb in b)
 
-            T = LatticePoset((antichains, compare), facade=facade,
-                             category=FiniteLatticePosets().Distributive())
+            T = LatticePoset(
+                (antichains, compare),
+                facade=facade,
+                category=FiniteLatticePosets().Distributive(),
+            )
             return T
 
         @abstract_method(optional=True)
@@ -1997,4 +2030,6 @@ class FinitePosets(CategoryWithAxiom):
             """
             if direction != 'up' and direction != 'down':
                 raise ValueError("direction must be either 'up' or 'down'")
-            return self.antichains().map(lambda elements: self.directed_subset(elements, direction))
+            return self.antichains().map(
+                lambda elements: self.directed_subset(elements, direction)
+            )

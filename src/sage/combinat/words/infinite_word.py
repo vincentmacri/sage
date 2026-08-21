@@ -63,6 +63,7 @@ Infinite words in a specific combinatorial class::
     sage: W(f)
     word: babababababababababababababababababababa...
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Sebastien Labbe <slabqc@gmail.com>,
 #                          Franco Saliola <saliola@gmail.com>

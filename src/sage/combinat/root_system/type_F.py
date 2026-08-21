@@ -39,11 +39,13 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: TestSuite(e).run()                                                    # needs sage.graphs
         """
         ambient_space.AmbientSpace.__init__(self, root_system, base_ring)
-        v = ZZ(1)/ZZ(2)
-        self.Base = [self.root(1,2,p2=1),
-                     self.root(2,3,p2=1),
-                     self.root(3),
-                     v*(self.root(0)-self.root(1)-self.root(2)-self.root(3))]
+        v = ZZ(1) / ZZ(2)
+        self.Base = [
+            self.root(1, 2, p2=1),
+            self.root(2, 3, p2=1),
+            self.root(3),
+            v * (self.root(0) - self.root(1) - self.root(2) - self.root(3)),
+        ]
 
     def dimension(self):
         """
@@ -71,12 +73,21 @@ class AmbientSpace(ambient_space.AmbientSpace):
             [(1, -1, 0, 0), (1, 0, -1, 0), (1, 0, 0, -1), (0, 1, -1, 0), (0, 1, 0, -1), (0, 0, 1, -1)]
         """
         if i == j or j is None:
-            return (-1)**p1*self.monomial(i)
+            return (-1) ** p1 * self.monomial(i)
         if k is None:
-            return (-1)**p1*self.monomial(i) + (-1)**p2*self.monomial(j)
+            return (-1) ** p1 * self.monomial(i) + (-1) ** p2 * self.monomial(j)
         if l is None:
-            return (-1)**p1*self.monomial(i) + (-1)**p2*self.monomial(j)+(-1)**p3*self.monomial(k)
-        return (-1)**p1*self.monomial(i) + (-1)**p2*self.monomial(j)+(-1)**p3*self.monomial(k)+(-1)**p4*self.monomial(l)
+            return (
+                (-1) ** p1 * self.monomial(i)
+                + (-1) ** p2 * self.monomial(j)
+                + (-1) ** p3 * self.monomial(k)
+            )
+        return (
+            (-1) ** p1 * self.monomial(i)
+            + (-1) ** p2 * self.monomial(j)
+            + (-1) ** p3 * self.monomial(k)
+            + (-1) ** p4 * self.monomial(l)
+        )
 
     def simple_root(self, i):
         r"""
@@ -97,7 +108,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.simple_roots()
             Finite family {1: (0, 1, -1, 0), 2: (0, 0, 1, -1), 3: (0, 0, 0, 1), 4: (1/2, -1/2, -1/2, -1/2)}
         """
-        return self.Base[i-1]
+        return self.Base[i - 1]
 
     def negative_roots(self):
         """
@@ -132,7 +143,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
             (-1/2, 1/2, 1/2, -1/2),
             (-1/2, 1/2, 1/2, 1/2)]
         """
-        return [ -a for a in self.positive_roots()]
+        return [-a for a in self.positive_roots()]
 
     def positive_roots(self):
         r"""
@@ -173,12 +184,27 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.rho()
             (11/2, 5/2, 3/2, 1/2)
         """
-        v = ZZ(1)/ZZ(2)
+        v = ZZ(1) / ZZ(2)
         if not hasattr(self, 'PosRoots'):
-            self.PosRoots = ([ self.monomial(i) for i in range(self.n) ] +
-                            [ self.root(i,j,p2=0) for i in range(self.n) for j in range(i+1,self.n) ] +
-                            [ self.root(i,j,p2=1) for i in range(self.n) for j in range(i+1,self.n) ] +
-                            [ v*self.root(0,1,2,3,0,p2,p3,p4) for p2 in [0,1] for p3 in [0,1] for p4 in [0,1] ])
+            self.PosRoots = (
+                [self.monomial(i) for i in range(self.n)]
+                + [
+                    self.root(i, j, p2=0)
+                    for i in range(self.n)
+                    for j in range(i + 1, self.n)
+                ]
+                + [
+                    self.root(i, j, p2=1)
+                    for i in range(self.n)
+                    for j in range(i + 1, self.n)
+                ]
+                + [
+                    v * self.root(0, 1, 2, 3, 0, p2, p3, p4)
+                    for p2 in [0, 1]
+                    for p3 in [0, 1]
+                    for p4 in [0, 1]
+                ]
+            )
         return self.PosRoots
 
     def fundamental_weights(self):
@@ -191,17 +217,33 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.fundamental_weights()
             Finite family {1: (1, 1, 0, 0), 2: (2, 1, 1, 0), 3: (3/2, 1/2, 1/2, 1/2), 4: (1, 0, 0, 0)}
         """
-        v = ZZ(1)/ZZ(2)
-        return Family({ 1: self.monomial(0)+self.monomial(1),
-                        2: 2*self.monomial(0)+self.monomial(1)+self.monomial(2),
-                        3: v*(3*self.monomial(0)+self.monomial(1)+self.monomial(2)+self.monomial(3)),
-                        4: self.monomial(0)})
+        v = ZZ(1) / ZZ(2)
+        return Family(
+            {
+                1: self.monomial(0) + self.monomial(1),
+                2: 2 * self.monomial(0) + self.monomial(1) + self.monomial(2),
+                3: v
+                * (
+                    3 * self.monomial(0)
+                    + self.monomial(1)
+                    + self.monomial(2)
+                    + self.monomial(3)
+                ),
+                4: self.monomial(0),
+            }
+        )
 
 
-from .cartan_type import CartanType_standard_finite, CartanType_simple, CartanType_crystallographic
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simple,
+    CartanType_crystallographic,
+)
 
 
-class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_crystallographic):
+class CartanType(
+    CartanType_standard_finite, CartanType_simple, CartanType_crystallographic
+):
     def __init__(self):
         """
         EXAMPLES::
@@ -282,10 +324,11 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             [(1, 2, 1), (2, 1, 1), (2, 3, 2), (3, 2, 1), (3, 4, 1), (4, 3, 1)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
         for i in range(1, 4):
-            g.add_edge(i, i+1)
-        g.set_edge_label(2,3,2)
+            g.add_edge(i, i + 1)
+        g.set_edge_label(2, 3, 2)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2, dual=False):
@@ -313,13 +356,13 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
         ret = "\\draw (0 cm,0) -- (%s cm,0);\n" % node_dist
         ret += "\\draw (%s cm, 0.1 cm) -- +(%s cm,0);\n" % (node_dist, node_dist)
         ret += "\\draw (%s cm, -0.1 cm) -- +(%s cm,0);\n" % (node_dist, node_dist)
-        ret += "\\draw (%s cm,0) -- +(%s cm,0);\n" % (node_dist*2.0, node_dist)
+        ret += "\\draw (%s cm,0) -- +(%s cm,0);\n" % (node_dist * 2.0, node_dist)
         if dual:
-            ret += self._latex_draw_arrow_tip(1.5*node_dist-0.2, 0, 180)
+            ret += self._latex_draw_arrow_tip(1.5 * node_dist - 0.2, 0, 180)
         else:
-            ret += self._latex_draw_arrow_tip(1.5*node_dist+0.2, 0, 0)
+            ret += self._latex_draw_arrow_tip(1.5 * node_dist + 0.2, 0, 0)
         for i in range(4):
-            ret += node(i*node_dist, 0, label(i+1))
+            ret += node(i * node_dist, 0, label(i + 1))
         return ret
 
     def ascii_art(self, label=None, node=None):
@@ -339,9 +382,10 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             label = lambda i: i
         if node is None:
             node = self._ascii_art_node
-        ret = "{}---{}=>={}---{}\n".format(node(label(1)), node(label(2)),
-                                           node(label(3)), node(label(4)))
-        ret += ("{!s:4}"*4).format(label(1), label(2), label(3), label(4))
+        ret = "{}---{}=>={}---{}\n".format(
+            node(label(1)), node(label(2)), node(label(3)), node(label(4))
+        )
+        ret += ("{!s:4}" * 4).format(label(1), label(2), label(3), label(4))
         return ret
 
     def dual(self):
@@ -377,10 +421,13 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             ['F', 4] as a folding of ['E', 6]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         return CartanTypeFolded(self, ['E', 6], [[2], [4], [3, 5], [1, 6]])
 
 
 # For unpickling backward compatibility (Sage <= 4.1)
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.type_F',
-                           'ambient_space', AmbientSpace)
+
+register_unpickle_override(
+    'sage.combinat.root_system.type_F', 'ambient_space', AmbientSpace
+)

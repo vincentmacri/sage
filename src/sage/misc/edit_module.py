@@ -53,7 +53,8 @@ template_defaults = {
     'nedit-client': Template('nedit-client -line ${line} ${file}'),
     'ncl': Template('ncl -line ${line} ${file}'),
     'gedit': Template('gedit +${line} ${file} &'),
-    'kate': Template('kate -u --line +${line} ${file} &')}
+    'kate': Template('kate -u --line +${line} ${file} &'),
+}
 
 
 def file_and_line(obj):
@@ -99,6 +100,7 @@ def file_and_line(obj):
     #  for the 3 lines that were prefixed in the preparsing process
     #
     from sage.misc.sageinspect import sage_getfile, sage_getsourcelines
+
     filename = sage_getfile(obj)
     lineno = sage_getsourcelines(obj)[1] - 1
     if filename.endswith('.py'):
@@ -140,6 +142,7 @@ def template_fields(template):
             dict[inst.args[0]] = None
     return list(dict)
 
+
 # The routine set_edit_template should only do some consistency
 # checks on template_string It should not do any magic. This routine
 # should give the user full control over what is going on.
@@ -172,8 +175,11 @@ def set_edit_template(template_string):
         template_string = Template(template_string)
     fields = set(template_fields(template_string))
     if not (fields <= {'file', 'line'} and ('file' in fields)):
-        raise ValueError("Only ${file} and ${line} are allowed as template variables, and ${file} must occur.")
+        raise ValueError(
+            "Only ${file} and ${line} are allowed as template variables, and ${file} must occur."
+        )
     edit_template = template_string
+
 
 # The routine set_editor is for convenience and hence is allowed to
 # apply magic. Given an editor name and possibly some options, it
@@ -203,9 +209,13 @@ def set_editor(editor_name, opts=''):
         'vi -c ${line} ${file}'
     """
     if editor_name in sage.misc.edit_module.template_defaults:
-        set_edit_template(Template(template_defaults[editor_name].safe_substitute(opts=opts)))
+        set_edit_template(
+            Template(template_defaults[editor_name].safe_substitute(opts=opts))
+        )
     else:
-        raise ValueError("editor_name not known. Try set_edit_template(<template_string>) instead.")
+        raise ValueError(
+            "editor_name not known. Try set_edit_template(<template_string>) instead."
+        )
 
 
 def edit(obj, editor=None, bg=None):
@@ -256,10 +266,12 @@ def edit(obj, editor=None, bg=None):
             ED = os.environ['EDITOR']
             EDITOR = ED.split()
             base = EDITOR[0]
-            opts = ' '.join(EDITOR[1:])   # for future use
+            opts = ' '.join(EDITOR[1:])  # for future use
             set_editor(base, opts=opts)
         except (ValueError, KeyError, IndexError):
-            raise ValueError("Use set_edit_template(<template_string>) to set a default")
+            raise ValueError(
+                "Use set_edit_template(<template_string>) to set a default"
+            )
 
     if not edit_template:
         raise ValueError("Use set_edit_template(<template_string>) to set a default")
@@ -295,6 +307,7 @@ def edit_devel(self, filename, linenum):
     editor supports it, also at the line in which gcd is defined.
     """
     import IPython.core.hooks
+
     runpathpattern = '^' + sage.env.SAGE_LIB
     develbranch = sage.env.SAGE_SRC
     filename = re.sub(runpathpattern, develbranch, filename)

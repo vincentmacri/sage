@@ -6,7 +6,7 @@ AUTHORS:
 - David Roe (2009-12-14) -- initial version.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 David Roe <roed@math.harvard.edu>
 #                          William Stein <wstein@gmail.com>
 #
@@ -15,7 +15,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.ideal import Ideal_pid
 
@@ -24,6 +24,7 @@ class Ideal_1poly_field(Ideal_pid):
     """
     An ideal in a univariate polynomial ring over a field.
     """
+
     def residue_class_degree(self):
         """
         Return the degree of the generator of this ideal.
@@ -52,11 +53,14 @@ class Ideal_1poly_field(Ideal_pid):
         """
         if check:
             if not self.ring().base_ring().is_finite():
-                raise TypeError("residue fields only supported for polynomial rings over finite fields.")
+                raise TypeError(
+                    "residue fields only supported for polynomial rings over finite fields."
+                )
             if not self.is_prime():
                 raise ValueError("%s is not a prime ideal" % self)
 
         from sage.rings.finite_rings.residue_field import ResidueField
+
         return ResidueField(self, names, check=False)
 
     def groebner_basis(self, algorithm=None):
@@ -83,7 +87,10 @@ class Ideal_1poly_field(Ideal_pid):
             [x - 1]
         """
         gb = self.gens_reduced()
-        from sage.rings.polynomial.multi_polynomial_sequence import PolynomialSequence_generic
+        from sage.rings.polynomial.multi_polynomial_sequence import (
+            PolynomialSequence_generic,
+        )
+
         return PolynomialSequence_generic([gb], self.ring(), immutable=True)
 
     def change_ring(self, R):

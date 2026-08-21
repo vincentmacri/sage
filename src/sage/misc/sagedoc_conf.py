@@ -137,6 +137,7 @@ def process_dollars(app, what, name, obj, options, docstringlines):
     """
     if len(docstringlines) and name.find("process_dollars") == -1:
         from sage.misc.sagedoc import process_dollars as sagedoc_dollars
+
         s = sagedoc_dollars("\n".join(docstringlines))
         lines = s.split("\n")
         for i in range(len(lines)):
@@ -174,6 +175,7 @@ def skip_TESTS_block(app, what, name, obj, options, docstringlines):
     See sage.misc.sagedoc.skip_TESTS_block for more information.
     """
     from sage.misc.sagedoc import skip_TESTS_block as sagedoc_skip_TESTS
+
     if not docstringlines:
         # No docstring, so don't do anything. See Issue #19932.
         return
@@ -193,6 +195,7 @@ class SagemathTransform(SphinxTransform):
     associated with the pycon lexer, and in particular, to change
     "<BLANKLINE>" to a blank line.
     """
+
     default_priority = 500
 
     def apply(self):
@@ -203,6 +206,7 @@ class SagemathTransform(SphinxTransform):
                 source = blankline_re.sub('', source)
                 node.rawsource = source
                 node[:] = [nodes.Text(source)]
+
 
 # This is only used by sage.misc.sphinxify
 

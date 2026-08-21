@@ -40,6 +40,7 @@ from sage.rings.real_mpfr import RR
 from sage.rings.cc import CC
 from sage.rings.integer import Integer
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.line", "line")
 lazy_import("sage.plot.point", "point")
 
@@ -87,8 +88,7 @@ def get_solution_dicts(output_file_contents, input_ring, get_failures=True):
                     for extras in range(rawsplit.count('')):
                         rawsplit.remove('')
                     temp_var = output_list[i + j].split(': ')[0].replace(' ', '')
-                    temp_dict[input_ring(temp_var)] = CC(rawsplit[0],
-                                                         rawsplit[1])
+                    temp_dict[input_ring(temp_var)] = CC(rawsplit[0], rawsplit[1])
                 solution_dicts.append(temp_dict)
     return solution_dicts
 
@@ -144,8 +144,7 @@ def get_classified_solution_dicts(output_file_contents, input_ring, get_failures
                 if phc_type == 'real':
                     temp_dict[input_ring(temp_var)] = RR(rawsplit[0])
                 else:
-                    temp_dict[input_ring(temp_var)] = CC(rawsplit[0],
-                                                         rawsplit[1])
+                    temp_dict[input_ring(temp_var)] = CC(rawsplit[0], rawsplit[1])
             solution_dicts[phc_type].append(temp_dict)
     return solution_dicts
 
@@ -176,7 +175,6 @@ def get_variable_list(output_file_contents):
 
 
 class PHC_Object:
-
     def __init__(self, output_file_contents, input_ring):
         """
         A container for data from the PHCpack program - lists of float
@@ -239,7 +237,10 @@ class PHC_Object:
         sol_count = 0
         sol_data = ''
         for i in range(found_solutions + 2, len(output_list)):
-            if output_list[i].count('the solution for t') == 1 and output_list[i + 1 + var_number].find(sol_filter) != -1:
+            if (
+                output_list[i].count('the solution for t') == 1
+                and output_list[i + 1 + var_number].find(sol_filter) != -1
+            ):
                 phc_type = output_list[i + var_number + 1].split(' = ')[-1]
                 if phc_type.find('no solution') == -1:
                     sol_count += 1
@@ -281,7 +282,9 @@ class PHC_Object:
             return self.__classified_sols
         except AttributeError:
             pass
-        classified_sols = get_classified_solution_dicts(self.output_file_contents, self.input_ring)
+        classified_sols = get_classified_solution_dicts(
+            self.output_file_contents, self.input_ring
+        )
         self.__classified_sols = classified_sols
         return classified_sols
 
@@ -319,7 +322,9 @@ class PHC_Object:
             return self.__solution_dicts
         except AttributeError:
             pass
-        solution_dicts = get_solution_dicts(self.output_file_contents, self.input_ring, get_failures=get_failures)
+        solution_dicts = get_solution_dicts(
+            self.output_file_contents, self.input_ring, get_failures=get_failures
+        )
         self.__solution_dicts = solution_dicts
         return solution_dicts
 
@@ -354,7 +359,9 @@ class PHC_Object:
             return self.__solutions
         except AttributeError:
             pass
-        solution_dicts = get_solution_dicts(self.output_file_contents, self.input_ring, get_failures=get_failures)
+        solution_dicts = get_solution_dicts(
+            self.output_file_contents, self.input_ring, get_failures=get_failures
+        )
         self.__solution_dicts = solution_dicts
         solutions = [sol_dict.values() for sol_dict in solution_dicts]
         self.__solutions = solutions
@@ -461,7 +468,9 @@ class PHC:
             print(read_stuff)
         child_phc.close()
         if not os.path.exists(output_filename):
-            raise RuntimeError("The output file does not exist; something went wrong running phc.")
+            raise RuntimeError(
+                "The output file does not exist; something went wrong running phc."
+            )
 
         # Delete the input file
         os.unlink(input_filename)
@@ -493,7 +502,7 @@ class PHC:
             raise TypeError('polys must be a list or tuple')
         s = '%s\n' % len(polys)
         for f in polys:
-            s += f._repr_() + ';\n'     # note the semicolon *terminators*
+            s += f._repr_() + ';\n'  # note the semicolon *terminators*
         return s
 
     def _parse_path_file(self, input_filename, verbose=False):
@@ -523,7 +532,11 @@ class PHC:
             25
         """
         if not os.path.exists(input_filename):
-            raise RuntimeError("The file containing output from phc (" + input_filename + ") cannot be found")
+            raise RuntimeError(
+                "The file containing output from phc ("
+                + input_filename
+                + ") cannot be found"
+            )
 
         fh = open(input_filename)
         line_idx = 0
@@ -535,8 +548,14 @@ class PHC:
         # regular expressions for matching certain output types
         var_cnt_regex = re.compile('^ +([0-9]+)')
         output_regex = re.compile('^OUTPUT INFORMATION DURING')
-        t_regex = re.compile(r'(^t +: +(-{0,1}[0-9]+\.[0-9]+E[-+][0-9]+) +(-{0,1}[0-9]+\.[0-9]+E[-+][0-9]+)$)', re.IGNORECASE)
-        sols_regex = re.compile(r'(^ *(([a-z]|[0-9])+) +: +(-?[0-9]+\.[0-9]+E[-+][0-9]+) +(-?[0-9]+\.[0-9]+E[-+][0-9]+)$)', re.IGNORECASE)
+        t_regex = re.compile(
+            r'(^t +: +(-{0,1}[0-9]+\.[0-9]+E[-+][0-9]+) +(-{0,1}[0-9]+\.[0-9]+E[-+][0-9]+)$)',
+            re.IGNORECASE,
+        )
+        sols_regex = re.compile(
+            r'(^ *(([a-z]|[0-9])+) +: +(-?[0-9]+\.[0-9]+E[-+][0-9]+) +(-?[0-9]+\.[0-9]+E[-+][0-9]+)$)',
+            re.IGNORECASE,
+        )
         complete_regex = re.compile('^TIMING INFORMATION')
 
         breakfast = False
@@ -574,8 +593,7 @@ class PHC:
                                 # m.group(2) contains our var name
                                 # m.group(4) contains our real val
                                 # m.group(5) contains our imaginary val
-                                temp_dict[m.group(2)] = CC(m.group(4),
-                                                           m.group(5))
+                                temp_dict[m.group(2)] = CC(m.group(4), m.group(5))
                         steps_dicts.append(temp_dict)
                     # check if its the end of a solution
                     if end_test.find('Length of path') != -1:
@@ -594,7 +612,9 @@ class PHC:
         fh.close()
         return solutions_dicts
 
-    def _path_track_file(self, start_filename_or_string, polys, input_ring, c_skew=0.001, verbose=False):
+    def _path_track_file(
+        self, start_filename_or_string, polys, input_ring, c_skew=0.001, verbose=False
+    ):
         """
         Return the filename which contains path tracking output.
 
@@ -619,11 +639,37 @@ class PHC:
         elif os.path.exists(start_filename_or_string):
             start_filename = start_filename_or_string
         else:
-            raise RuntimeError("There is something wrong with your start string or filename")
+            raise RuntimeError(
+                "There is something wrong with your start string or filename"
+            )
 
-        return self._output_from_command_list(['phc', '0', '0', 'A', start_filename, 'y', '1', '0', 'n', 'k', '2', 'a', '1', str(c_skew), '0', '0', '2'], polys, verbose=verbose)
+        return self._output_from_command_list(
+            [
+                'phc',
+                '0',
+                '0',
+                'A',
+                start_filename,
+                'y',
+                '1',
+                '0',
+                'n',
+                'k',
+                '2',
+                'a',
+                '1',
+                str(c_skew),
+                '0',
+                '0',
+                '2',
+            ],
+            polys,
+            verbose=verbose,
+        )
 
-    def path_track(self, start_sys, end_sys, input_ring, c_skew=.001, saved_start=None):
+    def path_track(
+        self, start_sys, end_sys, input_ring, c_skew=0.001, saved_start=None
+    ):
         """
         This function computes homotopy paths between the solutions of
         ``start_sys`` and ``end_sys``.
@@ -658,12 +704,23 @@ class PHC:
         if not saved_start:
             sol = phc.blackbox(start_sys, input_ring)
             saved_start = sol.save_as_start()
-        path_track_filename = phc._path_track_file(saved_start, end_sys, input_ring=input_ring, c_skew=c_skew)
+        path_track_filename = phc._path_track_file(
+            saved_start, end_sys, input_ring=input_ring, c_skew=c_skew
+        )
         sol_paths = phc._parse_path_file(path_track_filename)
         os.unlink(path_track_filename)
         return sol_paths
 
-    def plot_paths_2d(self, start_sys, end_sys, input_ring, c_skew=.001, endpoints=True, saved_start=None, rand_colors=False):
+    def plot_paths_2d(
+        self,
+        start_sys,
+        end_sys,
+        input_ring,
+        c_skew=0.001,
+        endpoints=True,
+        saved_start=None,
+        rand_colors=False,
+    ):
         """
         Return a graphics object of solution paths in the complex plane.
 
@@ -696,7 +753,9 @@ class PHC:
             sage: type(testing)                        # optional -- phc (normally use plot here)
             <class 'sage.plot.graphics.Graphics'>
         """
-        paths = phc.path_track(start_sys, end_sys, input_ring, c_skew=c_skew, saved_start=saved_start)
+        paths = phc.path_track(
+            start_sys, end_sys, input_ring, c_skew=c_skew, saved_start=saved_start
+        )
         path_lines = []
         sol_pts = []
         if rand_colors:
@@ -719,8 +778,12 @@ class PHC:
             for a_sol in paths:
                 for a_var in input_ring.gens():
                     var_name = str(a_var)
-                    sol_pts.append(point([a_sol[0][var_name].real(), a_sol[0][var_name].imag()]))
-                    sol_pts.append(point([a_sol[-1][var_name].real(), a_sol[-1][var_name].imag()]))
+                    sol_pts.append(
+                        point([a_sol[0][var_name].real(), a_sol[0][var_name].imag()])
+                    )
+                    sol_pts.append(
+                        point([a_sol[-1][var_name].real(), a_sol[-1][var_name].imag()])
+                    )
             return sum(sol_pts) + sum(path_lines)
         return sum(path_lines)
 
@@ -744,7 +807,9 @@ class PHC:
             sage: phc.mixed_volume(test_sys)                # optional -- phc
             4
         """
-        output_filename = self._output_from_command_list(['phc -m', '4', 'n', 'n', 'n'], polys, verbose=verbose)
+        output_filename = self._output_from_command_list(
+            ['phc -m', '4', 'n', 'n', 'n'], polys, verbose=verbose
+        )
 
         with open(output_filename) as out:
             out.read()
@@ -752,7 +817,10 @@ class PHC:
         out_lines = out.split('\n')
         for a_line in out_lines:
             # the two conditions below are necessary because of changes in output format
-            if a_line.find('The mixed volume equals :') == 0 or a_line.find('common mixed volume :') == 0:
+            if (
+                a_line.find('The mixed volume equals :') == 0
+                or a_line.find('common mixed volume :') == 0
+            ):
                 if verbose:
                     print('found line: ' + a_line)
                 mixed_vol = Integer(a_line.split(':')[1])
@@ -761,9 +829,18 @@ class PHC:
         try:
             return mixed_vol
         except NameError:
-            raise RuntimeError("Mixed volume not found in output; something went wrong running phc.")
+            raise RuntimeError(
+                "Mixed volume not found in output; something went wrong running phc."
+            )
 
-    def start_from(self, start_filename_or_string, polys, input_ring, path_track_file=None, verbose=False):
+    def start_from(
+        self,
+        start_filename_or_string,
+        polys,
+        input_ring,
+        path_track_file=None,
+        verbose=False,
+    ):
         """
         This computes solutions starting from a phcpack solution file.
 
@@ -803,7 +880,9 @@ class PHC:
         elif os.path.exists(start_filename_or_string):
             start_filename = start_filename_or_string
         else:
-            raise RuntimeError("There is something wrong with your start string or filename")
+            raise RuntimeError(
+                "There is something wrong with your start string or filename"
+            )
 
         # Get the input polynomial text
         input = self._input_file(polys)
@@ -851,7 +930,9 @@ class PHC:
         # close down the process:
         child_phc.close()
         if not os.path.exists(output_filename):
-            raise RuntimeError("The output file does not exist; something went wrong running phc.")
+            raise RuntimeError(
+                "The output file does not exist; something went wrong running phc."
+            )
 
         # Read the output produced by PHC
         with open(output_filename) as f:
@@ -917,6 +998,7 @@ class PHC:
         # Was there an error?
         if e:
             from sage.features import Executable
+
             phc_executable = Executable(name='phc', executable='phc')
             phc_executable.require()
             # todo -- why? etc.
@@ -925,7 +1007,9 @@ class PHC:
             raise RuntimeError(msg + "\nError running phc.")
 
         if not os.path.exists(output_filename):
-            raise RuntimeError("The output file does not exist; something went wrong running phc.")
+            raise RuntimeError(
+                "The output file does not exist; something went wrong running phc."
+            )
 
         # Read the output produced by PHC
         with open(output_filename) as f:

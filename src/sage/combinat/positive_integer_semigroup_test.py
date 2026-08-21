@@ -8,9 +8,8 @@ def test_positive_integer_semigroup():
     """
     from sage.misc.sage_unittest import TestSuite
     from sage.combinat.backtrack import PositiveIntegerSemigroup
+
     PP = PositiveIntegerSemigroup()
 
     # fewer max_runs since these are kind of slow
-    TestSuite(PP).run(verbose=True,
-                      raise_on_failure=True,
-                      max_runs=256)
+    TestSuite(PP).run(verbose=True, raise_on_failure=True, max_runs=256)

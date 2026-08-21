@@ -19,14 +19,12 @@ complex.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import coercion_model
 
 
 class CellComplexReference:
-
     def __init__(self, cell_complex, degree, cells=None) -> None:
         """
         Auxiliary base class for chains and cochains.
@@ -124,8 +122,8 @@ class Chains(CellComplexReference, CombinatorialFreeModule):
         sage: c.eval(z)
         6
     """
-    def __init__(self, cell_complex, degree, cells=None,
-                 base_ring=None) -> None:
+
+    def __init__(self, cell_complex, degree, cells=None, base_ring=None) -> None:
         """
         EXAMPLES::
 
@@ -164,8 +162,7 @@ class Chains(CellComplexReference, CombinatorialFreeModule):
             base_ring = ZZ
         CellComplexReference.__init__(self, cell_complex, degree, cells=cells)
         CombinatorialFreeModule.__init__(
-            self, base_ring, self._cells,
-            prefix='', bracket=False
+            self, base_ring, self._cells, prefix='', bracket=False
         )
 
     def dual(self):
@@ -187,8 +184,10 @@ class Chains(CellComplexReference, CombinatorialFreeModule):
             <class 'sage.homology.chains.Cochains_with_category'>
         """
         return Cochains(
-            self.cell_complex, self.degree,
-            cells=self._cells, base_ring=self.base_ring()
+            self.cell_complex,
+            self.degree,
+            cells=self._cells,
+            base_ring=self.base_ring(),
         )
 
     def chain_complex(self):
@@ -215,7 +214,6 @@ class Chains(CellComplexReference, CombinatorialFreeModule):
         )
 
     class Element(CombinatorialFreeModule.Element):
-
         def to_complex(self):
             """
             Return the corresponding chain complex element.
@@ -236,9 +234,9 @@ class Chains(CellComplexReference, CombinatorialFreeModule):
                         [0]       [0]
                         [0]       [1]
             """
-            return self.parent().chain_complex()({
-                self.parent().degree(): self.to_vector()
-            })
+            return self.parent().chain_complex()(
+                {self.parent().degree(): self.to_vector()}
+            )
 
         def boundary(self):
             """
@@ -352,8 +350,8 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
         sage: c.eval(z)
         6
     """
-    def __init__(self, cell_complex, degree, cells=None,
-                 base_ring=None) -> None:
+
+    def __init__(self, cell_complex, degree, cells=None, base_ring=None) -> None:
         """
         EXAMPLES::
 
@@ -392,9 +390,7 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
             base_ring = ZZ
         CellComplexReference.__init__(self, cell_complex, degree, cells=cells)
         CombinatorialFreeModule.__init__(
-            self, base_ring, self._cells,
-            prefix='\\chi',
-            bracket=['_', '']
+            self, base_ring, self._cells, prefix='\\chi', bracket=['_', '']
         )
 
     def dual(self):
@@ -416,8 +412,10 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
             <class 'sage.homology.chains.Chains_with_category'>
         """
         return Chains(
-            self.cell_complex, self.degree,
-            cells=self._cells, base_ring=self.base_ring()
+            self.cell_complex,
+            self.degree,
+            cells=self._cells,
+            base_ring=self.base_ring(),
         )
 
     def cochain_complex(self):
@@ -445,7 +443,6 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
         )
 
     class Element(CombinatorialFreeModule.Element):
-
         def to_complex(self):
             """
             Return the corresponding cochain complex element.
@@ -466,9 +463,9 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
                                   [0]       [0]
                                   [1]       [0]
             """
-            return self.parent().cochain_complex()({
-                self.parent().degree(): self.to_vector()
-            })
+            return self.parent().cochain_complex()(
+                {self.parent().degree(): self.to_vector()}
+            )
 
         def coboundary(self):
             r"""
@@ -588,8 +585,7 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
                 raise ValueError('argument is not a chain')
             if other.parent().indices() != self.parent().indices():
                 raise ValueError('the cells are not compatible')
-            result = sum(coeff * other.coefficient(cell)
-                         for cell, coeff in self)
+            result = sum(coeff * other.coefficient(cell) for cell, coeff in self)
             R = self.base_ring()
             if R != other.base_ring():
                 R = coercion_model.common_parent(R, other.base_ring())
@@ -639,16 +635,22 @@ class Cochains(CellComplexReference, CombinatorialFreeModule):
             left_chains = self.parent().dual()
             right_chains = cochain.parent().dual()
             base_ring = coercion_model.common_parent(
-                left_chains.base_ring(), right_chains.base_ring())
+                left_chains.base_ring(), right_chains.base_ring()
+            )
             cx = self.parent().cell_complex()
             codomain = cx.n_chains(
-                left_deg + right_deg, base_ring=base_ring, cochains=True)
+                left_deg + right_deg, base_ring=base_ring, cochains=True
+            )
             accumulator = codomain.zero()
             for cell in codomain.indices():
-                for (coeff, left_cell, right_cell) in cx.alexander_whitney(cell, left_deg):
+                for coeff, left_cell, right_cell in cx.alexander_whitney(
+                    cell, left_deg
+                ):
                     if not coeff:
                         continue
                     left = left_chains(left_cell)
                     right = right_chains(right_cell)
-                    accumulator += codomain(cell) * coeff * self.eval(left) * cochain.eval(right)
+                    accumulator += (
+                        codomain(cell) * coeff * self.eval(left) * cochain.eval(right)
+                    )
             return accumulator

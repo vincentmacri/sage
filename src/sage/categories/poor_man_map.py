@@ -1,6 +1,7 @@
 r"""
 Poor Man's map
 """
+
 # ****************************************************************************
 #       Copyright (C) 2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #                     2016 Julian Rüth <julian.rueth@fsfe.org>
@@ -56,6 +57,7 @@ class PoorManMap(SageObject):
         sage: i == g*h
         True
     """
+
     def __init__(self, function, domain=None, codomain=None, name=None):
         """
         TESTS::
@@ -68,6 +70,7 @@ class PoorManMap(SageObject):
             sage: TestSuite(f*g).run()
         """
         from collections.abc import Iterable
+
         if not isinstance(function, Iterable):
             function = (function,)
         self._functions = tuple(function)
@@ -89,9 +92,11 @@ class PoorManMap(SageObject):
             sage: PoorManMap(lambda x: x+2, codomain=(3,4,5))
             A map to (3, 4, 5)
         """
-        return ((self._name if self._name is not None else "A map") +
-                (" from %s" % (self._domain,) if self._domain is not None else "") +
-                (" to %s" % (self._codomain,) if self._codomain is not None else ""))
+        return (
+            (self._name if self._name is not None else "A map")
+            + (" from %s" % (self._domain,) if self._domain is not None else "")
+            + (" to %s" % (self._codomain,) if self._codomain is not None else "")
+        )
 
     def domain(self):
         """
@@ -134,10 +139,12 @@ class PoorManMap(SageObject):
             (True, False, False, False, False, False, False)
         """
         if isinstance(other, PoorManMap):
-            return (self._functions == other._functions
-                    and self._domain == other._domain
-                    and self._codomain == other._codomain
-                    and self._name == other._name)
+            return (
+                self._functions == other._functions
+                and self._domain == other._domain
+                and self._codomain == other._codomain
+                and self._name == other._name
+            )
         return False
 
     def __ne__(self, other):
@@ -219,9 +226,13 @@ class PoorManMap(SageObject):
 
         if self_domain is not None and other_codomain is not None:
             from sage.structure.parent import Parent
+
             if isinstance(self_domain, Parent) and isinstance(other_codomain, Parent):
                 if not self_domain.has_coerce_map_from(other_codomain):
-                    raise ValueError("the codomain %r does not coerce into the domain %r" % (other_codomain, self_domain))
+                    raise ValueError(
+                        "the codomain %r does not coerce into the domain %r"
+                        % (other_codomain, self_domain)
+                    )
 
         codomain = self.codomain()
         try:
@@ -263,6 +274,7 @@ class PoorManMap(SageObject):
             sin
         """
         from sympy import sympify
+
         if len(self._functions) == 1:
             return sympify(self._functions[0])
         raise NotImplementedError

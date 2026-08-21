@@ -39,6 +39,7 @@ This means that, among the trees on `4` nodes, one has a
 single internal node, three have two internal nodes, and one has
 three internal nodes.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
@@ -53,7 +54,11 @@ three internal nodes.
 #
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from .generating_series import OrdinaryGeneratingSeriesRing, ExponentialGeneratingSeriesRing, CycleIndexSeriesRing
+from .generating_series import (
+    OrdinaryGeneratingSeriesRing,
+    ExponentialGeneratingSeriesRing,
+    CycleIndexSeriesRing,
+)
 from sage.rings.rational_field import QQ
 from sage.structure.sage_object import SageObject
 from sage.misc.cachefunc import cached_method
@@ -221,7 +226,9 @@ class GenericCombinatorialSpecies(SageObject):
             Characteristic species of order 4
         """
         args_dict, kwds = state
-        self.__class__.__init__(self, *[args_dict[i] for i in range(len(args_dict))], **kwds)
+        self.__class__.__init__(
+            self, *[args_dict[i] for i in range(len(args_dict))], **kwds
+        )
 
     def weighted(self, weight):
         """
@@ -292,6 +299,7 @@ class GenericCombinatorialSpecies(SageObject):
             [[1, 2], [2, 1], [1, 2], [2, 1]]
         """
         from .sum_species import SumSpecies
+
         if not isinstance(g, GenericCombinatorialSpecies):
             raise TypeError("g must be a combinatorial species")
         return SumSpecies(self, g)
@@ -309,6 +317,7 @@ class GenericCombinatorialSpecies(SageObject):
             Product of (Permutation species) and (Permutation species)
         """
         from .product_species import ProductSpecies
+
         if not isinstance(g, GenericCombinatorialSpecies):
             raise TypeError("g must be a combinatorial species")
         return ProductSpecies(self, g)
@@ -324,6 +333,7 @@ class GenericCombinatorialSpecies(SageObject):
             Composition of (Set species) and (Set species)
         """
         from .composition_species import CompositionSpecies
+
         if not isinstance(g, GenericCombinatorialSpecies):
             raise TypeError("g must be a combinatorial species")
         return CompositionSpecies(self, g)
@@ -345,6 +355,7 @@ class GenericCombinatorialSpecies(SageObject):
             [1, 1, 2, 4, 11]
         """
         from .functorial_composition_species import FunctorialCompositionSpecies
+
         if not isinstance(g, GenericCombinatorialSpecies):
             raise TypeError("g must be a combinatorial species")
         return FunctorialCompositionSpecies(self, g)
@@ -369,9 +380,11 @@ class GenericCombinatorialSpecies(SageObject):
             sage: S.generating_series()[0:5]
             [0, 0, 0, 1/6, 1/24]
         """
-        kwargs = {'min': self._min if min is None else min,
-                  'max': self._max if max is None else max,
-                  'weight': self._weight}
+        kwargs = {
+            'min': self._min if min is None else min,
+            'max': self._max if max is None else max,
+            'weight': self._weight,
+        }
         return self.__class__(**kwargs)
 
     def structures(self, labels, structure_class=None):
@@ -414,8 +427,10 @@ class GenericCombinatorialSpecies(SageObject):
         it = self.isotypes(range(n))
 
         try:
-            return (len(st.list()) == st.cardinality() and
-                    len(it.list()) == it.cardinality())
+            return (
+                len(st.list()) == st.cardinality()
+                and len(it.list()) == it.cardinality()
+            )
         except NotImplementedError:
             return False
 
@@ -466,6 +481,7 @@ class GenericCombinatorialSpecies(SageObject):
         """
         from sage.rings.integer import Integer
         import operator
+
         n = Integer(n)
         if n <= 0:
             raise ValueError("only positive exponents are currently supported")
@@ -473,8 +489,7 @@ class GenericCombinatorialSpecies(SageObject):
         squares = [self]
         for i in range(len(digits) - 1):
             squares.append(squares[-1] * squares[-1])
-        return reduce(operator.mul, (s for i, s in zip(digits, squares)
-                                     if i != 0))
+        return reduce(operator.mul, (s for i, s in zip(digits, squares) if i != 0))
 
     def _get_series(self, series_ring_class, prefix, base_ring=None):
         """
@@ -495,8 +510,9 @@ class GenericCombinatorialSpecies(SageObject):
         # method will just return series.
         if self._min is None and self._max is None:
             return series
-        return series.parent()(lambda n: series[n],
-                               valuation=self._min, degree=self._max)
+        return series.parent()(
+            lambda n: series[n], valuation=self._min, degree=self._max
+        )
 
     def _series_helper(self, series_ring_class, prefix, base_ring=None):
         """
@@ -543,7 +559,9 @@ class GenericCombinatorialSpecies(SageObject):
             if not base_ring.has_coerce_map_from(QQ):
                 raise ValueError("specified base ring does not contain the rationals")
             if not base_ring.has_coerce_map_from(self.weight_ring()):
-                raise ValueError("specified base ring is incompatible with the weight ring of self")
+                raise ValueError(
+                    "specified base ring is incompatible with the weight ring of self"
+                )
 
         series_ring = series_ring_class(base_ring)
 
@@ -564,7 +582,9 @@ class GenericCombinatorialSpecies(SageObject):
         try:
             callable = getattr(self, prefix + "_callable")
             try:
-                return series_ring(lambda n: callable(base_ring, n), valuation=self._order())
+                return series_ring(
+                    lambda n: callable(base_ring, n), valuation=self._order()
+                )
             except AttributeError:
                 return series_ring(lambda n: callable(base_ring, n))
         except AttributeError:
@@ -574,8 +594,9 @@ class GenericCombinatorialSpecies(SageObject):
         # This is used when the generating series is just a single
         # term.
         try:
-            return series_ring(getattr(self, prefix + "_term")(base_ring),
-                                    self._order())
+            return series_ring(
+                getattr(self, prefix + "_term")(base_ring), self._order()
+            )
         except AttributeError:
             pass
 
@@ -695,6 +716,7 @@ class GenericCombinatorialSpecies(SageObject):
         """
         assert parents
         from sage.structure.element import get_coercion_model
+
         cm = get_coercion_model()
 
         common = parents[0]
@@ -730,6 +752,7 @@ class GenericCombinatorialSpecies(SageObject):
             [(0, 3, None), (2, 0, None), (2, 0, None), (3, 1, None), (3, 2, None)]
         """
         from sage.graphs.digraph import DiGraph
+
         d = DiGraph(multiedges=True)
         self._add_to_digraph(d)
         return d
@@ -806,8 +829,9 @@ class GenericCombinatorialSpecies(SageObject):
 
         # A dictionary mapping the nodes to variables
         vertices = sorted(d.vertex_iterator(), key=str)
-        var_mapping = {node: R_gens_dict[name]
-                       for node, name in zip(vertices, var_names)}
+        var_mapping = {
+            node: R_gens_dict[name] for node, name in zip(vertices, var_names)
+        }
         var_mapping['z'] = Qz.gen()
 
         eqns = []

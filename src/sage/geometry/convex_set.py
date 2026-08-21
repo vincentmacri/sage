@@ -291,6 +291,7 @@ class ConvexSet_base(SageObject, Set_base):
             A 2-dimensional polyhedron in QQ^3 defined as the convex hull of 1 vertex and 2 lines
         """
         from .polyhedron.constructor import Polyhedron
+
         i_affine_basis = iter(self.an_affine_basis())
         try:
             v = next(i_affine_basis)
@@ -300,10 +301,17 @@ class ConvexSet_base(SageObject, Set_base):
         return Polyhedron(vertices=[v], lines=[vector(p) - v for p in i_affine_basis])
 
     @cached_method
-    def _affine_hull_projection(self, *,
-                                as_convex_set=True, as_affine_map=True, as_section_map=True,
-                                orthogonal=False, orthonormal=False,
-                                extend=False, minimal=False):
+    def _affine_hull_projection(
+        self,
+        *,
+        as_convex_set=True,
+        as_affine_map=True,
+        as_section_map=True,
+        orthogonal=False,
+        orthonormal=False,
+        extend=False,
+        minimal=False,
+    ):
         r"""
         Return ``self`` projected into its affine hull.
 
@@ -357,9 +365,14 @@ class ConvexSet_base(SageObject, Set_base):
         """
         affine_hull = self.affine_hull()
         data = affine_hull._affine_hull_projection(
-            as_convex_set=False, as_affine_map=True, as_section_map=True,
-            orthogonal=orthogonal, orthonormal=orthonormal,
-            extend=extend, minimal=minimal)
+            as_convex_set=False,
+            as_affine_map=True,
+            as_section_map=True,
+            orthogonal=orthogonal,
+            orthonormal=orthonormal,
+            extend=extend,
+            minimal=minimal,
+        )
         if as_convex_set:
             data = copy(data)
             matrix = data.projection_linear_map.matrix().transpose()
@@ -367,10 +380,17 @@ class ConvexSet_base(SageObject, Set_base):
             data.image = projected.translation(data.projection_translation)
         return data
 
-    def affine_hull_projection(self, as_convex_set=None, as_affine_map=False,
-                               orthogonal=False, orthonormal=False,
-                               extend=False, minimal=False,
-                               return_all_data=False, **kwds):
+    def affine_hull_projection(
+        self,
+        as_convex_set=None,
+        as_affine_map=False,
+        orthogonal=False,
+        orthonormal=False,
+        extend=False,
+        minimal=False,
+        return_all_data=False,
+        **kwds,
+    ):
         r"""
         Return ``self`` projected into its affine hull.
 
@@ -407,16 +427,23 @@ class ConvexSet_base(SageObject, Set_base):
         if as_convex_set is None:
             as_convex_set = not as_affine_map
         if not as_affine_map and not as_convex_set:
-            raise ValueError('combining "as_affine_map=False" and '
-                             '"as_convex_set=False" not allowed')
+            raise ValueError(
+                'combining "as_affine_map=False" and "as_convex_set=False" not allowed'
+            )
         if return_all_data:
             as_convex_set = True
             as_affine_map = True
 
         result = self._affine_hull_projection(
-            as_convex_set=as_convex_set, as_affine_map=as_affine_map, as_section_map=return_all_data,
-            orthogonal=orthogonal, orthonormal=orthonormal,
-            extend=extend, minimal=minimal, **kwds)
+            as_convex_set=as_convex_set,
+            as_affine_map=as_affine_map,
+            as_section_map=return_all_data,
+            orthogonal=orthogonal,
+            orthonormal=orthonormal,
+            extend=extend,
+            minimal=minimal,
+            **kwds,
+        )
 
         # assemble result
         if return_all_data or (as_convex_set and as_affine_map):
@@ -688,10 +715,12 @@ class ConvexSet_base(SageObject, Set_base):
         if self.is_compact():
             tester.assertTrue(self.is_closed())
         from sage.misc.sage_unittest import TestSuite
+
         if relint_self is not None and relint_self is not self:
             tester.info("\n  Running the test suite of self.relative_interior()")
-            TestSuite(relint_self).run(verbose=tester._verbose,
-                                       prefix=tester._prefix + "  ")
+            TestSuite(relint_self).run(
+                verbose=tester._verbose, prefix=tester._prefix + "  "
+            )
             tester.info(tester._prefix + " ", newline=False)
 
     # Optional methods
@@ -857,9 +886,12 @@ class ConvexSet_base(SageObject, Set_base):
                 else:
                     ext_space = self.ambient_vector_space(AA)
                     ext_space_point = ext_space(space_point)
-                    tester.assertEqual(contains_space_point, self.contains(ext_space_point))
+                    tester.assertEqual(
+                        contains_space_point, self.contains(ext_space_point)
+                    )
             try:
                 from sage.symbolic.ring import SR
+
                 symbolic_space = self.ambient_vector_space(SR)
                 symbolic_space_point = symbolic_space(space_point)
                 # Only test that it can accept SR vectors without error.

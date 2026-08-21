@@ -177,31 +177,37 @@ class WeightSpace(CombinatorialFreeModule):
         self._extended = extended
         if extended:
             if not root_system.cartan_type().is_affine():
-                raise ValueError("extended weight lattices are only"
-                                 " implemented for affine root systems")
+                raise ValueError(
+                    "extended weight lattices are only"
+                    " implemented for affine root systems"
+                )
             basis_keys = tuple(basis_keys) + ("delta",)
 
             def sortkey(x):
                 return (1 if isinstance(x, str) else 0, x)
         else:
+
             def sortkey(x):
                 return x
 
         self.root_system = root_system
-        CombinatorialFreeModule.__init__(self, base_ring,
-                                         basis_keys,
-                                         prefix="Lambdacheck" if root_system.dual_side else "Lambda",
-                                         latex_prefix="\\Lambda^\\vee" if root_system.dual_side else "\\Lambda",
-                                         sorting_key=sortkey,
-                                         category=WeightLatticeRealizations(base_ring))
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            basis_keys,
+            prefix="Lambdacheck" if root_system.dual_side else "Lambda",
+            latex_prefix="\\Lambda^\\vee" if root_system.dual_side else "\\Lambda",
+            sorting_key=sortkey,
+            category=WeightLatticeRealizations(base_ring),
+        )
 
         if root_system.cartan_type().is_affine() and not extended:
             # For an affine type, register the quotient map from the
             # extended weight lattice/space to the weight lattice/space
             domain = root_system.weight_space(base_ring, extended=True)
-            domain.module_morphism(self.fundamental_weight,
-                                   codomain=self
-                                   ).register_as_coercion()
+            domain.module_morphism(
+                self.fundamental_weight, codomain=self
+            ).register_as_coercion()
 
     def is_extended(self):
         """
@@ -240,9 +246,13 @@ class WeightSpace(CombinatorialFreeModule):
             sage: RootSystem(['A',4]).weight_lattice()._name_string()
             "Weight lattice of the Root system of type ['A', 4]"
         """
-        return self._name_string_helper("weight",
-                                        capitalize=capitalize, base_ring=base_ring, type=type,
-                                        prefix="extended " if self.is_extended() else "")
+        return self._name_string_helper(
+            "weight",
+            capitalize=capitalize,
+            base_ring=base_ring,
+            type=type,
+            prefix="extended " if self.is_extended() else "",
+        )
 
     @cached_method
     def fundamental_weight(self, i):
@@ -360,7 +370,9 @@ class WeightSpace(CombinatorialFreeModule):
         if j not in self.index_set():
             raise ValueError("{} is not in the index set".format(j))
         K = self.base_ring()
-        result = self.sum_of_terms((i,K(c)) for i,c in self.root_system.dynkin_diagram().column(j))
+        result = self.sum_of_terms(
+            (i, K(c)) for i, c in self.root_system.dynkin_diagram().column(j)
+        )
         if self._extended and j == self.cartan_type().special_node():
             result = result + self.monomial("delta")
         return result
@@ -443,17 +455,21 @@ class WeightSpace(CombinatorialFreeModule):
             Implemented only for finite Cartan type.
         """
         if self.root_system.dual_side:
-            raise TypeError("No implemented map from the coweight space to the ambient space")
+            raise TypeError(
+                "No implemented map from the coweight space to the ambient space"
+            )
         L = self.cartan_type().root_system().ambient_space()
         basis = L.fundamental_weights()
 
         def basis_value(basis, i):
             return basis[i]
-        return self.module_morphism(on_basis=functools.partial(basis_value, basis), codomain=L)
+
+        return self.module_morphism(
+            on_basis=functools.partial(basis_value, basis), codomain=L
+        )
 
 
 class WeightSpaceElement(CombinatorialFreeModule.Element):
-
     def scalar(self, lambdacheck):
         """
         The canonical scalar product between the weight lattice and
@@ -501,12 +517,15 @@ class WeightSpaceElement(CombinatorialFreeModule.Element):
             is not in the coroot space
         """
         # TODO: Find some better test
-        if lambdacheck not in self.parent().coroot_lattice() and lambdacheck not in self.parent().coroot_space():
+        if (
+            lambdacheck not in self.parent().coroot_lattice()
+            and lambdacheck not in self.parent().coroot_space()
+        ):
             raise ValueError("{} is not in the coroot space".format(lambdacheck))
         zero = self.parent().base_ring().zero()
         if len(self) < len(lambdacheck):
-            return sum( (lambdacheck[i]*c for (i,c) in self), zero)
-        return sum( (self[i]*c for (i,c) in lambdacheck), zero)
+            return sum((lambdacheck[i] * c for (i, c) in self), zero)
+        return sum((self[i] * c for (i, c) in lambdacheck), zero)
 
     def is_dominant(self):
         r"""
@@ -536,7 +555,9 @@ class WeightSpaceElement(CombinatorialFreeModule.Element):
             True
         """
         index_set = set(self.parent().index_set())
-        return all(c >= 0 for i, c in self._monomial_coefficients.items() if i in index_set)
+        return all(
+            c >= 0 for i, c in self._monomial_coefficients.items() if i in index_set
+        )
 
     def is_dominant_weight(self):
         r"""
@@ -570,7 +591,12 @@ class WeightSpaceElement(CombinatorialFreeModule.Element):
         """
         index_set = set(self.parent().index_set())
         from sage.rings.integer_ring import ZZ
-        return all(c in ZZ and c >= 0 for i, c in self._monomial_coefficients.items() if i in index_set)
+
+        return all(
+            c in ZZ and c >= 0
+            for i, c in self._monomial_coefficients.items()
+            if i in index_set
+        )
 
     def to_ambient(self):
         r"""

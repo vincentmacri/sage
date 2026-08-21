@@ -53,6 +53,7 @@ class QuotientModule_free_ambient(Module_free_ambient):
          [x - y     z]
          [  y*z   x*z]
     """
+
     def __init__(self, module, sub):
         """
         Create this quotient module of ``module`` by a submodule ``sub``.
@@ -77,8 +78,14 @@ class QuotientModule_free_ambient(Module_free_ambient):
         if isinstance(module, QuotientModule_free_ambient):
             self._free_cover = module.cover()
             C = self._free_cover.element_class
-            v = [C(self._free_cover, x.list(), coerce=False, copy=False) for x in sub.gens()]
-            w = [C(self._free_cover, x.list(), coerce=False, copy=False) for x in module.free_relations().gens()]
+            v = [
+                C(self._free_cover, x.list(), coerce=False, copy=False)
+                for x in sub.gens()
+            ]
+            w = [
+                C(self._free_cover, x.list(), coerce=False, copy=False)
+                for x in module.free_relations().gens()
+            ]
             self._relations = self._free_cover.submodule(v + w, check=False)
         else:  # Otherwise module should be a free module
             self._free_cover = module
@@ -173,13 +180,18 @@ class QuotientModule_free_ambient(Module_free_ambient):
                     [  y*z   x*z]
         """
         if isinstance(M, FreeModule_ambient):
-            return (self.base_ring().has_coerce_map_from(M.base_ring()) and
-                    self.degree() == M.degree())
+            return (
+                self.base_ring().has_coerce_map_from(M.base_ring())
+                and self.degree() == M.degree()
+            )
         from sage.modules.submodule import Submodule_free_ambient
+
         if isinstance(M, Submodule_free_ambient):
             return self._module.has_coerce_map_from(self.ambient_module())
-        if (isinstance(M, QuotientModule_free_ambient)
-                and M.free_cover() == self.free_cover()):
+        if (
+            isinstance(M, QuotientModule_free_ambient)
+            and M.free_cover() == self.free_cover()
+        ):
             try:
                 return M.free_relations().is_submodule(self.free_relations())
             except NotImplementedError:
@@ -302,6 +314,7 @@ class QuotientModule_free_ambient(Module_free_ambient):
 #
 ###############################################################################
 
+
 class FreeModule_ambient_field_quotient(FreeModule_ambient_field):
     """
     A quotient `V/W` of two vector spaces as a vector space.
@@ -388,7 +401,10 @@ class FreeModule_ambient_field_quotient(FreeModule_ambient_field):
         sage: type(loads(dumps(U)) )
         <class 'sage.modules.quotient_module.FreeModule_ambient_field_quotient_with_category'>
     """
-    def __init__(self, domain, sub, quotient_matrix, lift_matrix, inner_product_matrix=None):
+
+    def __init__(
+        self, domain, sub, quotient_matrix, lift_matrix, inner_product_matrix=None
+    ):
         """
         Create this quotient space, from the given domain, submodule,
         and quotient_matrix.
@@ -463,8 +479,11 @@ class FreeModule_ambient_field_quotient(FreeModule_ambient_field):
         """
         return "%s space quotient V/W of dimension %s over %s where\nV: %s\nW: %s" % (
             "Sparse vector" if self.is_sparse() else "Vector",
-            self.dimension(), self.base_ring(),
-            self.V(), self.W())
+            self.dimension(),
+            self.base_ring(),
+            self.V(),
+            self.W(),
+        )
 
     def __hash__(self):
         """
@@ -587,9 +606,10 @@ class FreeModule_ambient_field_quotient(FreeModule_ambient_field):
             sage: V.coerce_map_from(QQ^2)
         """
         from sage.modules.free_module import FreeModule_ambient
-        if (isinstance(M, FreeModule_ambient)
-            and not (isinstance(M, FreeModule_ambient_field_quotient)
-                     and self._sub == M._sub)):
+
+        if isinstance(M, FreeModule_ambient) and not (
+            isinstance(M, FreeModule_ambient_field_quotient) and self._sub == M._sub
+        ):
             # No map between different quotients.
             # No map from quotient to abstract module.
             return None

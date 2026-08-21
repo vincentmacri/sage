@@ -2,7 +2,7 @@
 Finite fields of characteristic 2
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2011 David Roe
 #       Copyright (C) 2012 Travis Scrimshaw
 #       Copyright (C) 2013 Peter Bruin
@@ -13,7 +13,7 @@ Finite fields of characteristic 2
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.libs.pari import pari
@@ -35,9 +35,11 @@ def late_import():
     global Cache_ntl_gf2e, GF, GF2
 
     import sage.rings.finite_rings.element_ntl_gf2e
+
     Cache_ntl_gf2e = sage.rings.finite_rings.element_ntl_gf2e.Cache_ntl_gf2e
 
     import sage.rings.finite_rings.finite_field_constructor
+
     GF = sage.rings.finite_rings.finite_field_constructor.GF
     GF2 = GF(2)
 
@@ -127,6 +129,7 @@ class FiniteField_ntl_gf2e(FiniteField):
         FiniteField.__init__(self, GF2, names, normalize=True)
 
         from sage.rings.polynomial.polynomial_element import Polynomial
+
         if not isinstance(modulus, Polynomial):
             raise TypeError("modulus must be a polynomial")
 

@@ -87,6 +87,7 @@ class ProductTree:
          (32589158477190044730, 70746471270782959),
          (2305567963945518424753102147331756070,)]
     """
+
     def __init__(self, leaves):
         r"""
         Initialize a product tree having the given ring elements
@@ -101,7 +102,7 @@ class ProductTree:
         V = tuple(leaves)
         self.layers = [V]
         while len(V) > 1:
-            V = tuple(prod(V[i:i+2]) for i in range(0,len(V),2))
+            V = tuple(prod(V[i : i + 2]) for i in range(0, len(V), 2))
             self.layers.append(V)
 
     def __len__(self):
@@ -250,10 +251,11 @@ class ProductTree:
             [0, 0, 0, 1]
         """
         from sage.arith.misc import CRT_basis
+
         # tuples all the way for immutability
         bases = []
         for V in self.layers[:-1]:
-            B = tuple(tuple(CRT_basis(V[i:i+2])) for i in range(0, len(V), 2))
+            B = tuple(tuple(CRT_basis(V[i : i + 2])) for i in range(0, len(V), 2))
             bases.append(B)
         return tuple(bases)
 
@@ -294,8 +296,10 @@ class ProductTree:
         if len(xs) != len(self.layers[0]):
             raise ValueError('number of given elements must equal the number of leaves')
         for basis, layer in zip(bases, self.layers[1:]):
-            xs = [sum(c*x for c, x in zip(cs, xs[2*i:2*i+2])) % mod
-                  for i, (cs, mod) in enumerate(zip(basis, layer))]
+            xs = [
+                sum(c * x for c, x in zip(cs, xs[2 * i : 2 * i + 2])) % mod
+                for i, (cs, mod) in enumerate(zip(basis, layer))
+            ]
         assert len(xs) == 1
         return xs[0]
 
@@ -348,6 +352,7 @@ def prod_with_derivative(pairs):
         sage: prod_with_derivative(zip(us, vs))
         (442943981574522759, 104645261461514994)
     """
+
     class _aux:
         def __init__(self, f, df):
             self.f, self.df = f, df

@@ -76,14 +76,9 @@ if SAGE_LIVE_DOC == 'yes':
             binder_repo = SAGE_JUPYTER_SERVER[7:]
         s = binder_repo.split('/', 2)
         if len(s) > 2:
-            binder_options = {
-                'repo': s[0] + '/' + s[1],
-                'ref': s[2]
-            }
+            binder_options = {'repo': s[0] + '/' + s[1], 'ref': s[2]}
         else:
-            binder_options = {
-                'repo': binder_repo
-            }
+            binder_options = {'repo': binder_repo}
         jupyter_sphinx_thebelab_config = {
             'requestKernel': False,
             'binderOptions': binder_options,
@@ -92,10 +87,12 @@ if SAGE_LIVE_DOC == 'yes':
                 'kernelName': "sagemath",
                 'path': ".",
             },
-            'selector': "div.live-doc"
+            'selector': "div.live-doc",
         }
     else:  # local jupyter server
-        SAGE_JUPYTER_SERVER_TOKEN = os.environ.get('SAGE_JUPYTER_SERVER_TOKEN', 'secret')
+        SAGE_JUPYTER_SERVER_TOKEN = os.environ.get(
+            'SAGE_JUPYTER_SERVER_TOKEN', 'secret'
+        )
         jupyter_sphinx_thebelab_config = {
             'requestKernel': False,
             'kernelOptions': {
@@ -104,16 +101,18 @@ if SAGE_LIVE_DOC == 'yes':
                 'path': ".",
                 'serverSettings': {
                     'baseUrl': SAGE_JUPYTER_SERVER,
-                    'token': SAGE_JUPYTER_SERVER_TOKEN
+                    'token': SAGE_JUPYTER_SERVER_TOKEN,
                 },
             },
-            'selector': "div.live-doc"
+            'selector': "div.live-doc",
         }
-    jupyter_sphinx_thebelab_config.update({
-        'codeMirrorConfig': {
-            'lineNumbers': True,
+    jupyter_sphinx_thebelab_config.update(
+        {
+            'codeMirrorConfig': {
+                'lineNumbers': True,
+            }
         }
-    })
+    )
 
 # This code is executed before each ".. PLOT::" directive in the Sphinx
 # documentation. It defines a 'sphinx_plot' function that displays a Sage object
@@ -187,7 +186,9 @@ master_doc = 'index'
 
 # General information about the project.
 project = ""
-copyright = "2005--{}, The Sage Development Team".format(dateutil.parser.parse(sage.version.date).year)
+copyright = "2005--{}, The Sage Development Team".format(
+    dateutil.parser.parse(sage.version.date).year
+)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -233,7 +234,9 @@ show_authors = True
 # console lexers. 'ipycon' is the IPython console, which is what we want
 # for most code blocks: anything with "sage:" prompts. For other IPython,
 # like blocks which might appear in a notebook cell, use 'ipython'.
-highlighting.lexers['ipycon'] = IPythonConsoleLexer(in1_regex=r'(sage:|>>>)', in2_regex=r'([.][.][.][.]:|[.][.][.])')
+highlighting.lexers['ipycon'] = IPythonConsoleLexer(
+    in1_regex=r'(sage:|>>>)', in2_regex=r'([.][.][.][.]:|[.][.][.])'
+)
 highlighting.lexers['ipython'] = IPyLexer()
 highlight_language = 'ipycon'
 
@@ -273,7 +276,9 @@ multidocs_is_master = True
 copybutton_prompt_text = r"sage: |[.][.][.][.]: |>>> |[.][.][.] |\$ "
 copybutton_line_continuation_character = "\\"
 copybutton_prompt_is_regexp = True
-copybutton_exclude = '.linenos, .c1'  # exclude single comments (in particular, # optional!)
+copybutton_exclude = (
+    '.linenos, .c1'  # exclude single comments (in particular, # optional!)
+)
 copybutton_only_copy_prompt_lines = True
 
 
@@ -282,6 +287,7 @@ def linkcode_resolve(domain, info):
     from urllib.parse import quote
 
     from sage.misc.sageinspect import sage_getsourcelines
+
     if domain != 'py':
         return None
     if info['module']:
@@ -363,7 +369,9 @@ is_for_develop = github_ref.startswith('refs/heads/develop')
 is_for_github_pr = github_ref and match and pr_number
 is_stable_release = version.split('.')[-1].isnumeric()
 
-if is_for_develop or is_for_github_pr or not is_stable_release:  # condition for announcement banner
+if (
+    is_for_develop or is_for_github_pr or not is_stable_release
+):  # condition for announcement banner
     # This URL is hardcoded in the file .github/workflows/doc-publish.yml.
     # See NETLIFY_ALIAS of the "Deploy to Netlify" step.
     ver = f'<a href="https://doc-develop--sagemath.netlify.app/html/en/index.html">{version}</a>'
@@ -371,11 +379,13 @@ if is_for_develop or is_for_github_pr or not is_stable_release:  # condition for
         pr_url = f'https://github.com/sagemath/sage/pull/{pr_number}'
         pr_sha = os.environ.get('PR_SHA', '')
         pr_commit = pr_url + f'/commits/{pr_sha}'
-        ver += f' built with GitHub PR <a href="{pr_url}">#{pr_number}</a>' \
-               f' on <a href="{pr_commit}">{pr_sha[:7]}</a>' \
-               f' [<a href="/changes.html">changes</a>]'
+        ver += (
+            f' built with GitHub PR <a href="{pr_url}">#{pr_number}</a>'
+            f' on <a href="{pr_commit}">{pr_sha[:7]}</a>'
+            f' [<a href="/changes.html">changes</a>]'
+        )
     banner = f'This is documentation for Sage version {ver} for development purpose.'
-    html_theme_options.update({ "announcement": banner })
+    html_theme_options.update({"announcement": banner})
 
 # The name of the Pygments (syntax highlighting) style to use. This
 # overrides a HTML theme's corresponding setting.
@@ -413,7 +423,9 @@ html_js_files = [
 # A list of paths that contain extra templates (or templates that overwrite
 # builtin/theme-specific templates). Relative paths are taken as relative
 # to the configuration directory.
-templates_path = [os.path.join(SAGE_DOC_SRC, 'common', 'templates-furo')] + templates_path
+templates_path = [
+    os.path.join(SAGE_DOC_SRC, 'common', 'templates-furo')
+] + templates_path
 
 # HTML style sheet. This overrides a HTML theme's corresponding setting.
 # html_style = 'default.css'
@@ -521,10 +533,10 @@ html_split_index = True
 latex_elements = {}
 
 # The paper size ('letterpaper' or 'a4paper').
-#latex_elements['papersize'] = 'letterpaper'
+# latex_elements['papersize'] = 'letterpaper'
 
 # The font size ('10pt', '11pt' or '12pt').
-#latex_elements['pointsize'] = '10pt'
+# latex_elements['pointsize'] = '10pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
@@ -532,11 +544,11 @@ latex_documents = []
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = 'sagelogo-word.png'
+# latex_logo = 'sagelogo-word.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
-#latex_use_parts = False
+# latex_use_parts = False
 
 # Additional stuff for the LaTeX preamble.
 latex_elements['preamble'] = r"""
@@ -591,6 +603,7 @@ for macro in sage_latex_macros():
 # add custom context variables for templates
 # ------------------------------------------
 
+
 def add_page_context(app, pagename, templatename, context, doctree):
     # # The template function
     # def template_function(arg):
@@ -621,15 +634,26 @@ def add_page_context(app, pagename, templatename, context, doctree):
             # autodoc from the Python or Cython source files. Hence we tweak
             # here template context variables so that links to the correct
             # source files are generated.
-            suffix = '.py' if importlib.import_module(pagename.replace('/','.')).__file__.endswith('.py') else '.pyx'
+            suffix = (
+                '.py'
+                if importlib.import_module(
+                    pagename.replace('/', '.')
+                ).__file__.endswith('.py')
+                else '.pyx'
+            )
             context['page_source_suffix'] = suffix
-            context['theme_source_view_link'] = os.path.join(source_repository, 'blob/develop/src', '{filename}')
-            context['theme_source_edit_link'] = os.path.join(source_repository, 'edit/develop/src', '{filename}')
+            context['theme_source_view_link'] = os.path.join(
+                source_repository, 'blob/develop/src', '{filename}'
+            )
+            context['theme_source_edit_link'] = os.path.join(
+                source_repository, 'edit/develop/src', '{filename}'
+            )
 
 
 # ---------------------------------------
 # Sub-documents of the reference manual
 # ---------------------------------------
+
 
 def reference_subdocument(directory=None):
     r"""
@@ -707,10 +731,16 @@ def reference_subdocument(directory=None):
 
     # We use the directory's name to add small view/edit buttons.
     source = f'src/doc/en/reference/{name}'
-    html_theme_options.update({
-        'source_view_link': os.path.join(source_repository, 'blob/develop', source, '{filename}'),
-        'source_edit_link': os.path.join(source_repository, 'edit/develop', source, '{filename}'),
-    })
+    html_theme_options.update(
+        {
+            'source_view_link': os.path.join(
+                source_repository, 'blob/develop', source, '{filename}'
+            ),
+            'source_edit_link': os.path.join(
+                source_repository, 'edit/develop', source, '{filename}'
+            ),
+        }
+    )
 
     latex_elements['hyperref'] = r"""
 \usepackage{xr}
@@ -743,7 +773,6 @@ def reference_subdocument(directory=None):
     }
 
 
-
 autodoc_type_aliases = {
     'IntegerMod_abstract': 'sage.rings.finite_rings.integer_mod.IntegerMod_abstract',
     'EllipticCurve_finite_field': 'sage.schemes.elliptic_curves.ell_finite_field.EllipticCurve_finite_field',
@@ -759,9 +788,6 @@ autodoc_type_aliases = {
 # module defines usually means an annotation that Sphinx could not evaluate;
 # see _type_checking_aliases() in sage_docbuild.ext.sage_autodoc.
 nitpick_ignore = []
-
-
-
 
 
 # This replaces the setup() in sage.misc.sagedoc_conf.  Everything that is not

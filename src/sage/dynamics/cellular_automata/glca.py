@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2020-04-30): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2020 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -81,6 +81,7 @@ class GraftalLaceCellularAutomata(SageObject):
 
     - [Kas2018]_
     """
+
     def __init__(self, rule):
         """
         Initialize ``self``.
@@ -131,8 +132,9 @@ class GraftalLaceCellularAutomata(SageObject):
             sage: G1 is G3
             False
         """
-        return (isinstance(other, GraftalLaceCellularAutomata)
-                and self._rule == other._rule)
+        return (
+            isinstance(other, GraftalLaceCellularAutomata) and self._rule == other._rule
+        )
 
     def __ne__(self, other):
         """
@@ -204,8 +206,8 @@ class GraftalLaceCellularAutomata(SageObject):
 
         for i, val in enumerate(prev_state):
             next_state[i] += self._rule[val] & 0x1
-            next_state[i+1] += self._rule[val] & 0x2
-            next_state[i+2] += self._rule[val] & 0x4
+            next_state[i + 1] += self._rule[val] & 0x2
+            next_state[i + 2] += self._rule[val] & 0x4
         self._states.append(next_state)
 
     # Output functions
@@ -306,10 +308,10 @@ class GraftalLaceCellularAutomata(SageObject):
             number = len(self._states)
 
         space = len(self._states[:number]) * 2 - 1
-        ret = AsciiArt([' '*space + 'o'])
+        ret = AsciiArt([' ' * space + 'o'])
         space += 1
-        for i,state in enumerate(self._states[:number]):
-            temp = ' '*(space-2)
+        for i, state in enumerate(self._states[:number]):
+            temp = ' ' * (space - 2)
             last = ' '
             for x in state:
                 if x & 0x4:
@@ -323,7 +325,7 @@ class GraftalLaceCellularAutomata(SageObject):
                 last = '/' if x & 0x1 else ' '
             ret *= AsciiArt([temp + last])
             space -= 1
-            ret *= AsciiArt([' '*space + ' '.join('o' for dummy in range(2*i+1))])
+            ret *= AsciiArt([' ' * space + ' '.join('o' for dummy in range(2 * i + 1))])
             space -= 1
         return ret
 
@@ -364,10 +366,10 @@ class GraftalLaceCellularAutomata(SageObject):
             number = len(self._states)
 
         space = len(self._states[:number]) * 2 - 1
-        ret = UnicodeArt([' '*space + '◾'])
+        ret = UnicodeArt([' ' * space + '◾'])
         space += 1
-        for i,state in enumerate(self._states[:number]):
-            temp = ' '*(space-2)
+        for i, state in enumerate(self._states[:number]):
+            temp = ' ' * (space - 2)
             last = ' '
             for x in state:
                 if x & 0x4:
@@ -381,7 +383,9 @@ class GraftalLaceCellularAutomata(SageObject):
                 last = '╱' if x & 0x1 else ' '
             ret *= UnicodeArt([temp + last])
             space -= 1
-            ret *= UnicodeArt([' '*space + ' '.join('◾' for dummy in range(2*i+1))])
+            ret *= UnicodeArt(
+                [' ' * space + ' '.join('◾' for dummy in range(2 * i + 1))]
+            )
             space -= 1
         return ret
 
@@ -412,16 +416,16 @@ class GraftalLaceCellularAutomata(SageObject):
         x = len(self._states[:number])
         rad = 0.1
         ret = circle((x, 1), rad, fill=True)
-        for i,state in enumerate(self._states[:number]):
-            for j,val in enumerate(state):
+        for i, state in enumerate(self._states[:number]):
+            for j, val in enumerate(state):
                 if val & 0x4:
-                    ret += line([(x+j,-i), (x+j-1,-i+1)])
+                    ret += line([(x + j, -i), (x + j - 1, -i + 1)])
                 if val & 0x2:
-                    ret += line([(x+j,-i), (x+j,-i+1)])
+                    ret += line([(x + j, -i), (x + j, -i + 1)])
                 if val & 0x1:
-                    ret += line([(x+j,-i), (x+j+1,-i+1)])
-            for j in range(2*i+1):
-                ret += circle((x+j, -i), rad, fill=True)
+                    ret += line([(x + j, -i), (x + j + 1, -i + 1)])
+            for j in range(2 * i + 1):
+                ret += circle((x + j, -i), rad, fill=True)
             x -= 1
         ret.set_aspect_ratio(1)
         ret.axes(False)
@@ -461,16 +465,22 @@ class GraftalLaceCellularAutomata(SageObject):
         x = len(self._states)
         rad = 2
         ret += "\\fill ({},{}) circle ({}pt);\n".format(x, 1, rad)
-        for i,state in enumerate(self._states):
-            for j,val in enumerate(state):
+        for i, state in enumerate(self._states):
+            for j, val in enumerate(state):
                 if val & 0x4:
-                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(x+j,-i, x+j-1,-i+1)
+                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(
+                        x + j, -i, x + j - 1, -i + 1
+                    )
                 if val & 0x2:
-                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(x+j,-i, x+j,-i+1)
+                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(
+                        x + j, -i, x + j, -i + 1
+                    )
                 if val & 0x1:
-                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(x+j,-i, x+j+1,-i+1)
-            for j in range(2*i+1):
-                ret += "\\fill ({},{}) circle ({}pt);\n".format(x+j, -i, rad)
+                    ret += "\\draw[-] ({},{}) -- ({},{});\n".format(
+                        x + j, -i, x + j + 1, -i + 1
+                    )
+            for j in range(2 * i + 1):
+                ret += "\\fill ({},{}) circle ({}pt);\n".format(x + j, -i, rad)
             x -= 1
         ret += "\\end{tikzpicture}"
         return ret

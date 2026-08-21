@@ -1,13 +1,12 @@
 r"""
 Discrete Valuation Rings (DVR) and Fields (DVF)
 """
-#**************************************************************************
+# **************************************************************************
 #  Copyright (C) 2013 Xavier Caruso <xavier.caruso@normalesup.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#**************************************************************************
-
+# **************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.categories.category_singleton import Category_singleton
@@ -25,6 +24,7 @@ class DiscreteValuationRings(Category_singleton):
         True
         sage: TestSuite(DiscreteValuationRings()).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -169,7 +169,9 @@ class DiscreteValuationRings(Category_singleton):
                 sage: f = t*A+t**2*B/2
             """
             if not other:
-                raise ZeroDivisionError("Euclidean division by the zero element not defined")
+                raise ZeroDivisionError(
+                    "Euclidean division by the zero element not defined"
+                )
             P = self.parent()
             other = P(other)
             if self.valuation() >= other.valuation():
@@ -201,6 +203,7 @@ class DiscreteValuationRings(Category_singleton):
             uniformizer.
             """
             from sage.rings.infinity import Infinity
+
             val = min(self.valuation(), other.valuation())
             if val is Infinity:
                 return self.parent()(0)
@@ -213,6 +216,7 @@ class DiscreteValuationRings(Category_singleton):
             uniformizer.
             """
             from sage.rings.infinity import Infinity
+
             val = max(self.valuation(), other.valuation())
             if val is Infinity:
                 return self.parent()(0)
@@ -304,6 +308,7 @@ class DiscreteValuationFields(Category_singleton):
                 [ ...00000  ...44440  ...44443]
             """
             from sage.matrix.matrix_cdv import hessenbergize_cdvf
+
             hessenbergize_cdvf(H)
 
     class ElementMethods:

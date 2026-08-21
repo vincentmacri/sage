@@ -89,6 +89,7 @@ class SpecFunctor(Functor, UniqueRepresentation):
     """
     The Spec functor.
     """
+
     def __init__(self, base_ring=None):
         """
         EXAMPLES::
@@ -142,7 +143,8 @@ class SpecFunctor(Functor, UniqueRepresentation):
             \mathrm{Spec}\colon \mathbf{CommutativeRings} \longrightarrow \mathbf{Schemes}
         """
         return r'\mathrm{{Spec}}\colon {} \longrightarrow {}'.format(
-               self.domain()._latex_(), self.codomain()._latex_())
+            self.domain()._latex_(), self.codomain()._latex_()
+        )
 
     def _apply_functor(self, A):
         """
@@ -195,4 +197,5 @@ SpecZ = Spec(ZZ)
 # Compatibility with older versions of this module
 
 from sage.misc.persist import register_unpickle_override
+
 register_unpickle_override('sage.schemes.generic.spec', 'Spec', AffineScheme)

@@ -103,17 +103,19 @@ def krawtchouk(n, q, l, x, check=True):
     """
     from sage.arith.misc import binomial
     from sage.arith.srange import srange
+
     # Use the expression in equation (55) of MacWilliams & Sloane, pg 151
     # We write jth term = some_factor * (j-1)th term
     if check:
         from sage.rings.integer_ring import ZZ
+
         l0 = ZZ(l)
         if l0 != l or l0 < 0:
             raise ValueError('l must be a nonnegative integer')
         l = l0
-    kraw = jth_term = (q-1)**l * binomial(n, l)  # j=0
-    for j in srange(1, l+1):
-        jth_term *= -q*(l-j+1)*(x-j+1)/((q-1)*j*(n-j+1))
+    kraw = jth_term = (q - 1) ** l * binomial(n, l)  # j=0
+    for j in srange(1, l + 1):
+        jth_term *= -q * (l - j + 1) * (x - j + 1) / ((q - 1) * j * (n - j + 1))
         kraw += jth_term
     return kraw
 
@@ -176,13 +178,21 @@ def eberlein(n, w, k, u, check=True):
 
     if check:
         from sage.rings.integer_ring import ZZ
+
         n0 = ZZ(n)
         if n0 != n or n0 < 0:
             raise ValueError('l must be a nonnegative integer')
         n = n0
 
-    return sum([(-1)**j*binomial(u, j)*binomial(w-u, k-j)*binomial(n-w-u, k-j)
-                for j in srange(k + 1)])
+    return sum(
+        [
+            (-1) ** j
+            * binomial(u, j)
+            * binomial(w - u, k - j)
+            * binomial(n - w - u, k - j)
+            for j in srange(k + 1)
+        ]
+    )
 
 
 def _delsarte_LP_building(n, d, d_star, q, isinteger, solver, maxc=0):
@@ -217,8 +227,7 @@ def _delsarte_LP_building(n, d, d_star, q, isinteger, solver, maxc=0):
     for i in range(1, d):
         p.add_constraint(A[i] == 0)
     for j in range(1, n + 1):
-        rhs = p.sum([krawtchouk(n, q, j, r, check=False) * A[r]
-                   for r in range(n + 1)])
+        rhs = p.sum([krawtchouk(n, q, j, r, check=False) * A[r] for r in range(n + 1)])
         if j >= d_star:
             p.add_constraint(0 <= rhs)
         else:  # rhs is proportional to j-th weight of the dual code
@@ -273,22 +282,24 @@ def _delsarte_cwc_LP_building(n, d, w, solver, isinteger):
 
     p = MixedIntegerLinearProgram(maximization=True, solver=solver)
     A = p.new_variable(integer=isinteger, nonnegative=True)
-    p.set_objective(p.sum([A[2*r] for r in range(d//2, w+1)]) + 1)
+    p.set_objective(p.sum([A[2 * r] for r in range(d // 2, w + 1)]) + 1)
 
     def _q(k, i):
         mu_i = 1
-        v_i = binomial(w, i)*binomial(n-w, i)
-        return mu_i*eberlein(n, w, i, k)/v_i
+        v_i = binomial(w, i) * binomial(n - w, i)
+        return mu_i * eberlein(n, w, i, k) / v_i
 
-    for k in range(1, w+1):
-        p.add_constraint(p.sum([A[2*i]*_q(k, i) for i in range(d//2, w+1)]),
-                         min=-1)
+    for k in range(1, w + 1):
+        p.add_constraint(
+            p.sum([A[2 * i] * _q(k, i) for i in range(d // 2, w + 1)]), min=-1
+        )
 
     return A, p
 
 
-def delsarte_bound_constant_weight_code(n, d, w, return_data=False,
-                                        solver='PPL', isinteger=False):
+def delsarte_bound_constant_weight_code(
+    n, d, w, return_data=False, solver='PPL', isinteger=False
+):
     r"""
     Find the Delsarte bound on a constant weight code.
 
@@ -337,12 +348,10 @@ def delsarte_bound_constant_weight_code(n, d, w, return_data=False,
     from sage.numerical.mip import MIPSolverException
 
     if d < 4:
-        raise ValueError("Violated constraint d>=4 for "
-                         "Binary Constant Weight Codes")
+        raise ValueError("Violated constraint d>=4 for Binary Constant Weight Codes")
 
-    if d >= 2*w or 2*w > n:
-        raise ValueError("Violated constraint d<2w<=n for "
-                         "Binary Constant Weight Codes")
+    if d >= 2 * w or 2 * w > n:
+        raise ValueError("Violated constraint d<2w<=n for Binary Constant Weight Codes")
 
     # minimum distance is even => if there is an odd lower bound on d we can
     # increase it by 1
@@ -359,8 +368,9 @@ def delsarte_bound_constant_weight_code(n, d, w, return_data=False,
     return (A, p, bd) if return_data else int(bd)
 
 
-def delsarte_bound_hamming_space(n, d, q, return_data=False,
-                                 solver='PPL', isinteger=False):
+def delsarte_bound_hamming_space(
+    n, d, q, return_data=False, solver='PPL', isinteger=False
+):
     r"""
     Find the Delsarte bound on codes in ``H_q^n`` of minimal distance ``d``.
 
@@ -433,6 +443,7 @@ def delsarte_bound_hamming_space(n, d, q, return_data=False,
        False
     """
     from sage.numerical.mip import MIPSolverException
+
     A, p = _delsarte_LP_building(n, d, 0, q, isinteger, solver)
     try:
         bd = p.solve()
@@ -443,8 +454,9 @@ def delsarte_bound_hamming_space(n, d, q, return_data=False,
     return (A, p, bd) if return_data else bd
 
 
-def delsarte_bound_additive_hamming_space(n, d, q, d_star=1, q_base=0, return_data=False,
-                                          solver='PPL', isinteger=False):
+def delsarte_bound_additive_hamming_space(
+    n, d, q, d_star=1, q_base=0, return_data=False, solver='PPL', isinteger=False
+):
     r"""
     Find a modified Delsarte bound on additive codes in Hamming space `H_q^n` of minimal distance `d`.
 
@@ -524,6 +536,7 @@ def delsarte_bound_additive_hamming_space(n, d, q, d_star=1, q_base=0, return_da
         3
     """
     from sage.numerical.mip import MIPSolverException
+
     if q_base == 0:
         q_base = q
 
@@ -538,27 +551,26 @@ def delsarte_bound_additive_hamming_space(n, d, q, d_star=1, q_base=0, return_da
     # this implementation assumes that our LP solver to be unable to do a hot
     # restart with an adjusted constraint
 
-    m = kk*n  # this is to emulate repeat/until block
-    bd = q**n+1
+    m = kk * n  # this is to emulate repeat/until block
+    bd = q**n + 1
 
     while q_base**m < bd:
         # need to solve the LP repeatedly, as this is a new constraint!
         # we might become infeasible. More precisely, after rounding down
         # to the closest value of q_base^m, the LP, with the constraint that
         # the objective function is at most q_base^m,
-        A, p = _delsarte_LP_building(n, d, d_star, q, isinteger,
-                                     solver, q_base**m)
+        A, p = _delsarte_LP_building(n, d, d_star, q, isinteger, solver, q_base**m)
         try:
             bd = p.solve()
         except MIPSolverException as exc:
             print("Solver exception:", exc)
             return (A, p, False) if return_data else False
-    # rounding the bound down to the nearest power of q_base, for q=q_base^m
-    # bd_r = roundres(log(bd, base=q_base))
+        # rounding the bound down to the nearest power of q_base, for q=q_base^m
+        # bd_r = roundres(log(bd, base=q_base))
         m = -1
-        while q_base**(m+1) < bd:
+        while q_base ** (m + 1) < bd:
             m += 1
-        if q_base**(m+1) == bd:
+        if q_base ** (m + 1) == bd:
             m += 1
 
     return (A, p, m) if return_data else m
@@ -637,8 +649,7 @@ def _delsarte_Q_LP_building(q, d, solver, isinteger):
     return A, p
 
 
-def delsarte_bound_Q_matrix(q, d, return_data=False,
-                            solver='PPL', isinteger=False):
+def delsarte_bound_Q_matrix(q, d, return_data=False, solver='PPL', isinteger=False):
     r"""
     Delsarte bound on a code with Q matrix ``q`` and lower bound on min. dist. ``d``.
 
@@ -695,8 +706,7 @@ def delsarte_bound_Q_matrix(q, d, return_data=False,
     from sage.structure.element import Matrix
 
     if not isinstance(q, Matrix):
-        raise ValueError("Input to delsarte_bound_Q_matrix "
-                         "should be a sage Matrix()")
+        raise ValueError("Input to delsarte_bound_Q_matrix should be a sage Matrix()")
 
     A, p = _delsarte_Q_LP_building(q, d, solver, isinteger)
     try:

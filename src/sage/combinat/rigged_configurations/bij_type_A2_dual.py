@@ -78,28 +78,28 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
 
         if pos_val == 0:
             if len(self.ret_rig_con[pos_val - 1]) > 0:
-                max_width = self.ret_rig_con[n-1][0]
+                max_width = self.ret_rig_con[n - 1][0]
             else:
                 max_width = 1
-            max_width = self.ret_rig_con[n-1].insert_cell(max_width)
+            max_width = self.ret_rig_con[n - 1].insert_cell(max_width)
             width_n = max_width + 1
 
             # Follow regular A_n rules
-            for a in reversed(range(tableau_height, n-1)):
+            for a in reversed(range(tableau_height, n - 1)):
                 max_width = self.ret_rig_con[a].insert_cell(max_width)
                 self._update_vacancy_nums(a + 1)
                 self._update_partition_values(a + 1)
             self._update_vacancy_nums(tableau_height)
             self._update_partition_values(tableau_height)
             if tableau_height > 0:
-                self._update_vacancy_nums(tableau_height-1)
-                self._update_partition_values(tableau_height-1)
+                self._update_vacancy_nums(tableau_height - 1)
+                self._update_partition_values(tableau_height - 1)
 
             # Make the new string at n quasi-singular
-            p = self.ret_rig_con[n-1]
+            p = self.ret_rig_con[n - 1]
             for i in range(len(p)):
                 if p._list[i] == width_n:
-                    p.rigging[i] = p.rigging[i] - QQ(1)/QQ(2)
+                    p.rigging[i] = p.rigging[i] - QQ(1) / QQ(2)
                     break
             return
 
@@ -115,14 +115,14 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
 
         # Add cells similar to type A_n but we move to the right until we
         #   reach the value of n-1
-        for a in range(pos_val - 1, n-1):
+        for a in range(pos_val - 1, n - 1):
             max_width = self.ret_rig_con[a].insert_cell(max_width)
             case_S[a] = max_width
 
         # Special case for n
         # If we find a quasi-singular string first, then we are in case (Q, S)
         #   otherwise we will find a singular string and insert 2 cells
-        partition = self.ret_rig_con[n-1]
+        partition = self.ret_rig_con[n - 1]
         num_rows = len(partition)
         case_QS = False
         for i in range(num_rows + 1):
@@ -142,9 +142,9 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
                     j = len(partition._list) - 1
                     while j >= 0 and partition._list[j] <= 2:
                         j -= 1
-                    partition._list.insert(j+1, 2)
-                    partition.vacancy_numbers.insert(j+1, None)
-                    partition.rigging.insert(j+1, None)
+                    partition._list.insert(j + 1, 2)
+                    partition.vacancy_numbers.insert(j + 1, None)
+                    partition.rigging.insert(j + 1, None)
                 break
             elif partition._list[i] <= max_width:
                 if partition.vacancy_numbers[i] == partition.rigging[i]:
@@ -156,20 +156,25 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
                     else:
                         j = i - 1
                         while j >= 0 and partition._list[j] <= max_width + 2:
-                            partition.rigging[j+1] = partition.rigging[j]  # Shuffle it along
+                            partition.rigging[j + 1] = partition.rigging[
+                                j
+                            ]  # Shuffle it along
                             j -= 1
                         partition._list.pop(i)
-                        partition._list.insert(j+1, max_width + 2)
-                        partition.rigging[j+1] = None
+                        partition._list.insert(j + 1, max_width + 2)
+                        partition.rigging[j + 1] = None
                     break
-                elif partition.vacancy_numbers[i] - QQ(1)/QQ(2) == partition.rigging[i] and not case_QS:
+                elif (
+                    partition.vacancy_numbers[i] - QQ(1) / QQ(2) == partition.rigging[i]
+                    and not case_QS
+                ):
                     case_QS = True
                     partition._list[i] += 1
                     partition.rigging[i] = None
                     # No need to set max_width here since we will find a singular string
 
         # Now go back following the regular C_n (ish) rules
-        for a in reversed(range(tableau_height, n-1)):
+        for a in reversed(range(tableau_height, n - 1)):
             if case_S[a] == max_width:
                 self._insert_cell_case_S(self.ret_rig_con[a])
             else:
@@ -183,7 +188,7 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
             self._update_partition_values(tableau_height)
 
         if pos_val <= tableau_height:
-            for a in range(pos_val-1, tableau_height):
+            for a in range(pos_val - 1, tableau_height):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
@@ -198,7 +203,7 @@ class KRTToRCBijectionTypeA2Dual(KRTToRCBijectionTypeC):
             num_rows = len(partition)
             for i in range(num_rows):
                 if partition._list[i] == width_n:
-                    partition.rigging[i] = partition.rigging[i] - QQ(1)/QQ(2)
+                    partition.rigging[i] = partition.rigging[i] - QQ(1) / QQ(2)
                     break
 
 
@@ -222,7 +227,7 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
         """
         height -= 1  # indexing
         n = self.n
-        ell = [None] * (2*n)
+        ell = [None] * (2 * n)
         case_S = [False] * n
         case_Q = False
         b = None
@@ -230,7 +235,7 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
         # Calculate the rank and ell values
 
         last_size = 0
-        for a in range(height, n-1):
+        for a in range(height, n - 1):
             ell[a] = self._find_singular_string(self.cur_partitions[a], last_size)
 
             if ell[a] is None:
@@ -240,22 +245,26 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
                 last_size = self.cur_partitions[a][ell[a]]
 
         if b is None:
-            partition = self.cur_partitions[n-1]
+            partition = self.cur_partitions[n - 1]
             # Special case for n
             for i in reversed(range(len(partition))):
                 if partition[i] >= last_size:
                     if partition.vacancy_numbers[i] == partition.rigging[i]:
                         last_size = partition[i]
-                        case_S[n-1] = True
-                        ell[2*n-1] = i
+                        case_S[n - 1] = True
+                        ell[2 * n - 1] = i
                         break
-                    elif partition.vacancy_numbers[i] - QQ(1)/QQ(2) == partition.rigging[i] and not case_Q:
+                    elif (
+                        partition.vacancy_numbers[i] - QQ(1) / QQ(2)
+                        == partition.rigging[i]
+                        and not case_Q
+                    ):
                         case_Q = True
                         # This will never be singular
                         last_size = partition[i] + 1
-                        ell[n-1] = i
+                        ell[n - 1] = i
 
-            if ell[2*n-1] is None:
+            if ell[2 * n - 1] is None:
                 if not case_Q:
                     b = n
                 else:
@@ -263,12 +272,14 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
 
         if b is None:
             # Now go back
-            for a in reversed(range(n-1)):
+            for a in reversed(range(n - 1)):
                 if a >= height and self.cur_partitions[a][ell[a]] == last_size:
-                    ell[n+a] = ell[a]
+                    ell[n + a] = ell[a]
                     case_S[a] = True
                 else:
-                    ell[n+a] = self._find_singular_string(self.cur_partitions[a], last_size)
+                    ell[n + a] = self._find_singular_string(
+                        self.cur_partitions[a], last_size
+                    )
 
                     if ell[n + a] is None:
                         b = -(a + 2)
@@ -288,31 +299,37 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
             else:
                 row_num = self.cur_partitions[0].remove_cell(ell[0])
                 row_num_bar = self.cur_partitions[0].remove_cell(ell[n])
-        for a in range(1, n-1):
+        for a in range(1, n - 1):
             if case_S[a]:
                 row_num_next = None
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a], 2)
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a], 2)
             else:
                 row_num_next = self.cur_partitions[a].remove_cell(ell[a])
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a])
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a])
 
             self._update_vacancy_numbers(a - 1)
             if row_num is not None:
-                self.cur_partitions[a-1].rigging[row_num] = self.cur_partitions[a-1].vacancy_numbers[row_num]
+                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num]
             if row_num_bar is not None:
-                self.cur_partitions[a-1].rigging[row_num_bar] = self.cur_partitions[a-1].vacancy_numbers[row_num_bar]
+                self.cur_partitions[a - 1].rigging[row_num_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num_bar]
             row_num = row_num_next
             row_num_bar = row_num_bar_next
 
         if case_Q:
-            row_num_next = self.cur_partitions[n-1].remove_cell(ell[n-1])
-            if case_S[n-1]:
-                row_num_bar_next = self.cur_partitions[n-1].remove_cell(ell[2*n-1])
+            row_num_next = self.cur_partitions[n - 1].remove_cell(ell[n - 1])
+            if case_S[n - 1]:
+                row_num_bar_next = self.cur_partitions[n - 1].remove_cell(
+                    ell[2 * n - 1]
+                )
             else:
                 row_num_bar_next = None
-        elif case_S[n-1]:
+        elif case_S[n - 1]:
             row_num_next = None
-            row_num_bar_next = self.cur_partitions[n-1].remove_cell(ell[2*n-1], 2)
+            row_num_bar_next = self.cur_partitions[n - 1].remove_cell(ell[2 * n - 1], 2)
         else:
             row_num_next = None
             row_num_bar_next = None
@@ -320,18 +337,29 @@ class RCToKRTBijectionTypeA2Dual(RCToKRTBijectionTypeC):
         if n > 1:
             self._update_vacancy_numbers(n - 2)
             if row_num is not None:
-                self.cur_partitions[n-2].rigging[row_num] = self.cur_partitions[n-2].vacancy_numbers[row_num]
+                self.cur_partitions[n - 2].rigging[row_num] = self.cur_partitions[
+                    n - 2
+                ].vacancy_numbers[row_num]
             if row_num_bar is not None:
-                self.cur_partitions[n-2].rigging[row_num_bar] = self.cur_partitions[n-2].vacancy_numbers[row_num_bar]
+                self.cur_partitions[n - 2].rigging[row_num_bar] = self.cur_partitions[
+                    n - 2
+                ].vacancy_numbers[row_num_bar]
 
         self._update_vacancy_numbers(n - 1)
         if row_num_next is not None:
-            self.cur_partitions[n-1].rigging[row_num_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_next]
+            self.cur_partitions[n - 1].rigging[row_num_next] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num_next]
         if row_num_bar_next is not None:
             if case_Q:
                 # This will always be the largest value
-                self.cur_partitions[n-1].rigging[row_num_bar_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_bar_next] - QQ(1)/QQ(2)
+                self.cur_partitions[n - 1].rigging[row_num_bar_next] = (
+                    self.cur_partitions[n - 1].vacancy_numbers[row_num_bar_next]
+                    - QQ(1) / QQ(2)
+                )
             else:
-                self.cur_partitions[n-1].rigging[row_num_bar_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_bar_next]
+                self.cur_partitions[n - 1].rigging[row_num_bar_next] = (
+                    self.cur_partitions[n - 1].vacancy_numbers[row_num_bar_next]
+                )
 
         return b

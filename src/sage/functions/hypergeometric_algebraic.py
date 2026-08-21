@@ -195,10 +195,12 @@ from sage.functions.hypergeometric_parameters import HypergeometricParameters
 # Difficulty:
 #  . not sure we can handle easily simplifications!
 
+
 class HypergeometricAlgebraic(Element):
     r"""
     Class for (scalar multiples of) hypergeometric functions over arbitrary base rings.
     """
+
     def __init__(self, parent, arg1, arg2=None, scalar=None, check=True):
         r"""
         Initialize this hypergeometric function.
@@ -253,13 +255,17 @@ class HypergeometricAlgebraic(Element):
             try:
                 _ = parameters.degree()
             except ValueError:
-                raise ValueError("the parameters %s and %s do not define a hypergeometric function"
-                              % (parameters.top, parameters.bottom[:-1]))
+                raise ValueError(
+                    "the parameters %s and %s do not define a hypergeometric function"
+                    % (parameters.top, parameters.bottom[:-1])
+                )
             if char > 0:
                 val, _, _ = parameters.valuation_position(char)
                 if val < 0:
-                    raise ValueError("the parameters %s and %s do not define a hypergeometric function in characteristic %s"
-                                  % (parameters.top, parameters.bottom[:-1], char))
+                    raise ValueError(
+                        "the parameters %s and %s do not define a hypergeometric function in characteristic %s"
+                        % (parameters.top, parameters.bottom[:-1], char)
+                    )
         self._scalar = scalar
         self._parameters = parameters
         self._coeffs = [scalar]
@@ -366,7 +372,9 @@ class HypergeometricAlgebraic(Element):
             hs = H(self._parameters)
             ho = H(other._parameters)
             return hs.is_equal_as_series(ho)
-        raise NotImplementedError("equality as series is not implemented over %s" % self.base_ring())
+        raise NotImplementedError(
+            "equality as series is not implemented over %s" % self.base_ring()
+        )
 
     def __eq__(self, other):
         r"""
@@ -427,7 +435,11 @@ class HypergeometricAlgebraic(Element):
                 s = scalar + "*"
         else:
             s = "(%s)*" % scalar
-        s += "hypergeometric(%s, %s, %s)" % (self.top(), self.bottom(), self.parent().variable_name())
+        s += "hypergeometric(%s, %s, %s)" % (
+            self.top(),
+            self.bottom(),
+            self.parent().variable_name(),
+        )
         return s
 
     def _latex_(self):
@@ -796,7 +808,7 @@ class HypergeometricAlgebraic(Element):
             sage: g[9]
             0
         """
-        self._compute_coeffs(n+1)
+        self._compute_coeffs(n + 1)
         S = self.base_ring()
         return S(self._coeffs[n])
 
@@ -852,7 +864,9 @@ class HypergeometricAlgebraic(Element):
         if not self._scalar:
             return ZZ(-1)
         if self._char:
-            raise NotImplementedError("degree is not implemented in positive characteristic")
+            raise NotImplementedError(
+                "degree is not implemented in positive characteristic"
+            )
         return self._parameters.degree()
 
     def is_polynomial(self):
@@ -1048,9 +1062,9 @@ class HypergeometricAlgebraic(Element):
             A *= t + S(a)
         B = D.one()
         for b in self._parameters.bottom:
-            B *= t + S(b-1)
-        L = B - x*A
-        return D([c//x for c in L.list()])
+            B *= t + S(b - 1)
+        L = B - x * A
+        return D([c // x for c in L.list()])
 
     def derivative(self):
         r"""
@@ -1063,8 +1077,8 @@ class HypergeometricAlgebraic(Element):
             sage: f.derivative()
             4/9*hypergeometric((4/3, 5/3), (3/2,), x)
         """
-        top = [a+1 for a in self.top()]
-        bottom = [b+1 for b in self.bottom()]
+        top = [a + 1 for a in self.top()]
+        bottom = [b + 1 for b in self.bottom()]
         scalar = prod(self._parameters.top) / prod(self._parameters.bottom)
         scalar = self.base_ring()(scalar) * self._scalar
         return self.parent()(top, bottom, scalar)
@@ -1072,10 +1086,12 @@ class HypergeometricAlgebraic(Element):
 
 # Over the rationals
 
+
 class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
     r"""
     Class for hypergeometric functions over `\QQ`.
     """
+
     def __mod__(self, p):
         r"""
         Return the reduction of the hypergeometric function modulo ``p``.
@@ -1233,7 +1249,7 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
             if p > bound:
                 break
             val, _, _ = params.valuation_position(p)
-            exceptions[p] = (val + scalar.valuation(p) >= 0)
+            exceptions[p] = val + scalar.valuation(p) >= 0
 
         classes = []
         F = None
@@ -1247,8 +1263,8 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
                 if F is None:
                     F = scalar.factor()
                 for p, mult in F:
-                    if p > bound and (p-c) % d == 0:
-                        exceptions[p] = (val + mult >= 0)
+                    if p > bound and (p - c) % d == 0:
+                        exceptions[p] = val + mult >= 0
 
         return Primes(modulus=d, classes=classes, exceptions=exceptions)
 
@@ -1294,8 +1310,9 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
         if parameters.has_negative_integer_differences():
             return False
         d = parameters.d
-        return all(parameters.interlacing_criterion(c)
-                   for c in range(d) if d.gcd(c) == 1)
+        return all(
+            parameters.interlacing_criterion(c) for c in range(d) if d.gcd(c) == 1
+        )
 
     def is_globally_bounded(self, include_infinity=True):
         r"""
@@ -1354,10 +1371,10 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
         if not self._parameters.is_balanced():
             raise NotImplementedError("Only implemented for nFn-1")
         d = self._parameters.d
-        classes = dict.fromkeys(range(1, len(self.top())+1), Primes(modulus=0))
+        classes = dict.fromkeys(range(1, len(self.top()) + 1), Primes(modulus=0))
         for c in range(d):
             if gcd(c, d) == 1:
-                Delta = QQ(1/c) % d
+                Delta = QQ(1 / c) % d
                 j = self._parameters.interlacing_number(Delta)
                 classes[j] = classes[j].union(Primes(modulus=d, classes=[c]))
         for p in Primes():
@@ -1370,7 +1387,7 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
                 # hypergeometric differential equation defined?
                 continue
             qinterlacing = self._parameters.q_interlacing_number(p)
-            cinterlacing = self._parameters.interlacing_number(QQ(1/p) % d)
+            cinterlacing = self._parameters.interlacing_number(QQ(1 / p) % d)
             if qinterlacing != cinterlacing:
                 classes[qinterlacing].include(p)
                 classes[cinterlacing].exclude(p)
@@ -1425,14 +1442,16 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
         S = PolynomialRing(K, names='X')
         X = S.gen()
         if x == 0:
-            B = prod(X - z**(b*d) for b in params.bottom)
+            B = prod(X - z ** (b * d) for b in params.bottom)
             return companion_matrix(B, format='right').inverse()
         if x == 1:
-            A = prod(X - z**(a*d) for a in params.top)
-            B = prod(X - z**(b*d) for b in params.bottom)
-            return companion_matrix(A, format='right').inverse() * companion_matrix(B, format='right')
+            A = prod(X - z ** (a * d) for a in params.top)
+            B = prod(X - z ** (b * d) for b in params.bottom)
+            return companion_matrix(A, format='right').inverse() * companion_matrix(
+                B, format='right'
+            )
         if x is infinity:
-            A = prod(X - z**(a*d) for a in params.top)
+            A = prod(X - z ** (a * d) for a in params.top)
             return companion_matrix(A, format='right')
         n = len(params.top)
         return identity_matrix(QQ, n)
@@ -1459,10 +1478,12 @@ class HypergeometricAlgebraic_QQ(HypergeometricAlgebraic):
 
 # Over the p-adics
 
+
 class HypergeometricAlgebraic_padic(HypergeometricAlgebraic):
     r"""
     Class for hypergeometric functions over `p`-adic fields.
     """
+
     def __init__(self, parent, arg1, arg2=None, scalar=None, check=True):
         r"""
         Initialize this hypergeometric function.
@@ -1695,7 +1716,10 @@ class HypergeometricAlgebraic_padic(HypergeometricAlgebraic):
         try:
             vertices = self._parameters.newton_polygon(self._p, start)
         except ValueError:
-            raise ValueError("infinite Newton polygon; try to truncate it by giving a log radius less than %s" % convergence)
+            raise ValueError(
+                "infinite Newton polygon; try to truncate it by giving a log radius less than %s"
+                % convergence
+            )
         valscalar = self._scalar.valuation()
         vertices = [[k, v + valscalar] for k, v in vertices]
         return NewtonPolygon(vertices, last_slope=log_radius)
@@ -1846,10 +1870,12 @@ class HypergeometricAlgebraic_padic(HypergeometricAlgebraic):
 
 # Over prime finite fields
 
+
 class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
     r"""
     Class for hypergeometric functions over prime finite fields.
     """
+
     def __init__(self, parent, arg1, arg2=None, scalar=None, check=True):
         r"""
         Initialize this hypergeometric function.
@@ -1925,8 +1951,8 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
         if not scalar:
             return scalar
         H = self.parent().change_ring(K)
-        if n < len(self._coeffs) + p*log(n, p):
-            self._compute_coeffs(n+1)
+        if n < len(self._coeffs) + p * log(n, p):
+            self._compute_coeffs(n + 1)
             return self._coeffs[n]
         parameters = self._parameters
         ans = K(scalar)
@@ -1982,14 +2008,16 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
             if (left, right) in checked or (right, left) in checked:
                 continue
             checked[(left, right)] = True
-            criticals = [(1 - pa) % p
-                         for pa in left.top + left.bottom + right.top + right.bottom
-                         if pa.denominator() % p]
+            criticals = [
+                (1 - pa) % p
+                for pa in left.top + left.bottom + right.top + right.bottom
+                if pa.denominator() % p
+            ]
             criticals.sort()
             criticals.append(p)
             for i in range(len(criticals) - 1):
                 ei = criticals[i]
-                ej = criticals[i+1]
+                ej = criticals[i + 1]
                 if ei == ej:
                     continue
                 ld = left.shift(ei).dwork_image(p).reduce(p)
@@ -2002,9 +2030,11 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
                     continue
                 lh = H(left)
                 rh = H(right)
-                if lh[ei + lpos*p] == 0 and rh[ei + rpos*p] == 0:
+                if lh[ei + lpos * p] == 0 and rh[ei + rpos * p] == 0:
                     continue
-                if lpos != rpos or any(lh[r + lpos*p] != rh[r + rpos*p] for r in range(ei, ej)):
+                if lpos != rpos or any(
+                    lh[r + lpos * p] != rh[r + rpos * p] for r in range(ei, ej)
+                ):
                     return False
                 queued.append((ld.shift(lpos), rd.shift(rpos)))
         return True
@@ -2055,7 +2085,9 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
         """
         L = self.differential_operator()
         K = L.base_ring().fraction_field()
-        S = OrePolynomialRing(K, L.parent().twisting_derivation().extend_to_fraction_field(), names='d')
+        S = OrePolynomialRing(
+            K, L.parent().twisting_derivation().extend_to_fraction_field(), names='d'
+        )
         L = S(L.list())
         d = S.gen()
         p = self._char
@@ -2131,7 +2163,7 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
             return self
         H = self.parent()
         p = self._p
-        self._compute_coeffs(r+1)
+        self._compute_coeffs(r + 1)
         hr, z = scalar * self._coeffs_enriched[r]
         if z > 0:
             return H.zero()
@@ -2175,23 +2207,25 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
         p = self._char
         H = self.parent()
         S = H.polynomial_ring()
-        criticals = [(1 - pa) % p
-                     for pa in parameters.top + parameters.bottom
-                     if pa.denominator() % p]
+        criticals = [
+            (1 - pa) % p
+            for pa in parameters.top + parameters.bottom
+            if pa.denominator() % p
+        ]
         criticals.sort()
         criticals.append(p)
         Ps = {}
         for i in range(len(criticals) - 1):
             ci = criticals[i]
-            cj = criticals[i+1]
+            cj = criticals[i + 1]
             if cj == ci:
                 continue
             params = parameters.shift(ci).dwork_image(p)
             _, s, _ = params.valuation_position(p)
             if s is None:
                 continue
-            ci += s*p
-            cj += s*p
+            ci += s * p
+            cj += s * p
             h = H(params.shift(s), check=False)
             self._compute_coeffs(cj + 1)
             P = S(self._coeffs[ci:cj])
@@ -2238,7 +2272,9 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
         """
         parameters = self._parameters
         if not parameters.is_balanced():
-            raise NotImplementedError("the hypergeometric function is not a pFq with q = p-1")
+            raise NotImplementedError(
+                "the hypergeometric function is not a pFq with q = p-1"
+            )
 
         p = self._char
         S = self.parent().polynomial_ring()
@@ -2278,15 +2314,15 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
             Mrows = []
             Mqo = 1
             columns = {}
-            for j in range(i-1, max(-1, i-2-bound), -1):
+            for j in range(i - 1, max(-1, i - 2 - bound), -1):
                 for col in rows[j]:
                     columns[col] = None
-            for j in range(i-1, max(-1, i-2-bound), -1):
+            for j in range(i - 1, max(-1, i - 2 - bound), -1):
                 Mrow = []
                 for col in columns:
                     Mrow.append(insert_zeroes(rows[j].get(col, zero), Mqo))
                 Mrows.append(Mrow)
-                Mqo *= p ** order
+                Mqo *= p**order
             M = matrix(S, Mrows)
 
             ker = kernel(M)
@@ -2316,17 +2352,21 @@ class HypergeometricAlgebraic_GFp(HypergeometricAlgebraic):
             sage: h.is_lucas()
             True
         """
-        return all(P.degree() < self._p and self.is_equal_as_series(h)
-                   for h, P in self.dwork_relation().items())
+        return all(
+            P.degree() < self._p and self.is_equal_as_series(h)
+            for h, P in self.dwork_relation().items()
+        )
 
 
 # Parent
 ########
 
+
 class HypergeometricToSR(Map):
     r"""
     Map from hypergeometric series to symbolic ring
     """
+
     def _call_(self, h):
         r"""
         Return the symbolic expression representing ``h``.
@@ -2338,7 +2378,9 @@ class HypergeometricToSR(Map):
             sage: SR(h)  # indirect doctest
             hypergeometric((1/5, 4/5), (1,), x)
         """
-        return h.scalar() * hypergeometric(h.top(), h.bottom(), SR.var(h.parent().variable_name()))
+        return h.scalar() * hypergeometric(
+            h.top(), h.bottom(), SR.var(h.parent().variable_name())
+        )
 
 
 class ScalarMultiplication(Action):
@@ -2346,6 +2388,7 @@ class ScalarMultiplication(Action):
     Action on hypergeometric series by left multiplication
     by scalars.
     """
+
     def _act_(self, scalar, h):
         r"""
         Return the product ``scalar * h``.
@@ -2364,6 +2407,7 @@ class HypergeometricFunctions(Parent, UniqueRepresentation):
     r"""
     Hypergeometric functions over a base ring.
     """
+
     def __classcall__(cls, base, name, symbolic_equality=True):
         r"""
         Normalize parameters and call the init function.
@@ -2494,8 +2538,9 @@ class HypergeometricFunctions(Parent, UniqueRepresentation):
             sage: HS2.has_coerce_map_from(HS)
             True
         """
-        if (isinstance(other, HypergeometricFunctions)
-                and self.base_ring().has_coerce_map_from(other.base_ring())):
+        if isinstance(
+            other, HypergeometricFunctions
+        ) and self.base_ring().has_coerce_map_from(other.base_ring()):
             if self._symbolic_equality:
                 return True
             return other._symbolic_equality
@@ -2676,8 +2721,10 @@ class HypergeometricFunctions(Parent, UniqueRepresentation):
             return LazyPowerSeriesRing(self.base_ring(), self._name)
         return PowerSeriesRing(self.base_ring(), self._name, default_prec=default_prec)
 
+
 # Helper functions
 ##################
+
 
 def insert_zeroes(P, n):
     r"""
@@ -2699,7 +2746,7 @@ def insert_zeroes(P, n):
     cs = P.list()
     coeffs = n * len(cs) * [0]
     for i in range(len(cs)):
-        coeffs[n*i] = cs[i]
+        coeffs[n * i] = cs[i]
     return P.parent()(coeffs)
 
 
@@ -2747,7 +2794,7 @@ def kernel(M, repeat=2):
             Me = matrix(n, m, [f(a) for f in M.list()])
             if Me.rank() == n:
                 return
-    for J in Subsets(range(m), n-1):
+    for J in Subsets(range(m), n - 1):
         MJ = M.matrix_from_columns(J)
         minor = MJ.delete_rows([0]).determinant()
         if minor.is_zero():
@@ -2755,10 +2802,10 @@ def kernel(M, repeat=2):
         ker = [minor]
         for i in range(1, n):
             minor = MJ.delete_rows([i]).determinant()
-            ker.append((-1)**i * minor)
+            ker.append((-1) ** i * minor)
         Z = matrix(ker) * M
         if not Z.is_zero():
             return
         g = ker[0].leading_coefficient() * gcd(ker)
-        ker = [c//g for c in ker]
+        ker = [c // g for c in ker]
         return ker

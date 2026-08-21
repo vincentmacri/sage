@@ -1,6 +1,7 @@
 """
 Functorial composition species
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
@@ -99,7 +100,9 @@ class FunctorialCompositionSpecies(GenericCombinatorialSpecies):
             sage: G.generating_series()[0:5]
             [1, 1, 1, 4/3, 8/3]
         """
-        return self._F.generating_series(base_ring).functorial_composition(self._G.generating_series(base_ring))
+        return self._F.generating_series(base_ring).functorial_composition(
+            self._G.generating_series(base_ring)
+        )
 
     def _itgs(self, series_ring, base_ring):
         """
@@ -123,7 +126,9 @@ class FunctorialCompositionSpecies(GenericCombinatorialSpecies):
              4/3*p[1, 1, 1] + 2*p[2, 1] + 2/3*p[3],
              8/3*p[1, 1, 1, 1] + 4*p[2, 1, 1] + 2*p[2, 2] + 4/3*p[3, 1] + p[4]]
         """
-        return self._F.cycle_index_series(base_ring).functorial_composition(self._G.cycle_index_series(base_ring))
+        return self._F.cycle_index_series(base_ring).functorial_composition(
+            self._G.cycle_index_series(base_ring)
+        )
 
     def weight_ring(self):
         """
@@ -138,6 +143,7 @@ class FunctorialCompositionSpecies(GenericCombinatorialSpecies):
             Rational Field
         """
         from sage.structure.element import get_coercion_model
+
         cm = get_coercion_model()
 
         f_weights = self._F.weight_ring()

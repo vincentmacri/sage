@@ -258,8 +258,9 @@ class BundleConnection(SageObject, Mutability):
             sage: TestSuite(nab).run()
         """
         if not isinstance(vbundle, DifferentiableVectorBundle):
-            raise TypeError("the first argument must be a differentiable " +
-                            "vector bundle")
+            raise TypeError(
+                "the first argument must be a differentiable " + "vector bundle"
+            )
         Mutability.__init__(self)
         self._vbundle = vbundle
         self._domain = vbundle.base_space()
@@ -391,8 +392,10 @@ class BundleConnection(SageObject, Mutability):
             if frame not in other._connection_forms:
                 return False
             for ind in self._connection_forms[frame]:
-                if (other._connection_forms[frame][ind] !=
-                        self._connection_forms[frame][ind]):
+                if (
+                    other._connection_forms[frame][ind]
+                    != self._connection_forms[frame][ind]
+                ):
                     return False
         return True
 
@@ -653,6 +656,7 @@ class BundleConnection(SageObject, Mutability):
         """
         from sage.manifolds.section import TrivialSection
         from sage.tensor.modules.format_utilities import format_unop_latex
+
         if isinstance(s, TrivialSection):
             return self._derive_trivial(v, s)
         # Resulting section
@@ -667,8 +671,7 @@ class BundleConnection(SageObject, Mutability):
         else:
             nab_v_latex = self._latex_name + '_{' + v._latex_name + '} '
             latex_name_resu = format_unop_latex(nab_v_latex, s._latex_name)
-        resu = vb.section(domain=dom, name=name_resu,
-                          latex_name=latex_name_resu)
+        resu = vb.section(domain=dom, name=name_resu, latex_name=latex_name_resu)
         # gluing process
         for dom, rst in s._restrictions.items():
             # the computation is performed only if dom is not a subdomain
@@ -720,6 +723,7 @@ class BundleConnection(SageObject, Mutability):
             raise ValueError("no local frame found for the computation")
         # Resulting section
         from sage.tensor.modules.format_utilities import format_unop_latex
+
         if s._name is None or v._name is None:
             name_resu = None
         else:
@@ -729,13 +733,11 @@ class BundleConnection(SageObject, Mutability):
         else:
             nab_v_latex = self._latex_name + '_{' + v._latex_name + '} '
             latex_name_resu = format_unop_latex(nab_v_latex, s._latex_name)
-        res = vb.section(domain=dom, name=name_resu,
-                         latex_name=latex_name_resu)
+        res = vb.section(domain=dom, name=name_resu, latex_name=latex_name_resu)
         for j in vb.irange():
             ds_comp = s[[frame, j]].differential()
             res_comp = ds_comp(v)
-            res_comp += sum(s[[frame, i]] * self[frame, i, j](v)
-                            for i in vb.irange())
+            res_comp += sum(s[[frame, i]] * self[frame, i, j](v) for i in vb.irange())
             res[frame, j] = res_comp
         return res
 
@@ -816,8 +818,10 @@ class BundleConnection(SageObject, Mutability):
         # Are the components already known?
         if frame not in self._connection_forms:
             if frame not in self._vbundle._frames:
-                raise ValueError("the {} is not".format(frame) +
-                                 " a frame on the {}".format(self._domain))
+                raise ValueError(
+                    "the {} is not".format(frame)
+                    + " a frame on the {}".format(self._domain)
+                )
             self._connection_forms[frame] = self._new_forms(frame)
         self._del_derived()  # deletes the derived quantities
         return self._connection_forms[frame][(i, j)]
@@ -947,8 +951,9 @@ class BundleConnection(SageObject, Mutability):
             if frame is None:
                 raise ValueError("a frame must be provided")
         if frame not in self._connection_forms:
-            raise ValueError("the coefficients w.r.t. {}".format(frame) +
-                             " have not been defined")
+            raise ValueError(
+                "the coefficients w.r.t. {}".format(frame) + " have not been defined"
+            )
         to_be_deleted = []
         for other_frame in self._connection_forms:
             if other_frame != frame:
@@ -1004,14 +1009,18 @@ class BundleConnection(SageObject, Mutability):
         if frame not in self._curvature_forms:
             self._curvature_forms[frame] = {}
         if (i, j) not in self._curvature_forms[frame]:
-            name = "curvature ({},{}) of bundle connection ".format(i, j) + \
-                   self._name + " w.r.t. {}".format(frame)
-            latex_name = r"\Omega^" + str(i) + r"_{\ \, " + \
-                         str(j) + "}"
+            name = (
+                "curvature ({},{}) of bundle connection ".format(i, j)
+                + self._name
+                + " w.r.t. {}".format(frame)
+            )
+            latex_name = r"\Omega^" + str(i) + r"_{\ \, " + str(j) + "}"
             omega = self.connection_form
             curv_form = omega(i, j, frame).exterior_derivative()
-            curv_form += sum(omega(k, j, frame).wedge(omega(i, k, frame))
-                             for k in self._vbundle.irange())
+            curv_form += sum(
+                omega(k, j, frame).wedge(omega(i, k, frame))
+                for k in self._vbundle.irange()
+            )
             curv_form.set_name(name=name, latex_name=latex_name)
             self._curvature_forms[frame][(i, j)] = curv_form
         return self._curvature_forms[frame][(i, j)]
@@ -1116,10 +1125,11 @@ class BundleConnection(SageObject, Mutability):
             indices = args
         if isinstance(indices, slice):
             if indices.start is None and indices.stop is None:
-                return [[self.connection_form(i, j, frame=frame)
-                         for j in vb.irange()] for i in vb.irange()]
-            raise NotImplementedError("[start:stop] syntax not "
-                                      "implemented")
+                return [
+                    [self.connection_form(i, j, frame=frame) for j in vb.irange()]
+                    for i in vb.irange()
+                ]
+            raise NotImplementedError("[start:stop] syntax not implemented")
         if len(indices) != 2:
             raise ValueError("index must be a pair of integers")
         (i, j) = indices
@@ -1210,31 +1220,33 @@ class BundleConnection(SageObject, Mutability):
                         for j in vb.irange():
                             self[frame, i, j] = 0
                 elif not isinstance(value, (list, tuple)):
-                    raise TypeError("in case of [:] syntax, zero or a "
-                                    "list/tuple as value should be provided")
+                    raise TypeError(
+                        "in case of [:] syntax, zero or a "
+                        "list/tuple as value should be provided"
+                    )
                 elif any(not isinstance(row, (list, tuple)) for row in value):
-                    raise TypeError("in case of [:] syntax, the list/tuple "
-                                    "of value must contain lists/tuples")
+                    raise TypeError(
+                        "in case of [:] syntax, the list/tuple "
+                        "of value must contain lists/tuples"
+                    )
                 else:
                     # check lengths:
                     rk = vb._rank
                     if len(value) != rk:
-                        raise ValueError("value must have "
-                                         "length {}".format(rk))
+                        raise ValueError("value must have length {}".format(rk))
                     if any(len(row) != rk for row in value):
-                        raise ValueError("lists in value must have length "
-                                         "{}".format(rk))
+                        raise ValueError(
+                            "lists in value must have length {}".format(rk)
+                        )
                     # perform designation:
                     sind = vb._base_space._sindex
                     for i in vb.irange():
                         for j in vb.irange():
                             self[frame, i, j] = value[i - sind][j - sind]
             else:
-                raise NotImplementedError("[start:stop] syntax not "
-                                          "implemented")
+                raise NotImplementedError("[start:stop] syntax not implemented")
 
-    def display(self, frame=None, vector_frame=None, chart=None,
-                only_nonzero=True):
+    def display(self, frame=None, vector_frame=None, chart=None, only_nonzero=True):
         r"""
         Display all the connection 1-forms w.r.t. to a given local frame, one
         per line.

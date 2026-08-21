@@ -49,6 +49,7 @@ def example_type_space(example_no=0):
     So we don't want to mark it ``# long time``.
     """
     from sage.modular.modform.constructor import Newform as Newform_constructor
+
     if example_no == 0:
         # a fairly generic example
         return TypeSpace(Newform_constructor('98b', names='a'), 7)
@@ -143,8 +144,10 @@ def find_in_space(f, A, base_extend=False):
             break
 
     if D.dimension() != expected_dimension:
-        raise ArithmeticError("Error in find_in_space: "
-                              + "got dimension %s (should be %s)" % (D.dimension(), expected_dimension))
+        raise ArithmeticError(
+            "Error in find_in_space: "
+            + "got dimension %s (should be %s)" % (D.dimension(), expected_dimension)
+        )
 
     return D
 
@@ -154,6 +157,7 @@ class TypeSpace(SageObject):
     The modular symbol type space associated to a newform, at a prime dividing
     the level.
     """
+
     #################################################
     # Basic initialisation and data-access functions
     #################################################
@@ -174,13 +178,15 @@ class TypeSpace(SageObject):
         amb = ModularSymbols(self.group(), f.weight())
         self.e_space = find_in_space(f, amb, base_extend=base_extend).sign_submodule(1)
         R = self.e_space.base_ring()
-        mat = amb._action_on_modular_symbols([p**self.u(), 1, 0, p**self.u()])
+        mat = amb._action_on_modular_symbols([p ** self.u(), 1, 0, p ** self.u()])
         V = amb.free_module().base_extend(R)
         bvecs = []
         for v in self.e_space.free_module().basis():
             bvecs += mat.maxspin(v)
         T = V.submodule(bvecs)
-        self._unipmat = mat.change_ring(R).restrict(T).transpose() / ZZ(p ** (self.u() * (f.weight() - 2)))
+        self._unipmat = mat.change_ring(R).restrict(T).transpose() / ZZ(
+            p ** (self.u() * (f.weight() - 2))
+        )
         self.t_space = amb.base_extend(R).submodule(T, check=False)
 
     def _repr_(self):
@@ -193,7 +199,11 @@ class TypeSpace(SageObject):
             sage: example_type_space()._repr_()
             '6-dimensional type space at prime 7 of form q + ... + O(q^6)'
         """
-        return "%s-dimensional type space at prime %s of form %s" % (self.t_space.rank(), self.prime(), self.form())
+        return "%s-dimensional type space at prime %s of form %s" % (
+            self.t_space.rank(),
+            self.prime(),
+            self.form(),
+        )
 
     def prime(self):
         r"""
@@ -399,7 +409,9 @@ class TypeSpace(SageObject):
             D1 = A.degeneracy_map(NN, 1)
             Dp = A.degeneracy_map(NN, self.prime())
             A = D1.codomain()
-            vecs = [D1(v).element() for v in V.basis()] + [Dp(v).element() for v in V.basis()]
+            vecs = [D1(v).element() for v in V.basis()] + [
+                Dp(v).element() for v in V.basis()
+            ]
             VV = A.free_module().submodule(vecs)
             V = A.submodule(VV, check=False)
 
@@ -469,8 +481,12 @@ class TypeSpace(SageObject):
 
         g3 = [f * g2[0], g2[1], f**2 * g2[2], f * g2[3]]
         A = self.t_space.ambient()
-        mm = A._action_on_modular_symbols(g3).restrict(self.t_space.free_module()).transpose()
-        return mm / ZZ(f**(self.form().weight() - 2))
+        mm = (
+            A._action_on_modular_symbols(g3)
+            .restrict(self.t_space.free_module())
+            .transpose()
+        )
+        return mm / ZZ(f ** (self.form().weight() - 2))
 
     def _rho_unramified(self, g):
         r"""
@@ -500,6 +516,7 @@ class TypeSpace(SageObject):
         """
         f = self.prime() ** self.u()
         from sage.groups.matrix_gps.linear import SL
+
         G = SL(2, Zmod(f))
         gg = G(g)
         s = G([1, 1, 0, 1])
@@ -538,8 +555,15 @@ class TypeSpace(SageObject):
         p = self.prime()
         assert g[2] % p == 0
         gg = lift_ramified(g, p, self.u(), self.tame_level())
-        g3 = [p**self.u() * gg[0], gg[1], p**(2 * self.u()) * gg[2], p**self.u() * gg[3]]
-        return A._action_on_modular_symbols(g3).restrict(self.t_space.free_module()).transpose() / ZZ(p**(self.u() * (self.form().weight() - 2)))
+        g3 = [
+            p ** self.u() * gg[0],
+            gg[1],
+            p ** (2 * self.u()) * gg[2],
+            p ** self.u() * gg[3],
+        ]
+        return A._action_on_modular_symbols(g3).restrict(
+            self.t_space.free_module()
+        ).transpose() / ZZ(p ** (self.u() * (self.form().weight() - 2)))
 
     def _group_gens(self):
         r"""
@@ -562,9 +586,12 @@ class TypeSpace(SageObject):
         if p == 2:
             return [[ZZ(1), ZZ(1), ZZ(0), ZZ(1)], [ZZ(1), ZZ(0), ZZ(p), ZZ(1)]]
 
-        a = Zmod(p**(self.u() + 1))(ZZ(Zmod(p).unit_gens()[0]))
-        return [[ZZ(1), ZZ(1), ZZ(0), ZZ(1)], [ZZ(1), ZZ(0), ZZ(p), ZZ(1)],
-                [ZZ(a), 0, 0, ZZ(~a)]]
+        a = Zmod(p ** (self.u() + 1))(ZZ(Zmod(p).unit_gens()[0]))
+        return [
+            [ZZ(1), ZZ(1), ZZ(0), ZZ(1)],
+            [ZZ(1), ZZ(0), ZZ(p), ZZ(1)],
+            [ZZ(a), 0, 0, ZZ(~a)],
+        ]
 
     def _intertwining_basis(self, a):
         r"""
@@ -636,7 +663,9 @@ class TypeSpace(SageObject):
         mats = self._intertwining_basis(a)
         V = self.t_space.nonembedded_free_module()
         v = self.eigensymbol_subspace().gen(0)
-        w = V.submodule_with_basis([m * v for m in mats]).coordinates(v)  # v * self.e_space.diamond_eigenvalue(crt(a, 1, f, self.tame_level())))
+        w = V.submodule_with_basis([m * v for m in mats]).coordinates(
+            v
+        )  # v * self.e_space.diamond_eigenvalue(crt(a, 1, f, self.tame_level())))
         self._a = a
         self._amat = sum([mats[i] * w[i] for i in range(len(mats))])
 
@@ -673,7 +702,9 @@ class TypeSpace(SageObject):
             True
         """
         if not self.is_minimal():
-            raise NotImplementedError("Group action on non-minimal type space not implemented")
+            raise NotImplementedError(
+                "Group action on non-minimal type space not implemented"
+            )
 
         if self.u() == 0:
             # silly special case: rep is principal series or special, so SL2
@@ -681,9 +712,9 @@ class TypeSpace(SageObject):
             raise ValueError("Representation is not supercuspidal")
 
         p = self.prime()
-        f = p**self.u()
+        f = p ** self.u()
         g = [ZZ(_) for _ in g]
-        d = (g[0] * g[3] - g[2] * g[1])
+        d = g[0] * g[3] - g[2] * g[1]
 
         # g is in S(K_0) (easy case)
         if d % f == 1:
@@ -700,29 +731,37 @@ class TypeSpace(SageObject):
 
             if not (f % 8):
                 if d % 4 == 3:
-                    return (self.rho([-g[0], g[1], -g[2], g[3]]) *
-                            self.t_space.star_involution().matrix().transpose())
+                    return (
+                        self.rho([-g[0], g[1], -g[2], g[3]])
+                        * self.t_space.star_involution().matrix().transpose()
+                    )
 
             i = 0
             while (d * a**i) % f != 1:
                 i += 1
                 if i > f:
                     raise ArithmeticError
-            return self._rho_s([a**i * g[0], g[1], a**i * g[2], g[3]]) * self._amat**(-i)
+            return self._rho_s([a**i * g[0], g[1], a**i * g[2], g[3]]) * self._amat ** (
+                -i
+            )
 
         # det(g) is not a unit
 
-        if (self.conductor() % 2 == 0):
+        if self.conductor() % 2 == 0:
             if all(x.valuation(p) > 0 for x in g):
                 eps = self.form().character()(crt(1, p, f, self.tame_level()))
-                return ~eps * p**(self.form().weight() - 2) * self.rho([x // p for x in g])
+                return (
+                    ~eps
+                    * p ** (self.form().weight() - 2)
+                    * self.rho([x // p for x in g])
+                )
             raise ArithmeticError(f"g(={g}) not in K")
 
         else:
             m = matrix(ZZ, 2, g)
             s = m.det().valuation(p)
-            mm = (matrix(QQ, 2, [0, -1, p, 0])**(-s) * m).change_ring(ZZ)
-            return self._unif_ramified()**s * self.rho(mm.list())
+            mm = (matrix(QQ, 2, [0, -1, p, 0]) ** (-s) * m).change_ring(ZZ)
+            return self._unif_ramified() ** s * self.rho(mm.list())
 
     def _unif_ramified(self):
         r"""
@@ -739,7 +778,10 @@ class TypeSpace(SageObject):
         """
         p = self.prime()
         k = self.form().weight()
-        return (self.t_space.atkin_lehner_operator(p).matrix().transpose()
-                * p ** (-(k - 2) * self.u())
-                * self.t_space.diamond_bracket_matrix(
-                    crt(1, p**self.u(), p**self.u(), self.tame_level())).transpose())
+        return (
+            self.t_space.atkin_lehner_operator(p).matrix().transpose()
+            * p ** (-(k - 2) * self.u())
+            * self.t_space.diamond_bracket_matrix(
+                crt(1, p ** self.u(), p ** self.u(), self.tame_level())
+            ).transpose()
+        )

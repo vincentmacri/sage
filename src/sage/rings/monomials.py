@@ -18,8 +18,8 @@ def _monomials(gens, R, n, i):
     if len(gens) == 1:
         b = gens[0]
         v = [R(1)]
-        for _ in range(n[0]-1):
-            v.append(v[-1]*b)
+        for _ in range(n[0] - 1):
+            v.append(v[-1] * b)
         return v
     z = gens[i]
     w = list(gens)
@@ -28,9 +28,9 @@ def _monomials(gens, R, n, i):
     del nn[i]
     v = monomials(w, nn)
     k = len(v)
-    for _ in range(n[i]-1):
+    for _ in range(n[i] - 1):
         for j in range(k):
-            v.append(v[j]*z)
+            v.append(v[j] * z)
         z *= gens[i]
     return v
 
@@ -62,7 +62,7 @@ def monomials(v, n):
         [1, z, y, y*z, y^2, y^2*z, x, x*z, x*y, x*y*z, x*y^2, x*y^2*z]
     """
 
-    if (len(v) != len(n)):
+    if len(v) != len(n):
         raise ValueError("inputs must be of the same length.")
     if len(v) == 0:
         return []

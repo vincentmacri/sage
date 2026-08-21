@@ -1,6 +1,7 @@
 r"""
 Dedekind Domains
 """
+
 # ****************************************************************************
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  https://www.gnu.org/licenses/
@@ -29,6 +30,7 @@ class DedekindDomains(Category):
 
         sage: TestSuite(C).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -56,6 +58,7 @@ class DedekindDomains(Category):
                 1
             """
             from sage.rings.integer_ring import ZZ
+
             return ZZ.one()
 
         def is_integrally_closed(self) -> bool:

@@ -17,6 +17,7 @@ class AxiomElement:
         sage: len(sage.interfaces.abc.AxiomElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -34,6 +35,7 @@ class ExpectElement:
         sage: len(sage.interfaces.abc.ExpectElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -51,6 +53,7 @@ class FriCASElement:
         sage: len(sage.interfaces.abc.FriCASElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -68,6 +71,7 @@ class GapElement:
         sage: len(sage.interfaces.abc.GapElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -85,6 +89,7 @@ class GpElement:
         sage: len(sage.interfaces.abc.GpElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -102,6 +107,7 @@ class Macaulay2Element:
         sage: len(sage.interfaces.abc.Macaulay2Element.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -119,6 +125,7 @@ class MagmaElement:
         sage: len(sage.interfaces.abc.MagmaElement.__subclasses__()) <= 1
         True
     """
+
     pass
 
 
@@ -136,4 +143,5 @@ class SingularElement:
         sage: len(sage.interfaces.abc.SingularElement.__subclasses__()) <= 1
         True
     """
+
     pass

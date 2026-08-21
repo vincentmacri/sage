@@ -102,6 +102,7 @@ class PrefixClosedSet:
             [word: ]
         """
         from sage.combinat.words.words import Words
+
         return cls(Words(alphabet, infinite=False))
 
     def __repr__(self) -> str:
@@ -151,11 +152,12 @@ class PrefixClosedSet:
             ...
             ValueError: cannot add as not all prefixes of 11 are included yet
         """
-        if check and any(p not in self.elements
-                         for p in w.prefixes_iterator()
-                         if p != w):
-            raise ValueError('cannot add as not all prefixes of '
-                             '{} are included yet'.format(w))
+        if check and any(
+            p not in self.elements for p in w.prefixes_iterator() if p != w
+        ):
+            raise ValueError(
+                'cannot add as not all prefixes of {} are included yet'.format(w)
+            )
         self.elements.append(w)
 
     def iterate_possible_additions(self):
@@ -258,10 +260,12 @@ class PrefixClosedSet:
             [word: 01, word: 11, word: 001, word: 100,
              word: 101, word: 0000, word: 0001]
         """
-        return [p + a
-                for p in self.elements
-                for a in self.words.iterate_by_length(1)
-                if p + a not in self.elements]
+        return [
+            p + a
+            for p in self.elements
+            for a in self.words.iterate_by_length(1)
+            if p + a not in self.elements
+        ]
 
 
 def minimize_result(operation):
@@ -345,6 +349,7 @@ def minimize_result(operation):
         sage: t.nooperation(minimize=False) is t
         True
     """
+
     @wraps(operation)
     def minimized(self, *args, **kwds):
         minimize = kwds.pop('minimize', None)
@@ -578,6 +583,7 @@ class RecognizableSeries(ModuleElement):
 
         if latex:
             from sage.misc.latex import latex as latex_repr
+
             fr = latex_repr
             fs = latex_repr
             times = ' '
@@ -605,8 +611,7 @@ class RecognizableSeries(ModuleElement):
 
         coefficients = islice(all_coefficients(), 10)
 
-        s = ' + '.join(summand(w, c)
-                       for w, c in coefficients)
+        s = ' + '.join(summand(w, c) for w, c in coefficients)
         s = s.replace('+ -', '- ')
         if not s:
             s = '0'
@@ -749,6 +754,7 @@ class RecognizableSeries(ModuleElement):
         if w not in W:
             raise ValueError('index {} is not in {}'.format(w, W))
         from sage.misc.misc_c import prod
+
         return prod((self.mu[a] for a in w), z=self._mu_of_empty_word_())
 
     def __iter__(self):
@@ -849,9 +855,14 @@ class RecognizableSeries(ModuleElement):
             sage: S.is_zero()
             True
         """
-        return not self.left or not self.right or \
-            (all(not self.mu[a] for a in self.parent().alphabet()) and
-             not self[self.parent().indices()()])
+        return (
+            not self.left
+            or not self.right
+            or (
+                all(not self.mu[a] for a in self.parent().alphabet())
+                and not self[self.parent().indices()()]
+            )
+        )
 
     def __bool__(self) -> bool:
         r"""
@@ -1023,15 +1034,14 @@ class RecognizableSeries(ModuleElement):
             sage: T.mu[0].is_immutable(), T.mu[1].is_immutable(), T.left.is_immutable(), T.right.is_immutable()
             (True, True, True, True)
         """
+
         def tr(M):
             T = M.transpose()
             T.set_immutable()
             return T
 
         P = self.parent()
-        return P.element_class(P, self.mu.map(tr),
-                               left=self.right,
-                               right=self.left)
+        return P.element_class(P, self.mu.map(tr), left=self.right, right=self.left)
 
     @cached_method
     def minimized(self):
@@ -1177,9 +1187,7 @@ class RecognizableSeries(ModuleElement):
             return self.parent().zero()
         Left = [left]
         for p in pcs.iterate_possible_additions():
-            left = self.coefficient_of_word(p,
-                                            multiply_left=True,
-                                            multiply_right=False)
+            left = self.coefficient_of_word(p, multiply_left=True, multiply_right=False)
             try:
                 Matrix(Left).solve_left(left)
             except ValueError:
@@ -1197,8 +1205,12 @@ class RecognizableSeries(ModuleElement):
         mu_prime = []
         for a in self.parent().alphabet():
             a = self.parent().indices()([a])
-            M = Matrix([alpha(c) if c in C else tuple((c == q) for q in P)
-                        for c in (p + a for p in P)])
+            M = Matrix(
+                [
+                    alpha(c) if c in C else tuple((c == q) for q in P)
+                    for c in (p + a for p in P)
+                ]
+            )
             mu_prime.append(M)
 
         left_prime = vector([ZZ.one()] + (len(P) - 1) * [ZZ.zero()])
@@ -1259,13 +1271,15 @@ class RecognizableSeries(ModuleElement):
              (1))
         """
         from sage.modules.free_module_element import vector
+
         P = self.parent()
 
         result = P.element_class(
             P,
             {a: self.mu[a].block_sum(other.mu[a]) for a in P.alphabet()},
             vector(tuple(self.left) + tuple(other.left)),
-            vector(tuple(self.right) + tuple(other.right)))
+            vector(tuple(self.right) + tuple(other.right)),
+        )
 
         return result
 
@@ -1504,17 +1518,20 @@ class RecognizableSeries(ModuleElement):
         """
         from sage.matrix.constructor import Matrix
         from sage.modules.free_module_element import vector
+
         P = self.parent()
 
         def tensor_product(left, right):
             T = left.tensor_product(right)
             T.subdivide()
             return T
+
         result = P.element_class(
             P,
             {a: tensor_product(self.mu[a], other.mu[a]) for a in P.alphabet()},
             vector(tensor_product(Matrix(self.left), Matrix(other.left))),
-            vector(tensor_product(Matrix(self.right), Matrix(other.right))))
+            vector(tensor_product(Matrix(self.right), Matrix(other.right))),
+        )
 
         return result
 
@@ -1585,6 +1602,7 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         :doc:`recognizable series <recognizable_series>`,
         :class:`RecognizableSeries`.
     """
+
     Element = RecognizableSeries
 
     @staticmethod
@@ -1610,15 +1628,17 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
             sage: Rec1 is Rec2 is Rec3
             True
         """
-        return super().__classcall__(
-            cls, *cls.__normalize__(*args, **kwds))
+        return super().__classcall__(cls, *cls.__normalize__(*args, **kwds))
 
     @classmethod
-    def __normalize__(cls,
-                      coefficient_ring=None,
-                      alphabet=None, indices=None,
-                      category=None,
-                      minimize_results=True):
+    def __normalize__(
+        cls,
+        coefficient_ring=None,
+        alphabet=None,
+        indices=None,
+        category=None,
+        minimize_results=True,
+    ):
         r"""
         Normalize the input in order to ensure a unique
         representation.
@@ -1660,6 +1680,7 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
 
         if indices is None:
             from sage.combinat.words.words import Words
+
             indices = Words(alphabet, infinite=False)
         if not indices.alphabet().is_finite():
             raise NotImplementedError('alphabet is not finite')
@@ -1667,17 +1688,19 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         if coefficient_ring is None:
             raise ValueError('no coefficient ring specified')
         from sage.categories.semirings import Semirings
+
         if coefficient_ring not in Semirings():
             raise ValueError(
-                'coefficient ring {} is not a semiring'.format(coefficient_ring))
+                'coefficient ring {} is not a semiring'.format(coefficient_ring)
+            )
 
         from sage.categories.modules import Modules
+
         category = category or Modules(coefficient_ring)
 
         return (coefficient_ring, indices, category, minimize_results)
 
-    def __init__(self, coefficient_ring, indices,
-                 category, minimize_results) -> None:
+    def __init__(self, coefficient_ring, indices, category, minimize_results) -> None:
         r"""
         See :class:`RecognizableSeriesSpace` for details.
 
@@ -1733,8 +1756,7 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         """
         self._indices_ = indices
         self._minimize_results_ = minimize_results
-        super().__init__(
-            category=category, base=coefficient_ring)
+        super().__init__(category=category, base=coefficient_ring)
 
     def __reduce__(self):
         r"""
@@ -1746,8 +1768,11 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
             sage: loads(dumps(Rec))  # indirect doctest
             Space of recognizable series on {0, 1} with coefficients in Integer Ring
         """
-        return _pickle_RecognizableSeriesSpace, \
-            (self.coefficient_ring(), self.indices(), self.category())
+        return _pickle_RecognizableSeriesSpace, (
+            self.coefficient_ring(),
+            self.indices(),
+            self.category(),
+        )
 
     def alphabet(self):
         r"""
@@ -1825,9 +1850,9 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
             sage: repr(RecognizableSeriesSpace(ZZ, [0, 1]))  # indirect doctest
             'Space of recognizable series on {0, 1} with coefficients in Integer Ring'
         """
-        return 'Space of recognizable series on {} ' \
-               'with coefficients in {}'.format(self.alphabet(),
-                                                self.coefficient_ring())
+        return 'Space of recognizable series on {} with coefficients in {}'.format(
+            self.alphabet(), self.coefficient_ring()
+        )
 
     def _an_element_(self):
         r"""
@@ -1843,12 +1868,15 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         """
         from sage.matrix.constructor import Matrix
         from sage.modules.free_module_element import vector
+
         z = self.coefficient_ring().zero()
         o = self.coefficient_ring().one()
         e = self.coefficient_ring().an_element()
-        return self([Matrix([[o, z], [i * o, o]])
-                     for i, _ in enumerate(self.alphabet())],
-                    vector([z, e]), right=vector([e, z]))
+        return self(
+            [Matrix([[o, z], [i * o, o]]) for i, _ in enumerate(self.alphabet())],
+            vector([z, e]),
+            right=vector([e, z]),
+        )
 
     def some_elements(self, **kwds):
         r"""
@@ -1882,6 +1910,7 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         from itertools import islice
         from sage.matrix.matrix_space import MatrixSpace
         from sage.modules.free_module import FreeModule
+
         yield self.an_element()
 
         C = self.coefficient_ring()
@@ -1915,8 +1944,8 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         from sage.sets.family import Family
 
         return self.element_class(
-            self, Family(self.alphabet(), lambda a: Matrix()),
-            vector([]), vector([]))
+            self, Family(self.alphabet(), lambda a: Matrix()), vector([]), vector([])
+        )
 
     @cached_method
     def one(self):
@@ -1944,10 +1973,12 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         R = self.coefficient_ring()
         one = R.one()
         zero = R.zero()
-        return self.element_class(self,
-                                  len(self.alphabet()) * [Matrix([[zero]])],
-                                  vector([one]),
-                                  vector([one]))
+        return self.element_class(
+            self,
+            len(self.alphabet()) * [Matrix([[zero]])],
+            vector([one]),
+            vector([one]),
+        )
 
     @cached_method
     def one_hadamard(self):
@@ -1974,11 +2005,11 @@ class RecognizableSeriesSpace(UniqueRepresentation, Parent):
         from sage.modules.free_module_element import vector
 
         one = self.coefficient_ring()(1)
-        return self({a: Matrix([[one]]) for a in self.alphabet()},
-                    vector([one]), vector([one]))
+        return self(
+            {a: Matrix([[one]]) for a in self.alphabet()}, vector([one]), vector([one])
+        )
 
-    def _element_constructor_(self, data,
-                              left=None, right=None):
+    def _element_constructor_(self, data, left=None, right=None):
         r"""
         Return a recognizable series.
 

@@ -26,7 +26,7 @@ from IPython.terminal.pt_inputhooks import register
 import sage.repl.attach
 
 
-TIMEOUT = 0.25   # seconds
+TIMEOUT = 0.25  # seconds
 
 
 def sage_inputhook(context):
@@ -65,7 +65,7 @@ def install():
     """
     ip = get_ipython()
     if not ip:
-        return   # Not running in ipython, e.g. doctests
+        return  # Not running in ipython, e.g. doctests
     if ip._inputhook != sage_inputhook:
         # silence `ip.enable_gui()` useless output
         with contextlib.redirect_stdout(io.StringIO()):

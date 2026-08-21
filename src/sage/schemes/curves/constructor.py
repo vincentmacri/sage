@@ -54,29 +54,38 @@ from sage.structure.sequence import Sequence
 from sage.schemes.generic.ambient_space import AmbientSpace
 from sage.schemes.generic.algebraic_scheme import AlgebraicScheme
 from sage.schemes.affine.affine_space import AffineSpace, AffineSpace_generic
-from sage.schemes.projective.projective_space import ProjectiveSpace, ProjectiveSpace_ring
-from sage.schemes.weighted_projective.weighted_projective_space import WeightedProjectiveSpace_ring
+from sage.schemes.projective.projective_space import (
+    ProjectiveSpace,
+    ProjectiveSpace_ring,
+)
+from sage.schemes.weighted_projective.weighted_projective_space import (
+    WeightedProjectiveSpace_ring,
+)
 from sage.schemes.plane_conics.constructor import Conic
 
-from .projective_curve import (ProjectiveCurve,
-                               ProjectivePlaneCurve,
-                               ProjectiveCurve_field,
-                               ProjectivePlaneCurve_field,
-                               ProjectivePlaneCurve_finite_field,
-                               IntegralProjectiveCurve,
-                               IntegralProjectiveCurve_finite_field,
-                               IntegralProjectivePlaneCurve,
-                               IntegralProjectivePlaneCurve_finite_field)
+from .projective_curve import (
+    ProjectiveCurve,
+    ProjectivePlaneCurve,
+    ProjectiveCurve_field,
+    ProjectivePlaneCurve_field,
+    ProjectivePlaneCurve_finite_field,
+    IntegralProjectiveCurve,
+    IntegralProjectiveCurve_finite_field,
+    IntegralProjectivePlaneCurve,
+    IntegralProjectivePlaneCurve_finite_field,
+)
 
-from .affine_curve import (AffineCurve,
-                           AffinePlaneCurve,
-                           AffineCurve_field,
-                           AffinePlaneCurve_field,
-                           AffinePlaneCurve_finite_field,
-                           IntegralAffineCurve,
-                           IntegralAffineCurve_finite_field,
-                           IntegralAffinePlaneCurve,
-                           IntegralAffinePlaneCurve_finite_field)
+from .affine_curve import (
+    AffineCurve,
+    AffinePlaneCurve,
+    AffineCurve_field,
+    AffinePlaneCurve_field,
+    AffinePlaneCurve_finite_field,
+    IntegralAffineCurve,
+    IntegralAffineCurve_finite_field,
+    IntegralAffinePlaneCurve,
+    IntegralAffinePlaneCurve_finite_field,
+)
 
 from .weighted_projective_curve import WeightedProjectiveCurve
 
@@ -257,7 +266,9 @@ def Curve(F, A=None):
                     A._coordinate_ring = P
                     break
             else:
-                A = ProjectiveSpace(P.ngens() - 1, P.base_ring(), names=P.variable_names())
+                A = ProjectiveSpace(
+                    P.ngens() - 1, P.base_ring(), names=P.variable_names()
+                )
                 A._coordinate_ring = P
         elif isinstance(F, MPolynomial):  # define a plane curve
             P = F.parent()
@@ -269,7 +280,9 @@ def Curve(F, A=None):
                     F = P(F)
                     k = F.base_ring()
                 else:
-                    raise TypeError("not a multivariate polynomial over a field or an integral domain")
+                    raise TypeError(
+                        "not a multivariate polynomial over a field or an integral domain"
+                    )
 
             if F.parent().ngens() == 2:
                 if F == 0:
@@ -288,27 +301,37 @@ def Curve(F, A=None):
                 A._coordinate_ring = P
             elif F.parent().ngens() == 1:
                 if not F.is_zero():
-                    raise ValueError("defining polynomial of curve must be zero "
-                                     "if the ambient space is of dimension 1")
+                    raise ValueError(
+                        "defining polynomial of curve must be zero "
+                        "if the ambient space is of dimension 1"
+                    )
 
                 A = AffineSpace(1, P.base_ring(), names=P.variable_names())
                 A._coordinate_ring = P
             else:
-                raise TypeError("number of variables of F (={}) must be 2 or 3".format(F))
+                raise TypeError(
+                    "number of variables of F (={}) must be 2 or 3".format(F)
+                )
             F = [F]
         else:
             raise TypeError("F (={}) must be a multivariate polynomial".format(F))
     else:
         if not isinstance(A, AmbientSpace):
-            raise TypeError("ambient space must be either an affine or projective space")
+            raise TypeError(
+                "ambient space must be either an affine or projective space"
+            )
         if not isinstance(F, (list, tuple)):
             F = [F]
         if not all(f.parent() == A.coordinate_ring() for f in F):
-            raise TypeError("need a list of polynomials of the coordinate ring of {}".format(A))
+            raise TypeError(
+                "need a list of polynomials of the coordinate ring of {}".format(A)
+            )
 
     n = A.dimension_relative()
     if n < 1:
-        raise TypeError("ambient space should be an affine or projective space of positive dimension")
+        raise TypeError(
+            "ambient space should be an affine or projective space of positive dimension"
+        )
 
     k = A.base_ring()
 
@@ -320,19 +343,25 @@ def Curve(F, A=None):
                 if k in Fields():
                     return IntegralAffineCurve(A, F)
                 return AffineCurve(A, F)
-            raise TypeError(f"{F} does not define a curve in one-dimensional affine space")
+            raise TypeError(
+                f"{F} does not define a curve in one-dimensional affine space"
+            )
         if n != 2:
             if isinstance(k, FiniteField):
                 if A.coordinate_ring().ideal(F).is_prime():
                     return IntegralAffineCurve_finite_field(A, F)
             if k in Fields():
-                if (k == QQ or k in NumberFields()) and A.coordinate_ring().ideal(F).is_prime():
+                if (k == QQ or k in NumberFields()) and A.coordinate_ring().ideal(
+                    F
+                ).is_prime():
                     return IntegralAffineCurve(A, F)
                 return AffineCurve_field(A, F)
             return AffineCurve(A, F)
 
         if not (len(F) == 1 and F[0] != 0 and F[0].degree() > 0):
-            raise TypeError("need a single nonconstant polynomial to define a plane curve")
+            raise TypeError(
+                "need a single nonconstant polynomial to define a plane curve"
+            )
 
         F = F[0]
         if isinstance(k, FiniteField):
@@ -353,15 +382,21 @@ def Curve(F, A=None):
                 if k in Fields():
                     return IntegralProjectiveCurve(A, F)
                 return ProjectiveCurve(A, F)
-            raise TypeError(f"{F} does not define a curve in one-dimensional projective space")
+            raise TypeError(
+                f"{F} does not define a curve in one-dimensional projective space"
+            )
         if n != 2:
             if not all(f.is_homogeneous() for f in F):
-                raise TypeError("polynomials defining a curve in a projective space must be homogeneous")
+                raise TypeError(
+                    "polynomials defining a curve in a projective space must be homogeneous"
+                )
             if isinstance(k, FiniteField):
                 if A.coordinate_ring().ideal(F).is_prime():
                     return IntegralProjectiveCurve_finite_field(A, F)
             if k in Fields():
-                if (k == QQ or k in NumberFields()) and A.coordinate_ring().ideal(F).is_prime():
+                if (k == QQ or k in NumberFields()) and A.coordinate_ring().ideal(
+                    F
+                ).is_prime():
                     return IntegralProjectiveCurve(A, F)
                 return ProjectiveCurve_field(A, F)
             return ProjectiveCurve(A, F)
@@ -369,7 +404,9 @@ def Curve(F, A=None):
         # There is no dimension check when initializing a plane curve, so check
         # here that F consists of a single nonconstant polynomial.
         if not (len(F) == 1 and F[0] != 0 and F[0].degree() > 0):
-            raise TypeError("need a single nonconstant polynomial to define a plane curve")
+            raise TypeError(
+                "need a single nonconstant polynomial to define a plane curve"
+            )
 
         F = F[0]
         if not F.is_homogeneous():
@@ -388,7 +425,9 @@ def Curve(F, A=None):
     if isinstance(A, WeightedProjectiveSpace_ring):
         # currently, we only support curves in a weighted projective plane
         if n != 2:
-            raise NotImplementedError("ambient space has to be a weighted projective plane")
+            raise NotImplementedError(
+                "ambient space has to be a weighted projective plane"
+            )
         # currently, we do not perform checks on weighted projective curves
         return WeightedProjectiveCurve(A, F)
 

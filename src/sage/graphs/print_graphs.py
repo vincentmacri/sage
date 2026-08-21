@@ -135,11 +135,11 @@ def print_graph_ps(vert_ls, edge_iter, pos_dict):
 
     for v in vert_ls:
         x, y = pos_dict[v]
-        pos_dict[v] = int(floor(50*x))+50, int(floor(50*y))+50
+        pos_dict[v] = int(floor(50 * x)) + 50, int(floor(50 * y)) + 50
         x, y = pos_dict[v]
         s += "%s %s point\n" % (x, y)
 
-    for (u, v, l) in edge_iter:
+    for u, v, l in edge_iter:
         ux, uy = pos_dict[u]
         vx, vy = pos_dict[v]
         s += "%s %s %s %s edge\n" % (ux, uy, vx, vy)
@@ -185,11 +185,11 @@ def print_graph_eps(vert_ls, edge_iter, pos_dict):
 
     for v in vert_ls:
         x, y = pos_dict[v]
-        pos_dict[v] = int(floor(50*x)) + 50, int(floor(50*y)) + 50
+        pos_dict[v] = int(floor(50 * x)) + 50, int(floor(50 * y)) + 50
         x, y = pos_dict[v]
         s += "%s %s point\n" % (x, y)
 
-    for (u, v, l) in edge_iter:
+    for u, v, l in edge_iter:
         ux, uy = pos_dict[u]
         vx, vy = pos_dict[v]
         s += "%s %s %s %s edge\n" % (ux, uy, vx, vy)

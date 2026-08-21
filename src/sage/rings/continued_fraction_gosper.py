@@ -40,6 +40,7 @@ class gosper_iterator:
     Iterable for the partial quotients of `(a*x+b)/(c*x+d)`, where `a, b, c, d`
     are integers, and `x` is a continued fraction.
     """
+
     def __init__(self, a, b, c, d, x):
         """
         Construct the class.
@@ -70,6 +71,7 @@ class gosper_iterator:
             []
         """
         from sage.rings.continued_fraction import ContinuedFraction_periodic
+
         self.a = a
         self.b = b
         self.c = c
@@ -127,14 +129,23 @@ class gosper_iterator:
         """
         while True:
             if self.currently_read >= self.input_preperiod_length:
-                current_state = (self.a, self.b, self.c, self.d, (self.currently_read - self.input_preperiod_length) % self.input_period_length)
+                current_state = (
+                    self.a,
+                    self.b,
+                    self.c,
+                    self.d,
+                    (self.currently_read - self.input_preperiod_length)
+                    % self.input_period_length,
+                )
                 if current_state in self.states:
-                    self.output_preperiod_length = self.states_to_currently_emitted[current_state]
+                    self.output_preperiod_length = self.states_to_currently_emitted[
+                        current_state
+                    ]
                     raise StopIteration
                 self.states.add(current_state)
                 self.states_to_currently_emitted[current_state] = self.currently_emitted
 
-            if (self.c == 0 and self.d == 0):
+            if self.c == 0 and self.d == 0:
                 raise StopIteration
 
             ub = self.bound(self.a, self.c)

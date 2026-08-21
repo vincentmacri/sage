@@ -19,6 +19,7 @@ from sage.categories.isomorphic_objects import IsomorphicObjectsCategory
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import lazy_import
 from sage.cpython.getattr import raw_getattr
+
 lazy_import("sage.rings.integer", "Integer")
 
 
@@ -82,7 +83,6 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
         return EnumeratedSets()._call_(X)
 
     class ParentMethods:
-
         def __len__(self):
             """
             Return the number of elements of ``self``.
@@ -165,7 +165,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 c += 1
             return Integer(c)
 
-        #Set cardinality to the default implementation
+        # Set cardinality to the default implementation
         cardinality = _cardinality_from_iterator
 
         def _cardinality_from_list(self, *ignored_args, **ignored_kwds):
@@ -219,7 +219,9 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
             try:
                 return lst[r]
             except IndexError:
-                raise ValueError("the value must be in the range from %s to %s" % (0, len(lst) - 1))
+                raise ValueError(
+                    "the value must be in the range from %s to %s" % (0, len(lst) - 1)
+                )
 
         def tuple(self):
             r"""
@@ -234,7 +236,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 True
             """
             # Simpler implementation because it does not have to check whether cardinality is finite
-            try: # shortcut
+            try:  # shortcut
                 if self._list is not None:
                     return self._tuple_from_list()
             except AttributeError:
@@ -244,6 +246,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 return tuple(self.list())
 
             return self._tuple_from_iterator()
+
         _tuple_default = tuple
 
         def _list_from_iterator(self):
@@ -387,7 +390,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 return list(self._list[start:stop:step])
             except AttributeError:
                 pass
-            card = self.cardinality() # This may set the list
+            card = self.cardinality()  # This may set the list
             try:
                 return list(self._list[start:stop:step])
             except AttributeError:
@@ -439,12 +442,18 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 L = self._list
             except AttributeError:
                 pass
-            card = self.cardinality() # This may set the list
+            card = self.cardinality()  # This may set the list
             try:
                 L = self._list
             except AttributeError:
                 pass
-            if L is None and start is None and stop is not None and stop >= 0 and step is None:
+            if (
+                L is None
+                and start is None
+                and stop is not None
+                and stop >= 0
+                and step is None
+            ):
                 if stop < card:
                     it = self.__iter__()
                     for j in range(stop):
@@ -478,9 +487,11 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 True
             """
             from sage.misc.prandom import randint
+
             c = self.cardinality()
-            r = randint(0, c-1)
+            r = randint(0, c - 1)
             return self.unrank(r)
+
         # Set the default implementation of random_element
         random_element = _random_element_from_unrank
 
@@ -506,13 +517,16 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 sage: C = cartesian_product([list(range(5)) for _ in range(5)])
                 sage: C._test_random()
             """
-            if (self.random_element == self._random_element_from_unrank or
-                self.cardinality == self._cardinality_from_iterator):
+            if (
+                self.random_element == self._random_element_from_unrank
+                or self.cardinality == self._cardinality_from_iterator
+            ):
                 return
             from sage.misc.randstate import seed
             from sage.probability.probability_distribution import RealDistribution
             from sage.rings.infinity import Infinity
             from collections import Counter
+
             tester = self._tester(**options)
             n = self.cardinality()
             if not n:
@@ -527,7 +541,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                     tester.assertEqual(self.an_element(), self.random_element())
                 return
 
-            T = RealDistribution('chisquared', n-1)
+            T = RealDistribution('chisquared', n - 1)
             critical = T.cum_distribution_function_inv(0.99)
             if critical.is_NaN():
                 # the cardinality is too large
@@ -540,14 +554,20 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 elements = [self.random_element() for _ in range(N)]
             # check that setting the seed actually worked
             with seed(random_seed):
-                tester.assertEqual(elements[:10],
-                                   [self.random_element()
-                                    for _ in range(10)],
-                                   f"random_element of {self} produced different elements with the same seed {random_seed}")
+                tester.assertEqual(
+                    elements[:10],
+                    [self.random_element() for _ in range(10)],
+                    f"random_element of {self} produced different elements with the same seed {random_seed}",
+                )
             E = float(N) / float(n)
-            chi_2 = sum(float(o) ** 2
-                        for o in Counter(elements).values()) / E - float(N)
-            tester.assertLessEqual(chi_2, critical, f"assuming random_element of {self} follows a uniform distribution, this outcome would only occur with probability {1-T.cum_distribution_function(chi_2)}")
+            chi_2 = sum(float(o) ** 2 for o in Counter(elements).values()) / E - float(
+                N
+            )
+            tester.assertLessEqual(
+                chi_2,
+                critical,
+                f"assuming random_element of {self} follows a uniform distribution, this outcome would only occur with probability {1 - T.cum_distribution_function(chi_2)}",
+            )
 
         def _test_rank(self, **options):
             r"""
@@ -561,18 +581,26 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
 
                 sage: Permutations([1,1,1,2,3])._test_rank()
             """
-            from sage.categories.complex_reflection_groups import ComplexReflectionGroups
+            from sage.categories.complex_reflection_groups import (
+                ComplexReflectionGroups,
+            )
             from sage.categories.finite_posets import FinitePosets
             from sage.categories.modules_with_basis import ModulesWithBasis
-            if (self in ComplexReflectionGroups()
+
+            if (
+                self in ComplexReflectionGroups()
                 or self in FinitePosets()
-                or (self.base_ring() is not None
-                    and self in ModulesWithBasis(self.base_ring()))):
+                or (
+                    self.base_ring() is not None
+                    and self in ModulesWithBasis(self.base_ring())
+                )
+            ):
                 # the meaning of rank is different in these categories
                 return
             if self.rank == self._rank_from_iterator:
                 return
             from sage.misc.prandom import sample
+
             tester = self._tester(**options)
             n = self.cardinality()
             if not n:
@@ -606,6 +634,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
             for i in self:
                 pass
             return i
+
         last = _last_from_iterator
 
         def _last_from_unrank(self):
@@ -661,11 +690,9 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
             if self.cardinality != self._cardinality_from_iterator:
                 card = self.cardinality()
                 if card <= tester._max_runs:
-                    tester.assertEqual(card,
-                                       self._cardinality_from_iterator())
+                    tester.assertEqual(card, self._cardinality_from_iterator())
 
     class CartesianProducts(CartesianProductsCategory):
-
         def extra_super_categories(self):
             """
             A Cartesian product of finite enumerated sets is a finite
@@ -704,8 +731,13 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 sage: C.__iter__.__module__                                             # needs sage.combinat
                 'sage.categories.sets_cat'
             """
-            random_element = raw_getattr(Sets.CartesianProducts.ParentMethods, "random_element")
-            cardinality = raw_getattr(Sets.CartesianProducts.ParentMethods, "cardinality")
+
+            random_element = raw_getattr(
+                Sets.CartesianProducts.ParentMethods, "random_element"
+            )
+            cardinality = raw_getattr(
+                Sets.CartesianProducts.ParentMethods, "cardinality"
+            )
             __iter__ = raw_getattr(Sets.CartesianProducts.ParentMethods, "__iter__")
 
             def last(self):
@@ -720,7 +752,8 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                     (41, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 4)
                 """
                 return self._cartesian_product_of_elements(
-                        tuple(c.last() for c in self.cartesian_factors()))
+                    tuple(c.last() for c in self.cartesian_factors())
+                )
 
             def rank(self, x):
                 r"""
@@ -768,11 +801,13 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                     ('a', 86, [7, 5, 4, 4])
                 """
                 from sage.rings.integer_ring import ZZ
+
                 x = self(x)
                 b = ZZ.one()
                 rank = ZZ.zero()
-                for f, c in zip(reversed(x.cartesian_factors()),
-                                reversed(self.cartesian_factors())):
+                for f, c in zip(
+                    reversed(x.cartesian_factors()), reversed(self.cartesian_factors())
+                ):
                     rank += b * c.rank(f)
                     b *= c.cardinality()
                 return rank
@@ -810,6 +845,7 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                     IndexError: index i (=2) is greater than the cardinality
                 """
                 from sage.rings.integer_ring import ZZ
+
                 i = ZZ(i)
                 if i < 0:
                     raise IndexError("i (={}) must be a nonnegative integer")
@@ -819,11 +855,12 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                     elt.insert(0, c.unrank(i % card))
                     i //= card
                 if i:
-                    raise IndexError("index i (={}) is greater than the cardinality".format(i))
+                    raise IndexError(
+                        "index i (={}) is greater than the cardinality".format(i)
+                    )
                 return self._cartesian_product_of_elements(elt)
 
     class IsomorphicObjects(IsomorphicObjectsCategory):
-
         def example(self):
             """
             Return an example of isomorphic object of a finite
@@ -835,11 +872,13 @@ class FiniteEnumeratedSets(CategoryWithAxiom):
                 sage: FiniteEnumeratedSets().IsomorphicObjects().example()
                 The image by some isomorphism of An example of a finite enumerated set: {1,2,3}
             """
-            from sage.categories.examples.finite_enumerated_sets import IsomorphicObjectOfFiniteEnumeratedSet
+            from sage.categories.examples.finite_enumerated_sets import (
+                IsomorphicObjectOfFiniteEnumeratedSet,
+            )
+
             return IsomorphicObjectOfFiniteEnumeratedSet()
 
         class ParentMethods:
-
             def cardinality(self):
                 r"""
                 Return the cardinality of ``self`` which is the same

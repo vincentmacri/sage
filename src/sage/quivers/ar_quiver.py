@@ -144,6 +144,7 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
         <1, 4> 7*v1 + 8*v2    <1, -4> 7*v1 + 6*v2
         <2, 4> 6*v1 + 7*v2    <2, -4> 8*v1 + 7*v2
     """
+
     @staticmethod
     def __classcall_private__(cls, quiver):
         """
@@ -182,7 +183,9 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
         """
         self._quiver = quiver
         self._top_sort = quiver.topological_sort()
-        self._dim_vec_space = CombinatorialFreeModule(ZZ, quiver.vertices(), prefix='v', bracket=False)
+        self._dim_vec_space = CombinatorialFreeModule(
+            ZZ, quiver.vertices(), prefix='v', bracket=False
+        )
         self._max_level = float('inf')
 
         dynkin_type = detect_dynkin_quiver(quiver)
@@ -207,7 +210,9 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
             Auslander-Reiten quiver of Multi-digraph on 2 vertices
         """
         if self._is_finite:
-            return "Auslander-Reiten quiver of a {} Dynkin quiver".format(self._cartan_type)
+            return "Auslander-Reiten quiver of a {} Dynkin quiver".format(
+                self._cartan_type
+            )
         return "Auslander-Reiten quiver of {}".format(self._quiver)
 
     # add options to class
@@ -238,14 +243,19 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
             \begin{gathered} \left\langle 2, 2 \right\rangle \\ 2 v_{1} + 3 v_{2} \end{gathered}
             sage: AR.options._reset()
         """
+
         NAME = 'AuslanderReitenQuiver'
         module = 'sage.quivers.ar_quiver'
-        latex = dict(default='node',
-                     description='Specifies how nodes of the AR quiver should be latexed',
-                     values=dict(node='latex as the node description',
-                                 dimension_vector='latex as the dimension vector',
-                                 both='latex as both'),
-                     case_sensitive=False)
+        latex = dict(
+            default='node',
+            description='Specifies how nodes of the AR quiver should be latexed',
+            values=dict(
+                node='latex as the node description',
+                dimension_vector='latex as the dimension vector',
+                both='latex as both',
+            ),
+            case_sensitive=False,
+        )
 
     def _an_element_(self):
         r"""
@@ -289,7 +299,9 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
             sage: AR.projectives()
             Finite family {1: <1, 1>, 2: <2, 1>}
         """
-        return Family({v: self.element_class(self, v, 1) for v in self._quiver.vertex_iterator()})
+        return Family(
+            {v: self.element_class(self, v, 1) for v in self._quiver.vertex_iterator()}
+        )
 
     @cached_method
     def simples(self):
@@ -345,6 +357,7 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
         G.set_latex_options(edge_labels=True)
 
         from sage.graphs.dot2tex_utils import have_dot2tex
+
         if have_dot2tex():
             from sage.misc.latex import LatexExpr
 
@@ -385,17 +398,27 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
             # convert cur to the appropriate data
             cur = {v: self.element_class(self, v, k) for v in cur}
             verts.extend(cur.values())
-            edges.extend((cur[v], cur[u], l)
-                         for u in cur for _, v, l in self._quiver.outgoing_edge_iterator(u) if v in cur)
-            edges.extend((prev[u], cur[v], l) for v in cur
-                         for u, _, l in self._quiver.incoming_edge_iterator(v) if u in prev)
+            edges.extend(
+                (cur[v], cur[u], l)
+                for u in cur
+                for _, v, l in self._quiver.outgoing_edge_iterator(u)
+                if v in cur
+            )
+            edges.extend(
+                (prev[u], cur[v], l)
+                for v in cur
+                for u, _, l in self._quiver.incoming_edge_iterator(v)
+                if u in prev
+            )
             if with_translations:
                 edges.extend((cur[v], prev[v], 'ART') for v in cur if v in prev)
             k += 1
             prev = cur
             cur = self._dim_vecs_level(k)
 
-        G = DiGraph([verts, edges], format='vertices_and_edges', multiedges=True, immutable=True)
+        G = DiGraph(
+            [verts, edges], format='vertices_and_edges', multiedges=True, immutable=True
+        )
         return self._digraph_set_latex_options(G)
 
     def digraph_postinjectives(self, max_depth, with_translations=False):
@@ -424,17 +447,27 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
             # convert cur to the appropriate data
             cur = {v: self.element_class(self, v, -k) for v in cur}
             verts.extend(cur.values())
-            edges.extend((cur[u], cur[v], l)
-                         for u in cur for _, v, l in self._quiver.outgoing_edge_iterator(u) if v in cur)
-            edges.extend((cur[v], prev[u], l) for v in cur
-                         for u, _, l in self._quiver.incoming_edge_iterator(v) if u in prev)
+            edges.extend(
+                (cur[u], cur[v], l)
+                for u in cur
+                for _, v, l in self._quiver.outgoing_edge_iterator(u)
+                if v in cur
+            )
+            edges.extend(
+                (cur[v], prev[u], l)
+                for v in cur
+                for u, _, l in self._quiver.incoming_edge_iterator(v)
+                if u in prev
+            )
             if with_translations:
                 edges.extend((prev[v], cur[v], 'ART') for v in cur if v in prev)
             k += 1
             prev = cur
             cur = self._dim_vecs_level(-k)
 
-        G = DiGraph([verts, edges], format='vertices_and_edges', multiedges=True, immutable=True)
+        G = DiGraph(
+            [verts, edges], format='vertices_and_edges', multiedges=True, immutable=True
+        )
         return self._digraph_set_latex_options(G)
 
     @cached_method
@@ -482,10 +515,18 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
                 cur = {v: self.element_class(self, v, k) for v in cur}
                 injectives.update(cur)
                 verts.extend(cur.values())
-                edges.extend((cur[v], cur[u], l)
-                             for u in cur for _, v, l in self._quiver.outgoing_edge_iterator(u) if v in cur)
-                edges.extend((prev[u], cur[v], l) for v in cur
-                             for u, _, l in self._quiver.incoming_edge_iterator(v) if u in prev)
+                edges.extend(
+                    (cur[v], cur[u], l)
+                    for u in cur
+                    for _, v, l in self._quiver.outgoing_edge_iterator(u)
+                    if v in cur
+                )
+                edges.extend(
+                    (prev[u], cur[v], l)
+                    for v in cur
+                    for u, _, l in self._quiver.incoming_edge_iterator(v)
+                    if u in prev
+                )
                 k += 1
                 prev = cur
                 cur = self._dim_vecs_level(k)
@@ -595,8 +636,15 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
         M = self._dim_vec_space
         Q = self._quiver
         if k == 1:
-            ret = {v: M._from_dict({u: ZZ(len(Q.all_paths(v, u, use_multiedges=True))) for u in Q.vertex_iterator()})
-                   for v in Q.vertex_iterator()}
+            ret = {
+                v: M._from_dict(
+                    {
+                        u: ZZ(len(Q.all_paths(v, u, use_multiedges=True)))
+                        for u in Q.vertex_iterator()
+                    }
+                )
+                for v in Q.vertex_iterator()
+            }
         elif k > 1:
             if k > self._max_level:
                 return {}
@@ -620,8 +668,15 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
                 self._max_level = k
 
         elif k == -1:
-            ret = {v: M._from_dict({u: ZZ(len(Q.all_paths(u, v, use_multiedges=True))) for u in Q.vertex_iterator()})
-                   for v in Q.vertex_iterator()}
+            ret = {
+                v: M._from_dict(
+                    {
+                        u: ZZ(len(Q.all_paths(u, v, use_multiedges=True)))
+                        for u in Q.vertex_iterator()
+                    }
+                )
+                for v in Q.vertex_iterator()
+            }
 
         elif k < -1:
             prev = self._dim_vecs_level(k + 1)
@@ -678,6 +733,7 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
         r"""
         A node in the AR quiver.
         """
+
         def __init__(self, parent, vertex, level):
             r"""
             Initialize ``self``.
@@ -730,7 +786,10 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
                 sage: AR.options._reset()
             """
             from sage.misc.latex import latex
-            node = r"\left\langle {}, {} \right\rangle".format(latex(self._vertex), self._level)
+
+            node = r"\left\langle {}, {} \right\rangle".format(
+                latex(self._vertex), self._level
+            )
             latex_option = self.parent().options.latex
             if latex_option == "node":
                 return node
@@ -750,7 +809,9 @@ class AuslanderReitenQuiver(UniqueRepresentation, Parent):
                 sage: sorted(AR)
                 [<1, 1>, <2, 1>, <3, 1>, <1, 2>, <2, 2>, <3, 2>]
             """
-            return richcmp((self._level, self._vertex), (other._level, other._vertex), op)
+            return richcmp(
+                (self._level, self._vertex), (other._level, other._vertex), op
+            )
 
         def __hash__(self) -> int:
             r"""

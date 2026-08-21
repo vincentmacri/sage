@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,10 +7,9 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 """Implements different data storage types."""
-
 
 from .utils import je
 from .utils import reindent_lines as ri
@@ -288,12 +287,18 @@ class StorageType:
             sage: ty_mpfr.declare_chunk_class_members('args')
             '    cdef int _n_args\n    cdef mpfr_t* _args\n'
         """
-        return je(ri(0,
-            """
+        return je(
+            ri(
+                0,
+                """
             {# XXX Variables here (and everywhere, really) should actually be Py_ssize_t #}
                 cdef int _n_{{ name }}
                 cdef {{ myself.cython_array_type() }} _{{ name }}
-            """), myself=self, name=name)
+            """,
+            ),
+            myself=self,
+            name=name,
+        )
 
     def alloc_chunk_data(self, name, len):
         r"""
@@ -310,15 +315,22 @@ class StorageType:
                         mpfr_init2(self._args[i], self.domain.prec())
             <BLANKLINE>
         """
-        return je(ri(0,
-            """
+        return je(
+            ri(
+                0,
+                """
                     self._n_{{ name }} = {{ len }}
                     self._{{ name }} = <{{ myself.c_ptr_type() }}>check_allocarray(self._n_{{ name }}, sizeof({{ myself.c_decl_type() }}))
             {% if myself.needs_cython_init_clear() %}
                     for i in range({{ len }}):
                         {{ myself.cython_init('self._%s[i]' % name) }}
             {% endif %}
-            """), myself=self, name=name, len=len)
+            """,
+            ),
+            myself=self,
+            name=name,
+            len=len,
+        )
 
     def dealloc_chunk_data(self, name):
         r"""
@@ -340,14 +352,21 @@ class StorageType:
                         sig_free(self._constants)
             <BLANKLINE>
         """
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
                     if self._{{ name }}:
             {%     if myself.needs_cython_init_clear() %}
                         for i in range(self._n_{{ name }}):
                             {{ myself.cython_clear('self._%s[i]' % name) }}
             {%     endif %}
                         sig_free(self._{{ name }})
-            """), myself=self, name=name)
+            """,
+            ),
+            myself=self,
+            name=name,
+        )
 
 
 class StorageTypeAssignable(StorageType):
@@ -438,6 +457,7 @@ class StorageTypeSimple(StorageTypeAssignable):
     types.  As of yet, it has no functionality differences from
     StorageTypeAssignable.
     """
+
     pass
 
 
@@ -454,6 +474,7 @@ class StorageTypeDoubleComplex(StorageTypeSimple):
     This uses functions defined in CDFInterpreter, and is for use in
     that context.
     """
+
     def assign_c_from_py(self, c, py):
         """
         sage: from sage_setup.autogen.interpreters.internal import ty_double_complex
@@ -551,12 +572,18 @@ class StorageTypePython(StorageTypeAssignable):
             sage: ty_python.declare_chunk_class_members('args')
             '    cdef object _list_args\n    cdef int _n_args\n    cdef PyObject** _args\n'
         """
-        return je(ri(4,
-            """
+        return je(
+            ri(
+                4,
+                """
             cdef object _list_{{ name }}
             cdef int _n_{{ name }}
             cdef {{ myself.cython_array_type() }} _{{ name }}
-            """), myself=self, name=name)
+            """,
+            ),
+            myself=self,
+            name=name,
+        )
 
     def alloc_chunk_data(self, name, len):
         r"""
@@ -572,12 +599,19 @@ class StorageTypePython(StorageTypeAssignable):
                     self._args = (<PyListObject *>self._list_args).ob_item
             <BLANKLINE>
         """
-        return je(ri(8,
-            """
+        return je(
+            ri(
+                8,
+                """
             self._n_{{ name }} = {{ len }}
             self._list_{{ name }} = PyList_New(self._n_{{ name }})
             self._{{ name }} = (<PyListObject *>self._list_{{ name }}).ob_item
-            """), myself=self, name=name, len=len)
+            """,
+            ),
+            myself=self,
+            name=name,
+            len=len,
+        )
 
     def dealloc_chunk_data(self, name):
         r"""
@@ -623,8 +657,7 @@ class StorageTypePython(StorageTypeAssignable):
             sage: ty_python.assign_c_from_py('foo[i]', 'bar[j]')
             'foo[i] = <PyObject *>bar[j]; Py_INCREF(foo[i])'
         """
-        return je("""{{ c }} = <PyObject *>{{ py }}; Py_INCREF({{ c }})""",
-                  c=c, py=py)
+        return je("""{{ c }} = <PyObject *>{{ py }}; Py_INCREF({{ c }})""", c=c, py=py)
 
     def cython_init(self, loc):
         r"""
@@ -665,6 +698,7 @@ class StorageTypeAutoReference(StorageType):
     automatically converted to pointers to automatically pass
     arguments by reference.
     """
+
     def __init__(self, decl_ty, ref_ty):
         r"""
         Initializes the properties decl_type and ref_type (the C type
@@ -801,8 +835,10 @@ class StorageTypeMPFR(StorageTypeAutoReference):
         super().__init__('mpfr_t', 'mpfr_ptr')
         self.id = id
         self.class_member_declarations = "cdef RealField_class domain%s\n" % self.id
-        self.class_member_initializations = \
-            "self.domain%s = args['domain%s']\n" % (self.id, self.id)
+        self.class_member_initializations = "self.domain%s = args['domain%s']\n" % (
+            self.id,
+            self.id,
+        )
         self.local_declarations = "cdef RealNumber rn%s\n" % self.id
 
     def cython_init(self, loc):
@@ -816,8 +852,11 @@ class StorageTypeMPFR(StorageTypeAutoReference):
             sage: ty_mpfr.cython_init('foo[i]')
             'mpfr_init2(foo[i], self.domain.prec())'
         """
-        return je("mpfr_init2({{ loc }}, self.domain{{ myself.id }}.prec())",
-                  myself=self, loc=loc)
+        return je(
+            "mpfr_init2({{ loc }}, self.domain{{ myself.id }}.prec())",
+            myself=self,
+            loc=loc,
+        )
 
     def cython_clear(self, loc):
         r"""
@@ -844,10 +883,17 @@ class StorageTypeMPFR(StorageTypeAutoReference):
             sage: ty_mpfr.assign_c_from_py('foo[i]', 'bar[j]')
             'rn = self.domain(bar[j])\nmpfr_set(foo[i], rn.value, MPFR_RNDN)'
         """
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
             rn{{ myself.id }} = self.domain({{ py }})
-            mpfr_set({{ c }}, rn.value, MPFR_RNDN)"""),
-            myself=self, c=c, py=py)
+            mpfr_set({{ c }}, rn.value, MPFR_RNDN)""",
+            ),
+            myself=self,
+            c=c,
+            py=py,
+        )
 
 
 ty_mpfr = StorageTypeMPFR()
@@ -905,9 +951,14 @@ class StorageTypeMPC(StorageTypeAutoReference):
         """
         StorageTypeAutoReference.__init__(self, 'mpc_t', 'mpc_ptr')
         self.id = id
-        self.class_member_declarations = "cdef object domain%s\ncdef ComplexNumber domain_element%s\n" % (self.id, self.id)
-        self.class_member_initializations = \
-            "self.domain%s = args['domain%s']\nself.domain_element%s = self.domain.zero()\n" % (self.id, self.id, self.id)
+        self.class_member_declarations = (
+            "cdef object domain%s\ncdef ComplexNumber domain_element%s\n"
+            % (self.id, self.id)
+        )
+        self.class_member_initializations = (
+            "self.domain%s = args['domain%s']\nself.domain_element%s = self.domain.zero()\n"
+            % (self.id, self.id, self.id)
+        )
         self.local_declarations = "cdef ComplexNumber cn%s\n" % self.id
 
     def cython_init(self, loc):
@@ -921,8 +972,11 @@ class StorageTypeMPC(StorageTypeAutoReference):
             sage: ty_mpc.cython_init('foo[i]')
             'mpc_init2(foo[i], self.domain_element._prec)'
         """
-        return je("mpc_init2({{ loc }}, self.domain_element{{ myself.id }}._prec)",
-                  myself=self, loc=loc)
+        return je(
+            "mpc_init2({{ loc }}, self.domain_element{{ myself.id }}._prec)",
+            myself=self,
+            loc=loc,
+        )
 
     def cython_clear(self, loc):
         r"""
@@ -949,9 +1003,14 @@ class StorageTypeMPC(StorageTypeAutoReference):
             sage: ty_mpc.assign_c_from_py('foo[i]', 'bar[j]')
             'cn = self.domain(bar[j])\nmpc_set_fr_fr(foo[i], cn.__re, cn.__im, MPC_RNDNN)'
         """
-        return je("""
+        return je(
+            """
 cn{{ myself.id }} = self.domain({{ py }})
-mpc_set_fr_fr({{ c }}, cn.__re, cn.__im, MPC_RNDNN)""", myself=self, c=c, py=py)
+mpc_set_fr_fr({{ c }}, cn.__re, cn.__im, MPC_RNDNN)""",
+            myself=self,
+            c=c,
+            py=py,
+        )
 
 
 ty_mpc = StorageTypeMPC()

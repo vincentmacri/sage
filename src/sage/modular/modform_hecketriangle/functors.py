@@ -85,11 +85,21 @@ def _get_base_ring(ring, var_name='d'):
     base_ring = ring
     # if (isinstance(base_ring, FractionField_generic)):
     #    base_ring = base_ring.base()
-    if (base_ring.construction() and base_ring.construction()[0] == FractionFieldFunctor()):
+    if (
+        base_ring.construction()
+        and base_ring.construction()[0] == FractionFieldFunctor()
+    ):
         base_ring = base_ring.construction()[1]
-    if (isinstance(base_ring, PolynomialRing_generic) and base_ring.ngens() == 1 and base_ring.variable_name() == var_name):
+    if (
+        isinstance(base_ring, PolynomialRing_generic)
+        and base_ring.ngens() == 1
+        and base_ring.variable_name() == var_name
+    ):
         base_ring = base_ring.base()
-    if (base_ring.construction() and base_ring.construction()[0] == FractionFieldFunctor()):
+    if (
+        base_ring.construction()
+        and base_ring.construction()[0] == FractionFieldFunctor()
+    ):
         base_ring = base_ring.construction()[1]
 
     return base_ring
@@ -185,7 +195,9 @@ class FormsSubSpaceFunctor(ConstructionFunctor):
 
         Functor.__init__(self, Rings(), CommutativeAdditiveGroups())
         if not isinstance(ambient_space_functor, FormsSpaceFunctor):
-            raise ValueError("{} is not a FormsSpaceFunctor!".format(ambient_space_functor))
+            raise ValueError(
+                "{} is not a FormsSpaceFunctor!".format(ambient_space_functor)
+            )
         # TODO: canonical parameters? Some checks?
         # The generators should have an associated base ring
         # self._generators_ring = ...
@@ -247,7 +259,11 @@ class FormsSubSpaceFunctor(ConstructionFunctor):
             FormsSubSpaceFunctor with 1 generator for the ModularFormsFunctor(n=4, k=12, ep=1)
         """
 
-        return "FormsSubSpaceFunctor with {} generator{} for the {}".format(len(self._generators), 's' if len(self._generators) != 1 else '', self._ambient_space_functor)
+        return "FormsSubSpaceFunctor with {} generator{} for the {}".format(
+            len(self._generators),
+            's' if len(self._generators) != 1 else '',
+            self._ambient_space_functor,
+        )
 
     def merge(self, other):
         r"""
@@ -293,10 +309,12 @@ class FormsSubSpaceFunctor(ConstructionFunctor):
             QuasiModularFormsRingFunctor(n=4, red_hom=True)
         """
 
-        if (self == other):
+        if self == other:
             return self
         if isinstance(other, FormsSubSpaceFunctor):
-            merged_ambient_space_functor = self._ambient_space_functor.merge(other._ambient_space_functor)
+            merged_ambient_space_functor = self._ambient_space_functor.merge(
+                other._ambient_space_functor
+            )
             if isinstance(merged_ambient_space_functor, FormsSpaceFunctor):
                 generators = self._generators + other._generators
                 return FormsSubSpaceFunctor(merged_ambient_space_functor, generators)
@@ -319,9 +337,11 @@ class FormsSubSpaceFunctor(ConstructionFunctor):
             sage: ss_functor1 == ss_functor2
             False
         """
-        return (type(self) is type(other) and
-                self._ambient_space_functor == other._ambient_space_functor and
-                self._generators == other._generators)
+        return (
+            type(self) is type(other)
+            and self._ambient_space_functor == other._ambient_space_functor
+            and self._generators == other._generators
+        )
 
 
 class FormsSpaceFunctor(ConstructionFunctor):
@@ -337,6 +357,7 @@ class FormsSpaceFunctor(ConstructionFunctor):
     """
 
     from .analytic_type import AnalyticType
+
     AT = AnalyticType()
 
     rank = 10
@@ -371,6 +392,7 @@ class FormsSpaceFunctor(ConstructionFunctor):
 
         Functor.__init__(self, Rings(), CommutativeAdditiveGroups())
         from .space import canonical_parameters
+
         (self._group, R, self._k, self._ep, n) = canonical_parameters(group, ZZ, k, ep)
 
         self._analytic_type = self.AT(analytic_type)
@@ -396,7 +418,7 @@ class FormsSpaceFunctor(ConstructionFunctor):
             True
         """
 
-        if (isinstance(R, BaseFacade)):
+        if isinstance(R, BaseFacade):
             R = _get_base_ring(R._ring)
             return FormsSpace(self._analytic_type, self._group, R, self._k, self._ep)
         R = BaseFacade(_get_base_ring(R))
@@ -417,7 +439,12 @@ class FormsSpaceFunctor(ConstructionFunctor):
             QuasiCuspFormsFunctor(n=5, k=10/3, ep=-1)
         """
 
-        return "{}FormsFunctor(n={}, k={}, ep={})".format(self._analytic_type.analytic_space_name(), self._group.n(), self._k, self._ep)
+        return "{}FormsFunctor(n={}, k={}, ep={})".format(
+            self._analytic_type.analytic_space_name(),
+            self._group.n(),
+            self._k,
+            self._ep,
+        )
 
     def merge(self, other):
         r"""
@@ -465,7 +492,7 @@ class FormsSpaceFunctor(ConstructionFunctor):
             ModularFormsRingFunctor(n=5)
         """
 
-        if (self == other):
+        if self == other:
             return self
 
         if isinstance(other, FormsSubSpaceFunctor):
@@ -499,11 +526,13 @@ class FormsSpaceFunctor(ConstructionFunctor):
             sage: functor1 == functor2
             False
         """
-        return (type(self) is type(other) and
-                self._group == other._group and
-                self._analytic_type == other._analytic_type and
-                self._k == other._k and
-                self._ep == other._ep)
+        return (
+            type(self) is type(other)
+            and self._group == other._group
+            and self._analytic_type == other._analytic_type
+            and self._k == other._k
+            and self._ep == other._ep
+        )
 
 
 class FormsRingFunctor(ConstructionFunctor):
@@ -519,6 +548,7 @@ class FormsRingFunctor(ConstructionFunctor):
     """
 
     from .analytic_type import AnalyticType
+
     AT = AnalyticType()
 
     rank = 10
@@ -553,6 +583,7 @@ class FormsRingFunctor(ConstructionFunctor):
 
         Functor.__init__(self, Rings(), Rings())
         from .graded_ring import canonical_parameters
+
         (self._group, R, red_hom, n) = canonical_parameters(group, ZZ, red_hom)
         self._red_hom = bool(red_hom)
         self._analytic_type = self.AT(analytic_type)
@@ -578,7 +609,7 @@ class FormsRingFunctor(ConstructionFunctor):
             False
         """
 
-        if (isinstance(R, BaseFacade)):
+        if isinstance(R, BaseFacade):
             R = _get_base_ring(R._ring)
             return FormsRing(self._analytic_type, self._group, R, self._red_hom)
         R = BaseFacade(_get_base_ring(R))
@@ -598,11 +629,13 @@ class FormsRingFunctor(ConstructionFunctor):
             QuasiMeromorphicModularFormsRingFunctor(n=6)
         """
 
-        if (self._red_hom):
+        if self._red_hom:
             red_arg = ", red_hom=True"
         else:
             red_arg = ""
-        return "{}FormsRingFunctor(n={}{})".format(self._analytic_type.analytic_space_name(), self._group.n(), red_arg)
+        return "{}FormsRingFunctor(n={}{})".format(
+            self._analytic_type.analytic_space_name(), self._group.n(), red_arg
+        )
 
     def merge(self, other):
         r"""
@@ -647,7 +680,7 @@ class FormsRingFunctor(ConstructionFunctor):
             MeromorphicModularFormsRingFunctor(n=6, red_hom=True)
         """
 
-        if (self == other):
+        if self == other:
             return self
 
         if isinstance(other, FormsSubSpaceFunctor):
@@ -680,10 +713,12 @@ class FormsRingFunctor(ConstructionFunctor):
             sage: functor1 == functor2
             False
         """
-        return (type(self) is type(other) and
-                self._group == other._group and
-                self._analytic_type == other._analytic_type and
-                self._red_hom == other._red_hom)
+        return (
+            type(self) is type(other)
+            and self._group == other._group
+            and self._analytic_type == other._analytic_type
+            and self._red_hom == other._red_hom
+        )
 
 
 class BaseFacade(Parent, UniqueRepresentation):

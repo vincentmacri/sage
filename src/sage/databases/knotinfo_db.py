@@ -23,6 +23,7 @@ AUTHORS:
 
 - Sebastian Oehms (2020-08): initial version
 """
+
 ##############################################################################
 #       Copyright (C) 2020 Sebastian Oehms <seb.oehms@gmail.com>
 #
@@ -60,9 +61,10 @@ class KnotInfoColumnTypes(Enum):
         <KnotInfoColumnTypes.OnlyLinks: 'L'>,
         <KnotInfoColumnTypes.KnotsAndLinks: 'B'>]
     """
-    OnlyKnots = 'K'       # column that is only used in the KnotInfo table
-    OnlyLinks = 'L'       # column that is only used in the LinkInfo table
-    KnotsAndLinks = 'B'       # column that is only used in both tables
+
+    OnlyKnots = 'K'  # column that is only used in the KnotInfo table
+    OnlyLinks = 'L'  # column that is only used in the LinkInfo table
+    KnotsAndLinks = 'B'  # column that is only used in both tables
 
 
 class KnotInfoColumns(Enum):
@@ -108,6 +110,7 @@ class KnotInfoColumns(Enum):
          'unoriented_name_rank': 'Unoriented Rank',
          'weak_splitting_number': 'Weak Splitting Number'}
     """
+
     @property
     def types(self):
         r"""
@@ -171,6 +174,7 @@ class KnotInfoColumns(Enum):
             True
         """
         import webbrowser
+
         if self.column_type() == self.types.OnlyLinks:
             url = KnotInfoFilename.links.description_url(self)
         else:
@@ -329,9 +333,9 @@ class KnotInfoFilename(Enum):
     links = ['https://link-info-repo.onrender.com/', 'linkinfo_data_complete']
 
 
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 # Class to provide data for knots and links from the KnotInfo web-page
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 class KnotInfoDataBase(SageObject, UniqueRepresentation):
     r"""
     Database interface to KnotInfo.
@@ -376,6 +380,7 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
 
         from sage.features.databases import DatabaseKnotInfo
         from sage.env import DOT_SAGE
+
         self._feature = DatabaseKnotInfo()
         self._sobj_path = os.path.join(DOT_SAGE, 'knotinfo')
 
@@ -400,15 +405,21 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         if os.path.isdir(self._sobj_path):
             # if it exists then remove it if it belongs to an older version of
             # the database or should be reset by the user because it is damaged.
-            test_version = os.path.join(self._sobj_path, self.filename.knots.num_knots(self.version()))
+            test_version = os.path.join(
+                self._sobj_path, self.filename.knots.num_knots(self.version())
+            )
             if force or not os.path.isfile(test_version):
                 import shutil
+
                 shutil.rmtree(self._sobj_path)
 
         from sage.misc.temporary_file import atomic_dir
+
         with atomic_dir(self._sobj_path) as d:
             sobj_path = d.name
-            num_knots_file = os.path.join(sobj_path, self.filename.knots.num_knots(self.version()))
+            num_knots_file = os.path.join(
+                sobj_path, self.filename.knots.num_knots(self.version())
+            )
             knot_list = self.knot_list()
             num_knots = len(knot_list) - 1
             save(num_knots, num_knots_file)
@@ -447,6 +458,7 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         """
         self._feature.require()
         from database_knotinfo import version
+
         return version()
 
     def demo_version(self):
@@ -463,8 +475,11 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         """
         if self._demo is None:
             if self._feature.is_present():
-                num_knots_file = os.path.join(self._sobj_path, self.filename.knots.num_knots(self.version()))
+                num_knots_file = os.path.join(
+                    self._sobj_path, self.filename.knots.num_knots(self.version())
+                )
                 from builtins import FileNotFoundError
+
                 try:
                     self._num_knots = load(num_knots_file)
                 except FileNotFoundError:
@@ -472,7 +487,9 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
                 self._demo = False
             else:
                 self._demo = True
-                self._num_knots = len([v for v in row_demo_sample.values() if v[1] == 1])
+                self._num_knots = len(
+                    [v for v in row_demo_sample.values() if v[1] == 1]
+                )
         return self._demo
 
     def knot_list(self):
@@ -489,6 +506,7 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
             return self._knot_list
 
         from database_knotinfo import link_list
+
         self._knot_list = link_list()
         return self._knot_list
 
@@ -506,6 +524,7 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
             return self._link_list
 
         from database_knotinfo import link_list
+
         self._link_list = link_list(proper_links=True)
         return self._link_list
 
@@ -535,7 +554,6 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         # Columns that exist for knots and links
         # ----------------------------------------------------------------
         for col in knot_column_names:
-
             name = knot_column_names[col]
             if not name and col not in columns_white_list:
                 # not of interest
@@ -554,7 +572,6 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         # Columns that exist for links only
         # ----------------------------------------------------------------
         for col in link_column_names:
-
             name = link_column_names[col]
             if not name and col not in columns_white_list:
                 # not of interest
@@ -614,7 +631,10 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
             if col.column_type() != col.types.OnlyLinks:
                 for i in range(1, len_knots):
                     if col.name == self._names_column:
-                        row_dict[self._knot_prefix + knot_list[i][col.name]] = [i - 1, 1]
+                        row_dict[self._knot_prefix + knot_list[i][col.name]] = [
+                            i - 1,
+                            1,
+                        ]
 
                     val_list.append(knot_list[i][col.name])
 
@@ -632,9 +652,11 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
                     val_list.append(link_list[i][col.name])
 
             if val_list:
-                save(val_list, '%s/%s' % (sobj_path, self.filename.knots.sobj_data(col)))
+                save(
+                    val_list, '%s/%s' % (sobj_path, self.filename.knots.sobj_data(col))
+                )
 
-        save(row_dict,    '%s/%s' % (sobj_path, self.filename.knots.sobj_row()))
+        save(row_dict, '%s/%s' % (sobj_path, self.filename.knots.sobj_row()))
 
     @cached_method
     def columns(self):
@@ -724,7 +746,7 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         """
         row_dict = self.read_row_dict()
         names = self.read(self.columns().name)
-        return {k:names[v[0]] for k, v in row_dict.items()}
+        return {k: names[v[0]] for k, v in row_dict.items()}
 
     # -------------------------------------------------------------------------------------------------------------
     # read the number of knots contained in the database (without proper links) from the according sobj-file.
@@ -797,66 +819,88 @@ class KnotInfoDataBase(SageObject, UniqueRepresentation):
         """
         from sage.knots.knotinfo import KnotInfo
         from sage.misc.misc import some_tuples
+
         tester = options['tester']
         max_samples = tester._max_samples
         if not max_samples:
             max_samples = 20
         l = list(KnotInfo)
         sample = some_tuples(l, 1, len(l), max_samples=max_samples)
-        tester.assertTrue(all(L.is_recoverable(unique=False) for L, in sample))
+        tester.assertTrue(all(L.is_recoverable(unique=False) for (L,) in sample))
 
 
 column_demo_sample = {
-    'name':                 ['Name',                 KnotInfoColumnTypes.KnotsAndLinks],
-    'name_unoriented':      ['Name - Unoriented',    KnotInfoColumnTypes.OnlyLinks],
-    'dt_notation':          ['DT Notation',          KnotInfoColumnTypes.OnlyKnots],
-    'gauss_notation':       ['Gauss Notation',       KnotInfoColumnTypes.KnotsAndLinks],
-    'pd_notation':          ['PD Notation',          KnotInfoColumnTypes.OnlyKnots],
-    'pd_notation_vector':   ['PD Notation (vector)', KnotInfoColumnTypes.OnlyLinks],
-    'crossing_number':      ['Crossing Number',      KnotInfoColumnTypes.KnotsAndLinks],
-    'braid_index':          ['Braid Index',          KnotInfoColumnTypes.OnlyKnots],
-    'braid_length':         ['Braid Length',         KnotInfoColumnTypes.OnlyKnots],
-    'braid_notation':       ['Braid Notation',       KnotInfoColumnTypes.KnotsAndLinks],
-    'braid_notation_old':   ['Braid Notation',       KnotInfoColumnTypes.OnlyLinks],
-    'alternating':          ['Alternating',          KnotInfoColumnTypes.KnotsAndLinks],
-    'alexander_polynomial': ['Alexander',            KnotInfoColumnTypes.OnlyKnots],
-    'jones_polynomial':     ['Jones',                KnotInfoColumnTypes.KnotsAndLinks],
-    'conway_polynomial':    ['Conway',               KnotInfoColumnTypes.KnotsAndLinks],
-    'homfly_polynomial':    ['HOMFLY',               KnotInfoColumnTypes.OnlyKnots],
-    'homflypt_polynomial':  ['HOMFLYPT Polynomial',  KnotInfoColumnTypes.OnlyLinks],
-    'kauffman_polynomial':  ['Kauffman',             KnotInfoColumnTypes.KnotsAndLinks],
-    'khovanov_polynomial':  ['Khovanov',             KnotInfoColumnTypes.OnlyLinks],
-    'khovanov_unreduced_integral_polynomial': ['KH Unred Z Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_reduced_integral_polynomial': ['KH Red Z Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_reduced_rational_polynomial': ['KH Red Q Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_reduced_mod2_polynomial': ['KH Red Mod2 Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_odd_integral_polynomial': ['KH Odd Red Z Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_odd_rational_polynomial': ['KH Odd Red Q Poly', KnotInfoColumnTypes.OnlyKnots],
-    'khovanov_odd_mod2_polynomial': ['KH Red Odd Mod2 Poly', KnotInfoColumnTypes.OnlyKnots],
-    'determinant':          ['Determinant',          KnotInfoColumnTypes.KnotsAndLinks],
-    'positive':             ['Positive',             KnotInfoColumnTypes.OnlyKnots],
-    'fibered':              ['Fibered',              KnotInfoColumnTypes.OnlyKnots],
-    'unoriented':           ['Unoriented',           KnotInfoColumnTypes.OnlyLinks],
-    'symmetry_type':        ['Symmetry Type',        KnotInfoColumnTypes.OnlyKnots],
-    'geometric_type':       ['Geometric Type',       KnotInfoColumnTypes.OnlyKnots],
-    'cosmetic_crossing':    ['Cosmetic Crossing',    KnotInfoColumnTypes.OnlyKnots],
-    'width':                ['Width',                KnotInfoColumnTypes.OnlyKnots],
-    'arc_notation':         ['Arc Notation',         KnotInfoColumnTypes.OnlyLinks],
-    'dt_code':              ['DT code',              KnotInfoColumnTypes.OnlyLinks]
+    'name': ['Name', KnotInfoColumnTypes.KnotsAndLinks],
+    'name_unoriented': ['Name - Unoriented', KnotInfoColumnTypes.OnlyLinks],
+    'dt_notation': ['DT Notation', KnotInfoColumnTypes.OnlyKnots],
+    'gauss_notation': ['Gauss Notation', KnotInfoColumnTypes.KnotsAndLinks],
+    'pd_notation': ['PD Notation', KnotInfoColumnTypes.OnlyKnots],
+    'pd_notation_vector': ['PD Notation (vector)', KnotInfoColumnTypes.OnlyLinks],
+    'crossing_number': ['Crossing Number', KnotInfoColumnTypes.KnotsAndLinks],
+    'braid_index': ['Braid Index', KnotInfoColumnTypes.OnlyKnots],
+    'braid_length': ['Braid Length', KnotInfoColumnTypes.OnlyKnots],
+    'braid_notation': ['Braid Notation', KnotInfoColumnTypes.KnotsAndLinks],
+    'braid_notation_old': ['Braid Notation', KnotInfoColumnTypes.OnlyLinks],
+    'alternating': ['Alternating', KnotInfoColumnTypes.KnotsAndLinks],
+    'alexander_polynomial': ['Alexander', KnotInfoColumnTypes.OnlyKnots],
+    'jones_polynomial': ['Jones', KnotInfoColumnTypes.KnotsAndLinks],
+    'conway_polynomial': ['Conway', KnotInfoColumnTypes.KnotsAndLinks],
+    'homfly_polynomial': ['HOMFLY', KnotInfoColumnTypes.OnlyKnots],
+    'homflypt_polynomial': ['HOMFLYPT Polynomial', KnotInfoColumnTypes.OnlyLinks],
+    'kauffman_polynomial': ['Kauffman', KnotInfoColumnTypes.KnotsAndLinks],
+    'khovanov_polynomial': ['Khovanov', KnotInfoColumnTypes.OnlyLinks],
+    'khovanov_unreduced_integral_polynomial': [
+        'KH Unred Z Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_reduced_integral_polynomial': [
+        'KH Red Z Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_reduced_rational_polynomial': [
+        'KH Red Q Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_reduced_mod2_polynomial': [
+        'KH Red Mod2 Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_odd_integral_polynomial': [
+        'KH Odd Red Z Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_odd_rational_polynomial': [
+        'KH Odd Red Q Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'khovanov_odd_mod2_polynomial': [
+        'KH Red Odd Mod2 Poly',
+        KnotInfoColumnTypes.OnlyKnots,
+    ],
+    'determinant': ['Determinant', KnotInfoColumnTypes.KnotsAndLinks],
+    'positive': ['Positive', KnotInfoColumnTypes.OnlyKnots],
+    'fibered': ['Fibered', KnotInfoColumnTypes.OnlyKnots],
+    'unoriented': ['Unoriented', KnotInfoColumnTypes.OnlyLinks],
+    'symmetry_type': ['Symmetry Type', KnotInfoColumnTypes.OnlyKnots],
+    'geometric_type': ['Geometric Type', KnotInfoColumnTypes.OnlyKnots],
+    'cosmetic_crossing': ['Cosmetic Crossing', KnotInfoColumnTypes.OnlyKnots],
+    'width': ['Width', KnotInfoColumnTypes.OnlyKnots],
+    'arc_notation': ['Arc Notation', KnotInfoColumnTypes.OnlyLinks],
+    'dt_code': ['DT code', KnotInfoColumnTypes.OnlyLinks],
 }
 
 
 row_demo_sample = {
-    'K0_1':   [0, 1],
-    'K3_1':   [1, 1],
-    'K4_1':   [2, 1],
-    'K5_1':   [3, 1],
-    'K5_2':   [4, 1],
-    'K6_1':   [5, 1],
-    'K6_2':   [6, 1],
-    'K6_3':   [7, 1],
-    'K7_1':   [8, 1],
-    'K7_2':   [9, 1],
+    'K0_1': [0, 1],
+    'K3_1': [1, 1],
+    'K4_1': [2, 1],
+    'K5_1': [3, 1],
+    'K5_2': [4, 1],
+    'K6_1': [5, 1],
+    'K6_2': [6, 1],
+    'K6_3': [7, 1],
+    'K7_1': [8, 1],
+    'K7_2': [9, 1],
     'L2a1_0': [10, 2],
     'L2a1_1': [11, 2],
     'L4a1_0': [12, 2],
@@ -866,7 +910,7 @@ row_demo_sample = {
     'L6a1_0': [16, 2],
     'L6a1_1': [17, 2],
     'L6a2_0': [18, 2],
-    'L6a2_1': [19, 2]
+    'L6a2_1': [19, 2],
 }
 
 db = KnotInfoDataBase()
@@ -874,12 +918,65 @@ dc = db.columns()
 
 
 data_demo_sample = {
-    dc.name: ['0_1', '3_1', '4_1', '5_1', '5_2', '6_1', '6_2', '6_3', '7_1', '7_2',
-              'L2a1{0}', 'L2a1{1}', 'L4a1{0}', 'L4a1{1}', 'L5a1{0}', 'L5a1{1}',
-              'L6a1{0}', 'L6a1{1}', 'L6a2{0}', 'L6a2{1}', 'L6a3{0}'
-             ],
-    dc.name_unoriented: ['L2a1', 'L2a1', 'L4a1', 'L4a1', 'L5a1', 'L5a1', 'L6a1', 'L6a1', 'L6a2', 'L6a2', 'L6a3'],
-    dc.crossing_number: ['0', '3', '4', '5', '5', '6', '6', '6', '7', '7', '2', '2', '4', '4', '5', '5', '6', '6', '6', '6', '6'],
+    dc.name: [
+        '0_1',
+        '3_1',
+        '4_1',
+        '5_1',
+        '5_2',
+        '6_1',
+        '6_2',
+        '6_3',
+        '7_1',
+        '7_2',
+        'L2a1{0}',
+        'L2a1{1}',
+        'L4a1{0}',
+        'L4a1{1}',
+        'L5a1{0}',
+        'L5a1{1}',
+        'L6a1{0}',
+        'L6a1{1}',
+        'L6a2{0}',
+        'L6a2{1}',
+        'L6a3{0}',
+    ],
+    dc.name_unoriented: [
+        'L2a1',
+        'L2a1',
+        'L4a1',
+        'L4a1',
+        'L5a1',
+        'L5a1',
+        'L6a1',
+        'L6a1',
+        'L6a2',
+        'L6a2',
+        'L6a3',
+    ],
+    dc.crossing_number: [
+        '0',
+        '3',
+        '4',
+        '5',
+        '5',
+        '6',
+        '6',
+        '6',
+        '7',
+        '7',
+        '2',
+        '2',
+        '4',
+        '4',
+        '5',
+        '5',
+        '6',
+        '6',
+        '6',
+        '6',
+        '6',
+    ],
     dc.braid_notation: [
         '',
         '[1,1,1]',
@@ -901,8 +998,8 @@ data_demo_sample = {
         '{3, {2, 2, 2, 1, 1, -2, 1}}',
         '{3, {-1, 2, -1, -2, -2, -1, -1}}',
         '{3, {1, -2, 1, 2, 2, 1, 1}}',
-        '{2, {-1, -1, -1, -1, -1, -1}}'
-        ],
+        '{2, {-1, -1, -1, -1, -1, -1}}',
+    ],
     dc.braid_notation_old: [
         '{2, {-1, -1}}',
         '{2, {1, 1}}',
@@ -914,11 +1011,33 @@ data_demo_sample = {
         '{4, {1, 2, 3, 2, 2, -1, 2, 2, -3, 2}}',
         '{4, {1, -2, -2, -2, 3, -2, -1, -2, -3, -2}}',
         '{4, {1, 2, -3, 2, -1, 2, 3, 2, 2, 2}}',
-        '{2, {-1, -1, -1, -1, -1, -1}}'
-        ],
+        '{2, {-1, -1, -1, -1, -1, -1}}',
+    ],
     dc.braid_index: ['1', '2', '3', '2', '3', '4', '3', '3', '2', '4'],
     dc.braid_length: ['', '3', '4', '5', '6', '7', '6', '6', '7', '9'],
-    dc.determinant: ['0', '3', '5', '5', '7', '9', '11', '13', '7', '11', '2', '2', '4', '4', '8', '8', '12', '12', '10', '10', '6'],
+    dc.determinant: [
+        '0',
+        '3',
+        '5',
+        '5',
+        '7',
+        '9',
+        '11',
+        '13',
+        '7',
+        '11',
+        '2',
+        '2',
+        '4',
+        '4',
+        '8',
+        '8',
+        '12',
+        '12',
+        '10',
+        '10',
+        '6',
+    ],
     dc.positive: ['', 'Y', 'N', 'Y', 'Y', 'N', 'N', 'N', 'Y', 'Y'],
     dc.fibered: ['', 'Y', 'Y', 'Y', 'N', 'N', 'Y', 'Y', 'Y', 'N'],
     dc.unoriented: ['Y', 'N', 'Y', 'N', 'Y', 'N', 'Y', 'N', 'Y', 'N', 'Y'],
@@ -933,7 +1052,7 @@ data_demo_sample = {
         '[[4,2,5,1],[8,4,9,3],[12,9,1,10],[10,5,11,6],[6,11,7,12],[2,8,3,7]]',
         '[[1,9,2,8],[3,11,4,10],[5,13,6,12],[7,1,8,14],[9,3,10,2],[11,5,12,4],[13,7,14,6]]',
         '[[2,10,3,9],[4,14,5,13],[6,12,7,11],[8,2,9,1],[10,8,11,7],[12,6,13,5],[14,4,1,3]]',
-        ],
+    ],
     dc.pd_notation_vector: [
         '{{4, 1, 3, 2}, {2, 3, 1, 4}}',
         '{{4, 2, 3, 1}, {2, 4, 1, 3}}',
@@ -945,8 +1064,8 @@ data_demo_sample = {
         '{{10, 2, 11, 1}, {6, 4, 7, 3}, {12, 10, 5, 9}, {8, 6, 9, 5}, {2, 12, 3, 11}, {4, 8, 1, 7}}',
         '{{8, 1, 9, 2}, {12, 5, 7, 6}, {10, 3, 11, 4}, {4, 11, 5, 12}, {2, 7, 3, 8}, {6, 9, 1, 10}}',
         '{{10, 2, 11, 1}, {12, 6, 7, 5}, {8, 4, 9, 3}, {4, 8, 5, 7}, {2, 12, 3, 11}, {6, 10, 1, 9}}',
-        '{{8, 1, 9, 2}, {2, 9, 3, 10}, {10, 3, 11, 4}, {12, 5, 7, 6}, {6, 7, 1, 8}, {4, 11, 5, 12}}'
-        ],
+        '{{8, 1, 9, 2}, {2, 9, 3, 10}, {10, 3, 11, 4}, {12, 5, 7, 6}, {6, 7, 1, 8}, {4, 11, 5, 12}}',
+    ],
     dc.dt_notation: [
         '',
         '[4, 6, 2]',
@@ -957,8 +1076,8 @@ data_demo_sample = {
         '[4, 8, 10, 12, 2, 6]',
         '[4, 8, 10, 2, 12, 6]',
         '[8, 10, 12, 14, 2, 4, 6]',
-        '[4, 10, 14, 12, 2, 8, 6]'
-        ],
+        '[4, 10, 14, 12, 2, 8, 6]',
+    ],
     dc.dt_code: [
         '[{4}, {2}]',
         '[{4}, {2}]',
@@ -970,8 +1089,8 @@ data_demo_sample = {
         '[{10, 6}, {8, 4, 12, 2}]',
         '[{8, 10, 12}, {2, 6, 4}]',
         '[{10, 8, 12}, {4, 6, 2}]',
-        '[{8, 10, 12}, {6, 2, 4}]'
-        ],
+        '[{8, 10, 12}, {6, 2, 4}]',
+    ],
     dc.gauss_notation: [
         '',
         '{1, -2, 3, -1, 2, -3}',
@@ -993,8 +1112,8 @@ data_demo_sample = {
         '{{1, -5, 2, -6}, {4, -2, 6, -4, 3, -1, 5, -3}}',
         '{{1, -5, 3, -4, 2, -6}, {5, -1, 6, -3, 4, -2}}',
         '{{1, -5, 3, -4, 2, -6}, {4, -3, 6, -1, 5, -2}}',
-        '{{1, -2, 3, -6, 4, -5}, {5, -1, 2, -3, 6, -4}}'
-        ],
+        '{{1, -2, 3, -6, 4, -5}, {5, -1, 2, -3, 6, -4}}',
+    ],
     dc.arc_notation: [
         '{{4, 2}, {3, 1}, {4, 2}, {1, 3}}',
         '{{2, 4}, {3, 1}, {2, 4}, {3, 1}}',
@@ -1006,9 +1125,31 @@ data_demo_sample = {
         '{{2, 8}, {1, 7}, {8, 4}, {5, 3}, {4, 2}, {3, 6}, {7, 5}, {6, 1}}',
         '{{8, 3}, {2, 7}, {3, 1}, {4, 8}, {5, 2}, {6, 4}, {7, 5}, {1, 6}}',
         '{{3, 8}, {2, 7}, {8, 4}, {1, 3}, {5, 2}, {4, 6}, {7, 5}, {6, 1}}',
-        '{{8, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 6}, {5, 7}, {6, 8}, {7, 1}}'
-        ],
-    dc.alternating: ['Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'],
+        '{{8, 2}, {1, 3}, {2, 4}, {3, 5}, {4, 6}, {5, 7}, {6, 8}, {7, 1}}',
+    ],
+    dc.alternating: [
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+        'Y',
+    ],
     dc.symmetry_type: [
         '',
         'reversible',
@@ -1019,8 +1160,8 @@ data_demo_sample = {
         'reversible',
         'fully amphicheiral',
         'reversible',
-        'reversible'
-        ],
+        'reversible',
+    ],
     dc.geometric_type: [
         '',
         'torus knot T(2,3)',
@@ -1031,7 +1172,8 @@ data_demo_sample = {
         'hyperbolic',
         'hyperbolic',
         'torus knot T(2,7)',
-        'hyperbolic'],
+        'hyperbolic',
+    ],
     dc.cosmetic_crossing: ['', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'],
     dc.homfly_polynomial: [
         '',
@@ -1043,8 +1185,8 @@ data_demo_sample = {
         '(2-2*v^2+ v^4)+ (1-3*v^2+ v^4)*z^2-v^2*z^4',
         '(-v^(-2)+ 3-v^2)+ (-v^(-2)+ 3-v^2)*z^2+ z^4',
         '(4*v^6-3*v^8)+ (10*v^6-4*v^8)*z^2+ (6*v^6-v^8)*z^4+ v^6*z^6',
-        '(v^2+ v^6-v^8)+ (v^2+ v^4+ v^6)*z^2'
-        ],
+        '(v^2+ v^6-v^8)+ (v^2+ v^4+ v^6)*z^2',
+    ],
     dc.homflypt_polynomial: [
         '1/(v^3*z)-1/(v*z)-z/v',
         'v/z-v^3/z + v*z',
@@ -1056,8 +1198,8 @@ data_demo_sample = {
         'v^3/z-v^5/z + 2*v^3*z + v^5*z-v^7*z + v^3*z^3 + v^5*z^3',
         '1/(v^7*z)-1/(v^5*z) + z/v^7-(2*z)/v^5-(2*z)/v^3-z^3/v^5-z^3/v^3',
         'v^5/z-v^7/z + 2*v^3*z + 2*v^5*z-v^7*z + v^3*z^3 + v^5*z^3',
-        '1/(v^7*z)-1/(v^5*z) + (3*z)/v^7-(6*z)/v^5 + z^3/v^7-(5*z^3)/v^5-z^5/v^5'
-        ],
+        '1/(v^7*z)-1/(v^5*z) + (3*z)/v^7-(6*z)/v^5 + z^3/v^7-(5*z^3)/v^5-z^5/v^5',
+    ],
     dc.kauffman_polynomial: [
         '',
         '(-a^(-4)-2*a^(-2))*z^(0)+ (a^(-5)+ a^(-3))*z^(1)+ (a^(-4)+ a^(-2))*z^(2)',
@@ -1079,8 +1221,8 @@ data_demo_sample = {
         '-a^(-4) + 1/(a^5*z) + 1/(a^3*z)-z/a^9-z/a^5-(2*z)/a^3-(3*z^2)/a^8-(3*z^2)/a^6 + z^3/a^9 + z^3/a^3 + (2*z^4)/a^8 + (3*z^4)/a^6 + z^4/a^4 + z^5/a^7 + z^5/a^5',
         'a^6-a^5/z-a^7/z-2*a^3*z + 3*a^5*z + 3*a^7*z-2*a^9*z-a^4*z^2-2*a^6*z^2-a^8*z^2 + a^3*z^3-2*a^5*z^3-2*a^7*z^3 + a^9*z^3 + a^4*z^4 + 2*a^6*z^4 + a^8*z^4 + a^5*z^5 + a^7*z^5',
         'a^(-6)-1/(a^7*z)-1/(a^5*z)-(2*z)/a^9 + (3*z)/a^7 + (3*z)/a^5-(2*z)/a^3-z^2/a^8-(2*z^2)/a^6-z^2/a^4 + z^3/a^9-(2*z^3)/a^7-(2*z^3)/a^5 + z^3/a^3 + z^4/a^8 + (2*z^4)/a^6 + z^4/a^4 + z^5/a^7 + z^5/a^5',
-        'a^6-a^5/z-a^7/z + 6*a^5*z + 4*a^7*z-a^9*z + a^11*z-3*a^6*z^2-2*a^8*z^2 + a^10*z^2-5*a^5*z^3-4*a^7*z^3 + a^9*z^3 + a^6*z^4 + a^8*z^4 + a^5*z^5 + a^7*z^5'
-        ],
+        'a^6-a^5/z-a^7/z + 6*a^5*z + 4*a^7*z-a^9*z + a^11*z-3*a^6*z^2-2*a^8*z^2 + a^10*z^2-5*a^5*z^3-4*a^7*z^3 + a^9*z^3 + a^6*z^4 + a^8*z^4 + a^5*z^5 + a^7*z^5',
+    ],
     dc.jones_polynomial: [
         '1',
         't+ t^3-t^4',
@@ -1102,8 +1244,8 @@ data_demo_sample = {
         '-x^3 + x^5-3*x^7 + 2*x^9-2*x^11 + 2*x^13-x^15',
         '-x^(-15) + x^(-13)-2/x^11 + 2/x^9-2/x^7 + x^(-5)-x^(-3)',
         '-x^3 + x^5-2*x^7 + 2*x^9-2*x^11 + x^13-x^15',
-        '-x^(-17) + x^(-15)-x^(-13) + x^(-11)-x^(-9)-x^(-5)'
-        ],
+        '-x^(-17) + x^(-15)-x^(-13) + x^(-11)-x^(-9)-x^(-5)',
+    ],
     dc.alexander_polynomial: [
         '1',
         '1-t+ t^2',
@@ -1114,7 +1256,8 @@ data_demo_sample = {
         '1-3*t+ 3*t^2-3*t^3+ t^4',
         '1-3*t+ 5*t^2-3*t^3+ t^4',
         '1-t+ t^2-t^3+ t^4-t^5+ t^6',
-        '3-5*t+ 3*t^2'],
+        '3-5*t+ 3*t^2',
+    ],
     dc.conway_polynomial: [
         '1',
         '1+z^2',
@@ -1136,7 +1279,8 @@ data_demo_sample = {
         '2*z + 2*z^3',
         '-3*z-2*z^3',
         '3*z + 2*z^3',
-        '-3*z-4*z^3-z^5'],
+        '-3*z-4*z^3-z^5',
+    ],
     dc.khovanov_polynomial: [
         '1 + q^(-2) + 1/(q^6*t^2) + 1/(q^4*t^2)',
         '1 + q^2 + q^4*t^2 + q^6*t^2',
@@ -1148,7 +1292,8 @@ data_demo_sample = {
         'q^2 + q^4 + q^4*t + 2*q^6*t^2 + q^8*t^2 + 2*q^10*t^3 + 2*q^10*t^4 + q^12*t^4 + q^12*t^5 + q^14*t^5 + q^16*t^6',
         'q^(-4) + q^(-2) + 1/(q^16*t^6) + 1/(q^14*t^6) + 1/(q^14*t^5) + 1/(q^12*t^4) + 1/(q^10*t^4) + 1/(q^10*t^3) + 1/(q^8*t^3) + 1/(q^8*t^2) + 1/(q^6*t^2) + 1/(q^4*t)',
         'q^2 + q^4 + q^4*t + q^6*t^2 + q^8*t^2 + q^8*t^3 + q^10*t^3 + q^10*t^4 + q^12*t^4 + q^14*t^5 + q^14*t^6 + q^16*t^6',
-        'q^(-6) + q^(-4) + 1/(q^18*t^6) + 1/(q^16*t^6) + 1/(q^16*t^5) + 1/(q^12*t^4) + 1/(q^12*t^3) + 1/(q^8*t^2)'],
+        'q^(-6) + q^(-4) + 1/(q^18*t^6) + 1/(q^16*t^6) + 1/(q^16*t^5) + 1/(q^12*t^4) + 1/(q^12*t^3) + 1/(q^8*t^2)',
+    ],
     dc.khovanov_unreduced_integral_polynomial: [
         '',
         'q + q^(3) + t^(2) q^(5) + t^(3) q^(9) + t^(3) q^(7) T^(2)',
@@ -1159,7 +1304,8 @@ data_demo_sample = {
         't^(-2) q^(-3) + t^(-1) q + 2 q + q^(3) + t q^(3) + t q^(5) + t^(2) q^(5) + t^(2) q^(7) + t^(3) q^(7) + t^(3) q^(9) + t^(4) q^(11) + t^(-1) q^(-1) T^(2) + t q^(3) T^(2) + t^(2) q^(5) T^(2) + t^(3) q^(7) T^(2) + t^(4) q^(9) T^(2)',
         't^(-3) q^(-7) + t^(-2) q^(-5) + t^(-2) q^(-3) + t^(-1) q^(-3) + t^(-1) q^(-1) + 2 q^(-1) + 2 q + t q + t q^(3) + t^(2) q^(3) + t^(2) q^(5) + t^(3) q^(7) + t^(-2) q^(-5) T^(2) + t^(-1) q^(-3) T^(2) + q^(-1) T^(2) + t q T^(2) + t^(2) q^(3) T^(2) + t^(3) q^(5) T^(2)',
         'q^(5) + q^(7) + t^(2) q^(9) + t^(3) q^(13) + t^(4) q^(13) + t^(5) q^(17) + t^(6) q^(17) + t^(7) q^(21) + t^(3) q^(11) T^(2) + t^(5) q^(15) T^(2) + t^(7) q^(19) T^(2)',
-        'q + q^(3) + t q^(3) + t^(2) q^(5) + t^(2) q^(7) + t^(3) q^(7) + t^(3) q^(9) + t^(4) q^(9) + t^(4) q^(11) + t^(5) q^(13) + t^(6) q^(13) + t^(7) q^(17) + t^(2) q^(5) T^(2) + t^(3) q^(7) T^(2) + t^(4) q^(9) T^(2) + t^(5) q^(11) T^(2) + t^(7) q^(15) T^(2)'],
+        'q + q^(3) + t q^(3) + t^(2) q^(5) + t^(2) q^(7) + t^(3) q^(7) + t^(3) q^(9) + t^(4) q^(9) + t^(4) q^(11) + t^(5) q^(13) + t^(6) q^(13) + t^(7) q^(17) + t^(2) q^(5) T^(2) + t^(3) q^(7) T^(2) + t^(4) q^(9) T^(2) + t^(5) q^(11) T^(2) + t^(7) q^(15) T^(2)',
+    ],
     dc.khovanov_reduced_integral_polynomial: [
         '',
         'q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1170,7 +1316,8 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         'q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        'q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)'],
+        'q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
     dc.khovanov_reduced_rational_polynomial: [
         '',
         ' q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1181,7 +1328,8 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         ' q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)'],
+        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
     dc.khovanov_reduced_mod2_polynomial: [
         '',
         ' q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1192,7 +1340,8 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         ' q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)'],
+        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
     dc.khovanov_odd_integral_polynomial: [
         '',
         'q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1203,7 +1352,8 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         'q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        'q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)'],
+        'q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
     dc.khovanov_odd_rational_polynomial: [
         '',
         ' q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1214,7 +1364,8 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         ' q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)'],
+        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
     dc.khovanov_odd_mod2_polynomial: [
         '',
         ' q^(2) + t^(2) q^(6) + t^(3) q^(8)',
@@ -1225,5 +1376,6 @@ data_demo_sample = {
         't^(-2) q^(-2) + t^(-1) + 2 q^(2) + 2 t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + t^(4) q^(10)',
         't^(-3) q^(-6) + 2 t^(-2) q^(-4) + 2 t^(-1) q^(-2) + 3 + 2 t q^(2) + 2 t^(2) q^(4) + t^(3) q^(6)',
         ' q^(6) + t^(2) q^(10) + t^(3) q^(12) + t^(4) q^(14) + t^(5) q^(16) + t^(6) q^(18) + t^(7) q^(20)',
-        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)']
+        ' q^(2) + t q^(4) + 2 t^(2) q^(6) + 2 t^(3) q^(8) + 2 t^(4) q^(10) + t^(5) q^(12) + t^(6) q^(14) + t^(7) q^(16)',
+    ],
 }

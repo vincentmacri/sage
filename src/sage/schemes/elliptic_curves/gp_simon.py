@@ -2,6 +2,7 @@
 """
 Denis Simon's PARI scripts
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -32,8 +33,16 @@ from sage.structure.parent_gens import localvars
 simon_dir = Path(SAGE_EXTCODE) / 'pari' / 'simon'
 
 
-def simon_two_descent(E, verbose=0, lim1=None, lim3=None, limtriv=None,
-                      maxprob=20, limbigprime=30, known_points=[]):
+def simon_two_descent(
+    E,
+    verbose=0,
+    lim1=None,
+    lim3=None,
+    limtriv=None,
+    maxprob=20,
+    limbigprime=30,
+    known_points=[],
+):
     """
     Interface to Simon's gp script for two-descent.
 
@@ -131,8 +140,10 @@ def simon_two_descent(E, verbose=0, lim1=None, lim3=None, limtriv=None,
         if limtriv is None:
             limtriv = 2
 
-    pari('DEBUGLEVEL_ell=%s; LIM1=%s; LIM3=%s; LIMTRIV=%s; MAXPROB=%s; LIMBIGPRIME=%s;' % (
-        verbose, lim1, lim3, limtriv, maxprob, limbigprime))
+    pari(
+        'DEBUGLEVEL_ell=%s; LIM1=%s; LIM3=%s; LIMTRIV=%s; MAXPROB=%s; LIMBIGPRIME=%s;'
+        % (verbose, lim1, lim3, limtriv, maxprob, limbigprime)
+    )
 
     try:
         if over_QQ:
@@ -140,7 +151,9 @@ def simon_two_descent(E, verbose=0, lim1=None, lim3=None, limtriv=None,
         else:
             ans = pari("bnfellrank")(K_pari, E, known_points)
     except PariError as err:
-        raise RuntimeError("an error occurred while running Simon's 2-descent program") from err
+        raise RuntimeError(
+            "an error occurred while running Simon's 2-descent program"
+        ) from err
 
     loc = {} if over_QQ else {'y': y}
     lower, upper, pts = ans.sage(locals=loc)

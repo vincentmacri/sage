@@ -9,7 +9,7 @@ AUTHORS:
 - Kwankyu Lee (2017-11-07): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Kwankyu <ekwankyu@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.morphism import Morphism
 
@@ -27,6 +27,7 @@ class FiniteFieldVectorSpaceIsomorphism(Morphism):
     Base class of the vector space isomorphism between a finite field
     and a vector space over a subfield of the finite field.
     """
+
     def _repr_(self):
         """
         Return the string representation of this isomorphism
@@ -76,6 +77,7 @@ class MorphismVectorSpaceToFiniteField(FiniteFieldVectorSpaceIsomorphism):
     """
     Isomorphisms from vector spaces to finite fields.
     """
+
     def __init__(self, V, K, C):
         """
         Initialize.
@@ -117,9 +119,9 @@ class MorphismVectorSpaceToFiniteField(FiniteFieldVectorSpaceIsomorphism):
             [1, z6, z6^2]
         """
         E = self.codomain()  # = GF((p^n)^m)
-        V = self.domain()    # = GF(p^n)^m
+        V = self.domain()  # = GF(p^n)^m
         m = V.dimension()
-        F = V.base_ring()    # = GF(p^n)
+        F = V.base_ring()  # = GF(p^n)
         n = F.degree()
 
         if m == n == 1:
@@ -128,7 +130,7 @@ class MorphismVectorSpaceToFiniteField(FiniteFieldVectorSpaceIsomorphism):
         # expand v as a vector over GF(p)
         w = self._C.row_ambient_module()()
         for i in range(m):
-            w[i*n:(i+1)*n] = v[i]._vector_()
+            w[i * n : (i + 1) * n] = v[i]._vector_()
         return E(w * self._C)
 
 
@@ -136,6 +138,7 @@ class MorphismFiniteFieldToVectorSpace(FiniteFieldVectorSpaceIsomorphism):
     """
     Isomorphisms from finite fields to vector spaces
     """
+
     def __init__(self, K, V, C):
         """
         Initialize.
@@ -178,11 +181,11 @@ class MorphismFiniteFieldToVectorSpace(FiniteFieldVectorSpaceIsomorphism):
             sage: psi(E.gen())
             (0, 1, 0)
         """
-        V = self.codomain()   # = GF(p^n)^m
+        V = self.codomain()  # = GF(p^n)^m
         m = V.dimension()
-        F = V.base_ring()     # = GF(p^n)
+        F = V.base_ring()  # = GF(p^n)
         n = F.degree()
         w = e._vector_() * self._C
         if F.degree() > 1:
-            return V([F(w[i*n:(i+1)*n]) for i in range(m)])
+            return V([F(w[i * n : (i + 1) * n]) for i in range(m)])
         return w

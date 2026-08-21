@@ -57,6 +57,7 @@ class Jacobian_generic(Scheme):
         sage: J = Jacobian(C); J
         Jacobian of Projective Plane Curve over Rational Field defined by x^3 + y^3 + z^3
     """
+
     def __init__(self, C, category=None):
         """
         Initialize.
@@ -112,7 +113,11 @@ class Jacobian_generic(Scheme):
         if C.dimension() != 1:
             raise ValueError("C (=%s) must have dimension 1." % C)
         self.__curve = C
-        Scheme.__init__(self, C.base_scheme(), category=Jacobians(C.base_ring()).or_subcategory(category))
+        Scheme.__init__(
+            self,
+            C.base_scheme(),
+            category=Jacobians(C.base_ring()).or_subcategory(category),
+        )
 
     def __richcmp__(self, other, op) -> bool:
         """
@@ -246,6 +251,8 @@ class Jacobian_generic(Scheme):
         if self.base_ring() is R:
             return self
         if not R.has_coerce_map_from(self.base_ring()):
-            raise ValueError('no natural map from the base ring (=%s) to R (=%s)!'
-                             % (self.base_ring(), R))
+            raise ValueError(
+                'no natural map from the base ring (=%s) to R (=%s)!'
+                % (self.base_ring(), R)
+            )
         return self.change_ring(R)

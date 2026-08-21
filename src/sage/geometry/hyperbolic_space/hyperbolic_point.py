@@ -50,14 +50,14 @@ Some more examples::
     Point in HM (0, 0, 1)
 """
 
-#***********************************************************************
+# ***********************************************************************
 #       Copyright (C) 2013 Greg Laun <glaun@math.umd.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#***********************************************************************
+# ***********************************************************************
 
 from collections.abc import Iterable
 from sage.structure.element import Element
@@ -185,6 +185,7 @@ class HyperbolicPoint(Element):
         ...
         NotImplementedError: boundary points are not implemented in the HM model
     """
+
     def __init__(self, model, coordinates, is_boundary, check=True, **graphics_options):
         r"""
         See ``HyperbolicPoint`` for full documentation.
@@ -200,15 +201,21 @@ class HyperbolicPoint(Element):
         """
         if is_boundary:
             if not model.is_bounded():
-                raise NotImplementedError("boundary points are not implemented in the {0} model".format(model.short_name()))
+                raise NotImplementedError(
+                    "boundary points are not implemented in the {0} model".format(
+                        model.short_name()
+                    )
+                )
             if check and not model.boundary_point_in_model(coordinates):
                 raise ValueError(
-                    "{0} is not a valid".format(coordinates) +
-                    " boundary point in the {0} model".format(model.short_name()))
+                    "{0} is not a valid".format(coordinates)
+                    + " boundary point in the {0} model".format(model.short_name())
+                )
         elif check and not model.point_in_model(coordinates):
             raise ValueError(
-                "{0} is not a valid".format(coordinates) +
-                " point in the {0} model".format(model.short_name()))
+                "{0} is not a valid".format(coordinates)
+                + " point in the {0} model".format(model.short_name())
+            )
 
         if isinstance(coordinates, Iterable):
             coordinates = vector(coordinates)
@@ -253,7 +260,9 @@ class HyperbolicPoint(Element):
             base = "Boundary point"
         else:
             base = "Point"
-        return base + " in {0} {1}".format(self.parent().short_name(), self._coordinates)
+        return base + " in {0} {1}".format(
+            self.parent().short_name(), self._coordinates
+        )
 
     def _latex_(self):
         r"""
@@ -299,8 +308,7 @@ class HyperbolicPoint(Element):
             sage: p1 == p2
             True
         """
-        if not (isinstance(other, HyperbolicPoint)
-                or self.parent() is other.parent()):
+        if not (isinstance(other, HyperbolicPoint) or self.parent() is other.parent()):
             return op == op_NE
         # bool is required to convert symbolic (in)equalities
         return bool(richcmp(self._coordinates, other._coordinates, op))
@@ -330,8 +338,9 @@ class HyperbolicPoint(Element):
             #    and returns an error instead of calling this method
             A = self.parent().get_isometry(other)
             return A(self)
-        raise TypeError("unsupported operand type(s) for *:"
-                        "{0} and {1}".format(self, other))
+        raise TypeError(
+            "unsupported operand type(s) for *:{0} and {1}".format(self, other)
+        )
 
     #######################
     # Setters and Getters #
@@ -530,8 +539,7 @@ class HyperbolicPoint(Element):
             p = numerical_approx(p)
             pic = point((p, 0), **opts)
             if boundary:
-                bd_pic = self._model.get_background_graphic(bd_min=p - 1,
-                                                            bd_max=p + 1)
+                bd_pic = self._model.get_background_graphic(bd_min=p - 1, bd_max=p + 1)
                 pic = bd_pic + pic
         else:  # It is an interior point
             if p in RR:
@@ -561,6 +569,7 @@ class HyperbolicPointUHP(HyperbolicPoint):
         sage: HyperbolicPlane().UHP().get_point(1)
         Boundary point in UHP 1
     """
+
     def symmetry_involution(self):
         r"""
         Return the involutory isometry fixing the given point.
@@ -575,7 +584,7 @@ class HyperbolicPointUHP(HyperbolicPoint):
         p = self._coordinates
         x, y = real(p), imag(p)
         if y > 0:
-            M = matrix([[x/y, -(x**2/y) - y], [1/y, -(x/y)]])
+            M = matrix([[x / y, -(x**2 / y) - y], [1 / y, -(x / y)]])
             return self.parent().get_isometry(M)
         raise ValueError("cannot determine the isometry of a boundary point")
 
@@ -601,19 +610,23 @@ class HyperbolicPointUHP(HyperbolicPoint):
         opts.update(self.graphics_options())
         opts.update(options)
         from sage.misc.functional import numerical_approx
+
         p = numerical_approx(p + 0 * I)
         from sage.plot.point import point
+
         if self._bdry:
             pic = point((p, 0), **opts)
             if boundary:
-                bd_pic = self.parent().get_background_graphic(bd_min=p - 1,
-                                                              bd_max=p + 1)
+                bd_pic = self.parent().get_background_graphic(
+                    bd_min=p - 1, bd_max=p + 1
+                )
                 pic = bd_pic + pic
         else:
             pic = point(p, **opts)
             if boundary:
                 cent = real(p)
-                bd_pic = self.parent().get_background_graphic(bd_min=cent - 1,
-                                                              bd_max=cent + 1)
+                bd_pic = self.parent().get_background_graphic(
+                    bd_min=cent - 1, bd_max=cent + 1
+                )
                 pic = bd_pic + pic
         return pic

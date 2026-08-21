@@ -71,9 +71,12 @@ def bCheck(c, v, p, b):
     coeffs = c.coefficients(sparse=False)
     lcoeff = coeffs[deg]
     coeffs.remove(lcoeff)
-    check1 = [(coeffs[i].valuation(p) - lcoeff.valuation(p))/(deg - i)
-              for i in range(len(coeffs)) if coeffs[i] != 0]
-    check2 = (val - lcoeff.valuation(p))/deg
+    check1 = [
+        (coeffs[i].valuation(p) - lcoeff.valuation(p)) / (deg - i)
+        for i in range(len(coeffs))
+        if coeffs[i] != 0
+    ]
+    check2 = (val - lcoeff.valuation(p)) / deg
     check1.append(check2)
     bval = min(check1)
     return (bval).ceil()
@@ -112,7 +115,7 @@ def scale(c, v, p):
     """
     scaleval = min([coeff.valuation(p) for coeff in c.coefficients()])
     if scaleval > 0:
-        c = c/(p**scaleval)
+        c = c / (p**scaleval)
         v = v - scaleval
     if v <= 0:
         flag = False
@@ -159,53 +162,53 @@ def blift(LF, Li, p, k, S=None, all_orbits=False):
     """
 
     P = LF[0].parent()
-    #Determine which inequalities are trivial, and scale the rest, so that we only lift
-    #as many times as needed.
-    keepScaledIneqs = [scale(P(coeff),Li,p) for coeff in LF if coeff != 0]
+    # Determine which inequalities are trivial, and scale the rest, so that we only lift
+    # as many times as needed.
+    keepScaledIneqs = [scale(P(coeff), Li, p) for coeff in LF if coeff != 0]
     keptVals = [i[2] for i in keepScaledIneqs if i[0]]
     if keptVals:
         # Determine the valuation to lift until.
         # liftval = max(keptVals)
         pass
     else:
-        #All inequalities are satisfied.
+        # All inequalities are satisfied.
         if all_orbits:
             return [[True, t] for t in range(p)]
         return [[True, 1]]
     if S is None:
         S = PolynomialRing(Zmod(p), 'b')
     keptScaledIneqs = [S(i[1]) for i in keepScaledIneqs if i[0]]
-    #We need a solution for each polynomial on the left hand side of the inequalities,
-    #so we need only find a solution for their gcd.
+    # We need a solution for each polynomial on the left hand side of the inequalities,
+    # so we need only find a solution for their gcd.
     g = gcd(keptScaledIneqs)
     rts = g.roots(multiplicities=False)
     good = []
     for r in rts:
-        #Recursively try to lift each root
+        # Recursively try to lift each root
         r_initial = QQ(r)
         newInput = P([r_initial, p])
         LG = [F(newInput) for F in LF]
         new_good = blift(LG, Li, p, k, S=S)
-        for lift,lifted in new_good:
+        for lift, lifted in new_good:
             if lift:
-                #Lift successful.
+                # Lift successful.
                 if not all_orbits:
-                    return [[True, r_initial + p*lifted]]
+                    return [[True, r_initial + p * lifted]]
 
-                #only need up to SL(2,ZZ) equivalence
-                #this helps control the size of the resulting coefficients
-                if r_initial + p*lifted < p**k:
-                    good.append([True, r_initial + p*lifted])
+                # only need up to SL(2,ZZ) equivalence
+                # this helps control the size of the resulting coefficients
+                if r_initial + p * lifted < p**k:
+                    good.append([True, r_initial + p * lifted])
                 else:
-                    new_r = r_initial + p*lifted - p**k
+                    new_r = r_initial + p * lifted - p**k
                     while new_r > p**k:
                         new_r -= p**k
                     if [True, new_r] not in good:
                         good.append([True, new_r])
     if good:
         return good
-    #Lift non successful.
-    return [[False,0]]
+    # Lift non successful.
+    return [[False, 0]]
 
 
 def affine_minimal(vp, return_transformation=False, D=None, quick=False):
@@ -251,6 +254,7 @@ def affine_minimal(vp, return_transformation=False, D=None, quick=False):
         )
     """
     from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine
+
     BR = vp.domain().base_ring()
     conj = matrix(BR, 2, 2, 1)
     flag = True
@@ -260,45 +264,47 @@ def affine_minimal(vp, return_transformation=False, D=None, quick=False):
     Affvp = vp.dehomogenize(1)
     R = Affvp.coordinate_ring()
     if R.is_field():
-        #want the polynomial ring not the fraction field
+        # want the polynomial ring not the fraction field
         R = R.ring()
     F = R(Affvp[0].numerator())
     G = R(Affvp[0].denominator())
     if R(G.degree()) == 0 or R(F.degree()) == 0:
-        raise TypeError("affine minimality is only considered for maps not of the form f or 1/f for a polynomial f")
+        raise TypeError(
+            "affine minimality is only considered for maps not of the form f or 1/f for a polynomial f"
+        )
 
     z = F.parent().gen(0)
     minG = G
-    #If the valuation of a prime in the resultant is small enough, we can say the
-    #map is affine minimal at that prime without using the local minimality loop. See
-    #Theorem 3.2.2 in [Molnar, M.Sc. thesis]
+    # If the valuation of a prime in the resultant is small enough, we can say the
+    # map is affine minimal at that prime without using the local minimality loop. See
+    # Theorem 3.2.2 in [Molnar, M.Sc. thesis]
     if d % 2 == 0:
         g = d
     else:
-        g = 2*d
+        g = 2 * d
     Res = vp.resultant()
 
-    #Some quantities needed for the local minimization loop, but we compute now
-    #since the value is constant, so we do not wish to compute in every local loop.
-    #See Theorem 3.3.3 in [Molnar, M.Sc thesis]
+    # Some quantities needed for the local minimization loop, but we compute now
+    # since the value is constant, so we do not wish to compute in every local loop.
+    # See Theorem 3.3.3 in [Molnar, M.Sc thesis]
     H = F - z * minG
     A = AffineSpace(BR, 1, H.parent().variable_name())
-    ubRes = DynamicalSystem_affine([H/minG], domain=A).homogenize(1).resultant()
-    #Set the primes to check minimality at, if not already prescribed
+    ubRes = DynamicalSystem_affine([H / minG], domain=A).homogenize(1).resultant()
+    # Set the primes to check minimality at, if not already prescribed
     if D is None:
         D = ZZ(Res).prime_divisors()
 
-    #Check minimality at all primes in D. If D is all primes dividing
-    #Res(minF/minG), this is enough to show whether minF/minG is minimal or not. See
-    #Propositions 3.2.1 and 3.3.7 in [Molnar, M.Sc. thesis].
+    # Check minimality at all primes in D. If D is all primes dividing
+    # Res(minF/minG), this is enough to show whether minF/minG is minimal or not. See
+    # Propositions 3.2.1 and 3.3.7 in [Molnar, M.Sc. thesis].
     for p in D:
         while True:
             if Res.valuation(p) < g:
-                #The model is minimal at p
+                # The model is minimal at p
                 min = True
             else:
-                #The model may not be minimal at p.
-                newvp,conj = Min(vp, p, ubRes, conj, all_orbits=False)
+                # The model may not be minimal at p.
+                newvp, conj = Min(vp, p, ubRes, conj, all_orbits=False)
                 if newvp == vp:
                     min = True
                 else:
@@ -306,20 +312,20 @@ def affine_minimal(vp, return_transformation=False, D=None, quick=False):
                     Affvp = vp.dehomogenize(1)
                     min = False
             if min:
-                #The model is minimal at p
+                # The model is minimal at p
                 break
             elif F == Affvp[0].numerator() and G == Affvp[0].denominator():
-                #The model is minimal at p
+                # The model is minimal at p
                 break
             else:
-                #The model is not minimal at p
+                # The model is not minimal at p
                 flag = False
                 if quick:
                     break
         if quick and not flag:
             break
 
-    if quick: #only return whether the model is minimal
+    if quick:  # only return whether the model is minimal
         return flag
 
     if return_transformation:
@@ -373,17 +379,19 @@ def Min(Fun, p, ubRes, conj, all_orbits=False):
     AffFun = Fun.dehomogenize(1)
     R = AffFun.coordinate_ring()
     if R.is_field():
-        #want the polynomial ring not the fraction field
+        # want the polynomial ring not the fraction field
         R = R.ring()
     F = R(AffFun[0].numerator())
     G = R(AffFun[0].denominator())
     dG = G.degree()
     # all_orbits scales bounds for >= and <= if searching for orbits instead of min model
-    if dG > (d+1)/2:
-        lowerBound = (-2*(G[dG]).valuation(p)/(2*dG - d + 1) + 1).floor() - int(all_orbits)
+    if dG > (d + 1) / 2:
+        lowerBound = (-2 * (G[dG]).valuation(p) / (2 * dG - d + 1) + 1).floor() - int(
+            all_orbits
+        )
     else:
-        lowerBound = (-2*(F[d]).valuation(p)/(d-1) + 1).floor() - int(all_orbits)
-    upperBound = 2*(ubRes.valuation(p)) + int(all_orbits)
+        lowerBound = (-2 * (F[d]).valuation(p) / (d - 1) + 1).floor() - int(all_orbits)
+    upperBound = 2 * (ubRes.valuation(p)) + int(all_orbits)
 
     if upperBound < lowerBound:
         # There are no possible transformations to reduce the resultant.
@@ -394,14 +402,14 @@ def Min(Fun, p, ubRes, conj, all_orbits=False):
     # the resultant of F/G
     all_found = []
     k = lowerBound
-    Qb = PolynomialRing(QQ,'b')
+    Qb = PolynomialRing(QQ, 'b')
     b = Qb.gen(0)
-    Q = PolynomialRing(Qb,'z')
+    Q = PolynomialRing(Qb, 'z')
     z = Q.gen(0)
     while k <= upperBound:
-        A = (p**k)*z + b
-        Ft = Q(F(A) - b*G(A))
-        Gt = Q((p**k)*G(A))
+        A = (p**k) * z + b
+        Ft = Q(F(A) - b * G(A))
+        Gt = Q((p**k) * G(A))
         Fcoeffs = Ft.coefficients(sparse=False)
         Gcoeffs = Gt.coefficients(sparse=False)
         coeffs = Fcoeffs + Gcoeffs
@@ -409,8 +417,11 @@ def Min(Fun, p, ubRes, conj, all_orbits=False):
         # If there is some b such that Res(phi^A) < Res(phi), we must have
         # ord_p(c) > RHS for each c in coeffs.
         # Make sure constant coefficients in coeffs satisfy the inequality.
-        if all(QQ(c).valuation(p) > RHS - int(all_orbits)
-               for c in coeffs if c.degree() == 0):
+        if all(
+            QQ(c).valuation(p) > RHS - int(all_orbits)
+            for c in coeffs
+            if c.degree() == 0
+        ):
             # Constant coefficients in coeffs have large enough valuation, so
             # check the rest. We start by checking if simply picking b=0 works.
             if all(c(0).valuation(p) > RHS - int(all_orbits) for c in coeffs):
@@ -420,17 +431,19 @@ def Min(Fun, p, ubRes, conj, all_orbits=False):
                 minFun = Fun.conjugate(newconj)
                 minFun.normalize_coordinates()
                 if not all_orbits:
-                    return [minFun, conj*newconj]
+                    return [minFun, conj * newconj]
                 all_found.append([p, k, 0])
 
             # Otherwise we search if any value of b will work. We start by
             # finding a minimum bound on the valuation of b that is necessary.
             # See Theorem 3.3.5 in [Molnar, M.Sc. thesis].
-            bval = max(bCheck(coeff, RHS, p, b) for coeff in coeffs if coeff.degree() > 0)
+            bval = max(
+                bCheck(coeff, RHS, p, b) for coeff in coeffs if coeff.degree() > 0
+            )
 
             # We scale the coefficients in coeffs, so that we may assume
             # ord_p(b) is at least 0
-            scaledCoeffs = [coeff(b*(p**bval)) for coeff in coeffs]
+            scaledCoeffs = [coeff(b * (p**bval)) for coeff in coeffs]
 
             # We now scale the inequalities, ord_p(coeff) > RHS, so that
             # coeff is in ZZ[b]
@@ -447,33 +460,34 @@ def Min(Fun, p, ubRes, conj, all_orbits=False):
             # is not minimal.
             for boolval, sol in all_blift:
                 if boolval:
-                    #Rescale, conjugate and return new map
+                    # Rescale, conjugate and return new map
                     bsol = QQ(sol * (p**bval))
-                    #only add 'minimal orbit element'
+                    # only add 'minimal orbit element'
                     while bsol.abs() >= p**k:
                         if bsol < 0:
                             bsol += p**k
                         else:
                             bsol -= p**k
-                    #"Conjugating by ", p,"^", k, "*z +", bsol
+                    # "Conjugating by ", p,"^", k, "*z +", bsol
                     newconj = matrix(QQ, 2, 2, [p**k, bsol, 0, 1])
                     minFun = Fun.conjugate(newconj)
 
                     minFun.normalize_coordinates()
                     if not all_orbits:
-                        return [minFun, conj*newconj]
-                    if [p,k,bsol] not in all_found:
+                        return [minFun, conj * newconj]
+                    if [p, k, bsol] not in all_found:
                         all_found.append([p, k, bsol])
         k = k + 1
     if not all_orbits:
         return [Fun, conj]
     return all_found
 
+
 ###################################################
 # algorithms from Hutz-Stoll
 ###################################################
 
-#modification of Bruin-Molnar for all representatives
+# modification of Bruin-Molnar for all representatives
 
 
 def BM_all_minimal(vp, return_transformation=False, D=None):
@@ -544,7 +558,7 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
     BR = mp.domain().base_ring()
     MS = MatrixSpace(QQ, 2)
     M_Id = MS.one()
-    F, G = list(mp)  #coordinate polys
+    F, G = list(mp)  # coordinate polys
     aff_map = mp.dehomogenize(1)
     f, g = aff_map[0].numerator(), aff_map[0].denominator()
     z = aff_map.domain().gen(0)
@@ -552,9 +566,10 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
 
     # because of how the bound is compute in lemma 3.3
     from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine
-    h = f - z*g
+
+    h = f - z * g
     A = AffineSpace(BR, 1, h.parent().variable_name())
-    res = DynamicalSystem_affine([h/g], domain=A).homogenize(1).resultant()
+    res = DynamicalSystem_affine([h / g], domain=A).homogenize(1).resultant()
 
     if D is None:
         D = ZZ(Res).prime_divisors()
@@ -569,26 +584,27 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
         if [p, 0, 0] not in all_pM[-1]:
             all_pM[-1].append([p, 0, 0])
 
-    #combine conjugations for all primes
+    # combine conjugations for all primes
     all_M = [M_Id]
     for prime_data in all_pM:
-        #these are (p,k,b) so that the matrix is [p^k,b,0,1]
+        # these are (p,k,b) so that the matrix is [p^k,b,0,1]
         new_M = []
         if prime_data:
             p = prime_data[0][0]
             for m in prime_data:
-                mat = MS([m[0]**m[1], m[2], 0, 1])
+                mat = MS([m[0] ** m[1], m[2], 0, 1])
                 new_map = mp.conjugate(mat)
                 new_map.normalize_coordinates()
                 # make sure the resultant didn't change and that it is a different SL(2,ZZ) orbit
-                if (mat == M_Id) or (new_map.resultant().valuation(p) == Res.valuation(p)
-                                     and mat.det() not in [1,-1]):
+                if (mat == M_Id) or (
+                    new_map.resultant().valuation(p) == Res.valuation(p)
+                    and mat.det() not in [1, -1]
+                ):
                     new_M.append(m)
         if new_M:
-            all_M = [m1 * MS([m[0]**m[1], m[2], 0, 1])
-                     for m1 in all_M for m in new_M]
+            all_M = [m1 * MS([m[0] ** m[1], m[2], 0, 1]) for m1 in all_M for m in new_M]
 
-    #get all models with same resultant
+    # get all models with same resultant
     all_maps = []
     for M in all_M:
         new_map = mp.conjugate(M)
@@ -596,9 +612,9 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
         if [new_map, M] not in all_maps:
             all_maps.append([new_map, M])
 
-    #Split into conjugacy classes
-    #We just keep track of the two matrices that come from
-    #the original to get the conjugation that goes between these!!
+    # Split into conjugacy classes
+    # We just keep track of the two matrices that come from
+    # the original to get the conjugation that goes between these!!
     classes = []
     for funct, mat in all_maps:
         if not classes:
@@ -606,11 +622,11 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
         else:
             found = False
             for Func, Mat in classes:
-                #get conjugation
+                # get conjugation
                 M = mat.inverse() * Mat
                 assert funct.conjugate(M) == Func
-                if M.det() in [1,-1]:
-                    #same SL(2,Z) orbit
+                if M.det() in [1, -1]:
+                    # same SL(2,Z) orbit
                     found = True
                     break
             if found is False:
@@ -620,11 +636,12 @@ def BM_all_minimal(vp, return_transformation=False, D=None):
         return classes
     return [funct for funct, matr in classes]
 
+
 ###################################################
 # enumerative algorithms from Hutz-Stoll
 ###################################################
 
-#find minimal model
+# find minimal model
 
 
 def HS_minimal(f, return_transformation=False, D=None):
@@ -693,30 +710,31 @@ def HS_minimal(f, return_transformation=False, D=None):
             F1.normalize_coordinates()
             res1 = F1.resultant()
             vp1 = res1.valuation(p)
-            if vp1 < vp: # check if smaller
+            if vp1 < vp:  # check if smaller
                 F = F1
                 vp = vp1
-                m = m * t # keep track of conjugation
+                m = m * t  # keep track of conjugation
                 minimal = False
             else:
                 # still search for smaller
                 for b in range(p):
-                    t = matrix(ZZ,2,2,[p, b, 0, 1])
+                    t = matrix(ZZ, 2, 2, [p, b, 0, 1])
                     F1 = F.conjugate(t)
                     F1.normalize_coordinates()
                     res1 = ZZ(F1.resultant())
                     vp1 = res1.valuation(p)
-                    if vp1 < vp: # check if smaller
+                    if vp1 < vp:  # check if smaller
                         F = F1
-                        m = m * t # keep track of transformation
+                        m = m * t  # keep track of transformation
                         minimal = False
                         vp = vp1
-                        break # exit for loop
+                        break  # exit for loop
     if return_transformation:
         return F, m
     return F
 
-#find all representatives of orbits for one prime
+
+# find all representatives of orbits for one prime
 
 
 def HS_all_minimal_p(p, f, m=None, return_transformation=False):
@@ -763,7 +781,7 @@ def HS_all_minimal_p(p, f, m=None, return_transformation=False):
         True
     """
     count = 0
-    prev = 0 # no exclusions
+    prev = 0  # no exclusions
     F = copy(f)
     res = ZZ(F.resultant())
     vp = res.valuation(p)
@@ -776,8 +794,8 @@ def HS_all_minimal_p(p, f, m=None, return_transformation=False):
         if return_transformation:
             return [[f, m]]
         return [f]
-    to_do = [[F, m, prev]] # repns left to check
-    reps = [[F, m]] # orbit representatives for f
+    to_do = [[F, m, prev]]  # repns left to check
+    reps = [[F, m]]  # orbit representatives for f
     while to_do:
         F, m, prev = to_do.pop()
         # there are at most two directions preserving the resultant
@@ -785,7 +803,7 @@ def HS_all_minimal_p(p, f, m=None, return_transformation=False):
             count = 0
         else:
             count = 1
-        if prev != 2: # [p,a,0,1]
+        if prev != 2:  # [p,a,0,1]
             t = MS([1, 0, 0, p])
             F1 = F.conjugate(t)
             F1.normalize_coordinates()
@@ -794,9 +812,9 @@ def HS_all_minimal_p(p, f, m=None, return_transformation=False):
             if vp1 == vp:
                 count += 1
                 # we have a new representative
-                reps.append([F1, m*t])
+                reps.append([F1, m * t])
                 # need to check if it has any neighbors
-                to_do.append([F1, m*t, 1])
+                to_do.append([F1, m * t, 1])
         for b in range(p):
             if not (b == 0 and prev == 1):
                 t = MS([p, b, 0, 1])
@@ -807,17 +825,18 @@ def HS_all_minimal_p(p, f, m=None, return_transformation=False):
                 if vp1 == vp:
                     count += 1
                     # we have a new representative
-                    reps.append([F1, m*t])
+                    reps.append([F1, m * t])
                     # need to check if it has any neighbors
-                    to_do.append([F1, m*t, 2])
-            if count >= 2: # at most two neighbors
+                    to_do.append([F1, m * t, 2])
+            if count >= 2:  # at most two neighbors
                 break
 
     if return_transformation:
         return reps
     return [funct for funct, matr in reps]
 
-#find all representatives of orbits
+
+# find all representatives of orbits
 
 
 def HS_all_minimal(f, return_transformation=False, D=None):
@@ -886,7 +905,7 @@ def HS_all_minimal(f, return_transformation=False, D=None):
     if F.degree() == 1:
         raise ValueError("function must be degree at least 2")
     if f.degree() % 2 == 0:
-        #there is only one orbit for even degree
+        # there is only one orbit for even degree
         if return_transformation:
             return [[f, m]]
         return [f]
@@ -898,14 +917,15 @@ def HS_all_minimal(f, return_transformation=False, D=None):
         # get p-orbits
         Mp = HS_all_minimal_p(p, F, m, return_transformation=True)
         # combine with previous orbits representatives
-        M = [[g.conjugate(t), t*s] for g,s in M for G,t in Mp]
+        M = [[g.conjugate(t), t * s] for g, s in M for G, t in Mp]
 
     if return_transformation:
         return M
     return [funct for funct, matr in M]
 
+
 #######################
-#functionality for smallest coefficients
+# functionality for smallest coefficients
 #
 # Ben Hutz July 2018
 #####################################3
@@ -948,8 +968,9 @@ def get_bound_dynamical(F, f, m=1, dynatomic=True, prec=53, emb=None):
     from sage.symbolic.constants import e
 
     def coshdelta(z):
-        #The cosh of the hyperbolic distance from z = t+uj to j
-        return (z.norm() + 1)/(2*z.imag())
+        # The cosh of the hyperbolic distance from z = t+uj to j
+        return (z.norm() + 1) / (2 * z.imag())
+
     if F.base_ring() != ComplexField(prec=prec):
         if emb is None:
             compF = F.change_ring(ComplexField(prec=prec))
@@ -961,31 +982,41 @@ def get_bound_dynamical(F, f, m=1, dynatomic=True, prec=53, emb=None):
 
     z0F, thetaF = covariant_z0(compF, prec=prec, emb=emb)
     d = f.degree()
-    hF = e**f.global_height(prec=prec)
-    #get precomputed constants C,k
+    hF = e ** f.global_height(prec=prec)
+    # get precomputed constants C,k
     if m == 1:
-        C = 4*d+2
+        C = 4 * d + 2
         k = 2
     else:
-        Ck_values = {(False, 2, 2): (322, 6), (False, 2, 3): (385034, 14),
-                     (False, 2, 4): (4088003923454, 30), (False, 3, 2): (18044, 8),
-                     (False, 4, 2): (1761410, 10), (False, 5, 2): (269283820, 12),
-                     (True, 2, 2): (43, 4), (True, 2, 3): (106459, 12),
-                     (True, 2, 4): (39216735905, 24), (True, 3, 2): (1604, 6),
-                     (True, 4, 2): (114675, 8), (True, 5, 2): (14158456, 10)}
+        Ck_values = {
+            (False, 2, 2): (322, 6),
+            (False, 2, 3): (385034, 14),
+            (False, 2, 4): (4088003923454, 30),
+            (False, 3, 2): (18044, 8),
+            (False, 4, 2): (1761410, 10),
+            (False, 5, 2): (269283820, 12),
+            (True, 2, 2): (43, 4),
+            (True, 2, 3): (106459, 12),
+            (True, 2, 4): (39216735905, 24),
+            (True, 3, 2): (1604, 6),
+            (True, 4, 2): (114675, 8),
+            (True, 5, 2): (14158456, 10),
+        }
         try:
-            C, k = Ck_values[(dynatomic,d,m)]
+            C, k = Ck_values[(dynatomic, d, m)]
         except KeyError:
             raise ValueError("constants not computed for this (m,d) pair")
     if n == 2 and d == 2:
-        #bound with epsilonF = 1
-        bound = 2*((2*C*(hF**k))/(thetaF))
+        # bound with epsilonF = 1
+        bound = 2 * ((2 * C * (hF**k)) / (thetaF))
     else:
-        bound = cosh(epsinv(F, (2**(n-1))*C*(hF**k)/thetaF, prec=prec))
+        bound = cosh(epsinv(F, (2 ** (n - 1)) * C * (hF**k) / thetaF, prec=prec))
     return bound
 
 
-def smallest_dynamical(f, dynatomic=True, start_n=1, prec=53, emb=None, algorithm='HS', check_minimal=True):
+def smallest_dynamical(
+    f, dynatomic=True, start_n=1, prec=53, emb=None, algorithm='HS', check_minimal=True
+):
     r"""
     Determine the poly with smallest coefficients in `SL(2,\ZZ)` orbit of ``F``.
 
@@ -1053,76 +1084,85 @@ def smallest_dynamical(f, dynatomic=True, start_n=1, prec=53, emb=None, algorith
         left = 1
         right = N
         mid = (left + right) // 2  # these are ints so this is .floor()
-        if item[index] > pts[mid][index]: # item goes into first half
+        if item[index] > pts[mid][index]:  # item goes into first half
             return insert_item(pts[:mid], item, index) + pts[mid:N]
         # item goes into second half
         return pts[:mid] + insert_item(pts[mid:N], item, index)
 
     def coshdelta(z):
         # The cosh of the hyperbolic distance from z = t+uj to j
-        return (z.norm() + 1)/(2*z.imag())
+        return (z.norm() + 1) / (2 * z.imag())
 
     # can't be smaller if height 0
     f.normalize_coordinates()
     if f.global_height(prec=prec) == 0:
-        return [f, matrix(ZZ,2,2,[1,0,0,1])]
-    all_min = f.all_minimal_models(return_transformation=True, algorithm=algorithm, check_minimal=check_minimal)
+        return [f, matrix(ZZ, 2, 2, [1, 0, 0, 1])]
+    all_min = f.all_minimal_models(
+        return_transformation=True, algorithm=algorithm, check_minimal=check_minimal
+    )
 
     current_min = None
     current_size = None
     # search for minimum over all orbits
-    for g,M in all_min:
+    for g, M in all_min:
         PS = g.domain()
         CR = PS.coordinate_ring()
-        x,y = CR.gens()
-        n = start_n # sometimes you get a problem later with 0,infty as roots
+        x, y = CR.gens()
+        n = start_n  # sometimes you get a problem later with 0,infty as roots
         if dynatomic:
             pts_poly = g.dynatomic_polynomial(n)
         else:
             gn = g.nth_iterate_map(n)
-            pts_poly = y*gn[0] - x*gn[1]
+            pts_poly = y * gn[0] - x * gn[1]
         d = ZZ(pts_poly.degree())
-        max_mult = max([ex for p,ex in pts_poly.factor()])
-        while ((d < 3) or (max_mult >= d/2) and (n < 5)):
-            n = n+1
+        max_mult = max([ex for p, ex in pts_poly.factor()])
+        while (d < 3) or (max_mult >= d / 2) and (n < 5):
+            n = n + 1
             if dynatomic:
                 pts_poly = g.dynatomic_polynomial(n)
             else:
                 gn = g.nth_iterate_map(n)
-                pts_poly = y*gn[0] - x*gn[1]
+                pts_poly = y * gn[0] - x * gn[1]
             d = ZZ(pts_poly.degree())
             max_mult = max([ex for _, ex in pts_poly.factor()])
-        assert (n <= 4), "n > 4, failed to find usable poly"
+        assert n <= 4, "n > 4, failed to find usable poly"
 
-        R = get_bound_dynamical(pts_poly, g, m=n, dynatomic=dynatomic, prec=prec, emb=emb)
+        R = get_bound_dynamical(
+            pts_poly, g, m=n, dynatomic=dynatomic, prec=prec, emb=emb
+        )
         # search starts in fundamental domain
-        G,MG = pts_poly.reduced_form(prec=prec, emb=emb, smallest_coeffs=False)
-        red_g = f.conjugate(M*MG)
+        G, MG = pts_poly.reduced_form(prec=prec, emb=emb, smallest_coeffs=False)
+        red_g = f.conjugate(M * MG)
         if G != pts_poly:
-            R2 = get_bound_dynamical(G, red_g, m=n, dynatomic=dynatomic, prec=prec, emb=emb)
+            R2 = get_bound_dynamical(
+                G, red_g, m=n, dynatomic=dynatomic, prec=prec, emb=emb
+            )
             R = min(R2, R)
         red_g.normalize_coordinates()
         if red_g.global_height(prec=prec) == 0:
-            return [red_g, M*MG]
+            return [red_g, M * MG]
 
         # height
         if current_size is None:
-            current_size = e**red_g.global_height(prec=prec)
+            current_size = e ** red_g.global_height(prec=prec)
         v0, th = covariant_z0(G, prec=prec, emb=emb)
-        rep = 2*CC.gen(0)
+        rep = 2 * CC.gen(0)
         from math import isnan
+
         if isnan(v0.abs()):
             raise ValueError("invalid covariant: %s" % v0)
 
         # get orbit
-        S = matrix(ZZ,2,2,[0,-1,1,0])
-        T = matrix(ZZ,2,2,[1,1,0,1])
-        TI = matrix(ZZ,2,2,[1,-1,0,1])
+        S = matrix(ZZ, 2, 2, [0, -1, 1, 0])
+        T = matrix(ZZ, 2, 2, [1, 1, 0, 1])
+        TI = matrix(ZZ, 2, 2, [1, -1, 0, 1])
 
         count = 0
-        pts = [[G, red_g, v0, rep, M*MG, coshdelta(v0), 0]]  # label - 0:None, 1:S, 2:T, 3:T^(-1)
+        pts = [
+            [G, red_g, v0, rep, M * MG, coshdelta(v0), 0]
+        ]  # label - 0:None, 1:S, 2:T, 3:T^(-1)
         if current_min is None:
-            current_min = [G, red_g, v0, rep, M*MG, coshdelta(v0)]
+            current_min = [G, red_g, v0, rep, M * MG, coshdelta(v0)]
         while pts != []:
             G, g, v, rep, M, D, label = pts.pop()
             # apply ST and keep z, Sz
@@ -1130,34 +1170,62 @@ def smallest_dynamical(f, dynatomic=True, start_n=1, prec=53, emb=None, algorith
                 break  # all remaining pts are too far away
             # check if it is smaller. If so, we can improve the bound
             count += 1
-            new_size = e**g.global_height(prec=prec)
+            new_size = e ** g.global_height(prec=prec)
             if new_size < current_size:
                 current_min = [G, g, v, rep, M, coshdelta(v)]
                 current_size = new_size
                 if new_size == 1:  # early exit
                     return [current_min[1], current_min[4]]
-                new_R = get_bound_dynamical(G, g, m=n, dynatomic=dynatomic, prec=prec, emb=emb)
+                new_R = get_bound_dynamical(
+                    G, g, m=n, dynatomic=dynatomic, prec=prec, emb=emb
+                )
                 R = min(new_R, R)
 
             # add new points to check
-            if label != 1 and min((rep+1).norm(), (rep-1).norm()) >= 1: # don't undo S
+            if (
+                label != 1 and min((rep + 1).norm(), (rep - 1).norm()) >= 1
+            ):  # don't undo S
                 # the 2nd condition is equivalent to |\Re(-1/rep)| <= 1/2
                 # this means that rep can have resulted from an inversion step in
                 # the shift-and-invert procedure, so don't invert
 
                 # do inversion
-                z = -1/v
-                new_pt = [G.subs({x:-y, y:x}), g.conjugate(S), z, -1/rep, M*S, coshdelta(z), 1]
+                z = -1 / v
+                new_pt = [
+                    G.subs({x: -y, y: x}),
+                    g.conjugate(S),
+                    z,
+                    -1 / rep,
+                    M * S,
+                    coshdelta(z),
+                    1,
+                ]
                 pts = insert_item(pts, new_pt, 5)
             if label != 3:  # don't undo T on g
                 # do right shift
-                z = v-1
-                new_pt = [G.subs({x:x+y}), g.conjugate(TI), z, rep-1, M*TI, coshdelta(z), 2]
+                z = v - 1
+                new_pt = [
+                    G.subs({x: x + y}),
+                    g.conjugate(TI),
+                    z,
+                    rep - 1,
+                    M * TI,
+                    coshdelta(z),
+                    2,
+                ]
                 pts = insert_item(pts, new_pt, 5)
             if label != 2:  # don't undo TI on g
                 # do left shift
-                z = v+1
-                new_pt = [G.subs({x:x-y}), g.conjugate(T), z, rep+1, M*T, coshdelta(z), 3]
+                z = v + 1
+                new_pt = [
+                    G.subs({x: x - y}),
+                    g.conjugate(T),
+                    z,
+                    rep + 1,
+                    M * T,
+                    coshdelta(z),
+                    3,
+                ]
                 pts = insert_item(pts, new_pt, 5)
 
     return [current_min[1], current_min[4]]

@@ -132,6 +132,7 @@ class InlineFortran:
             globals = self.globs
             if globals is None:
                 from sage.repl.user_globals import get_globals
+
                 globals = get_globals()
 
         # Create everything in a temporary directory
@@ -162,13 +163,18 @@ class InlineFortran:
 
             # What follows are the arguments to f2py itself (appended later
             # just for logical separation)
-            cmd += ['-c', '-m', name, fortran_file, '--quiet', '--backend', 'meson'] + s_lib_path + s_lib
+            cmd += (
+                ['-c', '-m', name, fortran_file, '--quiet', '--backend', 'meson']
+                + s_lib_path
+                + s_lib
+            )
 
             try:
                 out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as exc:
                 raise RuntimeError(
-                    "failed to compile Fortran code:\n{}".format(exc.output))
+                    "failed to compile Fortran code:\n{}".format(exc.output)
+                )
 
             # Note that f2py() doesn't raise an exception if it fails.
             # In that case, the import below will fail.

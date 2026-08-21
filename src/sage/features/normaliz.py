@@ -26,6 +26,7 @@ class PyNormaliz(JoinFeature):
         sage: PyNormaliz().is_present()                    # optional - pynormaliz
         FeatureTestResult('pynormaliz', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -34,8 +35,9 @@ class PyNormaliz(JoinFeature):
             sage: isinstance(PyNormaliz(), PyNormaliz)
             True
         """
-        JoinFeature.__init__(self, 'pynormaliz',
-                             [PythonModule('PyNormaliz', spkg='pynormaliz')])
+        JoinFeature.__init__(
+            self, 'pynormaliz', [PythonModule('PyNormaliz', spkg='pynormaliz')]
+        )
 
 
 def all_features():

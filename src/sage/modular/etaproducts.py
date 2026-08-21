@@ -83,7 +83,6 @@ def EtaGroup(level):
 
 
 class EtaGroupElement(Element):
-
     def __init__(self, parent, rdict) -> None:
         r"""
         Create an eta product object. Usually called implicitly via
@@ -122,7 +121,7 @@ class EtaGroupElement(Element):
             sumR += rdict[d]
             sumDR += rdict[d] * d
             sumNoverDr += rdict[d] * (N // d)
-            prod *= (N // d)**rdict[d]
+            prod *= (N // d) ** rdict[d]
 
         if sumR != 0:
             raise ValueError("sum r_d (=%s) is not 0" % sumR)
@@ -148,8 +147,10 @@ class EtaGroupElement(Element):
             sage: eta1 * eta2
             Eta product of level 4 : (eta_1)^24 (eta_2)^-48 (eta_4)^24
         """
-        newdict = {d: self._rdict.get(d, 0) + other._rdict.get(d, 0)
-                   for d in set(self._rdict).union(other._rdict)}
+        newdict = {
+            d: self._rdict.get(d, 0) + other._rdict.get(d, 0)
+            for d in set(self._rdict).union(other._rdict)
+        }
         P = self.parent()
         return P.element_class(P, newdict)
 
@@ -165,8 +166,10 @@ class EtaGroupElement(Element):
             sage: (eta1 / eta2) * eta2 == eta1
             True
         """
-        newdict = {d: self._rdict.get(d, 0) - other._rdict.get(d, 0)
-                   for d in set(self._rdict).union(other._rdict)}
+        newdict = {
+            d: self._rdict.get(d, 0) - other._rdict.get(d, 0)
+            for d in set(self._rdict).union(other._rdict)
+        }
         P = self.parent()
         return P.element_class(P, newdict)
 
@@ -223,11 +226,13 @@ class EtaGroupElement(Element):
             False
         """
         if op in [op_EQ, op_NE]:
-            test = (self._N == other._N and
-                    self._rdict == other._rdict)
+            test = self._N == other._N and self._rdict == other._rdict
             return test == (op == op_EQ)
-        return richcmp((self._N, sorted(self._rdict.items())),
-                       (other._N, sorted(other._rdict.items())), op)
+        return richcmp(
+            (self._N, sorted(self._rdict.items())),
+            (other._N, sorted(other._rdict.items())),
+            op,
+        )
 
     def _short_repr(self) -> str:
         r"""
@@ -241,8 +246,9 @@ class EtaGroupElement(Element):
         """
         if self.degree() == 0:
             return "1"
-        return " ".join("(eta_%s)^%s" % (d, exp)
-                        for d, exp in sorted(self._rdict.items()))
+        return " ".join(
+            "(eta_%s)^%s" % (d, exp) for d, exp in sorted(self._rdict.items())
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -306,8 +312,8 @@ class EtaGroupElement(Element):
         for d in self._rdict:
             rd = self._rdict[d]
             if rd:
-                pr *= eta(q ** d) ** ZZ(rd)
-        return pr * q**(self._sumDR // 24)
+                pr *= eta(q**d) ** ZZ(rd)
+        return pr * q ** (self._sumDR // 24)
 
     def qexp(self, n):
         """
@@ -345,9 +351,13 @@ class EtaGroupElement(Element):
             raise TypeError("argument (=%s) should be a CuspFamily" % cusp)
         if cusp.level() != self._N:
             raise ValueError("cusp not on right curve")
-        sigma = sum(ell * self._rdict[ell] / cusp.width() *
-                    (gcd(cusp.width(), self._N // ell))**2
-                    for ell in self._rdict)
+        sigma = sum(
+            ell
+            * self._rdict[ell]
+            / cusp.width()
+            * (gcd(cusp.width(), self._N // ell)) ** 2
+            for ell in self._rdict
+        )
         return sigma / ZZ(24) / gcd(cusp.width(), self._N // cusp.width())
 
     def divisor(self):
@@ -365,8 +375,7 @@ class EtaGroupElement(Element):
              - (c_{8,1}) - (c_{4,1}) + (c_{32,4}) + (c_{32,3}) + (c_{64,1})
              + (0) + (c_{32,2}) + (c_{64,2}) + (c_{128}) + (c_{32,1})
         """
-        return FormalSum([(self.order_at_cusp(c), c)
-                          for c in AllCusps(self.level())])
+        return FormalSum([(self.order_at_cusp(c), c) for c in AllCusps(self.level())])
 
     def degree(self) -> Integer:
         r"""
@@ -381,9 +390,11 @@ class EtaGroupElement(Element):
             sage: e.degree()
             230
         """
-        return sum(self.order_at_cusp(c)
-                   for c in AllCusps(self._N)
-                   if self.order_at_cusp(c) > 0)
+        return sum(
+            self.order_at_cusp(c)
+            for c in AllCusps(self._N)
+            if self.order_at_cusp(c) > 0
+        )
 
     def r(self, d) -> Integer:
         r"""
@@ -542,8 +553,7 @@ class EtaGroup_class(UniqueRepresentation, Parent):
         for di in divs:
             # generate a row of relation matrix
             row = [Mod(di, 24) - Mod(N, 24), Mod(N // di, 24) - Mod(1, 24)]
-            row.extend(Mod(12 * (N // di).valuation(p), 24)
-                       for p in primedivs)
+            row.extend(Mod(12 * (N // di).valuation(p), 24) for p in primedivs)
             rows.append(row)
 
         M = matrix(IntegerModRing(24), rows)
@@ -605,9 +615,10 @@ class EtaGroup_class(UniqueRepresentation, Parent):
         short_etas = []
         for shortvect in rred.rows():
             bv = A.coordinates(shortvect)
-            dic = {d: sum(bv[i] * long_etas[i].r(d)
-                          for i in range(r.nrows()))
-                   for d in divisors(N)}
+            dic = {
+                d: sum(bv[i] * long_etas[i].r(d) for i in range(r.nrows()))
+                for d in divisors(N)
+            }
             short_etas.append(self(dic))
         return short_etas
 
@@ -728,8 +739,7 @@ def AllCusps(N) -> list:
         if n == 1:
             c.append(CuspFamily(N, d))
         elif n > 1:
-            c.extend(CuspFamily(N, d, label=str(i + 1))
-                     for i in range(n))
+            c.extend(CuspFamily(N, d, label=str(i + 1)) for i in range(n))
     return c
 
 
@@ -738,6 +748,7 @@ class CuspFamily(SageObject):
     r"""
     A family of elliptic curves parametrising a region of `X_0(N)`.
     """
+
     def __init__(self, N, width, label=None) -> None:
         r"""
         Create the cusp of width d on X_0(N) corresponding to the family
@@ -762,9 +773,15 @@ class CuspFamily(SageObject):
         if N % width:
             raise ValueError("bad width")
         if n_cusps_of_width(N, width) > 1 and label is None:
-            raise ValueError("there are %s > 1 cusps of width %s on X_0(%s): specify a label" % (n_cusps_of_width(N, width), width, N))
+            raise ValueError(
+                "there are %s > 1 cusps of width %s on X_0(%s): specify a label"
+                % (n_cusps_of_width(N, width), width, N)
+            )
         if n_cusps_of_width(N, width) == 1 and label is not None:
-            raise ValueError("there is only one cusp of width %s on X_0(%s): no need to specify a label" % (width, N))
+            raise ValueError(
+                "there is only one cusp of width %s on X_0(%s): no need to specify a label"
+                % (width, N)
+            )
         self.label = label
 
     @property
@@ -861,7 +878,10 @@ class CuspFamily(SageObject):
             return "(Inf)"
         if self.width() == self.level():
             return "(0)"
-        return "(c_{%s%s})" % (self.width(), ((self.label and ("," + self.label)) or ""))
+        return "(c_{%s%s})" % (
+            self.width(),
+            ((self.label and ("," + self.label)) or ""),
+        )
 
 
 def qexp_eta(ps_ring, prec):
@@ -917,8 +937,7 @@ def qexp_eta(ps_ring, prec):
     return ps_ring(v, prec=prec)
 
 
-def eta_poly_relations(eta_elements, degree, labels=['x1', 'x2'],
-                       verbose=False):
+def eta_poly_relations(eta_elements, degree, labels=['x1', 'x2'], verbose=False):
     r"""
     Find polynomial relations between eta products.
 
@@ -989,14 +1008,18 @@ def eta_poly_relations(eta_elements, degree, labels=['x1', 'x2'],
         [x1^3*x2 - 13*x1^3 - 4*x1^2*x2 - 4*x1*x2 - x2^2 + x2]
     """
     if len(eta_elements) > 2:
-        raise NotImplementedError("do not know how to find relations between more than two elements")
+        raise NotImplementedError(
+            "do not know how to find relations between more than two elements"
+        )
 
     eta1, eta2 = eta_elements
 
     if verbose:
         print("Trying to find a relation of degree %s" % degree)
     inf = CuspFamily(eta1.level(), 1)
-    loterm = -(min(0, eta1.order_at_cusp(inf)) + min(0, eta2.order_at_cusp(inf))) * degree
+    loterm = (
+        -(min(0, eta1.order_at_cusp(inf)) + min(0, eta2.order_at_cusp(inf))) * degree
+    )
     if verbose:
         print("Lowest order of a term at infinity = %s" % -loterm)
 
@@ -1043,26 +1066,40 @@ def _eta_relations_helper(eta1, eta2, degree, qexp_terms, labels, verbose):
     indices = [(i, j) for j in range(degree) for i in range(degree)]
     inf = CuspFamily(eta1.level(), 1)
 
-    pole_at_infinity = -(min(0, eta1.order_at_cusp(inf)) + min(0, eta2.order_at_cusp(inf))) * degree
+    pole_at_infinity = (
+        -(min(0, eta1.order_at_cusp(inf)) + min(0, eta2.order_at_cusp(inf))) * degree
+    )
     if verbose:
-        print("Trying all coefficients from q^%s to q^%s inclusive" % (-pole_at_infinity, -pole_at_infinity + qexp_terms - 1))
+        print(
+            "Trying all coefficients from q^%s to q^%s inclusive"
+            % (-pole_at_infinity, -pole_at_infinity + qexp_terms - 1)
+        )
 
     rows: list[list] = [[] for _ in range(qexp_terms)]
     for i in indices:
-        func = (eta1**i[0] * eta2**i[1]).qexp(qexp_terms)
+        func = (eta1 ** i[0] * eta2 ** i[1]).qexp(qexp_terms)
         for j in range(qexp_terms):
             rows[j].append(func[j - pole_at_infinity])
     M = matrix(rows)
     V = M.right_kernel()
     if V.dimension() == 0:
         if verbose:
-            print("No polynomial relation of order %s valid for %s terms" % (degree, qexp_terms))
+            print(
+                "No polynomial relation of order %s valid for %s terms"
+                % (degree, qexp_terms)
+            )
         return None
     if V.dimension() >= 1:
         R = PolynomialRing(QQ, 2, labels)
         x, y = R.gens()
-        relations = [sum([c[v] * x**indices[v][0] * y**indices[v][1]
-                          for v in range(len(indices))])
-                     for c in V.basis()]
+        relations = [
+            sum(
+                [
+                    c[v] * x ** indices[v][0] * y ** indices[v][1]
+                    for v in range(len(indices))
+                ]
+            )
+            for c in V.basis()
+        ]
         id = R.ideal(relations)
         return id.groebner_basis()

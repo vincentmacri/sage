@@ -2,6 +2,7 @@
 """
 Non-symmetric Macdonald polynomials
 """
+
 import copy
 
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -92,8 +93,11 @@ class LatticeDiagram(CombinatorialObject):
             sage: a.arm_right(5,2)
             [(8, 1)]
         """
-        return [(ip, j - 1) for ip in range(i + 1, len(self) + 1)
-                if j - 1 <= self[ip] < self[i]]
+        return [
+            (ip, j - 1)
+            for ip in range(i + 1, len(self) + 1)
+            if j - 1 <= self[ip] < self[i]
+        ]
 
     def arm(self, i, j):
         """
@@ -241,8 +245,9 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
             sage: a.shape()
             [2, 1, 3, 0, 0, 2]
         """
-        return LatticeDiagram([max(0, len(self[i]) - 1)
-                               for i in range(1, len(self) + 1)])
+        return LatticeDiagram(
+            [max(0, len(self[i]) - 1) for i in range(1, len(self) + 1)]
+        )
 
     def __contains__(self, ij):
         r"""
@@ -312,8 +317,7 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
              (5, 0),
              (6, 0)]
         """
-        return self.shape().boxes() + [(i, 0)
-                                       for i in range(1, len(self.shape()) + 1)]
+        return self.shape().boxes() + [(i, 0) for i in range(1, len(self.shape()) + 1)]
 
     def attacking_boxes(self):
         """
@@ -435,6 +439,7 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
 
         def fn(ij):
             return (-ij[1], -ij[0])
+
         boxes.sort(key=fn)
         return boxes
 
@@ -496,9 +501,12 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
         res = 0
         shape = self.shape()
         for i in range(1, len(self) + 1):
-            a = self._list[i-1][0]
-            res += sum(1 for j in range(i + 1, len(self) + 1)
-                       if shape[i] <= shape[j] and a < self._list[j-1][0])
+            a = self._list[i - 1][0]
+            res += sum(
+                1
+                for j in range(i + 1, len(self) + 1)
+                if shape[i] <= shape[j] and a < self._list[j - 1][0]
+            )
         return res
 
     def inv(self):
@@ -543,8 +551,11 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
             (t - 1)^4/((q^2*t^3 - 1)^2*(q*t^2 - 1)^2)
         """
         shape = self.shape()
-        return prod((1 - t) / (1 - q**(shape.l(i, j) + 1) * t**(shape.a(i, j) + 1))
-                    for i, j in shape.boxes() if self[i, j] != self[i, j - 1])
+        return prod(
+            (1 - t) / (1 - q ** (shape.l(i, j) + 1) * t ** (shape.a(i, j) + 1))
+            for i, j in shape.boxes()
+            if self[i, j] != self[i, j - 1]
+        )
 
     def coeff_integral(self, q, t):
         r"""
@@ -563,10 +574,10 @@ class AugmentedLatticeDiagramFilling(CombinatorialObject):
         shape = self.shape()
         for i, j in shape.boxes():
             if self[i, j] != self[i, j - 1]:
-                res *= (1 - q**(shape.l(i, j) + 1) * t**(shape.a(i, j) + 1))
+                res *= 1 - q ** (shape.l(i, j) + 1) * t ** (shape.a(i, j) + 1)
         for i, j in shape.boxes():
             if self[i, j] == self[i, j - 1]:
-                res *= (1 - t)
+                res *= 1 - t
         return res
 
     def permuted_filling(self, sigma):
@@ -681,8 +692,7 @@ class NonattackingFillings_shape(Parent, UniqueRepresentation):
             24
         """
         if sum(self._shape) == 0:
-            yield AugmentedLatticeDiagramFilling([[] for _ in self._shape],
-                                                 self.pi)
+            yield AugmentedLatticeDiagramFilling([[] for _ in self._shape], self.pi)
             return
 
         for z in NonattackingBacktracker(self._shape, self.pi):
@@ -719,7 +729,9 @@ class NonattackingBacktracker(GenericBacktracker):
         nonzero = [i for i in shape if i != 0]
         starting_col = list(shape).index(nonzero[0]) + 1
 
-        GenericBacktracker.__init__(self, self._initial_data, (starting_col, starting_row))
+        GenericBacktracker.__init__(
+            self, self._initial_data, (starting_col, starting_row)
+        )
 
     def _rec(self, obj, state):
         """
@@ -745,11 +757,13 @@ class NonattackingBacktracker(GenericBacktracker):
         for k in range(1, len(self._shape) + 1):
             # We check to make sure that k does not
             # violate any of the attacking conditions
-            if j == 1 and any(self.pi(x + 1) == k
-                              for x in range(i, len(self._shape))):
+            if j == 1 and any(self.pi(x + 1) == k for x in range(i, len(self._shape))):
                 continue
-            if any(obj[ii - 1][jj - 1] == k for ii, jj in
-                    self._shape.boxes_same_and_lower_right(i, j) if jj != 0):
+            if any(
+                obj[ii - 1][jj - 1] == k
+                for ii, jj in self._shape.boxes_same_and_lower_right(i, j)
+                if jj != 0
+            ):
                 continue
 
             # Fill in the in the i,j box with k+1
@@ -899,7 +913,12 @@ def E(mu, q=None, t=None, pi=None):
     res = R.zero()
     for a in n:
         weight = a.weight()
-        res += q**a.maj() * t**a.coinv() * a.coeff(q, t) * prod(x[i]**weight[i] for i in range(len(weight)))
+        res += (
+            q ** a.maj()
+            * t ** a.coinv()
+            * a.coeff(q, t)
+            * prod(x[i] ** weight[i] for i in range(len(weight)))
+        )
     return res
 
 
@@ -958,7 +977,12 @@ def E_integral(mu, q=None, t=None, pi=None):
     res = R.zero()
     for a in n:
         weight = a.weight()
-        res += q**a.maj() * t**a.coinv() * a.coeff_integral(q, t) * prod(x[i]**weight[i] for i in range(len(weight)))
+        res += (
+            q ** a.maj()
+            * t ** a.coinv()
+            * a.coeff_integral(q, t)
+            * prod(x[i] ** weight[i] for i in range(len(weight)))
+        )
     return res
 
 
@@ -1000,5 +1024,9 @@ def Ht(mu, q=None, t=None, pi=None):
     res = R.zero()
     for a in n:
         weight = a.weight()
-        res += q**a.maj() * t**a.inv() * prod(x[i]**weight[i] for i in range(len(weight)))
+        res += (
+            q ** a.maj()
+            * t ** a.inv()
+            * prod(x[i] ** weight[i] for i in range(len(weight)))
+        )
     return res

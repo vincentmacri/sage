@@ -312,7 +312,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -341,6 +340,7 @@ class SetFactory(UniqueRepresentation, SageObject):
         ...
         NotImplementedError: <abstract method add_constraints at ...>
     """
+
     @abstract_method
     def __call__(self, *constraints, **consdict):
         r"""
@@ -409,6 +409,7 @@ class SetFactory(UniqueRepresentation, SageObject):
 
     # TODO : default policy ?
 
+
 ####################################################
 #                    Policies                      #
 ####################################################
@@ -431,6 +432,7 @@ class SetFactoryPolicy(UniqueRepresentation, SageObject):
         This class is a base class for policies, one should not try
         to create instances.
     """
+
     def __init__(self, factory):
         r"""
         TESTS::
@@ -507,9 +509,11 @@ class SetFactoryPolicy(UniqueRepresentation, SageObject):
              '_parent_for': AllPairs,
              'element_class': <class 'sage.structure.set_factories_example.AllPairs_with_category.element_class'>}
         """
-        return {'_parent_for': parent,
-                '_facade_for': parent,
-                'element_class': parent.element_class}
+        return {
+            '_parent_for': parent,
+            '_facade_for': parent,
+            'element_class': parent.element_class,
+        }
 
     @abstract_method
     def element_constructor_attributes(self, constraints):
@@ -573,6 +577,7 @@ class SelfParentPolicy(SetFactoryPolicy):
         sage: isinstance(el, Foo)
         True
     """
+
     def __init__(self, factory, Element):
         r"""
         TESTS::
@@ -638,6 +643,7 @@ class TopMostParentPolicy(SetFactoryPolicy):
         sage: P = XYPairs(); P.policy()
         Set factory policy for <class 'sage.structure.set_factories_example.XYPair'> with parent AllPairs[=Factory for XY pairs(())]
     """
+
     def __init__(self, factory, top_constraints, Element):
         """
         TESTS::
@@ -679,7 +685,8 @@ class TopMostParentPolicy(SetFactoryPolicy):
         if constraints == self._top_constraints:
             return self.self_element_constructor_attributes(self._Element)
         return self.facade_element_constructor_attributes(
-            factory(*self._top_constraints, policy=self))
+            factory(*self._top_constraints, policy=self)
+        )
 
     def _repr_(self):
         r"""
@@ -691,8 +698,11 @@ class TopMostParentPolicy(SetFactoryPolicy):
             Set factory policy for <class 'sage.structure.set_factories_example.XYPair'> with parent AllPairs[=Factory for XY pairs(())]
         """
         return "Set factory policy for {} with parent {}[={}({})]".format(
-            self._Element, self._factory(*self._top_constraints, policy=self),
-            self._factory, self._top_constraints)
+            self._Element,
+            self._factory(*self._top_constraints, policy=self),
+            self._factory,
+            self._top_constraints,
+        )
 
 
 class FacadeParentPolicy(SetFactoryPolicy):
@@ -740,6 +750,7 @@ class FacadeParentPolicy(SetFactoryPolicy):
         sage: type(el) is P.element_class
         True
     """
+
     def __init__(self, factory, parent):
         r"""
         TESTS::
@@ -776,8 +787,7 @@ class FacadeParentPolicy(SetFactoryPolicy):
              '_parent_for': AllPairs,
              'element_class': <class 'sage.structure.set_factories_example.AllPairs_with_category.element_class'>}
         """
-        return self.facade_element_constructor_attributes(
-            self._parent_for._parent_for)
+        return self.facade_element_constructor_attributes(self._parent_for._parent_for)
 
     def _repr_(self):
         r"""
@@ -788,8 +798,7 @@ class FacadeParentPolicy(SetFactoryPolicy):
             sage: FacadeParentPolicy(XYPairs, XYPairs())  # indirect doctest
             Set factory policy for facade parent AllPairs
         """
-        return "Set factory policy for facade parent {}".format(
-            self._parent_for)
+        return "Set factory policy for facade parent {}".format(self._parent_for)
 
 
 class BareFunctionPolicy(SetFactoryPolicy):
@@ -815,6 +824,7 @@ class BareFunctionPolicy(SetFactoryPolicy):
         sage: type(el)
         <... 'tuple'>
     """
+
     def __init__(self, factory, constructor):
         """
         TESTS::
@@ -845,8 +855,7 @@ class BareFunctionPolicy(SetFactoryPolicy):
             sage: pol.element_constructor_attributes(())
             {'_element_constructor_': <... 'tuple'>, '_parent_for': None}
         """
-        return {'_element_constructor_': self._constructor,
-                '_parent_for': None}
+        return {'_element_constructor_': self._constructor, '_parent_for': None}
 
     def _repr_(self):
         r"""
@@ -887,6 +896,7 @@ class ParentWithSetFactory(Parent):
         sage: P.category()
         Category of facade finite enumerated sets
     """
+
     def __init__(self, constraints, policy, category=None):
         r"""
         TESTS::
@@ -906,9 +916,9 @@ class ParentWithSetFactory(Parent):
             else:
                 setattr(self, attrname, attr)
         assert self._parent_for is None or isinstance(self._parent_for, Parent)
-        Parent.__init__(self,
-                        category=category,
-                        facade=policy_attributes.get('_facade_for', None))
+        Parent.__init__(
+            self, category=category, facade=policy_attributes.get('_facade_for', None)
+        )
 
     def constraints(self):
         r"""
@@ -1012,8 +1022,7 @@ class ParentWithSetFactory(Parent):
             True
         """
         factory = self.factory()
-        constr = factory.add_constraints(self._constraints,
-                                         (args, options))
+        constr = factory.add_constraints(self._constraints, (args, options))
         return factory(*constr, policy=self._policy)
 
     def _test_subset(self, **options):
@@ -1106,8 +1115,9 @@ class ParentWithSetFactory(Parent):
             sage: el in XYPairs(y=4)
             False
         """
-        if (isinstance(x, self.element_class) and
-                x.parent() == self._parent_for):  # TODO: is_parent_of ???
+        if (
+            isinstance(x, self.element_class) and x.parent() == self._parent_for
+        ):  # TODO: is_parent_of ???
             try:
                 self.check_element(x, True)
             except ValueError:
@@ -1138,9 +1148,11 @@ class ParentWithSetFactory(Parent):
             ValueError: Wrong first coordinate
         """
         # Ensure idempotence of element construction
-        if (len(args) == 1 and
-            isinstance(args[0], self.element_class) and
-                args[0].parent() == self._parent_for):
+        if (
+            len(args) == 1
+            and isinstance(args[0], self.element_class)
+            and args[0].parent() == self._parent_for
+        ):
             check = keywords.get("check", True)
             if check:
                 self.check_element(args[0], check)

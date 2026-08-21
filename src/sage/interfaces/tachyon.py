@@ -741,6 +741,7 @@ class TachyonRT(SageObject):
 
     .. automethod:: __call__
     """
+
     def _repr_(self):
         """
         Return a brief description of this interface object (the Tachyon
@@ -802,8 +803,8 @@ class TachyonRT(SageObject):
         if self.version() >= '0.99.2':
             # this keyword was changed in 0.99.2
             model = model.replace(
-                "              focallength ",
-                "              focaldist ")
+                "              focallength ", "              focaldist "
+            )
         modelfile = tmp_filename(ext='.dat')
         with open(modelfile, 'w') as file:
             file.write(model)
@@ -826,6 +827,7 @@ class TachyonRT(SageObject):
         if verbose:
             print(' '.join(cmd))
         import subprocess
+
         out = bytes_to_str(subprocess.check_output(cmd))
         if verbose >= 1:
             print(out)

@@ -41,6 +41,7 @@ atexit.register(lambda: TMP_DIR_FILENAME_BASE.cleanup())
 # temporary directory
 #################################################################
 
+
 def tmp_dir(name='dir_', ext='') -> str:
     r"""
     Create and return a temporary directory in
@@ -73,9 +74,7 @@ def tmp_dir(name='dir_', ext='') -> str:
         0
         sage: f.close()
     """
-    tmp = tempfile.mkdtemp(prefix=name,
-                           suffix=ext,
-                           dir=TMP_DIR_FILENAME_BASE.name)
+    tmp = tempfile.mkdtemp(prefix=name, suffix=ext, dir=TMP_DIR_FILENAME_BASE.name)
     name = os.path.abspath(tmp)
     return name + os.sep
 
@@ -83,6 +82,7 @@ def tmp_dir(name='dir_', ext='') -> str:
 #################################################################
 # temporary filename
 #################################################################
+
 
 def tmp_filename(name='tmp_', ext='') -> str:
     r"""
@@ -122,9 +122,9 @@ def tmp_filename(name='tmp_', ext='') -> str:
         0
         sage: f.close()
     """
-    handle, tmp = tempfile.mkstemp(prefix=name,
-                                   suffix=ext,
-                                   dir=TMP_DIR_FILENAME_BASE.name)
+    handle, tmp = tempfile.mkstemp(
+        prefix=name, suffix=ext, dir=TMP_DIR_FILENAME_BASE.name
+    )
     os.close(handle)
     name = os.path.abspath(tmp)
     return name
@@ -298,8 +298,10 @@ class atomic_write:
         sage: os.path.exists(writer.tempname)
         False
     """
-    def __init__(self, target_filename, append=False, mode=0o666,
-                 binary=False, **kwargs) -> None:
+
+    def __init__(
+        self, target_filename, append=False, mode=0o666, binary=False, **kwargs
+    ) -> None:
         """
         TESTS::
 
@@ -408,6 +410,7 @@ class atomic_write:
             # Failure: delete temporary file
             os.unlink(self.tempname)
 
+
 #################################################################
 # write to a temporary directory and move it in place
 #################################################################
@@ -455,6 +458,7 @@ class atomic_dir:
         ....:     h.read()
         'Second'
     """
+
     def __init__(self, target_directory) -> None:
         r"""
         TESTS::
@@ -511,6 +515,7 @@ class atomic_dir:
             False
         """
         import shutil
+
         if exc_type is None:
             # Success: move temporary file to target file
             try:

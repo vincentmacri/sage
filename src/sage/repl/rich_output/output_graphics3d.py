@@ -3,6 +3,7 @@ Three-Dimensional Graphics Output Types
 
 This module defines the rich output types for 3-d scenes.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2015 Volker Braun <vbraun.name@gmail.com>
 #
@@ -20,7 +21,6 @@ from sage.repl.rich_output.buffer import OutputBuffer
 
 
 class OutputSceneJmol(OutputBase):
-
     def __init__(self, scene_zip, preview_png):
         """
         JMol Scene.
@@ -67,6 +67,7 @@ class OutputSceneJmol(OutputBase):
             script SCRIPT
         """
         from sage.misc.temporary_file import tmp_dir
+
         basedir = tmp_dir()
         scene_filename = os.path.join(basedir, 'scene.spt.zip')
         script_filename = os.path.join(basedir, 'scene.spt')
@@ -108,7 +109,6 @@ class OutputSceneJmol(OutputBase):
 
 
 class OutputSceneCanvas3d(OutputBase):
-
     def __init__(self, canvas3d):
         """
         Canvas3d Scene.
@@ -151,7 +151,6 @@ class OutputSceneCanvas3d(OutputBase):
 
 
 class OutputSceneThreejs(OutputBase):
-
     def __init__(self, html):
         """
         Three.js Scene.
@@ -170,7 +169,6 @@ class OutputSceneThreejs(OutputBase):
 
 
 class OutputSceneWavefront(OutputBase):
-
     def __init__(self, obj, mtl):
         """
         Wavefront `*.obj` Scene.
@@ -234,8 +232,9 @@ class OutputSceneWavefront(OutputBase):
             ValueError: must be pure filename, got directory component: /absolute/scene.mtl
         """
         if os.path.split(filename)[0]:
-            raise ValueError('must be pure filename, got directory component: {0}'
-                             .format(filename))
+            raise ValueError(
+                'must be pure filename, got directory component: {0}'.format(filename)
+            )
 
     def mtllib(self):
         """
@@ -259,8 +258,7 @@ class OutputSceneWavefront(OutputBase):
         marker = b'mtllib '
         for line in self.obj.get().splitlines():
             if line.startswith(marker):
-                return bytes_to_str(line[len(marker):], FS_ENCODING,
-                                    'surrogateescape')
+                return bytes_to_str(line[len(marker) :], FS_ENCODING, 'surrogateescape')
         return 'scene.mtl'
 
     def obj_filename(self):
@@ -304,6 +302,7 @@ class OutputSceneWavefront(OutputBase):
             d 1
         """
         from sage.misc.temporary_file import tmp_dir
+
         basedir = tmp_dir()
         obj_filename = os.path.join(basedir, 'scene.obj')
         mtl_filename = os.path.join(basedir, self.mtllib())
@@ -337,8 +336,12 @@ class OutputSceneWavefront(OutputBase):
             sage: rich_output.mtl.get_str()
             'newmtl texture177\nKa 0.2 0.2 0.5\nKd 0.4 0.4 1.0\nKs 0.0 0.0 0.0\nillum 1\nNs 1\nd 1\n'
         """
-        with importlib.resources.path(__package__, 'example_wavefront_scene.obj') as filename:
+        with importlib.resources.path(
+            __package__, 'example_wavefront_scene.obj'
+        ) as filename:
             scene_obj = OutputBuffer.from_file(filename)
-        with importlib.resources.path(__package__, 'example_wavefront_scene.mtl') as filename:
+        with importlib.resources.path(
+            __package__, 'example_wavefront_scene.mtl'
+        ) as filename:
             scene_mtl = OutputBuffer.from_file(filename)
         return cls(scene_obj, scene_mtl)

@@ -6,7 +6,7 @@ cardinality must be less than `2^{16}`. By default, Conway polynomials are
 used as minimal polynomial.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2010-2012 David Roe
 #       Copyright (C) 2012 Travis Scrimshaw
 #       Copyright (C) 2013 Peter Bruin
@@ -17,7 +17,7 @@ used as minimal polynomial.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.rings.integer import Integer
@@ -101,6 +101,7 @@ class FiniteField_givaro(FiniteField):
         sage: GF(1009, implementation='givaro', modulus='conway').modulus()
         x + 998
     """
+
     def __init__(self, q, name='a', modulus=None, repr='poly', cache=False):
         """
         Initialize ``self``.
@@ -132,9 +133,11 @@ class FiniteField_givaro(FiniteField):
             raise ValueError("q must be < 2^16")
 
         from .finite_field_constructor import GF
+
         FiniteField.__init__(self, GF(p), name, normalize=False)
 
         from sage.rings.polynomial.polynomial_element import Polynomial
+
         if not isinstance(modulus, Polynomial):
             raise TypeError("modulus must be a polynomial")
 
@@ -202,7 +205,7 @@ class FiniteField_givaro(FiniteField):
             False
         """
         if key == 'element_is_atomic':
-            return self._cache.repr != 0   # 0 means repr='poly'
+            return self._cache.repr != 0  # 0 means repr='poly'
         return super()._repr_option(key)
 
     def random_element(self, *args, **kwds):
@@ -424,6 +427,7 @@ class FiniteField_givaro(FiniteField):
             return self._prime_subfield
         except AttributeError:
             from .finite_field_constructor import GF
+
             self._prime_subfield = GF(self.characteristic())
             return self._prime_subfield
 
@@ -513,6 +517,7 @@ class FiniteField_givaro(FiniteField):
             [0, a, a + 1, 1]
         """
         from .element_givaro import FiniteField_givaro_iterator
+
         return FiniteField_givaro_iterator(self._cache)
 
     def a_times_b_plus_c(self, a, b, c):
@@ -609,5 +614,8 @@ class FiniteField_givaro(FiniteField):
 
         - Xavier Caruso (2012-06-29)
         """
-        from sage.rings.finite_rings.hom_finite_field_givaro import FrobeniusEndomorphism_givaro
+        from sage.rings.finite_rings.hom_finite_field_givaro import (
+            FrobeniusEndomorphism_givaro,
+        )
+
         return FrobeniusEndomorphism_givaro(self, n)

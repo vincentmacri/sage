@@ -183,8 +183,9 @@ def kfpoly_skew(lamu, nu, t=None):
     if t is None:
         t = polygen(ZZ, 't')
 
-    return t.parent().sum(t ** T.to_word().charge()
-                          for T in SemistandardSkewTableaux(lamu, nu))
+    return t.parent().sum(
+        t ** T.to_word().charge() for T in SemistandardSkewTableaux(lamu, nu)
+    )
 
 
 def schur_to_hl(mu, t=None):
@@ -330,20 +331,20 @@ def compat(n, mu, nu):
         [[4]]
     """
     l = max(len(mu), len(nu))
-    mmu = list(mu) + [0]*(l-len(mu))
-    nnu = list(nu) + [0]*(l-len(nu))
+    mmu = list(mu) + [0] * (l - len(mu))
+    nnu = list(nu) + [0] * (l - len(nu))
 
     bd = []
     sa = 0
     for i in range(l):
-        sa += 2*mmu[i] - nnu[i]
+        sa += 2 * mmu[i] - nnu[i]
         bd.append(sa)
 
     for la in ZS1_iterator(n):
         if dom(la, bd):
             return [x.conjugate() for x in _Partitions(la).dominated_partitions()]
 
-    return [] # _Partitions([])
+    return []  # _Partitions([])
 
 
 def dom(mup, snu):
@@ -375,8 +376,8 @@ def dom(mup, snu):
         sage: dom([],[])
         True
     """
-    if not mup: # mup is empty:
-        return not snu # True if and only if snu is empty
+    if not mup:  # mup is empty:
+        return not snu  # True if and only if snu is empty
 
     l = len(snu)
     lmup = len(mup)
@@ -427,20 +428,21 @@ def weight(rg, t=None):
         4
     """
     from sage.combinat.q_analogues import q_binomial
+
     if t is None:
         t = polygen(ZZ, 't')
 
-    nu = rg + [ [] ]
-    l = 1 + max( map(len, nu) )
-    nu = [ list(mu) + [0]*l for mu in nu ]
-    res = t**int(sum(i * (i-1) // 2 for i in rg[-1]))
-    for k in range(1, len(nu)-1):
+    nu = rg + [[]]
+    l = 1 + max(map(len, nu))
+    nu = [list(mu) + [0] * l for mu in nu]
+    res = t ** int(sum(i * (i - 1) // 2 for i in rg[-1]))
+    for k in range(1, len(nu) - 1):
         sa = 0
         mid = nu[k]
-        for i in range( max(len(rg[k]), len(rg[k-1])) ):
-            sa += nu[k-1][i] - 2*mid[i] + nu[k+1][i]
-            if mid[i] - mid[i+1] + sa >= 0:
-                res *= q_binomial(mid[i]-mid[i+1]+sa, sa, t)
-            mu = nu[k-1][i] - mid[i]
-            res *= t**int(mu * (mu-1) // 2)
+        for i in range(max(len(rg[k]), len(rg[k - 1]))):
+            sa += nu[k - 1][i] - 2 * mid[i] + nu[k + 1][i]
+            if mid[i] - mid[i + 1] + sa >= 0:
+                res *= q_binomial(mid[i] - mid[i + 1] + sa, sa, t)
+            mu = nu[k - 1][i] - mid[i]
+            res *= t ** int(mu * (mu - 1) // 2)
     return res

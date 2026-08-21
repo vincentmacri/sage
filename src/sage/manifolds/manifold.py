@@ -360,6 +360,7 @@ if TYPE_CHECKING:
 #############################################################################
 # Class
 
+
 class TopologicalManifold(ManifoldSubset):
     r"""
     Topological manifold over a topological field `K`.
@@ -519,11 +520,21 @@ class TopologicalManifold(ManifoldSubset):
 
         :mod:`sage.manifolds.manifold`
     """
+
     _dim: int
 
-    def __init__(self, n, name, field, structure, base_manifold=None,
-                 latex_name=None, start_index=0, category=None,
-                 unique_tag=None):
+    def __init__(
+        self,
+        n,
+        name,
+        field,
+        structure,
+        base_manifold=None,
+        latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a topological manifold.
 
@@ -578,8 +589,9 @@ class TopologicalManifold(ManifoldSubset):
         else:
             category = base_manifold.category().Subobjects()
         # Initialization as a manifold set:
-        ManifoldSubset.__init__(self, base_manifold, name, latex_name=latex_name,
-                                category=category)
+        ManifoldSubset.__init__(
+            self, base_manifold, name, latex_name=latex_name, category=category
+        )
         self._is_open = True
         self._open_covers.append([self])  # list of open covers of self
 
@@ -589,14 +601,14 @@ class TopologicalManifold(ManifoldSubset):
 
         self._atlas = []  # list of charts defined on subsets of self
         self._top_charts = []  # list of charts defined on subsets of self
-                        # that are not subcharts of charts on larger subsets
+        # that are not subcharts of charts on larger subsets
         self._def_chart = None  # default chart
-        self._orientation = [] # set no orientation a priori
-        self._charts_by_coord = {} # dictionary of charts whose domain is self
-                                   # (key: string formed by the coordinate
-                                   #  symbols separated by a white space)
-        self._coord_changes = {} # dictionary of transition maps (key: pair of
-                                 # of charts)
+        self._orientation = []  # set no orientation a priori
+        self._charts_by_coord = {}  # dictionary of charts whose domain is self
+        # (key: string formed by the coordinate
+        #  symbols separated by a white space)
+        self._coord_changes = {}  # dictionary of transition maps (key: pair of
+        # of charts)
         # List of charts that individually cover self, i.e. whose
         # domains are self (if non-empty, self is a coordinate domain):
         self._covering_charts = []
@@ -640,23 +652,20 @@ class TopologicalManifold(ManifoldSubset):
         """
         if self is self._manifold:
             if self._field_type == 'real':
-                return "{}-dimensional {} manifold {}".format(self._dim,
-                                                          self._structure.name,
-                                                          self._name)
+                return "{}-dimensional {} manifold {}".format(
+                    self._dim, self._structure.name, self._name
+                )
             if self._field_type == 'complex':
                 if isinstance(self._structure, DifferentialStructure):
                     return "{}-dimensional complex manifold {}".format(
-                                                                    self._dim,
-                                                                    self._name)
+                        self._dim, self._name
+                    )
                 return "Complex {}-dimensional {} manifold {}".format(
-                                                      self._dim,
-                                                      self._structure.name,
-                                                      self._name)
+                    self._dim, self._structure.name, self._name
+                )
             return "{}-dimensional {} manifold {} over the {}".format(
-                                                          self._dim,
-                                                          self._structure.name,
-                                                          self._name,
-                                                          self._field)
+                self._dim, self._structure.name, self._name, self._field
+            )
         return "Open subset {} of the {}".format(self._name, self._manifold)
 
     def _an_element_(self):
@@ -688,6 +697,7 @@ class TopologicalManifold(ManifoldSubset):
             (-pi - 1, 2)
         """
         from sage.rings.infinity import Infinity
+
         if self._def_chart is None:
             return self.element_class(self)
         # Attempt to construct a point in the domain of the default chart
@@ -706,16 +716,16 @@ class TopologicalManifold(ManifoldSubset):
                     if xmax == Infinity:
                         x = xmin + 1
                     else:
-                        x = (xmin + xmax)/2
+                        x = (xmin + xmax) / 2
                 coords.append(x)
         else:
-            coords = self._dim*[0]
+            coords = self._dim * [0]
         if not chart.valid_coordinates(*coords):
             # Attempt to construct a point in the domain of other charts
             if self._field_type == 'real':
                 for ch in self._atlas:
                     if ch is self._def_chart:
-                        continue # since this case has already been attempted
+                        continue  # since this case has already been attempted
                     coords = []
                     for coord_range in ch._bounds:
                         xmin = coord_range[0][0]
@@ -729,7 +739,7 @@ class TopologicalManifold(ManifoldSubset):
                             if xmax == Infinity:
                                 x = xmin + 1
                             else:
-                                x = (xmin + xmax)/2
+                                x = (xmin + xmax) / 2
                         coords.append(x)
                     if ch.valid_coordinates(*coords):
                         chart = ch
@@ -744,7 +754,7 @@ class TopologicalManifold(ManifoldSubset):
                 # Case of manifolds over a field different from R
                 for ch in self._atlas:
                     if ch is self._def_chart:
-                        continue # since this case has already been attempted
+                        continue  # since this case has already been attempted
                     if ch.valid_coordinates(*coords):
                         chart = ch
                         break
@@ -752,8 +762,7 @@ class TopologicalManifold(ManifoldSubset):
                     return self.element_class(self)
         # The point is constructed with check_coords=False since the check
         # has just been performed above:
-        return self.element_class(self, coords=coords, chart=chart,
-                                  check_coords=False)
+        return self.element_class(self, coords=coords, chart=chart, check_coords=False)
 
     def __contains__(self, point):
         r"""
@@ -786,12 +795,13 @@ class TopologicalManifold(ManifoldSubset):
             return True
         for chart in self._atlas:
             if chart in point._coordinates:
-                if chart.valid_coordinates( *(point._coordinates[chart]) ):
+                if chart.valid_coordinates(*(point._coordinates[chart])):
                     return True
         for chart in point._coordinates:
             for schart in chart._subcharts:
                 if schart in self._atlas and schart.valid_coordinates(
-                                          *(point._coordinates[chart]) ):
+                    *(point._coordinates[chart])
+                ):
                     return True
         return False
 
@@ -879,11 +889,15 @@ class TopologicalManifold(ManifoldSubset):
             sage: M.point((1,2)) in U
             False
         """
-        resu = TopologicalManifold(self._dim, name, self._field,
-                                   self._structure,
-                                   base_manifold=self._manifold,
-                                   latex_name=latex_name,
-                                   start_index=self._sindex)
+        resu = TopologicalManifold(
+            self._dim,
+            name,
+            self._field,
+            self._structure,
+            base_manifold=self._manifold,
+            latex_name=latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:
@@ -923,8 +937,10 @@ class TopologicalManifold(ManifoldSubset):
         # Charts on the result from the coordinate definition:
         for chart, restrictions in coord_def.items():
             if chart not in self._atlas:
-                raise ValueError("the {} does not belong to ".format(chart) +
-                                 "the atlas of {}".format(self))
+                raise ValueError(
+                    "the {} does not belong to ".format(chart)
+                    + "the atlas of {}".format(self)
+                )
             chart.restrict(resu, restrictions)
         # Transition maps on the result inferred from those of self:
         for chart1 in coord_def:
@@ -984,9 +1000,11 @@ class TopologicalManifold(ManifoldSubset):
         try:
             return dom._charts_by_coord[coordinates]
         except KeyError:
-            raise KeyError("the coordinates '{}' ".format(coordinates) +
-                           "do not correspond to any chart with " +
-                           "the {} as domain".format(dom))
+            raise KeyError(
+                "the coordinates '{}' ".format(coordinates)
+                + "do not correspond to any chart with "
+                + "the {} as domain".format(dom)
+            )
 
     def dimension(self):
         r"""
@@ -1174,17 +1192,17 @@ class TopologicalManifold(ManifoldSubset):
         imax = self._dim - 1 + si
         ind = [si for k in range(nb_indices)]
         ind_end = [si for k in range(nb_indices)]
-        ind_end[0] = imax+1
+        ind_end[0] = imax + 1
         while ind != ind_end:
             yield tuple(ind)
             ret = 1
-            for pos in range(nb_indices-1, -1, -1):
+            for pos in range(nb_indices - 1, -1, -1):
                 if ind[pos] != imax:
                     ind[pos] += ret
                     ret = 0
                 elif ret == 1:
                     if pos == 0:
-                        ind[pos] = imax + 1 # end point reached
+                        ind[pos] = imax + 1  # end point reached
                     else:
                         ind[pos] = si
                         ret = 1
@@ -1231,7 +1249,7 @@ class TopologicalManifold(ManifoldSubset):
 
             :meth:`top_charts`
         """
-        return list(self._atlas) # Make a (shallow) copy
+        return list(self._atlas)  # Make a (shallow) copy
 
     def top_charts(self):
         r"""
@@ -1265,7 +1283,7 @@ class TopologicalManifold(ManifoldSubset):
             :meth:`atlas` for the complete list of charts defined on the
             manifold.
         """
-        return list(self._top_charts) # Make a (shallow) copy
+        return list(self._top_charts)  # Make a (shallow) copy
 
     def default_chart(self):
         r"""
@@ -1320,6 +1338,7 @@ class TopologicalManifold(ManifoldSubset):
             Chart (M, (u, v))
         """
         from sage.manifolds.chart import Chart
+
         if not isinstance(chart, Chart):
             raise TypeError("{} is not a chart".format(chart))
         if chart not in self._atlas:
@@ -1358,9 +1377,12 @@ class TopologicalManifold(ManifoldSubset):
             Change of coordinates from Chart (M, (x, y)) to Chart (M, (u, v))
         """
         if (chart1, chart2) not in self._coord_changes:
-            raise TypeError("the change of coordinates from " +
-                            "{} to {}".format(chart1, chart2) + " has not " +
-                            "been defined on the {}".format(self))
+            raise TypeError(
+                "the change of coordinates from "
+                + "{} to {}".format(chart1, chart2)
+                + " has not "
+                + "been defined on the {}".format(self)
+            )
         return self._coord_changes[(chart1, chart2)]
 
     def coord_changes(self):
@@ -1608,9 +1630,13 @@ class TopologicalManifold(ManifoldSubset):
         """
         if calc_method is None:
             calc_method = self._calculus_method
-        return self._structure.chart(self, coordinates=coordinates,
-                                     names=names, calc_method=calc_method,
-                                     coord_restrictions=coord_restrictions)
+        return self._structure.chart(
+            self,
+            coordinates=coordinates,
+            names=names,
+            calc_method=calc_method,
+            coord_restrictions=coord_restrictions,
+        )
 
     def is_open(self):
         """
@@ -1668,16 +1694,16 @@ class TopologicalManifold(ManifoldSubset):
         elif isinstance(orientation, (tuple, list)):
             orientation = list(orientation)
         else:
-            raise TypeError("orientation must be a chart or a list/tuple of "
-                            "charts")
+            raise TypeError("orientation must be a chart or a list/tuple of charts")
         dom_union = None
         for c in orientation:
             if not isinstance(c, chart_type):
                 raise ValueError("orientation must consist of charts")
             dom = c._domain
             if not dom.is_subset(self):
-                raise ValueError("{} must be defined ".format(c) +
-                                 "on a subset of {}".format(self))
+                raise ValueError(
+                    "{} must be defined ".format(c) + "on a subset of {}".format(self)
+                )
             if dom_union is not None:
                 dom_union = dom.union(dom_union)
             else:
@@ -1871,8 +1897,10 @@ class TopologicalManifold(ManifoldSubset):
              2-dimensional topological manifold M
         """
         from sage.manifolds.vector_bundle import TopologicalVectorBundle
-        return TopologicalVectorBundle(rank, name, self, field=field,
-                                       latex_name=latex_name)
+
+        return TopologicalVectorBundle(
+            rank, name, self, field=field, latex_name=latex_name
+        )
 
     def scalar_field_algebra(self):
         r"""
@@ -2000,11 +2028,19 @@ class TopologicalManifold(ManifoldSubset):
             # check validity of entry
             for chart in coord_expression:
                 if not chart.domain().is_subset(self):
-                    raise ValueError("the {} is not defined ".format(chart) +
-                                     "on some subset of the " + str(self))
+                    raise ValueError(
+                        "the {} is not defined ".format(chart)
+                        + "on some subset of the "
+                        + str(self)
+                    )
         alg = self.scalar_field_algebra()
-        return alg.element_class(alg, coord_expression=coord_expression,
-                                 name=name, latex_name=latex_name, chart=chart)
+        return alg.element_class(
+            alg,
+            coord_expression=coord_expression,
+            name=name,
+            latex_name=latex_name,
+            chart=chart,
+        )
 
     def constant_scalar_field(self, value, name=None, latex_name=None):
         r"""
@@ -2059,8 +2095,9 @@ class TopologicalManifold(ManifoldSubset):
         if value == 0:
             return self.zero_scalar_field()
         alg = self.scalar_field_algebra()
-        return alg.element_class(alg, coord_expression=value, name=name,
-                                 latex_name=latex_name, chart='all')
+        return alg.element_class(
+            alg, coord_expression=value, name=name, latex_name=latex_name, chart='all'
+        )
 
     def zero_scalar_field(self):
         r"""
@@ -2164,15 +2201,20 @@ class TopologicalManifold(ManifoldSubset):
             u*v
             sage: M.options._reset()
         """
+
         NAME = 'manifolds'
         module = 'sage.manifolds.manifold'
         option_class = 'TopologicalManifold'
-        textbook_output = dict(default=True,
-                             description='textbook-like output instead of the Pynac output for derivatives',
-                             checker=lambda x: isinstance(x, bool))
-        omit_function_arguments = dict(default=False,
-                                     description='Determine whether the arguments of symbolic functions are printed',
-                                     checker=lambda x: isinstance(x, bool))
+        textbook_output = dict(
+            default=True,
+            description='textbook-like output instead of the Pynac output for derivatives',
+            checker=lambda x: isinstance(x, bool),
+        )
+        omit_function_arguments = dict(
+            default=False,
+            description='Determine whether the arguments of symbolic functions are printed',
+            checker=lambda x: isinstance(x, bool),
+        )
 
     def _Hom_(self, other, category=None):
         r"""
@@ -2212,8 +2254,15 @@ class TopologicalManifold(ManifoldSubset):
         """
         return self._structure.homset(self, other)
 
-    def continuous_map(self, codomain, coord_functions=None, chart1=None,
-                       chart2=None, name=None, latex_name=None):
+    def continuous_map(
+        self,
+        codomain,
+        coord_functions=None,
+        chart1=None,
+        chart2=None,
+        name=None,
+        latex_name=None,
+    ):
         r"""
         Define a continuous map from ``self`` to ``codomain``.
 
@@ -2305,9 +2354,13 @@ class TopologicalManifold(ManifoldSubset):
             Allow the construction of continuous maps from ``self`` to the
             base field (considered as a trivial 1-dimensional manifold).
         """
-        if (not isinstance(codomain, TopologicalManifold)
-            or codomain.base_field() != self.base_field()):
-            raise ValueError("{} is not a manifold over {}".format(codomain, self.base_field()))
+        if (
+            not isinstance(codomain, TopologicalManifold)
+            or codomain.base_field() != self.base_field()
+        ):
+            raise ValueError(
+                "{} is not a manifold over {}".format(codomain, self.base_field())
+            )
         homset = Hom(self, codomain)
         if coord_functions is None:
             coord_functions = {}
@@ -2316,18 +2369,29 @@ class TopologicalManifold(ManifoldSubset):
             if chart1 is None:
                 chart1 = self._def_chart
             elif chart1 not in self._atlas:
-                raise ValueError("{} is not a chart ".format(chart1) +
-                                 "defined on the {}".format(self))
+                raise ValueError(
+                    "{} is not a chart ".format(chart1)
+                    + "defined on the {}".format(self)
+                )
             if chart2 is None:
                 chart2 = codomain._def_chart
             elif chart2 not in codomain._atlas:
-                raise ValueError("{} is not a chart ".format(chart2) +
-                                 " defined on the {}".format(codomain))
+                raise ValueError(
+                    "{} is not a chart ".format(chart2)
+                    + " defined on the {}".format(codomain)
+                )
             coord_functions = {(chart1, chart2): coord_functions}
         return homset(coord_functions, name=name, latex_name=latex_name)
 
-    def homeomorphism(self, codomain, coord_functions=None, chart1=None,
-                       chart2=None, name=None, latex_name=None):
+    def homeomorphism(
+        self,
+        codomain,
+        coord_functions=None,
+        chart1=None,
+        chart2=None,
+        name=None,
+        latex_name=None,
+    ):
         r"""
         Define a homeomorphism between the current manifold and another one.
 
@@ -2409,16 +2473,21 @@ class TopologicalManifold(ManifoldSubset):
             if chart1 is None:
                 chart1 = self._def_chart
             elif chart1 not in self._atlas:
-                raise ValueError("{} is not a chart ".format(chart1) +
-                                 "defined on the {}".format(self))
+                raise ValueError(
+                    "{} is not a chart ".format(chart1)
+                    + "defined on the {}".format(self)
+                )
             if chart2 is None:
                 chart2 = codomain._def_chart
             elif chart2 not in codomain._atlas:
-                raise ValueError("{} is not a chart ".format(chart2) +
-                                 " defined on the {}".format(codomain))
+                raise ValueError(
+                    "{} is not a chart ".format(chart2)
+                    + " defined on the {}".format(codomain)
+                )
             coord_functions = {(chart1, chart2): coord_functions}
-        return homset(coord_functions, name=name, latex_name=latex_name,
-                      is_isomorphism=True)
+        return homset(
+            coord_functions, name=name, latex_name=latex_name, is_isomorphism=True
+        )
 
     @overload
     def identity_map(self: TopologicalManifold) -> ContinuousMap: ...
@@ -2670,8 +2739,9 @@ class TopologicalManifold(ManifoldSubset):
             <class 'sympy.core.numbers.One'>
         """
         for chart in self._atlas:
-            chart.calculus_method().set_simplify_function(simplifying_func,
-                                                          method=method)
+            chart.calculus_method().set_simplify_function(
+                simplifying_func, method=method
+            )
 
 
 ###########################################################
@@ -2966,11 +3036,13 @@ def Manifold(
     global _manifold_id
 
     _manifold_id += 1
-    unique_tag = lambda: getrandbits(128)*_manifold_id
+    unique_tag = lambda: getrandbits(128) * _manifold_id
 
     if structure is None:
-        if any(extra_kwds.get(x, None) is not None
-               for x in ('metric_name', 'metric_latex_name', 'signature')):
+        if any(
+            extra_kwds.get(x, None) is not None
+            for x in ('metric_name', 'metric_latex_name', 'signature')
+        ):
             structure = 'pseudo-Riemannian'
 
     if structure is None:
@@ -2989,21 +3061,33 @@ def Manifold(
             structure = TopologicalStructure()
         if 'ambient' in extra_kwds:
             ambient = extra_kwds['ambient']
-            return TopologicalSubmanifold(dim, name, field, structure,
-                                          ambient=ambient,
-                                          latex_name=latex_name,
-                                          start_index=start_index,
-                                          unique_tag=unique_tag())
-        return TopologicalManifold(dim, name, field, structure,
-                                   latex_name=latex_name,
-                                   start_index=start_index,
-                                   unique_tag=unique_tag())
+            return TopologicalSubmanifold(
+                dim,
+                name,
+                field,
+                structure,
+                ambient=ambient,
+                latex_name=latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag(),
+            )
+        return TopologicalManifold(
+            dim,
+            name,
+            field,
+            structure,
+            latex_name=latex_name,
+            start_index=start_index,
+            unique_tag=unique_tag(),
+        )
     if structure in ['differentiable', 'diff', 'smooth']:
         if 'diff_degree' in extra_kwds:
             diff_degree = extra_kwds['diff_degree']
             if structure == 'smooth' and diff_degree != infinity:
-                raise ValueError("diff_degree = {} is ".format(diff_degree) +
-                                 "not compatible with a smooth structure")
+                raise ValueError(
+                    "diff_degree = {} is ".format(diff_degree)
+                    + "not compatible with a smooth structure"
+                )
         else:
             diff_degree = infinity
         if field == 'real' or isinstance(field, sage.rings.abc.RealField):
@@ -3012,18 +3096,33 @@ def Manifold(
             structure = DifferentialStructure()
         if 'ambient' in extra_kwds:
             ambient = extra_kwds['ambient']
-            return DifferentiableSubmanifold(dim, name, field, structure,
-                                             ambient=ambient,
-                                             diff_degree=diff_degree,
-                                             latex_name=latex_name,
-                                             start_index=start_index,
-                                             unique_tag=unique_tag())
-        return DifferentiableManifold(dim, name, field, structure,
-                                      diff_degree=diff_degree,
-                                      latex_name=latex_name,
-                                      start_index=start_index,
-                                      unique_tag=unique_tag())
-    if structure in ['pseudo-Riemannian', 'Riemannian', 'Lorentzian','degenerate_metric']:
+            return DifferentiableSubmanifold(
+                dim,
+                name,
+                field,
+                structure,
+                ambient=ambient,
+                diff_degree=diff_degree,
+                latex_name=latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag(),
+            )
+        return DifferentiableManifold(
+            dim,
+            name,
+            field,
+            structure,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            start_index=start_index,
+            unique_tag=unique_tag(),
+        )
+    if structure in [
+        'pseudo-Riemannian',
+        'Riemannian',
+        'Lorentzian',
+        'degenerate_metric',
+    ]:
         diff_degree = extra_kwds.get('diff_degree', infinity)
         metric_name = extra_kwds.get('metric_name', None)
         metric_latex_name = extra_kwds.get('metric_latex_name', None)
@@ -3032,7 +3131,7 @@ def Manifold(
         elif structure == 'Riemannian':
             signature = dim
         elif structure == 'degenerate_metric':
-            signature = (0, dim-1, 1)
+            signature = (0, dim - 1, 1)
         elif structure == 'Lorentzian':
             if 'signature' in extra_kwds:
                 signat = extra_kwds['signature']
@@ -3041,47 +3140,64 @@ def Manifold(
                 elif signat == 'negative' or signat == 2 - dim:
                     signature = 2 - dim
                 else:
-                    raise ValueError("signature {} not ".format(signat) +
-                                     "compatible with a Lorentzian " +
-                                     "manifold of dimension {}".format(dim))
+                    raise ValueError(
+                        "signature {} not ".format(signat)
+                        + "compatible with a Lorentzian "
+                        + "manifold of dimension {}".format(dim)
+                    )
             else:
                 signature = dim - 2  # default value for a Lorentzian manifold
         if 'ambient' in extra_kwds:
             ambient = extra_kwds['ambient']
             if structure == 'degenerate_metric':
-                return DegenerateSubmanifold(dim, name, ambient=ambient,
-                                             metric_name=metric_name,
-                                             signature=signature,
-                                             diff_degree=diff_degree,
-                                             latex_name=latex_name,
-                                             metric_latex_name=metric_latex_name,
-                                             start_index=start_index,
-                                             unique_tag=unique_tag())
-            return PseudoRiemannianSubmanifold(dim, name, ambient=ambient,
-                                               metric_name=metric_name,
-                                               signature=signature,
-                                               diff_degree=diff_degree,
-                                               latex_name=latex_name,
-                                               metric_latex_name=metric_latex_name,
-                                               start_index=start_index,
-                                               unique_tag=unique_tag())
+                return DegenerateSubmanifold(
+                    dim,
+                    name,
+                    ambient=ambient,
+                    metric_name=metric_name,
+                    signature=signature,
+                    diff_degree=diff_degree,
+                    latex_name=latex_name,
+                    metric_latex_name=metric_latex_name,
+                    start_index=start_index,
+                    unique_tag=unique_tag(),
+                )
+            return PseudoRiemannianSubmanifold(
+                dim,
+                name,
+                ambient=ambient,
+                metric_name=metric_name,
+                signature=signature,
+                diff_degree=diff_degree,
+                latex_name=latex_name,
+                metric_latex_name=metric_latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag(),
+            )
         if structure == 'degenerate_metric':
-            return DegenerateManifold(dim, name, metric_name=metric_name,
-                                      signature=signature,
-                                      diff_degree=diff_degree,
-                                      latex_name=latex_name,
-                                      metric_latex_name=metric_latex_name,
-                                      start_index=start_index,
-                                      unique_tag=unique_tag())
-        return PseudoRiemannianManifold(dim, name, metric_name=metric_name,
-                                        signature=signature,
-                                        diff_degree=diff_degree,
-                                        latex_name=latex_name,
-                                        metric_latex_name=metric_latex_name,
-                                        start_index=start_index,
-                                        unique_tag=unique_tag())
-    raise NotImplementedError(f"manifolds of type {structure} are " +
-                              "not implemented")
+            return DegenerateManifold(
+                dim,
+                name,
+                metric_name=metric_name,
+                signature=signature,
+                diff_degree=diff_degree,
+                latex_name=latex_name,
+                metric_latex_name=metric_latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag(),
+            )
+        return PseudoRiemannianManifold(
+            dim,
+            name,
+            metric_name=metric_name,
+            signature=signature,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            unique_tag=unique_tag(),
+        )
+    raise NotImplementedError(f"manifolds of type {structure} are " + "not implemented")
 
 
 Manifold.options = TopologicalManifold.options

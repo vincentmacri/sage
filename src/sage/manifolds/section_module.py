@@ -16,7 +16,7 @@ AUTHORS:
 - Michael Jung (2019): initial version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2019 Michael Jung <micjung@uni-potsdam.de>
 #
@@ -24,7 +24,7 @@ AUTHORS:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.modules import Modules
 from sage.manifolds.section import Section, TrivialSection
@@ -141,6 +141,7 @@ class SectionModule(UniqueRepresentation, Parent):
     The conversion map is actually the restriction of sections defined
     on `M` to `U`.
     """
+
     Element = Section
 
     def __init__(self, vbundle, domain):
@@ -175,27 +176,28 @@ class SectionModule(UniqueRepresentation, Parent):
         if not domain.is_subset(base_space):
             raise ValueError("domain must be a subset of base space")
         if vbundle._diff_degree == infinity:
-            repr_deg = "infinity" # to skip the "+" in repr(infinity)
-            latex_deg = r"\infty" # to skip the "+" in latex(infinity)
+            repr_deg = "infinity"  # to skip the "+" in repr(infinity)
+            latex_deg = r"\infty"  # to skip the "+" in latex(infinity)
         else:
             repr_deg = r"{}".format(vbundle._diff_degree)
             latex_deg = r"{}".format(vbundle._diff_degree)
         self._name = "C^{}({};{})".format(repr_deg, domain._name, vbundle._name)
-        self._latex_name = r"C^{" + latex_deg + r"}" + \
-                           r"({};{})".format(domain._latex_name,
-                                             vbundle._latex_name)
+        self._latex_name = (
+            r"C^{"
+            + latex_deg
+            + r"}"
+            + r"({};{})".format(domain._latex_name, vbundle._latex_name)
+        )
         self._vbundle = vbundle
         self._domain = domain
         self._base_space = vbundle.base_space()
         self._ring = domain.scalar_field_algebra()
         self._def_frame = None
-        Parent.__init__(self, base=self._ring,
-                        category=Modules(self._ring))
+        Parent.__init__(self, base=self._ring, category=Modules(self._ring))
 
     #### Begin of parent methods
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct an element of the module.
 
@@ -226,11 +228,15 @@ class SectionModule(UniqueRepresentation, Parent):
         if isinstance(comp, Section):
             if self._domain.is_subset(comp._domain):
                 return comp.restrict(self._domain)
-            raise ValueError("cannot convert the {} ".format(comp) +
-                             "to a local section in {}".format(self))
+            raise ValueError(
+                "cannot convert the {} ".format(comp)
+                + "to a local section in {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
         resu = self.element_class(self, name=name, latex_name=latex_name)
         if comp:
@@ -303,12 +309,17 @@ class SectionModule(UniqueRepresentation, Parent):
             Module C^0(M;E) of sections on the 2-dimensional topological
              manifold M with values in the real vector bundle E of rank 2
         """
-        desc = "Module {} of sections on the {} with values in the {} vector " \
-               "bundle {} of rank {}"
-        desc = desc.format(self._name, self._domain,
-                           self._vbundle.base_field_type(),
-                           self._vbundle._name,
-                           self._vbundle.rank())
+        desc = (
+            "Module {} of sections on the {} with values in the {} vector "
+            "bundle {} of rank {}"
+        )
+        desc = desc.format(
+            self._name,
+            self._domain,
+            self._vbundle.base_field_type(),
+            self._vbundle._name,
+            self._vbundle.rank(),
+        )
         return desc
 
     def _latex_(self):
@@ -466,14 +477,17 @@ class SectionModule(UniqueRepresentation, Parent):
             Open subset U of the 3-dimensional topological manifold M
         """
         from sage.manifolds.local_frame import LocalFrame
+
         if not isinstance(basis, LocalFrame):
             raise ValueError("the argument is not a local frame")
         elif not basis._domain.is_subset(self._domain):
-            raise ValueError("local frame's domain must be a subset "
-                             "of the {}".format(self._domain))
+            raise ValueError(
+                "local frame's domain must be a subset of the {}".format(self._domain)
+            )
         self._def_frame = basis
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class SectionFreeModule(FiniteRankFreeModule):
@@ -565,6 +579,7 @@ class SectionFreeModule(FiniteRankFreeModule):
 
         sage: TestSuite(C0).run()
     """
+
     Element = TrivialSection
 
     def __init__(self, vbundle, domain):
@@ -586,25 +601,28 @@ class SectionFreeModule(FiniteRankFreeModule):
             sage: TestSuite(C0).run()
         """
         from sage.manifolds.scalarfield import ScalarField
+
         self._domain = domain
         name = "C^0({};{})".format(domain._name, vbundle._name)
-        latex_name = r'C^0({};{})'.format(domain._latex_name,
-                                          vbundle._latex_name)
+        latex_name = r'C^0({};{})'.format(domain._latex_name, vbundle._latex_name)
         base_space = vbundle.base_space()
         self._base_space = base_space
         self._vbundle = vbundle
         cat = Modules(domain.scalar_field_algebra()).FiniteDimensional()
-        FiniteRankFreeModule.__init__(self, domain.scalar_field_algebra(),
-                               vbundle.rank(), name=name,
-                               latex_name=latex_name,
-                               start_index=base_space._sindex,
-                               output_formatter=ScalarField.coord_function,
-                               category=cat)
+        FiniteRankFreeModule.__init__(
+            self,
+            domain.scalar_field_algebra(),
+            vbundle.rank(),
+            name=name,
+            latex_name=latex_name,
+            start_index=base_space._sindex,
+            output_formatter=ScalarField.coord_function,
+            category=cat,
+        )
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct an element of ``self``.
 
@@ -634,11 +652,15 @@ class SectionFreeModule(FiniteRankFreeModule):
         if isinstance(comp, Section):
             if self._domain.is_subset(comp._domain):
                 return comp.restrict(self._domain)
-            raise ValueError("cannot convert the {}".format(comp) +
-                             "to a local section in {}".format(self))
+            raise ValueError(
+                "cannot convert the {}".format(comp)
+                + "to a local section in {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
         resu = self.element_class(self, name=name, latex_name=latex_name)
         if comp:
@@ -688,12 +710,17 @@ class SectionFreeModule(FiniteRankFreeModule):
             Free module C^0(M;E) of sections on the 2-dimensional topological
              manifold M with values in the real vector bundle E of rank 2
         """
-        desc = "Free module {} of sections on the {} with values in the {} " \
-               "vector bundle {} of rank {}"
-        desc = desc.format(self._name, self._domain,
-                           self._vbundle.base_field_type(),
-                           self._vbundle._name,
-                           self._vbundle.rank())
+        desc = (
+            "Free module {} of sections on the {} with values in the {} "
+            "vector bundle {} of rank {}"
+        )
+        desc = desc.format(
+            self._name,
+            self._domain,
+            self._vbundle.base_field_type(),
+            self._vbundle._name,
+            self._vbundle.rank(),
+        )
         return desc
 
     def domain(self):
@@ -752,9 +779,16 @@ class SectionFreeModule(FiniteRankFreeModule):
         """
         return self._vbundle
 
-    def basis(self, symbol=None, latex_symbol=None, from_frame=None,
-              indices=None, latex_indices=None, symbol_dual=None,
-              latex_symbol_dual=None):
+    def basis(
+        self,
+        symbol=None,
+        latex_symbol=None,
+        from_frame=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Define a basis of ``self``.
 
@@ -806,6 +840,7 @@ class SectionFreeModule(FiniteRankFreeModule):
         and documentation.
         """
         from sage.manifolds.local_frame import LocalFrame
+
         if symbol is None:
             symbol = from_frame._symbol
             latex_symbol = from_frame._latex_symbol
@@ -816,11 +851,15 @@ class SectionFreeModule(FiniteRankFreeModule):
         for other in self._known_bases:
             if symbol == other._symbol:
                 return other
-        return LocalFrame(self, symbol, latex_symbol=latex_symbol,
-                          indices=indices,
-                          latex_indices=latex_indices,
-                          symbol_dual=symbol_dual,
-                          latex_symbol_dual=latex_symbol_dual)
+        return LocalFrame(
+            self,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     def set_default_frame(self, frame):
         r"""

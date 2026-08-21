@@ -828,8 +828,10 @@ from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.combinat.root_system.cartan_type import CartanType
-lazy_import("sage.combinat.root_system.root_lattice_realizations",
-            "RootLatticeRealizations")
+
+lazy_import(
+    "sage.combinat.root_system.root_lattice_realizations", "RootLatticeRealizations"
+)
 
 
 class PlotOptions:
@@ -845,15 +847,17 @@ class PlotOptions:
           system plotting
     """
 
-    def __init__(self, space,
-                 projection=True,
-                 bounding_box=3,
-                 color=CartanType.color,
-                 labels=True,
-                 level=None,
-                 affine=None,
-                 arrowsize=5,
-                 ):
+    def __init__(
+        self,
+        space,
+        projection=True,
+        bounding_box=3,
+        color=CartanType.color,
+        labels=True,
+        level=None,
+        affine=None,
+        arrowsize=5,
+    ):
         r"""
         TESTS::
 
@@ -940,11 +944,14 @@ class PlotOptions:
         from sage.rings.real_mpfr import RR
         from sage.geometry.polyhedron.constructor import Polyhedron
         from itertools import product
+
         if bounding_box in RR:
-            bounding_box = [[-bounding_box,bounding_box]] * self.dimension
+            bounding_box = [[-bounding_box, bounding_box]] * self.dimension
         else:
             if not len(bounding_box) == self.dimension:
-                raise TypeError("bounding_box argument doesn't match with the plot dimension")
+                raise TypeError(
+                    "bounding_box argument doesn't match with the plot dimension"
+                )
             elif not all(len(b) == 2 for b in bounding_box):
                 raise TypeError("Invalid bounding box %s" % bounding_box)
         self.bounding_box = Polyhedron(vertices=product(*bounding_box))
@@ -973,7 +980,7 @@ class PlotOptions:
         """
         return self.bounding_box.contains(self.projection(x))
 
-    def text(self, label, position, rgbcolor=(0,0,0)):
+    def text(self, label, position, rgbcolor=(0, 0, 0)):
         r"""
         Return text widget with label ``label`` at position ``position``.
 
@@ -1010,16 +1017,23 @@ class PlotOptions:
         if self.labels:
             if self.dimension <= 2:
                 if not isinstance(label, str):
-                    label = "$"+str(latex(label))+"$"
+                    label = "$" + str(latex(label)) + "$"
                 from sage.plot.text import text
+
                 return text(label, position, fontsize=15, rgbcolor=rgbcolor)
             if self.dimension == 3:
                 # LaTeX labels not yet supported in 3D
                 if isinstance(label, str):
-                    label = label.replace("{","").replace("}","").replace("$","").replace("_","")
+                    label = (
+                        label.replace("{", "")
+                        .replace("}", "")
+                        .replace("$", "")
+                        .replace("_", "")
+                    )
                 else:
                     label = str(label)
                 from sage.plot.plot3d.shapes2 import text3d
+
                 return text3d(label, position, rgbcolor=rgbcolor)
             raise NotImplementedError("Plots in dimension > 3")
         else:
@@ -1047,7 +1061,11 @@ class PlotOptions:
             sage: options.index_of_object(30)
             sage: options.index_of_object("bla")
         """
-        if parent(i) in RootLatticeRealizations and len(i) == 1 and i.leading_coefficient().is_one():
+        if (
+            parent(i) in RootLatticeRealizations
+            and len(i) == 1
+            and i.leading_coefficient().is_one()
+        ):
             i = i.leading_support()
         if i in self.space.cartan_type().index_set():
             return i
@@ -1254,6 +1272,7 @@ class PlotOptions:
             []
         """
         from sage.plot.graphics import Graphics
+
         if self.dimension == 2:
             if G == 0:
                 G = Graphics()
@@ -1263,6 +1282,7 @@ class PlotOptions:
         elif self.dimension == 3:
             if G == 0:
                 from sage.plot.plot3d.base import Graphics3dGroup
+
                 G = Graphics3dGroup()
             G.aspect_ratio(1)
             # TODO: Configuration axes
@@ -1318,6 +1338,7 @@ class PlotOptions:
              Text '$2$' at the point (-0.525,0.909325744308...)]
         """
         from sage.plot.arrow import arrow
+
         tail = self.origin_projected
         G = self.empty()
         for i in vectors.keys():
@@ -1325,12 +1346,24 @@ class PlotOptions:
                 continue
             head = self.projection(vectors[i])
             if head != tail:
-                G += arrow(tail, head, rgbcolor=self.color(i), arrowsize=self._arrowsize)
-            G += self.text(i, 1.05*head)
+                G += arrow(
+                    tail, head, rgbcolor=self.color(i), arrowsize=self._arrowsize
+                )
+            G += self.text(i, 1.05 * head)
         return self.finalize(G)
 
-    def cone(self, rays=[], lines=[], color='black', thickness=1, alpha=1, wireframe=False,
-             label=None, draw_degenerate=True, as_polyhedron=False):
+    def cone(
+        self,
+        rays=[],
+        lines=[],
+        color='black',
+        thickness=1,
+        alpha=1,
+        wireframe=False,
+        label=None,
+        draw_degenerate=True,
+        as_polyhedron=False,
+    ):
         r"""
         Return the cone generated by the given rays and lines.
 
@@ -1402,6 +1435,7 @@ class PlotOptions:
         if color is None:
             return self.empty()
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         # TODO: we currently convert lines into rays, which simplify a
         # bit the calculation of the intersection. But it would be
         # nice to benefit from the new ``lines`` option of Polyhedra
@@ -1410,16 +1444,25 @@ class PlotOptions:
         # Compute the intersection at level 1, if needed
         if self.level:
             old_rays = rays
-            vertices = [self.intersection_at_level_1(ray) for ray in old_rays if ray.level() > 0]
+            vertices = [
+                self.intersection_at_level_1(ray) for ray in old_rays if ray.level() > 0
+            ]
             rays = [ray for ray in old_rays if ray.level() == 0]
-            rays += [vertex - self.intersection_at_level_1(ray) for ray in old_rays if ray.level() < 0 for vertex in vertices]
+            rays += [
+                vertex - self.intersection_at_level_1(ray)
+                for ray in old_rays
+                if ray.level() < 0
+                for vertex in vertices
+            ]
         else:
             vertices = []
 
         # Apply the projection (which is supposed to be affine)
-        vertices = [ self.projection(vertex) for vertex in vertices ]
-        rays = [ self.projection(ray)-self.projection(self.space.zero()) for ray in rays ]
-        rays = [ ray for ray in rays if ray ] # Polyhedron does not accept yet zero rays
+        vertices = [self.projection(vertex) for vertex in vertices]
+        rays = [
+            self.projection(ray) - self.projection(self.space.zero()) for ray in rays
+        ]
+        rays = [ray for ray in rays if ray]  # Polyhedron does not accept yet zero rays
 
         # Build the polyhedron
         p = Polyhedron(vertices=vertices, rays=rays)
@@ -1432,15 +1475,20 @@ class PlotOptions:
             if wireframe:
                 options = dict(point=False, line=dict(width=10), polygon=False)
                 center = q.center()
-                q = q.translation(-center).dilation(ZZ(95)/ZZ(100)).translation(center)
+                q = (
+                    q.translation(-center)
+                    .dilation(ZZ(95) / ZZ(100))
+                    .translation(center)
+                )
             else:
-                options = dict(wireframe=False, line={"thickness":thickness})
+                options = dict(wireframe=False, line={"thickness": thickness})
             result = q.plot(color=color, alpha=alpha, **options)
             if label is not None:
                 # Put the label on the vertex having largest z, then y, then x coordinate.
-                vertices = sorted([vector(v) for v in q.vertices()],
-                                  key=lambda x: list(reversed(x)))
-                result += self.text(label, 1.05*vector(vertices[-1]))
+                vertices = sorted(
+                    [vector(v) for v in q.vertices()], key=lambda x: list(reversed(x))
+                )
+                result += self.text(label, 1.05 * vector(vertices[-1]))
             return result
         return self.empty()
 
@@ -1492,6 +1540,7 @@ class PlotOptions:
             upon which the hyperplane label is attached.
         """
         from sage.matrix.constructor import matrix
+
         L = self.space
         label = coroot
         # scalar currently only handles scalar product with
@@ -1503,12 +1552,16 @@ class PlotOptions:
         # Compute the kernel of the linear form associated to the coroot
         vectors = matrix([b.scalar(coroot) for b in L.basis()]).right_kernel().basis()
         basis = [L.from_vector(v) for v in vectors]
-        if self.dimension == 3: # LaTeX labels not yet supported in 3D
+        if self.dimension == 3:  # LaTeX labels not yet supported in 3D
             text_label = "H_%s$" % (str(label))
         else:
             text_label = "$H_{%s}$" % (latex(label))
-        return self.cone(lines=basis, color=self.color(label), label=text_label,
-                         as_polyhedron=as_polyhedron)
+        return self.cone(
+            lines=basis,
+            color=self.color(label),
+            label=text_label,
+            as_polyhedron=as_polyhedron,
+        )
 
 
 @cached_function
@@ -1593,20 +1646,21 @@ def barycentric_projection_matrix(n, angle=0):
     """
     from sage.matrix.constructor import matrix
     from sage.misc.functional import sqrt
+
     n = ZZ(n)
     if n == 0:
         return matrix(QQ, 0, 1)
-    a = 1/n
-    b = sqrt(1-a**2)
-    result = b * barycentric_projection_matrix(n-1)
-    result = result.augment(vector([0]*(n-1)))
-    result = result.stack(matrix([[a]*n+[-1]]))
+    a = 1 / n
+    b = sqrt(1 - a**2)
+    result = b * barycentric_projection_matrix(n - 1)
+    result = result.augment(vector([0] * (n - 1)))
+    result = result.stack(matrix([[a] * n + [-1]]))
     assert sum(result.columns()).is_zero()
     if angle and n == 2:
         from sage.functions.trig import sin
         from sage.functions.trig import cos
-        rotation = matrix([[sin(angle), cos(angle)],
-                           [-cos(angle), sin(angle)]])
+
+        rotation = matrix([[sin(angle), cos(angle)], [-cos(angle), sin(angle)]])
         result = rotation * result
     result.set_immutable()
     return result

@@ -90,6 +90,7 @@ class NumberFields(Category_singleton):
             False
         """
         from sage.rings.number_field.number_field_base import NumberField
+
         return isinstance(x, NumberField)
 
     def _call_(self, x):
@@ -122,9 +123,7 @@ class NumberFields(Category_singleton):
             raise TypeError("unable to canonically associate a number field to %s" % x)
 
     class ParentMethods:
-        def zeta_function(self, prec=53,
-                          max_imaginary_part=0,
-                          algorithm='pari'):
+        def zeta_function(self, prec=53, max_imaginary_part=0, algorithm='pari'):
             r"""
             Return the Dedekind zeta function of this number field.
 
@@ -165,8 +164,8 @@ class NumberFields(Category_singleton):
                 PARI zeta function associated to Rational Field
             """
             from sage.lfunctions.pari import LFunction, lfun_number_field
-            Z = LFunction(lfun_number_field(self), prec=prec,
-                          max_im=max_imaginary_part)
+
+            Z = LFunction(lfun_number_field(self), prec=prec, max_im=max_imaginary_part)
             Z.rename(f'PARI zeta function associated to {self}')
             return Z
 
@@ -188,6 +187,7 @@ class NumberFields(Category_singleton):
                 sage: S._test_absolute_disc()                                           # needs sage.rings.number_field
             """
             from sage.rings.integer import Integer
+
             tester = self._tester(**options)
             tester.assertIsInstance(self.absolute_discriminant(), Integer)
 

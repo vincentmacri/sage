@@ -115,6 +115,7 @@ AUTHOR:
 
 - Martin Albrecht (2008-08): initial version
 """
+
 from sage.rings.integer_ring import ZZ
 from sage.arith.functions import lcm
 from sage.arith.misc import XGCD as xgcd, GCD as gcd
@@ -233,10 +234,12 @@ def d_basis(F, strat=True):
             f1, f2 = select(C)
             C.remove((f1, f2))
             lcm_lmf1_lmf2 = LCM(LM(f1), LM(f2))
-            if not any(divides(LM(g), lcm_lmf1_lmf2) and
-                       divides_ZZ(LC(g), LC(f1)) and
-                       divides_ZZ(LC(g), LC(f2))
-                       for g in G):
+            if not any(
+                divides(LM(g), lcm_lmf1_lmf2)
+                and divides_ZZ(LC(g), LC(f1))
+                and divides_ZZ(LC(g), LC(f2))
+                for g in G
+            ):
                 h = gpol(f1, f2)
                 h0 = h.reduce(G)
                 if h0.lc() < 0:
@@ -336,12 +339,12 @@ def update(G, B, h):
         return R.monomial_divides(LM(h), LM(g)) and LC(h).divides(LC(g))
 
     def lt_pairwise_prime(x, y):
-        return (R.monomial_pairwise_prime(LM(x), LM(y))
-                and gcd(LC(x), LC(y)) == 1)
+        return R.monomial_pairwise_prime(LM(x), LM(y)) and gcd(LC(x), LC(y)) == 1
 
     def lcm_divides(f, g1, h):
-        return (R.monomial_divides(LCM(LM(h), LM(f[1])), LCM(LM(h), LM(g1)))
-                and lcm(LC(h), LC(f[1])).divides(lcm(LC(h), LC(g1))))
+        return R.monomial_divides(LCM(LM(h), LM(f[1])), LCM(LM(h), LM(g1))) and lcm(
+            LC(h), LC(f[1])
+        ).divides(lcm(LC(h), LC(g1)))
 
     C = set((h, g) for g in G)
 
@@ -349,9 +352,10 @@ def update(G, B, h):
     while C:
         (h, g1) = C.pop()
 
-        if (lt_pairwise_prime(h, g1) or
-                (not any(lcm_divides(f, g1, h) for f in C) and
-                 not any(lcm_divides(f, g1, h) for f in D))):
+        if lt_pairwise_prime(h, g1) or (
+            not any(lcm_divides(f, g1, h) for f in C)
+            and not any(lcm_divides(f, g1, h) for f in D)
+        ):
             D.add((h, g1))
 
     E = set()
@@ -366,9 +370,11 @@ def update(G, B, h):
         g1, g2 = B.pop()
 
         lcm_12 = lcm(LC(g1), LC(g2)) * LCM(LM(g1), LM(g2))
-        if (not lt_divides(lcm_12, h) or
-                lcm(LC(g1), LC(h)) * R.monomial_lcm(LM(g1), LM(h)) == lcm_12 or
-                lcm(LC(h), LC(g2)) * R.monomial_lcm(LM(h), LM(g2)) == lcm_12):
+        if (
+            not lt_divides(lcm_12, h)
+            or lcm(LC(g1), LC(h)) * R.monomial_lcm(LM(g1), LM(h)) == lcm_12
+            or lcm(LC(h), LC(g2)) * R.monomial_lcm(LM(h), LM(g2)) == lcm_12
+        ):
             B_new.add((g1, g2))
 
     B_new = B_new.union(E)

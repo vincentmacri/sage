@@ -30,6 +30,7 @@ AUTHORS:
 
 - Lorenz Panny (2026): :meth:`~EllipticCurveHom.kernel_subgroup`, :meth:`~EllipticCurveHom.kernel_gens`
 """
+
 from sage.arith.misc import integer_floor
 from sage.categories.morphism import Morphism
 from sage.misc.lazy_import import lazy_import
@@ -46,6 +47,7 @@ class EllipticCurveHom(Morphism):
     """
     Base class for elliptic-curve morphisms.
     """
+
     def __init__(self, *args, **kwds):
         r"""
         Constructor for elliptic-curve morphisms.
@@ -75,7 +77,10 @@ class EllipticCurveHom(Morphism):
 
         # Over finite fields, isogenous curves have the same number of
         # rational points, hence we copy over the cached curve orders.
-        if isinstance(self.base_ring(), finite_field_base.FiniteField) and self.degree():
+        if (
+            isinstance(self.base_ring(), finite_field_base.FiniteField)
+            and self.degree()
+        ):
             self._codomain._fetch_cached_order(self._domain)
             self._domain._fetch_cached_order(self._codomain)
 
@@ -123,7 +128,9 @@ class EllipticCurveHom(Morphism):
               From: Elliptic Curve defined by y^2 = x^3 + x over Finite Field of size 19
               To:   Elliptic Curve defined by y^2 = x^3 + x over Finite Field of size 19
         """
-        if not isinstance(self, EllipticCurveHom) or not isinstance(other, EllipticCurveHom):
+        if not isinstance(self, EllipticCurveHom) or not isinstance(
+            other, EllipticCurveHom
+        ):
             raise TypeError(f'cannot compose {type(self)} with {type(other)}')
 
         ret = self._composition_impl(self, other)
@@ -135,6 +142,7 @@ class EllipticCurveHom(Morphism):
             from sage.schemes.elliptic_curves.hom_composite import (
                 EllipticCurveHom_composite,
             )
+
             ret = EllipticCurveHom_composite.from_factors([other, self])
 
         return ret
@@ -155,6 +163,7 @@ class EllipticCurveHom(Morphism):
               Via:  (Isogeny of degree 7 from Elliptic Curve defined by y^2 = x^3 + 5*x + 5 over Finite Field of size 101 to Elliptic Curve defined by y^2 = x^3 + 29*x + 51 over Finite Field of size 101, Isogeny of degree 7 from Elliptic Curve defined by y^2 = x^3 + 5*x + 5 over Finite Field of size 101 to Elliptic Curve defined by y^2 = x^3 + 29*x + 51 over Finite Field of size 101)
         """
         from sage.schemes.elliptic_curves.hom_sum import EllipticCurveHom_sum
+
         phis = []
         if isinstance(self, EllipticCurveHom_sum):
             phis += self.summands()
@@ -165,10 +174,12 @@ class EllipticCurveHom(Morphism):
         else:
             phis.append(other)
 
-        #TODO should probably try to simplify some more?
+        # TODO should probably try to simplify some more?
 
         assert other.domain() == self.domain() and other.codomain() == self.codomain()
-        return EllipticCurveHom_sum(phis, domain=self.domain(), codomain=self.codomain())
+        return EllipticCurveHom_sum(
+            phis, domain=self.domain(), codomain=self.codomain()
+        )
 
     def _sub_(self, other):
         r"""
@@ -252,7 +263,9 @@ class EllipticCurveHom(Morphism):
             - :meth:`_comparison_impl`
             - :func:`compare_via_evaluation`
         """
-        if not isinstance(self, EllipticCurveHom) or not isinstance(other, EllipticCurveHom):
+        if not isinstance(self, EllipticCurveHom) or not isinstance(
+            other, EllipticCurveHom
+        ):
             raise TypeError(f'cannot compare {type(self)} to {type(other)}')
 
         if op == op_NE:
@@ -408,7 +421,7 @@ class EllipticCurveHom(Morphism):
                 raise ValueError('trace only makes sense for endomorphisms')
             d = self.degree()
             s = self.scaling_factor()
-            return ZZ(s + d/s)
+            return ZZ(s + d / s)
         return compute_trace_generic(self)
 
     def trace_pairing(self, psi):
@@ -455,7 +468,9 @@ class EllipticCurveHom(Morphism):
         ALGORITHM: Thin wrapper around :meth:`dual` and :meth:`trace`.
         """
         if self.parent() != psi.parent():
-            raise ValueError('given morphism must have the same domain and codomain as this morphism')
+            raise ValueError(
+                'given morphism must have the same domain and codomain as this morphism'
+            )
         if self.degree() < psi.degree():
             pair = self.dual() * psi
         else:
@@ -708,13 +723,17 @@ class EllipticCurveHom(Morphism):
             else:
                 algorithm = 'kerpoly'
 
-        from sage.groups.additive_abelian.additive_abelian_wrapper import AdditiveAbelianGroupWrapper
+        from sage.groups.additive_abelian.additive_abelian_wrapper import (
+            AdditiveAbelianGroupWrapper,
+        )
 
-        #TODO: a specialized implementation for EllipticCurveHom_composite might be beneficial
-        #TODO: a specialized implementation for EllipticCurveHom_fractional might be beneficial
+        # TODO: a specialized implementation for EllipticCurveHom_composite might be beneficial
+        # TODO: a specialized implementation for EllipticCurveHom_fractional might be beneficial
 
         try:
-            return AdditiveAbelianGroupWrapper.from_generators(self.__EllipticCurveIsogeny_kernel_list)
+            return AdditiveAbelianGroupWrapper.from_generators(
+                self.__EllipticCurveIsogeny_kernel_list
+            )
         except AttributeError:
             pass
 
@@ -729,7 +748,9 @@ class EllipticCurveHom(Morphism):
             T2 = self.codomain().change_ring(F).torsion_subgroup(n)
 
             if T1.order().is_one():
-                raise ValueError('kernel subgroup has no generating points over the base field')
+                raise ValueError(
+                    'kernel subgroup has no generating points over the base field'
+                )
 
             Ps = [g.element() for g in T1.gens()]
             imPs = [self._eval(P) for P in Ps]
@@ -737,16 +758,19 @@ class EllipticCurveHom(Morphism):
             for imP in imPs:
                 imP.set_order(multiple=o)
             if len(T2.invariants()) == 1:
-                R, = (g.element() for g in T2.gens())
+                (R,) = (g.element() for g in T2.gens())
                 mylog = lambda pt: (pt.log(R),)
             else:
                 R, S = (g.element() for g in T2.gens())
-                mylog = lambda pt: pt.log([R,S])
+                mylog = lambda pt: pt.log([R, S])
 
             from sage.matrix.constructor import matrix
             from sage.matrix.special import diagonal_matrix
-            M = matrix(ZZ, map(mylog, imPs)).stack(diagonal_matrix([elt.order() for elt in T2.gens()]))
-            K = M.left_kernel_matrix()[:,:len(Ps)]
+
+            M = matrix(ZZ, map(mylog, imPs)).stack(
+                diagonal_matrix([elt.order() for elt in T2.gens()])
+            )
+            K = M.left_kernel_matrix()[:, : len(Ps)]
 
             V = K.row_space(ZZ) / diagonal_matrix([P.order() for P in Ps]).row_space(ZZ)
             G = [g.lift() for g in V.gens()]
@@ -755,15 +779,19 @@ class EllipticCurveHom(Morphism):
             for s, row in zip(V.invariants(), G):
                 if s.is_one():
                     continue
-                Q = sum(c * P for c,P in zip(row, Ps))
+                Q = sum(c * P for c, P in zip(row, Ps))
                 assert not self._eval(Q)
                 Q.set_order(s)
                 gens.append(Q)
 
-            A = AdditiveAbelianGroupWrapper(T1.universe(), gens, [pt._order for pt in gens])
+            A = AdditiveAbelianGroupWrapper(
+                T1.universe(), gens, [pt._order for pt in gens]
+            )
             assert A.order().divides(self.separable_degree())
             if A.order() != self.separable_degree():
-                raise ValueError('kernel subgroup has no generating points over the base field')
+                raise ValueError(
+                    'kernel subgroup has no generating points over the base field'
+                )
             return A
 
         if algorithm != 'kerpoly':
@@ -784,7 +812,9 @@ class EllipticCurveHom(Morphism):
                 pts = [g.element() for g in A.gens()]
                 if A.order() == self.separable_degree():
                     return A
-            raise ValueError('kernel subgroup has no generating points over the base field')
+            raise ValueError(
+                'kernel subgroup has no generating points over the base field'
+            )
 
         _, to_K = f.splitting_field('u', map=True)
         EE = E.change_ring(to_K)
@@ -886,7 +916,9 @@ class EllipticCurveHom(Morphism):
             True
         """
         if not hasattr(self, '_kernel_gens'):
-            self._kernel_gens = tuple(g.element() for g in self.kernel_subgroup(**kwds).gens())
+            self._kernel_gens = tuple(
+                g.element() for g in self.kernel_subgroup(**kwds).gens()
+            )
         return list(self._kernel_gens)
 
     def dual(self, algorithm=None):
@@ -1070,9 +1102,14 @@ class EllipticCurveHom(Morphism):
             return (K + P for K in self.kernel_points())
         if not self.base_ring().is_exact():
             from warnings import warn
-            warn('computing inverse image over inexact base ring is not guaranteed to be correct')
+
+            warn(
+                'computing inverse image over inexact base ring is not guaranteed to be correct'
+            )
         E = self.domain()
-        for Px in (self.x_rational_map() - Q.x()).numerator().roots(multiplicities=False):
+        for Px in (
+            (self.x_rational_map() - Q.x()).numerator().roots(multiplicities=False)
+        ):
             for P in E.lift_x(Px, all=True):
                 if self(P) == Q:
                     return P
@@ -1151,15 +1188,25 @@ class EllipticCurveHom(Morphism):
         Eh = self._domain.formal()
         f, g = self.rational_maps()
         xh = Eh.x(prec=prec)
-        assert not self.is_separable() or xh.valuation() == -2, f"xh has valuation {xh.valuation()} (should be -2)"
+        assert not self.is_separable() or xh.valuation() == -2, (
+            f"xh has valuation {xh.valuation()} (should be -2)"
+        )
         yh = Eh.y(prec=prec)
-        assert not self.is_separable() or yh.valuation() == -3, f"yh has valuation {yh.valuation()} (should be -3)"
-        fh = f(xh,yh)
-        assert not self.is_separable() or fh.valuation() == -2, f"fh has valuation {fh.valuation()} (should be -2)"
-        gh = g(xh,yh)
-        assert not self.is_separable() or gh.valuation() == -3, f"gh has valuation {gh.valuation()} (should be -3)"
-        th = -fh/gh
-        assert not self.is_separable() or th.valuation() == +1, f"th has valuation {th.valuation()} (should be +1)"
+        assert not self.is_separable() or yh.valuation() == -3, (
+            f"yh has valuation {yh.valuation()} (should be -3)"
+        )
+        fh = f(xh, yh)
+        assert not self.is_separable() or fh.valuation() == -2, (
+            f"fh has valuation {fh.valuation()} (should be -2)"
+        )
+        gh = g(xh, yh)
+        assert not self.is_separable() or gh.valuation() == -3, (
+            f"gh has valuation {gh.valuation()} (should be -3)"
+        )
+        th = -fh / gh
+        assert not self.is_separable() or th.valuation() == +1, (
+            f"th has valuation {th.valuation()} (should be +1)"
+        )
         return th
 
     def is_normalized(self):
@@ -1539,7 +1586,14 @@ class EllipticCurveHom(Morphism):
             sage: EllipticCurveIsogeny(E,X^3-13*X^2-58*X+503,check=False)
             Isogeny of degree 7 from Elliptic Curve defined by y^2 + x*y = x^3 - x^2 - 107*x + 552 over Rational Field to Elliptic Curve defined by y^2 + x*y = x^3 - x^2 - 5252*x - 178837 over Rational Field
         """
-        return hash((self.domain(), self.codomain(), self.kernel_polynomial(), self.scaling_factor()))
+        return hash(
+            (
+                self.domain(),
+                self.codomain(),
+                self.kernel_polynomial(),
+                self.scaling_factor(),
+            )
+        )
 
     def as_morphism(self):
         r"""
@@ -1567,6 +1621,7 @@ class EllipticCurveHom(Morphism):
             (0 : 1 : 0)
         """
         from sage.schemes.curves.constructor import Curve
+
         X_affine = Curve(self.domain()).affine_patch(2)
         Y_affine = Curve(self.codomain()).affine_patch(2)
         return X_affine.hom(self.rational_maps(), Y_affine).homogenize(2)
@@ -1664,17 +1719,19 @@ class EllipticCurveHom(Morphism):
         """
         if codomain_gens is None:
             if not self.is_endomorphism():
-                raise ValueError('basis of codomain subgroup is required for non-endomorphisms')
+                raise ValueError(
+                    'basis of codomain subgroup is required for non-endomorphisms'
+                )
             codomain_gens = domain_gens
 
-        P,Q = domain_gens
-        R,S = codomain_gens
+        P, Q = domain_gens
+        R, S = codomain_gens
 
-        ords = {P.order() for P in (P,Q,R,S)}
+        ords = {P.order() for P in (P, Q, R, S)}
         if len(ords) != 1:
-            #TODO: Is there some meaningful way to lift this restriction?
+            # TODO: Is there some meaningful way to lift this restriction?
             raise ValueError('generator points must all have the same order')
-        n, = ords
+        (n,) = ords
 
         if P.weil_pairing(Q, n).multiplicative_order() != n:
             raise ValueError('generator points on domain are not independent')
@@ -1689,6 +1746,7 @@ class EllipticCurveHom(Morphism):
 
         from sage.matrix.constructor import matrix
         from sage.rings.finite_rings.integer_mod_ring import Zmod
+
         return matrix(Zmod(n), [vecP, vecQ])
 
     def __truediv__(self, other):
@@ -1715,11 +1773,13 @@ class EllipticCurveHom(Morphism):
               Denominator: 2
         """
         from sage.rings.integer import Integer
+
         if not isinstance(other, (int, Integer)):
             return NotImplemented
         from sage.schemes.elliptic_curves.hom_fractional import (
             EllipticCurveHom_fractional,
         )
+
         return EllipticCurveHom_fractional(self, other)
 
     def divide_left(self, psi):
@@ -1748,6 +1808,7 @@ class EllipticCurveHom(Morphism):
         from sage.schemes.elliptic_curves.hom_fractional import (
             EllipticCurveHom_fractional,
         )
+
         numer = psi.dual() * self
         denom = psi.degree()
         return EllipticCurveHom_fractional(numer, denom)
@@ -1799,6 +1860,7 @@ class EllipticCurveHom(Morphism):
         from sage.schemes.elliptic_curves.hom_fractional import (
             EllipticCurveHom_fractional,
         )
+
         numer = self * psi.dual()
         denom = psi.degree()
         return EllipticCurveHom_fractional(numer, denom)
@@ -1842,9 +1904,9 @@ class EllipticCurveHom(Morphism):
             sage: phi.minimal_polynomial().factor()
             x^4 + (57*z2 + 65)*x^2 + 20*z2 + 25
         """
-        #FIXME This can probably be implemented better!
+        # FIXME This can probably be implemented better!
         h = self.kernel_polynomial()
-        for f,_ in reversed(h.factor()):
+        for f, _ in reversed(h.factor()):
             if self.domain().kernel_polynomial_from_divisor(f, self.degree()) == h:
                 return f
         raise ValueError('not a cyclic isogeny')
@@ -2093,6 +2155,7 @@ class EllipticCurveHom(Morphism):
             a specialized implementation could be (much) faster.
         """
         from sage.rings.infinity import Infinity as oo
+
         proj = isinstance(xP, (tuple, list))
         if proj:
             if not xP[1]:
@@ -2104,9 +2167,9 @@ class EllipticCurveHom(Morphism):
         d = xmap.denominator()
         if proj:
             m = max(n.degree(), d.degree())
-            x,z = n.parent().base_ring()['x,z'].gens()
-            n = n(x=x).homogenize('z') * z**(m - n.degree())
-            d = d(x=x).homogenize('z') * z**(m - d.degree())
+            x, z = n.parent().base_ring()['x,z'].gens()
+            n = n(x=x).homogenize('z') * z ** (m - n.degree())
+            d = d(x=x).homogenize('z') * z ** (m - d.degree())
             dx = d(xP[0], xP[1])
         else:
             dx = d(xP)
@@ -2176,8 +2239,8 @@ def compare_via_evaluation(left, right):
 
         # then extend to a field with enough points to conclude
         q = F.cardinality()
-        e = integer_floor(1 + 2 * (2*d.sqrt() + 1).log(q))  # from Hasse bound
-        e = next(i for i, n in enumerate(E.count_points(e+1), 1) if n > 4*d)
+        e = integer_floor(1 + 2 * (2 * d.sqrt() + 1).log(q))  # from Hasse bound
+        e = next(i for i, n in enumerate(E.count_points(e + 1), 1) if n > 4 * d)
         EE = E.base_extend(F.extension(e, 'U'))  # named extension is faster
         Ps = EE.gens()
         return all(left._eval(P) == right._eval(P) for P in Ps)
@@ -2185,7 +2248,7 @@ def compare_via_evaluation(left, right):
     if isinstance(F, number_field_base.NumberField):
         for _ in range(100):
             P = E.lift_x(F.random_element(), extend=True)
-            if P._has_order_at_least(4*d + 1, attempts=50):
+            if P._has_order_at_least(4 * d + 1, attempts=50):
                 # if P.height(precision=250) == 0:  # slow sometimes
                 return left._eval(P) == right._eval(P)
         assert False, "couldn't find a point of large enough order"
@@ -2261,7 +2324,9 @@ def find_post_isomorphism(phi, psi):
                 if len(isos) <= 1:
                     break
             else:
-                E = E.base_extend(E.base_field().extension(2, 'U'))  # named extension is faster
+                E = E.base_extend(
+                    E.base_field().extension(2, 'U')
+                )  # named extension is faster
 
     elif isinstance(F, number_field_base.NumberField):
         for _ in range(100):
@@ -2364,14 +2429,14 @@ def compute_trace_generic(phi):
     d = phi.degree()
 
     M = 4 * d.isqrt() + 1  # |trace| <= 2 sqrt(deg)
-    tr = Mod(0,1)
+    tr = Mod(0, 1)
 
     F = E.base_field()
     p = F.characteristic()
     if p:
         s = phi.scaling_factor()
         if s:
-            tr = Mod(ZZ(s + d/s), p)
+            tr = Mod(ZZ(s + d / s), p)
 
     for l in Primes():
         if tr.modulus() >= M:
@@ -2384,8 +2449,8 @@ def compute_trace_generic(phi):
         if not Q:  # we learn nothing when P lies in the kernel
             continue
         R = phi._eval(Q)
-        t = discrete_log(R + d*P, Q, ord=l, operation='+')
-#        assert not R - t*Q + d*P
+        t = discrete_log(R + d * P, Q, ord=l, operation='+')
+        #        assert not R - t*Q + d*P
 
         tr = tr.crt(Mod(t, l))
 

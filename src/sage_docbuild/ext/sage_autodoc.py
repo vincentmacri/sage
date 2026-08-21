@@ -209,12 +209,12 @@ class _ModuleBindingVisitor(ast.NodeVisitor):
         self.names.add(node.name)
         for decorator in node.decorator_list:
             self.visit(decorator)
-        for default in (*node.args.defaults,
-                        *(value for value in node.args.kw_defaults
-                          if value is not None)):
+        for default in (
+            *node.args.defaults,
+            *(value for value in node.args.kw_defaults if value is not None),
+        ):
             self.visit(default)
-        arguments = (*node.args.posonlyargs, *node.args.args,
-                     *node.args.kwonlyargs)
+        arguments = (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
         for argument in arguments:
             if argument.annotation is not None:
                 self.visit(argument.annotation)
@@ -233,8 +233,11 @@ class _ModuleBindingVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         self.names.add(node.name)
-        for expression in (*node.decorator_list, *node.bases,
-                           *(keyword.value for keyword in node.keywords)):
+        for expression in (
+            *node.decorator_list,
+            *node.bases,
+            *(keyword.value for keyword in node.keywords),
+        ):
             self.visit(expression)
         for parameter in getattr(node, 'type_params', ()):
             for attribute in ('bound', 'default_value'):
@@ -243,9 +246,10 @@ class _ModuleBindingVisitor(ast.NodeVisitor):
                     self.visit(value)
 
     def visit_Lambda(self, node: ast.Lambda) -> None:
-        for default in (*node.args.defaults,
-                        *(value for value in node.args.kw_defaults
-                          if value is not None)):
+        for default in (
+            *node.args.defaults,
+            *(value for value in node.args.kw_defaults if value is not None),
+        ):
             self.visit(default)
 
     def _visit_comprehension(self, node, values) -> None:
@@ -291,29 +295,35 @@ def _bound_module_names(node: ast.AST) -> tuple[set[str], bool]:
     return visitor.names, visitor.has_star_import
 
 
-def _type_checking_value(test: ast.expr, flags: set[str],
-                         modules: set[str]) -> str | None:
+def _type_checking_value(
+    test: ast.expr, flags: set[str], modules: set[str]
+) -> str | None:
     """Classify *test* as the typing flag or module, if it names either."""
     if isinstance(test, ast.Name):
         if test.id in flags:
             return 'flag'
         if test.id in modules:
             return 'module'
-    if (isinstance(test, ast.Attribute) and test.attr == 'TYPE_CHECKING'
-            and isinstance(test.value, ast.Name) and test.value.id in modules):
+    if (
+        isinstance(test, ast.Attribute)
+        and test.attr == 'TYPE_CHECKING'
+        and isinstance(test.value, ast.Name)
+        and test.value.id in modules
+    ):
         return 'flag'
     return None
 
 
-def _update_type_checking_names(node: ast.stmt, flags: set[str],
-                                modules: set[str]) -> None:
+def _update_type_checking_names(
+    node: ast.stmt, flags: set[str], modules: set[str]
+) -> None:
     """Update known typing bindings after the module executes *node*."""
+
     def forget(names: set[str]) -> None:
         flags.difference_update(names)
         modules.difference_update(names)
 
-    if (isinstance(node, ast.If)
-            and _tests_type_checking(node.test, flags, modules)):
+    if isinstance(node, ast.If) and _tests_type_checking(node.test, flags, modules):
         # typing.TYPE_CHECKING is false while the module executes.  Bindings
         # in the positive body therefore do not replace the runtime aliases
         # used by a later guard; an ``else`` body does execute.
@@ -325,9 +335,9 @@ def _update_type_checking_names(node: ast.stmt, flags: set[str],
         for alias in node.names:
             name = alias.asname or alias.name.partition('.')[0]
             forget({name})
-            if (alias.name == 'typing'
-                    or (alias.asname is None
-                        and alias.name.startswith('typing.'))):
+            if alias.name == 'typing' or (
+                alias.asname is None and alias.name.startswith('typing.')
+            ):
                 modules.add(name)
         return
 
@@ -344,8 +354,11 @@ def _update_type_checking_names(node: ast.stmt, flags: set[str],
                 continue
             name = alias.asname or alias.name
             forget({name})
-            if (node.level == 0 and node.module == 'typing'
-                    and alias.name == 'TYPE_CHECKING'):
+            if (
+                node.level == 0
+                and node.module == 'typing'
+                and alias.name == 'TYPE_CHECKING'
+            ):
                 flags.add(name)
         return
 
@@ -357,8 +370,7 @@ def _update_type_checking_names(node: ast.stmt, flags: set[str],
             # expression, so invalidate only names bound there.
             forget(_bound_module_names(node.annotation)[0])
             return
-        names = {name for target in targets
-                 for name in _bound_module_names(target)[0]}
+        names = {name for target in targets for name in _bound_module_names(target)[0]}
         if isinstance(node, ast.AnnAssign):
             names.update(_bound_module_names(node.annotation)[0])
         value = node.value
@@ -366,7 +378,9 @@ def _update_type_checking_names(node: ast.stmt, flags: set[str],
             # Assignment expressions in the value bind in the surrounding
             # scope too: ``holder = (TC := False)`` invalidates ``TC``.
             names.update(_bound_module_names(value)[0])
-        kind = _type_checking_value(value, flags, modules) if value is not None else None
+        kind = (
+            _type_checking_value(value, flags, modules) if value is not None else None
+        )
         forget(names)
         # Propagate a simple alias, but not a destructuring assignment whose
         # runtime value cannot be recovered from the syntax alone.
@@ -470,14 +484,12 @@ def _type_checking_guards(tree: ast.Module) -> Iterator[ast.If]:
     flags: set[str] = set()
     modules: set[str] = set()
     for node in tree.body:
-        if (isinstance(node, ast.If)
-                and _tests_type_checking(node.test, flags, modules)):
+        if isinstance(node, ast.If) and _tests_type_checking(node.test, flags, modules):
             yield node
         _update_type_checking_names(node, flags, modules)
 
 
-def _tests_type_checking(test: ast.expr, flags: set[str],
-                         modules: set[str]) -> bool:
+def _tests_type_checking(test: ast.expr, flags: set[str], modules: set[str]) -> bool:
     """
     Return whether the expression *test* is a guard on ``TYPE_CHECKING``.
 
@@ -514,8 +526,12 @@ def _tests_type_checking(test: ast.expr, flags: set[str],
     """
     if isinstance(test, ast.Name):
         return test.id in flags
-    return (isinstance(test, ast.Attribute) and test.attr == 'TYPE_CHECKING'
-            and isinstance(test.value, ast.Name) and test.value.id in modules)
+    return (
+        isinstance(test, ast.Attribute)
+        and test.attr == 'TYPE_CHECKING'
+        and isinstance(test.value, ast.Name)
+        and test.value.id in modules
+    )
 
 
 def _type_checking_aliases(modname: str) -> Mapping[str, str]:
@@ -607,8 +623,9 @@ def _type_checking_aliases(modname: str) -> Mapping[str, str]:
     aliases = _aliases_of_imported_module(filename, package)
     if not aliases or not any(name in namespace for name in aliases):
         return aliases
-    return MappingProxyType({name: target for name, target in aliases.items()
-                             if name not in namespace})
+    return MappingProxyType(
+        {name: target for name, target in aliases.items() if name not in namespace}
+    )
 
 
 @functools.lru_cache(maxsize=256)
@@ -640,8 +657,7 @@ def _aliases_of_imported_module(
         for node in guard.body:
             if not isinstance(node, ast.ImportFrom):
                 if isinstance(node, ast.AnnAssign) and node.value is None:
-                    names, has_star_import = _bound_module_names(
-                        node.annotation)
+                    names, has_star_import = _bound_module_names(node.annotation)
                 else:
                     names, has_star_import = _bound_module_names(node)
                 if has_star_import:
@@ -706,7 +722,9 @@ def _unwrap_type_alias_forward_refs(text: str) -> str:
         sage: _unwrap_type_alias_forward_refs(text) == text
         True
     """
-    pattern = r'''TypeAliasForwardRef\((?P<literal>'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")\)'''
+    pattern = (
+        r'''TypeAliasForwardRef\((?P<literal>'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")\)'''
+    )
     wrapper = re.compile(pattern)
     answer = []
     quote = None
@@ -781,22 +799,23 @@ def _render_subscript_argument(argument: Any) -> str:
     if isinstance(argument, list):
         return '[' + ', '.join(map(_render_subscript_argument, argument)) + ']'
     if isinstance(argument, dict):
-        items = (f'{_render_subscript_argument(key)}: '
-                 f'{_render_subscript_argument(value)}'
-                 for key, value in argument.items())
+        items = (
+            f'{_render_subscript_argument(key)}: {_render_subscript_argument(value)}'
+            for key, value in argument.items()
+        )
         return '{' + ', '.join(items) + '}'
     if isinstance(argument, (set, frozenset)):
         items = sorted(map(_render_subscript_argument, argument))
         if isinstance(argument, frozenset):
-            return ('frozenset({' + ', '.join(items) + '})'
-                    if items else 'frozenset()')
+            return 'frozenset({' + ', '.join(items) + '})' if items else 'frozenset()'
         return '{' + ', '.join(items) + '}' if items else 'set()'
     if isinstance(argument, slice):
         parts = [argument.start, argument.stop, argument.step]
         while len(parts) > 2 and parts[-1] is None:
             parts.pop()
-        return ':'.join('' if part is None
-                        else _render_subscript_argument(part) for part in parts)
+        return ':'.join(
+            '' if part is None else _render_subscript_argument(part) for part in parts
+        )
     return stringify_annotation(argument)
 
 
@@ -854,9 +873,11 @@ def _subscript_type_alias_forward_ref(self: TypeAliasForwardRef, item: Any) -> A
         sage: deferred.name.endswith('.Color.red]') and '<Color.red:' not in deferred.name
         True
     """
-    render = (_render_literal_argument
-              if self.name.rpartition('.')[2] == 'Literal'
-              else _render_subscript_argument)
+    render = (
+        _render_literal_argument
+        if self.name.rpartition('.')[2] == 'Literal'
+        else _render_subscript_argument
+    )
     if isinstance(item, tuple):
         if not item:
             # The empty tuple is the item of A[()], not an empty subscription.
@@ -865,9 +886,10 @@ def _subscript_type_alias_forward_ref(self: TypeAliasForwardRef, item: Any) -> A
             inside = ', '.join(map(render, item))
             # __class_getitem__ receives a tuple, rather than its sole member,
             # for a one-item comma-separated subscription.
-            if (len(item) == 1
-                    and not (isinstance(item[0], TypeAliasForwardRef)
-                             and item[0].name.startswith('*'))):
+            if len(item) == 1 and not (
+                isinstance(item[0], TypeAliasForwardRef)
+                and item[0].name.startswith('*')
+            ):
                 inside += ','
     else:
         inside = render(item)
@@ -950,39 +972,7 @@ def stringify_signature(
 # ------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Some useful event listener factories for autodoc-process-docstring.
-
-
-
-
-
-
 
 
 class ObjectMember:
@@ -1072,9 +1062,7 @@ class Documenter:
         msg = 'must be implemented in subclasses'
         raise NotImplementedError(msg)
 
-    def __init__(
-        self, directive: Any, name: str, indent: str = ''
-    ) -> None:
+    def __init__(self, directive: Any, name: str, indent: str = '') -> None:
         self.directive = directive
         self.config: sphinx.config.Config = directive.env.config
         self.env: BuildEnvironment = directive.env
@@ -1210,8 +1198,10 @@ class Documenter:
         This is for :func:`~sphinx.util.inspect.signature`, which builds a
         namespace of its own; see :meth:`_type_alias_namespace` for the rest.
         """
-        modname = self.get_attr(obj if obj is not None else self.object,
-                                '__module__', None) or self.modname
+        modname = (
+            self.get_attr(obj if obj is not None else self.object, '__module__', None)
+            or self.modname
+        )
         aliases = _type_checking_aliases(modname)
         if not aliases:
             return self.config.autodoc_type_aliases
@@ -1500,6 +1490,7 @@ class Documenter:
             # Issue #17455: Immediately skip lazy imports to avoid
             # deprecation messages.
             from sage.misc.lazy_import import LazyImport
+
             if isinstance(member, LazyImport):
                 continue
             # ---------------------------------------------------
@@ -2205,8 +2196,9 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
         # a class instance, whose doc string coincides with that of f and is
         # thus different from that of the class CachedFunction. In that
         # situation, we want that f is documented.
-        return (isclassinstance(member) and
-                sage_getdoc_original(member) != sage_getdoc_original(member.__class__))
+        return isclassinstance(member) and sage_getdoc_original(
+            member
+        ) != sage_getdoc_original(member.__class__)
         # --------------------------------------------------------------------
 
     def format_args(self, **kwargs: Any) -> str:
@@ -2227,8 +2219,7 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
 
             if hasattr(obj, "_sage_argspec_"):
                 argspec = obj._sage_argspec_()
-            if inspect.isbuiltin(obj) or \
-                   inspect.ismethoddescriptor(obj):
+            if inspect.isbuiltin(obj) or inspect.ismethoddescriptor(obj):
                 # cannot introspect arguments of a C function or method
                 # unless a function to do so is supplied
                 argspec = sage_getargspec(obj)
@@ -2301,9 +2292,7 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
                         documenter.objpath = ['']
                         sigs.append(documenter.format_signature())
         if overloaded and self.analyzer is not None:
-            actual = inspect.signature(
-                self.object, type_aliases=self._type_aliases()
-            )
+            actual = inspect.signature(self.object, type_aliases=self._type_aliases())
             __globals__ = safe_getattr(self.object, '__globals__', {})
             for overload in self.analyzer.overloads['.'.join(self.objpath)]:
                 overload = self.merge_default_value(actual, overload)
@@ -2377,15 +2366,19 @@ class DecoratorDocumenter(FunctionDocumenter):
 # Types which have confusing metaclass signatures it would be best not to show.
 # These are listed by name, rather than storing the objects themselves, to avoid
 # needing to import the modules.
-_METACLASS_CALL_BLACKLIST = frozenset({
-    'enum.EnumType.__call__',
-})
+_METACLASS_CALL_BLACKLIST = frozenset(
+    {
+        'enum.EnumType.__call__',
+    }
+)
 
 
 # Types whose __new__ signature is a pass-through.
-_CLASS_NEW_BLACKLIST = frozenset({
-    'typing.Generic.__new__',
-})
+_CLASS_NEW_BLACKLIST = frozenset(
+    {
+        'typing.Generic.__new__',
+    }
+)
 
 
 class ClassDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # type: ignore[misc]
@@ -2494,6 +2487,7 @@ class ClassDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # type: 
             #
             # References: trac #5986, file sage/misc/nested_class.py
             import sys
+
             module = getattr(self.object, '__module__', False)
             name = getattr(self.object, '__name__', False)
             qualname = getattr(self.object, '__qualname__', name)
@@ -2505,8 +2499,7 @@ class ClassDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # type: 
                     if cls is None:
                         break
                     cls = getattr(cls, part, None)
-                self.doc_as_attr = (self.objpath != qualname_parts and
-                                    self.object is cls)
+                self.doc_as_attr = self.objpath != qualname_parts and self.object is cls
             # -------------------------------------------------------------------
             else:
                 self.doc_as_attr = True
@@ -3685,6 +3678,7 @@ class AttributeDocumenter(  # type: ignore[misc]
         # Issue #26522: Pass objects of classes that inherit ClasscallMetaclass
         # as attributes rather than method descriptors.
         from sage.misc.classcall_metaclass import ClasscallMetaclass
+
         if isinstance(type(member), ClasscallMetaclass):
             return True
         # ---------------------------------------------------------------------
@@ -3895,9 +3889,7 @@ class PropertyDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):  #
             return
 
         try:
-            signature = inspect.signature(
-                func, type_aliases=self._type_aliases(func)
-            )
+            signature = inspect.signature(func, type_aliases=self._type_aliases(func))
             if signature.return_annotation is not Parameter.empty:
                 mode = _get_render_mode(self.config.autodoc_typehints_format)
                 short_literals = self.config.python_display_short_literal_types

@@ -10,7 +10,10 @@ from .ext.crossrefs import _vendored_inventories_dir, _intersphinx_targets
 
 if __name__ == '__main__':
     if not _vendored_inventories_dir:
-        print('Error: sage_docbuild.vendor needs to be able to write to SAGE_SRC', file=sys.stderr)
+        print(
+            'Error: sage_docbuild.vendor needs to be able to write to SAGE_SRC',
+            file=sys.stderr,
+        )
         sys.exit(1)
     errors = 0
     for key, targets in _intersphinx_targets.items():

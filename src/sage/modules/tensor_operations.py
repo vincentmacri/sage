@@ -124,9 +124,12 @@ def antisymmetrized_coordinate_sums(dim, n):
     from sage.structure.formal_sum import FormalSum
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
     from sage.combinat.combination import Combinations
+
     S_d = SymmetricGroup(n)
-    table = [FormalSum([[g.sign(), g(tuple(i))] for g in S_d])
-             for i in Combinations(range(dim), n)]
+    table = [
+        FormalSum([[g.sign(), g(tuple(i))] for g in S_d])
+        for i in Combinations(range(dim), n)
+    ]
     return tuple(table)
 
 
@@ -170,6 +173,7 @@ class VectorCollection(FreeModule_ambient_field):
         sage: r.is_immutable()
         True
     """
+
     def __init__(self, vector_collection, base_ring, dim):
         """
         EXAMPLES::
@@ -259,6 +263,7 @@ class TensorOperation(VectorCollection):
         sage: R_tensor_S.vectors()
         ((1, 0), (-1, 0), (1, 2), (-1, -2))
     """
+
     def __init__(self, vector_collections, operation='product'):
         """
         EXAMPLES::
@@ -420,8 +425,7 @@ class TensorOperation(VectorCollection):
             [((0, 0), 0), ((0, 1), 1), ((0, 2), 2), ((1, 1), 3), ((1, 2), 4), ((2, 2), 3)]
         """
         V_list_indices = [list(range(V.n_vectors())) for V in self._V]
-        Sym = symmetrized_coordinate_sums(self._V[0].dimension(),
-                                          len(self._V))
+        Sym = symmetrized_coordinate_sums(self._V[0].dimension(), len(self._V))
         N = len(V_list_indices)
         for i in product(*V_list_indices):
             if any(i[j - 1] > i[j] for j in range(1, N)):
@@ -446,6 +450,7 @@ class TensorOperation(VectorCollection):
         dim = self._V[0].degree()
         Alt = antisymmetrized_coordinate_sums(dim, n)
         from sage.combinat.combination import Combinations
+
         for i in Combinations(range(self._V[0].n_vectors()), n):
             ray = self._init_power_operation_vectors(i, Alt)
             if ray is not None:

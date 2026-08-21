@@ -116,6 +116,7 @@ class FunctionField_polymod(FunctionField):
         False
         False
     """
+
     Element = FunctionFieldElement_polymod
 
     def __init__(self, polynomial, names, category=None) -> None:
@@ -155,10 +156,11 @@ class FunctionField_polymod(FunctionField):
             Polynomial Ring in t over Rational Field
         """
         from sage.rings.polynomial.polynomial_element import Polynomial
+
         if polynomial.parent().ngens() > 1 or not isinstance(polynomial, Polynomial):
             raise TypeError("polynomial must be univariate a polynomial")
         if names is None:
-            names = (polynomial.variable_name(), )
+            names = (polynomial.variable_name(),)
         elif names != polynomial.variable_name():
             polynomial = polynomial.change_variable_name(names)
         if polynomial.degree() <= 0:
@@ -170,10 +172,15 @@ class FunctionField_polymod(FunctionField):
         self._base_field = base_field
         self._polynomial = polynomial
 
-        FunctionField.__init__(self, base_field, names=names,
-                               category=FunctionFields().or_subcategory(category))
+        FunctionField.__init__(
+            self,
+            base_field,
+            names=names,
+            category=FunctionFields().or_subcategory(category),
+        )
 
         from .place_polymod import FunctionFieldPlace_polymod
+
         self._place_class = FunctionFieldPlace_polymod
 
         self._hash = hash(polynomial)
@@ -429,11 +436,19 @@ class FunctionField_polymod(FunctionField):
         if self.base_field() is not self.rational_function_field():
             L, from_L, to_L = self.simple_model()
             ret, ret_to_L, L_to_ret = L.monic_integral_model(names)
-            from_ret = ret.hom([from_L(ret_to_L(ret.gen())),
-                                from_L(ret_to_L(ret.base_field().gen()))])
-            to_ret = self.hom([L_to_ret(to_L(k.gen())) for k in self._intermediate_fields(self.rational_function_field())])
+            from_ret = ret.hom(
+                [from_L(ret_to_L(ret.gen())), from_L(ret_to_L(ret.base_field().gen()))]
+            )
+            to_ret = self.hom(
+                [
+                    L_to_ret(to_L(k.gen()))
+                    for k in self._intermediate_fields(self.rational_function_field())
+                ]
+            )
             return ret, from_ret, to_ret
-        if self.polynomial().is_monic() and all(c.denominator().is_one() for c in self.polynomial()):
+        if self.polynomial().is_monic() and all(
+            c.denominator().is_one() for c in self.polynomial()
+        ):
             # self is already monic and integral
             if names is None or names == ():
                 names = (self.variable_name(),)
@@ -565,6 +580,7 @@ class FunctionField_polymod(FunctionField):
             base = self.base_field()
         if base is self:
             from sage.rings.integer_ring import ZZ
+
             return ZZ(1)
         return self._polynomial.degree() * self.base_field().degree(base)
 
@@ -592,8 +608,10 @@ class FunctionField_polymod(FunctionField):
             sage: latex(L)
             \text{Function field in } y \text{ defined by } y^{5} - 2 x y + \frac{-x^{4} - 1}{x}
         """
-        return (fr"\text{{Function field in }} {self.variable_name()} "
-                fr"\text{{ defined by }} {self._polynomial._latex_()}")
+        return (
+            rf"\text{{Function field in }} {self.variable_name()} "
+            rf"\text{{ defined by }} {self._polynomial._latex_()}"
+        )
 
     def base_field(self):
         """
@@ -700,7 +718,13 @@ class FunctionField_polymod(FunctionField):
         """
         return self._ring
 
-    @cached_method(key=lambda self, base, basis, map: (self.base_field() if base is None else base, basis, map))
+    @cached_method(
+        key=lambda self, base, basis, map: (
+            self.base_field() if base is None else base,
+            basis,
+            map,
+        )
+    )
     def free_module(self, base=None, basis=None, map: bool = True):
         """
         Return a vector space and isomorphisms from the field to and from the
@@ -803,6 +827,7 @@ class FunctionField_polymod(FunctionField):
         if basis is not None:
             raise NotImplementedError
         from .maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
+
         if base is None:
             base = self.base_field()
         degree = self.degree(base)
@@ -825,6 +850,7 @@ class FunctionField_polymod(FunctionField):
             Maximal order of Function field in y defined by y^5 - 2*x*y + (-x^4 - 1)/x
         """
         from .order_polymod import FunctionFieldMaximalOrder_polymod
+
         return FunctionFieldMaximalOrder_polymod(self)
 
     def maximal_order_infinite(self):
@@ -849,6 +875,7 @@ class FunctionField_polymod(FunctionField):
             Maximal infinite order of Function field in y defined by y^2 + y + (x^2 + 1)/x
         """
         from .order_polymod import FunctionFieldMaximalOrderInfinite_polymod
+
         return FunctionFieldMaximalOrderInfinite_polymod(self)
 
     def different(self):
@@ -1012,10 +1039,14 @@ class FunctionField_polymod(FunctionField):
         codomain = im_gens[0].parent()
         if base_morphism is not None:
             from sage.categories.pushout import pushout
+
             codomain = pushout(codomain, base_morphism.codomain())
 
         from .maps import FunctionFieldMorphism_polymod
-        return FunctionFieldMorphism_polymod(self.Hom(codomain), im_gens[0], base_morphism)
+
+        return FunctionFieldMorphism_polymod(
+            self.Hom(codomain), im_gens[0], base_morphism
+        )
 
     @cached_method
     def genus(self):
@@ -1036,22 +1067,27 @@ class FunctionField_polymod(FunctionField):
         # a ring of transcendental degree 2 over a prime field not a ring of
         # transcendental degree 1 over a rational function field of one variable
 
-        if (isinstance(self._base_field, RationalFunctionField) and
-                self._base_field.constant_field().is_prime_field()):
+        if (
+            isinstance(self._base_field, RationalFunctionField)
+            and self._base_field.constant_field().is_prime_field()
+        ):
             from sage.interfaces.singular import singular
 
             # making the auxiliary ring which only has polynomials
             # with integral coefficients.
-            tmpAuxRing = PolynomialRing(self._base_field.constant_field(),
-                            str(self._base_field.gen()) + ',' + str(self._ring.gen()))
+            tmpAuxRing = PolynomialRing(
+                self._base_field.constant_field(),
+                str(self._base_field.gen()) + ',' + str(self._ring.gen()),
+            )
             intMinPoly, d = self._make_monic_integral(self._polynomial)
             curveIdeal = tmpAuxRing.ideal(intMinPoly)
 
             singular.lib('normal.lib')  # loading genus method in Singular
             return int(curveIdeal._singular_().genus())
 
-        raise NotImplementedError("computation of genus over non-prime "
-                                  "constant fields not implemented yet")
+        raise NotImplementedError(
+            "computation of genus over non-prime constant fields not implemented yet"
+        )
 
     def _simple_model(self, name='v'):
         r"""
@@ -1141,12 +1177,14 @@ class FunctionField_polymod(FunctionField):
         L = M.base_field()
         K = L.base_field()
 
-        assert (isinstance(K, RationalFunctionField))
-        assert (K is not L)
-        assert (L is not M)
+        assert isinstance(K, RationalFunctionField)
+        assert K is not L
+        assert L is not M
 
         if not K.constant_field().is_perfect():
-            raise NotImplementedError("simple_model() only implemented over perfect constant fields")
+            raise NotImplementedError(
+                "simple_model() only implemented over perfect constant fields"
+            )
 
         x = K.gen()
         b = L.gen()
@@ -1178,6 +1216,7 @@ class FunctionField_polymod(FunctionField):
         V, V_to_M, M_to_V = M.free_module(K)
         V, V_to_N, N_to_V = N.free_module(K)
         from sage.matrix.matrix_space import MatrixSpace
+
         MS = MatrixSpace(V.base_field(), V.dimension())
         # the power basis of v over K
         B = [M_to_V(v**i) for i in range(V.dimension())]
@@ -1308,17 +1347,23 @@ class FunctionField_polymod(FunctionField):
         # recursively collapse the tower of fields
         base = self.base_field()
         base_, from_base_, to_base_ = base.simple_model()
-        self_ = base_.extension(self.polynomial().map_coefficients(to_base_), names=(name,))
-        gens_in_base_ = [to_base_(k.gen())
-                         for k in base._intermediate_fields(base.rational_function_field())]
+        self_ = base_.extension(
+            self.polynomial().map_coefficients(to_base_), names=(name,)
+        )
+        gens_in_base_ = [
+            to_base_(k.gen())
+            for k in base._intermediate_fields(base.rational_function_field())
+        ]
         to_self_ = self.hom([self_.gen()] + gens_in_base_)
         from_self_ = self_.hom([self.gen(), from_base_(base_.gen())])
 
         # now collapse self_/base_/K(x)
         ret, ret_to_self_, self__to_ret = self_._simple_model(name)
         ret_to_self = ret.hom(from_self_(ret_to_self_(ret.gen())))
-        gens_in_ret = [self__to_ret(to_self_(k.gen()))
-                       for k in self._intermediate_fields(self.rational_function_field())]
+        gens_in_ret = [
+            self__to_ret(to_self_(k.gen()))
+            for k in self._intermediate_fields(self.rational_function_field())
+        ]
         self_to_ret = self.hom(gens_in_ret)
         return ret, ret_to_self, self_to_ret
 
@@ -1522,7 +1567,12 @@ class FunctionField_polymod(FunctionField):
             L, from_L, to_L = self.simple_model()
             K, from_K, to_K = L.separable_model(names=names)
             f = K.hom([from_L(from_K(K.gen())), from_L(from_K(K.base_field().gen()))])
-            t = self.hom([to_K(to_L(k.gen())) for k in self._intermediate_fields(self.rational_function_field())])
+            t = self.hom(
+                [
+                    to_K(to_L(k.gen()))
+                    for k in self._intermediate_fields(self.rational_function_field())
+                ]
+            )
             return K, f, t
 
         if self.polynomial().gcd(self.polynomial().derivative()).is_one():
@@ -1532,21 +1582,31 @@ class FunctionField_polymod(FunctionField):
             return self.change_variable_name(names)
 
         if not self.constant_base_field().is_perfect():
-            raise NotImplementedError("constructing a separable model is only implemented for function fields over a perfect constant base field")
+            raise NotImplementedError(
+                "constructing a separable model is only implemented for function fields over a perfect constant base field"
+            )
 
         if names is None:
-            names = (self.variable_name() + "_", self.rational_function_field().variable_name() + "_")
+            names = (
+                self.variable_name() + "_",
+                self.rational_function_field().variable_name() + "_",
+            )
 
         L, from_L, to_L = self.monic_integral_model()
 
         if L.polynomial().gcd(L.polynomial().derivative()).is_one():
             # L is separable
             ret, ret_to_L, L_to_ret = L.change_variable_name(names)
-            f = ret.hom([from_L(ret_to_L(ret.gen())), from_L(ret_to_L(ret.base_field().gen()))])
-            t = self.hom([L_to_ret(to_L(self.gen())), L_to_ret(to_L(self.base_field().gen()))])
+            f = ret.hom(
+                [from_L(ret_to_L(ret.gen())), from_L(ret_to_L(ret.base_field().gen()))]
+            )
+            t = self.hom(
+                [L_to_ret(to_L(self.gen())), L_to_ret(to_L(self.base_field().gen()))]
+            )
             return ret, f, t
         # otherwise, the polynomial of L must be separable in the other variable
         from .constructor import FunctionField
+
         K = FunctionField(self.constant_base_field(), names=(names[1],))
         # construct a field isomorphic to L on top of K
 
@@ -1554,10 +1614,14 @@ class FunctionField_polymod(FunctionField):
         if names[0] == names[1]:
             raise ValueError("names of generators must be distinct")
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(self.constant_base_field(), names=names)
         S = R.remove_var(names[1])
-        f = R(L.polynomial().change_variable_name(names[1]).map_coefficients(
-            lambda c: c.numerator().change_variable_name(names[0]), S))
+        f = R(
+            L.polynomial()
+            .change_variable_name(names[1])
+            .map_coefficients(lambda c: c.numerator().change_variable_name(names[0]), S)
+        )
         f = f.polynomial(R.gen(0)).change_ring(K)
         f /= f.leading_coefficient()
         # f must be separable in the other variable (otherwise it would factor)
@@ -1568,8 +1632,12 @@ class FunctionField_polymod(FunctionField):
         ret_to_L = ret.hom([L(L.base_field().gen()), L.gen()])
         L_to_ret = L.hom([ret(K.gen()), ret.gen()])
         # compose with from_L and to_L to get the desired isomorphisms between self and ret
-        f = ret.hom([from_L(ret_to_L(ret.gen())), from_L(ret_to_L(ret.base_field().gen()))])
-        t = self.hom([L_to_ret(to_L(self.gen())), L_to_ret(to_L(self.base_field().gen()))])
+        f = ret.hom(
+            [from_L(ret_to_L(ret.gen())), from_L(ret_to_L(ret.base_field().gen()))]
+        )
+        t = self.hom(
+            [L_to_ret(to_L(self.gen())), L_to_ret(to_L(self.base_field().gen()))]
+        )
         return ret, f, t
 
     def change_variable_name(self, name):
@@ -1649,9 +1717,15 @@ class FunctionField_polymod(FunctionField):
         else:
             base, from_base, to_base = self.base_field().change_variable_name(name[1:])
 
-        ret = base.extension(self.polynomial().map_coefficients(to_base), names=(name[0],))
-        f = ret.hom([k.gen() for k in self._intermediate_fields(self.rational_function_field())])
-        t = self.hom([k.gen() for k in ret._intermediate_fields(ret.rational_function_field())])
+        ret = base.extension(
+            self.polynomial().map_coefficients(to_base), names=(name[0],)
+        )
+        f = ret.hom(
+            [k.gen() for k in self._intermediate_fields(self.rational_function_field())]
+        )
+        t = self.hom(
+            [k.gen() for k in ret._intermediate_fields(ret.rational_function_field())]
+        )
         return ret, f, t
 
 
@@ -1660,6 +1734,7 @@ class FunctionField_simple(FunctionField_polymod):
     Function fields defined by irreducible and separable polynomials
     over rational function fields.
     """
+
     @cached_method
     def _inversion_isomorphism(self):
         r"""
@@ -1998,6 +2073,7 @@ class FunctionField_char_zero(FunctionField_simple):
         sage: L.characteristic()
         0
     """
+
     @cached_method
     def higher_derivation(self):
         """
@@ -2018,6 +2094,7 @@ class FunctionField_char_zero(FunctionField_simple):
               To:   Function field in y defined by y^3 + (-x^3 + 1)/(x^3 - 2)
         """
         from .derivations_polymod import FunctionFieldHigherDerivation_char_zero
+
         return FunctionFieldHigherDerivation_char_zero(self)
 
 
@@ -2052,7 +2129,10 @@ class FunctionField_global(FunctionField_simple):
         sage: L.genus()                                                                 # needs sage.rings.finite_rings
         0
     """
-    _differentials_space = LazyImport('sage.rings.function_field.differential', 'DifferentialsSpace_global')
+
+    _differentials_space = LazyImport(
+        'sage.rings.function_field.differential', 'DifferentialsSpace_global'
+    )
 
     def __init__(self, polynomial, names) -> None:
         """
@@ -2080,6 +2160,7 @@ class FunctionField_global(FunctionField_simple):
             (1, 1/x^4*y, 1/x^11*y^2 + 1/x^2, 1/x^15*y^3 + 1/x^6*y)
         """
         from .order_polymod import FunctionFieldMaximalOrder_global
+
         return FunctionFieldMaximalOrder_global(self)
 
     @cached_method
@@ -2102,6 +2183,7 @@ class FunctionField_global(FunctionField_simple):
               To:   Function field in y defined by y^3 + (4*x^3 + 1)/(x^3 + 3)
         """
         from .derivations_polymod import FunctionFieldHigherDerivation_global
+
         return FunctionFieldHigherDerivation_global(self)
 
     def places(self, degree=1) -> list[FunctionFieldPlace_polymod]:
@@ -2252,12 +2334,13 @@ class FunctionField_global(FunctionField_simple):
             2*t^2 + t + 1
         """
         from sage.rings.integer_ring import ZZ
+
         q = self.constant_field().order()
         g = self.genus()
 
         B = [len(self.places(i + 1)) for i in range(g)]
         N = [sum(d * B[d - 1] for d in ZZ(i + 1).divisors()) for i in range(g)]
-        S = [N[i] - q**(i + 1) - 1 for i in range(g)]
+        S = [N[i] - q ** (i + 1) - 1 for i in range(g)]
 
         a = [1]
         for i in range(1, g + 1):
@@ -2345,6 +2428,7 @@ def _singular_normal(ideal):
         singular_function,
     )
     from sage.libs.singular.function import lib as singular_lib
+
     singular_lib('normal.lib')
     normal = singular_function('normal')
 
@@ -2428,6 +2512,7 @@ class FunctionField_integral(FunctionField_simple):
                 return tuple(self(hom(b) / hom(s)) for b in singular_basis)
 
             from sage.env import SAGE_EXTCODE
+
             lib(SAGE_EXTCODE + '/singular/function_field/core.lib')
             normalize = singular_function('core_normalize')
 
@@ -2474,7 +2559,7 @@ class FunctionField_integral(FunctionField_simple):
         # that is, the function field. The integral closure of k[x]
         # is then obtained by multiplying these generators with powers of y
         # as the equation order itself is an integral extension of k[x].
-        d = ~ pols[-1]
+        d = ~pols[-1]
         _basis = []
         for f in pols:
             b = d * f
@@ -2514,6 +2599,7 @@ class FunctionField_integral(FunctionField_simple):
             Order in Function field in y defined by y^3 - x^6 - 2*x^5 - 3*x^4 - 2*x^3 - x^2
         """
         from .order_basis import FunctionFieldOrder_basis
+
         a = self.gen()
         basis = [a**i for i in range(self.degree())]
         return FunctionFieldOrder_basis(tuple(basis))
@@ -2541,9 +2627,14 @@ class FunctionField_integral(FunctionField_simple):
         y = self.gen()
         x = self.base_field().gen()
 
-        cf = max([(f[i].numerator().degree() / (n - i)).ceil() for i in range(n)
-                  if f[i] != 0])
-        return y * x**(-cf)
+        cf = max(
+            [
+                (f[i].numerator().degree() / (n - i)).ceil()
+                for i in range(n)
+                if f[i] != 0
+            ]
+        )
+        return y * x ** (-cf)
 
     @cached_method
     def equation_order_infinite(self):
@@ -2567,6 +2658,7 @@ class FunctionField_integral(FunctionField_simple):
             Infinite order in Function field in y defined by y^3 - x^6 - 2*x^5 - 3*x^4 - 2*x^3 - x^2
         """
         from .order_basis import FunctionFieldOrderInfinite_basis
+
         b = self.primitive_integal_element_infinite()
         basis = [b**i for i in range(self.degree())]
         return FunctionFieldOrderInfinite_basis(tuple(basis))
@@ -2578,6 +2670,7 @@ class FunctionField_char_zero_integral(FunctionField_char_zero, FunctionField_in
     separable polynomial, integral over the maximal order of the base rational
     function field with a finite constant field.
     """
+
     pass
 
 
@@ -2587,4 +2680,5 @@ class FunctionField_global_integral(FunctionField_global, FunctionField_integral
     integral over the maximal order of the base rational function field with a
     finite constant field.
     """
+
     pass

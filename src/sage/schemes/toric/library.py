@@ -49,9 +49,7 @@ from sage.geometry.toric_lattice import ToricLattice
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.arith.misc import GCD as gcd
-from sage.schemes.toric.variety import (DEFAULT_PREFIX,
-                                        ToricVariety,
-                                        normalize_names)
+from sage.schemes.toric.variety import DEFAULT_PREFIX, ToricVariety, normalize_names
 from sage.schemes.toric.fano_variety import CPRFanoToricVariety
 
 
@@ -60,122 +58,287 @@ from sage.schemes.toric.fano_variety import CPRFanoToricVariety
 toric_varieties_rays_cones = {
     'dP6': [
         [(0, 1), (-1, 0), (-1, -1), (0, -1), (1, 0), (1, 1)],
-        [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]],
+        [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]],
+    ],
     'dP7': [
         [(0, 1), (-1, 0), (-1, -1), (0, -1), (1, 0)],
-        [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]],
-    'dP8': [
-        [(1, 1), (0, 1), (-1, -1), (1, 0)],
-        [[0, 1], [1, 2], [2, 3], [3, 0]]
-        ],
-    'P1xP1': [
-        [(1, 0), (-1, 0), (0, 1), (0, -1)],
-        [[0, 2], [2, 1], [1, 3], [3, 0]]],
+        [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]],
+    ],
+    'dP8': [[(1, 1), (0, 1), (-1, -1), (1, 0)], [[0, 1], [1, 2], [2, 3], [3, 0]]],
+    'P1xP1': [[(1, 0), (-1, 0), (0, 1), (0, -1)], [[0, 2], [2, 1], [1, 3], [3, 0]]],
     'P1xP1_Z2': [
         [(1, 1), (-1, -1), (-1, 1), (1, -1)],
-        [[0, 2], [2, 1], [1, 3], [3, 0]]],
-    'P1': [
-        [(1,), (-1,)],
-        [[0], [1]]],
-    'P2': [
-        [(1, 0), (0, 1), (-1, -1)],
-        [[0, 1], [1, 2], [2, 0]]],
-    'A1': [
-        [(1,)],
-        [[0]]],
-    'A2': [
-        [(1, 0), (0, 1)],
-        [[0, 1]]],
-    'A2_Z2': [
-        [(1, 0), (1, 2)],
-        [[0, 1]]],
-    'P1xA1': [
-        [(1, 0), (-1, 0), (0, 1)],
-        [[0, 2], [2, 1]]],
-    'Conifold': [
-        [(0, 0, 1), (0, 1, 1), (1, 0, 1), (1, 1, 1)],
-        [[0, 1, 2, 3]]],
+        [[0, 2], [2, 1], [1, 3], [3, 0]],
+    ],
+    'P1': [[(1,), (-1,)], [[0], [1]]],
+    'P2': [[(1, 0), (0, 1), (-1, -1)], [[0, 1], [1, 2], [2, 0]]],
+    'A1': [[(1,)], [[0]]],
+    'A2': [[(1, 0), (0, 1)], [[0, 1]]],
+    'A2_Z2': [[(1, 0), (1, 2)], [[0, 1]]],
+    'P1xA1': [[(1, 0), (-1, 0), (0, 1)], [[0, 2], [2, 1]]],
+    'Conifold': [[(0, 0, 1), (0, 1, 1), (1, 0, 1), (1, 1, 1)], [[0, 1, 2, 3]]],
     'dP6xdP6': [
-        [(0, 1, 0, 0), (-1, 0, 0, 0), (-1, -1, 0, 0),
-         (0, -1, 0, 0), (1, 0, 0, 0), (1, 1, 0, 0),
-         (0, 0, 0, 1), (0, 0, -1, 0), (0, 0, -1, -1),
-         (0, 0, 0, -1), (0, 0, 1, 0), (0, 0, 1, 1)],
-        [[0, 1, 6, 7], [0, 1, 7, 8], [0, 1, 8, 9], [0, 1, 9, 10],
-         [0, 1, 10, 11], [0, 1, 6, 11], [1, 2, 6, 7], [1, 2, 7, 8],
-         [1, 2, 8, 9], [1, 2, 9, 10], [1, 2, 10, 11], [1, 2, 6, 11],
-         [2, 3, 6, 7], [2, 3, 7, 8], [2, 3, 8, 9], [2, 3, 9, 10],
-         [2, 3, 10, 11], [2, 3, 6, 11], [3, 4, 6, 7], [3, 4, 7, 8],
-         [3, 4, 8, 9], [3, 4, 9, 10], [3, 4, 10, 11], [3, 4, 6, 11],
-         [4, 5, 6, 7], [4, 5, 7, 8], [4, 5, 8, 9], [4, 5, 9, 10],
-         [4, 5, 10, 11], [4, 5, 6, 11], [0, 5, 6, 7], [0, 5, 7, 8],
-         [0, 5, 8, 9], [0, 5, 9, 10], [0, 5, 10, 11], [0, 5, 6, 11]]],
+        [
+            (0, 1, 0, 0),
+            (-1, 0, 0, 0),
+            (-1, -1, 0, 0),
+            (0, -1, 0, 0),
+            (1, 0, 0, 0),
+            (1, 1, 0, 0),
+            (0, 0, 0, 1),
+            (0, 0, -1, 0),
+            (0, 0, -1, -1),
+            (0, 0, 0, -1),
+            (0, 0, 1, 0),
+            (0, 0, 1, 1),
+        ],
+        [
+            [0, 1, 6, 7],
+            [0, 1, 7, 8],
+            [0, 1, 8, 9],
+            [0, 1, 9, 10],
+            [0, 1, 10, 11],
+            [0, 1, 6, 11],
+            [1, 2, 6, 7],
+            [1, 2, 7, 8],
+            [1, 2, 8, 9],
+            [1, 2, 9, 10],
+            [1, 2, 10, 11],
+            [1, 2, 6, 11],
+            [2, 3, 6, 7],
+            [2, 3, 7, 8],
+            [2, 3, 8, 9],
+            [2, 3, 9, 10],
+            [2, 3, 10, 11],
+            [2, 3, 6, 11],
+            [3, 4, 6, 7],
+            [3, 4, 7, 8],
+            [3, 4, 8, 9],
+            [3, 4, 9, 10],
+            [3, 4, 10, 11],
+            [3, 4, 6, 11],
+            [4, 5, 6, 7],
+            [4, 5, 7, 8],
+            [4, 5, 8, 9],
+            [4, 5, 9, 10],
+            [4, 5, 10, 11],
+            [4, 5, 6, 11],
+            [0, 5, 6, 7],
+            [0, 5, 7, 8],
+            [0, 5, 8, 9],
+            [0, 5, 9, 10],
+            [0, 5, 10, 11],
+            [0, 5, 6, 11],
+        ],
+    ],
     'Cube_face_fan': [
-        [(1, 1, 1), (1, -1, 1), (-1, 1, 1), (-1, -1, 1),
-         (-1, -1, -1), (-1, 1, -1), (1, -1, -1), (1, 1, -1)],
-        [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 7, 6], [4, 5, 3, 2], [0, 2, 5, 7], [4, 6, 1, 3]]],
+        [
+            (1, 1, 1),
+            (1, -1, 1),
+            (-1, 1, 1),
+            (-1, -1, 1),
+            (-1, -1, -1),
+            (-1, 1, -1),
+            (1, -1, -1),
+            (1, 1, -1),
+        ],
+        [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [0, 1, 7, 6],
+            [4, 5, 3, 2],
+            [0, 2, 5, 7],
+            [4, 6, 1, 3],
+        ],
+    ],
     'Cube_sublattice': [
-        [(1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 1, 1),
-         (-1, 0, 0), (0, -1, 0), (0, 0, -1), (1, -1, -1)],
-        [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 7, 6], [4, 5, 3, 2], [0, 2, 5, 7], [4, 6, 1, 3]]],
+        [
+            (1, 0, 0),
+            (0, 1, 0),
+            (0, 0, 1),
+            (-1, 1, 1),
+            (-1, 0, 0),
+            (0, -1, 0),
+            (0, 0, -1),
+            (1, -1, -1),
+        ],
+        [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [0, 1, 7, 6],
+            [4, 5, 3, 2],
+            [0, 2, 5, 7],
+            [4, 6, 1, 3],
+        ],
+    ],
     'Cube_nonpolyhedral': [
-        [(1, 2, 3), (1, -1, 1), (-1, 1, 1), (-1, -1, 1),
-         (-1, -1, -1), (-1, 1, -1), (1, -1, -1), (1, 1, -1)],
-        [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 7, 6], [4, 5, 3, 2], [0, 2, 5, 7], [4, 6, 1, 3]]],
+        [
+            (1, 2, 3),
+            (1, -1, 1),
+            (-1, 1, 1),
+            (-1, -1, 1),
+            (-1, -1, -1),
+            (-1, 1, -1),
+            (1, -1, -1),
+            (1, 1, -1),
+        ],
+        [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [0, 1, 7, 6],
+            [4, 5, 3, 2],
+            [0, 2, 5, 7],
+            [4, 6, 1, 3],
+        ],
+    ],
     'BCdlOG': [
-        [(-1, 0, 0, 2, 3),  # 0
-         (0, -1, 0, 2, 3),  # 1
-         (0, 0, -1, 2, 3),  # 2
-         (0, 0, -1, 1, 2),  # 3
-         (0, 0, 0, -1, 0),  # 4
-         (0, 0, 0, 0, -1),  # 5
-         (0, 0, 0, 2, 3),  # 6
-         (0, 0, 1, 2, 3),  # 7
-         (0, 0, 2, 2, 3),  # 8
-         (0, 0, 1, 1, 1),  # 9
-         (0, 1, 2, 2, 3),  # 10
-         (0, 1, 3, 2, 3),  # 11
-         (1, 0, 4, 2, 3)],  # 12
-        [[0, 6, 7, 1, 4], [0, 6, 10, 2, 4], [0, 6, 1, 2, 4], [0, 9, 7, 1, 5], [0, 6, 7, 1, 5],
-          [0, 6, 10, 2, 5], [0, 6, 1, 2, 5], [0, 9, 1, 4, 5], [0, 6, 10, 4, 11], [0, 6, 7, 4, 11],
-          [0, 6, 10, 5, 11], [0, 9, 7, 5, 11], [0, 6, 7, 5, 11], [0, 9, 4, 5, 11], [0, 10, 4, 5, 11],
-          [0, 9, 7, 1, 8], [0, 9, 1, 4, 8], [0, 7, 1, 4, 8], [0, 9, 7, 11, 8], [0, 9, 4, 11, 8],
-          [0, 7, 4, 11, 8], [0, 10, 2, 4, 3], [0, 1, 2, 4, 3], [0, 10, 2, 5, 3], [0, 1, 2, 5, 3],
-          [0, 10, 4, 5, 3], [0, 1, 4, 5, 3], [12, 6, 7, 1, 4], [12, 6, 10, 2, 4], [12, 6, 1, 2, 4],
-          [12, 9, 7, 1, 5], [12, 6, 7, 1, 5], [12, 6, 10, 2, 5], [12, 6, 1, 2, 5], [12, 9, 1, 4, 5],
-          [12, 6, 10, 4, 11], [12, 6, 7, 4, 11], [12, 6, 10, 5, 11], [12, 9, 7, 5, 11], [12, 6, 7, 5, 11],
-          [12, 9, 4, 5, 11], [12, 10, 4, 5, 11], [12, 9, 7, 1, 8], [12, 9, 1, 4, 8], [12, 7, 1, 4, 8],
-          [12, 9, 7, 11, 8], [12, 9, 4, 11, 8], [12, 7, 4, 11, 8], [12, 10, 2, 4, 3], [12, 1, 2, 4, 3],
-          [12, 10, 2, 5, 3], [12, 1, 2, 5, 3], [12, 10, 4, 5, 3], [12, 1, 4, 5, 3]]],
+        [
+            (-1, 0, 0, 2, 3),  # 0
+            (0, -1, 0, 2, 3),  # 1
+            (0, 0, -1, 2, 3),  # 2
+            (0, 0, -1, 1, 2),  # 3
+            (0, 0, 0, -1, 0),  # 4
+            (0, 0, 0, 0, -1),  # 5
+            (0, 0, 0, 2, 3),  # 6
+            (0, 0, 1, 2, 3),  # 7
+            (0, 0, 2, 2, 3),  # 8
+            (0, 0, 1, 1, 1),  # 9
+            (0, 1, 2, 2, 3),  # 10
+            (0, 1, 3, 2, 3),  # 11
+            (1, 0, 4, 2, 3),
+        ],  # 12
+        [
+            [0, 6, 7, 1, 4],
+            [0, 6, 10, 2, 4],
+            [0, 6, 1, 2, 4],
+            [0, 9, 7, 1, 5],
+            [0, 6, 7, 1, 5],
+            [0, 6, 10, 2, 5],
+            [0, 6, 1, 2, 5],
+            [0, 9, 1, 4, 5],
+            [0, 6, 10, 4, 11],
+            [0, 6, 7, 4, 11],
+            [0, 6, 10, 5, 11],
+            [0, 9, 7, 5, 11],
+            [0, 6, 7, 5, 11],
+            [0, 9, 4, 5, 11],
+            [0, 10, 4, 5, 11],
+            [0, 9, 7, 1, 8],
+            [0, 9, 1, 4, 8],
+            [0, 7, 1, 4, 8],
+            [0, 9, 7, 11, 8],
+            [0, 9, 4, 11, 8],
+            [0, 7, 4, 11, 8],
+            [0, 10, 2, 4, 3],
+            [0, 1, 2, 4, 3],
+            [0, 10, 2, 5, 3],
+            [0, 1, 2, 5, 3],
+            [0, 10, 4, 5, 3],
+            [0, 1, 4, 5, 3],
+            [12, 6, 7, 1, 4],
+            [12, 6, 10, 2, 4],
+            [12, 6, 1, 2, 4],
+            [12, 9, 7, 1, 5],
+            [12, 6, 7, 1, 5],
+            [12, 6, 10, 2, 5],
+            [12, 6, 1, 2, 5],
+            [12, 9, 1, 4, 5],
+            [12, 6, 10, 4, 11],
+            [12, 6, 7, 4, 11],
+            [12, 6, 10, 5, 11],
+            [12, 9, 7, 5, 11],
+            [12, 6, 7, 5, 11],
+            [12, 9, 4, 5, 11],
+            [12, 10, 4, 5, 11],
+            [12, 9, 7, 1, 8],
+            [12, 9, 1, 4, 8],
+            [12, 7, 1, 4, 8],
+            [12, 9, 7, 11, 8],
+            [12, 9, 4, 11, 8],
+            [12, 7, 4, 11, 8],
+            [12, 10, 2, 4, 3],
+            [12, 1, 2, 4, 3],
+            [12, 10, 2, 5, 3],
+            [12, 1, 2, 5, 3],
+            [12, 10, 4, 5, 3],
+            [12, 1, 4, 5, 3],
+        ],
+    ],
     'BCdlOG_base': [
-        [(-1, 0, 0),
-         (0, -1, 0),
-         (0, 0, -1),
-         (0, 0, 1),
-         (0, 1, 2),
-         (0, 1, 3),
-         (1, 0, 4)],
-        [[0, 4, 2], [0, 4, 5], [0, 5, 3], [0, 1, 3], [0, 1, 2],
-         [6, 4, 2], [6, 4, 5], [6, 5, 3], [6, 1, 3], [6, 1, 2]]],
-    'P2_112': [
-        [(1, 0), (0, 1), (-1, -2)],
-        [[0, 1], [1, 2], [2, 0]]],
-    'P2_123': [
-        [(1, 0), (0, 1), (-2, -3)],
-        [[0, 1], [1, 2], [2, 0]]],
+        [
+            (-1, 0, 0),
+            (0, -1, 0),
+            (0, 0, -1),
+            (0, 0, 1),
+            (0, 1, 2),
+            (0, 1, 3),
+            (1, 0, 4),
+        ],
+        [
+            [0, 4, 2],
+            [0, 4, 5],
+            [0, 5, 3],
+            [0, 1, 3],
+            [0, 1, 2],
+            [6, 4, 2],
+            [6, 4, 5],
+            [6, 5, 3],
+            [6, 1, 3],
+            [6, 1, 2],
+        ],
+    ],
+    'P2_112': [[(1, 0), (0, 1), (-1, -2)], [[0, 1], [1, 2], [2, 0]]],
+    'P2_123': [[(1, 0), (0, 1), (-2, -3)], [[0, 1], [1, 2], [2, 0]]],
     'P4_11169': [
         [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1), (-9, -6, -1, -1)],
-        [[0, 1, 2, 3], [0, 1, 2, 4], [0, 1, 3, 4], [0, 2, 3, 4], [1, 2, 3, 4]]],
+        [[0, 1, 2, 3], [0, 1, 2, 4], [0, 1, 3, 4], [0, 2, 3, 4], [1, 2, 3, 4]],
+    ],
     'P4_11169_resolved': [
-        [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1), (-9, -6, -1, -1), (-3, -2, 0, 0)],
-        [[0, 1, 2, 3], [0, 1, 3, 4], [0, 1, 2, 4], [1, 3, 4, 5], [0, 3, 4, 5],
-         [1, 2, 4, 5], [0, 2, 4, 5], [1, 2, 3, 5], [0, 2, 3, 5]]],
+        [
+            (1, 0, 0, 0),
+            (0, 1, 0, 0),
+            (0, 0, 1, 0),
+            (0, 0, 0, 1),
+            (-9, -6, -1, -1),
+            (-3, -2, 0, 0),
+        ],
+        [
+            [0, 1, 2, 3],
+            [0, 1, 3, 4],
+            [0, 1, 2, 4],
+            [1, 3, 4, 5],
+            [0, 3, 4, 5],
+            [1, 2, 4, 5],
+            [0, 2, 4, 5],
+            [1, 2, 3, 5],
+            [0, 2, 3, 5],
+        ],
+    ],
     'P4_11133': [
         [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1), (-3, -3, -1, -1)],
-        [[0, 1, 2, 3], [0, 1, 2, 4], [0, 1, 3, 4], [0, 2, 3, 4], [1, 2, 3, 4]]],
+        [[0, 1, 2, 3], [0, 1, 2, 4], [0, 1, 3, 4], [0, 2, 3, 4], [1, 2, 3, 4]],
+    ],
     'P4_11133_resolved': [
-        [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1), (-3, -3, -1, -1), (-1, -1, 0, 0)],
-        [[0, 1, 2, 3], [0, 1, 3, 4], [0, 1, 2, 4], [1, 3, 4, 5], [0, 3, 4, 5],
-         [1, 2, 4, 5], [0, 2, 4, 5], [1, 2, 3, 5], [0, 2, 3, 5]]]
+        [
+            (1, 0, 0, 0),
+            (0, 1, 0, 0),
+            (0, 0, 1, 0),
+            (0, 0, 0, 1),
+            (-3, -3, -1, -1),
+            (-1, -1, 0, 0),
+        ],
+        [
+            [0, 1, 2, 3],
+            [0, 1, 3, 4],
+            [0, 1, 2, 4],
+            [1, 3, 4, 5],
+            [0, 3, 4, 5],
+            [1, 2, 4, 5],
+            [0, 2, 4, 5],
+            [1, 2, 3, 5],
+            [0, 2, 3, 5],
+        ],
+    ],
 }
 
 
@@ -218,15 +381,15 @@ class ToricVarietyFactory(SageObject):
         if coordinate_names is None:
             dict_key = (name, base_ring)
         else:
-            coordinate_names = normalize_names(coordinate_names, len(rays),
-                                               DEFAULT_PREFIX)
+            coordinate_names = normalize_names(
+                coordinate_names, len(rays), DEFAULT_PREFIX
+            )
             dict_key = (name, base_ring) + tuple(coordinate_names)
         if dict_key not in self.__dict__:
             fan = Fan(cones, rays, check=self._check)
-            self.__dict__[dict_key] = \
-                ToricVariety(fan,
-                             coordinate_names=coordinate_names,
-                             base_ring=base_ring)
+            self.__dict__[dict_key] = ToricVariety(
+                fan, coordinate_names=coordinate_names, base_ring=base_ring
+            )
         return self.__dict__[dict_key]
 
     def _make_CPRFanoToricVariety(self, name, coordinate_names, base_ring):
@@ -257,21 +420,23 @@ class ToricVarietyFactory(SageObject):
         if coordinate_names is None:
             dict_key = (name, base_ring)
         else:
-            coordinate_names = normalize_names(coordinate_names, len(rays),
-                                               DEFAULT_PREFIX)
+            coordinate_names = normalize_names(
+                coordinate_names, len(rays), DEFAULT_PREFIX
+            )
             dict_key = (name, base_ring) + tuple(coordinate_names)
         if dict_key not in self.__dict__:
             polytope = LatticePolytope(rays, lattice=ToricLattice(len(rays[0])))
             points = [tuple(_) for _ in polytope.points()]
             ray2point = [points.index(r) for r in rays]
             charts = [[ray2point[i] for i in c] for c in cones]
-            self.__dict__[dict_key] = \
-                CPRFanoToricVariety(Delta_polar=polytope,
-                                    coordinate_points=ray2point,
-                                    charts=charts,
-                                    coordinate_names=coordinate_names,
-                                    base_ring=base_ring,
-                                    check=self._check)
+            self.__dict__[dict_key] = CPRFanoToricVariety(
+                Delta_polar=polytope,
+                coordinate_points=ray2point,
+                charts=charts,
+                coordinate_names=coordinate_names,
+                base_ring=base_ring,
+                check=self._check,
+            )
         return self.__dict__[dict_key]
 
     def dP6(self, names='x u y v z w', base_ring=QQ):
@@ -521,20 +686,26 @@ class ToricVarietyFactory(SageObject):
         # We are going to eventually switch off consistency checks, so we need
         # to be sure that the input is acceptable.
         try:
-            n = ZZ(n)   # make sure that we got a "mathematical" integer
+            n = ZZ(n)  # make sure that we got a "mathematical" integer
         except TypeError:
-            raise TypeError("dimension of the projective space must be a "
-                            "positive integer!\nGot: %s" % n)
+            raise TypeError(
+                "dimension of the projective space must be a "
+                "positive integer!\nGot: %s" % n
+            )
         if n <= 0:
-            raise ValueError("only projective spaces of positive dimension "
-                             "can be constructed!\nGot: %s" % n)
+            raise ValueError(
+                "only projective spaces of positive dimension "
+                "can be constructed!\nGot: %s" % n
+            )
         m = identity_matrix(n).augment(matrix(n, 1, [-1] * n))
-        charts = [list(range(i)) + list(range(i + 1, n + 1))
-                  for i in range(n + 1)]
+        charts = [list(range(i)) + list(range(i + 1, n + 1)) for i in range(n + 1)]
         return CPRFanoToricVariety(
             Delta_polar=LatticePolytope(m.columns(), lattice=ToricLattice(n)),
-            charts=charts, check=self._check, coordinate_names=names,
-            base_ring=base_ring)
+            charts=charts,
+            check=self._check,
+            coordinate_names=names,
+            base_ring=base_ring,
+        )
 
     def A1(self, names='z', base_ring=QQ):
         r"""
@@ -626,13 +797,16 @@ class ToricVarietyFactory(SageObject):
         # We are going to eventually switch off consistency checks, so we need
         # to be sure that the input is acceptable.
         try:
-            n = ZZ(n)   # make sure that we got a "mathematical" integer
+            n = ZZ(n)  # make sure that we got a "mathematical" integer
         except TypeError:
-            raise TypeError("dimension of the affine space must be a "
-                            "positive integer!\nGot: %s" % n)
+            raise TypeError(
+                "dimension of the affine space must be a positive integer!\nGot: %s" % n
+            )
         if n <= 0:
-            raise ValueError("only affine spaces of positive dimension can "
-                             "be constructed!\nGot: %s" % n)
+            raise ValueError(
+                "only affine spaces of positive dimension can "
+                "be constructed!\nGot: %s" % n
+            )
         rays = identity_matrix(n).columns()
         cones = [list(range(n))]
         fan = Fan(cones, rays, check=self._check)
@@ -910,22 +1084,39 @@ class ToricVarietyFactory(SageObject):
         # We are going to eventually switch off consistency checks, so we need
         # to be sure that the input is acceptable.
         try:
-            k = ZZ(k)   # make sure that we got a "mathematical" integer
+            k = ZZ(k)  # make sure that we got a "mathematical" integer
         except TypeError:
-            raise TypeError("cube deformations X_k are defined only for "
-                            "nonnegative integer k!\nGot: %s" % k)
+            raise TypeError(
+                "cube deformations X_k are defined only for "
+                "nonnegative integer k!\nGot: %s" % k
+            )
         if k < 0:
-            raise ValueError("cube deformations X_k are defined only for "
-                             "nonnegative k!\nGot: %s" % k)
+            raise ValueError(
+                "cube deformations X_k are defined only for nonnegative k!\nGot: %s" % k
+            )
 
         def rays(kappa):
-            return matrix([[1, 1, 2 * kappa + 1], [1, -1, 1],
-                           [-1, 1, 1], [-1, -1, 1],
-                           [-1, -1, -1], [-1, 1, -1],
-                           [1, -1, -1], [1, 1, -1]])
+            return matrix(
+                [
+                    [1, 1, 2 * kappa + 1],
+                    [1, -1, 1],
+                    [-1, 1, 1],
+                    [-1, -1, 1],
+                    [-1, -1, -1],
+                    [-1, 1, -1],
+                    [1, -1, -1],
+                    [1, 1, -1],
+                ]
+            )
 
-        cones = [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 7, 6],
-                 [4, 5, 3, 2], [0, 2, 5, 7], [4, 6, 1, 3]]
+        cones = [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [0, 1, 7, 6],
+            [4, 5, 3, 2],
+            [0, 2, 5, 7],
+            [4, 6, 1, 3],
+        ]
         fan = Fan(cones, rays(k))
         return ToricVariety(fan, coordinate_names=names)
 
@@ -1266,7 +1457,7 @@ class ToricVarietyFactory(SageObject):
             b = L_basis[i]
             v = Q.coordinate_vector(Q(b))
             rays = rays + [v]
-            w_c = w[:i] + w[i + 1:]
+            w_c = w[:i] + w[i + 1 :]
             cones = cones + [tuple(w_c)]
         fan = Fan(cones, rays)
         return ToricVariety(fan, coordinate_names=names, base_ring=base_ring)

@@ -140,11 +140,17 @@ def Phi2_quad(J3, ssJ1, ssJ2):
     ssJ1_pow2 = ssJ1**2
     ssJ2_pow2 = ssJ2**2
 
-    return J3.parent()([(-ssJ1 + 1488) * ssJ2_pow2
-                        + (1488 * ssJ1 + 40773375) * ssJ2
-                        + ssJ1_pow2 - 162000 * ssJ1 + 8748000000,
-                        -ssJ2_pow2 + 1488 * ssJ2 + (ssJ1 - 162000),
-                        1])
+    return J3.parent()(
+        [
+            (-ssJ1 + 1488) * ssJ2_pow2
+            + (1488 * ssJ1 + 40773375) * ssJ2
+            + ssJ1_pow2
+            - 162000 * ssJ1
+            + 8748000000,
+            -ssJ2_pow2 + 1488 * ssJ2 + (ssJ1 - 162000),
+            1,
+        ]
+    )
 
 
 def Phi_polys(L, x, j):
@@ -343,38 +349,41 @@ def supersingular_j(FF, *, all=False):
     prime = FF.characteristic()
     if not all:
         if kronecker(-1, prime) != 1:
-            j_invss = 1728                 # (2^2 * 3)^3
+            j_invss = 1728  # (2^2 * 3)^3
         elif kronecker(-2, prime) != 1:
-            j_invss = 8000                 # (2^2 * 5)^3
+            j_invss = 8000  # (2^2 * 5)^3
         elif kronecker(-3, prime) != 1:
-            j_invss = 0                    # 0^3
+            j_invss = 0  # 0^3
         elif kronecker(-7, prime) != 1:
-            j_invss = 16581375             # (3 * 5 * 17)^3
+            j_invss = 16581375  # (3 * 5 * 17)^3
         elif kronecker(-11, prime) != 1:
-            j_invss = -32768               # -(2^5)^3
+            j_invss = -32768  # -(2^5)^3
         elif kronecker(-19, prime) != 1:
-            j_invss = -884736              # -(2^5 * 3)^3
+            j_invss = -884736  # -(2^5 * 3)^3
         elif kronecker(-43, prime) != 1:
-            j_invss = -884736000           # -(2^6 * 3 * 5)^3
+            j_invss = -884736000  # -(2^6 * 3 * 5)^3
         elif kronecker(-67, prime) != 1:
-            j_invss = -147197952000        # -(2^5 * 3 * 5 * 11)^3
+            j_invss = -147197952000  # -(2^5 * 3 * 5 * 11)^3
         elif kronecker(-163, prime) != 1:
             j_invss = -262537412640768000  # -(2^6 * 3 * 5 * 23 * 29)^3
         else:
             if FF.absolute_degree() % 2:
                 # stronger condition than supersingular_D() to ensure a curve over GF(p)
                 from sage.arith.misc import hilbert_conductor
+
                 D = -ZZ.one()
                 while hilbert_conductor(D, -prime) != prime:
                     D -= 1
             else:
                 D = supersingular_D(prime)
             from sage.schemes.elliptic_curves.cm import hilbert_class_polynomial
+
             hc_poly = hilbert_class_polynomial(D).change_ring(FF)
             root_hc_poly_list = hc_poly.roots(multiplicities=False)
             j_invss = root_hc_poly_list[0]
         return FF(j_invss)
     from sage.schemes.elliptic_curves.ell_finite_field import supersingular_j_polynomial
+
     return supersingular_j_polynomial(prime).roots(ring=FF, multiplicities=False)
 
 
@@ -406,6 +415,7 @@ class SupersingularModule(HeckeModule_free_module):
         ...
         NotImplementedError: supersingular modules of level > 1 not yet implemented
     """
+
     def __init__(self, prime=2, level=1, base_ring=ZZ):
         r"""
         Create a supersingular module.
@@ -420,13 +430,14 @@ class SupersingularModule(HeckeModule_free_module):
         if prime.divides(level):
             raise ValueError("the argument level must be coprime to the argument prime")
         if level != 1:
-            raise NotImplementedError("supersingular modules of level > 1 not yet implemented")
+            raise NotImplementedError(
+                "supersingular modules of level > 1 not yet implemented"
+            )
         self.__prime = prime
         self.__finite_field = FiniteField(prime**2, 'a')
         self.__level = level
         self.__hecke_matrices = {}
-        HeckeModule_free_module.__init__(self, base_ring,
-                                         prime * level, weight=2)
+        HeckeModule_free_module.__init__(self, base_ring, prime * level, weight=2)
 
     def _repr_(self) -> str:
         """
@@ -438,7 +449,10 @@ class SupersingularModule(HeckeModule_free_module):
             'Module of supersingular points on X_0(1)/F_11 over Integer Ring'
         """
         return "Module of supersingular points on X_0(%s)/F_%s over %s" % (
-            self.__level, self.__prime, self.base_ring())
+            self.__level,
+            self.__prime,
+            self.base_ring(),
+        )
 
     def __richcmp__(self, other, op) -> bool:
         r"""
@@ -455,8 +469,11 @@ class SupersingularModule(HeckeModule_free_module):
         """
         if not isinstance(other, SupersingularModule):
             return NotImplemented
-        return richcmp((self.__level, self.__prime, self.base_ring()),
-                       (other.__level, other.__prime, other.base_ring()), op)
+        return richcmp(
+            (self.__level, self.__prime, self.base_ring()),
+            (other.__level, other.__prime, other.base_ring()),
+            op,
+        )
 
     def free_module(self):
         """
@@ -504,7 +521,7 @@ class SupersingularModule(HeckeModule_free_module):
              (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
              (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
         """
-        return ZZ**self.dimension()
+        return ZZ ** self.dimension()
 
     @cached_method
     def dimension(self):

@@ -28,7 +28,6 @@ from sage.groups.matrix_gps.matrix_group import MatrixGroup_generic
 
 
 class MatrixGroup_gap(GroupMixinLibGAP, MatrixGroup_generic, ParentLibGAP):
-
     Element = MatrixGroupElement_gap
 
     def __init__(self, degree, base_ring, libgap_group, ambient=None, category=None):
@@ -217,6 +216,7 @@ class MatrixGroup_gap(GroupMixinLibGAP, MatrixGroup_generic, ParentLibGAP):
             TypeError: matrix is not in the finitely generated group
         """
         from sage.libs.gap.libgap import libgap
+
         libgap_contains = libgap.eval(r'\in')
         is_contained = libgap_contains(x_gap, self.gap())
         if not is_contained.sage():
@@ -306,9 +306,12 @@ class MatrixGroup_gap(GroupMixinLibGAP, MatrixGroup_generic, ParentLibGAP):
         cat = Groups()
         if self in Groups().Finite():
             cat = cat.Finite()
-        from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
-        return FinitelyGeneratedMatrixGroup_gap(self.degree(), self.base_ring(),
-                                                libgap_subgroup, ambient=self,
-                                                category=cat)
+        from sage.groups.matrix_gps.finitely_generated_gap import (
+            FinitelyGeneratedMatrixGroup_gap,
+        )
+
+        return FinitelyGeneratedMatrixGroup_gap(
+            self.degree(), self.base_ring(), libgap_subgroup, ambient=self, category=cat
+        )
 
     from sage.groups.generic import structure_description

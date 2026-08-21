@@ -86,8 +86,17 @@ class DifferentiableVectorBundle(TopologicalVectorBundle):
         sage: M.diff_degree() == E.diff_degree()
         True
     """
-    def __init__(self, rank, name, base_space, field='real', latex_name=None,
-                 category=None, unique_tag=None) -> None:
+
+    def __init__(
+        self,
+        rank,
+        name,
+        base_space,
+        field='real',
+        latex_name=None,
+        category=None,
+        unique_tag=None,
+    ) -> None:
         r"""
         Construct a differentiable vector bundle.
 
@@ -111,10 +120,15 @@ class DifferentiableVectorBundle(TopologicalVectorBundle):
                 category = VectorBundles(base_space, field_c).Smooth()
             else:
                 category = VectorBundles(base_space, field_c).Differentiable()
-        TopologicalVectorBundle.__init__(self, rank, name, base_space,
-                                         field=field,
-                                         latex_name=latex_name,
-                                         category=category)
+        TopologicalVectorBundle.__init__(
+            self,
+            rank,
+            name,
+            base_space,
+            field=field,
+            latex_name=latex_name,
+            category=category,
+        )
         self._diff_degree = diff_degree  # Override diff degree
 
     def _repr_(self) -> str:
@@ -158,6 +172,7 @@ class DifferentiableVectorBundle(TopologicalVectorBundle):
             :class:`~sage.manifolds.differentiable.bundle_connection.BundleConnection`.
         """
         from sage.manifolds.differentiable.bundle_connection import BundleConnection
+
         return BundleConnection(self, name, latex_name)
 
     def characteristic_cohomology_class_ring(self, base=QQ):
@@ -318,20 +333,24 @@ class DifferentiableVectorBundle(TopologicalVectorBundle):
         """
         if self._total_space is None:
             from sage.manifolds.manifold import Manifold
+
             base_space = self._base_space
             dim = base_space._dim + self._rank
             sindex = base_space.start_index()
             self._total_space = Manifold(
-                dim, self._name,
+                dim,
+                self._name,
                 latex_name=self._latex_name,
-                field=self._field, structure='differentiable',
+                field=self._field,
+                structure='differentiable',
                 diff_degree=self._diff_degree,
-                start_index=sindex
+                start_index=sindex,
             )
 
         # TODO: if update_atlas: introduce charts via self._atlas
 
         return self._total_space
+
 
 # *****************************************************************************
 
@@ -427,6 +446,7 @@ class TensorBundle(DifferentiableVectorBundle):
         sage: R_tensor_module is PhiTM.section_module()
         True
     """
+
     def __init__(self, base_space, k, l, dest_map=None) -> None:
         r"""
         Construct a tensor bundle.
@@ -470,13 +490,19 @@ class TensorBundle(DifferentiableVectorBundle):
             latex_name += r'T^*{}'.format(self._ambient_domain._latex_name)
         else:
             name += "T^({},{}){}".format(k, l, self._ambient_domain._name)
-            latex_name += r'T^{(' + str(k) + r',' + str(l) + r')}' + \
-                          self._ambient_domain._latex_name
+            latex_name += (
+                r'T^{('
+                + str(k)
+                + r','
+                + str(l)
+                + r')}'
+                + self._ambient_domain._latex_name
+            )
         # Initialize differentiable vector bundle:
         rank = self._ambient_domain.dim() ** (k + l)
-        DifferentiableVectorBundle.__init__(self, rank, name, base_space,
-                                            field=base_space._field,
-                                            latex_name=latex_name)
+        DifferentiableVectorBundle.__init__(
+            self, rank, name, base_space, field=base_space._field, latex_name=latex_name
+        )
 
     def _init_derived(self):
         r"""
@@ -564,7 +590,9 @@ class TensorBundle(DifferentiableVectorBundle):
             True
         """
         amb_point = self._dest_map(point)
-        return self._ambient_domain.tangent_space(amb_point).tensor_module(*self._tensor_type)
+        return self._ambient_domain.tangent_space(amb_point).tensor_module(
+            *self._tensor_type
+        )
 
     def atlas(self):
         r"""
@@ -631,11 +659,11 @@ class TensorBundle(DifferentiableVectorBundle):
         """
         if domain is None:
             base_space = self.base_space()
-            return base_space.tensor_field_module(self._tensor_type,
-                                                  dest_map=self._dest_map)
+            return base_space.tensor_field_module(
+                self._tensor_type, dest_map=self._dest_map
+            )
         return domain.tensor_field_module(
-            self._tensor_type,
-            dest_map=self._dest_map.restrict(domain)
+            self._tensor_type, dest_map=self._dest_map.restrict(domain)
         )
 
     def section(self, *args, **kwargs):
@@ -726,8 +754,9 @@ class TensorBundle(DifferentiableVectorBundle):
         kwargs['dest_map'] = self._dest_map.restrict(domain)
         return domain.tensor_field(*nargs, **kwargs)
 
-    def set_change_of_frame(self, frame1, frame2, change_of_frame,
-                            compute_inverse=True):
+    def set_change_of_frame(
+        self, frame1, frame2, change_of_frame, compute_inverse=True
+    ):
         r"""
         Relate two vector frames by an automorphism.
 
@@ -782,11 +811,17 @@ class TensorBundle(DifferentiableVectorBundle):
             [0 3]
         """
         if not frame1._domain.is_subset(self._ambient_domain):
-            raise ValueError("the frames must be defined on a subset of "
-                             "the {}".format(self._ambient_domain))
-        frame1._domain.set_change_of_frame(frame1=frame1, frame2=frame2,
-                                           change_of_frame=change_of_frame,
-                                           compute_inverse=compute_inverse)
+            raise ValueError(
+                "the frames must be defined on a subset of the {}".format(
+                    self._ambient_domain
+                )
+            )
+        frame1._domain.set_change_of_frame(
+            frame1=frame1,
+            frame2=frame2,
+            change_of_frame=change_of_frame,
+            compute_inverse=compute_inverse,
+        )
 
     def change_of_frame(self, frame1, frame2):
         r"""
@@ -1108,8 +1143,9 @@ class TensorBundle(DifferentiableVectorBundle):
             sage: X[:]
             (x, y)
         """
-        return self._ambient_domain.chart(coordinates=coordinates, names=names,
-                                          calc_method=calc_method)
+        return self._ambient_domain.chart(
+            coordinates=coordinates, names=names, calc_method=calc_method
+        )
 
     def transitions(self):
         r"""
@@ -1414,8 +1450,9 @@ class TensorBundle(DifferentiableVectorBundle):
         if not args and not kwargs:
             # if no argument is provided, the default basis of the
             # base vector field module is returned:
-            return domain.vector_field_module(dest_map=dest_map,
-                                              force_free=True).basis()
+            return domain.vector_field_module(
+                dest_map=dest_map, force_free=True
+            ).basis()
         kwargs['dest_map'] = dest_map
         return domain.vector_frame(*args, **kwargs)
 
@@ -1548,12 +1585,14 @@ class TensorBundle(DifferentiableVectorBundle):
             Vector frame (M, (e_0,e_1))
         """
         from sage.manifolds.differentiable.vectorframe import VectorFrame
+
         if not isinstance(frame, VectorFrame):
             raise TypeError("{} is not a vector frame".format(frame))
-        if (not frame._domain.is_subset(self._base_space) or
-                frame._dest_map != self._dest_map):
-            raise ValueError("the frame must be defined on " +
-                             "the {}".format(self))
+        if (
+            not frame._domain.is_subset(self._base_space)
+            or frame._dest_map != self._dest_map
+        ):
+            raise ValueError("the frame must be defined on " + "the {}".format(self))
         if self._dest_map.is_identity():
             self._base_space.set_default_frame(frame)
         else:

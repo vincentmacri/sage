@@ -166,8 +166,18 @@ class NumberField_relative(NumberField_generic):
         sage: loads(dumps(M)) is M
         True
     """
-    def __init__(self, base, polynomial, name,
-                 latex_name=None, names=None, check=True, embedding=None, structure=None):
+
+    def __init__(
+        self,
+        base,
+        polynomial,
+        name,
+        latex_name=None,
+        names=None,
+        check=True,
+        embedding=None,
+        structure=None,
+    ):
         r"""
         Initialization.
 
@@ -258,7 +268,9 @@ class NumberField_relative(NumberField_generic):
             ValueError: base field and extension cannot have the same name 'a'
         """
         if embedding is not None:
-            raise NotImplementedError("Embeddings not implemented for relative number fields")
+            raise NotImplementedError(
+                "Embeddings not implemented for relative number fields"
+            )
         if names is not None:
             name = names
         if not isinstance(base, NumberField_base):
@@ -269,7 +281,9 @@ class NumberField_relative(NumberField_generic):
             except (AttributeError, TypeError):
                 raise TypeError("polynomial (=%r) must be a polynomial" % polynomial)
         if name == base.variable_name():
-            raise ValueError("base field and extension cannot have the same name %r" % name)
+            raise ValueError(
+                "base field and extension cannot have the same name %r" % name
+            )
         if polynomial.parent().base_ring() != base:
             polynomial = polynomial.change_ring(base)
             # raise ValueError("The polynomial must be defined over the base field")
@@ -294,14 +308,22 @@ class NumberField_relative(NumberField_generic):
         self._element_class = number_field_element.NumberFieldElement_relative
 
         if check and not self.pari_relative_polynomial().polisirreducible():
-            raise ValueError("defining polynomial (%s) must be irreducible" % polynomial)
+            raise ValueError(
+                "defining polynomial (%s) must be irreducible" % polynomial
+            )
 
         names = (name,) + base.variable_names()
         self._assign_names(tuple(names), normalize=False)
 
-        NumberField_generic.__init__(self, self.absolute_polynomial(), name=None,
-                                     latex_name=latex_name, check=False,
-                                     embedding=embedding, structure=structure)
+        NumberField_generic.__init__(
+            self,
+            self.absolute_polynomial(),
+            name=None,
+            latex_name=latex_name,
+            check=False,
+            embedding=embedding,
+            structure=structure,
+        )
 
         self._zero_element = self(0)
         self._one_element = self(1)
@@ -373,7 +395,9 @@ class NumberField_relative(NumberField_generic):
         to_K = K.structure()[1]
         old_poly = self.relative_polynomial()
         new_poly = PolynomialRing(K, 'x')([to_K(c) for c in old_poly])
-        return K.extension(new_poly, names=names[0], structure=structure.NameChange(self))
+        return K.extension(
+            new_poly, names=names[0], structure=structure.NameChange(self)
+        )
 
     def subfields(self, degree=0, name=None):
         """
@@ -431,7 +455,9 @@ class NumberField_relative(NumberField_generic):
         for K, from_K, to_K in abs_subfields:
             from_K = K.hom([from_abs(from_K(K.gen()))])
             if to_K is not None:
-                to_K = RelativeNumberFieldHomomorphism_from_abs(self.Hom(K), to_K*to_abs)
+                to_K = RelativeNumberFieldHomomorphism_from_abs(
+                    self.Hom(K), to_K * to_abs
+                )
             ans.append((K, from_K, to_K))
         ans = Sequence(ans, immutable=True, cr=bool(ans))
         return ans
@@ -473,8 +499,7 @@ class NumberField_relative(NumberField_generic):
             sage: NumberField([x, x^2 - 3], 'a').gens()
             (0, a1)
         """
-        return ((self._gen_relative(),) +
-                tuple(map(self, self.base_field().gens())))
+        return (self._gen_relative(),) + tuple(map(self, self.base_field().gens()))
 
     def _first_ngens(self, n):
         """
@@ -554,7 +579,9 @@ class NumberField_relative(NumberField_generic):
         """
         return self.absolute_field('a').galois_closure(names=names)
 
-    def composite_fields(self, other, names=None, both_maps=False, preserve_embedding=True):
+    def composite_fields(
+        self, other, names=None, both_maps=False, preserve_embedding=True
+    ):
         """
         List of all possible composite number fields formed from ``self`` and
         ``other``, together with (optionally) embeddings into the compositum;
@@ -615,7 +642,9 @@ class NumberField_relative(NumberField_generic):
             names = sv + (ov if ov != sv else "")
 
         self_abs = self.absolute_field('w')
-        abs_composites = self_abs.composite_fields(other, names=names, both_maps=both_maps)
+        abs_composites = self_abs.composite_fields(
+            other, names=names, both_maps=both_maps
+        )
 
         m = self.absolute_degree()
 
@@ -631,13 +660,21 @@ class NumberField_relative(NumberField_generic):
 
         rets = []
         for F, self_abs_to_F, other_to_F, k in abs_composites:
-            self_to_F = RelativeNumberFieldHomomorphism_from_abs(self.Hom(F), self_abs_to_F*to_self_abs)
+            self_to_F = RelativeNumberFieldHomomorphism_from_abs(
+                self.Hom(F), self_abs_to_F * to_self_abs
+            )
             if F.absolute_degree() == m:
                 if other.is_absolute():
-                    other_to_F = other.hom([(from_self_abs*(~self_abs_to_F)*other_to_F)(other.gen())])
+                    other_to_F = other.hom(
+                        [(from_self_abs * (~self_abs_to_F) * other_to_F)(other.gen())]
+                    )
                 else:
-                    other_to_F = RelativeNumberFieldHomomorphism_from_abs(self.Hom(self), from_self_abs*(~self_abs_to_F)*other_to_F)
-                self_to_F = RelativeNumberFieldHomomorphism_from_abs(self.Hom(self), from_self_abs)
+                    other_to_F = RelativeNumberFieldHomomorphism_from_abs(
+                        self.Hom(self), from_self_abs * (~self_abs_to_F) * other_to_F
+                    )
+                self_to_F = RelativeNumberFieldHomomorphism_from_abs(
+                    self.Hom(self), from_self_abs
+                )
                 F = self
             rets.append([F, self_to_F, other_to_F, None])
         return rets
@@ -684,7 +721,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field
             you must use relative_degree or absolute_degree as appropriate
         """
-        raise NotImplementedError("For a relative number field you must use relative_degree or absolute_degree as appropriate")
+        raise NotImplementedError(
+            "For a relative number field you must use relative_degree or absolute_degree as appropriate"
+        )
 
     @cached_method
     def _maximal_order(self, v=(), assume_maximal='non-maximal-non-unique'):
@@ -699,9 +738,13 @@ class NumberField_relative(NumberField_generic):
             sage: K.maximal_order() is K.maximal_order()  # indirect doctest
             True
         """
-        absolute_order = self.absolute_field('z').maximal_order(v=v, assume_maximal=assume_maximal)
+        absolute_order = self.absolute_field('z').maximal_order(
+            v=v, assume_maximal=assume_maximal
+        )
 
-        return RelativeOrder(self, absolute_order, is_maximal=assume_maximal, is_maximal_at=v)
+        return RelativeOrder(
+            self, absolute_order, is_maximal=assume_maximal, is_maximal_at=v
+        )
 
     def _repr_(self) -> str:
         """
@@ -720,7 +763,10 @@ class NumberField_relative(NumberField_generic):
             Number Field in b with defining polynomial x^7 + 3
         """
 
-        return "Number Field in %s with defining polynomial %s over its base field" % (self.variable_name(), self.relative_polynomial())
+        return "Number Field in %s with defining polynomial %s over its base field" % (
+            self.variable_name(),
+            self.relative_polynomial(),
+        )
 
     def _Hom_(self, codomain, category=None):
         """
@@ -746,9 +792,14 @@ class NumberField_relative(NumberField_generic):
             True
         """
         if not is_NumberFieldHomsetCodomain(codomain):
-            raise TypeError("{} is not suitable as codomain for homomorphisms from {}".format(codomain, self))
+            raise TypeError(
+                "{} is not suitable as codomain for homomorphisms from {}".format(
+                    codomain, self
+                )
+            )
 
         from sage.rings.number_field.homset import RelativeNumberFieldHomset
+
         return RelativeNumberFieldHomset(self, codomain, category)
 
     def _latex_(self):
@@ -765,8 +816,11 @@ class NumberField_relative(NumberField_generic):
             '( \\Bold{Q}[a]/(a^{3} - 2) )[b]/(b^{2} + b + a)'
         """
         latex_name = self.latex_variable_names()[0]
-        return "( %s )[%s]/(%s)" % (latex(self.base_field()), latex_name,
-                              self.relative_polynomial()._latex_(latex_name))
+        return "( %s )[%s]/(%s)" % (
+            latex(self.base_field()),
+            latex_name,
+            self.relative_polynomial()._latex_(latex_name),
+        )
 
     def _coerce_from_other_number_field(self, x):
         """
@@ -948,8 +1002,8 @@ class NumberField_relative(NumberField_generic):
                 x = R(x.list())
             # this should work for base_ring()['x'] and QQ['base']['ext']
             x = self.polynomial_ring()(x)
-            f = R( [ K(coeff) for coeff in x.list() ] )
-            return self._element_class(self, f(self.gen()).polynomial() )
+            f = R([K(coeff) for coeff in x.list()])
+            return self._element_class(self, f(self.gen()).polynomial())
 
         # Anything else: use the code for generic number fields
         return super()._convert_non_number_field_element(x)
@@ -1030,8 +1084,10 @@ class NumberField_relative(NumberField_generic):
         # to an absolute element.
         if isinstance(x, pari_gen) and x.type() == "t_POLMOD":
             modulus = x.mod()
-            if (modulus == self.pari_relative_polynomial()
-                or modulus == self.pari_absolute_base_polynomial()):
+            if (
+                modulus == self.pari_relative_polynomial()
+                or modulus == self.pari_absolute_base_polynomial()
+            ):
                 x = self._pari_rnfeq()._eltreltoabs(x.liftpol())
                 check = False
         return NumberField_generic._element_constructor_(self, x, check=check)
@@ -1160,7 +1216,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field L you must use
             either L.is_galois_relative() or L.is_galois_absolute() as appropriate
         """
-        raise NotImplementedError("For a relative number field L you must use either L.is_galois_relative() or L.is_galois_absolute() as appropriate")
+        raise NotImplementedError(
+            "For a relative number field L you must use either L.is_galois_relative() or L.is_galois_absolute() as appropriate"
+        )
 
     def is_galois_relative(self) -> bool:
         r"""
@@ -1204,7 +1262,10 @@ class NumberField_relative(NumberField_generic):
             False
         """
         f = self.absolute_polynomial()
-        return f.galois_group(pari_group=f.degree() <= 11).order() == self.absolute_degree()
+        return (
+            f.galois_group(pari_group=f.degree() <= 11).order()
+            == self.absolute_degree()
+        )
 
     def is_isomorphic_relative(self, other, base_isom=None) -> bool:
         r"""
@@ -1276,11 +1337,19 @@ class NumberField_relative(NumberField_generic):
             o_base_field = other.base_field()
             if base_isom is None:
                 if s_base_field is o_base_field:
-                    return self.relative_degree() == other.relative_degree() and len(self.relative_polynomial().roots(other)) > 0
-                raise ValueError("other does not have the same base field as self, so an isomorphism from self's base_field to other's base_field must be provided using the base_isom parameter.")
+                    return (
+                        self.relative_degree() == other.relative_degree()
+                        and len(self.relative_polynomial().roots(other)) > 0
+                    )
+                raise ValueError(
+                    "other does not have the same base field as self, so an isomorphism from self's base_field to other's base_field must be provided using the base_isom parameter."
+                )
             if s_base_field.absolute_degree() != o_base_field.absolute_degree():
                 raise ValueError("The base fields are not isomorphic.")
-            if base_isom.domain() is s_base_field and base_isom.codomain() is o_base_field:
+            if (
+                base_isom.domain() is s_base_field
+                and base_isom.codomain() is o_base_field
+            ):
                 if s_base_field.absolute_degree() != o_base_field.absolute_degree():
                     raise ValueError("The base fields are not isomorphic.")
                 if not self.relative_degree() == other.relative_degree():
@@ -1288,7 +1357,9 @@ class NumberField_relative(NumberField_generic):
                 R = PolynomialRing(o_base_field, 'x')
                 F = R([base_isom(_) for _ in self.relative_polynomial()])
                 return len(F.roots(other)) > 0
-            raise ValueError("base_isom is not a homomorphism from self's base_field to other's base_field")
+            raise ValueError(
+                "base_isom is not a homomorphism from self's base_field to other's base_field"
+            )
         raise ValueError("other must be a relative number field.")
 
     def is_CM_extension(self) -> bool:
@@ -1328,7 +1399,7 @@ class NumberField_relative(NumberField_generic):
 
         try:
             return self.__is_CM_extension
-        except (AttributeError):
+        except AttributeError:
             pass
 
         if self.relative_degree() == 2:
@@ -1336,12 +1407,17 @@ class NumberField_relative(NumberField_generic):
                 if self.is_totally_imaginary():
                     self.__is_CM_extension = True
                     self.__is_CM = True
-                    self.__max_tot_real_sub = [self.base_field(), self._internal_coerce_map_from(self.base_field())]
+                    self.__max_tot_real_sub = [
+                        self.base_field(),
+                        self._internal_coerce_map_from(self.base_field()),
+                    ]
                     return True
         self.__is_CM_extension = False
         return False
 
-    @cached_method(key=lambda self, base, basis, map: (base or self.base_ring(), basis, map))
+    @cached_method(
+        key=lambda self, base, basis, map: (base or self.base_ring(), basis, map)
+    )
     def free_module(self, base=None, basis=None, map=True):
         """
         Return a vector space over a specified subfield that is isomorphic to this number field,
@@ -1375,14 +1451,14 @@ class NumberField_relative(NumberField_generic):
         if base is None:
             base = self.base_field()
         if base is self.base_field():
-            V = self.base_field()**self.relative_degree()
+            V = self.base_field() ** self.relative_degree()
             if not map:
                 return V
             fr = maps.MapRelativeVectorSpaceToRelativeNumberField(V, self)
             to = maps.MapRelativeNumberFieldToRelativeVectorSpace(self, V)
         elif base is QQ:
             if not map:
-                return QQ**self.absolute_degree()
+                return QQ ** self.absolute_degree()
             K = self.absolute_field('a')
             from_K, to_K = K.structure()
             V, from_V, to_V = K.free_module()
@@ -1473,7 +1549,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field L you must use either
             L.relative_vector_space() or L.absolute_vector_space() as appropriate
         """
-        raise NotImplementedError("For a relative number field L you must use either L.relative_vector_space() or L.absolute_vector_space() as appropriate")
+        raise NotImplementedError(
+            "For a relative number field L you must use either L.relative_vector_space() or L.absolute_vector_space() as appropriate"
+        )
 
     def absolute_base_field(self):
         r"""
@@ -1624,8 +1702,9 @@ class NumberField_relative(NumberField_generic):
             # PARI's rnfpolredbest() does not always return a
             # polynomial with integral coefficients in this case.
             from sage.libs.pari import pari
+
             g = f.variable()
-            alpha = -f[0]/f[1]
+            alpha = -f[0] / f[1]
             beta = pari(0).Mod(f)
         else:
             g, alpha = self._pari_base_nf().rnfpolredbest(f, flag=1)
@@ -1660,7 +1739,9 @@ class NumberField_relative(NumberField_generic):
             b
         """
         alpha = self._pari_relative_structure()[1].liftpol()
-        return self._element_constructor_(self._pari_rnfeq()._eltreltoabs(alpha), check=False)
+        return self._element_constructor_(
+            self._pari_rnfeq()._eltreltoabs(alpha), check=False
+        )
 
     @cached_method
     def pari_rnf(self):
@@ -1830,7 +1911,11 @@ class NumberField_relative(NumberField_generic):
             sage: to_L(b)^2
             -2
         """
-        return NumberField(self.absolute_polynomial(), names, structure=structure.AbsoluteFromRelative(self))
+        return NumberField(
+            self.absolute_polynomial(),
+            names,
+            structure=structure.AbsoluteFromRelative(self),
+        )
 
     def absolute_polynomial_ntl(self):
         """
@@ -1851,7 +1936,9 @@ class NumberField_relative(NumberField_generic):
             self.__abs_denominator_ntl = ntl_ZZ()
             den = self.absolute_polynomial().denominator()
             self.__abs_denominator_ntl.set_from_sage_int(ZZ(den))
-            self.__abs_polynomial_ntl = ntl_ZZX((self.absolute_polynomial()*den).list())
+            self.__abs_polynomial_ntl = ntl_ZZX(
+                (self.absolute_polynomial() * den).list()
+            )
         return (self.__abs_polynomial_ntl, self.__abs_denominator_ntl)
 
     @cached_method
@@ -1951,7 +2038,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field L you must use either
             L.relative_polynomial() or L.absolute_polynomial() as appropriate
         """
-        raise NotImplementedError("For a relative number field L you must use either L.relative_polynomial() or L.absolute_polynomial() as appropriate")
+        raise NotImplementedError(
+            "For a relative number field L you must use either L.relative_polynomial() or L.absolute_polynomial() as appropriate"
+        )
 
     def base_field(self):
         """
@@ -2046,7 +2135,9 @@ class NumberField_relative(NumberField_generic):
         # then it is most natural, so we put it first.
         put_natural_embedding_first(v)
 
-        self.__embeddings[K] = Sequence(v, cr=bool(v), immutable=True, check=False, universe=self.Hom(K))
+        self.__embeddings[K] = Sequence(
+            v, cr=bool(v), immutable=True, check=False, universe=self.Hom(K)
+        )
         return self.__embeddings[K]
 
     def automorphisms(self):
@@ -2113,11 +2204,17 @@ class NumberField_relative(NumberField_generic):
 
         a = self_into_L(self.gen())
         abs_base_gens = [self_into_L(_) for _ in self.base_field().gens()]
-        v = sorted([self.hom([L_into_self(aa(a))]) for aa in aas
-                    if all(aa(g) == g for g in abs_base_gens)])
+        v = sorted(
+            [
+                self.hom([L_into_self(aa(a))])
+                for aa in aas
+                if all(aa(g) == g for g in abs_base_gens)
+            ]
+        )
         put_natural_embedding_first(v)
-        self.__automorphisms = Sequence(v, cr=bool(v), immutable=True,
-                                        check=False, universe=self.Hom(self))
+        self.__automorphisms = Sequence(
+            v, cr=bool(v), immutable=True, check=False, universe=self.Hom(self)
+        )
         return self.__automorphisms
 
     def logarithmic_embedding(self, prec=53):
@@ -2159,6 +2256,7 @@ class NumberField_relative(NumberField_generic):
             (2.19722457733622, 2.19722457733622, 2.19722457733622, 2.19722457733622,
             2.19722457733622, 2.19722457733622, 2.19722457733622, 2.19722457733622)
         """
+
         def closure_map(x, prec=53):
             """
             The function closure of the logarithmic embedding.
@@ -2169,6 +2267,7 @@ class NumberField_relative(NumberField_generic):
             r = r1 + r2 - 1
 
             from sage.rings.real_mpfr import RealField
+
             Reals = RealField(prec)
 
             if x == 0:
@@ -2269,7 +2368,7 @@ class NumberField_relative(NumberField_generic):
         """
         I = self.absolute_different()
         J = self.ideal(self.base_field().absolute_different().gens())
-        return I/J
+        return I / J
 
     def different(self):
         """
@@ -2287,7 +2386,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field you must use
             relative_different or absolute_different as appropriate
         """
-        raise NotImplementedError("For a relative number field you must use relative_different or absolute_different as appropriate")
+        raise NotImplementedError(
+            "For a relative number field you must use relative_different or absolute_different as appropriate"
+        )
 
     def absolute_discriminant(self, v=None):
         r"""
@@ -2370,7 +2471,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field you must use
             relative_discriminant or absolute_discriminant as appropriate
         """
-        raise NotImplementedError("For a relative number field you must use relative_discriminant or absolute_discriminant as appropriate")
+        raise NotImplementedError(
+            "For a relative number field you must use relative_discriminant or absolute_discriminant as appropriate"
+        )
 
     def disc(self):
         """
@@ -2388,7 +2491,9 @@ class NumberField_relative(NumberField_generic):
             NotImplementedError: For a relative number field you must use
             relative_discriminant or absolute_discriminant as appropriate
         """
-        raise NotImplementedError("For a relative number field you must use relative_discriminant or absolute_discriminant as appropriate")
+        raise NotImplementedError(
+            "For a relative number field you must use relative_discriminant or absolute_discriminant as appropriate"
+        )
 
     def order(self, *gens, **kwds):
         r"""
@@ -2683,7 +2788,9 @@ class NumberField_relative(NumberField_generic):
         return from_abs(abs.uniformizer(P.absolute_ideal(), others=others))
 
 
-def NumberField_relative_v1(base_field, poly, name, latex_name, canonical_embedding=None):
+def NumberField_relative_v1(
+    base_field, poly, name, latex_name, canonical_embedding=None
+):
     """
     Used for unpickling old pickles.
 
@@ -2694,8 +2801,13 @@ def NumberField_relative_v1(base_field, poly, name, latex_name, canonical_embedd
         sage: NumberField_relative_v1(CyclotomicField(3), x^2 + 7, 'a', 'a')
         Number Field in a with defining polynomial x^2 + 7 over its base field
     """
-    return NumberField(poly.change_ring(base_field), name, check=False,
-                       embedding=canonical_embedding, latex_name=latex_name)
+    return NumberField(
+        poly.change_ring(base_field),
+        name,
+        check=False,
+        embedding=canonical_embedding,
+        latex_name=latex_name,
+    )
 
 
 NumberField_extension_v1 = NumberField_relative_v1  # historical reasons only

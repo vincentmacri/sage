@@ -15,13 +15,19 @@ Symplectic Linear Groups with GAP
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.matrix_gps.symplectic import SymplecticMatrixGroup_generic
 from sage.misc.cachefunc import cached_method
 
 
-class SymplecticMatrixGroup_gap(SymplecticMatrixGroup_generic, NamedMatrixGroup_gap, FinitelyGeneratedMatrixGroup_gap):
+class SymplecticMatrixGroup_gap(
+    SymplecticMatrixGroup_generic,
+    NamedMatrixGroup_gap,
+    FinitelyGeneratedMatrixGroup_gap,
+):
     r"""
     Symplectic group in GAP.
 

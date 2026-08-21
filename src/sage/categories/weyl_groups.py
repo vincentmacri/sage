@@ -147,6 +147,7 @@ class WeylGroups(Category_singleton):
             # Do not remove this line which makes sure the pieri factor
             # code is properly inserted inside the Cartan Types
             import sage.combinat.root_system.pieri_factors
+
             assert sage.combinat.root_system.pieri_factors
             ct = self.cartan_type()
             if hasattr(ct, "PieriFactors"):
@@ -210,22 +211,30 @@ class WeylGroups(Category_singleton):
             - [JS2021]_
             """
             from sage.modules.free_module_element import vector
+
             if side == 'upper':
-                roots = [vector((x * r * x.inverse()).reflection_to_root().to_ambient())
-                         for z, r in x.bruhat_upper_covers_reflections()
-                         if z.bruhat_le(y)]
+                roots = [
+                    vector((x * r * x.inverse()).reflection_to_root().to_ambient())
+                    for z, r in x.bruhat_upper_covers_reflections()
+                    if z.bruhat_le(y)
+                ]
             elif side == 'lower':
-                roots = [vector((y * r * y.inverse()).reflection_to_root().to_ambient())
-                         for z, r in y.bruhat_lower_covers_reflections()
-                         if x.bruhat_le(z)]
+                roots = [
+                    vector((y * r * y.inverse()).reflection_to_root().to_ambient())
+                    for z, r in y.bruhat_lower_covers_reflections()
+                    if x.bruhat_le(z)
+                ]
             else:
                 raise ValueError("side must be either 'upper' or 'lower'")
 
             from sage.geometry.polyhedron.constructor import Polyhedron
-            return Polyhedron(vertices=[vector([0] * self.degree())],
-                              rays=roots,
-                              ambient_dim=self.degree(),
-                              backend=backend)
+
+            return Polyhedron(
+                vertices=[vector([0] * self.degree())],
+                rays=roots,
+                ambient_dim=self.degree(),
+                backend=backend,
+            )
 
         @cached_method
         def quantum_bruhat_graph(self, index_set=()):
@@ -267,7 +276,9 @@ class WeylGroups(Category_singleton):
                 ValueError: the Cartan type ['A', 3, 1] is not finite
             """
             if not self.cartan_type().is_finite():
-                raise ValueError("the Cartan type {} is not finite".format(self.cartan_type()))
+                raise ValueError(
+                    "the Cartan type {} is not finite".format(self.cartan_type())
+                )
 
             # This is a modified form of quantum_bruhat_successors.
             # It does not do any error checking and also is more efficient
@@ -281,9 +292,11 @@ class WeylGroups(Category_singleton):
             for alpha in NPR:
                 ref = alpha.associated_reflection()
                 alphacheck = alpha.associated_coroot()
-                NPR_data[alpha] = [self.from_reduced_word(ref),  # the element
-                                   len(ref) == double_rho.scalar(alphacheck) - 1,  # is_quantum
-                                   NPR_sum.scalar(alphacheck)]  # the scalar
+                NPR_data[alpha] = [
+                    self.from_reduced_word(ref),  # the element
+                    len(ref) == double_rho.scalar(alphacheck) - 1,  # is_quantum
+                    NPR_sum.scalar(alphacheck),
+                ]  # the scalar
             # We also create a temporary cache of lengths as they are
             #   relatively expensive to compute and needed frequently
             visited = {}
@@ -295,6 +308,7 @@ class WeylGroups(Category_singleton):
                     return len_cache[x]
                 len_cache[x] = x.length()
                 return len_cache[x]
+
             while todo:
                 x = todo.pop()
                 w_length_plus_one = length(x) + 1
@@ -315,13 +329,16 @@ class WeylGroups(Category_singleton):
                 visited[x] = adj
 
             from sage.graphs.digraph import DiGraph
-            return DiGraph(visited,
-                           name="Parabolic Quantum Bruhat Graph of %s for nodes %s" % (self, index_set),
-                           format='dict_of_dicts',
-                           data_structure='static_sparse')
+
+            return DiGraph(
+                visited,
+                name="Parabolic Quantum Bruhat Graph of %s for nodes %s"
+                % (self, index_set),
+                format='dict_of_dicts',
+                data_structure='static_sparse',
+            )
 
     class ElementMethods:
-
         def is_pieri_factor(self):
             r"""
             Return whether ``self`` is a Pieri factor, as used for
@@ -415,6 +432,7 @@ class WeylGroups(Category_singleton):
             """
             if max_length is None:
                 from sage.rings.infinity import infinity
+
                 max_length = infinity
             pieri_factors = self.parent().pieri_factors()
 
@@ -490,18 +508,28 @@ class WeylGroups(Category_singleton):
             """
             if max_length is None:
                 from sage.rings.infinity import infinity
+
                 max_length = infinity
             W = self.parent()
             pieri_factors = W.pieri_factors()
             from sage.rings.rational_field import QQ
-            R = QQ[','.join('x%s' % l for l in range(1, pieri_factors.max_length() + 1))]
+
+            R = QQ[
+                ','.join('x%s' % l for l in range(1, pieri_factors.max_length() + 1))
+            ]
             x = R.gens()
             if self.is_one():
                 return R.one()
 
-            return R(sum(2**(pieri_factors.stanley_symm_poly_weight(u)) * x[u.length() - 1] * v.stanley_symmetric_function_as_polynomial(max_length=u.length())
-                         for (u, v) in self.left_pieri_factorizations(max_length)
-                         if u != W.one()))
+            return R(
+                sum(
+                    2 ** (pieri_factors.stanley_symm_poly_weight(u))
+                    * x[u.length() - 1]
+                    * v.stanley_symmetric_function_as_polynomial(max_length=u.length())
+                    for (u, v) in self.left_pieri_factorizations(max_length)
+                    if u != W.one()
+                )
+            )
 
         def stanley_symmetric_function(self):
             r"""
@@ -576,7 +604,9 @@ class WeylGroups(Category_singleton):
             from sage.combinat.sf.sf import SymmetricFunctions
 
             m = SymmetricFunctions(QQ).monomial()
-            return m.from_polynomial_exp(self.stanley_symmetric_function_as_polynomial())
+            return m.from_polynomial_exp(
+                self.stanley_symmetric_function_as_polynomial()
+            )
 
         @cached_in_parent_method
         def reflection_to_root(self):
@@ -601,11 +631,21 @@ class WeylGroups(Category_singleton):
             if i is None:
                 raise ValueError("{} is not a reflection".format(self))
             if self == self.parent().simple_reflection(i):
-                return self.parent().cartan_type().root_system().root_lattice().simple_root(i)
+                return (
+                    self.parent()
+                    .cartan_type()
+                    .root_system()
+                    .root_lattice()
+                    .simple_root(i)
+                )
             rsi = self.apply_simple_reflection(i)
             if not rsi.has_descent(i, side='left'):
                 raise ValueError("{} is not a reflection".format(self))
-            return rsi.apply_simple_reflection(i, side='left').reflection_to_root().simple_reflection(i)
+            return (
+                rsi.apply_simple_reflection(i, side='left')
+                .reflection_to_root()
+                .simple_reflection(i)
+            )
 
         @cached_in_parent_method
         def reflection_to_coroot(self):
@@ -630,11 +670,21 @@ class WeylGroups(Category_singleton):
             if i is None:
                 raise ValueError("{} is not a reflection".format(self))
             if self == self.parent().simple_reflection(i):
-                return self.parent().cartan_type().root_system().root_lattice().simple_coroot(i)
+                return (
+                    self.parent()
+                    .cartan_type()
+                    .root_system()
+                    .root_lattice()
+                    .simple_coroot(i)
+                )
             rsi = self.apply_simple_reflection(i)
             if not rsi.has_descent(i, side='left'):
                 raise ValueError("{} is not a reflection".format(self))
-            return rsi.apply_simple_reflection(i, side='left').reflection_to_coroot().simple_reflection(i)
+            return (
+                rsi.apply_simple_reflection(i, side='left')
+                .reflection_to_coroot()
+                .simple_reflection(i)
+            )
 
         def inversions(self, side='right', inversion_type='reflections'):
             """
@@ -719,15 +769,18 @@ class WeylGroups(Category_singleton):
                 Empty hyperplane arrangement of dimension 3
             """
             inv = self.inversions(side=side, inversion_type='roots')
-            from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangements
+            from sage.geometry.hyperplane_arrangement.arrangement import (
+                HyperplaneArrangements,
+            )
+
             I = self.parent().cartan_type().index_set()
             from sage.rings.rational_field import QQ
+
             H = HyperplaneArrangements(QQ, tuple(['a{}'.format(i) for i in I]))
             gens = H.gens()
             if not inv:
                 return H()
-            return H([sum(c * gens[I.index(i)] for (i, c) in root)
-                      for root in inv])
+            return H([sum(c * gens[I.index(i)] for (i, c) in root) for root in inv])
 
         def bruhat_lower_covers_coroots(self):
             r"""
@@ -749,8 +802,10 @@ class WeylGroups(Category_singleton):
                 [(s1*s2*s1, alphacheck[1] + alphacheck[2] + alphacheck[3]),
                  (s3*s2*s1, alphacheck[2]), (s3*s1*s2, alphacheck[1])]
             """
-            return [(x[0], x[1].reflection_to_coroot())
-                    for x in self.bruhat_lower_covers_reflections()]
+            return [
+                (x[0], x[1].reflection_to_coroot())
+                for x in self.bruhat_lower_covers_reflections()
+            ]
 
         def bruhat_upper_covers_coroots(self):
             r"""
@@ -772,10 +827,14 @@ class WeylGroups(Category_singleton):
                  (s3*s4*s1*s2*s1, alphacheck[4]),
                  (s4*s3*s1*s2*s1, alphacheck[1] + alphacheck[2] + alphacheck[3] + alphacheck[4])]
             """
-            return [(x[0], x[1].reflection_to_coroot())
-                    for x in self.bruhat_upper_covers_reflections()]
+            return [
+                (x[0], x[1].reflection_to_coroot())
+                for x in self.bruhat_upper_covers_reflections()
+            ]
 
-        def quantum_bruhat_successors(self, index_set=None, roots=False, quantum_only=False):
+        def quantum_bruhat_successors(
+            self, index_set=None, roots=False, quantum_only=False
+        ):
             r"""
             Return the successors of ``self`` in the quantum Bruhat graph
             on the parabolic quotient of the Weyl group determined by the
@@ -826,14 +885,20 @@ class WeylGroups(Category_singleton):
             """
             W = self.parent()
             if not W.cartan_type().is_finite():
-                raise ValueError("the Cartan type {} is not finite".format(W.cartan_type()))
+                raise ValueError(
+                    "the Cartan type {} is not finite".format(W.cartan_type())
+                )
             if index_set is None:
                 index_set = []
             else:
                 index_set = list(index_set)
             index_set = tuple(index_set)
             if self != self.coset_representative(index_set):
-                raise ValueError("{} is not of minimum length in its coset of the parabolic subgroup generated by the reflections {}".format(self, index_set))
+                raise ValueError(
+                    "{} is not of minimum length in its coset of the parabolic subgroup generated by the reflections {}".format(
+                        self, index_set
+                    )
+                )
             lattice = W.cartan_type().root_system().root_lattice()
             w_length_plus_one = self.length() + 1
             successors = []
@@ -845,7 +910,14 @@ class WeylGroups(Category_singleton):
                         successors.append((wr, alpha))
                     else:
                         successors.append(wr)
-                elif alpha.quantum_root() and wrc.length() == w_length_plus_one - lattice.nonparabolic_positive_root_sum(index_set).scalar(alpha.associated_coroot()):
+                elif (
+                    alpha.quantum_root()
+                    and wrc.length()
+                    == w_length_plus_one
+                    - lattice.nonparabolic_positive_root_sum(index_set).scalar(
+                        alpha.associated_coroot()
+                    )
+                ):
                     if roots:
                         successors.append((wrc, alpha))
                     else:

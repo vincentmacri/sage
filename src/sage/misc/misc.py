@@ -48,12 +48,10 @@ import warnings
 from sage.env import DOT_SAGE, HOSTNAME
 from sage.misc.lazy_import import lazy_import
 
-lazy_import("sage.combinat.subset", ["powerset", "subsets", "uniq"],
-            deprecation=35564)
+lazy_import("sage.combinat.subset", ["powerset", "subsets", "uniq"], deprecation=35564)
 
 lazy_import(
-    "sage.misc.timing", ["cputime", "GlobalCputime", "walltime"],
-    deprecation=35816
+    "sage.misc.timing", ["cputime", "GlobalCputime", "walltime"], deprecation=35816
 )
 
 LOCAL_IDENTIFIER = '%s.%s' % (HOSTNAME, os.getpid())
@@ -362,6 +360,7 @@ def nest(f, n, x):
 #################################################################
 # The A \ b operator has been removed after issue #36394
 #################################################################
+
 
 #################################################################
 # is_iterator function

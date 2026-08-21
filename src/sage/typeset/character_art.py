@@ -35,7 +35,6 @@ MAX_WIDTH = None
 
 
 class CharacterArt(SageObject):
-
     def __init__(self, lines=[], breakpoints=[], baseline=None) -> None:
         r"""
         Abstract base class for character art.
@@ -217,6 +216,7 @@ class CharacterArt(SageObject):
             False
         """
         from sage.doctest import DOCTEST_MODE
+
         if DOCTEST_MODE:
             return False
         try:
@@ -240,8 +240,10 @@ class CharacterArt(SageObject):
         import fcntl
         import termios
         import struct
-        rc = fcntl.ioctl(0, termios.TIOCGWINSZ,
-                         struct.pack('HHHH', sys.stdout.fileno(), 0, 0, 0))
+
+        rc = fcntl.ioctl(
+            0, termios.TIOCGWINSZ, struct.pack('HHHH', sys.stdout.fileno(), 0, 0, 0)
+        )
         h, w, hp, wp = struct.unpack('HHHH', rc)
         return w
 
@@ -264,6 +266,7 @@ class CharacterArt(SageObject):
             sage: list(ascii_art(*(['a'] * 90))._splitting_points(20, offset=5))
             [15, 35, 55, 75, 90]
         """
+
         # We implement a custom iterator instead of repeatedly using
         # itertools.chain to prepend elements in order to avoid quadratic time
         # complexity
@@ -271,6 +274,7 @@ class CharacterArt(SageObject):
             """
             Iterator with support for prepending of elements.
             """
+
             def __init__(self, stack):
                 self._stack = [iter(elems) for elems in stack]
 
@@ -304,8 +308,9 @@ class CharacterArt(SageObject):
                 except StopIteration:
                     bp_next = None
                 if bp_next is None or isinstance(bp_next, tuple):
-                    raise ValueError("nested structure must be followed by a "
-                                     "regular breakpoint")
+                    raise ValueError(
+                        "nested structure must be followed by a regular breakpoint"
+                    )
                 if bp_next - idx > size:
                     # substructure is too wide for the current line, so force a
                     # line break
@@ -313,8 +318,9 @@ class CharacterArt(SageObject):
                         yield bp
                         idx = bp
                     breakpoints.prepend([bp_next])
-                    breakpoints.prepend(_shifted_breakpoints(sub_breakpoints,
-                                                             sub_offset))
+                    breakpoints.prepend(
+                        _shifted_breakpoints(sub_breakpoints, sub_offset)
+                    )
                     # at this point, we do not know the next breakpoint yet,
                     # but have already yielded bp, so discard it
                     bp = None
@@ -357,8 +363,11 @@ class CharacterArt(SageObject):
         for bp in self._splitting_points(size):
             if bp - idx > size:
                 import warnings
-                warnings.warn("the console size is smaller than the pretty "
-                              "representation of the object")
+
+                warnings.warn(
+                    "the console size is smaller than the pretty "
+                    "representation of the object"
+                )
             # Note that this is faster than calling self.split() repeatedly
             parts.append('\n'.join(line[idx:bp] for line in self))
             idx = bp
@@ -512,12 +521,8 @@ class CharacterArt(SageObject):
              |
              |
         """
-        return max(
-            obj1.get_baseline(),
-            obj2.get_baseline()
-        ) + max(
-            obj1._h - obj1.get_baseline(),
-            obj2._h - obj2.get_baseline()
+        return max(obj1.get_baseline(), obj2.get_baseline()) + max(
+            obj1._h - obj1.get_baseline(), obj2._h - obj2.get_baseline()
         )
 
     def width(self):
@@ -651,8 +656,9 @@ class CharacterArt(SageObject):
 
         if self._baseline is not None and Nelt._baseline is not None:
             # left treatment
-            new_matrix.extend(line + " " * (self._l - len(line))
-                              for line in self._matrix)
+            new_matrix.extend(
+                line + " " * (self._l - len(line)) for line in self._matrix
+            )
 
             if new_h > self._h:
                 # |                 new_h > self._h
@@ -662,8 +668,9 @@ class CharacterArt(SageObject):
                 #  | }
                 if new_baseline > self._baseline:
                     l_space = " " * self._l
-                    new_matrix.extend(l_space
-                                      for k in range(new_baseline - self._baseline))
+                    new_matrix.extend(
+                        l_space for k in range(new_baseline - self._baseline)
+                    )
                 #  | }              new_h > self._h
                 #  | }              new_h - new_baseline > self._h - self._baseline
                 # ||<-- baseline    number of white lines at the top
@@ -689,8 +696,9 @@ class CharacterArt(SageObject):
             for j in range(Nelt._h):
                 new_matrix[i + j] += Nelt._matrix[j]
         else:
-            new_matrix.extend(line + " " * (self._l - len(line))
-                              for line in self._matrix)
+            new_matrix.extend(
+                line + " " * (self._l - len(line)) for line in self._matrix
+            )
             for i, line_i in enumerate(Nelt._matrix):
                 if i == len(new_matrix):
                     new_matrix.append(" " * self._l + line_i)
@@ -701,8 +709,7 @@ class CharacterArt(SageObject):
         new_breakpoints = list(self._breakpoints)
         if self._l and Nelt._l:
             new_breakpoints.append(self._l)
-        new_breakpoints.extend(_shifted_breakpoints(Nelt._breakpoints,
-                                                    self._l))
+        new_breakpoints.extend(_shifted_breakpoints(Nelt._breakpoints, self._l))
         return self.__class__(
             lines=new_matrix,
             breakpoints=new_breakpoints,

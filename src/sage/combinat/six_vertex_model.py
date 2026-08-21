@@ -47,12 +47,14 @@ class SixVertexConfiguration(ClonableArray):
                 V    V    V
         """
         # List are in the order of URDL
-        ascii = [[r'  V  ', ' -', r'  ^  ', '- '], # LR
-                 [r'  |  ', ' <', r'  ^  ', '- '], # LU
-                 [r'  V  ', ' <', r'  |  ', '- '], # LD
-                 [r'  |  ', ' <', r'  |  ', '> '], # UD
-                 [r'  |  ', ' -', r'  ^  ', '> '], # UR
-                 [r'  V  ', ' -', r'  |  ', '> ']] # RD
+        ascii = [
+            [r'  V  ', ' -', r'  ^  ', '- '],  # LR
+            [r'  |  ', ' <', r'  ^  ', '- '],  # LU
+            [r'  V  ', ' <', r'  |  ', '- '],  # LD
+            [r'  |  ', ' <', r'  |  ', '> '],  # UD
+            [r'  |  ', ' -', r'  ^  ', '> '],  # UR
+            [r'  V  ', ' -', r'  |  ', '> '],
+        ]  # RD
         ret = '  '
         # Do the top line
         for entry in self[0]:
@@ -127,6 +129,7 @@ class SixVertexConfiguration(ClonableArray):
             if x == 3:
                 return 1
             return 0
+
         return matrix([[matrix_sign(r) for r in row] for row in self])
 
     def plot(self, color='sign'):
@@ -168,63 +171,63 @@ class SixVertexConfiguration(ClonableArray):
 
         if color == 4:
             color_list = ['black', 'red', 'blue', 'green']
-            cfunc = lambda d,pm: color_list[d]
+            cfunc = lambda d, pm: color_list[d]
         elif color == 2:
-            cfunc = lambda d,pm: 'red' if d % 2 == 0 else 'blue'
+            cfunc = lambda d, pm: 'red' if d % 2 == 0 else 'blue'
         elif color == 1 or color is None:
-            cfunc = lambda d,pm: 'black'
+            cfunc = lambda d, pm: 'black'
         elif color == 'sign':
-            cfunc = lambda d,pm: 'red' if pm else 'blue' # RD are True
+            cfunc = lambda d, pm: 'red' if pm else 'blue'  # RD are True
         elif isinstance(color, (list, tuple)):
-            cfunc = lambda d,pm: color[d]
+            cfunc = lambda d, pm: color[d]
         else:
             cfunc = color
 
         G = Graphics()
-        for j,row in enumerate(reversed(self)):
-            for i,entry in enumerate(row):
-                if entry == 0: # LR
-                    G += arrow((i,j+1), (i,j), color=cfunc(2, True))
-                    G += arrow((i,j), (i+1,j), color=cfunc(1, True))
+        for j, row in enumerate(reversed(self)):
+            for i, entry in enumerate(row):
+                if entry == 0:  # LR
+                    G += arrow((i, j + 1), (i, j), color=cfunc(2, True))
+                    G += arrow((i, j), (i + 1, j), color=cfunc(1, True))
                     if j == 0:
-                        G += arrow((i,j-1), (i,j), color=cfunc(0, False))
+                        G += arrow((i, j - 1), (i, j), color=cfunc(0, False))
                     if i == 0:
-                        G += arrow((i,j), (i-1,j), color=cfunc(3, False))
-                elif entry == 1: # LU
-                    G += arrow((i,j), (i,j+1), color=cfunc(0, False))
-                    G += arrow((i+1,j), (i,j), color=cfunc(3, False))
+                        G += arrow((i, j), (i - 1, j), color=cfunc(3, False))
+                elif entry == 1:  # LU
+                    G += arrow((i, j), (i, j + 1), color=cfunc(0, False))
+                    G += arrow((i + 1, j), (i, j), color=cfunc(3, False))
                     if j == 0:
-                        G += arrow((i,j-1), (i,j), color=cfunc(0, False))
+                        G += arrow((i, j - 1), (i, j), color=cfunc(0, False))
                     if i == 0:
-                        G += arrow((i,j), (i-1,j), color=cfunc(3, False))
-                elif entry == 2: # LD
-                    G += arrow((i,j+1), (i,j), color=cfunc(2, True))
-                    G += arrow((i+1,j), (i,j), color=cfunc(3, False))
+                        G += arrow((i, j), (i - 1, j), color=cfunc(3, False))
+                elif entry == 2:  # LD
+                    G += arrow((i, j + 1), (i, j), color=cfunc(2, True))
+                    G += arrow((i + 1, j), (i, j), color=cfunc(3, False))
                     if j == 0:
-                        G += arrow((i,j), (i,j-1), color=cfunc(2, True))
+                        G += arrow((i, j), (i, j - 1), color=cfunc(2, True))
                     if i == 0:
-                        G += arrow((i,j), (i-1,j), color=cfunc(3, False))
-                elif entry == 3: # UD
-                    G += arrow((i,j), (i,j+1), color=cfunc(0, False))
-                    G += arrow((i+1,j), (i,j), color=cfunc(3, False))
+                        G += arrow((i, j), (i - 1, j), color=cfunc(3, False))
+                elif entry == 3:  # UD
+                    G += arrow((i, j), (i, j + 1), color=cfunc(0, False))
+                    G += arrow((i + 1, j), (i, j), color=cfunc(3, False))
                     if j == 0:
-                        G += arrow((i,j), (i,j-1), color=cfunc(2, True))
+                        G += arrow((i, j), (i, j - 1), color=cfunc(2, True))
                     if i == 0:
-                        G += arrow((i-1,j), (i,j), color=cfunc(1, True))
-                elif entry == 4: # UR
-                    G += arrow((i,j), (i,j+1), color=cfunc(0, False))
-                    G += arrow((i,j), (i+1,j), color=cfunc(1, True))
+                        G += arrow((i - 1, j), (i, j), color=cfunc(1, True))
+                elif entry == 4:  # UR
+                    G += arrow((i, j), (i, j + 1), color=cfunc(0, False))
+                    G += arrow((i, j), (i + 1, j), color=cfunc(1, True))
                     if j == 0:
-                        G += arrow((i,j-1), (i,j), color=cfunc(0, False))
+                        G += arrow((i, j - 1), (i, j), color=cfunc(0, False))
                     if i == 0:
-                        G += arrow((i-1,j), (i,j), color=cfunc(1, True))
-                elif entry == 5: # RD
-                    G += arrow((i,j+1), (i,j), color=cfunc(2, True))
-                    G += arrow((i,j), (i+1,j), color=cfunc(1, True))
+                        G += arrow((i - 1, j), (i, j), color=cfunc(1, True))
+                elif entry == 5:  # RD
+                    G += arrow((i, j + 1), (i, j), color=cfunc(2, True))
+                    G += arrow((i, j), (i + 1, j), color=cfunc(1, True))
                     if j == 0:
-                        G += arrow((i,j), (i,j-1), color=cfunc(2, True))
+                        G += arrow((i, j), (i, j - 1), color=cfunc(2, True))
                     if i == 0:
-                        G += arrow((i-1,j), (i,j), color=cfunc(1, True))
+                        G += arrow((i - 1, j), (i, j), color=cfunc(1, True))
         G.axes(False)
         return G
 
@@ -417,6 +420,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
     - :wikipedia:`Vertex_model`
     - :wikipedia:`Ice-type_model`
     """
+
     @staticmethod
     def __classcall_private__(cls, n, m=None, boundary_conditions=None):
         """
@@ -432,7 +436,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
         if m is None:
             m = n
         if boundary_conditions is None or boundary_conditions == 'free':
-            boundary_conditions = ((None,)*m, (None,)*n)*2
+            boundary_conditions = ((None,) * m, (None,) * n) * 2
         elif boundary_conditions == 'alternating':
             bdry = True
             cond = []
@@ -451,7 +455,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
         elif boundary_conditions == 'ice' or boundary_conditions == 'domain wall':
             if m == n:
                 return SquareIceModel(n)
-            boundary_conditions = ((False,)*m, (True,)*n)*2
+            boundary_conditions = ((False,) * m, (True,) * n) * 2
         else:
             boundary_conditions = tuple(tuple(x) for x in boundary_conditions)
         return super().__classcall__(cls, n, m, boundary_conditions)
@@ -467,7 +471,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
         """
         self._nrows = n
         self._ncols = m
-        self._bdry_cond = boundary_conditions # Ordered URDL
+        self._bdry_cond = boundary_conditions  # Ordered URDL
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def _repr_(self):
@@ -479,7 +483,9 @@ class SixVertexModel(UniqueRepresentation, Parent):
             sage: SixVertexModel(2, boundary_conditions='ice')
             The six vertex model on a 2 by 2 grid
         """
-        return "The six vertex model on a {} by {} grid".format(self._nrows, self._ncols)
+        return "The six vertex model on a {} by {} grid".format(
+            self._nrows, self._ncols
+        )
 
     def _repr_option(self, key):
         """
@@ -564,7 +570,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
         check_left = [False, False, False, True, True, True]
 
         bdry = [self._bdry_cond[0]]
-        lbd = list(self._bdry_cond[3]) + [None] # Dummy
+        lbd = list(self._bdry_cond[3]) + [None]  # Dummy
         left = [[lbd[0]]]
         cur = [[-1]]
         n = self._nrows
@@ -578,8 +584,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
                 cur.pop()
                 left.pop()
                 # Check if all our bottom boundary conditions are satisfied
-                if all(x is not self._bdry_cond[2][i]
-                       for i, x in enumerate(bdry[-1])):
+                if all(x is not self._bdry_cond[2][i] for i, x in enumerate(bdry[-1])):
                     yield self.element_class(self, tuple(tuple(x) for x in cur))
                 bdry.pop()
 
@@ -595,9 +600,10 @@ class SixVertexModel(UniqueRepresentation, Parent):
                     l.pop()
                     continue
                 # Check to see if we can add the vertex
-                if (check_left[row[-1]] is l[-1] or l[-1] is None) \
-                        and (check_top[row[-1]] is bdry[-1][len(row)-1]
-                             or bdry[-1][len(row)-1] is None):
+                if (check_left[row[-1]] is l[-1] or l[-1] is None) and (
+                    check_top[row[-1]] is bdry[-1][len(row) - 1]
+                    or bdry[-1][len(row) - 1] is None
+                ):
                     if len(row) != m:
                         l.append(next_left[row[-1]])
                         row.append(-1)
@@ -605,7 +611,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
                     elif next_left[row[-1]] is not self._bdry_cond[1][i]:
                         bdry.append([next_top[x] for x in row])
                         cur.append([-1])
-                        left.append([lbd[i+1]])
+                        left.append([lbd[i + 1]])
                         break
 
             # If we've killed this row, backup
@@ -658,6 +664,7 @@ class SixVertexModel(UniqueRepresentation, Parent):
         :wikipedia:`Partition_function_(statistical_mechanics)`
         """
         from sage.functions.log import exp
+
         return sum(exp(-beta * nu.energy(epsilon)) for nu in self)
 
 
@@ -683,7 +690,7 @@ class SquareIceModel(SixVertexModel):
             sage: M = SixVertexModel(3, boundary_conditions='ice')
             sage: TestSuite(M).run()
         """
-        boundary_conditions = ((False,)*n, (True,)*n)*2
+        boundary_conditions = ((False,) * n, (True,) * n) * 2
         SixVertexModel.__init__(self, n, n, boundary_conditions)
 
     def from_alternating_sign_matrix(self, asm):
@@ -721,13 +728,13 @@ class SquareIceModel(SixVertexModel):
         if asm.parent().size() != self._nrows:
             raise ValueError("mismatched size")
 
-        #verts = ['LR', 'LU', 'LD', 'UD', 'UR', 'RD']
+        # verts = ['LR', 'LU', 'LD', 'UD', 'UR', 'RD']
         ret = []
-        bdry = [False]*self._nrows # False = up
+        bdry = [False] * self._nrows  # False = up
         for row in asm.to_matrix():
             cur = []
-            right = True # True = right
-            for j,entry in enumerate(row):
+            right = True  # True = right
+            for j, entry in enumerate(row):
                 if entry == -1:
                     cur.append(0)
                     right = True
@@ -736,7 +743,7 @@ class SquareIceModel(SixVertexModel):
                     cur.append(3)
                     right = False
                     bdry[j] = True
-                else: # entry == 0
+                else:  # entry == 0
                     if bdry[j]:
                         if right:
                             cur.append(5)
@@ -754,6 +761,7 @@ class SquareIceModel(SixVertexModel):
         """
         An element in the square ice model.
         """
+
         @combinatorial_map(name='to alternating sign matrix')
         def to_alternating_sign_matrix(self):
             """
@@ -777,7 +785,10 @@ class SquareIceModel(SixVertexModel):
                 [ 0  1 -1  1]
                 [ 0  0  1  0]
             """
-            from sage.combinat.alternating_sign_matrix import AlternatingSignMatrix  # AlternatingSignMatrices
+            from sage.combinat.alternating_sign_matrix import (
+                AlternatingSignMatrix,
+            )  # AlternatingSignMatrices
+
             # ASM = AlternatingSignMatrices(self.parent()._nrows)
             # return ASM(self.to_signed_matrix())
             return AlternatingSignMatrix(self.to_signed_matrix())

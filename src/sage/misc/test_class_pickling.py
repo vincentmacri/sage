@@ -1,4 +1,3 @@
-
 import copyreg
 
 
@@ -58,6 +57,7 @@ class Metaclass(type):
         calling __eq__ defined in Metaclass
         True
     """
+
     def __eq__(self, other):
         print("calling __eq__ defined in Metaclass")
         return (type(self) is type(other)) and (self.reduce_args == other.reduce_args)

@@ -1,12 +1,12 @@
 r"""
 Manifolds
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -37,6 +37,7 @@ class Manifolds(Category_over_base_ring):
 
         sage: TestSuite(C).run(skip='_test_category_over_bases')                        # needs sage.rings.real_mpfr
     """
+
     def __init__(self, base, name=None):
         r"""
         Initialize ``self``.
@@ -249,6 +250,7 @@ class Manifolds(Category_over_base_ring):
 
         A smooth manifold is a manifold with a smooth atlas.
         """
+
         def extra_super_categories(self):
             """
             Return the extra super categories of ``self``.
@@ -270,6 +272,7 @@ class Manifolds(Category_over_base_ring):
 
         An analytic manifold is a manifold with an analytic atlas.
         """
+
         def extra_super_categories(self):
             """
             Return the extra super categories of ``self``.
@@ -294,6 +297,7 @@ class Manifolds(Category_over_base_ring):
         vector bundle isomorphism `J : TM \to TM` on the tangent bundle.
         The tensor field `J` is called the *almost complex structure* of `M`.
         """
+
         def extra_super_categories(self):
             """
             Return the extra super categories of ``self``.
@@ -339,6 +343,7 @@ class ComplexManifolds(Category_over_base_ring):
     A `d`-dimensional complex manifold is a manifold whose underlying
     vector space is `\CC^d` and has a holomorphic atlas.
     """
+
     @cached_method
     def super_categories(self):
         """

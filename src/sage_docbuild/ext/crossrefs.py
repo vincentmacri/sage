@@ -37,36 +37,38 @@ from sage.env import PPLPY_DOCS, SAGE_DOC, SAGE_DOC_SRC
 logger = sphinx_logging.getLogger(__name__)
 
 
-SAGE_DOC_REMOTE_INVENTORIES = os.environ.get('SAGE_DOC_REMOTE_INVENTORIES', 'no') == 'yes'
+SAGE_DOC_REMOTE_INVENTORIES = (
+    os.environ.get('SAGE_DOC_REMOTE_INVENTORIES', 'no') == 'yes'
+)
 
 _vendored_inventories_dir = os.path.join(SAGE_DOC_SRC, "common", "_vendor")
 
 
 # Run "sage -python -m sage_docbuild.vendor" to update src/doc/common/_vendor/*.inv
 _intersphinx_targets = {
-    'cvxopt':     ['https://cvxopt.org/userguide/'],
-    'cvxpy':      ['https://www.cvxpy.org/'],
-    'cypari2':    ['https://cypari2.readthedocs.io/en/latest/'],
-    'cysignals':  ['https://cysignals.readthedocs.io/en/latest/'],
-    'flint':      ['https://flintlib.org/doc/'],
-    'fpylll':     ['https://fpylll.readthedocs.io/en/latest/'],
-    'gmpy2':      ['https://gmpy2.readthedocs.io/en/latest/'],
-    'ipykernel':  ['https://ipykernel.readthedocs.io/en/stable/'],
-    'ipython':    ['https://ipython.readthedocs.io/en/stable/'],
+    'cvxopt': ['https://cvxopt.org/userguide/'],
+    'cvxpy': ['https://www.cvxpy.org/'],
+    'cypari2': ['https://cypari2.readthedocs.io/en/latest/'],
+    'cysignals': ['https://cysignals.readthedocs.io/en/latest/'],
+    'flint': ['https://flintlib.org/doc/'],
+    'fpylll': ['https://fpylll.readthedocs.io/en/latest/'],
+    'gmpy2': ['https://gmpy2.readthedocs.io/en/latest/'],
+    'ipykernel': ['https://ipykernel.readthedocs.io/en/stable/'],
+    'ipython': ['https://ipython.readthedocs.io/en/stable/'],
     'ipywidgets': ['https://ipywidgets.readthedocs.io/en/stable/'],
     'matplotlib': ['https://matplotlib.org/stable/'],
-    'mpmath':     ['https://mpmath.org/doc/current/'],
-    'networkx':   ['https://networkx.org/documentation/stable/'],
-    'numpy':      ['https://numpy.org/doc/stable/'],
-    'pexpect':    ['https://pexpect.readthedocs.io/en/stable/'],
-    'pplpy':      [PPLPY_DOCS, 'https://www.sagemath.org/pplpy/'],
+    'mpmath': ['https://mpmath.org/doc/current/'],
+    'networkx': ['https://networkx.org/documentation/stable/'],
+    'numpy': ['https://numpy.org/doc/stable/'],
+    'pexpect': ['https://pexpect.readthedocs.io/en/stable/'],
+    'pplpy': [PPLPY_DOCS, 'https://www.sagemath.org/pplpy/'],
     'ptyprocess': ['https://ptyprocess.readthedocs.io/en/stable/'],
-    'python':     ['https://docs.python.org/'],
-    'rpy2':       ['https://rpy2.github.io/doc/latest/html/'],
-    'scipy':      ['https://docs.scipy.org/doc/scipy/'],
-    'sphinx':     ['https://www.sphinx-doc.org/en/master/'],
-    'sympy':      ['https://docs.sympy.org/latest/'],
-    'traitlets':  ['https://traitlets.readthedocs.io/en/stable/'],
+    'python': ['https://docs.python.org/'],
+    'rpy2': ['https://rpy2.github.io/doc/latest/html/'],
+    'scipy': ['https://docs.scipy.org/doc/scipy/'],
+    'sphinx': ['https://www.sphinx-doc.org/en/master/'],
+    'sympy': ['https://docs.sympy.org/latest/'],
+    'traitlets': ['https://traitlets.readthedocs.io/en/stable/'],
 }
 
 
@@ -80,7 +82,9 @@ def _intersphinx_mapping(key):
             if not link_target:
                 link_target = target
                 if SAGE_DOC_REMOTE_INVENTORIES:
-                    inventories.append(None)  # Try downloading inventory from link_target
+                    inventories.append(
+                        None
+                    )  # Try downloading inventory from link_target
         elif os.path.exists(target):
             if not link_target:
                 link_target = target
@@ -97,7 +101,9 @@ def _intersphinx_mapping(key):
             # connection, we use the local python inventory file as a fallback for other
             # projects. Cross-references will not be resolved in that case, but the
             # docbuild will still succeed.
-            python_inventory_file = os.path.join(_vendored_inventories_dir, "python.inv")
+            python_inventory_file = os.path.join(
+                _vendored_inventories_dir, "python.inv"
+            )
             inventories.append(python_inventory_file)
     assert link_target
     if len(inventories) == 1:
@@ -117,12 +123,15 @@ def set_intersphinx_mappings(app, config):
         return
 
     install_path = os.path.join(SAGE_DOC, "html", "en", "installation")
-    install_inv = os.path.join(SAGE_DOC, "inventory", "en", "installation", "objects.inv")
+    install_inv = os.path.join(
+        SAGE_DOC, "inventory", "en", "installation", "objects.inv"
+    )
     if os.path.exists(install_inv):
         app.config.intersphinx_mapping['installation'] = (install_path, install_inv)
 
-    app.config.intersphinx_mapping.update({key: _intersphinx_mapping(key)
-                                           for key in _intersphinx_targets})
+    app.config.intersphinx_mapping.update(
+        {key: _intersphinx_mapping(key) for key in _intersphinx_targets}
+    )
 
     # Add master intersphinx mapping
     dst = os.path.join(invpath, 'objects.inv')
@@ -217,8 +226,9 @@ def prefer_python_inventory(app):
     for objtype, objects in inventories.named_inventory.get('python', {}).items():
         if not objtype.startswith('py:'):
             continue
-        builtin_objects = {name: entry for name, entry in objects.items()
-                           if hasattr(builtins, name)}
+        builtin_objects = {
+            name: entry for name, entry in objects.items() if hasattr(builtins, name)
+        }
         if builtin_objects:
             inventories.main_inventory.setdefault(objtype, {}).update(builtin_objects)
 
@@ -249,15 +259,13 @@ def call_intersphinx(app, env, node, contnode):
     """
     debug_inf(app, "???? Trying intersphinx for %s" % node['reftarget'])
     builder = app.builder
-    res = intersphinx.missing_reference(
-        app, env, node, contnode)
+    res = intersphinx.missing_reference(app, env, node, contnode)
     if res:
         # Replace absolute links to $SAGE_DOC by relative links: this
         # allows to copy the whole documentation tree somewhere else
         # without breaking links, see Issue #20118.
         if res['refuri'].startswith(SAGE_DOC):
-            here = os.path.dirname(os.path.join(builder.outdir,
-                                                node['refdoc']))
+            here = os.path.dirname(os.path.join(builder.outdir, node['refdoc']))
             res['refuri'] = os.path.relpath(res['refuri'], here)
             debug_inf(app, "++++ Found at %s" % res['refuri'])
     else:
@@ -322,10 +330,12 @@ def _public_aliases(reftarget):
     if obj is None:
         return []
     parts = modname.split('.')
-    return ['.'.join(parts[:i] + [attrname])
-            for i in range(1, len(parts))
-            if (ancestor := sys.modules.get('.'.join(parts[:i]))) is not None
-            and safe_getattr(ancestor, attrname, None) is obj]
+    return [
+        '.'.join(parts[:i] + [attrname])
+        for i in range(1, len(parts))
+        if (ancestor := sys.modules.get('.'.join(parts[:i]))) is not None
+        and safe_getattr(ancestor, attrname, None) is obj
+    ]
 
 
 def _retitle(node, contnode, reftarget, alias):
@@ -599,8 +609,7 @@ def find_sage_dangling_links(app, env, node, contnode):
         module = node['py:module']
         cls = node['py:class']
     except KeyError:
-        debug_inf(app, "-- no module or class for :%s:%s" % (reftype,
-                                                             reftarget))
+        debug_inf(app, "-- no module or class for :%s:%s" % (reftype, reftarget))
         return None
 
     def module_of(module, name):
@@ -617,32 +626,39 @@ def find_sage_dangling_links(app, env, node, contnode):
         if this_module is not None:
             target_module = module_of(this_module, basename)
             if target_module is None:
-                debug_inf(app, "-- %s not found in sage.all or this module" % (basename))
+                debug_inf(
+                    app, "-- %s not found in sage.all or this module" % (basename)
+                )
                 return None
             debug_inf(app, "++ found %s in this module" % (basename,))
     if target_module is None:
         target_module = ""
         debug_inf(app, "?? found in None !!!")
 
-    newtarget = target_module+'.'+reftarget
+    newtarget = target_module + '.' + reftarget
     node['reftarget'] = newtarget
 
     # adapted  from sphinx/domains/python.py
     builder = app.builder
     searchmode = node.hasattr('refspecific') and 1 or 0
     matches = builder.env.domains['py'].find_obj(
-        builder.env, module, cls, newtarget, reftype, searchmode)
+        builder.env, module, cls, newtarget, reftype, searchmode
+    )
     if not matches:
         debug_inf(app, "?? no matching doc for %s" % newtarget)
         return call_intersphinx(app, env, node, contnode)
     if len(matches) > 1:
-        logger.warning('more than one target found for cross-reference %r: %s',
-                       newtarget, ', '.join(match[0] for match in matches),
-                       location=node)
+        logger.warning(
+            'more than one target found for cross-reference %r: %s',
+            newtarget,
+            ', '.join(match[0] for match in matches),
+            location=node,
+        )
     name, obj = matches[0]
     debug_inf(app, "++ match = %s %s" % (name, obj))
 
     from docutils import nodes
+
     newnode = nodes.reference('', '', internal=True)
     if name == target_module:
         newnode['refid'] = name
@@ -662,14 +678,45 @@ def find_sage_dangling_links(app, env, node, contnode):
 # plain text and suppresses the warning that nitpicky mode would otherwise
 # raise, so a reference that no inventory resolves is invisible in the output.
 base_class_as_func = [
-    'bool', 'classmethod', 'complex', 'dict', 'enumerate', 'filter',
-    'float', 'frozenset', 'int', 'list', 'map', 'object', 'reversed',
-    'set', 'slice', 'staticmethod', 'str', 'tuple', 'type', 'zip']
+    'bool',
+    'classmethod',
+    'complex',
+    'dict',
+    'enumerate',
+    'filter',
+    'float',
+    'frozenset',
+    'int',
+    'list',
+    'map',
+    'object',
+    'reversed',
+    'set',
+    'slice',
+    'staticmethod',
+    'str',
+    'tuple',
+    'type',
+    'zip',
+]
 
 # Basic Python functions documented as classes in modern inventories.
 base_func_as_class = [
-    'bool', 'complex', 'dict', 'float', 'frozenset', 'int', 'list',
-    'object', 'range', 'set', 'slice', 'str', 'tuple', 'type']
+    'bool',
+    'complex',
+    'dict',
+    'float',
+    'frozenset',
+    'int',
+    'list',
+    'object',
+    'range',
+    'set',
+    'slice',
+    'str',
+    'tuple',
+    'type',
+]
 
 
 def setup(app):

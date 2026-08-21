@@ -28,6 +28,7 @@ class Internet(Feature):
         sage: Internet()
         Feature('internet')
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -52,7 +53,9 @@ class Internet(Feature):
         from urllib.request import Request, urlopen
         from ssl import create_default_context as default_context
 
-        req = Request("https://www.sagemath.org", headers={"User-Agent": "sage-doctest"})
+        req = Request(
+            "https://www.sagemath.org", headers={"User-Agent": "sage-doctest"}
+        )
         try:
             urlopen(req, timeout=1, context=default_context())
             return FeatureTestResult(self, True)

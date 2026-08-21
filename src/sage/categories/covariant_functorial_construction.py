@@ -39,12 +39,13 @@ AUTHORS:
 
  - Nicolas M. Thiery (2010): initial revision
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #  Copyright (C) 2010 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 from typing import Self
 
 from sage.categories.category import Category
@@ -147,12 +148,15 @@ class CovariantFunctorialConstruction(UniqueRepresentation, SageObject):
              finite dimensional vector spaces with basis over Rational Field
         """
         from sage.structure.parent import Parent
+
         assert all(isinstance(parent, Parent) for parent in parents)
         # Should we pass a set of categories to reduce the cache size?
         # But then this would impose that, for any constructor, the
         # category of the result does not depend on the order/repetition
         # of the categories of the parents
-        return self.category_from_categories(tuple({parent.category() for parent in parents}))
+        return self.category_from_categories(
+            tuple({parent.category() for parent in parents})
+        )
 
     @cached_method
     def category_from_categories(self, categories):
@@ -225,13 +229,15 @@ class CovariantFunctorialConstruction(UniqueRepresentation, SageObject):
             sage: tensor((E, E, E))                                                     # needs sage.modules
             E # E # E
         """
-        args = tuple(args)  # a bit brute force; let's see if this becomes a bottleneck later
+        args = tuple(
+            args
+        )  # a bit brute force; let's see if this becomes a bottleneck later
         assert all(hasattr(arg, self._functor_name) for arg in args)
         assert len(args) > 0
         return getattr(args[0], self._functor_name)(*args[1:], **kwargs)
 
 
-class FunctorialConstructionCategory(Category): # Should this be CategoryWithBase?
+class FunctorialConstructionCategory(Category):  # Should this be CategoryWithBase?
     """
     Abstract class for categories `F_{Cat}` obtained through a
     functorial construction
@@ -290,8 +296,9 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
             :class:`CategoryWithAxiom._base_category_class`. Find a
             way to refactor this to avoid the duplication.
         """
-        module_name = cls.__module__.replace(cls._functor_category.lower() + "_","")
+        module_name = cls.__module__.replace(cls._functor_category.lower() + "_", "")
         import sys
+
         name = cls.__name__.replace(cls._functor_category, "")
         __import__(module_name)
         module = sys.modules[module_name]
@@ -372,9 +379,11 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
         if "_base_category_class" not in cls.__dict__:
             cls._base_category_class = (base_category_class,)
         else:
-            assert cls._base_category_class[0] is base_category_class, \
+            assert cls._base_category_class[0] is base_category_class, (
                 "base category class for {} mismatch; expected {}, got {}".format(
-                 cls, cls._base_category_class[0], base_category_class)
+                    cls, cls._base_category_class[0], base_category_class
+                )
+            )
 
         # Workaround #15648: if Sets.Subquotients is a LazyImport object,
         # this forces the substitution of the object back into Sets
@@ -383,8 +392,10 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
             setattr(base_category_class, cls._functor_category, cls)
         if base_category is None:
             return cls
-        return getattr(super(base_category.__class__.__base__, base_category),
-                       cls._functor_category)
+        return getattr(
+            super(base_category.__class__.__base__, base_category),
+            cls._functor_category,
+        )
 
     @classmethod
     @cached_function
@@ -417,7 +428,9 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
         # TODO: find a better test
         # the purpose is to test whether ``category`` implements that functor
         functor_category = getattr(category.__class__, cls._functor_category)
-        if isinstance(functor_category, type) and issubclass(functor_category, Category):
+        if isinstance(functor_category, type) and issubclass(
+            functor_category, Category
+        ):
             return functor_category(category, *args)
         return cls.default_super_categories(category, *args)
 
@@ -486,9 +499,11 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
             sage: Semigroups().Quotients().super_categories()
             [Category of subquotients of semigroups, Category of quotients of sets]
         """
-        return Category.join([self.__class__.default_super_categories(self.base_category(), *self._args)] +
-                             self.extra_super_categories(),
-                             as_list=True)
+        return Category.join(
+            [self.__class__.default_super_categories(self.base_category(), *self._args)]
+            + self.extra_super_categories(),
+            as_list=True,
+        )
 
     def _repr_object_names(self):
         """
@@ -497,7 +512,10 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
             sage: Semigroups().Subquotients()  # indirect doctest
             Category of subquotients of semigroups
         """
-        return "%s of %s" % (Category._repr_object_names(self), self.base_category()._repr_object_names())
+        return "%s of %s" % (
+            Category._repr_object_names(self),
+            self.base_category()._repr_object_names(),
+        )
 
     def _latex_(self):
         r"""
@@ -511,6 +529,7 @@ class FunctorialConstructionCategory(Category): # Should this be CategoryWithBas
             \mathbf{Algebras}(\mathbf{Semigroups})
         """
         from sage.misc.latex import latex
+
         return "\\mathbf{%s}(%s)" % (self._short_name(), latex(self.base_category()))
 
 
@@ -586,9 +605,13 @@ class CovariantConstructionCategory(FunctorialConstructionCategory):
                 and Category of monoid algebras over Rational Field
                 and Category of finite set algebras over Rational Field
         """
-        return Category.join([getattr(cat, cls._functor_category)(*args)
-                              for cat in category._super_categories
-                              if hasattr(cat, cls._functor_category)])
+        return Category.join(
+            [
+                getattr(cat, cls._functor_category)(*args)
+                for cat in category._super_categories
+                if hasattr(cat, cls._functor_category)
+            ]
+        )
 
     def is_construction_defined_by_base(self):
         r"""
@@ -696,5 +719,6 @@ class RegressiveCovariantConstructionCategory(CovariantConstructionCategory):
             sage: C.__class__.default_super_categories(C.base_category(), *C._args)
             Category of unital subquotients of semigroups
         """
-        return Category.join([category,
-                              super().default_super_categories(category, *args)])
+        return Category.join(
+            [category, super().default_super_categories(category, *args)]
+        )

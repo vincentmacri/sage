@@ -163,7 +163,7 @@ def spol(f, g):
         x^2*y - z^3 + x^2 - z^2
     """
     fg_lcm = LCM(LM(f), LM(g))
-    return fg_lcm//LT(f)*f - fg_lcm//LT(g)*g
+    return fg_lcm // LT(f) * f - fg_lcm // LT(g) * g
 
 
 def buchberger(F):
@@ -264,7 +264,6 @@ def buchberger_improved(F):
         G, B = update(G, B, f)
 
     while B:
-
         g1, g2 = select(B)
         B.remove((g1, g2))
         h = spol(g1, g2).reduce(G)
@@ -325,15 +324,13 @@ def update(G, B, h):
     while C:
         (h, g) = C.pop()
 
-        lcm_divides = lambda rhs: R.monomial_divides(LCM(LM(h), LM(rhs[1])),
-                                                     LCM(LM(h), LM(g)))
+        lcm_divides = lambda rhs: R.monomial_divides(
+            LCM(LM(h), LM(rhs[1])), LCM(LM(h), LM(g))
+        )
 
-        if R.monomial_pairwise_prime(LM(h), LM(g)) or \
-                (
-                   not any(lcm_divides(f) for f in C)
-                   and
-                   not any(lcm_divides(f) for f in D)
-                ):
+        if R.monomial_pairwise_prime(LM(h), LM(g)) or (
+            not any(lcm_divides(f) for f in C) and not any(lcm_divides(f) for f in D)
+        ):
             D.add((h, g))
 
     E = set()
@@ -347,9 +344,11 @@ def update(G, B, h):
 
     while B:
         g1, g2 = B.pop()
-        if not R.monomial_divides(LM(h), LCM(LM(g1), LM(g2))) or \
-           R.monomial_lcm(LM(g1), LM(h)) == LCM(LM(g1), LM(g2)) or \
-           R.monomial_lcm(LM(h), LM(g2)) == LCM(LM(g1), LM(g2)):
+        if (
+            not R.monomial_divides(LM(h), LCM(LM(g1), LM(g2)))
+            or R.monomial_lcm(LM(g1), LM(h)) == LCM(LM(g1), LM(g2))
+            or R.monomial_lcm(LM(h), LM(g2)) == LCM(LM(g1), LM(g2))
+        ):
             B_new.add((g1, g2))
 
     B_new = B_new.union(E)
@@ -385,8 +384,7 @@ def select(P):
         sage: select(pairs)
         [x^3 - z - 1, -y + z^3 - 1]
     """
-    return min(P, key=lambda fi_fj: LCM(LM(fi_fj[0]),
-                                        LM(fi_fj[1])).total_degree())
+    return min(P, key=lambda fi_fj: LCM(LM(fi_fj[0]), LM(fi_fj[1])).total_degree())
 
 
 def inter_reduction(Q):
@@ -437,5 +435,5 @@ def inter_reduction(Q):
                 Q.add(h)
         if Qbar == Q:
             if base_ring.is_field():
-                return set(f.lc()**(-1) * f for f in Qbar)
+                return set(f.lc() ** (-1) * f for f in Qbar)
             return Qbar

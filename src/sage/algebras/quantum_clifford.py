@@ -142,6 +142,7 @@ class QuantumCliffordAlgebra(CombinatorialFreeModule):
         sage: w0^2
         1
     """
+
     @staticmethod
     def __classcall_private__(cls, n, k=1, q=None, F=None):
         r"""
@@ -165,7 +166,7 @@ class QuantumCliffordAlgebra(CombinatorialFreeModule):
             F = FractionField(F)
             q = F(q)
 
-        if bool(q**(2*k) == 1):
+        if bool(q ** (2 * k) == 1):
             return QuantumCliffordAlgebraRootUnity(n, k, q, F)
         return QuantumCliffordAlgebraGeneric(n, k, q, F)
 
@@ -199,8 +200,11 @@ class QuantumCliffordAlgebra(CombinatorialFreeModule):
             Quantum Clifford algebra of rank 3 and twist 1 with q=q over
              Fraction Field of Univariate Polynomial Ring in q over Integer Ring
         """
-        return "Quantum Clifford algebra of rank {} and twist {} with q={} over {}".format(
-            self._n, self._k, self._q, self.base_ring())
+        return (
+            "Quantum Clifford algebra of rank {} and twist {} with q={} over {}".format(
+                self._n, self._k, self._q, self.base_ring()
+            )
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -268,7 +272,7 @@ class QuantumCliffordAlgebra(CombinatorialFreeModule):
             sage: Cl.dimension()  # long time
             65536
         """
-        return ZZ(8*self._k) ** self._n
+        return ZZ(8 * self._k) ** self._n
 
     @cached_method
     def algebra_generators(self):
@@ -323,7 +327,7 @@ class QuantumCliffordAlgebra(CombinatorialFreeModule):
             sage: Cl.one_basis()
             ((0, 0, 0), (0, 0, 0))
         """
-        return (self._psi([0]*self._n), (0,)*self._n)
+        return (self._psi([0] * self._n), (0,) * self._n)
 
 
 class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
@@ -356,6 +360,7 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
     When `k = 2`, we recover the original definition given by Hayashi in
     [Hayashi1990]_. The `k = 1` version was used in [Kwon2014]_.
     """
+
     def __init__(self, n, k, q, F):
         r"""
         Initialize ``self``.
@@ -373,10 +378,12 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
             sage: elts = Cl.some_elements() + list(Cl.algebra_generators())
             sage: TestSuite(Cl).run(elements=elts)  # long time
         """
-        psi = cartesian_product([(-1,0,1)]*n)
-        indices = [(tuple(p), tuple(w))
-                   for p in psi
-                   for w in product(*[list(range((4-2*abs(p[i]))*k)) for i in range(n)])]
+        psi = cartesian_product([(-1, 0, 1)] * n)
+        indices = [
+            (tuple(p), tuple(w))
+            for p in psi
+            for w in product(*[list(range((4 - 2 * abs(p[i])) * k)) for i in range(n)])
+        ]
         super().__init__(n, k, q, F, psi, indices)
 
     def _repr_term(self, m) -> str:
@@ -399,8 +406,11 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
             5
         """
         p, v = m
-        rp = '*'.join('psi%s' % i if p[i] > 0 else 'psid%s' % i
-                      for i in range(self._n) if p[i] != 0)
+        rp = '*'.join(
+            'psi%s' % i if p[i] > 0 else 'psid%s' % i
+            for i in range(self._n)
+            if p[i] != 0
+        )
         gen_str = lambda e: '' if e == 1 else '^%s' % e
         rv = '*'.join('w%s' % i + gen_str(v[i]) for i in range(self._n) if v[i] != 0)
         if rp:
@@ -431,11 +441,15 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
             5
         """
         p, v = m
-        rp = ''.join('\\psi_{%s}' % i if p[i] > 0 else '\\psi^{\\dagger}_{%s}' % i
-                     for i in range(self._n) if p[i] != 0)
+        rp = ''.join(
+            '\\psi_{%s}' % i if p[i] > 0 else '\\psi^{\\dagger}_{%s}' % i
+            for i in range(self._n)
+            if p[i] != 0
+        )
         gen_str = lambda e: '' if e == 1 else '^{%s}' % e
-        rv = ''.join('\\omega_{%s}' % i + gen_str(v[i])
-                     for i in range(self._n) if v[i] != 0)
+        rv = ''.join(
+            '\\omega_{%s}' % i + gen_str(v[i]) for i in range(self._n) if v[i] != 0
+        )
         if not rp and not rv:
             return '1'
         return rp + rv
@@ -487,17 +501,17 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
                 q_power += w1[i] * p2[i]
                 if p1[i] != 0:
                     # We make pairings 1-based because we cannot distinguish 0 and -0
-                    pairings.append((i+1) * p1[i])
+                    pairings.append((i + 1) * p1[i])
             # we know p1[i] != p2[i] if nonzero, so their sum is -1, 0, 1
             p[i] = p1[i] + p2[i]
 
-        supported.append(self._n-1) # To get between the last support and the end
+        supported.append(self._n - 1)  # To get between the last support and the end
         # Get the sign of moving \psi_i and \psi_i^{\dagger} into position
         for i in reversed(range(1, len(supported))):
             if i % 2 != 0:
-                for j in reversed(range(supported[i-1]+1, supported[i]+1)):
+                for j in reversed(range(supported[i - 1] + 1, supported[i] + 1)):
                     if p1[j] != 0:
-                        sign = (-1)**i * sign
+                        sign = (-1) ** i * sign
 
         # We move the pairs \psi_i \psi_i^{\dagger} (or the reverse) to the
         #   end of the \psi part. This does not change the sign because they
@@ -508,13 +522,17 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
         q = self._q
         for i in pairings:
             if i < 0:
-                i = -i - 1 # Go back to 0-based
-                vpik = -q**(2*k) * vp[i]**(3*k) + (1 + q**(2*k)) * vp[i]**k
-                poly *= -(vp[i]**k - vpik) / (q**k - q**(-k))
+                i = -i - 1  # Go back to 0-based
+                vpik = (
+                    -(q ** (2 * k)) * vp[i] ** (3 * k) + (1 + q ** (2 * k)) * vp[i] ** k
+                )
+                poly *= -(vp[i] ** k - vpik) / (q**k - q ** (-k))
             else:
-                i -= 1 # Go back to 0-based
-                vpik = -q**(2*k) * vp[i]**(3*k) + (1 + q**(2*k)) * vp[i]**k
-                poly *= (q**k * vp[i]**k - q**(-k) * vpik) / (q**k - q**(-k))
+                i -= 1  # Go back to 0-based
+                vpik = (
+                    -(q ** (2 * k)) * vp[i] ** (3 * k) + (1 + q ** (2 * k)) * vp[i] ** k
+                )
+                poly *= (q**k * vp[i] ** k - q ** (-k) * vpik) / (q**k - q ** (-k))
 
         v = list(w1)
         for i in range(self._n):
@@ -524,17 +542,22 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
         #   and same for \psi_i^{\dagger}
         for i in range(self._n):
             if p[i] > 0 and v[i] != 0:
-                q_power -= 2 * k * (v[i] // (2*k))
-                v[i] = v[i] % (2*k)
+                q_power -= 2 * k * (v[i] // (2 * k))
+                v[i] = v[i] % (2 * k)
             if p[i] < 0 and v[i] != 0:
-                v[i] = v[i] % (2*k)
+                v[i] = v[i] % (2 * k)
 
         poly *= self._w_poly.monomial(*v)
-        poly = poly.reduce([vp[i]**(4*k) - (1 + q**(-2*k)) * vp[i]**(2*k) + q**(-2*k)
-                            for i in range(self._n)])
+        poly = poly.reduce(
+            [
+                vp[i] ** (4 * k)
+                - (1 + q ** (-2 * k)) * vp[i] ** (2 * k)
+                + q ** (-2 * k)
+                for i in range(self._n)
+            ]
+        )
         pdict = poly.monomial_coefficients()
-        ret = {(self._psi(p), tuple(e)): pdict[e] * q**q_power * sign
-               for e in pdict}
+        ret = {(self._psi(p), tuple(e)): pdict[e] * q**q_power * sign for e in pdict}
 
         return self._from_dict(ret)
 
@@ -598,17 +621,26 @@ class QuantumCliffordAlgebraGeneric(QuantumCliffordAlgebra):
             if len(self) != 1:
                 return super().__invert__()
             Cl = self.parent()
-            ((p, w), coeff), = list(self._monomial_coefficients.items())
+            (((p, w), coeff),) = list(self._monomial_coefficients.items())
             if any(p[i] != 0 for i in range(Cl._n)):
                 return super().__invert__()
             poly = Cl._w_poly.monomial(*w)
             wp = Cl._w_poly.gens()
             q = Cl._q
             k = Cl._k
-            poly = poly.subs({wi: -q**(2*k) * wi**(4*k-1) + (1 + q**(2*k)) * wi**(2*k-1)
-                              for wi in wp})
-            poly = poly.reduce([wi**(4*k) - (1 + q**(-2*k)) * wi**(2*k) + q**(-2*k)
-                                for wi in wp])
+            poly = poly.subs(
+                {
+                    wi: -(q ** (2 * k)) * wi ** (4 * k - 1)
+                    + (1 + q ** (2 * k)) * wi ** (2 * k - 1)
+                    for wi in wp
+                }
+            )
+            poly = poly.reduce(
+                [
+                    wi ** (4 * k) - (1 + q ** (-2 * k)) * wi ** (2 * k) + q ** (-2 * k)
+                    for wi in wp
+                ]
+            )
             pdict = poly.monomial_coefficients()
             coeff = coeff.inverse_of_unit()
             ret = {(p, tuple(e)): coeff * c for e, c in pdict.items()}
@@ -652,6 +684,7 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
         (\psi_a \psi^*_a)^2 & = \psi_a \psi^*_a \omega_a^k.
         \end{aligned}
     """
+
     def __init__(self, n, k, q, F):
         r"""
         Initialize ``self``.
@@ -673,10 +706,12 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
             sage: elts = Cl.some_elements() + list(Cl.algebra_generators())
             sage: TestSuite(Cl).run(elements=elts)  # long time
         """
-        psi = cartesian_product([(-1,0,1,2)]*n)
-        indices = [(tuple(p), tuple(w))
-                   for p in psi
-                   for w in product(list(range(2*k)), repeat=n)]
+        psi = cartesian_product([(-1, 0, 1, 2)] * n)
+        indices = [
+            (tuple(p), tuple(w))
+            for p in psi
+            for w in product(list(range(2 * k)), repeat=n)
+        ]
         super().__init__(n, k, q, F, psi, indices)
 
     def _repr_term(self, m) -> str:
@@ -707,7 +742,7 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
             if val == 1:
                 return 'psi%s' % i
             if val == 2:
-                return 'psi%s*psid%s' % (i,i)
+                return 'psi%s*psid%s' % (i, i)
 
         rp = '*'.join(ppr(i) for i in range(self._n) if p[i] != 0)
         gen_str = lambda e: '' if e == 1 else '^%s' % e
@@ -752,8 +787,9 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
 
         rp = ''.join(ppr(i) for i in range(self._n) if p[i] != 0)
         gen_str = lambda e: '' if e == 1 else '^{%s}' % e
-        rv = ''.join('\\omega_{%s}' % i + gen_str(v[i])
-                     for i in range(self._n) if v[i] != 0)
+        rv = ''.join(
+            '\\omega_{%s}' % i + gen_str(v[i]) for i in range(self._n) if v[i] != 0
+        )
         if not rp and not rv:
             return '1'
         return rp + rv
@@ -814,9 +850,12 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
         # \psi_i \psi_i^{\dagger} is a 2 in p1[i] and p2[i]
 
         # Check for \psi_i^2 == 0 and for the dagger version
-        if any((p1[i] % 2 != 0 and p1[i] == p2[i])
-               or (p1[i] == 2 and p2[i] == -1) or (p2[i] == 2 and p1[i] == 1)
-               for i in range(self._n)):
+        if any(
+            (p1[i] % 2 != 0 and p1[i] == p2[i])
+            or (p1[i] == 2 and p2[i] == -1)
+            or (p2[i] == 2 and p1[i] == 1)
+            for i in range(self._n)
+        ):
             return self.zero()
 
         # Reduce any v_i^{2k} = 1
@@ -840,15 +879,15 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
                     p[i] = p1[i]
                 else:
                     p[i] = p2[i]
-            elif p2[i] != 0: # == +1, -1
+            elif p2[i] != 0:  # == +1, -1
                 q_power += w1[i] * p2[i]
                 # By the above check, we cannot have p1[i] == p2[i]
                 if p1[i] == -1:
                     pairings.append(i)
-                    total_cross -= 1 # correction
+                    total_cross -= 1  # correction
                     p[i] = None
                 elif p1[i] == 1:
-                    total_cross -= 1 # correction
+                    total_cross -= 1  # correction
                     p[i] = 2
                 elif p1[i] == 2:
                     q_power += k
@@ -878,8 +917,10 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
             return (self._psi(p), tuple(e))
 
         q = self._q
-        ret = {key(X): (-1)**len(X) * sign * q**(q_power+k*(len(pairings) % 2))
-               for X in powerset(pairings)}
+        ret = {
+            key(X): (-1) ** len(X) * sign * q ** (q_power + k * (len(pairings) % 2))
+            for X in powerset(pairings)
+        }
 
         return self._from_dict(ret)
 
@@ -947,7 +988,7 @@ class QuantumCliffordAlgebraRootUnity(QuantumCliffordAlgebra):
             if len(self) != 1:
                 return super().__invert__()
             Cl = self.parent()
-            ((p, w), coeff), = list(self._monomial_coefficients.items())
+            (((p, w), coeff),) = list(self._monomial_coefficients.items())
             if any(p[i] != 0 for i in range(Cl._n)):
                 return super().__invert__()
             tk = 2 * Cl._k

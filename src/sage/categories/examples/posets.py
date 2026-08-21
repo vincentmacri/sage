@@ -106,7 +106,6 @@ class FiniteSetsOrderedByInclusion(UniqueRepresentation, Parent):
         return self(Set([1, 4, 6]))
 
     class Element(ElementWrapper):
-
         wrapped_class = Set_object_enumerated
 
 

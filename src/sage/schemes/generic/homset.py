@@ -47,17 +47,29 @@ from sage.schemes.generic.scheme import AffineScheme
 from sage.schemes.generic.morphism import (
     SchemeMorphism,
     SchemeMorphism_structure_map,
-    SchemeMorphism_spec)
+    SchemeMorphism_spec,
+)
 
-lazy_import('sage.schemes.affine.affine_space', 'AffineSpace_generic', as_='AffineSpace')
+lazy_import(
+    'sage.schemes.affine.affine_space', 'AffineSpace_generic', as_='AffineSpace'
+)
 lazy_import('sage.schemes.generic.algebraic_scheme', 'AlgebraicScheme_subscheme')
-lazy_import('sage.schemes.product_projective.space', 'ProductProjectiveSpaces_ring', as_='ProductProjectiveSpaces')
-lazy_import('sage.schemes.projective.projective_space', 'ProjectiveSpace_ring', as_='ProjectiveSpace')
+lazy_import(
+    'sage.schemes.product_projective.space',
+    'ProductProjectiveSpaces_ring',
+    as_='ProductProjectiveSpaces',
+)
+lazy_import(
+    'sage.schemes.projective.projective_space',
+    'ProjectiveSpace_ring',
+    as_='ProjectiveSpace',
+)
 
 
 # *******************************************************************
 #  Factory for Hom sets of schemes
 # *******************************************************************
+
 
 class SchemeHomsetFactory(UniqueFactory):
     """
@@ -96,8 +108,9 @@ class SchemeHomsetFactory(UniqueFactory):
         Rational Field
     """
 
-    def create_key_and_extra_args(self, X, Y, category=None, base=None,
-                                  check=True, as_point_homset=False):
+    def create_key_and_extra_args(
+        self, X, Y, category=None, base=None, check=True, as_point_homset=False
+    ):
         """
         Create a key that uniquely determines the Hom-set.
 
@@ -142,6 +155,7 @@ class SchemeHomsetFactory(UniqueFactory):
             Y = AffineScheme(Y)
         if base is None:
             from sage.structure.element import coercion_model
+
             base = coercion_model.common_parent(X.base_ring(), Y.base_ring())
         if isinstance(base, AffineScheme):
             base_spec = base
@@ -153,6 +167,7 @@ class SchemeHomsetFactory(UniqueFactory):
             raise ValueError('base must be a commutative ring or its spectrum')
         if not category:
             from sage.categories.schemes import Schemes
+
             category = Schemes(base_spec)
         key = (id(X), id(Y), category, as_point_homset)
         extra = {'X': X, 'Y': Y, 'base_ring': base_ring, 'check': check}
@@ -189,11 +204,15 @@ class SchemeHomsetFactory(UniqueFactory):
         Y = extra_args.pop('Y')
         base_ring = extra_args.pop('base_ring')
         if len(key) >= 4 and key[3]:  # as_point_homset=True
-            return Y._point_homset(X, Y, category=category, base=base_ring, **extra_args)
+            return Y._point_homset(
+                X, Y, category=category, base=base_ring, **extra_args
+            )
         try:
             return X._homset(X, Y, category=category, base=base_ring, **extra_args)
         except AttributeError:
-            return SchemeHomset_generic(X, Y, category=category, base=base_ring, **extra_args)
+            return SchemeHomset_generic(
+                X, Y, category=category, base=base_ring, **extra_args
+            )
 
 
 SchemeHomset = SchemeHomsetFactory('sage.schemes.generic.homset.SchemeHomset')
@@ -202,6 +221,7 @@ SchemeHomset = SchemeHomsetFactory('sage.schemes.generic.homset.SchemeHomset')
 # *******************************************************************
 #  Base class
 # *******************************************************************
+
 
 class SchemeHomset_generic(HomsetWithBase):
     r"""
@@ -230,6 +250,7 @@ class SchemeHomset_generic(HomsetWithBase):
         sage: Hom.category()
         Category of endsets of schemes over Rational Field
     """
+
     Element = SchemeMorphism
 
     def __reduce__(self):
@@ -244,8 +265,14 @@ class SchemeHomset_generic(HomsetWithBase):
             sage: loads(Hom.dumps()) == Hom
             True
         """
-        return SchemeHomset, (self.domain(), self.codomain(), self.homset_category(),
-                              self.base_ring(), False, False)
+        return SchemeHomset, (
+            self.domain(),
+            self.codomain(),
+            self.homset_category(),
+            self.base_ring(),
+            False,
+            False,
+        )
 
     def __call__(self, *args, **kwds):
         r"""
@@ -371,6 +398,7 @@ class SchemeHomset_generic(HomsetWithBase):
 
         from sage.categories.map import Map
         from sage.categories.rings import Rings
+
         if isinstance(x, Map) and x.category_for().is_subcategory(Rings()):
             # x is a morphism of Rings
             return SchemeMorphism_spec(self, x, check=check)
@@ -381,6 +409,7 @@ class SchemeHomset_generic(HomsetWithBase):
 # *******************************************************************
 #  Base class for points
 # *******************************************************************
+
 
 class SchemeHomset_points(SchemeHomset_generic):
     r"""
@@ -422,7 +451,9 @@ class SchemeHomset_points(SchemeHomset_generic):
         """
         if check and not isinstance(X, AffineScheme):
             raise ValueError('The domain must be an affine scheme.')
-        SchemeHomset_generic.__init__(self, X, Y, category=category, check=check, base=base)
+        SchemeHomset_generic.__init__(
+            self, X, Y, category=category, check=check, base=base
+        )
 
     def __reduce__(self):
         """
@@ -435,8 +466,14 @@ class SchemeHomset_points(SchemeHomset_generic):
             sage: loads(Hom.dumps()) == Hom
             True
         """
-        return SchemeHomset, (self.domain(), self.codomain(), self.homset_category(),
-                              self.base_ring(), False, True)
+        return SchemeHomset, (
+            self.domain(),
+            self.codomain(),
+            self.homset_category(),
+            self.base_ring(),
+            False,
+            True,
+        )
 
     def _coerce_map_from_(self, other):
         r"""
@@ -550,8 +587,10 @@ class SchemeHomset_points(SchemeHomset_generic):
         # and the base rings are coercible
         if other in CommutativeRings:
             try:
-                if (isinstance(target.ambient_space(), AffineSpace)
-                        and target.ambient_space().dimension_relative() == 1):
+                if (
+                    isinstance(target.ambient_space(), AffineSpace)
+                    and target.ambient_space().dimension_relative() == 1
+                ):
                     return target.base_ring().has_coerce_map_from(other)
                 return False
             except AttributeError:  # no .ambient_space
@@ -564,9 +603,15 @@ class SchemeHomset_points(SchemeHomset_generic):
                 if not isinstance(source, AlgebraicScheme_subscheme):
                     return False
                 if target.ambient_space() == source.ambient_space():
-                    if all(g in source.defining_ideal()
-                           for g in target.defining_polynomials()):
-                        return self.domain().coordinate_ring().has_coerce_map_from(other.domain().coordinate_ring())
+                    if all(
+                        g in source.defining_ideal()
+                        for g in target.defining_polynomials()
+                    ):
+                        return (
+                            self.domain()
+                            .coordinate_ring()
+                            .has_coerce_map_from(other.domain().coordinate_ring())
+                        )
             else:
                 # if the target is an ambient space, we can coerce if the base rings coerce
                 # and they are the same type: affine, projective, etc and have the same
@@ -578,17 +623,30 @@ class SchemeHomset_points(SchemeHomset_generic):
                     return False
                 # for projective and affine varieties, we check dimension
                 # and matching variable names
-                if ((isinstance(ta, ProjectiveSpace) and isinstance(sa, ProjectiveSpace))
-                        or (isinstance(ta, AffineSpace) and isinstance(sa, AffineSpace))):
-                    if (ta.variable_names() == sa.variable_names()):
-                        return self.domain().coordinate_ring().has_coerce_map_from(other.domain().coordinate_ring())
+                if (
+                    isinstance(ta, ProjectiveSpace) and isinstance(sa, ProjectiveSpace)
+                ) or (isinstance(ta, AffineSpace) and isinstance(sa, AffineSpace)):
+                    if ta.variable_names() == sa.variable_names():
+                        return (
+                            self.domain()
+                            .coordinate_ring()
+                            .has_coerce_map_from(other.domain().coordinate_ring())
+                        )
                     return False
                 # for products of projective spaces, we check dimension of
                 # components and matching variable names
-                if isinstance(ta, ProductProjectiveSpaces) and isinstance(sa, ProductProjectiveSpaces):
-                    if (ta.dimension_relative_components() == sa.dimension_relative_components()) \
-                      and (ta.variable_names() == sa.variable_names()):
-                        return self.domain().coordinate_ring().has_coerce_map_from(other.domain().coordinate_ring())
+                if isinstance(ta, ProductProjectiveSpaces) and isinstance(
+                    sa, ProductProjectiveSpaces
+                ):
+                    if (
+                        ta.dimension_relative_components()
+                        == sa.dimension_relative_components()
+                    ) and (ta.variable_names() == sa.variable_names()):
+                        return (
+                            self.domain()
+                            .coordinate_ring()
+                            .has_coerce_map_from(other.domain().coordinate_ring())
+                        )
                     return False
 
     def _element_constructor_(self, *v, **kwds):
@@ -768,6 +826,7 @@ class SchemeHomset_points(SchemeHomset_generic):
         """
         if hasattr(self, 'is_finite') and not self.is_finite():
             from sage.rings.infinity import Infinity
+
             return Infinity
         return sum(ZZ.one() for point in self)
 

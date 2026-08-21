@@ -500,7 +500,9 @@ def detach(filename):
         elif abs_fpath in attached:
             attached.pop(abs_fpath)
         else:
-            raise ValueError("file '{0}' is not attached, see attached_files()".format(filename))
+            raise ValueError(
+                "file '{0}' is not attached, see attached_files()".format(filename)
+            )
     if not attached:
         sage.repl.inputhook.uninstall()
 
@@ -556,7 +558,11 @@ def modified_file_iterator():
     for filename in list(attached):
         old_tm = attached[filename]
         if not filename.exists():
-            print('### detaching file {0} because it does not exist (deleted?) ###'.format(filename))
+            print(
+                '### detaching file {0} because it does not exist (deleted?) ###'.format(
+                    filename
+                )
+            )
             detach(filename)
             continue
         new_tm = filename.stat().st_mtime
@@ -614,7 +620,9 @@ def reload_attached_files_if_modified():
     for filename, mtime in modified_file_iterator():
         basename = filename.name
         timestr = time.strftime('%T', mtime)
-        notice = '### reloading attached file {0} modified at {1} ###'.format(basename, timestr)
+        notice = '### reloading attached file {0} modified at {1} ###'.format(
+            basename, timestr
+        )
         if ip:
             print(notice)
             code = load_wrap(filename, attach=True)

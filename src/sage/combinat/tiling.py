@@ -350,6 +350,7 @@ def ncube_isometry_group(n, orientation_preserving=True):
         ValueError: ['B', 0] is not a valid Cartan type
     """
     from sage.combinat.root_system.weyl_group import WeylGroup
+
     L = [w.matrix() for w in WeylGroup(['B', n])]
     if orientation_preserving:
         return [m for m in L if m.det() == 1]
@@ -431,6 +432,7 @@ def ncube_isometry_group_cosets(n, orientation_preserving=True):
     """
     from sage.misc.misc_c import prod
     from sage.matrix.constructor import diagonal_matrix
+
     G = ncube_isometry_group(n, orientation_preserving)
 
     # Construct the subgroup H of G of diagonal matrices
@@ -451,14 +453,15 @@ def ncube_isometry_group_cosets(n, orientation_preserving=True):
     for g in G:
         if g not in G_todo:
             continue
-        left_coset = sorted(h*g for h in H)
-        right_coset = sorted(g*h for h in H)
+        left_coset = sorted(h * g for h in H)
+        right_coset = sorted(g * h for h in H)
         assert left_coset == right_coset, "H must be a normal subgroup of G"
         for c in left_coset:
             c.set_immutable()
         G_todo.difference_update(left_coset)
         cosets.append(left_coset)
     return cosets
+
 
 ##############################
 # Class Polyomino
@@ -517,15 +520,18 @@ class Polyomino(SageObject):
             raise TypeError("color = ({!r}) must be a string".format(color))
         self._color = color
 
-        if not isinstance(coords, (tuple,list)):
+        if not isinstance(coords, (tuple, list)):
             coords = list(coords)
 
         if dimension is None:
             if coords:
                 self._dimension = ZZ(len(coords[0]))
             else:
-                raise ValueError("dimension(={}) must be provided for"
-                                 " the empty polyomino".format(dimension))
+                raise ValueError(
+                    "dimension(={}) must be provided for the empty polyomino".format(
+                        dimension
+                    )
+                )
         else:
             self._dimension = dimension
         self._free_module = FreeModule(ZZ, self._dimension)
@@ -633,8 +639,7 @@ class Polyomino(SageObject):
             sage: p.bounding_box()
             [[0, 0, 0], [1, 2, 1]]
         """
-        return [[min(w) for w in zip(*self)],
-                [max(w) for w in zip(*self)]]
+        return [[min(w) for w in zip(*self)], [max(w) for w in zip(*self)]]
 
     def __hash__(self):
         r"""
@@ -803,8 +808,11 @@ class Polyomino(SageObject):
         """
         if not isinstance(other, Polyomino):
             raise TypeError("other(={}) must be a polyomino".format(other))
-        return Polyomino(self.frozenset() & other.frozenset(),
-                         color=self._color, dimension=self._dimension)
+        return Polyomino(
+            self.frozenset() & other.frozenset(),
+            color=self._color,
+            dimension=self._dimension,
+        )
 
     def __sub__(self, v):
         r"""
@@ -825,7 +833,7 @@ class Polyomino(SageObject):
             Polyomino: [(-2, -2, -2), (-1, -2, -2), (-1, -1, -2), (-1, -1, -1), (-1, 0, -2)], Color: deeppink
         """
         v = self._free_module(v)
-        return Polyomino([p-v for p in self], color=self._color)
+        return Polyomino([p - v for p in self], color=self._color)
 
     def __add__(self, v):
         r"""
@@ -845,7 +853,7 @@ class Polyomino(SageObject):
             Polyomino: [(2, 2, 2), (3, 2, 2), (3, 3, 2), (3, 3, 3), (3, 4, 2)], Color: deeppink
         """
         v = self._free_module(v)
-        return Polyomino([p+v for p in self], color=self._color)
+        return Polyomino([p + v for p in self], color=self._color)
 
     def __rmul__(self, m):
         r"""
@@ -878,8 +886,9 @@ class Polyomino(SageObject):
             ValueError: Dimension of input matrix must match the dimension of the polyomino
         """
         if not m.nrows() == m.ncols() == self._dimension:
-            raise ValueError("Dimension of input matrix must match the "
-                             "dimension of the polyomino")
+            raise ValueError(
+                "Dimension of input matrix must match the dimension of the polyomino"
+            )
         return Polyomino([m * p for p in self], color=self._color)
 
     def canonical(self):
@@ -908,8 +917,9 @@ class Polyomino(SageObject):
         minxyz, _ = self.bounding_box()
         return self - minxyz
 
-    def canonical_isometric_copies(self, orientation_preserving=True,
-                                   mod_box_isometries=False):
+    def canonical_isometric_copies(
+        self, orientation_preserving=True, mod_box_isometries=False
+    ):
         r"""
         Return the list of image of ``self`` under isometries of the `n`-cube
         where the coordinates are all nonnegative and minimal.
@@ -957,9 +967,10 @@ class Polyomino(SageObject):
         """
         if mod_box_isometries:
             L = ncube_isometry_group_cosets(self._dimension, orientation_preserving)
-            P_cosets = {frozenset((m * self).canonical() for m in coset)
-                        for coset in L}
-            P_cosets_representents = [min(s, key=lambda a: a.sorted_list()) for s in P_cosets]
+            P_cosets = {frozenset((m * self).canonical() for m in coset) for coset in L}
+            P_cosets_representents = [
+                min(s, key=lambda a: a.sorted_list()) for s in P_cosets
+            ]
             return sorted(P_cosets_representents, key=lambda a: a.sorted_list())
         L = ncube_isometry_group(self._dimension, orientation_preserving)
         P_images = {(m * self).canonical() for m in L}
@@ -1053,14 +1064,14 @@ class Polyomino(SageObject):
             ranges = [range(a) for a in box]
             box = Polyomino(itertools.product(*ranges))
         if not box._dimension == self._dimension:
-            raise ValueError("Dimension of input box must match the "
-                             "dimension of the polyomino")
+            raise ValueError(
+                "Dimension of input box must match the dimension of the polyomino"
+            )
         minxyz, maxxyz = self.bounding_box()
         minxyz, maxxyz = vector(minxyz), vector(maxxyz)
         size = maxxyz - minxyz
         boxminxyz, boxmaxxyz = box.bounding_box()
-        ranges = [range(a, b - c + 1)
-                  for a, b, c in zip(boxminxyz, boxmaxxyz, size)]
+        ranges = [range(a, b - c + 1) for a, b, c in zip(boxminxyz, boxmaxxyz, size)]
         cano = self.canonical()
         for v in itertools.product(*ranges):
             translated = cano + v
@@ -1106,14 +1117,14 @@ class Polyomino(SageObject):
             ranges = [range(a) for a in box]
             box = Polyomino(itertools.product(*ranges))
         if not box._dimension == self._dimension:
-            raise ValueError("Dimension of input box must match the "
-                             "dimension of the polyomino")
+            raise ValueError(
+                "Dimension of input box must match the dimension of the polyomino"
+            )
         minxyz, maxxyz = self.bounding_box()
         minxyz, maxxyz = vector(minxyz), vector(maxxyz)
         size = maxxyz - minxyz
         boxminxyz, boxmaxxyz = box.bounding_box()
-        ranges = [range(a - c, b + 1)
-                  for a, b, c in zip(boxminxyz, boxmaxxyz, size)]
+        ranges = [range(a - c, b + 1) for a, b, c in zip(boxminxyz, boxmaxxyz, size)]
         S = set()
         cano = self.canonical()
         for v in itertools.product(*ranges):
@@ -1123,8 +1134,9 @@ class Polyomino(SageObject):
                 S.add(intersected)
         return S
 
-    def isometric_copies(self, box, orientation_preserving=True,
-                         mod_box_isometries=False):
+    def isometric_copies(
+        self, box, orientation_preserving=True, mod_box_isometries=False
+    ):
         r"""
         Return the translated and isometric images of ``self`` that lies in the box.
 
@@ -1178,16 +1190,23 @@ class Polyomino(SageObject):
             ranges = [range(a) for a in box]
             box = Polyomino(itertools.product(*ranges))
         if not box._dimension == self._dimension:
-            raise ValueError("Dimension of input box must match the "
-                             "dimension of the polyomino")
+            raise ValueError(
+                "Dimension of input box must match the dimension of the polyomino"
+            )
         box_min_coords, box_max_coords = box.bounding_box()
-        if mod_box_isometries and len({b - a for a, b in zip(box_min_coords,
-                                                             box_max_coords)}) < box._dimension:
-            raise NotImplementedError("The code below assumes that the"
-                    " sizes of the box (={}) are all distinct when"
-                    " argument `mod_box_isometries` is True.".format(box))
-        all_distinct_cano = self.canonical_isometric_copies(orientation_preserving,
-                                                            mod_box_isometries)
+        if (
+            mod_box_isometries
+            and len({b - a for a, b in zip(box_min_coords, box_max_coords)})
+            < box._dimension
+        ):
+            raise NotImplementedError(
+                "The code below assumes that the"
+                " sizes of the box (={}) are all distinct when"
+                " argument `mod_box_isometries` is True.".format(box)
+            )
+        all_distinct_cano = self.canonical_isometric_copies(
+            orientation_preserving, mod_box_isometries
+        )
         for cano in all_distinct_cano:
             yield from cano.translated_copies(box=box)
 
@@ -1223,10 +1242,14 @@ class Polyomino(SageObject):
              [(1, 1), (1, 2)],
              [(1, 2)]]
         """
-        all_distinct_cano = self.canonical_isometric_copies(orientation_preserving,
-                                                            mod_box_isometries=False)
-        return {t for cano in all_distinct_cano
-                for t in cano.translated_copies_intersection(box=box)}
+        all_distinct_cano = self.canonical_isometric_copies(
+            orientation_preserving, mod_box_isometries=False
+        )
+        return {
+            t
+            for cano in all_distinct_cano
+            for t in cano.translated_copies_intersection(box=box)
+        }
 
     def neighbor_edges(self):
         r"""
@@ -1263,7 +1286,7 @@ class Polyomino(SageObject):
             [(1, 1), (1, 2)]
         """
         for P, Q in itertools.combinations(self, 2):
-            s = sorted(map(abs, Q-P))
+            s = sorted(map(abs, Q - P))
             firsts = s[:-1]
             last = s[-1]
             if last == 1 and all(f == 0 for f in firsts):
@@ -1323,26 +1346,27 @@ class Polyomino(SageObject):
              ((4.5, 5.5), (5.5, 5.5)), ((5.5, 4.5), (5.5, 5.5))]
         """
         if self._dimension != 2:
-            raise NotImplementedError("The method boundary is currently "
-                                      "implemented "
-                                      "only for dimension 2")
+            raise NotImplementedError(
+                "The method boundary is currently implemented only for dimension 2"
+            )
         from collections import defaultdict
+
         horizontal = defaultdict(int)
         vertical = defaultdict(int)
         for a in self:
             x, y = a = tuple(a)
             horizontal[a] += 1
             vertical[a] += 1
-            horizontal[(x, y+1)] -= 1
-            vertical[(x+1, y)] -= 1
+            horizontal[(x, y + 1)] -= 1
+            vertical[(x + 1, y)] -= 1
         edges = []
         h = 0.5
         for (x, y), coeff in horizontal.items():
             if coeff:
-                edges.append(((x-h, y-h), (x+h, y-h)))
+                edges.append(((x - h, y - h), (x + h, y - h)))
         for (x, y), coeff in vertical.items():
             if coeff:
-                edges.append(((x-h, y-h), (x-h, y+h)))
+                edges.append(((x - h, y - h), (x - h, y + h)))
         return edges
 
     def show3d(self, size=1):
@@ -1366,6 +1390,7 @@ class Polyomino(SageObject):
         assert self._dimension == 3, "Dimension of the polyomino must be 3."
         from sage.plot.graphics import Graphics
         from sage.plot.plot3d.platonic import cube
+
         G = Graphics()
         for p in self:
             G += cube(p, color=self._color)
@@ -1398,6 +1423,7 @@ class Polyomino(SageObject):
         from sage.plot.circle import circle
         from sage.plot.line import line
         from sage.plot.polygon import polygon
+
         h = size / 2.0
         G = Graphics()
         for a, b in self:
@@ -1405,14 +1431,21 @@ class Polyomino(SageObject):
         k = h / 2.0
         for P, Q in self.neighbor_edges():
             a, b = (P + Q) / 2.0
-            G += polygon([(a-k, b-k), (a+k, b-k), (a+k, b+k), (a-k, b+k),
-                          (a-k, b-k)], color=self._color)
+            G += polygon(
+                [
+                    (a - k, b - k),
+                    (a + k, b - k),
+                    (a + k, b + k),
+                    (a - k, b + k),
+                    (a - k, b - k),
+                ],
+                color=self._color,
+            )
         for edge in self.boundary():
             G += line(edge, color=color, thickness=thickness)
         return G
 
-    def self_surrounding(self, radius, remove_incomplete_copies=True,
-                         ncpus=None):
+    def self_surrounding(self, radius, remove_incomplete_copies=True, ncpus=None):
         r"""
         Return a list of isometric copies of ``self`` surrounding it with an
         annulus of given radius.
@@ -1451,12 +1484,13 @@ class Polyomino(SageObject):
         minxyz, maxxyz = self.bounding_box()
         minxyz, maxxyz = vector(minxyz), vector(maxxyz)
         v = vector([radius for _ in range(self._dimension)])
-        ranges = [range(a,b) for a,b in zip(minxyz-v, maxxyz+v)]
+        ranges = [range(a, b) for a, b in zip(minxyz - v, maxxyz + v)]
         box = Polyomino(itertools.product(*ranges))
 
         # Get the rows for this problem
-        T = TilingSolver([self], box=box, reusable=True,
-                reflection=True, rotation=True, outside=True)
+        T = TilingSolver(
+            [self], box=box, reusable=True, reflection=True, rotation=True, outside=True
+        )
         rows = T.rows()
 
         # Add one row to force the placement of the central tile
@@ -1468,13 +1502,16 @@ class Polyomino(SageObject):
 
         # Construct the dancing links solver
         from sage.combinat.matrices.dancing_links import dlx_solver
+
         d = dlx_solver(rows)
 
         # Solve
         solution = d.one_solution(ncpus=ncpus)
         if solution is None:
-            raise ValueError('No solution was found with radius={}, '
-            'this tile can not be surrounded by itself'.format(radius))
+            raise ValueError(
+                'No solution was found with radius={}, '
+                'this tile can not be surrounded by itself'.format(radius)
+            )
 
         # Recover the polyominoes
         assert forced_row_number in solution
@@ -1486,6 +1523,7 @@ class Polyomino(SageObject):
         # Recolor randomly the polyominoes
         from sage.plot.colors import Color
         from random import random
+
         for p in polyominoes:
             random_color = Color(tuple(random() for _ in range(3)))
             p.color(random_color)
@@ -1563,8 +1601,15 @@ class TilingSolver(SageObject):
         NotImplementedError: When reflection is allowed and rotation is not allowed
     """
 
-    def __init__(self, pieces, box, rotation=True,
-                 reflection=False, reusable=False, outside=False):
+    def __init__(
+        self,
+        pieces,
+        box,
+        rotation=True,
+        reflection=False,
+        reusable=False,
+        outside=False,
+    ):
         r"""
         Constructor.
 
@@ -1591,8 +1636,9 @@ class TilingSolver(SageObject):
         self._rotation = rotation
         self._reflection = reflection
         if not self._rotation and self._reflection:
-            raise NotImplementedError("When reflection is allowed and "
-                                      "rotation is not allowed")
+            raise NotImplementedError(
+                "When reflection is allowed and rotation is not allowed"
+            )
         self._reusable = reusable
         self._outside = outside
 
@@ -1643,8 +1689,10 @@ class TilingSolver(SageObject):
         """
         if self._reusable:
             return len(self.rows()) != 0
-        return (sum(len(p) for p in self.pieces()) == len(self._box)
-                and len(self.rows()) != 0)
+        return (
+            sum(len(p) for p in self.pieces()) == len(self._box)
+            and len(self.rows()) != 0
+        )
 
     def pieces(self):
         r"""
@@ -1817,16 +1865,20 @@ class TilingSolver(SageObject):
             else:
                 orientation_preserving = True
             if self._outside:
-                it = p.isometric_copies_intersection(self._box,
-                          orientation_preserving=orientation_preserving)
+                it = p.isometric_copies_intersection(
+                    self._box, orientation_preserving=orientation_preserving
+                )
             else:
-                it = p.isometric_copies(self._box,
-                          orientation_preserving=orientation_preserving,
-                          mod_box_isometries=mod_box_isometries)
+                it = p.isometric_copies(
+                    self._box,
+                    orientation_preserving=orientation_preserving,
+                    mod_box_isometries=mod_box_isometries,
+                )
         else:
             if self._reflection:
-                raise NotImplementedError("Reflection allowed, Rotation not "
-                                          "allowed is not implemented")
+                raise NotImplementedError(
+                    "Reflection allowed, Rotation not allowed is not implemented"
+                )
             else:
                 if self._outside:
                     it = p.translated_copies_intersection(self._box)
@@ -1939,10 +1991,10 @@ class TilingSolver(SageObject):
             sage: dlx_solver(T._rows_mod_box_isometries(0))  # long time (10s)
             Dancing links solver for 96 columns and 5214 rows
         """
-        assert not self._reusable, ("this code assumes the pieces are not reusable")
+        assert not self._reusable, "this code assumes the pieces are not reusable"
         len_pieces = len(self._pieces)
         if not 0 <= i < len_pieces:
-            raise ValueError("i(={}) must be 0 <= i < {}".format(i,len_pieces))
+            raise ValueError("i(={}) must be 0 <= i < {}".format(i, len_pieces))
         rows = []
         for j in range(len_pieces):
             if j == i:
@@ -2038,6 +2090,7 @@ class TilingSolver(SageObject):
             if row_number < 0:
                 row_number += len(rows)
             from bisect import bisect
+
             no = bisect(self.starting_rows(), row_number) - 1
             indices = row
         else:
@@ -2065,6 +2118,7 @@ class TilingSolver(SageObject):
             Dancing links solver for 9 columns and 15 rows
         """
         from sage.combinat.matrices.dancing_links import dlx_solver
+
         return dlx_solver(self.rows())
 
     def _dlx_solutions_iterator(self):
@@ -2211,7 +2265,7 @@ class TilingSolver(SageObject):
                     common_prefix += 1
                 else:
                     break
-            for i in range(1, len(A)-common_prefix):
+            for i in range(1, len(A) - common_prefix):
                 yield A[:-i]
             for j in range(common_prefix, len(B)):
                 yield B[:j]
@@ -2402,19 +2456,29 @@ class TilingSolver(SageObject):
         """
         from sage.plot.graphics import Graphics
         from sage.plot.animate import Animation
+
         dimension = self._box._dimension
         if dimension == 2:
             it = self.solve(partial=partial)
             it = itertools.islice(it, stop)
-            L = [sum([piece.show2d(size) for piece in solution], Graphics())
-                 for solution in it]
+            L = [
+                sum([piece.show2d(size) for piece in solution], Graphics())
+                for solution in it
+            ]
             (xmin, ymin), (xmax, ymax) = self._box.bounding_box()
             xmax = xmax + 0.5
             ymax = ymax + 0.5
-            return Animation(L, xmin=xmin - 0.5, ymin=ymin - 0.5,
-                             xmax=xmax, ymax=ymax, aspect_ratio=1, axes=axes)
+            return Animation(
+                L,
+                xmin=xmin - 0.5,
+                ymin=ymin - 0.5,
+                xmax=xmax,
+                ymax=ymax,
+                aspect_ratio=1,
+                axes=axes,
+            )
         if dimension == 3:
-            raise NotImplementedError("3d Animation must be implemented "
-                                      "in Jmol first")
-        raise NotImplementedError("Dimension must be 2 or 3 in order "
-                                  "to make an animation")
+            raise NotImplementedError("3d Animation must be implemented in Jmol first")
+        raise NotImplementedError(
+            "Dimension must be 2 or 3 in order to make an animation"
+        )

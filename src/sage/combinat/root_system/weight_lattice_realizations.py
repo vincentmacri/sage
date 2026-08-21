@@ -129,7 +129,6 @@ class WeightLatticeRealizations(Category_over_base_ring):
         return [RootLatticeRealizations(self.base_ring())]
 
     class ParentMethods:
-
         @abstract_method
         def fundamental_weight(self, i):
             r"""
@@ -219,20 +218,25 @@ class WeightLatticeRealizations(Category_over_base_ring):
             """
             from sage.rings.integer_ring import ZZ
             from .weight_space import WeightSpace
+
             K = self.base_ring()
             # If self is the root lattice or the root space, we don't want
             # to register its trivial embedding into itself. This builds
             # the domains from which we want to register an embedding.
             domains = []
             if not isinstance(self, WeightSpace) or K is not ZZ:
-                domains.append(self.root_system.weight_lattice(extended=self.is_extended()))
+                domains.append(
+                    self.root_system.weight_lattice(extended=self.is_extended())
+                )
             if not isinstance(self, WeightSpace):
-                domains.append(self.root_system.weight_space(K,extended=self.is_extended()))
+                domains.append(
+                    self.root_system.weight_space(K, extended=self.is_extended())
+                )
             # Build and register the embeddings
             for domain in domains:
-                domain.module_morphism(self.fundamental_weight,
-                                       codomain=self
-                                       ).register_as_coercion()
+                domain.module_morphism(
+                    self.fundamental_weight, codomain=self
+                ).register_as_coercion()
 
         def _test_weight_lattice_realization(self, **options):
             """
@@ -249,6 +253,7 @@ class WeightLatticeRealizations(Category_over_base_ring):
                 sage: RootSystem(['A',3]).weight_lattice()._test_weight_lattice_realization()       # needs sage.graphs
             """
             from sage.rings.integer_ring import ZZ
+
             tester = self._tester(**options)
 
             try:
@@ -270,9 +275,13 @@ class WeightLatticeRealizations(Category_over_base_ring):
             # For an affine root system, this will check the embedding of
             # the extended ones, and also of the non extended ones if this
             # realization is not extended
-            domains = [self.root_system.weight_space(base_ring, extended=extended)
-                       for base_ring in set([ZZ, self.base_ring()])
-                       for extended in set([self.cartan_type().is_affine(), self.is_extended()])]
+            domains = [
+                self.root_system.weight_space(base_ring, extended=extended)
+                for base_ring in set([ZZ, self.base_ring()])
+                for extended in set(
+                    [self.cartan_type().is_affine(), self.is_extended()]
+                )
+            ]
             for domain in domains:
                 tester.assertIsNot(self._internal_coerce_map_from(domain), None)
                 for i in self.index_set():
@@ -289,13 +298,17 @@ class WeightLatticeRealizations(Category_over_base_ring):
                         tester.assertEqual(self.null_root(), self.term("delta", a[0]))
                     for i in self.index_set():
                         # The level of the fundamental weights is consistent
-                        tester.assertEqual(domain.fundamental_weight(i).level(), Lambda[i].level())
+                        tester.assertEqual(
+                            domain.fundamental_weight(i).level(), Lambda[i].level()
+                        )
 
             # Check that the fundamental weights form the dual basis of the simple coroots
             for i in self.index_set():
-                assert (Lambda[i].is_dominant())
+                assert Lambda[i].is_dominant()
                 for j in self.index_set():
-                    tester.assertEqual(Lambda[j].scalar(alphacheck[i]), (1 if i == j else 0))
+                    tester.assertEqual(
+                        Lambda[j].scalar(alphacheck[i]), (1 if i == j else 0)
+                    )
 
             tester.assertTrue(self.rho().is_dominant())
             if self.root_system.is_finite() and self.root_system.is_irreducible():
@@ -362,7 +375,7 @@ class WeightLatticeRealizations(Category_over_base_ring):
             # after the embedding from the root lattice, and the later
             # uses the simple roots. So we compute that embedding by hand.
             Lambda = self.fundamental_weights()
-            return self.linear_combination( (Lambda[j], c) for j,c in alphai )
+            return self.linear_combination((Lambda[j], c) for j, c in alphai)
 
         @cached_method
         def rho(self):
@@ -592,7 +605,9 @@ class WeightLatticeRealizations(Category_over_base_ring):
             `f\circ w^{-1}` permutes the simple roots.
             """
             alpha = self.simple_roots()
-            w = self.weyl_group().from_reduced_word(self.reduced_word_of_alcove_morphism(f))
+            w = self.weyl_group().from_reduced_word(
+                self.reduced_word_of_alcove_morphism(f)
+            )
             # Now, we have d = f w^-1
             winv = ~w
             assert all(alpha[i].level().is_zero() for i in self.index_set())
@@ -677,7 +692,9 @@ class WeightLatticeRealizations(Category_over_base_ring):
             See the documentation for :class:`TestSuite` for more information.
             """
             tester = self._tester(**options)
-            if not self.cartan_type().is_affine(): # won't be necessary anymore once root systems are categorified
+            if (
+                not self.cartan_type().is_affine()
+            ):  # won't be necessary anymore once root systems are categorified
                 return
             try:
                 alpha = self.simple_roots()
@@ -694,15 +711,18 @@ class WeightLatticeRealizations(Category_over_base_ring):
             # preserving the alcoves.
             if elements is None:
                 c = self.cartan_type().c()
-                elements = [c[i] * Lambda[i]
-                            for i in self.cartan_type().classical().index_set()]
+                elements = [
+                    c[i] * Lambda[i] for i in self.cartan_type().classical().index_set()
+                ]
 
             # When the null root is zero in this root lattice realization,
             # the roots correspond to the classical roots. We use that to
             # check that w permute the simple roots according to a Dynkin
             # diagram automorphism. This test currently requires the index
             # set to be of the form 0..n
-            test_automorphism = self.null_root().is_zero() and set(self.index_set()) == set(i for i in range(len(self.index_set())))
+            test_automorphism = self.null_root().is_zero() and set(
+                self.index_set()
+            ) == set(i for i in range(len(self.index_set())))
             # dictionary assigning a simple root to its index
             rank_simple_roots = {alpha[i]: i for i in self.index_set()}
 
@@ -712,11 +732,11 @@ class WeightLatticeRealizations(Category_over_base_ring):
                 return
 
             for t in elements:
-                t = t - self.base_ring()(t.level()/Lambda[0].level()) * Lambda[0]
+                t = t - self.base_ring()(t.level() / Lambda[0].level()) * Lambda[0]
                 w = W.from_reduced_word(self.reduced_word_of_translation(t))
                 if self.null_root().is_zero():
                     # The following formula is only valid when the null root is zero
-                    tester.assertEqual(w.action(rho), rho + rho.level()*t)
+                    tester.assertEqual(w.action(rho), rho + rho.level() * t)
                     # TODO: fix this formula to take delta into account,
                     # and remove the above condition
                 if test_automorphism:
@@ -729,17 +749,21 @@ class WeightLatticeRealizations(Category_over_base_ring):
                     # It could be nicer to test equality of G and its relabelling
                     for i in self.index_set():
                         for j in self.index_set():
-                            tester.assertEqual(G[permutation[i],permutation[j]], G[i,j])
+                            tester.assertEqual(
+                                G[permutation[i], permutation[j]], G[i, j]
+                            )
                     permutations.append(permutation)
 
-            if test_automorphism and elements is None: # note: the test on elements is broken
+            if (
+                test_automorphism and elements is None
+            ):  # note: the test on elements is broken
                 # Check that, if we start from all fundamental weights, we
                 # get the full automorphism group
                 # Disabled: this should actually check that one gets all special
                 # automorphisms, which are in bijection with the special nodes
-                #from sage.groups.perm_gps.permgroup import PermutationGroup
-                #P = PermutationGroup([[i+1 for i in permutation] for permutation in permutations])
-                #tester.assertEqual(P, G.automorphism_group())
+                # from sage.groups.perm_gps.permgroup import PermutationGroup
+                # P = PermutationGroup([[i+1 for i in permutation] for permutation in permutations])
+                # tester.assertEqual(P, G.automorphism_group())
                 pass
 
         def signs_of_alcovewalk(self, walk):
@@ -810,11 +834,11 @@ class WeightLatticeRealizations(Category_over_base_ring):
             w = W.one()
             signs = []
             for i in walk:
-                if (w.action(rho0).scalar(alphacheck[i]) > 0):
+                if w.action(rho0).scalar(alphacheck[i]) > 0:
                     signs.append(-1)
                 else:
                     signs.append(1)
-                w = s[i]*w
+                w = s[i] * w
             return signs
 
         def rho_classical(self):
@@ -879,7 +903,7 @@ class WeightLatticeRealizations(Category_over_base_ring):
                 raise ValueError("x must be an element of the classical type")
             Lambda = self.fundamental_weights()
             result = self.sum_of_terms(x)
-            result += Lambda[0] * (level-result.level()) / (Lambda[0].level())
+            result += Lambda[0] * (level - result.level()) / (Lambda[0].level())
             assert result.level() == level
             return result
 
@@ -906,9 +930,10 @@ class WeightLatticeRealizations(Category_over_base_ring):
             rho = self.rho()
             pr = self.coroot_lattice().positive_roots()
             from sage.rings.integer import Integer
-            n = prod(((rho+highest_weight).scalar(x) for x in pr), Integer(1))
+
+            n = prod(((rho + highest_weight).scalar(x) for x in pr), Integer(1))
             d = prod((rho.scalar(x) for x in pr), Integer(1))
-            return Integer(n/d)
+            return Integer(n / d)
 
         @lazy_attribute
         def _inverse_cartan_matrix(self):
@@ -976,6 +1001,7 @@ class WeightLatticeRealizations(Category_over_base_ring):
                 [1/2   1   1   0]
             """
             from sage.matrix.constructor import matrix
+
             ct = self.cartan_type()
             cm = ct.cartan_matrix()
             if cm.det() != 0:
@@ -983,24 +1009,27 @@ class WeightLatticeRealizations(Category_over_base_ring):
                 return self._inverse_cartan_matrix.transpose() * diag
 
             if not ct.is_affine():
-                raise ValueError("only implemented for affine types when the"
-                                 " Cartan matrix is singular")
+                raise ValueError(
+                    "only implemented for affine types when the"
+                    " Cartan matrix is singular"
+                )
 
             r = ct.rank()
             a = ct.a()
             # Determine the change of basis matrix
             # La[0], ..., La[r], delta -> al[0], ..., al[r], La[0]
-            M = cm.stack( matrix([1] + [0]*(r-1)) )
-            M = matrix.block([[ M, matrix([[1]] + [[0]]*r) ]])
+            M = cm.stack(matrix([1] + [0] * (r - 1)))
+            M = matrix.block([[M, matrix([[1]] + [[0]] * r)]])
             M = M.inverse()
 
             if a[0] != 1:
                 from sage.rings.rational_field import QQ
-                S = matrix([~a[0]]+[0]*(r-1))
+
+                S = matrix([~a[0]] + [0] * (r - 1))
                 A = cm.symmetrized_matrix().change_ring(QQ).stack(S)
             else:
-                A = cm.symmetrized_matrix().stack(matrix([1]+[0]*(r-1)))
-            A = matrix.block([[A, matrix([[~a[0]]] + [[0]]*r)]])
+                A = cm.symmetrized_matrix().stack(matrix([1] + [0] * (r - 1)))
+            A = matrix.block([[A, matrix([[~a[0]]] + [[0]] * r)]])
             return M.transpose() * A * M
 
     class ElementMethods:
@@ -1110,8 +1139,11 @@ class WeightLatticeRealizations(Category_over_base_ring):
             else:
                 iset = P.index_set() + ('delta',)
 
-            return sum(cl*sym[iset.index(ml),iset.index(mr)]*cr
-                       for ml, cl in self for mr, cr in la)
+            return sum(
+                cl * sym[iset.index(ml), iset.index(mr)] * cr
+                for ml, cl in self
+                for mr, cr in la
+            )
 
         #    # This should be in a method to_weight_lattice()
         #    alphac = self.simple_coroots()
@@ -1152,9 +1184,10 @@ class WeightLatticeRealizations(Category_over_base_ring):
 
             wt_space = L.root_system.weight_space(base_ring)
             simple_coroots = L.simple_coroots()
-            return wt_space.sum_of_terms(((i, base_ring(self.scalar(ac)))
-                                          for i, ac in simple_coroots.items()),
-                                         distinct=True)
+            return wt_space.sum_of_terms(
+                ((i, base_ring(self.scalar(ac))) for i, ac in simple_coroots.items()),
+                distinct=True,
+            )
 
         @cached_method
         def _to_root_vector(self):

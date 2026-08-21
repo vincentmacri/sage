@@ -6,6 +6,7 @@ AUTHORS:
 
 - Mark Shimozono (2013) initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Mark Shimozono <mshimo at math.vt.edu>
 #
@@ -30,8 +31,9 @@ from sage.rings.integer_ring import ZZ
 from sage.sets.family import LazyFamily
 
 
-def FundamentalGroupOfExtendedAffineWeylGroup(cartan_type, prefix='pi',
-                                              general_linear=None):
+def FundamentalGroupOfExtendedAffineWeylGroup(
+    cartan_type, prefix='pi', general_linear=None
+):
     r"""
     Factory for the fundamental group of an extended affine Weyl group.
 
@@ -199,8 +201,9 @@ def FundamentalGroupOfExtendedAffineWeylGroup(cartan_type, prefix='pi',
         if cartan_type.is_untwisted_affine() and cartan_type.type() == "A":
             return FundamentalGroupGL(cartan_type, prefix)
         raise ValueError("General Linear Fundamental group is untwisted type A")
-    return FundamentalGroupOfExtendedAffineWeylGroup_Class(cartan_type, prefix,
-                                                           finite=True)
+    return FundamentalGroupOfExtendedAffineWeylGroup_Class(
+        cartan_type, prefix, finite=True
+    )
 
 
 class FundamentalGroupElement(MultiplicativeGroupElement):
@@ -340,13 +343,13 @@ class FundamentalGroupElement(MultiplicativeGroupElement):
         return hash(self.value())
 
 
-class FundamentalGroupOfExtendedAffineWeylGroup_Class(UniqueRepresentation,
-                                                      Parent):
+class FundamentalGroupOfExtendedAffineWeylGroup_Class(UniqueRepresentation, Parent):
     r"""
     The group of length zero elements in the extended affine Weyl group.
 
     .. automethod:: __iter__
     """
+
     Element = FundamentalGroupElement
 
     def __init__(self, cartan_type, prefix, finite=True):
@@ -360,6 +363,7 @@ class FundamentalGroupOfExtendedAffineWeylGroup_Class(UniqueRepresentation,
             True
             sage: TestSuite(F).run()
         """
+
         def leading_support(beta):
             r"""
             Given a dictionary with one key, return this key
@@ -383,7 +387,7 @@ class FundamentalGroupOfExtendedAffineWeylGroup_Class(UniqueRepresentation,
         # permutations of the affine Dynkin nodes
         auto_dict = {}
         for i in cartan_type.index_set():
-            auto_dict[special_node,i] = i
+            auto_dict[special_node, i] = i
         # dictionary for the finite Weyl component of the special automorphisms
         reduced_words_dict = {}
         reduced_words_dict[0] = tuple()
@@ -397,30 +401,38 @@ class FundamentalGroupOfExtendedAffineWeylGroup_Class(UniqueRepresentation,
             I = list(cartan_type_classical.index_set())
             Q = RootSystem(cartan_type_classical).root_lattice()
             alpha = Q.simple_roots()
-            omega = RootSystem(cartan_type_classical).weight_lattice().fundamental_weights()
+            omega = (
+                RootSystem(cartan_type_classical).weight_lattice().fundamental_weights()
+            )
             W = Q.weyl_group(prefix='s')
             for i in self._special_nodes:
                 if i == special_node:
                     continue
-                antidominant_weight, reduced_word = omega[i].to_dominant_chamber(reduced_word=True, positive=False)
+                antidominant_weight, reduced_word = omega[i].to_dominant_chamber(
+                    reduced_word=True, positive=False
+                )
                 reduced_words_dict[i] = tuple(reduced_word)
                 w0i = W.from_reduced_word(reduced_word)
                 idual = leading_support(-antidominant_weight)
                 inverse_dict[i] = idual
-                auto_dict[i,special_node] = i
+                auto_dict[i, special_node] = i
                 for j in I:
                     if j == idual:
                         auto_dict[i, j] = special_node
                     else:
                         auto_dict[i, j] = leading_support(w0i.action(alpha[j]))
 
-        self._action = Family(self._special_nodes, lambda i: Family(cartan_type.index_set(), lambda j: auto_dict[i, j]))
+        self._action = Family(
+            self._special_nodes,
+            lambda i: Family(cartan_type.index_set(), lambda j: auto_dict[i, j]),
+        )
         self._dual_node = Family(self._special_nodes, inverse_dict.__getitem__)
-        self._reduced_words = Family(self._special_nodes, reduced_words_dict.__getitem__)
+        self._reduced_words = Family(
+            self._special_nodes, reduced_words_dict.__getitem__
+        )
 
         if finite:
-            cat = Category.join((Groups().Commutative().Finite(),
-                                 EnumeratedSets()))
+            cat = Category.join((Groups().Commutative().Finite(), EnumeratedSets()))
         else:
             cat = Groups().Commutative().Infinite()
         Parent.__init__(self, category=cat)
@@ -635,6 +647,7 @@ class FundamentalGroupGL(FundamentalGroupOfExtendedAffineWeylGroup_Class):
     r"""
     Fundamental group of `GL_n`. It is just the integers with extra privileges.
     """
+
     Element = FundamentalGroupGLElement
 
     def __init__(self, cartan_type, prefix='pi'):
@@ -648,7 +661,9 @@ class FundamentalGroupGL(FundamentalGroupOfExtendedAffineWeylGroup_Class):
             True
             sage: TestSuite(F).run()
         """
-        FundamentalGroupOfExtendedAffineWeylGroup_Class.__init__(self, cartan_type, prefix, finite=False)
+        FundamentalGroupOfExtendedAffineWeylGroup_Class.__init__(
+            self, cartan_type, prefix, finite=False
+        )
         self._special_nodes = ZZ
         self._n = cartan_type.n + 1
 
@@ -793,5 +808,11 @@ class FundamentalGroupGL(FundamentalGroupOfExtendedAffineWeylGroup_Class):
         i = i % self._n
         if i == 0:
             return tuple()
-        om = self.cartan_type().classical().root_system().weight_lattice().fundamental_weight(i)
+        om = (
+            self.cartan_type()
+            .classical()
+            .root_system()
+            .weight_lattice()
+            .fundamental_weight(i)
+        )
         return tuple((-om).reduced_word())

@@ -13,55 +13,85 @@ from sage.misc.call import attrcall
 from functools import reduce
 
 implications = {
- 'doubling_convex': ['doubling_any'],
- 'doubling_interval': ['doubling_lower', 'doubling_upper'],
- 'doubling_lower': ['doubling_convex', 'meet_semidistributive'],
- 'doubling_upper': ['doubling_convex', 'join_semidistributive'],
- 'cosectionally_complemented': ['complemented', 'coatomic', 'regular'],
- 'distributive': ['modular', 'semidistributive', 'join_distributive', 'meet_distributive', 'subdirectly_reducible', 'doubling_interval', 'extremal'],
- 'geometric': ['upper_semimodular', 'relatively_complemented'],
- 'isoform': ['uniform'],
- 'join_distributive': ['meet_semidistributive', 'upper_semimodular'],
- 'join_semidistributive': ['join_pseudocomplemented', 'interval_dismantlable'],
- 'lower_semimodular': ['graded'],
- 'meet_distributive': ['join_semidistributive', 'lower_semimodular'],
- 'meet_semidistributive': ['pseudocomplemented', 'interval_dismantlable'],
- 'modular': ['upper_semimodular', 'lower_semimodular', 'supersolvable'],
- 'orthocomplemented': ['self_dual', 'complemented'],
- 'planar': ['dismantlable'],
- 'dismantlable': ['sublattice_dismantlable'],
- 'interval_dismantlable': ['sublattice_dismantlable'],
- 'relatively_complemented': ['sectionally_complemented', 'cosectionally_complemented', 'isoform'],
- 'sectionally_complemented': ['complemented', 'atomic', 'regular'],
- 'semidistributive': ['join_semidistributive', 'meet_semidistributive'],
- 'simple': ['isoform'],
- 'supersolvable': ['graded'],
- 'uniform': ['regular'],
- 'uniq_orthocomplemented': ['orthocomplemented'],
- 'upper_semimodular': ['graded'],
- 'vertically_decomposable': ['subdirectly_reducible'],
+    'doubling_convex': ['doubling_any'],
+    'doubling_interval': ['doubling_lower', 'doubling_upper'],
+    'doubling_lower': ['doubling_convex', 'meet_semidistributive'],
+    'doubling_upper': ['doubling_convex', 'join_semidistributive'],
+    'cosectionally_complemented': ['complemented', 'coatomic', 'regular'],
+    'distributive': [
+        'modular',
+        'semidistributive',
+        'join_distributive',
+        'meet_distributive',
+        'subdirectly_reducible',
+        'doubling_interval',
+        'extremal',
+    ],
+    'geometric': ['upper_semimodular', 'relatively_complemented'],
+    'isoform': ['uniform'],
+    'join_distributive': ['meet_semidistributive', 'upper_semimodular'],
+    'join_semidistributive': ['join_pseudocomplemented', 'interval_dismantlable'],
+    'lower_semimodular': ['graded'],
+    'meet_distributive': ['join_semidistributive', 'lower_semimodular'],
+    'meet_semidistributive': ['pseudocomplemented', 'interval_dismantlable'],
+    'modular': ['upper_semimodular', 'lower_semimodular', 'supersolvable'],
+    'orthocomplemented': ['self_dual', 'complemented'],
+    'planar': ['dismantlable'],
+    'dismantlable': ['sublattice_dismantlable'],
+    'interval_dismantlable': ['sublattice_dismantlable'],
+    'relatively_complemented': [
+        'sectionally_complemented',
+        'cosectionally_complemented',
+        'isoform',
+    ],
+    'sectionally_complemented': ['complemented', 'atomic', 'regular'],
+    'semidistributive': ['join_semidistributive', 'meet_semidistributive'],
+    'simple': ['isoform'],
+    'supersolvable': ['graded'],
+    'uniform': ['regular'],
+    'uniq_orthocomplemented': ['orthocomplemented'],
+    'upper_semimodular': ['graded'],
+    'vertically_decomposable': ['subdirectly_reducible'],
 }
 
 dual_properties = [
- ['atomic', 'coatomic'],
- ['upper_semimodular', 'lower_semimodular'],
- ['sectionally_complemented', 'cosectionally_complemented'],
- ['join_distributive', 'meet_distributive'],
- ['join_semidistributive', 'meet_semidistributive'],
- ['pseudocomplemented', 'join_pseudocomplemented'],
- ['doubling_lower', 'doubling_upper'],
+    ['atomic', 'coatomic'],
+    ['upper_semimodular', 'lower_semimodular'],
+    ['sectionally_complemented', 'cosectionally_complemented'],
+    ['join_distributive', 'meet_distributive'],
+    ['join_semidistributive', 'meet_semidistributive'],
+    ['pseudocomplemented', 'join_pseudocomplemented'],
+    ['doubling_lower', 'doubling_upper'],
 ]
 
-selfdual_properties = ['distributive', 'modular', 'semidistributive', 'complemented',
- 'relatively_complemented', 'orthocomplemented', 'uniq_orthocomplemented', 'supersolvable', 'planar',
- 'dismantlable', 'vertically_decomposable', 'simple', 'isoform', 'uniform', 'regular',
- 'subdirectly_reducible', 'doubling_any', 'doubling_convex', 'doubling_interval',
- 'interval_dismantlable', 'interval_dismantlable']
+selfdual_properties = [
+    'distributive',
+    'modular',
+    'semidistributive',
+    'complemented',
+    'relatively_complemented',
+    'orthocomplemented',
+    'uniq_orthocomplemented',
+    'supersolvable',
+    'planar',
+    'dismantlable',
+    'vertically_decomposable',
+    'simple',
+    'isoform',
+    'uniform',
+    'regular',
+    'subdirectly_reducible',
+    'doubling_any',
+    'doubling_convex',
+    'doubling_interval',
+    'interval_dismantlable',
+    'interval_dismantlable',
+]
 
 dual_elements = [
- ['atoms', 'coatoms'],
- ['meet_irreducibles', 'join_irreducibles'],
- ['meet_primes', 'join_primes']
+    ['atoms', 'coatoms'],
+    ['meet_irreducibles', 'join_irreducibles'],
+    ['meet_primes', 'join_primes'],
 ]
 
 two_to_one = [
@@ -75,22 +105,28 @@ two_to_one = [
 ]
 
 mutually_exclusive = [
- ['doubling_any', 'simple'],
- ['vertically_decomposable', 'atomic'],
- ['vertically_decomposable', 'coatomic'],
- ['vertically_decomposable', 'regular'],
+    ['doubling_any', 'simple'],
+    ['vertically_decomposable', 'atomic'],
+    ['vertically_decomposable', 'coatomic'],
+    ['vertically_decomposable', 'regular'],
 ]
 
 set_inclusions = [
- ['atoms', 'join_irreducibles'],
- ['coatoms', 'meet_irreducibles'],
- ['double_irreducibles', 'join_irreducibles'],
- ['double_irreducibles', 'meet_irreducibles'],
- ['meet_primes', 'meet_irreducibles'],
- ['join_primes', 'join_irreducibles'],
+    ['atoms', 'join_irreducibles'],
+    ['coatoms', 'meet_irreducibles'],
+    ['double_irreducibles', 'join_irreducibles'],
+    ['double_irreducibles', 'meet_irreducibles'],
+    ['meet_primes', 'meet_irreducibles'],
+    ['join_primes', 'join_irreducibles'],
 ]
 
-sublattice_closed = ['distributive', 'modular', 'semidistributive', 'join_semidistributive', 'meet_semidistributive']
+sublattice_closed = [
+    'distributive',
+    'modular',
+    'semidistributive',
+    'join_semidistributive',
+    'meet_semidistributive',
+]
 
 
 def check_attrcall(name, L):
@@ -183,7 +219,9 @@ def check_finite_lattice(L):
     # Impossible combinations
     for p1, p2 in mutually_exclusive:
         if P[p1] and P[p2]:
-            raise ValueError("error: %s and %s should be impossible combination" % (p1, p2))
+            raise ValueError(
+                "error: %s and %s should be impossible combination" % (p1, p2)
+            )
 
     # Two-property implications
     for p1, p2, p3 in two_to_one:
@@ -193,11 +231,11 @@ def check_finite_lattice(L):
     Ldual = L.dual()
     # Selfdual properties
     for p in selfdual_properties:
-        if P[p] != check_attrcall('is_'+p, Ldual):
+        if P[p] != check_attrcall('is_' + p, Ldual):
             raise ValueError("selfdual property %s error" % p)
     # Dual properties and elements
     for p1, p2 in dual_properties:
-        if P[p1] != check_attrcall('is_'+p2, Ldual):
+        if P[p1] != check_attrcall('is_' + p2, Ldual):
             raise ValueError("dual properties error %s" % p1)
     for e1, e2 in dual_elements:
         if set(attrcall(e1)(L)) != set(attrcall(e2)(Ldual)):
@@ -210,7 +248,7 @@ def check_finite_lattice(L):
         # Dirty fix first
         if p_[:9] == 'doubling_' or p_[:5] == 'uniq_':
             continue
-        p = "is_"+p_
+        p = "is_" + p_
         if 'certificate' in sage_getargspec(getattr(L, p)).args:
             res = attrcall(p, certificate=True)(L)
             if not isinstance(res, tuple) or len(res) != 2:
@@ -223,13 +261,13 @@ def check_finite_lattice(L):
         a = L.is_supersolvable(certificate=True)[1]
         S = Subsets(L).random_element()
         if L.is_chain_of_poset(S):
-            if not L.sublattice(a+list(S)).is_distributive():
+            if not L.sublattice(a + list(S)).is_distributive():
                 raise ValueError("certificate error in is_supersolvable")
     if P['dismantlable']:
         elms = L.is_dismantlable(certificate=True)[1]
         if len(elms) != L.cardinality():
             raise ValueError("certificate error 1 in is_dismantlable")
-        elms = elms[:randint(0, len(elms)-1)]
+        elms = elms[: randint(0, len(elms) - 1)]
         L_ = L.sublattice([x for x in L if x not in elms])
         if L_.cardinality() != L.cardinality() - len(elms):
             raise ValueError("certificate error 2 in is_dismantlable")
@@ -277,11 +315,15 @@ def check_finite_lattice(L):
 
     if not P['upper_semimodular']:
         a, b = L.is_upper_semimodular(certificate=True)[1]
-        if not set(L.lower_covers(a)).intersection(set(L.lower_covers(b))) or set(L.upper_covers(a)).intersection(set(L.upper_covers(b))):
+        if not set(L.lower_covers(a)).intersection(set(L.lower_covers(b))) or set(
+            L.upper_covers(a)
+        ).intersection(set(L.upper_covers(b))):
             raise ValueError("certificate error in is_upper_semimodular")
     if not P['lower_semimodular']:
         a, b = L.is_lower_semimodular(certificate=True)[1]
-        if set(L.lower_covers(a)).intersection(set(L.lower_covers(b))) or not set(L.upper_covers(a)).intersection(set(L.upper_covers(b))):
+        if set(L.lower_covers(a)).intersection(set(L.lower_covers(b))) or not set(
+            L.upper_covers(a)
+        ).intersection(set(L.upper_covers(b))):
             raise ValueError("certificate error in is_lower_semimodular")
 
     if not P['distributive']:
@@ -290,7 +332,9 @@ def check_finite_lattice(L):
             raise ValueError("certificate error in is_distributive")
     if not P['modular']:
         x, a, b = L.is_modular(certificate=True)[1]
-        if not L.is_less_than(x, b) or L.join(x, L.meet(a, b)) == L.meet(L.join(x, a), b):
+        if not L.is_less_than(x, b) or L.join(x, L.meet(a, b)) == L.meet(
+            L.join(x, a), b
+        ):
             raise ValueError("certificate error in is_modular")
 
     if not P['pseudocomplemented']:
@@ -315,19 +359,22 @@ def check_finite_lattice(L):
 
     if not P['simple']:
         c = L.is_simple(certificate=True)[1]
-        if len(L.congruence([c[randint(0, len(c)-1)]])) == 1:
+        if len(L.congruence([c[randint(0, len(c) - 1)]])) == 1:
             raise ValueError("certificate error in is_simple")
     if not P['isoform']:
         c = L.is_isoform(certificate=True)[1]
         if len(c) == 1:
             raise ValueError("certificate error in is_isoform")
-        if all(L.subposet(c[i]).is_isomorphic(L.subposet(c[i+1])) for i in range(len(c)-1)):
+        if all(
+            L.subposet(c[i]).is_isomorphic(L.subposet(c[i + 1]))
+            for i in range(len(c) - 1)
+        ):
             raise ValueError("certificate error in is_isoform")
     if not P['uniform']:
         c = L.is_uniform(certificate=True)[1]
         if len(c) == 1:
             raise ValueError("certificate error in is_uniform")
-        if all(len(c[i]) == len(c[i+1]) for i in range(len(c)-1)):
+        if all(len(c[i]) == len(c[i + 1]) for i in range(len(c) - 1)):
             raise ValueError("certificate error in is_uniform")
     if not P['regular']:
         c = L.is_regular(certificate=True)[1]
@@ -347,7 +394,9 @@ def check_finite_lattice(L):
             for c_ in c:
                 if x in c_:
                     if y not in c_:
-                        raise ValueError("certificate error 1 in is_subdirectly_reducible")
+                        raise ValueError(
+                            "certificate error 1 in is_subdirectly_reducible"
+                        )
                     break
             else:
                 raise ValueError("certificate error 2 in is_subdirectly_reducible")
@@ -367,13 +416,25 @@ def check_finite_lattice(L):
 
     # Other ways to recognize some boolean property
     if P['distributive'] != (set(L.join_primes()) == set(L.join_irreducibles())):
-        raise ValueError("every join-irreducible of a distributive lattice should be join-prime")
+        raise ValueError(
+            "every join-irreducible of a distributive lattice should be join-prime"
+        )
     if P['distributive'] != (set(L.meet_primes()) == set(L.meet_irreducibles())):
-        raise ValueError("every meet-irreducible of a distributive lattice should be meet-prime")
-    if P['join_semidistributive'] != all(L.canonical_joinands(e) is not None for e in L):
-        raise ValueError("every element of join-semidistributive lattice should have canonical joinands")
-    if P['meet_semidistributive'] != all(L.canonical_meetands(e) is not None for e in L):
-        raise ValueError("every element of meet-semidistributive lattice should have canonical meetands")
+        raise ValueError(
+            "every meet-irreducible of a distributive lattice should be meet-prime"
+        )
+    if P['join_semidistributive'] != all(
+        L.canonical_joinands(e) is not None for e in L
+    ):
+        raise ValueError(
+            "every element of join-semidistributive lattice should have canonical joinands"
+        )
+    if P['meet_semidistributive'] != all(
+        L.canonical_meetands(e) is not None for e in L
+    ):
+        raise ValueError(
+            "every element of meet-semidistributive lattice should have canonical meetands"
+        )
 
     # Random verification of a Boolean property
     if P['relatively_complemented']:
@@ -398,7 +459,7 @@ def check_finite_lattice(L):
     # Sublattice-closed properties
     L_ = L.sublattice(Subsets(L).random_element())
     for p in sublattice_closed:
-        if P[p] and not check_attrcall('is_'+p, L_):
+        if P[p] and not check_attrcall('is_' + p, L_):
             raise ValueError("property %s should apply to sublattices" % p)
 
     # Some sublattices
@@ -414,13 +475,17 @@ def check_finite_lattice(L):
     if L.sublattice(S) == L and L.sublattice([e for e in S if e not in L_]) != L:
         raise ValueError("error in Frattini sublattice")
     L_ = L.maximal_sublattices()
-    L_ = L_[randint(0, len(L_)-1)]
+    L_ = L_[randint(0, len(L_) - 1)]
     e = L.random_element()
-    if e not in L_ and L.sublattice(list(L_)+[e]) != L:
+    if e not in L_ and L.sublattice(list(L_) + [e]) != L:
         raise ValueError("error in maximal_sublattices")
 
     # Reverse functions: vertical composition and decomposition
-    L_ = reduce(lambda a, b: a.vertical_composition(b), L.vertical_decomposition(), LatticePoset())
+    L_ = reduce(
+        lambda a, b: a.vertical_composition(b),
+        L.vertical_decomposition(),
+        LatticePoset(),
+    )
     if not L.is_isomorphic(L_):
         raise ValueError("error in vertical [de]composition")
 
@@ -429,8 +494,12 @@ def check_finite_lattice(L):
     b = L.random_element()
     m = L.meet(a, b)
     j = L.join(a, b)
-    m_ = L.subposet([e for e in L.principal_lower_set(a) if e in L.principal_lower_set(b)]).top()
-    j_ = L.subposet([e for e in L.principal_upper_set(a) if e in L.principal_upper_set(b)]).bottom()
+    m_ = L.subposet(
+        [e for e in L.principal_lower_set(a) if e in L.principal_lower_set(b)]
+    ).top()
+    j_ = L.subposet(
+        [e for e in L.principal_upper_set(a) if e in L.principal_upper_set(b)]
+    ).bottom()
     if m != m_ or m != Ldual.join(a, b):
         raise ValueError("error in meet")
     if j != j_ or j != Ldual.meet(a, b):
@@ -438,7 +507,7 @@ def check_finite_lattice(L):
 
     # Misc misc
     e = L.neutral_elements()
-    e = e[randint(0, len(e)-1)]
+    e = e[randint(0, len(e) - 1)]
     a = L.random_element()
     b = L.random_element()
     if not L.sublattice([e, a, b]).is_distributive():
@@ -476,7 +545,7 @@ def check_finite_poset(P):
     # Cardinality
     if len(P) != P.cardinality():
         raise ValueError("error 1 in cardinality")
-    if P.cardinality()-1 != P_one_less.cardinality():
+    if P.cardinality() - 1 != P_one_less.cardinality():
         raise ValueError("error 5 in cardinality")
 
     # Height
@@ -490,7 +559,7 @@ def check_finite_poset(P):
         raise ValueError("error 3 in height")
     if len(P.random_maximal_chain()) > h1:
         raise ValueError("error 4 in height")
-    if h1-P_one_less.height() not in [0, 1]:
+    if h1 - P_one_less.height() not in [0, 1]:
         raise ValueError("error 5 in height")
 
     # Width
@@ -504,7 +573,7 @@ def check_finite_poset(P):
         raise ValueError("error 3 in width")
     if len(P.random_maximal_antichain()) > w1:
         raise ValueError("error 4 in width")
-    if w1-P_one_less.width() not in [0, 1]:
+    if w1 - P_one_less.width() not in [0, 1]:
         raise ValueError("error 5 in width")
 
     # Dimension
@@ -514,14 +583,21 @@ def check_finite_poset(P):
         raise ValueError("error 1 in dimension")
     if dim1 != len(linexts):
         raise ValueError("error 2 in dimension")
-    P_ = Poset( (P.list(), lambda a, b: all(linext.index(a) < linext.index(b) for linext in linexts)) )
+    P_ = Poset(
+        (
+            P.list(),
+            lambda a, b: all(linext.index(a) < linext.index(b) for linext in linexts),
+        )
+    )
     if P_ != Poset(P.hasse_diagram()):
         raise ValueError("error 3 in dimension")
-    x = [P.random_linear_extension() for _ in range(dim1-1)]
-    P_ = Poset( (P.list(), lambda a, b: all(linext.index(a) < linext.index(b) for linext in x)) )
+    x = [P.random_linear_extension() for _ in range(dim1 - 1)]
+    P_ = Poset(
+        (P.list(), lambda a, b: all(linext.index(a) < linext.index(b) for linext in x))
+    )
     if P_ == Poset(P.hasse_diagram()):
         raise ValueError("error 4 in dimension")
-    if dim1-P_one_less.dimension() < 0:
+    if dim1 - P_one_less.dimension() < 0:
         raise ValueError("error 5 in dimension")
 
     # Jump number
@@ -535,11 +611,20 @@ def check_finite_poset(P):
         raise ValueError("error 3 in jump number")
     if P.linear_extension(P.random_linear_extension()).jump_count() < j1:
         raise ValueError("error 4 in jump number")
-    if j1-P_one_less.jump_number() not in [0, 1]:
+    if j1 - P_one_less.jump_number() not in [0, 1]:
         raise ValueError("error 5 in jump number")
 
     P_dual = P.dual()
-    selfdual_properties = ['chain', 'bounded', 'connected', 'graded', 'ranked', 'series_parallel', 'slender', 'lattice']
+    selfdual_properties = [
+        'chain',
+        'bounded',
+        'connected',
+        'graded',
+        'ranked',
+        'series_parallel',
+        'slender',
+        'lattice',
+    ]
     for prop in selfdual_properties:
         f = attrcall('is_' + prop)
         if f(P) != f(P_dual):
@@ -600,17 +685,23 @@ def check_finite_poset(P):
         raise ValueError("error in sorted")
 
     dil = P.dilworth_decomposition()
-    chain = dil[randint(0, len(dil)-1)]
+    chain = dil[randint(0, len(dil) - 1)]
     if not P.is_chain_of_poset(chain):
         raise ValueError("error in Dilworth decomposition")
     lev = P.level_sets()
-    level = lev[randint(0, len(lev)-1)]
+    level = lev[randint(0, len(lev) - 1)]
     if not P.is_antichain_of_poset(level):
         raise ValueError("error in level sets")
 
     # certificate=True must return a pair
-    bool_with_cert = ['eulerian', 'greedy', 'join_semilattice',
-                      'jump_critical', 'meet_semilattice', 'slender']
+    bool_with_cert = [
+        'eulerian',
+        'greedy',
+        'join_semilattice',
+        'jump_critical',
+        'meet_semilattice',
+        'slender',
+    ]
     for p in bool_with_cert:
         try:  # some properties are not always defined for all posets
             res1 = attrcall('is_' + p)(P)

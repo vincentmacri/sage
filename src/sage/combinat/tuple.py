@@ -1,6 +1,7 @@
 r"""
 Tuples
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #
@@ -55,6 +56,7 @@ class Tuples(Parent, UniqueRepresentation):
          (1, a),     (a, a),     (a + 1, a),
          (1, a + 1), (a, a + 1), (a + 1, a + 1)]
     """
+
     @staticmethod
     def __classcall_private__(cls, S, k):
         """
@@ -219,8 +221,9 @@ class Tuples(Parent, UniqueRepresentation):
         if i < 0:
             raise IndexError("index out of range")
         if i >= self.cardinality():
-            raise IndexError("index i (={}) is greater than or equal to the cardinality"
-                             .format(i))
+            raise IndexError(
+                "index i (={}) is greater than or equal to the cardinality".format(i)
+            )
         ts = len(self.S)
         if ts <= 1:
             return tuple(self.S[0] for _ in range(self.k))
@@ -282,6 +285,7 @@ class UnorderedTuples(Parent, UniqueRepresentation):
         [('a', 'a'), ('a', 'b'), ('a', 'c'), ('b', 'b'), ('b', 'c'),
          ('c', 'c')]
     """
+
     @staticmethod
     def __classcall_private__(cls, S, k):
         """

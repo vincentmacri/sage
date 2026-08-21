@@ -11,8 +11,9 @@ from sage.structure.element import Vector
 
 
 @rename_keyword(alpha='opacity')
-def parametric_plot3d(f, urange, vrange=None, plot_points='automatic',
-                      boundary_style=None, **kwds):
+def parametric_plot3d(
+    f, urange, vrange=None, plot_points='automatic', boundary_style=None, **kwds
+):
     r"""
     Return a parametric three-dimensional space curve or surface.
 
@@ -990,7 +991,10 @@ def parametric_plot3d(f, urange, vrange=None, plot_points='automatic',
         f = tuple(f)
 
     if isinstance(f, (list, tuple)) and f and isinstance(f[0], (list, tuple)):
-        return sum(parametric_plot3d(v, urange, vrange, plot_points=plot_points, **kwds) for v in f)
+        return sum(
+            parametric_plot3d(v, urange, vrange, plot_points=plot_points, **kwds)
+            for v in f
+        )
 
     if not isinstance(f, (tuple, list)) or len(f) != 3:
         raise ValueError("f must be a list, tuple, or vector of length 3")
@@ -1002,7 +1006,14 @@ def parametric_plot3d(f, urange, vrange=None, plot_points='automatic',
     else:
         if plot_points == "automatic":
             plot_points = [40, 40]
-        G = _parametric_plot3d_surface(f, urange, vrange, plot_points=plot_points, boundary_style=boundary_style, **kwds)
+        G = _parametric_plot3d_surface(
+            f,
+            urange,
+            vrange,
+            plot_points=plot_points,
+            boundary_style=boundary_style,
+            **kwds,
+        )
     G._set_extra_kwds(kwds)
     return G
 
@@ -1054,6 +1065,7 @@ def _parametric_plot3d_curve(f, urange, plot_points, **kwds):
         Graphics3d Object
     """
     from sage.plot.misc import setup_for_eval_on_grid
+
     g, ranges = setup_for_eval_on_grid(f, [urange], plot_points)
     f_x, f_y, f_z = g
     w = [(f_x(u), f_y(u), f_z(u)) for u in xsrange(*ranges[0], include_endpoint=True)]
@@ -1114,6 +1126,7 @@ def _parametric_plot3d_surface(f, urange, vrange, plot_points, boundary_style, *
         Graphics3d Object
     """
     from sage.plot.misc import setup_for_eval_on_grid
+
     g, ranges = setup_for_eval_on_grid(f, [urange, vrange], plot_points)
     urange = srange(*ranges[0], include_endpoint=True)
     vrange = srange(*ranges[1], include_endpoint=True)
@@ -1121,9 +1134,11 @@ def _parametric_plot3d_surface(f, urange, vrange, plot_points, boundary_style, *
 
     if boundary_style is not None:
         for u in (urange[0], urange[-1]):
-            G += line3d([(g[0](u, v), g[1](u, v), g[2](u, v)) for v in vrange],
-                        **boundary_style)
+            G += line3d(
+                [(g[0](u, v), g[1](u, v), g[2](u, v)) for v in vrange], **boundary_style
+            )
         for v in (vrange[0], vrange[-1]):
-            G += line3d([(g[0](u, v), g[1](u, v), g[2](u, v)) for u in urange],
-                        **boundary_style)
+            G += line3d(
+                [(g[0](u, v), g[1](u, v), g[2](u, v)) for u in urange], **boundary_style
+            )
     return G

@@ -10,6 +10,7 @@ AUTHORS:
 
 - David Joyner (2005-12-20): More Examples
 """
+
 # ****************************************************************************
 #       Copyright (C) 2004 William Stein <wstein@gmail.com>
 #
@@ -125,6 +126,7 @@ def category(x):
         return x.category()
     except AttributeError:
         from sage.categories.objects import Objects
+
         return Objects()
 
 
@@ -165,7 +167,9 @@ def characteristic_polynomial(x, var='x'):
     try:
         return x.charpoly(var)
     except AttributeError:
-        raise NotImplementedError("computation of charpoly of M (={}) not implemented".format(x))
+        raise NotImplementedError(
+            "computation of charpoly of M (={}) not implemented".format(x)
+        )
 
 
 charpoly = characteristic_polynomial
@@ -596,6 +600,7 @@ def symbolic_sum(expression, *args, **kwds):
     if max(len(args), len(kwds)) <= 1:
         return sum(expression, *args, **kwds)
     from sage.symbolic.ring import SR
+
     return SR(expression).sum(*args, **kwds)
 
 
@@ -677,11 +682,13 @@ def symbolic_prod(expression, *args, **kwds):
         sum(log(f(i)), i, 1, n)
     """
     from .misc_c import prod as c_prod
+
     if hasattr(expression, 'prod'):
         return expression.prod(*args, **kwds)
     if len(args) <= 1:
         return c_prod(expression, *args)
     from sage.symbolic.ring import SR
+
     return SR(expression).prod(*args, **kwds)
 
 
@@ -827,6 +834,7 @@ def integral(x, *args, **kwds):
     if hasattr(x, 'integral'):
         return x.integral(*args, **kwds)
     from sage.symbolic.ring import SR
+
     return SR(x).integral(*args, **kwds)
 
 
@@ -1208,9 +1216,13 @@ def log(*args, **kwds):
         raise TypeError("log takes at least 1 arguments (0 given)")
     if len(args) == 1:
         from sage.functions.log import ln
+
         return ln(args[0], **kwds)
     if len(args) > 2:
-        raise TypeError("log takes at most 2 arguments (%s given)" % (len(args) + 1 - (base is not None)))
+        raise TypeError(
+            "log takes at most 2 arguments (%s given)"
+            % (len(args) + 1 - (base is not None))
+        )
     try:
         return args[0].log(args[1])
     except ValueError as ex:
@@ -1219,6 +1231,7 @@ def log(*args, **kwds):
     except (AttributeError, TypeError):
         pass
     from sage.functions.log import logb
+
     return logb(args[0], args[1])
 
 
@@ -1622,11 +1635,13 @@ def numerical_approx(x, prec=None, digits=None, algorithm=None):
     """
     if prec is None:
         from sage.arith.numerical_approx import digits_to_bits
+
         prec = digits_to_bits(digits)
     try:
         n = x.numerical_approx
     except AttributeError:
         from sage.arith.numerical_approx import numerical_approx_generic
+
         return numerical_approx_generic(x, prec)
     else:
         return n(prec, algorithm=algorithm)
@@ -1824,6 +1839,7 @@ def isqrt(x):
         return x.isqrt()
     except AttributeError:
         from sage.functions.other import floor
+
         n = Integer(floor(x))
         return n.isqrt()
 
@@ -1868,6 +1884,7 @@ def squarefree_part(x):
         pass
     from sage.arith.misc import factor
     from sage.structure.element import parent
+
     F = factor(x)
     n = parent(x)(1)
     for p, e in F:
@@ -1918,13 +1935,16 @@ def _do_sqrt(x, prec=None, extend=True, all=False):
     if prec:
         if x >= 0:
             from sage.rings.real_mpfr import RealField
+
             return RealField(prec)(x).sqrt(all=all)
         from sage.rings.complex_mpfr import ComplexField
+
         return ComplexField(prec)(x).sqrt(all=all)
     if x == -1:
         from sage.symbolic.constants import I as z
     else:
         from sage.symbolic.ring import SR
+
         z = SR(x).sqrt()
 
     if all:
@@ -2018,6 +2038,7 @@ def sqrt(x, *args, **kwds):
         return math.sqrt(x)
     if type(x).__module__ == 'numpy':
         from numpy import sqrt
+
         return sqrt(x)
     try:
         return x.sqrt(*args, **kwds)

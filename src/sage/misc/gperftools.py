@@ -48,7 +48,6 @@ libprofiler = None
 
 
 class Profiler(SageObject):
-
     def __init__(self, filename=None) -> None:
         """
         Interface to the gperftools profiler.
@@ -66,6 +65,7 @@ class Profiler(SageObject):
         """
         if filename is None:
             from sage.misc.temporary_file import tmp_filename
+
             self._filename = tmp_filename(ext='.perf')
         else:
             self._filename = filename
@@ -115,11 +115,14 @@ class Profiler(SageObject):
         if libprofiler is not None:
             return libprofiler
         import ctypes.util
+
         name = ctypes.util.find_library('profiler')
         if name:
             libprofiler = ctypes.CDLL(name)
             return libprofiler
-        raise ImportError('failed to open libprofiler, make sure gperftools is installed')
+        raise ImportError(
+            'failed to open libprofiler, make sure gperftools is installed'
+        )
 
     def start(self):
         """
@@ -136,6 +139,7 @@ class Profiler(SageObject):
         """
         from signal import SIGPROF, SIG_DFL
         from cysignals.pysignals import setossignal
+
         self._previous_sigprof_handler = setossignal(SIGPROF, SIG_DFL)
         profiler = self._libprofiler()
         self._t_start = time.time()
@@ -161,8 +165,10 @@ class Profiler(SageObject):
         self._t_stop = time.time()
         if (self._t_stop - self._t_start) < 0.1:
             from warnings import warn
-            warn('not enough samples, total runtime was '
-                 'less than 100ms', RuntimeWarning)
+
+            warn(
+                'not enough samples, total runtime was less than 100ms', RuntimeWarning
+            )
 
     @cached_method
     def _pprof(self) -> str:
@@ -186,6 +192,7 @@ class Profiler(SageObject):
         """
         potential_names = ['google-pprof', 'pprof']
         from subprocess import check_output, CalledProcessError, STDOUT
+
         for name in potential_names:
             try:
                 bytes_version = check_output([name, '--version'], stderr=STDOUT)
@@ -194,8 +201,13 @@ class Profiler(SageObject):
             version = bytes_version.decode()
             if 'gperftools' not in version:
                 from warnings import warn
-                warn('the "{0}" utility does not appear to be the gperftools profiler'
-                     .format(name), RuntimeWarning)
+
+                warn(
+                    'the "{0}" utility does not appear to be the gperftools profiler'.format(
+                        name
+                    ),
+                    RuntimeWarning,
+                )
                 continue
             return name
         raise OSError('unable to run pprof, please install gperftools')
@@ -235,6 +247,7 @@ class Profiler(SageObject):
             ...
         """
         from subprocess import check_call
+
         check_call([self._pprof()] + list(args), **kwds)
 
     def top(self, cumulative=True):
@@ -330,6 +343,7 @@ def crun(s, evaluator):
     """
     prof = Profiler()
     from sage.repl.preparse import preparse
+
     py_s = preparse(s)
     prof.start()
     try:
@@ -351,8 +365,9 @@ def run_100ms() -> None:
         sage: from sage.misc.gperftools import run_100ms
         sage: run_100ms()
     """
-    t0 = time.time()   # start
-    t1 = t0 + 0.1      # end
+    t0 = time.time()  # start
+    t1 = t0 + 0.1  # end
     from sage.symbolic.ring import SR
+
     while time.time() < t1:
         sum(1 / (1 + SR(n) ** 2) for n in range(100))

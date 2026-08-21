@@ -71,6 +71,7 @@ class MatrixPlot(GraphicPrimitive):
         sage: matrix_plot([[mod(i,5)^j for i in range(5)] for j in range(1,6)])
         Graphics object consisting of 1 graphics primitive
     """
+
     def __init__(self, xy_data_array, xrange, yrange, options):
         """
         Initialize base class MatrixPlot.
@@ -115,15 +116,16 @@ class MatrixPlot(GraphicPrimitive):
             [('xmax', 4.5), ('xmin', -0.5), ('ymax', 4.5), ('ymin', -0.5)]
         """
         from sage.plot.plot import minmax_data
+
         xrange = self.xrange
         yrange = self.yrange
         # if xrange/yrange are not specified, add offset to the matrix so that,
         # for example, the square representing the (0,0) entry is centered on
         # the origin.
         if not xrange:
-            xrange = (-.5, self.xy_array_col - .5)
+            xrange = (-0.5, self.xy_array_col - 0.5)
         if not yrange:
-            yrange = (-.5, self.xy_array_row - .5)
+            yrange = (-0.5, self.xy_array_row - 0.5)
         return minmax_data(xrange, yrange, dict=True)
 
     def _allowed_options(self):
@@ -136,21 +138,23 @@ class MatrixPlot(GraphicPrimitive):
             sage: isinstance(M[0]._allowed_options(), dict)                             # needs sage.symbolic
             True
         """
-        return {'cmap':"""the name of a predefined colormap,
+        return {
+            'cmap': """the name of a predefined colormap,
                         a list of colors, or an instance of a
                         matplotlib Colormap. Type: import matplotlib.cm; matplotlib.cm.datad.keys()
                         for available colormap names.""",
-                'colorbar': "Include a colorbar indicating the levels (dense matrices only)",
-                'colorbar_options': "a dictionary of options for colorbars",
-                'zorder':"The layer level in which to draw",
-                'marker':"The marker for sparse plots",
-                'markersize':"The marker size for sparse plots",
-                'norm': "The normalization function",
-                'vmin': "The minimum value",
-                'vmax': "The maximum value",
-                'flip_y': "If False, draw the matrix with the first row on the bottom of the graph",
-                'subdivisions': "If True, draw subdivisions of the matrix",
-                'subdivision_options': "Options (boundaries and style) of the subdivisions"}
+            'colorbar': "Include a colorbar indicating the levels (dense matrices only)",
+            'colorbar_options': "a dictionary of options for colorbars",
+            'zorder': "The layer level in which to draw",
+            'marker': "The marker for sparse plots",
+            'markersize': "The marker size for sparse plots",
+            'norm': "The normalization function",
+            'vmin': "The minimum value",
+            'vmax': "The maximum value",
+            'flip_y': "If False, draw the matrix with the first row on the bottom of the graph",
+            'subdivisions': "If True, draw subdivisions of the matrix",
+            'subdivision_options': "Options (boundaries and style) of the subdivisions",
+        }
 
     def _repr_(self):
         """
@@ -162,7 +166,9 @@ class MatrixPlot(GraphicPrimitive):
             sage: m = M[0]; m                                                           # needs sage.symbolic
             MatrixPlot defined by a 5 x 5 data grid
         """
-        return "MatrixPlot defined by a {} x {} data grid".format(self.xy_array_row, self.xy_array_col)
+        return "MatrixPlot defined by a {} x {} data grid".format(
+            self.xy_array_row, self.xy_array_col
+        )
 
     def _render_on_subplot(self, subplot):
         """
@@ -172,25 +178,26 @@ class MatrixPlot(GraphicPrimitive):
             Graphics object consisting of 1 graphics primitive
         """
         options = self.options()
-        cmap = get_cmap(options.pop('cmap',None))
+        cmap = get_cmap(options.pop('cmap', None))
         flip_y = options['flip_y']
 
         norm = options['norm']
 
         if norm == 'value':
             import matplotlib
+
             norm = matplotlib.colors.NoNorm()
 
         lim = self.get_minmax_data()
         if options['subdivisions']:
             subdiv_options = options['subdivision_options']
             if isinstance(subdiv_options['boundaries'], (list, tuple)):
-                rowsub,colsub = subdiv_options['boundaries']
+                rowsub, colsub = subdiv_options['boundaries']
             else:
                 rowsub = subdiv_options['boundaries']
                 colsub = subdiv_options['boundaries']
             if isinstance(subdiv_options['style'], (list, tuple)):
-                rowstyle,colstyle = subdiv_options['style']
+                rowstyle, colstyle = subdiv_options['style']
             else:
                 rowstyle = subdiv_options['style']
                 colstyle = subdiv_options['style']
@@ -201,40 +208,57 @@ class MatrixPlot(GraphicPrimitive):
 
             # Make line objects for subdivisions
             from .line import line2d
+
             # First draw horizontal lines representing row subdivisions
             for y in rowsub:
-                y = lim['ymin'] + ((lim['ymax'] - lim['ymin'])
-                                   * y / self.xy_array_row)
+                y = lim['ymin'] + ((lim['ymax'] - lim['ymin']) * y / self.xy_array_row)
                 l = line2d([(lim['xmin'], y), (lim['xmax'], y)], **rowstyle)[0]
                 l._render_on_subplot(subplot)
             for x in colsub:
-                x = lim['xmin'] + ((lim['xmax'] - lim['xmin'])
-                                   * x / self.xy_array_col)
+                x = lim['xmin'] + ((lim['xmax'] - lim['xmin']) * x / self.xy_array_col)
                 l = line2d([(x, lim['ymin']), (x, lim['ymax'])], **colstyle)[0]
                 l._render_on_subplot(subplot)
 
         if hasattr(self.xy_data_array, 'tocoo'):
             # Sparse matrix -- use spy
             opts = options.copy()
-            for opt in ['vmin', 'vmax', 'norm', 'flip_y', 'subdivisions',
-                        'subdivision_options', 'colorbar', 'colorbar_options']:
+            for opt in [
+                'vmin',
+                'vmax',
+                'norm',
+                'flip_y',
+                'subdivisions',
+                'subdivision_options',
+                'colorbar',
+                'colorbar_options',
+            ]:
                 del opts[opt]
             subplot.spy(self.xy_data_array, **opts)
         else:
-            extent = (lim['xmin'], lim['xmax'],
-                      lim['ymax' if flip_y else 'ymin'],
-                      lim['ymin' if flip_y else 'ymax'])
-            opts = {'cmap': cmap, 'interpolation': 'nearest',
-                    'aspect': 'equal', 'norm': norm,
-                    'vmin': options['vmin'], 'vmax': options['vmax'],
-                    'origin': ('upper' if flip_y else 'lower'),
-                    'extent': extent, 'zorder': options.get('zorder')}
+            extent = (
+                lim['xmin'],
+                lim['xmax'],
+                lim['ymax' if flip_y else 'ymin'],
+                lim['ymin' if flip_y else 'ymax'],
+            )
+            opts = {
+                'cmap': cmap,
+                'interpolation': 'nearest',
+                'aspect': 'equal',
+                'norm': norm,
+                'vmin': options['vmin'],
+                'vmax': options['vmax'],
+                'origin': ('upper' if flip_y else 'lower'),
+                'extent': extent,
+                'zorder': options.get('zorder'),
+            }
             image = subplot.imshow(self.xy_data_array, **opts)
 
             if options.get('colorbar', False):
                 colorbar_options = options['colorbar_options']
                 from matplotlib import colorbar
-                cax,kwds = colorbar.make_axes_gridspec(subplot, **colorbar_options)
+
+                cax, kwds = colorbar.make_axes_gridspec(subplot, **colorbar_options)
                 colorbar.Colorbar(cax, image, **kwds)
 
         if flip_y:
@@ -245,10 +269,21 @@ class MatrixPlot(GraphicPrimitive):
 
 
 @suboptions('colorbar', orientation='vertical', format=None)
-@suboptions('subdivision',boundaries=None, style=None)
-@options(aspect_ratio=1, axes=False, cmap='Greys', colorbar=False,
-         frame=True, marker='.', norm=None, flip_y=True,
-         subdivisions=False, ticks_integer=True, vmin=None, vmax=None)
+@suboptions('subdivision', boundaries=None, style=None)
+@options(
+    aspect_ratio=1,
+    axes=False,
+    cmap='Greys',
+    colorbar=False,
+    frame=True,
+    marker='.',
+    norm=None,
+    flip_y=True,
+    subdivisions=False,
+    ticks_integer=True,
+    vmin=None,
+    vmax=None,
+)
 def matrix_plot(mat, xrange=None, yrange=None, **options):
     r"""
     A plot of a given matrix or 2D array.
@@ -558,18 +593,26 @@ def matrix_plot(mat, xrange=None, yrange=None, **options):
     from sage.plot.graphics import Graphics
     from sage.structure.element import Matrix
     from sage.rings.real_double import RDF
+
     orig_mat = mat
     if isinstance(mat, Matrix):
         sparse = mat.is_sparse()
         if sparse:
             entries = list(mat._dict().items())
             try:
-                data = np.asarray([d for _,d in entries], dtype=float)
+                data = np.asarray([d for _, d in entries], dtype=float)
             except Exception:
                 raise ValueError("cannot convert entries to floating point numbers")
-            positions = np.asarray([[row for (row,col),_ in entries],
-                                    [col for (row,col),_ in entries]], dtype=int)
-            mat = scipysparse.coo_matrix((data,positions), shape=(mat.nrows(), mat.ncols()))
+            positions = np.asarray(
+                [
+                    [row for (row, col), _ in entries],
+                    [col for (row, col), _ in entries],
+                ],
+                dtype=int,
+            )
+            mat = scipysparse.coo_matrix(
+                (data, positions), shape=(mat.nrows(), mat.ncols())
+            )
         else:
             mat = mat.change_ring(RDF).numpy()
     elif hasattr(mat, 'tocoo'):

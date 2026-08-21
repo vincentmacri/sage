@@ -86,7 +86,7 @@ def berlekamp_massey(a):
         K = sage.rings.rational_field.RationalField()
 
     R, x = K['x'].objgen()
-    f0, f1 = R(a), x**(2 * M)
+    f0, f1 = R(a), x ** (2 * M)
     s0, s1 = 1, 0
     while f1.degree() >= M:
         f0, (q, f1) = f1, f0.quo_rem(f1)

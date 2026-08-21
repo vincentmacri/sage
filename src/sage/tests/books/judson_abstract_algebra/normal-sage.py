@@ -1,11 +1,11 @@
 ##          Sage Doctest File         ##
-#**************************************#
-#*    Generated from PreTeXt source   *#
-#*    on 2017-08-24T11:43:34-07:00    *#
-#*                                    *#
-#*   http://mathbook.pugetsound.edu   *#
-#*                                    *#
-#**************************************#
+# **************************************#
+# *    Generated from PreTeXt source   *#
+# *    on 2017-08-24T11:43:34-07:00    *#
+# *                                    *#
+# *   http://mathbook.pugetsound.edu   *#
+# *                                    *#
+# **************************************#
 ##
 """
 Please contact Rob Beezer (beezer@ups.edu) with
@@ -18,6 +18,7 @@ Algebra: Theory and Applications" when the text is
 updated, and a replacement of this file is proposed
 for review.
 """
+
 ##
 ## To execute doctests in these files, run
 ##   $ $SAGE_ROOT/sage -t <directory-of-these-files>

@@ -109,7 +109,7 @@ def multiply_variable(self, c, i, in_place=False):
 
     # Switch off-diagonal elements
     for k in range(self.dim()):
-        if (k != i):
+        if k != i:
             tmp = c * self[k, i]
             self[k, i] = tmp
 
@@ -154,7 +154,7 @@ def divide_variable(self, c, i, in_place=False):
 
     # Switch off-diagonal elements
     for k in range(self.dim()):
-        if (k != i):
+        if k != i:
             tmp = self[k, i] / c
             self[k, i] = tmp
 
@@ -201,12 +201,16 @@ def scale_by_factor(self, c, change_value_ring_flag=False):
         return Q
     except ValueError:
         if not change_value_ring_flag:
-            raise TypeError("we could not rescale the lattice in this way and preserve its defining ring")
+            raise TypeError(
+                "we could not rescale the lattice in this way and preserve its defining ring"
+            )
         else:
             raise RuntimeError("this code is not tested by current doctests")
             F = R.fraction_field()
             list2 = [F(x) for x in new_coeff_list]
-            Q = self.parent()(self.dim(), F, list2, R)  # DEFINE THIS!  IT WANTS TO SET THE EQUIVALENCE RING TO R, BUT WITH COEFFS IN F.
+            Q = self.parent()(
+                self.dim(), F, list2, R
+            )  # DEFINE THIS!  IT WANTS TO SET THE EQUIVALENCE RING TO R, BUT WITH COEFFS IN F.
             # Q.set_equivalence_ring(R)
             return Q
 
@@ -236,10 +240,11 @@ def extract_variables(QF, var_indices):
         [ * 9 ]
     """
     m = len(var_indices)
-    return QF.parent()(QF.base_ring(), m,
-                       [QF[var_indices[i], var_indices[j]]
-                        for i in range(m)
-                        for j in range(i, m)])
+    return QF.parent()(
+        QF.base_ring(),
+        m,
+        [QF[var_indices[i], var_indices[j]] for i in range(m) for j in range(i, m)],
+    )
 
 
 def elementary_substitution(self, c, i, j, in_place=False):  # CHECK THIS!!!
@@ -302,12 +307,14 @@ def elementary_substitution(self, c, i, j, in_place=False):  # CHECK THIS!!!
         return Q
 
     # Adjust the a_{k,j} coefficients
-    ij_old = self[i, j]    # Store this since it's overwritten, but used in the a_{j,j} computation!
+    ij_old = self[
+        i, j
+    ]  # Store this since it's overwritten, but used in the a_{j,j} computation!
     for k in range(self.dim()):
         if (k != i) and (k != j):
             ans = self[j, k] + c * self[i, k]
             self[j, k] = ans
-        elif (k == j):
+        elif k == j:
             ans = self[j, k] + c * ij_old + c * c * self[i, i]
             self[j, k] = ans
         else:

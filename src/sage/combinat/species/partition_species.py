@@ -41,8 +41,13 @@ class PartitionSpeciesStructure(GenericSpeciesStructure):
             sage: s == loads(dumps(s))
             True
         """
-        list = [SubsetSpeciesStructure(parent, labels, block) if not isinstance(block, SubsetSpeciesStructure) else block for block in list]
-        list.sort(key=lambda block:(-len(block), block))
+        list = [
+            SubsetSpeciesStructure(parent, labels, block)
+            if not isinstance(block, SubsetSpeciesStructure)
+            else block
+            for block in list
+        ]
+        list.sort(key=lambda block: (-len(block), block))
         GenericSpeciesStructure.__init__(self, parent, labels, list)
 
     def __repr__(self):
@@ -54,7 +59,7 @@ class PartitionSpeciesStructure(GenericSpeciesStructure):
             {{'a', 'b', 'c'}}
         """
         s = GenericSpeciesStructure.__repr__(self)
-        return "{"+s[1:-1]+"}"
+        return "{" + s[1:-1] + "}"
 
     def canonical_label(self):
         """
@@ -89,7 +94,7 @@ class PartitionSpeciesStructure(GenericSpeciesStructure):
             {{2, 4}, {3}}
         """
         l = [block.transport(perm)._list for block in self._list]
-        l.sort(key=lambda block:(-len(block), block))
+        l.sort(key=lambda block: (-len(block), block))
         return PartitionSpeciesStructure(self.parent(), self._labels, l)
 
     def automorphism_group(self):
@@ -107,8 +112,11 @@ class PartitionSpeciesStructure(GenericSpeciesStructure):
             Permutation Group with generators [(1,2)]
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-        return reduce(lambda a,b: a.direct_product(b, maps=False),
-                      [SymmetricGroup(block._list) for block in self._list])
+
+        return reduce(
+            lambda a, b: a.direct_product(b, maps=False),
+            [SymmetricGroup(block._list) for block in self._list],
+        )
 
     def change_labels(self, labels):
         """
@@ -132,7 +140,9 @@ class PartitionSpeciesStructure(GenericSpeciesStructure):
             sage: a.change_labels([1,2,3])
             {{1, 2}, {3}}
         """
-        return PartitionSpeciesStructure(self.parent(), labels, [block.change_labels(labels) for block in self._list])
+        return PartitionSpeciesStructure(
+            self.parent(), labels, [block.change_labels(labels) for block in self._list]
+        )
 
 
 class PartitionSpecies(GenericCombinatorialSpecies):
@@ -179,6 +189,7 @@ class PartitionSpecies(GenericCombinatorialSpecies):
             [{{1, 2, 3}}, {{1, 3}, {2}}, {{1, 2}, {3}}, {{2, 3}, {1}}, {{1}, {2}, {3}}]
         """
         from sage.combinat.restricted_growth import RestrictedGrowthArrays
+
         n = len(labels)
 
         if n == 0:
@@ -218,6 +229,7 @@ class PartitionSpecies(GenericCombinatorialSpecies):
              {{1}, {2}, {3}, {4}}]
         """
         from sage.combinat.partition import Partitions
+
         for p in Partitions(len(labels)):
             yield self._canonical_rep_from_partition(structure_class, labels, p)
 
@@ -233,7 +245,11 @@ class PartitionSpecies(GenericCombinatorialSpecies):
             {{1, 2}, {3}}
         """
         breaks = [sum(p[:i]) for i in range(len(p) + 1)]
-        return structure_class(self, labels, [list(range(breaks[i]+1, breaks[i+1]+1)) for i in range(len(p))])
+        return structure_class(
+            self,
+            labels,
+            [list(range(breaks[i] + 1, breaks[i + 1] + 1)) for i in range(len(p))],
+        )
 
     def _gs_callable(self, base_ring, n):
         r"""
@@ -245,6 +261,7 @@ class PartitionSpecies(GenericCombinatorialSpecies):
             [1, 1, 1, 5/6, 5/8]
         """
         from sage.combinat.combinat import bell_number
+
         return self._weight * base_ring(bell_number(n) / factorial(n))
 
     def _itgs_callable(self, base_ring, n):
@@ -260,7 +277,8 @@ class PartitionSpecies(GenericCombinatorialSpecies):
             [1, 1, 2, 3, 5, 7, 11, 15, 22, 30]
         """
         from sage.combinat.partition import number_of_partitions
-        return self._weight*base_ring(number_of_partitions(n))
+
+        return self._weight * base_ring(number_of_partitions(n))
 
     def _cis(self, series_ring, base_ring):
         r"""
@@ -288,5 +306,5 @@ class PartitionSpecies(GenericCombinatorialSpecies):
         return res
 
 
-#Backward compatibility
+# Backward compatibility
 PartitionSpecies_class = PartitionSpecies

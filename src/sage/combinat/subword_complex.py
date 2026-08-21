@@ -99,6 +99,7 @@ AUTHORS:
 - Christian Stump: initial version
 - Vincent Pilaud: greedy flip algorithm, minor improvements, documentation
 """
+
 # ****************************************************************************
 #       Copyright (C) 2015      Christian Stump <christian.stump@gmail.com>
 #
@@ -181,7 +182,9 @@ class SubwordComplexFacet(Simplex, Element):
             sage: TestSuite(SC).run()                                   # optional - gap3
         """
         if facet_test and positions not in parent:
-            raise ValueError("the given iterable %s is not a facet of the %s" % (positions, parent))
+            raise ValueError(
+                "the given iterable %s is not a facet of the %s" % (positions, parent)
+            )
         Simplex.__init__(self, sorted(positions))
         Element.__init__(self, parent)
         self._extended_root_conf_indices = None
@@ -226,7 +229,9 @@ class SubwordComplexFacet(Simplex, Element):
             [0, 1, 3, 1, 2]
         """
         if self._extended_root_conf_indices is None:
-            self._extended_root_conf_indices = _extended_root_configuration_indices(self.parent().group(), self.parent().word(), self)
+            self._extended_root_conf_indices = _extended_root_configuration_indices(
+                self.parent().group(), self.parent().word(), self
+            )
         return self._extended_root_conf_indices
 
     def _root_configuration_indices(self):
@@ -394,9 +399,11 @@ class SubwordComplexFacet(Simplex, Element):
         W = self.parent().group()
         N = len(W.long_element(as_word=True))
         root_conf = self._root_configuration_indices()
-        return [~w for w in W
-                if all(w.action_on_root_indices(i, side='left') < N
-                       for i in root_conf)]
+        return [
+            ~w
+            for w in W
+            if all(w.action_on_root_indices(i, side='left') < N for i in root_conf)
+        ]
 
     def is_vertex(self) -> bool:
         r"""
@@ -553,8 +560,7 @@ class SubwordComplexFacet(Simplex, Element):
             I = W.index_set()
             Lambda = W.fundamental_weights()
             if coefficients is not None:
-                coeff = {I[i]: coefficients[i]
-                         for i in range(len(coefficients))}
+                coeff = {I[i]: coefficients[i] for i in range(len(coefficients))}
                 Lambda = {li: coeff[li] * Lambda[li] for li in Lambda.keys()}
             Q = self.parent().word()
             V_weights = []
@@ -733,8 +739,17 @@ class SubwordComplexFacet(Simplex, Element):
 
     # plot and show
 
-    def plot(self, list_colors=None, labels=[], thickness=3, fontsize=14,
-             shift=(0, 0), compact=False, roots=True, **args):
+    def plot(
+        self,
+        list_colors=None,
+        labels=[],
+        thickness=3,
+        fontsize=14,
+        shift=(0, 0),
+        compact=False,
+        roots=True,
+        **args,
+    ):
         r"""
         In type `A` or `B`, plot a pseudoline arrangement representing
         the facet ``self``.
@@ -812,7 +827,9 @@ class SubwordComplexFacet(Simplex, Element):
         W = S.group()
         n = W.rank()
 
-        error_msg = "plotting is currently only implemented for irreducibles types A, B, and C."
+        error_msg = (
+            "plotting is currently only implemented for irreducibles types A, B, and C."
+        )
         if S._cartan_type is not None:
             cartan_type = S._cartan_type
             type = cartan_type.type()
@@ -854,18 +871,19 @@ class SubwordComplexFacet(Simplex, Element):
         else:
             last = n - 1
         permutation = Permutation(range(1, last + 2))
-        x_max = .5
+        x_max = 0.5
 
         # list the pseudolines to be drawn
-        pseudolines = [[(shift[0], shift[1] + i), .5] for i in range(last + 1)]
+        pseudolines = [[(shift[0], shift[1] + i), 0.5] for i in range(last + 1)]
         pseudolines_type_B = [[] for _ in repeat(None, last + 1)]
         contact_points = []
         root_labels = []
         pseudoline_labels = []
         if labels is not False:
-            pseudoline_labels += [(pseudoline,
-                                   (shift[0] - .1, shift[1] + pseudoline),
-                                   "center") for pseudoline in range(last + 1)]
+            pseudoline_labels += [
+                (pseudoline, (shift[0] - 0.1, shift[1] + pseudoline), "center")
+                for pseudoline in range(last + 1)
+            ]
         if roots:
             extended_root_conf = self.extended_root_configuration()
         for position in range(len(Q)):
@@ -879,56 +897,90 @@ class SubwordComplexFacet(Simplex, Element):
                     x = x_max
                     x_max += 1
                 if position in self:
-                    pseudolines[pseudoline] += [(shift[0] + x + 1,
-                                                 shift[1]), x + 1]
-                    contact_points += [[(shift[0] + x + .5, shift[1] - .2),
-                                        (shift[0] + x + .5, shift[1])]]
+                    pseudolines[pseudoline] += [(shift[0] + x + 1, shift[1]), x + 1]
+                    contact_points += [
+                        [
+                            (shift[0] + x + 0.5, shift[1] - 0.2),
+                            (shift[0] + x + 0.5, shift[1]),
+                        ]
+                    ]
                 else:
-                    pseudolines_type_B[pseudoline] = pseudolines[pseudoline] + [(shift[0] + x + .5, shift[1]), (shift[0] + x + .5, shift[1] - .2)]
-                    pseudolines[pseudoline] = [(shift[0] + x + .6, shift[1] - .2), (shift[0] + x + .6, shift[1]), .5]
+                    pseudolines_type_B[pseudoline] = pseudolines[pseudoline] + [
+                        (shift[0] + x + 0.5, shift[1]),
+                        (shift[0] + x + 0.5, shift[1] - 0.2),
+                    ]
+                    pseudolines[pseudoline] = [
+                        (shift[0] + x + 0.6, shift[1] - 0.2),
+                        (shift[0] + x + 0.6, shift[1]),
+                        0.5,
+                    ]
                 if roots:
-                    root_labels.append((extended_root_conf[position],
-                                        (shift[0] + x + .25, shift[1] - .2)))
+                    root_labels.append(
+                        (
+                            extended_root_conf[position],
+                            (shift[0] + x + 0.25, shift[1] - 0.2),
+                        )
+                    )
             else:
                 if type in ['B', 'C']:
                     y -= 1
                 pseudoline1 = permutation(y + 1) - 1
                 pseudoline2 = permutation(y + 2) - 1
-                x = max(pseudolines[pseudoline1].pop(),
-                        pseudolines[pseudoline2].pop())
+                x = max(pseudolines[pseudoline1].pop(), pseudolines[pseudoline2].pop())
                 if compact:
                     x_max = max(x + 1, x_max)
                 else:
                     x = x_max
                     x_max += 1
                 if position in self:
-                    pseudolines[pseudoline1] += [(shift[0] + x + 1,
-                                                  shift[1] + y), x + 1]
-                    pseudolines[pseudoline2] += [(shift[0] + x + 1,
-                                                  shift[1] + y + 1), x + 1]
-                    contact_points += [[(shift[0] + x + .5, shift[1] + y),
-                                        (shift[0] + x + .5, shift[1] + y + 1)]]
+                    pseudolines[pseudoline1] += [
+                        (shift[0] + x + 1, shift[1] + y),
+                        x + 1,
+                    ]
+                    pseudolines[pseudoline2] += [
+                        (shift[0] + x + 1, shift[1] + y + 1),
+                        x + 1,
+                    ]
+                    contact_points += [
+                        [
+                            (shift[0] + x + 0.5, shift[1] + y),
+                            (shift[0] + x + 0.5, shift[1] + y + 1),
+                        ]
+                    ]
                 else:
-                    pseudolines[pseudoline1] += [(shift[0] + x + .6,
-                                                  shift[1] + y),
-                                                 (shift[0] + x + .6,
-                                                  shift[1] + y + 1), x + 1]
-                    pseudolines[pseudoline2] += [(shift[0] + x + .5,
-                                                  shift[1] + y + 1),
-                                                 (shift[0] + x + .5,
-                                                  shift[1] + y), x + 1]
-                    permutation = permutation._left_to_right_multiply_on_left(Permutation((y + 1, y + 2)))
+                    pseudolines[pseudoline1] += [
+                        (shift[0] + x + 0.6, shift[1] + y),
+                        (shift[0] + x + 0.6, shift[1] + y + 1),
+                        x + 1,
+                    ]
+                    pseudolines[pseudoline2] += [
+                        (shift[0] + x + 0.5, shift[1] + y + 1),
+                        (shift[0] + x + 0.5, shift[1] + y),
+                        x + 1,
+                    ]
+                    permutation = permutation._left_to_right_multiply_on_left(
+                        Permutation((y + 1, y + 2))
+                    )
                 if roots:
-                    root_labels.append((extended_root_conf[position],
-                                        (shift[0] + x + .35,
-                                         shift[1] + y + .5)))
+                    root_labels.append(
+                        (
+                            extended_root_conf[position],
+                            (shift[0] + x + 0.35, shift[1] + y + 0.5),
+                        )
+                    )
                 if labels is not False:
-                    pseudoline_labels += [(pseudoline1, (shift[0] + x + .35,
-                                                         shift[1] + y + .05),
-                                           "bottom"),
-                                          (pseudoline2, (shift[0] + x + .35,
-                                                         shift[1] + y + .95),
-                                           "top")]
+                    pseudoline_labels += [
+                        (
+                            pseudoline1,
+                            (shift[0] + x + 0.35, shift[1] + y + 0.05),
+                            "bottom",
+                        ),
+                        (
+                            pseudoline2,
+                            (shift[0] + x + 0.35, shift[1] + y + 0.95),
+                            "top",
+                        ),
+                    ]
 
         # transform list to real lines
         if list_colors is None:
@@ -938,38 +990,57 @@ class SubwordComplexFacet(Simplex, Element):
         thickness = max(thickness, 2)
         L = line([(1, 1)])
         for contact_point in contact_points:
-            L += line(contact_point, rgbcolor=[0, 0, 0],
-                      thickness=thickness - 1)
+            L += line(contact_point, rgbcolor=[0, 0, 0], thickness=thickness - 1)
         for pseudoline in range(last + 1):
             pseudolines[pseudoline].pop()
-            pseudolines[pseudoline].append((shift[0] + x_max,
-                                            shift[1] + permutation.inverse()(pseudoline + 1) - 1))
-            L += line(pseudolines[pseudoline], color=list_colors[pseudoline],
-                      thickness=thickness)
+            pseudolines[pseudoline].append(
+                (shift[0] + x_max, shift[1] + permutation.inverse()(pseudoline + 1) - 1)
+            )
+            L += line(
+                pseudolines[pseudoline],
+                color=list_colors[pseudoline],
+                thickness=thickness,
+            )
             if type in ['B', 'C']:
-                L += line(pseudolines_type_B[pseudoline],
-                          color=list_colors[pseudoline],
-                          thickness=thickness, linestyle='--')
+                L += line(
+                    pseudolines_type_B[pseudoline],
+                    color=list_colors[pseudoline],
+                    thickness=thickness,
+                    linestyle='--',
+                )
         for root_label in root_labels:
-            L += text(root_label[0], root_label[1], rgbcolor=[0, 0, 0],
-                      fontsize=fontsize, vertical_alignment='center',
-                      horizontal_alignment='right')
+            L += text(
+                root_label[0],
+                root_label[1],
+                rgbcolor=[0, 0, 0],
+                fontsize=fontsize,
+                vertical_alignment='center',
+                horizontal_alignment='right',
+            )
         if len(labels) < last + 1:
             labels = list(range(1, last + 2))
         for pseudoline_label in pseudoline_labels:
-            L += text(labels[pseudoline_label[0]], pseudoline_label[1],
-                      color=list_colors[pseudoline_label[0]],
-                      fontsize=fontsize,
-                      vertical_alignment=pseudoline_label[2],
-                      horizontal_alignment='right')
+            L += text(
+                labels[pseudoline_label[0]],
+                pseudoline_label[1],
+                color=list_colors[pseudoline_label[0]],
+                fontsize=fontsize,
+                vertical_alignment=pseudoline_label[2],
+                horizontal_alignment='right',
+            )
         if labels is not False:
             for pseudoline in range(last):
-                L += text(labels[pseudoline],
-                          (shift[0] + x_max + .1,
-                           shift[1] + permutation.inverse()(pseudoline + 1) - 1),
-                          color=list_colors[pseudoline], fontsize=fontsize,
-                          vertical_alignment='center',
-                          horizontal_alignment='left')
+                L += text(
+                    labels[pseudoline],
+                    (
+                        shift[0] + x_max + 0.1,
+                        shift[1] + permutation.inverse()(pseudoline + 1) - 1,
+                    ),
+                    color=list_colors[pseudoline],
+                    fontsize=fontsize,
+                    vertical_alignment='center',
+                    horizontal_alignment='left',
+                )
         L.axes(False)
         return L
 
@@ -1134,7 +1205,9 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
         W = w.parent()
         I = W.index_set()
         if not all(i in I for i in Q):
-            raise ValueError("all elements in Q = %s must be contained in the index set %s" % (Q, I))
+            raise ValueError(
+                "all elements in Q = %s must be contained in the index set %s" % (Q, I)
+            )
         self._Q = Q
         self._pi = w
         if algorithm == "inductive":
@@ -1142,14 +1215,18 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
         elif algorithm == "greedy":
             Fs, Rs = _greedy_flip_algorithm(Q, w)
         else:
-            raise ValueError("the optional argument algorithm can be "
-                             "either inductive or greedy")
+            raise ValueError(
+                "the optional argument algorithm can be either inductive or greedy"
+            )
         if not Fs:
-            raise ValueError("the word %s does not contain a reduced expression for %s" % (Q, w.reduced_word()))
+            raise ValueError(
+                "the word %s does not contain a reduced expression for %s"
+                % (Q, w.reduced_word())
+            )
         cat = SimplicialComplexes().Finite().Enumerated()
-        SimplicialComplex.__init__(self, maximal_faces=Fs,
-                                   maximality_check=False,
-                                   category=cat)
+        SimplicialComplex.__init__(
+            self, maximal_faces=Fs, maximality_check=False, category=cat
+        )
         self._W = W
         try:
             T = W.coxeter_matrix().coxeter_type()
@@ -1184,8 +1261,12 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             Subword complex of type ['A', 2] for Q = (1, 2, 1, 2, 1) and pi = [1, 2, 1]
         """
         if self._cartan_type is None:
-            return "Subword complex of unknown type for Q = {} and pi = {}".format(self._Q, self._pi.reduced_word())
-        return 'Subword complex of type {} for Q = {} and pi = {}'.format(self.cartan_type(), self._Q, self._pi.reduced_word())
+            return "Subword complex of unknown type for Q = {} and pi = {}".format(
+                self._Q, self._pi.reduced_word()
+            )
+        return 'Subword complex of type {} for Q = {} and pi = {}'.format(
+            self.cartan_type(), self._Q, self._pi.reduced_word()
+        )
 
     def __call__(self, F, facet_test=True):
         r"""
@@ -1261,7 +1342,9 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
         r = range(len(Q))
         if not all(i in r for i in F):
             return False
-        return W.from_reduced_word(Qi for i, Qi in enumerate(Q) if i not in F) == self.pi()
+        return (
+            W.from_reduced_word(Qi for i, Qi in enumerate(Q) if i not in F) == self.pi()
+        )
 
     # getting the stored properties
 
@@ -1431,8 +1514,9 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             sage: SC.greedy_facet(side='negative')
             (3, 4)
         """
-        return self.element_class(self, _greedy_facet(self.word(),
-                                                      self.pi(), side=side))
+        return self.element_class(
+            self, _greedy_facet(self.word(), self.pi(), side=side)
+        )
 
     # topological properties
 
@@ -1556,6 +1640,7 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             True
         """
         from sage.matrix.constructor import matrix
+
         M = matrix(self.greedy_facet(side='negative').root_configuration())
         return M.rank() == max(M.ncols(), M.nrows())
 
@@ -1662,6 +1747,7 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             Rational polyhedral fan in 2-d lattice N
         """
         from sage.geometry.fan import Fan
+
         return Fan([F.weight_cone() for F in self])
 
     # brick polytope
@@ -1720,13 +1806,19 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
         """
         G = self.group()
         from sage.rings.rational_field import QQ
+
         if G.coxeter_matrix().is_crystallographic():
-            min_sum = [[QQ(v) for v in F.extended_weight_configuration()[i]] for F in self]
+            min_sum = [
+                [QQ(v) for v in F.extended_weight_configuration()[i]] for F in self
+            ]
         else:
             from sage.rings.cc import CC
             from warnings import warn
+
             warn("the polytope is built with rational vertices", RuntimeWarning)
-            min_sum = [[QQ(CC(v)) for v in F.extended_weight_configuration()[i]] for F in self]
+            min_sum = [
+                [QQ(CC(v)) for v in F.extended_weight_configuration()[i]] for F in self
+            ]
         return Polyhedron(min_sum)
 
     def brick_polytope(self, coefficients=None):
@@ -1774,11 +1866,13 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
         BV = self.brick_vectors(coefficients=coefficients)
         G = self.group()
         from sage.rings.rational_field import QQ
+
         if G.coxeter_matrix().is_crystallographic():
             BV = [[QQ(v) for v in V] for V in BV]
         else:
             from sage.rings.cc import CC
             from warnings import warn
+
             warn("the polytope is built with rational vertices", RuntimeWarning)
             BV = [[QQ(CC(v).real()) for v in V] for V in BV]
         return Polyhedron(BV)
@@ -1880,6 +1974,7 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             Digraph on 5 vertices
         """
         from sage.graphs.digraph import DiGraph
+
         return DiGraph(self.cover_relations(label=label))
 
     def interval(self, I, J) -> set:
@@ -1930,6 +2025,7 @@ class SubwordComplex(UniqueRepresentation, SimplicialComplex):
             Finite poset containing 5 elements
         """
         from sage.combinat.posets.posets import Poset
+
         cov = self.cover_relations()
         if not self.is_root_independent():
             Fs = [F for F in self if F.is_vertex()]
@@ -1977,8 +2073,7 @@ def _greedy_facet(Q, w, side='negative', n=None, pos=0, l=None, elems=[]):
         Q = Q[::-1]
         w = w.inverse()
     else:
-        raise ValueError("the optional argument side is not positive "
-                         "or negative")
+        raise ValueError("the optional argument side is not positive or negative")
 
     if n is None:
         n = len(Q)
@@ -1993,8 +2088,9 @@ def _greedy_facet(Q, w, side='negative', n=None, pos=0, l=None, elems=[]):
     s = Q[pos]
 
     if w.has_left_descent(s):
-        X = _greedy_facet(Q, w.apply_simple_reflection_left(s),
-                          n=n, pos=pos + 1, l=l - 1, elems=elems)
+        X = _greedy_facet(
+            Q, w.apply_simple_reflection_left(s), n=n, pos=pos + 1, l=l - 1, elems=elems
+        )
     else:
         X = []
 
@@ -2043,8 +2139,7 @@ def _extended_root_configuration_indices(W, Q, F):
     V_roots = []
     pi = W.one()
     for i, wi in enumerate(Q):
-        V_roots.append(pi.action_on_root_indices(W.simple_root_index(wi),
-                                                 side='left'))
+        V_roots.append(pi.action_on_root_indices(W.simple_root_index(wi), side='left'))
         if i not in F:
             pi = pi.apply_simple_reflection_right(wi)
     return V_roots

@@ -177,6 +177,7 @@ class MSymbol(SageObject):
         sage: loads(dumps(alpha))==alpha
         True
     """
+
     def __init__(self, N, c, d=None, check=True):
         """
         See ``MSymbol`` for full documentation.
@@ -212,7 +213,9 @@ class MSymbol(SageObject):
                 c1 = R(c)
                 d1 = R(d)
             except (ValueError, TypeError):
-                raise TypeError("Unable to create a Manin symbol from (%s, %s)" % (c, d))
+                raise TypeError(
+                    "Unable to create a Manin symbol from (%s, %s)" % (c, d)
+                )
         if check:
             if (c1.is_zero() and d1.is_zero()) or not N.is_coprime(k.ideal(c1, d1)):
                 raise ValueError("(%s, %s) is not an element of P1(R/N)." % (c1, d1))
@@ -268,8 +271,9 @@ class MSymbol(SageObject):
         """
         if not isinstance(other, MSymbol):
             raise ValueError("You can only compare with another M-symbol")
-        return richcmp([self.__c.list(), self.__d.list()],
-                       [other.__c.list(), other.__d.list()], op)
+        return richcmp(
+            [self.__c.list(), self.__d.list()], [other.__c.list(), other.__d.list()], op
+        )
 
     def N(self):
         r"""
@@ -339,6 +343,7 @@ class MSymbol(SageObject):
             3
         """
         return self.__c
+
     c = property(__get_c)
 
     def __get_d(self):
@@ -355,6 +360,7 @@ class MSymbol(SageObject):
             a^2 + 1
         """
         return self.__d
+
     d = property(__get_d)
 
     def lift_to_sl2_Ok(self):
@@ -441,14 +447,14 @@ class MSymbol(SageObject):
         if N.is_coprime(self.c):
             cinv = R(self.c).inverse_mod(N)
             if with_scalar:
-                return N.reduce(self.c), MSymbol(N, 1, N.reduce(self.d*cinv))
-            return MSymbol(N, 1, N.reduce(self.d*cinv))
+                return N.reduce(self.c), MSymbol(N, 1, N.reduce(self.d * cinv))
+            return MSymbol(N, 1, N.reduce(self.d * cinv))
 
         if N in _level_cache:
             Lfacs, Lxs = _level_cache[N]
         else:
             Lfacs = [p**e for p, e in N.factor()]
-            Lxs = [(N/p).element_1_mod(p) for p in Lfacs]
+            Lxs = [(N / p).element_1_mod(p) for p in Lfacs]
             # Lfacs, Lxs only depend of the ideal: same lists every time we
             # call normalize for a given level, so we store the lists.
             _level_cache[N] = (Lfacs, Lxs)
@@ -459,9 +465,9 @@ class MSymbol(SageObject):
                 inv = self.c.inverse_mod(p)
             else:
                 inv = self.d.inverse_mod(p)
-            u = u + inv*Lxs[p_i]
+            u = u + inv * Lxs[p_i]
             p_i = p_i + 1
-        c, d = (N.reduce(u*self.c), N.reduce(u*self.d))
+        c, d = (N.reduce(u * self.c), N.reduce(u * self.d))
         if (c - 1) in N:
             c = R(1)
         if with_scalar:
@@ -503,6 +509,7 @@ class P1NFList(SageObject):
         sage: loads(dumps(P)) == P
         True
     """
+
     def __init__(self, N):
         r"""
         The constructor for the class P1NFList. See ``P1NFList`` for full
@@ -942,7 +949,7 @@ class P1NFList(SageObject):
             True
         """
         c, d = self.__list[i].tuple()
-        t, j = search(self.__list, self.normalize(c, alpha*c + d))
+        t, j = search(self.__list, self.normalize(c, alpha * c + d))
         return j
 
     def apply_J_epsilon(self, i, e1, e2=1):
@@ -989,7 +996,7 @@ class P1NFList(SageObject):
             True
         """
         c, d = self.__list[i].tuple()
-        t, j = search(self.__list, self.normalize(c*e1, d*e2))
+        t, j = search(self.__list, self.normalize(c * e1, d * e2))
         return j
 
 
@@ -1000,6 +1007,7 @@ class P1NFList(SageObject):
 #    - make_coprime -- need it for ``lift_to_sl2_Ok``
 #    - psi -- useful to check cardinality of the M-symbols list
 # *************************************************************************
+
 
 def p1NFlist(N):
     r"""
@@ -1026,6 +1034,7 @@ def p1NFlist(N):
     L = L + [MSymbol(N, k(1), r, check=False) for r in N.residues()]
 
     from sage.arith.misc import divisors
+
     for D in divisors(N):
         if not D.is_trivial() and D != N:
             # we find Dp ideal coprime to N, in inverse class to D
@@ -1035,16 +1044,16 @@ def p1NFlist(N):
             else:
                 it = k.primes_of_degree_one_iter()
                 Dp = next(it)
-                while not Dp.is_coprime(N) or not (Dp*D).is_principal():
+                while not Dp.is_coprime(N) or not (Dp * D).is_principal():
                     Dp = next(it)
-                c = (D*Dp).gens_reduced()[0]
+                c = (D * Dp).gens_reduced()[0]
             # now we find all the (c,d)'s which have associated divisor D
-            I = D + N/D
-            for d in (N/D).residues():
+            I = D + N / D
+            for d in (N / D).residues():
                 if I.is_coprime(d):
-                    M = D.prime_to_idealM_part(N/D)
-                    u = (Dp*M).element_1_mod(N/D)
-                    d1 = u*d + (1-u)
+                    M = D.prime_to_idealM_part(N / D)
+                    u = (Dp * M).element_1_mod(N / D)
+                    d1 = u * d + (1 - u)
                     L.append(MSymbol(N, c, d1, check=False).normalize())
     return L
 
@@ -1133,25 +1142,25 @@ def lift_to_sl2_Ok(N, c, d):
     if c.is_zero():  # and d!=1, so won't happen for normalized M-symbols (c: d)
         it = k.primes_of_degree_one_iter()
         q = k.ideal(1)
-        while not (q.is_coprime(d) and (q*N).is_principal()):
+        while not (q.is_coprime(d) and (q * N).is_principal()):
             q = next(it)
-        m = (q*N).gens_reduced()[0]
+        m = (q * N).gens_reduced()[0]
         B = k.ideal(m).element_1_mod(k.ideal(d))
-        return [(1-B)/d, -B/m, m, d]
+        return [(1 - B) / d, -B / m, m, d]
     if d.is_zero():  # and c!=1, so won't happen for normalized M-symbols (c: d)
         it = k.primes_of_degree_one_iter()
         q = k.ideal(1)
-        while not (q.is_coprime(c) and (q*N).is_principal()):
+        while not (q.is_coprime(c) and (q * N).is_principal()):
             q = next(it)
-        m = (q*N).gens_reduced()[0]
+        m = (q * N).gens_reduced()[0]
         B = k.ideal(c).element_1_mod(k.ideal(m))
-        return [(1-B)/m, -B/c, c, m]
+        return [(1 - B) / m, -B / c, c, m]
 
     c, d = make_coprime(N, c, d)
 
     B = k.ideal(c).element_1_mod(k.ideal(d))
-    b = -B/c
-    a = (1-B)/d
+    b = -B / c
+    a = (1 - B) / d
     return [a, b, c, d]
 
 
@@ -1195,10 +1204,10 @@ def make_coprime(N, c, d):
     q = k.ideal(c).prime_to_idealM_part(d)
     it = k.primes_of_degree_one_iter()
     r = k.ideal(1)
-    qN = q*N
-    while not (r.is_coprime(c) and (r*qN).is_principal()):
+    qN = q * N
+    while not (r.is_coprime(c) and (r * qN).is_principal()):
         r = next(it)
-    m = (r*qN).gens_reduced()[0]
+    m = (r * qN).gens_reduced()[0]
     d1 = d + m
     return c, d1
 
@@ -1229,6 +1238,10 @@ def psi(N):
         raise ValueError("psi only defined for integral ideals")
 
     from sage.misc.misc_c import prod
-    return prod([(np + 1) * np**(e - 1)
-                 for np, e in [(p.absolute_norm(), e)
-                               for p, e in N.factor()]])
+
+    return prod(
+        [
+            (np + 1) * np ** (e - 1)
+            for np, e in [(p.absolute_norm(), e) for p, e in N.factor()]
+        ]
+    )

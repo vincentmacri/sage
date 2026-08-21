@@ -74,6 +74,7 @@ class LinearExpression(ModuleElement):
         sage: a - LZ([2, -1, 3], 1)
         10*x + 5/3*y - 4*z - 3
     """
+
     def __init__(self, parent, coefficients, constant, check=True):
         """
         Initialize ``self``.
@@ -209,7 +210,9 @@ class LinearExpression(ModuleElement):
         constant = '+ {0}'.format(constant).replace('+ -', '- ')
         return '{0} {1} {2} = 0'.format(repr(self._coeffs), variable, constant)
 
-    def _repr_linear(self, include_zero=True, include_constant=True, multiplication='*'):
+    def _repr_linear(
+        self, include_zero=True, include_constant=True, multiplication='*'
+    ):
         """
         Return a representation as a linear polynomial.
 
@@ -407,8 +410,7 @@ class LinearExpression(ModuleElement):
             sage: x == 'test'
             False
         """
-        return richcmp((self._coeffs, self._const),
-                       (other._coeffs, other._const), op)
+        return richcmp((self._coeffs, self._const), (other._coeffs, other._const), op)
 
     def evaluate(self, point):
         """
@@ -437,6 +439,7 @@ class LinearExpression(ModuleElement):
             point = self.parent().ambient_module()(point)
         except TypeError:
             from sage.matrix.constructor import vector
+
             point = vector(point)
         return self._coeffs * point + self._const
 
@@ -459,6 +462,7 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
         sage: L.an_element()
         x + 0*y + 0*z + 0
     """
+
     Element = LinearExpression
 
     def __init__(self, base_ring, names=tuple()):
@@ -480,7 +484,10 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
             sage: TestSuite(L).run()
         """
         from sage.categories.modules import Modules
-        super().__init__(base_ring, category=Modules(base_ring).WithBasis().FiniteDimensional())
+
+        super().__init__(
+            base_ring, category=Modules(base_ring).WithBasis().FiniteDimensional()
+        )
         self._names = names
 
     @cached_method
@@ -499,10 +506,12 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
              0*x + 0*y + 0*z + 1]
         """
         from sage.sets.family import Family
+
         gens = self.gens()
         d = dict(enumerate(gens))
-        d['b'] = self.element_class(self, self.ambient_module().zero(),
-                                    self.base_ring().one())
+        d['b'] = self.element_class(
+            self, self.ambient_module().zero(), self.base_ring().one()
+        )
         return Family(list(range(len(gens))) + ['b'], lambda i: d[i])
 
     @cached_method
@@ -536,6 +545,7 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
             (x + 0*y + 0*z + 0, 0*x + y + 0*z + 0, 0*x + 0*y + z + 0)
         """
         from sage.matrix.constructor import identity_matrix
+
         identity = identity_matrix(self.base_ring(), self.ngens())
         return tuple(self(e, 0) for e in identity.rows())
 
@@ -607,7 +617,11 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
                 # Construct from linear expression
                 const = arg0.b()
                 coeffs = arg0.A()
-            elif isinstance(arg0, (list, tuple)) and len(arg0) == 2 and isinstance(arg0[0], (list, tuple)):
+            elif (
+                isinstance(arg0, (list, tuple))
+                and len(arg0) == 2
+                and isinstance(arg0[0], (list, tuple))
+            ):
                 # Construct from pair
                 coeffs = arg0[0]
                 const = arg0[1]
@@ -670,6 +684,7 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
             Vector space of dimension 2 over Rational Field
         """
         from sage.modules.free_module import FreeModule
+
         return FreeModule(self.base_ring(), self.ngens())
 
     @cached_method
@@ -699,6 +714,7 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
             Vector space of dimension 2 over Rational Field
         """
         from sage.modules.free_module import VectorSpace
+
         field = self.base_ring().fraction_field()
         return VectorSpace(field, self.ngens())
 
@@ -726,8 +742,9 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
         if self.base().has_coerce_map_from(P):
             return True
         try:
-            return self.ngens() == P.ngens() and \
-                self.base().has_coerce_map_from(P.base())
+            return self.ngens() == P.ngens() and self.base().has_coerce_map_from(
+                P.base()
+            )
         except AttributeError:
             pass
         return super()._coerce_map_from_(P)
@@ -745,7 +762,8 @@ class LinearExpressionModule(Parent, UniqueRepresentation):
             Module of linear expressions in variable x over Rational Field
         """
         return 'Module of linear expressions in variable{2} {0} over {1}'.format(
-            ', '.join(self._names), self.base_ring(), 's' if self.ngens() > 1 else '')
+            ', '.join(self._names), self.base_ring(), 's' if self.ngens() > 1 else ''
+        )
 
     def change_ring(self, base_ring):
         """

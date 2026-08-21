@@ -132,6 +132,7 @@ class RationalField(Singleton, number_field_base.NumberField):
 
     .. automethod:: __iter__
     """
+
     def __new__(cls):
         """
         This method actually is not needed for using :class:`RationalField`.
@@ -146,6 +147,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             return QQ
         except BaseException:
             from sage.rings.number_field.number_field_base import NumberField
+
             return NumberField.__new__(cls)
 
     def __init__(self):
@@ -233,9 +235,14 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         from sage.categories.number_fields import NumberFields
         from sage.categories.quotient_fields import QuotientFields
-        Parent.__init__(self, base=self, names=(), normalize=False,
-                        category=[QuotientFields().Metric(),
-                                  NumberFields()])
+
+        Parent.__init__(
+            self,
+            base=self,
+            names=(),
+            normalize=False,
+            category=[QuotientFields().Metric(), NumberFields()],
+        )
         self._populate_coercion_lists_(init_no_parent=True)
 
     _element_constructor_ = Rational
@@ -318,6 +325,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         from sage.categories.pushout import FractionField
 
         from . import integer_ring
+
         return FractionField(), integer_ring.ZZ
 
     def completion(self, p, prec, extras={}):
@@ -332,10 +340,13 @@ class RationalField(Singleton, number_field_base.NumberField):
             5-adic Field with capped relative precision 15
         """
         from sage.rings.infinity import Infinity
+
         if p == Infinity:
             from sage.rings.real_field import create_RealField
+
             return create_RealField(prec, **extras)
         from sage.rings.padics.factory import Qp
+
         return Qp(p, prec, **extras)
 
     def _coerce_map_from_(self, S):
@@ -369,8 +380,10 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         global ZZ
         from . import rational
+
         if ZZ is None:
             from . import integer_ring
+
             ZZ = integer_ring.ZZ
         if S is ZZ:
             return rational.Z_to_Q()
@@ -379,10 +392,14 @@ class RationalField(Singleton, number_field_base.NumberField):
         if ZZ.has_coerce_map_from(S):
             return rational.Z_to_Q() * ZZ._internal_coerce_map_from(S)
         from sage.rings.localization import Localization
+
         if isinstance(S, Localization):
             if S.fraction_field() is self:
                 from sage.structure.coerce_maps import CallableConvertMap
-                return CallableConvertMap(S, self, lambda x: x._value, parent_as_first_arg=False)
+
+                return CallableConvertMap(
+                    S, self, lambda x: x._value, parent_as_first_arg=False
+                )
 
     def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None):
         """
@@ -431,10 +448,10 @@ class RationalField(Singleton, number_field_base.NumberField):
             height = height + 1
             for other in range(1, height):
                 if height.gcd(other) == 1:
-                    yield self(other/height)
-                    yield self(-other/height)
-                    yield self(height/other)
-                    yield self(-height/other)
+                    yield self(other / height)
+                    yield self(-other / height)
+                    yield self(height / other)
+                    yield self(-height / other)
 
     def __truediv__(self, I):
         """
@@ -447,6 +464,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         from sage.groups.additive_abelian.qmodnz import QmodnZ
         from sage.rings.ideal import Ideal_generic
+
         if I is ZZ:
             return QmodnZ(1)
         if isinstance(I, Ideal_generic) and I.base_ring() is ZZ:
@@ -500,10 +518,10 @@ class RationalField(Singleton, number_field_base.NumberField):
                 yield self(-1)
             for other in ZZ.range(1, height):
                 if height.gcd(other) == 1:
-                    yield self(other/height)
-                    yield self(-other/height)
-                    yield self(height/other)
-                    yield self(-height/other)
+                    yield self(other / height)
+                    yield self(-other / height)
+                    yield self(height / other)
+                    yield self(-height / other)
 
     def primes_of_bounded_norm_iter(self, B):
         r"""
@@ -537,6 +555,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             return
 
         from sage.arith.misc import primes
+
         yield from primes(B + 1)
 
     def discriminant(self):
@@ -633,8 +652,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             [Ring endomorphism of Rational Field
                Defn: 1 |--> 1]
         """
-        return Sequence([self.hom(1, self)], cr=True, immutable=False,
-                        check=False)
+        return Sequence([self.hom(1, self)], cr=True, immutable=False, check=False)
 
     def places(self, all_complex=False, prec=None):
         r"""
@@ -671,6 +689,7 @@ class RationalField(Singleton, number_field_base.NumberField):
               Defn: 1 |--> 1.0000000000000000000000000000000000000000000000000000000000]
         """
         from sage.rings.infinity import Infinity
+
         if prec is None:
             if all_complex:
                 from sage.rings.cc import CC as domain
@@ -688,9 +707,11 @@ class RationalField(Singleton, number_field_base.NumberField):
                 from sage.rings.qqbar import AA as domain
         elif all_complex:
             from sage.rings.complex_mpfr import ComplexField
+
             domain = ComplexField(prec)
         else:
             from sage.rings.real_mpfr import RealField
+
             domain = RealField(prec)
         return [self.hom([domain(1)])]
 
@@ -712,6 +733,7 @@ class RationalField(Singleton, number_field_base.NumberField):
               Defn: 1 |--> 1.0000
         """
         from . import complex_mpfr
+
         CC = complex_mpfr.ComplexField(prec)
         return self.hom([CC(1)])
 
@@ -737,6 +759,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             Residue field of Integers modulo 1000000007
         """
         from sage.rings.finite_rings.residue_field import ResidueField
+
         return ResidueField(ZZ.ideal(p), check=check)
 
     def hilbert_symbol_negative_at_S(self, S, b, check=True):
@@ -852,15 +875,20 @@ class RationalField(Singleton, number_field_base.NumberField):
         for p in S:
             if p != infty:
                 if check and not is_prime(p):
-                    raise ValueError("all entries in list must be prime"
-                                     " or -1 for infinite place")
+                    raise ValueError(
+                        "all entries in list must be prime or -1 for infinite place"
+                    )
                 R = Qp(p)
                 if R(b).is_square():
-                    raise ValueError("second argument must be a nonsquare with"
-                                     " respect to every finite prime in the list")
+                    raise ValueError(
+                        "second argument must be a nonsquare with"
+                        " respect to every finite prime in the list"
+                    )
             elif b > 0:
-                raise ValueError("if the infinite place is in the list, "
-                                 "the second argument must be negative")
+                raise ValueError(
+                    "if the infinite place is in the list, "
+                    "the second argument must be negative"
+                )
         # L is the list of primes that we need to consider, b must have
         # nonzero valuation for each prime in L, this is the set S'
         # in Kirschmer's algorithm
@@ -879,7 +907,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         # symbol is negative for all primes in S and positive
         # at all primes in S'
         V = VectorSpace(GF(2), len(P))
-        v = V([1]*len(S) + [0]*len(L))
+        v = V([1] * len(S) + [0] * len(L))
 
         # Compute the map phi of Hilbert symbols at all the primes
         # in S and S'
@@ -887,10 +915,10 @@ class RationalField(Singleton, number_field_base.NumberField):
         # represented as 1 and a Hilbert symbol of 1
         # is represented as 0
         def phi(x):
-            v = [(1-hilbert_symbol(x, b, p))//2 for p in P]
+            v = [(1 - hilbert_symbol(x, b, p)) // 2 for p in P]
             return V(v)
 
-        M = matrix(GF(2), [phi(p) for p in P+[-1]])
+        M = matrix(GF(2), [phi(p) for p in P + [-1]])
         # We search through all the primes
         for q in Primes():
             # Only look at this prime if it is not in our list
@@ -906,7 +934,7 @@ class RationalField(Singleton, number_field_base.NumberField):
                 break
         Pq = P + [-1] + [q]
         l = W.solve_left(v)
-        a = self.prod([Pq[i]**ZZ(l[i]) for i in range(l.degree())])
+        a = self.prod([Pq[i] ** ZZ(l[i]) for i in range(l.degree())])
         if check:
             assert phi(a) == v, "oops"
         return a
@@ -920,7 +948,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             sage: QQ.gens()
             (1,)
         """
-        return (self(1), )
+        return (self(1),)
 
     def gen(self, n=0):
         r"""
@@ -1018,6 +1046,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             Integer Ring
         """
         from .integer_ring import ZZ
+
         return ZZ
 
     def number_field(self):
@@ -1069,6 +1098,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             -5
         """
         from sage.rings.number_field.number_field import NumberField
+
         return NumberField(poly, names=names, **kwds)
 
     def algebraic_closure(self):
@@ -1081,6 +1111,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             Algebraic Field
         """
         from sage.rings.qqbar import QQbar
+
         return QQbar
 
     def order(self):
@@ -1093,6 +1124,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             +Infinity
         """
         from sage.rings.infinity import Infinity
+
         return Infinity
 
     def polynomial(self):
@@ -1108,6 +1140,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             x
         """
         from sage.rings.polynomial.polynomial_ring import polygen
+
         return polygen(self)
 
     defining_polynomial = polynomial
@@ -1153,15 +1186,15 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         yield self.an_element()
         yield -self.an_element()
-        yield 1/self.an_element()
-        yield -1/self.an_element()
+        yield 1 / self.an_element()
+        yield -1 / self.an_element()
         yield self(0)
         yield self(1)
         yield self(-1)
         yield self(42)
         for n in range(1, 24):
-            a = 2*n
-            b = (2*n + 1)**(n//10 + 1)
+            a = 2 * n
+            b = (2 * n + 1) ** (n // 10 + 1)
             yield Rational((a, b))
             yield Rational((-a, b))
             yield Rational((b, a))
@@ -1218,6 +1251,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         global ZZ
         if ZZ is None:
             from . import integer_ring
+
             ZZ = integer_ring.ZZ
         if num_bound is None:
             num = ZZ.random_element(*args, **kwds)
@@ -1231,10 +1265,10 @@ class RationalField(Singleton, number_field_base.NumberField):
             den_bound = num_bound
             if den_bound < 1:
                 den_bound = 2
-        num = ZZ.random_element(-num_bound, num_bound+1, *args, **kwds)
-        den = ZZ.random_element(1, den_bound+1, *args, **kwds)
+        num = ZZ.random_element(-num_bound, num_bound + 1, *args, **kwds)
+        den = ZZ.random_element(1, den_bound + 1, *args, **kwds)
         while den == 0:
-            den = ZZ.random_element(1, den_bound+1, *args, **kwds)
+            den = ZZ.random_element(1, den_bound + 1, *args, **kwds)
         return self((num, den))
 
     def zeta(self, n=2):
@@ -1359,6 +1393,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         from itertools import product
 
         from sage.misc.misc_c import prod
+
         for ev in product(*[range(o) for o in ords]):
             yield prod((p**e for p, e in zip(KSgens, ev)), one)
 
@@ -1443,6 +1478,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             at all primes in [5, 7]
         """
         from sage.rings.number_field.selmer_group import pSelmerGroup
+
         return pSelmerGroup(self, S, p)
 
     def quadratic_defect(self, a, p, check=True):
@@ -1472,6 +1508,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         from sage.arith.misc import legendre_symbol
         from sage.rings.infinity import Infinity
+
         if a not in self:
             raise TypeError(str(a) + " must be an element of " + str(self))
         if p.parent() == ZZ.ideal_monoid():
@@ -1574,6 +1611,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         from sympy import Rationals
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return Rationals
 
@@ -1638,6 +1676,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         F = [(P(g).monic(), int(e)) for g, e in zip(*G)]
 
         from sage.structure.factorization import Factorization
+
         return Factorization(F, f.leading_coefficient())
 
     def valuation(self, p):
@@ -1657,6 +1696,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             :meth:`IntegerRing_class.valuation() <sage.rings.integer_ring.IntegerRing_class.valuation>`
         """
         from sage.rings.padics.padic_valuation import pAdicValuation
+
         return pAdicValuation(self, p)
 
 

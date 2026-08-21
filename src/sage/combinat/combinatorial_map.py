@@ -54,7 +54,6 @@ thereof, for all the combinatorial maps that apply to it.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from typing import Self
 
 
@@ -221,6 +220,7 @@ class CombinatorialMap:
             '__main__'
         """
         import types
+
         if not isinstance(f, types.FunctionType):
             raise ValueError("only plain functions are supported")
         self._f = f
@@ -267,6 +267,7 @@ class CombinatorialMap:
             2653
         """
         from sage.misc.sageinspect import sage_getsourcelines
+
         return sage_getsourcelines(self._f)
 
     def __get__(self, inst, cls=None) -> Self:

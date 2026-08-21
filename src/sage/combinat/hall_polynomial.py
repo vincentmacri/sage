@@ -164,24 +164,33 @@ def hall_polynomial(nu, mu, la, q=None):
         return R.zero()
 
     if all(x == 1 for x in la):
-        r = [len(la)]   # r will be [r_0, r_1, ..., r_n].
+        r = [len(la)]  # r will be [r_0, r_1, ..., r_n].
         exp_nu = nu.to_exp()  # exp_nu == [l_1, l_2, ..., l_n].
         exp_mu = mu.to_exp()  # exp_mu == [m_1, m_2, ..., m_n].
         n = max(len(exp_nu), len(exp_mu))
         for k in range(n):
             r.append(r[-1] + sum(exp_mu[k:]) - sum(exp_nu[k:]))
         # Now, r is [r_0, r_1, ..., r_n].
-        exp_nu += [0]*(n - len(exp_nu)) # Pad with 0s until it has length n
+        exp_nu += [0] * (n - len(exp_nu))  # Pad with 0s until it has length n
         # Note that all -1 for exp_nu is due to indexing
-        t = sum((r[k-2] - r[k-1])*(sum(exp_nu[k-1:]) - r[k-1]) for k in range(2,n+1))
+        t = sum(
+            (r[k - 2] - r[k - 1]) * (sum(exp_nu[k - 1 :]) - r[k - 1])
+            for k in range(2, n + 1)
+        )
         if t < 0:
             # This case needs short-circuiting, since otherwise q**-t
             # might throw an exception if q is non-invertible.
             return R.zero()
-        return q**t * q_binomial(exp_nu[n-1], r[n-1], q) \
-               * prod([q_binomial(exp_nu[k-1], r[k-1] - r[k], q)
-                       for k in range(1, n)], R.one())
+        return (
+            q**t
+            * q_binomial(exp_nu[n - 1], r[n - 1], q)
+            * prod(
+                [q_binomial(exp_nu[k - 1], r[k - 1] - r[k], q) for k in range(1, n)],
+                R.one(),
+            )
+        )
 
     from sage.algebras.hall_algebra import HallAlgebra
+
     H = HallAlgebra(R, q)
-    return (H[mu]*H[la]).coefficient(nu)
+    return (H[mu] * H[la]).coefficient(nu)

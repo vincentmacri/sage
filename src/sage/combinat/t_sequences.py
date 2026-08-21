@@ -111,7 +111,7 @@ def is_skew(seq, verbose=False):
         return False
 
     for i in range(n):
-        if seq[i] != -seq[n-i-1]:
+        if seq[i] != -seq[n - i - 1]:
             if verbose:
                 print(f'Constraint not satisfied at index {i}')
             return False
@@ -157,7 +157,7 @@ def is_symmetric(seq, verbose=False) -> bool:
         return False
 
     for i in range(n):
-        if seq[i] != seq[n-i-1]:
+        if seq[i] != seq[n - i - 1]:
             if verbose:
                 print(f'Constraint not satisfied at index {i}')
             return False
@@ -213,7 +213,9 @@ def is_T_sequences_set(sequences, verbose=False):
     """
     if len(sequences) != 4:
         if verbose:
-            print(f"T-Sequence should contain 4 sequences, found {len(sequences)} instead")
+            print(
+                f"T-Sequence should contain 4 sequences, found {len(sequences)} instead"
+            )
         return False
 
     t = len(sequences[0])
@@ -223,19 +225,25 @@ def is_T_sequences_set(sequences, verbose=False):
         for seq in sequences:
             if seq[i] not in [-1, 0, 1]:
                 if verbose:
-                    print(f"Elements should be in (-1, 0, +1), but {seq[i]} was found at index {i}")
+                    print(
+                        f"Elements should be in (-1, 0, +1), but {seq[i]} was found at index {i}"
+                    )
                 return False
             tot += abs(seq[i])
         if tot != 1:
             if verbose:
-                print(f"There should be exactly a nonzero element at every index, found {tot} such elements at index {i}")
+                print(
+                    f"There should be exactly a nonzero element at every index, found {tot} such elements at index {i}"
+                )
             return False
 
     for j in range(1, t):
         autocorr = _nonperiodic_autocorrelation(sequences, j)
         if autocorr != 0:
             if verbose:
-                print(f"Nonperiodic autocorrelation should always be zero, found {autocorr} for parameter {j}")
+                print(
+                    f"Nonperiodic autocorrelation should always be zero, found {autocorr} for parameter {j}"
+                )
             return False
 
     return True
@@ -281,13 +289,36 @@ def turyn_sequences_smallcases(l, existence=False):
         3: [[1, 1, 1], [1, 1, -1], [1, -1], [1, -1]],
         4: [[1, 1, -1, -1], [1, 1, -1, 1], [1, 1, 1], [1, -1, 1]],
         5: [[1, 1, -1, 1, 1], [1, 1, 1, 1, -1], [1, 1, -1, -1], [1, -1, 1, -1]],
-        6: [[1, 1, 1, -1, -1, -1], [1, 1, -1, 1, -1, 1], [1, 1, -1, 1, 1], [1, 1, -1, 1, 1]],
-        7: [[1, 1, 1, -1, 1, 1, 1], [1, 1, -1, -1, -1, 1, -1], [1, 1, -1, 1, -1, -1], [1, 1, -1, 1, -1, -1]],
-        8: [[1, 1, -1, 1, -1, 1, -1, -1], [1, 1, 1, 1, -1, -1, -1, 1], [1, 1, 1, -1, 1, 1, 1], [1, -1, -1, 1, -1, -1, 1]],
-        13: [[1, 1, 1, 1, -1, 1, -1, 1, -1, 1, 1, 1, 1], [1, 1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1],
-             [1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1], [1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1]],
-        15: [[1, 1, -1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, 1], [1, 1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1, -1],
-             [1, 1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1], [1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, 1, 1, -1]],
+        6: [
+            [1, 1, 1, -1, -1, -1],
+            [1, 1, -1, 1, -1, 1],
+            [1, 1, -1, 1, 1],
+            [1, 1, -1, 1, 1],
+        ],
+        7: [
+            [1, 1, 1, -1, 1, 1, 1],
+            [1, 1, -1, -1, -1, 1, -1],
+            [1, 1, -1, 1, -1, -1],
+            [1, 1, -1, 1, -1, -1],
+        ],
+        8: [
+            [1, 1, -1, 1, -1, 1, -1, -1],
+            [1, 1, 1, 1, -1, -1, -1, 1],
+            [1, 1, 1, -1, 1, 1, 1],
+            [1, -1, -1, 1, -1, -1, 1],
+        ],
+        13: [
+            [1, 1, 1, 1, -1, 1, -1, 1, -1, 1, 1, 1, 1],
+            [1, 1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1],
+            [1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1],
+            [1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1],
+        ],
+        15: [
+            [1, 1, -1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, 1],
+            [1, 1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1, -1],
+            [1, 1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1],
+            [1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, 1, 1, -1],
+        ],
     }
 
     if existence:
@@ -371,8 +402,8 @@ def T_sequences_construction_from_base_sequences(base_sequences, check=True):
 
     X1 = Sequence(seq_sum(A, B) + zero_seq(n))
     X2 = Sequence(seq_subtract(A, B) + zero_seq(n))
-    X3 = Sequence(zero_seq(n+p) + seq_sum(C, D))
-    X4 = Sequence(zero_seq(n+p) + seq_subtract(C, D))
+    X3 = Sequence(zero_seq(n + p) + seq_sum(C, D))
+    X4 = Sequence(zero_seq(n + p) + seq_subtract(C, D))
 
     res = [X1, X2, X3, X4]
     if check:
@@ -430,7 +461,7 @@ def T_sequences_construction_from_turyn_sequences(turyn_sequences, check=True):
     X, U, Y, V = turyn_sequences
     l = len(X)
 
-    assert len(X) == len(U) == len(Y)+1 == len(V)+1
+    assert len(X) == len(U) == len(Y) + 1 == len(V) + 1
 
     def zero_seq(n):
         return [0 for _ in range(n)]
@@ -439,15 +470,15 @@ def T_sequences_construction_from_turyn_sequences(turyn_sequences, check=True):
         res = []
         for i in range(len(seq1) + len(seq2)):
             if i % 2 == 0:
-                res.append(seq1[i//2])
+                res.append(seq1[i // 2])
             else:
-                res.append(seq2[i//2])
+                res.append(seq2[i // 2])
         return res
 
-    X1 = Sequence([1] + zero_seq(4*l-2))
-    X2 = Sequence([0] + interleave(X, Y) + zero_seq(2*l-1))
-    X3 = Sequence(zero_seq(2*l) + interleave(U, zero_seq(l-1)))
-    X4 = Sequence(zero_seq(2*l) + interleave(zero_seq(l), V))
+    X1 = Sequence([1] + zero_seq(4 * l - 2))
+    X2 = Sequence([0] + interleave(X, Y) + zero_seq(2 * l - 1))
+    X3 = Sequence(zero_seq(2 * l) + interleave(U, zero_seq(l - 1)))
+    X4 = Sequence(zero_seq(2 * l) + interleave(zero_seq(l), V))
 
     res = [X1, X2, X3, X4]
     if check:
@@ -508,23 +539,197 @@ def T_sequences_smallcases(t, existence=False, check=True):
     """
     db = {
         47: [
-            [1,-1,-1,0,0,-1,1,-1]+[0]*8+[1,-1,-1,0,0,-1,-1]+[0]*24,
-            [0,0,0,-1,1,0,0,0,-1,-1,-1,1,1,1,1,1,0,0,0,1,-1,0,0,1]+[0]*23,
-            [0]*26+[-1,0,1,0,0,0,0,1,-1,1,1,1,0,0,0,0,1,0,-1,0,0],
-            [0]*24 + [1,1,0,-1,0,-1,1,1,-1,0,0,0,0,0,-1,1,-1,-1,0,-1,0,-1,1]
+            [1, -1, -1, 0, 0, -1, 1, -1]
+            + [0] * 8
+            + [1, -1, -1, 0, 0, -1, -1]
+            + [0] * 24,
+            [
+                0,
+                0,
+                0,
+                -1,
+                1,
+                0,
+                0,
+                0,
+                -1,
+                -1,
+                -1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                -1,
+                0,
+                0,
+                1,
+            ]
+            + [0] * 23,
+            [0] * 26
+            + [-1, 0, 1, 0, 0, 0, 0, 1, -1, 1, 1, 1, 0, 0, 0, 0, 1, 0, -1, 0, 0],
+            [0] * 24
+            + [
+                1,
+                1,
+                0,
+                -1,
+                0,
+                -1,
+                1,
+                1,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                1,
+                -1,
+                -1,
+                0,
+                -1,
+                0,
+                -1,
+                1,
+            ],
         ],
         65: [
-            [0]*33+[1,1,1,1,1,-1,-1,1,1,-1,1,-1,1,1,-1,-1,1,1,1,1,1,-1,-1,1,-1,1,-1,1,-1,-1,1,1],
-            [0]*32+[1]+[0]*32,
-            [1]*5+[-1,-1,1,1,-1,1,-1,1,1]+[-1]*7+[1,1,-1,1,-1,1,-1,1,1,-1,-1]+[0]*33,
-            [0]*65
+            [0] * 33
+            + [
+                1,
+                1,
+                1,
+                1,
+                1,
+                -1,
+                -1,
+                1,
+                1,
+                -1,
+                1,
+                -1,
+                1,
+                1,
+                -1,
+                -1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                -1,
+                -1,
+                1,
+                -1,
+                1,
+                -1,
+                1,
+                -1,
+                -1,
+                1,
+                1,
+            ],
+            [0] * 32 + [1] + [0] * 32,
+            [1] * 5
+            + [-1, -1, 1, 1, -1, 1, -1, 1, 1]
+            + [-1] * 7
+            + [1, 1, -1, 1, -1, 1, -1, 1, 1, -1, -1]
+            + [0] * 33,
+            [0] * 65,
         ],
         93: [
-            [0,-1,0,0,-1,1,0,-1,1,0,1,1,0,0,1,1,1,0,0,-1,0,-1,1,1,1,-1,0,1,0,0,1]+[0]*33+[1,1,0,0,1,0,0,-1,0,0,-1,1,0,1]+[0]*15,
-            [-1,0,-1,1,0,0,1,0,0,-1,0,0,-1,-1,0,0,0,-1,1,0,1]+[0]*5+[-1,0,1,1]+[0]*32+[1,1,0,0,1,1,0,1,-1,0,1,-1,0,0,-1]+[0]*16,
-            [0]*32+[1,0,0,1,-1,0,1,-1,0,-1,-1,0,0,-1,-1,1,0,0,-1,0,-1,1,1,1,-1,0,1,0,0,1]+[0]*17+[1,1,0,-1]+[0]*5+[1,0,1,-1,0],
-            [0]*31+[1,0,1,-1,0,0,-1,0,0,1,0,0,1,1,0,0,0,-1,1,0,1]+[0]*5+[-1,0,1,1]+[0]*17+[-1,0,0,-1,0,1,-1,-1,-1,1,0,1,0,0,-1]
-        ]
+            [
+                0,
+                -1,
+                0,
+                0,
+                -1,
+                1,
+                0,
+                -1,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                -1,
+                0,
+                -1,
+                1,
+                1,
+                1,
+                -1,
+                0,
+                1,
+                0,
+                0,
+                1,
+            ]
+            + [0] * 33
+            + [1, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 1, 0, 1]
+            + [0] * 15,
+            [-1, 0, -1, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, -1, 0, 0, 0, -1, 1, 0, 1]
+            + [0] * 5
+            + [-1, 0, 1, 1]
+            + [0] * 32
+            + [1, 1, 0, 0, 1, 1, 0, 1, -1, 0, 1, -1, 0, 0, -1]
+            + [0] * 16,
+            [0] * 32
+            + [
+                1,
+                0,
+                0,
+                1,
+                -1,
+                0,
+                1,
+                -1,
+                0,
+                -1,
+                -1,
+                0,
+                0,
+                -1,
+                -1,
+                1,
+                0,
+                0,
+                -1,
+                0,
+                -1,
+                1,
+                1,
+                1,
+                -1,
+                0,
+                1,
+                0,
+                0,
+                1,
+            ]
+            + [0] * 17
+            + [1, 1, 0, -1]
+            + [0] * 5
+            + [1, 0, 1, -1, 0],
+            [0] * 31
+            + [1, 0, 1, -1, 0, 0, -1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, -1, 1, 0, 1]
+            + [0] * 5
+            + [-1, 0, 1, 1]
+            + [0] * 17
+            + [-1, 0, 0, -1, 0, 1, -1, -1, -1, 1, 0, 1, 0, 0, -1],
+        ],
     }
 
     if t in db:
@@ -534,21 +739,21 @@ def T_sequences_smallcases(t, existence=False, check=True):
         if check:
             assert is_T_sequences_set(sequences)
         return sequences
-    if (t+1) % 2 == 0 and turyn_sequences_smallcases((t+1)//2, existence=True):
+    if (t + 1) % 2 == 0 and turyn_sequences_smallcases((t + 1) // 2, existence=True):
         if existence:
             return True
-        turyn_seqs = turyn_sequences_smallcases((t+1)//2)
+        turyn_seqs = turyn_sequences_smallcases((t + 1) // 2)
         return T_sequences_construction_from_base_sequences(turyn_seqs, check=check)
 
-    if (t+1) % 4 == 0 and turyn_sequences_smallcases((t+1)//4, existence=True):
+    if (t + 1) % 4 == 0 and turyn_sequences_smallcases((t + 1) // 4, existence=True):
         if existence:
             return True
-        turyn_seqs = turyn_sequences_smallcases((t+1)//4)
+        turyn_seqs = turyn_sequences_smallcases((t + 1) // 4)
         return T_sequences_construction_from_turyn_sequences(turyn_seqs, check=check)
 
     for p in range(1, t):
-        n = (t-p)//2
-        if (t-p) % 2 == 0 and base_sequences_smallcases(n, p, existence=True):
+        n = (t - p) // 2
+        if (t - p) % 2 == 0 and base_sequences_smallcases(n, p, existence=True):
             if existence:
                 return True
             base_seqs = base_sequences_smallcases(n, p, check=False)
@@ -614,7 +819,7 @@ def base_sequences_construction(turyn_type_seqs, check=True):
     assert len(turyn_type_seqs) == 4
     X, Y, Z, W = turyn_type_seqs
 
-    assert len(X) == len(Y) == len(Z) == len(W)+1
+    assert len(X) == len(Y) == len(Z) == len(W) + 1
 
     A = Sequence(Z + W)
     B = Sequence(Z + [-el for el in W])
@@ -685,9 +890,11 @@ def is_base_sequences_tuple(base_sequences, verbose=False):
     A, B, C, D = base_sequences
     n = len(C)
     p = len(A) - len(C)
-    if not (len(A) == len(B) == len(C)+p == len(D)+p):
+    if not (len(A) == len(B) == len(C) + p == len(D) + p):
         if verbose:
-            print(f'Base sequences should have length n+p, n+p, n, n, found {len(A)}, {len(B)}, {len(C)}, {len(D)}')
+            print(
+                f'Base sequences should have length n+p, n+p, n, n, found {len(A)}, {len(B)}, {len(C)}, {len(D)}'
+            )
         return False
 
     for seq in base_sequences:
@@ -697,11 +904,18 @@ def is_base_sequences_tuple(base_sequences, verbose=False):
                     print(f'Base sequences should only contain -1, +1, found {el}')
                 return False
 
-    for j in range(1, n+p):
-        autocorr = _nonperiodic_autocorrelation(A, j) + _nonperiodic_autocorrelation(B, j) + _nonperiodic_autocorrelation(C, j) + _nonperiodic_autocorrelation(D, j)
+    for j in range(1, n + p):
+        autocorr = (
+            _nonperiodic_autocorrelation(A, j)
+            + _nonperiodic_autocorrelation(B, j)
+            + _nonperiodic_autocorrelation(C, j)
+            + _nonperiodic_autocorrelation(D, j)
+        )
         if autocorr != 0:
             if verbose:
-                print(f"Nonperiodic autocorrelation should always be zero, found {autocorr} for parameter {j}")
+                print(
+                    f"Nonperiodic autocorrelation should always be zero, found {autocorr} for parameter {j}"
+                )
             return False
 
     return True
@@ -754,6 +968,7 @@ def turyn_type_sequences_smallcases(n, existence=False):
     For the `n`-th digit, it should be converted to a 3 digits binary number, and
     then the same mapping as before can be used (see also [BDKR2013]_).
     """
+
     def convertLists(hexstring):
         seqs = [Sequence([]), Sequence([]), Sequence([]), Sequence([])]
         for c in hexstring[:-1]:
@@ -861,9 +1076,9 @@ def base_sequences_smallcases(n, p, existence=False, check=True):
     """
 
     if existence:
-        return p == n-1 and turyn_type_sequences_smallcases(n, existence=True)
+        return p == n - 1 and turyn_type_sequences_smallcases(n, existence=True)
 
-    if p == n-1 and turyn_type_sequences_smallcases(n, existence=True):
+    if p == n - 1 and turyn_type_sequences_smallcases(n, existence=True):
         if existence:
             return True
         turyn_type_seqs = turyn_type_sequences_smallcases(n)
@@ -873,4 +1088,6 @@ def base_sequences_smallcases(n, p, existence=False, check=True):
             return True
         return turyn_sequences_smallcases(n + p)
 
-    raise ValueError(f'Base sequences of order {n+p}, {n+p}, {n}, {n} not yet implemented.')
+    raise ValueError(
+        f'Base sequences of order {n + p}, {n + p}, {n}, {n} not yet implemented.'
+    )

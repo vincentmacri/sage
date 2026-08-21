@@ -51,6 +51,7 @@ class AbelianGroupElement_gap(ElementLibGAP):
         sage: G.gens()
         (f1, f2)
     """
+
     def __init__(self, parent, x, check=True):
         """
         The Python constructor.
@@ -196,6 +197,7 @@ class AbelianGroupElement_polycyclic(AbelianGroupElement_gap):
         sage: G = AbelianGroupGap([4,7,0])          # optional - gap_package_polycyclic
         sage: TestSuite(G.an_element()).run()       # optional - gap_package_polycyclic
     """
+
     def exponents(self):
         r"""
         Return the tuple of exponents of ``self``.
@@ -223,7 +225,9 @@ class AbelianGroupElement_polycyclic(AbelianGroupElement_gap):
         return tuple(self.gap().Exponents().sage())
 
 
-class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, AbelianGroupBase):
+class AbelianGroup_gap(
+    UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, AbelianGroupBase
+):
     r"""
     Finitely generated abelian groups implemented in GAP.
 
@@ -242,6 +246,7 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
         sage: G
         Abelian group with gap, generator orders (3, 2, 5)
     """
+
     def __init__(self, G, category, ambient=None):
         r"""
         Create an instance of this class.
@@ -333,7 +338,11 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
         if isinstance(x, AbelianGroupElement_gap):
             try:
                 if x in self._cover:
-                    x = self._cover.gap().NaturalHomomorphismByNormalSubgroup(self._relations).Image(x.gap())
+                    x = (
+                        self._cover.gap()
+                        .NaturalHomomorphismByNormalSubgroup(self._relations)
+                        .Image(x.gap())
+                    )
                 else:
                     x = x.gap()
             except AttributeError:
@@ -341,9 +350,14 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
         elif x == 1 or x == ():
             x = self.gap().Identity()
         elif not isinstance(x, GapElement):
-            from sage.groups.abelian_gps.abelian_group_element import AbelianGroupElement
-            from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroupElement
+            from sage.groups.abelian_gps.abelian_group_element import (
+                AbelianGroupElement,
+            )
+            from sage.groups.additive_abelian.additive_abelian_group import (
+                AdditiveAbelianGroupElement,
+            )
             from sage.modules.fg_pid.fgp_element import FGP_Element
+
             if isinstance(x, AbelianGroupElement):
                 exp = x.exponents()
             elif isinstance(x, AdditiveAbelianGroupElement):
@@ -352,6 +366,7 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
                 exp = x.vector()
             else:
                 from sage.modules.free_module_element import vector
+
                 exp = vector(ZZ, x)
             # turn the exponents into a gap element
             gens_gap = self.gens()
@@ -399,6 +414,7 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
             Full group of automorphisms of Abelian group with gap, generator orders (2, 3)
         """
         from sage.groups.abelian_gps.abelian_aut import AbelianGroupAutomorphismGroup
+
         return AbelianGroupAutomorphismGroup(self)
 
     aut = automorphism_group
@@ -456,6 +472,7 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
         """
         ediv = self.gap().AbelianInvariants().sage()
         from sage.matrix.constructor import diagonal_matrix
+
         ed = diagonal_matrix(ZZ, ediv).elementary_divisors()
         return tuple(d for d in ed if d != 1)
 
@@ -507,6 +524,7 @@ class AbelianGroup_gap(UniqueRepresentation, GroupMixinLibGAP, ParentLibGAP, Abe
             False
         """
         from sage.rings.infinity import Infinity
+
         orders = []
         for g in self.gens():
             order = g.order()
@@ -650,6 +668,7 @@ class AbelianGroupGap(AbelianGroup_gap):
 
         Needs the GAP package ``Polycyclic`` in case the group is infinite.
     """
+
     @staticmethod
     def __classcall_private__(cls, generator_orders):
         r"""
@@ -702,6 +721,7 @@ class AbelianGroupGap(AbelianGroup_gap):
             \text{\texttt{Abelian group with gap, generator orders }} \left(2, 6\right)
         """
         from sage.misc.latex import latex
+
         base = r"\text{\texttt{Abelian group with gap, generator orders }}"
         return base + latex(self.gens_orders())
 
@@ -757,6 +777,7 @@ class AbelianGroupSubgroup_gap(AbelianGroup_gap):
         sage: gen = G.gens()[:2]
         sage: S = G.subgroup(gen)
     """
+
     def __init__(self, ambient, gens):
         r"""
         Initialize this subgroup.
@@ -784,6 +805,7 @@ class AbelianGroupSubgroup_gap(AbelianGroup_gap):
         gens_gap = tuple([g.gap() for g in gens])
         G = ambient.gap().Subgroup(gens_gap)
         from sage.rings.infinity import Infinity
+
         category = Groups().Commutative()
         if G.Size().sage() < Infinity:
             category = category.Finite()
@@ -806,7 +828,7 @@ class AbelianGroupSubgroup_gap(AbelianGroup_gap):
             Subgroup of Abelian group with gap, generator orders (2, 3, 4, 5)
              generated by (f1, f2)
         """
-        return "Subgroup of %s generated by %s" % (self.ambient(),self.gens())
+        return "Subgroup of %s generated by %s" % (self.ambient(), self.gens())
 
     def __reduce__(self):
         r"""
@@ -907,6 +929,7 @@ class AbelianGroupQuotient_gap(AbelianGroup_gap):
         sage: Q2
         Quotient abelian group with generator orders (1, 3)
     """
+
     def __init__(self, G, N):
         r"""
         Constructor.
@@ -939,8 +962,7 @@ class AbelianGroupQuotient_gap(AbelianGroup_gap):
             sage: G.quotient(S)
             Quotient abelian group with generator orders (1, 1, 4, 5)
         """
-        return "Quotient abelian group with generator orders " + str(
-               self.gens_orders())
+        return "Quotient abelian group with generator orders " + str(self.gens_orders())
 
     def __reduce__(self):
         r"""
@@ -959,7 +981,7 @@ class AbelianGroupQuotient_gap(AbelianGroup_gap):
         """
         G = self._cover
         N = self._relations
-        return G.quotient, (N, )
+        return G.quotient, (N,)
 
     def _coerce_map_from_(self, S):
         r"""

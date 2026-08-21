@@ -12,6 +12,7 @@ class Sh:
     temporary) directory where the Sage worksheet process is
     executing.
     """
+
     def eval(self, code, globals=None, locals=None):
         r"""
         This is difficult to test because the output goes to the

@@ -1,14 +1,13 @@
 """
 Root system data for type Q
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Wencin Poh
 #       Copyright (C) 2018 Anne Schilling
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_finite
 from sage.combinat.root_system.root_system import RootSystem
@@ -47,7 +46,7 @@ class CartanType(CartanType_standard_finite):
             sage: TestSuite(ct).run()
         """
         assert m >= 2
-        CartanType_standard_finite.__init__(self, "Q", m-1)
+        CartanType_standard_finite.__init__(self, "Q", m - 1)
 
     def _repr_(self, compact=False):
         """
@@ -60,7 +59,7 @@ class CartanType(CartanType_standard_finite):
             'Q4'
         """
         format = '%s%s' if compact else "['%s', %s]"
-        return format % (self.letter, self.n+1)
+        return format % (self.letter, self.n + 1)
 
     def __reduce__(self):
         """
@@ -73,7 +72,8 @@ class CartanType(CartanType_standard_finite):
             True
         """
         from .cartan_type import CartanType
-        return (CartanType, (self.letter, self.n+1))
+
+        return (CartanType, (self.letter, self.n + 1))
 
     def index_set(self):
         r"""
@@ -110,7 +110,7 @@ class CartanType(CartanType_standard_finite):
             sage: Q.root_system()
             Root system of type ['A', 2]
         """
-        return RootSystem(['A',self.n])
+        return RootSystem(['A', self.n])
 
     def is_irreducible(self):
         """

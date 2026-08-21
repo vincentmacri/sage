@@ -21,6 +21,7 @@ class FunctionFieldPlace_rational(FunctionFieldPlace):
     """
     Places of rational function fields.
     """
+
     def degree(self):
         """
         Return the degree of the place.

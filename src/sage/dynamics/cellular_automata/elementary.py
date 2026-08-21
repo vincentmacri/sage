@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2018-07-07): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.sage_object import SageObject
 from sage.typeset.ascii_art import AsciiArt
@@ -22,6 +22,7 @@ from sage.typeset.unicode_art import UnicodeArt
 from sage.rings.integer_ring import ZZ
 from sage.matrix.constructor import matrix
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.matrix_plot", "matrix_plot")
 from sage.misc.constant_function import ConstantFunction
 
@@ -253,6 +254,7 @@ class ElementaryCellularAutomata(SageObject):
 
     :wikipedia:`Elementary_cellular_automaton`
     """
+
     def __init__(self, rule, width=None, initial_state=None, boundary=(0, 0)):
         """
         Initialize ``self``.
@@ -266,31 +268,35 @@ class ElementaryCellularAutomata(SageObject):
             raise ValueError("invalid rule")
         self._rule = ZZ(rule).binary()
         # We reverse the rule to make it easier to work with
-        self._rule = [ZZ(x) for x in reversed('0'*(8-len(self._rule)) + self._rule)]
+        self._rule = [ZZ(x) for x in reversed('0' * (8 - len(self._rule)) + self._rule)]
         if isinstance(width, list):
             initial_state = width
             width = len(initial_state)
         if initial_state is None:
             self._width = width
-            initial_state = [ZZ.random_element(0,2) for d in range(width)]
+            initial_state = [ZZ.random_element(0, 2) for d in range(width)]
         else:
-            if not all(d in [0,1] for d in initial_state):
+            if not all(d in [0, 1] for d in initial_state):
                 raise ValueError("invalid initial state")
-            initial_state = list(initial_state) # make sure it is a list and a copy
+            initial_state = list(initial_state)  # make sure it is a list and a copy
             if width is None:
                 self._width = len(initial_state)
             elif width >= len(initial_state):
                 self._width = width
-                initial_state = ([0]*(width - len(initial_state))
-                                 + initial_state)
+                initial_state = [0] * (width - len(initial_state)) + initial_state
             else:
-                raise ValueError("the width must be at least the length of"
-                                 " the initial state")
+                raise ValueError(
+                    "the width must be at least the length of the initial state"
+                )
         self._states = [initial_state]
         if boundary is not None:
             self._bdry = tuple(boundary)
-            self._lbdry = ConstantFunction(boundary[0]) if boundary[0] in [0,1] else boundary[0]
-            self._rbdry = ConstantFunction(boundary[1]) if boundary[1] in [0,1] else boundary[1]
+            self._lbdry = (
+                ConstantFunction(boundary[0]) if boundary[0] in [0, 1] else boundary[0]
+            )
+            self._rbdry = (
+                ConstantFunction(boundary[1]) if boundary[1] in [0, 1] else boundary[1]
+            )
         else:
             self._bdry = boundary
 
@@ -320,11 +326,13 @@ class ElementaryCellularAutomata(SageObject):
             sage: ECA1 == ECA6
             False
         """
-        return (isinstance(other, ElementaryCellularAutomata)
-                and self._rule == other._rule
-                and self._width == other._width
-                and self._states[0] == other._states[0]
-                and self._bdry == other._bdry)
+        return (
+            isinstance(other, ElementaryCellularAutomata)
+            and self._rule == other._rule
+            and self._width == other._width
+            and self._states[0] == other._states[0]
+            and self._bdry == other._bdry
+        )
 
     def __ne__(self, other):
         """
@@ -397,6 +405,7 @@ class ElementaryCellularAutomata(SageObject):
 
         def to_int(triple):
             return ZZ(list(reversed(triple)), base=2)
+
         if self._bdry is None:
             next_state[0] = self._rule[to_int([prev_state[-1]] + prev_state[:2])]
             next_state[-1] = self._rule[to_int(prev_state[-2:] + [prev_state[0]])]
@@ -405,8 +414,8 @@ class ElementaryCellularAutomata(SageObject):
             next_state[0] = self._rule[to_int([self._lbdry(n)] + prev_state[:2])]
             next_state[-1] = self._rule[to_int(prev_state[-2:] + [self._rbdry(n)])]
 
-        for i in range(1, self._width-1):
-            next_state[i] = self._rule[to_int(prev_state[i-1:i+2])]
+        for i in range(1, self._width - 1):
+            next_state[i] = self._rule[to_int(prev_state[i - 1 : i + 2])]
         self._states.append(next_state)
 
     # Output functions
@@ -424,7 +433,8 @@ class ElementaryCellularAutomata(SageObject):
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
         """
         return "Elementary cellular automata with rule {} and initial state {}".format(
-                        ZZ(self._rule, base=2), self._states[0])
+            ZZ(self._rule, base=2), self._states[0]
+        )
 
     def print_state(self, number=None):
         r"""
@@ -540,8 +550,9 @@ class ElementaryCellularAutomata(SageObject):
              X   X   X   X   X   X   X   X
             XXX XXX XXX XXX XXX XXX XXX XX
         """
-        return AsciiArt([''.join('X' if x else ' ' for x in state)
-                         for state in self._states])
+        return AsciiArt(
+            [''.join('X' if x else ' ' for x in state) for state in self._states]
+        )
 
     def _unicode_art_(self):
         r"""
@@ -583,8 +594,9 @@ class ElementaryCellularAutomata(SageObject):
              █   █   █   █   █   █   █   █
             ███ ███ ███ ███ ███ ███ ███ ██
         """
-        return UnicodeArt([''.join('█' if x else ' ' for x in state)
-                           for state in self._states])
+        return UnicodeArt(
+            [''.join('█' if x else ' ' for x in state) for state in self._states]
+        )
 
     def plot(self, number=None):
         r"""

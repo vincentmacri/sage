@@ -292,7 +292,9 @@ class TCrystal(UniqueRepresentation, Parent):
             sage: B
             The T crystal of type ['E', 6] and weight Lambda[6]
         """
-        return "The T crystal of type {1!s} and weight {0!s}".format(self._weight, self._cartan_type)
+        return "The T crystal of type {1!s} and weight {0!s}".format(
+            self._weight, self._cartan_type
+        )
 
     def _element_constructor_(self, weight):
         r"""
@@ -555,7 +557,8 @@ class RCrystal(UniqueRepresentation, Parent):
         """
         dual_str = " dual" if self._dual else ""
         return "The{} R crystal of weight {} and type {}".format(
-                    dual_str, self._weight, self._cartan_type)
+            dual_str, self._weight, self._cartan_type
+        )
 
     def _element_constructor_(self, weight):
         r"""
@@ -817,7 +820,9 @@ class ElementaryCrystal(UniqueRepresentation, Parent):
             sage: B
             The 4-elementary crystal of type ['B', 5, 1]
         """
-        return "The {0!s}-elementary crystal of type {1!s}".format(self._i, self._cartan_type)
+        return "The {0!s}-elementary crystal of type {1!s}".format(
+            self._i, self._cartan_type
+        )
 
     def _element_constructor_(self, m):
         r"""

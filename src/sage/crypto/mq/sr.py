@@ -316,8 +316,9 @@ from sage.modules.vector_modn_dense import Vector_modn_dense
 from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.multi_polynomial_sequence import PolynomialSequence
-from sage.rings.polynomial.polynomial_ring_constructor import \
-    BooleanPolynomialRing_constructor as BooleanPolynomialRing
+from sage.rings.polynomial.polynomial_ring_constructor import (
+    BooleanPolynomialRing_constructor as BooleanPolynomialRing,
+)
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.polynomial.term_order import TermOrder
 from sage.structure.element import Matrix
@@ -433,7 +434,7 @@ class SR_generic(MPolynomialSystemGenerator):
              A 4 4 1
              1 8 3 3
         """
-        if n-1 not in range(10):
+        if n - 1 not in range(10):
             raise TypeError("n must be between 1 and 10 (inclusive)")
         self._n = n
 
@@ -638,8 +639,18 @@ class SR_generic(MPolynomialSystemGenerator):
             sage: sr1 == sr2
             False
         """
-        for name in ['n', 'r', 'c', 'e', '_postfix', '_order',
-                     '_allow_zero_inversions', '_aes_mode', '_gf2', '_star']:
+        for name in [
+            'n',
+            'r',
+            'c',
+            'e',
+            '_postfix',
+            '_order',
+            '_allow_zero_inversions',
+            '_aes_mode',
+            '_gf2',
+            '_star',
+        ]:
             lx = getattr(self, name)
             rx = getattr(other, name)
             if lx != rx:
@@ -679,7 +690,9 @@ class SR_generic(MPolynomialSystemGenerator):
             [  a^6 + a^5 + a^4 + a^3 + a^2 a^6 + a^5 + a^4 + a^2 + a + 1]
         """
         d = self.state_array(d)
-        return matrix(self.base_ring(), d.nrows(), d.ncols(), [self.sub_byte(b) for b in d.list()])
+        return matrix(
+            self.base_ring(), d.nrows(), d.ncols(), [self.sub_byte(b) for b in d.list()]
+        )
 
     def sub_byte(self, b):
         r"""
@@ -721,7 +734,9 @@ class SR_generic(MPolynomialSystemGenerator):
         """
         if not b:
             if not self._allow_zero_inversions:
-                raise ZeroDivisionError("A zero inversion occurred during an encryption or key schedule.")
+                raise ZeroDivisionError(
+                    "A zero inversion occurred during an encryption or key schedule."
+                )
             else:
                 return self.sbox_constant()
         try:
@@ -731,26 +746,35 @@ class SR_generic(MPolynomialSystemGenerator):
             k = self.k
 
             # inversion
-            b = b ** ( 2**e - 2 )
+            b = b ** (2**e - 2)
 
             # GF(2) linear map
             if e == 4:
                 if not hasattr(self, "_L"):
-                    self._L = matrix(GF(2), 4, 4, [[1, 1, 1, 0],
-                                                [0, 1, 1, 1],
-                                                [1, 0, 1, 1],
-                                                [1, 1, 0, 1]])
+                    self._L = matrix(
+                        GF(2),
+                        4,
+                        4,
+                        [[1, 1, 1, 0], [0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 0, 1]],
+                    )
 
             elif e == 8:
                 if not hasattr(self, "_L"):
-                    self._L = matrix(GF(2), 8, 8, [[1, 0, 0, 0, 1, 1, 1, 1],
-                                                [1, 1, 0, 0, 0, 1, 1, 1],
-                                                [1, 1, 1, 0, 0, 0, 1, 1],
-                                                [1, 1, 1, 1, 0, 0, 0, 1],
-                                                [1, 1, 1, 1, 1, 0, 0, 0],
-                                                [0, 1, 1, 1, 1, 1, 0, 0],
-                                                [0, 0, 1, 1, 1, 1, 1, 0],
-                                                [0, 0, 0, 1, 1, 1, 1, 1]])
+                    self._L = matrix(
+                        GF(2),
+                        8,
+                        8,
+                        [
+                            [1, 0, 0, 0, 1, 1, 1, 1],
+                            [1, 1, 0, 0, 0, 1, 1, 1],
+                            [1, 1, 1, 0, 0, 0, 1, 1],
+                            [1, 1, 1, 1, 0, 0, 0, 1],
+                            [1, 1, 1, 1, 1, 0, 0, 0],
+                            [0, 1, 1, 1, 1, 1, 0, 0],
+                            [0, 0, 1, 1, 1, 1, 1, 0],
+                            [0, 0, 0, 1, 1, 1, 1, 1],
+                        ],
+                    )
 
             b = k(self._L * b._vector_())
 
@@ -902,7 +926,7 @@ class SR_generic(MPolynomialSystemGenerator):
         d = self.state_array(d)
         ret = []
         for i in range(d.nrows()):
-            ret += list(d.row(i)[i % d.ncols():]) + list(d.row(i)[:i % d.ncols()])
+            ret += list(d.row(i)[i % d.ncols() :]) + list(d.row(i)[: i % d.ncols()])
         return matrix(self.base_ring(), self._r, self._c, ret)
 
     def mix_columns(self, d):
@@ -938,14 +962,20 @@ class SR_generic(MPolynomialSystemGenerator):
         if r == 1:
             M = matrix(self.base_ring(), 1, 1, [[1]])
         elif r == 2:
-            M = matrix(self.base_ring(), 2, 2, [[a + 1, a],
-                                              [a, a + 1]])
+            M = matrix(self.base_ring(), 2, 2, [[a + 1, a], [a, a + 1]])
 
         elif r == 4:
-            M = matrix(self.base_ring(), 4, 4, [[a, a+1, 1, 1],
-                                              [1, a, a+1, 1],
-                                              [1, 1, a, a+1],
-                                              [a+1, 1, 1, a]])
+            M = matrix(
+                self.base_ring(),
+                4,
+                4,
+                [
+                    [a, a + 1, 1, 1],
+                    [1, a, a + 1, 1],
+                    [1, 1, a, a + 1],
+                    [a + 1, 1, 1, a],
+                ],
+            )
         ret = []
         for column in d.columns():
             ret.append(M * column)
@@ -974,7 +1004,7 @@ class SR_generic(MPolynomialSystemGenerator):
         d = self.state_array(d)
         key = self.state_array(key)
 
-        return d+key
+        return d + key
 
     def state_array(self, d=None):
         """
@@ -1013,7 +1043,7 @@ class SR_generic(MPolynomialSystemGenerator):
             return matrix(k, r, c)
 
         if isinstance(d, Matrix):
-            if d.nrows() == r*c*e:
+            if d.nrows() == r * c * e:
                 return matrix(k, c, r, self.antiphi(d).list()).transpose()
             if d.ncols() == c and d.nrows() == r and d.base_ring() == k:
                 return d
@@ -1040,10 +1070,12 @@ class SR_generic(MPolynomialSystemGenerator):
             sage: sr.is_state_array( matrix(k, 4, 4) )
             False
         """
-        return isinstance(d, Matrix) and \
-               d.nrows() == self.r and \
-               d.ncols() == self.c and \
-               d.base_ring() == self.base_ring()
+        return (
+            isinstance(d, Matrix)
+            and d.nrows() == self.r
+            and d.ncols() == self.c
+            and d.base_ring() == self.base_ring()
+        )
 
     def random_state_array(self, *args, **kwds):
         r"""
@@ -1134,49 +1166,48 @@ class SR_generic(MPolynomialSystemGenerator):
         a = F.gen()
         SubByte = self.sub_byte
 
-        rc = matrix(F, r, c, ([a**(i-1)] * c) + [F(0)]*((r-1)*c) )
+        rc = matrix(F, r, c, ([a ** (i - 1)] * c) + [F(0)] * ((r - 1) * c))
         ki = matrix(F, r, c)
 
         if r == 1:
-            s0 = SubByte(kj[0, c-1])
+            s0 = SubByte(kj[0, c - 1])
 
             if c > 1:
                 for q in range(c):
-                    ki[0, q] = s0 + sum([kj[0, t] for t in range(q+1) ])
+                    ki[0, q] = s0 + sum([kj[0, t] for t in range(q + 1)])
             else:
                 ki[0, 0] = s0
 
         elif r == 2:
-            s0 = SubByte(kj[1, c-1])
-            s1 = SubByte(kj[0, c-1])
+            s0 = SubByte(kj[1, c - 1])
+            s1 = SubByte(kj[0, c - 1])
 
             if c > 1:
                 for q in range(c):
-                    ki[0, q] = s0 + sum([ kj[0, t] for t in range(q+1) ])
-                    ki[1, q] = s1 + sum([ kj[1, t] for t in range(q+1) ])
+                    ki[0, q] = s0 + sum([kj[0, t] for t in range(q + 1)])
+                    ki[1, q] = s1 + sum([kj[1, t] for t in range(q + 1)])
             else:
                 ki[0, 0] = s0
                 ki[1, 0] = s1
 
         elif r == 4:
-
             if self._aes_mode:
-                s0 = SubByte(kj[1, c-1])
-                s1 = SubByte(kj[2, c-1])
-                s2 = SubByte(kj[3, c-1])
-                s3 = SubByte(kj[0, c-1])
+                s0 = SubByte(kj[1, c - 1])
+                s1 = SubByte(kj[2, c - 1])
+                s2 = SubByte(kj[3, c - 1])
+                s3 = SubByte(kj[0, c - 1])
             else:
-                s0 = SubByte(kj[3, c-1])
-                s1 = SubByte(kj[2, c-1])
-                s2 = SubByte(kj[1, c-1])
-                s3 = SubByte(kj[0, c-1])
+                s0 = SubByte(kj[3, c - 1])
+                s1 = SubByte(kj[2, c - 1])
+                s2 = SubByte(kj[1, c - 1])
+                s3 = SubByte(kj[0, c - 1])
 
             if c > 1:
                 for q in range(c):
-                    ki[0, q] = s0 + sum([ kj[0, t] for t in range(q+1) ])
-                    ki[1, q] = s1 + sum([ kj[1, t] for t in range(q+1) ])
-                    ki[2, q] = s2 + sum([ kj[2, t] for t in range(q+1) ])
-                    ki[3, q] = s3 + sum([ kj[3, t] for t in range(q+1) ])
+                    ki[0, q] = s0 + sum([kj[0, t] for t in range(q + 1)])
+                    ki[1, q] = s1 + sum([kj[1, t] for t in range(q + 1)])
+                    ki[2, q] = s2 + sum([kj[2, t] for t in range(q + 1)])
+                    ki[3, q] = s3 + sum([kj[3, t] for t in range(q + 1)])
 
             else:
                 ki[0, 0] = s0
@@ -1279,21 +1310,28 @@ class SR_generic(MPolynomialSystemGenerator):
         F = self.base_ring()
 
         if isinstance(P, str):
-            P = self.state_array([F.from_integer(ZZ(P[i: i + 2], 16)) for i in range(0, len(P), 2)])
+            P = self.state_array(
+                [F.from_integer(ZZ(P[i : i + 2], 16)) for i in range(0, len(P), 2)]
+            )
         if isinstance(K, str):
-            K = self.state_array([F.from_integer(ZZ(K[i: i + 2], 16)) for i in range(0, len(K), 2)])
+            K = self.state_array(
+                [F.from_integer(ZZ(K[i : i + 2], 16)) for i in range(0, len(K), 2)]
+            )
 
         if self.is_state_array(P) and self.is_state_array(K):
             _type = self.state_array
         elif self.is_vector(P) and self.is_vector(K):
             _type = self.vector
-        elif isinstance(P, (list,tuple)) and isinstance(K, (list,tuple)):
-            if len(P) == len(K) == r*c:
+        elif isinstance(P, (list, tuple)) and isinstance(K, (list, tuple)):
+            if len(P) == len(K) == r * c:
                 _type = self.state_array
-            elif len(P) == len(K) == r*c*e:
+            elif len(P) == len(K) == r * c * e:
                 _type = self.vector
             else:
-                raise TypeError("length %d or %d doesn't match either %d or %d" % (len(P),len(K),r*c,r*c*e))
+                raise TypeError(
+                    "length %d or %d doesn't match either %d or %d"
+                    % (len(P), len(K), r * c, r * c * e)
+                )
         else:
             raise TypeError("plaintext or key parameter not understood")
 
@@ -1308,25 +1346,25 @@ class SR_generic(MPolynomialSystemGenerator):
 
         P = AddRoundKey(P, K)
 
-        for r in range(self._n-1):
+        for r in range(self._n - 1):
             if get_verbose() >= 2:
-                print("R[%02d].start   %s" % (r+1, self.hex_str_vector(P)))
+                print("R[%02d].start   %s" % (r + 1, self.hex_str_vector(P)))
 
             P = SubBytes(P)
             if get_verbose() >= 2:
-                print("R[%02d].s_box   %s" % (r+1, self.hex_str_vector(P)))
+                print("R[%02d].s_box   %s" % (r + 1, self.hex_str_vector(P)))
 
             P = ShiftRows(P)
             if get_verbose() >= 2:
-                print("R[%02d].s_row   %s" % (r+1, self.hex_str_vector(P)))
+                print("R[%02d].s_row   %s" % (r + 1, self.hex_str_vector(P)))
 
             P = MixColumns(P)
             if get_verbose() >= 2:
-                print("R[%02d].m_col   %s" % (r+1, self.hex_str_vector(P)))
+                print("R[%02d].m_col   %s" % (r + 1, self.hex_str_vector(P)))
 
-            K = KeyExpansion(K, r+1)
+            K = KeyExpansion(K, r + 1)
             if get_verbose() >= 2:
-                print("R[%02d].k_sch   %s" % (r+1, self.hex_str_vector(K)))
+                print("R[%02d].k_sch   %s" % (r + 1, self.hex_str_vector(K)))
 
             P = AddRoundKey(P, K)
 
@@ -1438,7 +1476,7 @@ class SR_generic(MPolynomialSystemGenerator):
                     st.append("%02X" % M[x, y].to_integer())
                 else:
                     st.append("%X" % M[x, y].to_integer())
-            #st.append("\n")
+            # st.append("\n")
         return "".join(st)
 
     def _insert_matrix_into_matrix(self, dst, src, row, col):
@@ -1475,7 +1513,7 @@ class SR_generic(MPolynomialSystemGenerator):
         """
         for i in range(src.nrows()):
             for j in range(src.ncols()):
-                dst[row+i, col+j] = src[i, j]
+                dst[row + i, col + j] = src[i, j]
         return dst
 
     def varformatstr(self, name, n=None, rc=None, e=None):
@@ -1509,7 +1547,7 @@ class SR_generic(MPolynomialSystemGenerator):
         if e is None:
             e = self.e
 
-        l = str(max([  len(str(rc-1)), len(str(n-1)), len(str(e-1)) ] ))
+        l = str(max([len(str(rc - 1)), len(str(n - 1)), len(str(e - 1))]))
         if name not in ("k", "s"):
             pf = self._postfix
         else:
@@ -1535,7 +1573,7 @@ class SR_generic(MPolynomialSystemGenerator):
             sage: sr.varstr('x', 2, 1, 1)
             'x211'
         """
-        format_string = self.varformatstr(name, self.n, self.r*self.c, self.e)
+        format_string = self.varformatstr(name, self.n, self.r * self.c, self.e)
         return format_string % (nr, rc, e)
 
     def varstrs(self, name, nr, rc=None, e=None):
@@ -1565,7 +1603,9 @@ class SR_generic(MPolynomialSystemGenerator):
 
         format_string = self.varformatstr(name, n, rc, e)
 
-        return tuple([format_string % (nr, rci, ei) for rci in range(rc) for ei in range(e)])
+        return tuple(
+            [format_string % (nr, rci, ei) for rci in range(rc) for ei in range(e)]
+        )
 
     def vars(self, name, nr, rc=None, e=None):
         """
@@ -1641,7 +1681,7 @@ class SR_generic(MPolynomialSystemGenerator):
              'x103': x103}
         """
         try:
-            R,gd = self._variable_dict
+            R, gd = self._variable_dict
             if R is self.R:
                 return gd
             pass
@@ -1649,7 +1689,7 @@ class SR_generic(MPolynomialSystemGenerator):
             pass
 
         gd = self.R.gens_dict()
-        self._variable_dict = self.R,gd
+        self._variable_dict = self.R, gd
         return gd
 
     def block_order(self):
@@ -1686,9 +1726,9 @@ class SR_generic(MPolynomialSystemGenerator):
 
         T = None
         for _n in range(n):
-            T = TermOrder('deglex', r*e + 3*r*c*e ) + T
+            T = TermOrder('deglex', r * e + 3 * r * c * e) + T
 
-        T += TermOrder('deglex', r*c*e)
+        T += TermOrder('deglex', r * c * e)
 
         return T
 
@@ -1760,22 +1800,31 @@ class SR_generic(MPolynomialSystemGenerator):
         if reverse_variables:
             names = []
         else:
-            names = self.varstrs("k", 0, r*c, e)
+            names = self.varstrs("k", 0, r * c, e)
 
         for _n in process(list(range(n))):
-            names += self.varstrs("k", _n+1, r*c, e)
-            names += self.varstrs("x", _n+1, r*c, e)
-            names += self.varstrs("w", _n+1, r*c, e)
+            names += self.varstrs("k", _n + 1, r * c, e)
+            names += self.varstrs("x", _n + 1, r * c, e)
+            names += self.varstrs("w", _n + 1, r * c, e)
             names += self.varstrs("s", _n, r, e)
 
         if reverse_variables:
-            names += self.varstrs("k", 0, r*c, e)
+            names += self.varstrs("k", 0, r * c, e)
 
-        #from sage.rings.polynomial.pbori.pbori import BooleanPolynomialRing
+        # from sage.rings.polynomial.pbori.pbori import BooleanPolynomialRing
 
         if self._gf2 and self._polybori:
-            return BooleanPolynomialRing(2*n*r*c*e + (n+1)*r*c*e + n*r*e, names, order=self._order)
-        return PolynomialRing(k, 2*n*r*c*e + (n+1)*r*c*e + n*r*e, names, order=self._order)
+            return BooleanPolynomialRing(
+                2 * n * r * c * e + (n + 1) * r * c * e + n * r * e,
+                names,
+                order=self._order,
+            )
+        return PolynomialRing(
+            k,
+            2 * n * r * c * e + (n + 1) * r * c * e + n * r * e,
+            names,
+            order=self._order,
+        )
 
     def round_polynomials(self, i, plaintext=None, ciphertext=None):
         r"""
@@ -1813,34 +1862,33 @@ class SR_generic(MPolynomialSystemGenerator):
         _vars = self.vars
 
         if i == 0:
-            w1 = matrix(R, r*c*e, 1, _vars("w", 1, r*c, e))
-            k0 = matrix(R, r*c*e, 1, _vars("k", 0, r*c, e))
-            if isinstance(plaintext, (tuple, list)) and len(plaintext) == r*c:
-                plaintext = matrix(R, r*c*e, 1, self.phi(plaintext))
+            w1 = matrix(R, r * c * e, 1, _vars("w", 1, r * c, e))
+            k0 = matrix(R, r * c * e, 1, _vars("k", 0, r * c, e))
+            if isinstance(plaintext, (tuple, list)) and len(plaintext) == r * c:
+                plaintext = matrix(R, r * c * e, 1, self.phi(plaintext))
             return tuple((w1 + k0 + plaintext).list())
 
         if i > 0 and i <= n:
-
             if self._star and i == n:
                 M = self.Mstar
 
-            xj = matrix(R, r*c*e, 1, _vars("x", i, r*c, e))
-            ki = matrix(R, r*c*e, 1, _vars("k", i, r*c, e))
-            rcon = matrix(R, r*c*e, 1, self.phi([self.sbox_constant()]*r*c))
+            xj = matrix(R, r * c * e, 1, _vars("x", i, r * c, e))
+            ki = matrix(R, r * c * e, 1, _vars("k", i, r * c, e))
+            rcon = matrix(R, r * c * e, 1, self.phi([self.sbox_constant()] * r * c))
 
             if i < n:
-                wj = matrix(R, r*c*e, 1, _vars("w", i+1, r*c, e))
+                wj = matrix(R, r * c * e, 1, _vars("w", i + 1, r * c, e))
             if i == n:
-                if isinstance(ciphertext, (tuple, list)) and len(ciphertext) == r*c:
-                    ciphertext = matrix(R, r*c*e, 1, self.phi(ciphertext))
+                if isinstance(ciphertext, (tuple, list)) and len(ciphertext) == r * c:
+                    ciphertext = matrix(R, r * c * e, 1, self.phi(ciphertext))
                 wj = ciphertext
 
             lin = (wj + ki + M * xj + rcon).list()
 
-            wi = matrix(R, r*c*e, 1, _vars("w", i, r*c, e))
-            xi = matrix(R, r*c*e, 1, _vars("x", i, r*c, e))
+            wi = matrix(R, r * c * e, 1, _vars("w", i, r * c, e))
+            xi = matrix(R, r * c * e, 1, _vars("x", i, r * c, e))
             sbox = []
-            sbox += self.inversion_polynomials(xi, wi, r*c*e)
+            sbox += self.inversion_polynomials(xi, wi, r * c * e)
             sbox += self.field_polynomials("x", i)
             sbox += self.field_polynomials("w", i)
             return tuple(lin + sbox)
@@ -1898,43 +1946,65 @@ class SR_generic(MPolynomialSystemGenerator):
             raise TypeError("i must by >= 0")
 
         if i == 0:
-            return tuple(self.field_polynomials("k", i, r*c))
+            return tuple(self.field_polynomials("k", i, r * c))
         L = self.lin_matrix(r)
-        ki = matrix(R, r*c*e, 1, self.vars("k", i  , r*c, e))
-        kj = matrix(R, r*c*e, 1, self.vars("k", i-1, r*c, e))
-        si = matrix(R, r*e, 1, self.vars("s", i-1, r, e))
+        ki = matrix(R, r * c * e, 1, self.vars("k", i, r * c, e))
+        kj = matrix(R, r * c * e, 1, self.vars("k", i - 1, r * c, e))
+        si = matrix(R, r * e, 1, self.vars("s", i - 1, r, e))
 
-        rc = matrix(R, r*e, 1, self.phi([a**(i-1)] + [k(0)]*(r-1)) )
-        d = matrix(R, r*e, 1, self.phi([self.sbox_constant()]*r) )
+        rc = matrix(R, r * e, 1, self.phi([a ** (i - 1)] + [k(0)] * (r - 1)))
+        d = matrix(R, r * e, 1, self.phi([self.sbox_constant()] * r))
 
         sbox = []
 
         sbox += self.field_polynomials("k", i)
-        sbox += self.field_polynomials("s", i-1, r)
+        sbox += self.field_polynomials("s", i - 1, r)
 
         if r == 1:
-            sbox += self.inversion_polynomials(kj[(c - 1)*e:(c - 1)*e + e], si[0:e], e)
+            sbox += self.inversion_polynomials(
+                kj[(c - 1) * e : (c - 1) * e + e], si[0:e], e
+            )
         if r == 2:
-            sbox += self.inversion_polynomials( kj[(2*c - 1)*e : (2*c - 1)*e + e] , si[0:1*e], e )
-            sbox += self.inversion_polynomials( kj[(2*c - 2)*e : (2*c - 2)*e + e] , si[e:2*e], e )
+            sbox += self.inversion_polynomials(
+                kj[(2 * c - 1) * e : (2 * c - 1) * e + e], si[0 : 1 * e], e
+            )
+            sbox += self.inversion_polynomials(
+                kj[(2 * c - 2) * e : (2 * c - 2) * e + e], si[e : 2 * e], e
+            )
         if r == 4:
             if self._aes_mode:
-                sbox += self.inversion_polynomials( kj[(4*c-3)*e  : (4*c-3)*e + e] , si[0*e : 1*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-2)*e  : (4*c-2)*e + e] , si[1*e : 2*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-1)*e  : (4*c-1)*e + e] , si[2*e : 3*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-4)*e  : (4*c-4)*e + e] , si[3*e : 4*e] , e )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 3) * e : (4 * c - 3) * e + e], si[0 * e : 1 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 2) * e : (4 * c - 2) * e + e], si[1 * e : 2 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 1) * e : (4 * c - 1) * e + e], si[2 * e : 3 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 4) * e : (4 * c - 4) * e + e], si[3 * e : 4 * e], e
+                )
             else:
-                sbox += self.inversion_polynomials( kj[(4*c-1)*e  : (4*c-1)*e + e] , si[0*e : 1*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-2)*e  : (4*c-2)*e + e] , si[1*e : 2*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-3)*e  : (4*c-3)*e + e] , si[2*e : 3*e] , e )
-                sbox += self.inversion_polynomials( kj[(4*c-4)*e  : (4*c-4)*e + e] , si[3*e : 4*e] , e )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 1) * e : (4 * c - 1) * e + e], si[0 * e : 1 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 2) * e : (4 * c - 2) * e + e], si[1 * e : 2 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 3) * e : (4 * c - 3) * e + e], si[2 * e : 3 * e], e
+                )
+                sbox += self.inversion_polynomials(
+                    kj[(4 * c - 4) * e : (4 * c - 4) * e + e], si[3 * e : 4 * e], e
+                )
 
         si = L * si + d + rc
-        Sum = matrix(R, r*e, 1)
+        Sum = matrix(R, r * e, 1)
         lin = []
         if c > 1:
             for q in range(c):
-                t = list(range(r*e*(q) , r*e*(q+1)))
+                t = list(range(r * e * (q), r * e * (q + 1)))
                 Sum += kj.matrix_from_rows(t)
                 lin += (ki.matrix_from_rows(t) + si + Sum).list()
 
@@ -2041,27 +2111,27 @@ class SR_generic(MPolynomialSystemGenerator):
         data = []
 
         R = self.R
-        r,c,e = self.r,self.c,self.e
+        r, c, e = self.r, self.c, self.e
 
         for d in (plaintext, key, ciphertext):
             if d is None:
-                data.append( None )
+                data.append(None)
             elif isinstance(d, (tuple, list)):
                 if isinstance(d[0], int):
                     d = [GF(2)(_) for _ in d]
-                if len(d) == r*c*e and (d[0].parent() is R or d[0].parent() == R):
-                    data.append( matrix(R,r*c*e,1,d) )
+                if len(d) == r * c * e and (d[0].parent() is R or d[0].parent() == R):
+                    data.append(matrix(R, r * c * e, 1, d))
                     continue
                 try:
-                    data.append( self.phi(self.state_array(d)) )
-                except ValueError: # GF2 vectors maybe?
-                    data.append( self.vector(d) )
+                    data.append(self.phi(self.state_array(d)))
+                except ValueError:  # GF2 vectors maybe?
+                    data.append(self.vector(d))
             elif self.is_state_array(d):
-                data.append( self.phi(d) )
+                data.append(self.phi(d))
             elif self.is_vector(d):
-                data.append( d )
+                data.append(d)
             else:
-                data.append( False )
+                data.append(False)
 
         plaintext, key, ciphertext = data
 
@@ -2080,9 +2150,9 @@ class SR_generic(MPolynomialSystemGenerator):
         elif ciphertext is False:
             raise TypeError("type %s of C not understood" % (type(ciphertext)))
 
-        for i in range(n+1):
-            system.append( self.round_polynomials(i, plaintext, ciphertext) )
-            system.append( self.key_schedule_polynomials(i) )
+        for i in range(n + 1):
+            system.append(self.round_polynomials(i, plaintext, ciphertext))
+            system.append(self.key_schedule_polynomials(i))
 
         if key is not None:
             K = dict(zip(self.vars("k", 0), key.list()))
@@ -2096,6 +2166,7 @@ class SR_gf2n(SR_generic):
     Small Scale Variants of the AES polynomial system constructor over
     `\GF{2^n}`.
     """
+
     def vector(self, d=None):
         """
         Construct a vector suitable for the algebraic representation of
@@ -2125,9 +2196,9 @@ class SR_gf2n(SR_generic):
         k = self.base_ring()
 
         if d is None:
-            return matrix(k, r*c*e, 1)
+            return matrix(k, r * c * e, 1)
         if d.ncols() == c and d.nrows() == r and d.base_ring() == k:
-            return matrix(k, r*c*e, 1, self.phi(d).transpose().list())
+            return matrix(k, r * c * e, 1, self.phi(d).transpose().list())
 
     def is_vector(self, d):
         """
@@ -2146,10 +2217,12 @@ class SR_gf2n(SR_generic):
             sage: sr.is_vector(B)
             True
         """
-        return isinstance(d, Matrix) and \
-               d.nrows() == self.r*self.c*self.e and \
-               d.ncols() == 1 and \
-               d.base_ring() == self.base_ring()
+        return (
+            isinstance(d, Matrix)
+            and d.nrows() == self.r * self.c * self.e
+            and d.ncols() == 1
+            and d.base_ring() == self.base_ring()
+        )
 
     def phi(self, l):
         r"""
@@ -2175,16 +2248,16 @@ class SR_gf2n(SR_generic):
         ret = []
         if isinstance(l, Matrix):
             for e in l.transpose().list():
-                ret += [e**(2**i) for i in range(self.e)]
+                ret += [e ** (2**i) for i in range(self.e)]
         else:
             for e in l:
-                ret += [e**(2**i) for i in range(self.e)]
+                ret += [e ** (2**i) for i in range(self.e)]
         if isinstance(l, list):
             return ret
         if isinstance(l, tuple):
             return tuple(ret)
         if isinstance(l, Matrix):
-            return matrix(l.base_ring(), l.ncols(), l.nrows()*self.e, ret).transpose()
+            return matrix(l.base_ring(), l.ncols(), l.nrows() * self.e, ret).transpose()
         raise TypeError
 
     def antiphi(self, l):
@@ -2203,17 +2276,18 @@ class SR_gf2n(SR_generic):
             True
         """
         if isinstance(l, Matrix):
-            ret = l.transpose().list()[0:-1:self.e]
+            ret = l.transpose().list()[0 : -1 : self.e]
         else:
-            ret = l[0:-1:self.e]
+            ret = l[0 : -1 : self.e]
 
         if isinstance(l, list):
             return ret
         if isinstance(l, tuple):
             return tuple(ret)
         if isinstance(l, Matrix):
-            return matrix(self.base_ring(), l.ncols(), l.nrows() // self.e,
-                          ret).transpose()
+            return matrix(
+                self.base_ring(), l.ncols(), l.nrows() // self.e, ret
+            ).transpose()
         raise TypeError
 
     def shift_rows_matrix(self):
@@ -2233,13 +2307,13 @@ class SR_gf2n(SR_generic):
         r = self.r
         c = self.c
         k = self.base_ring()
-        bs = r*c*e
+        bs = r * c * e
         shift_rows = matrix(k, bs, bs)
         I = MatrixSpace(k, e, e)(1)
         for x in range(c):
             for y in range(r):
-                _r = ((x*r)+y) * e
-                _c = (((x*r)+((r+1)*y)) * e) % bs
+                _r = ((x * r) + y) * e
+                _c = (((x * r) + ((r + 1) * y)) * e) % bs
                 self._insert_matrix_into_matrix(shift_rows, I, _r, _c)
 
         return shift_rows
@@ -2272,21 +2346,21 @@ class SR_gf2n(SR_generic):
         k = self.k
 
         if length is None:
-            length = r*c
+            length = r * c
 
-        lin = matrix(self.base_ring(), length*e, length*e)
+        lin = matrix(self.base_ring(), length * e, length * e)
         if e == 4:
             l = [k.from_integer(x) for x in (5, 1, 12, 5)]
             for k in range(length):
                 for i in range(4):
                     for j in range(4):
-                        lin[k*4+j, k*4+i] = l[(i-j) % 4] ** (2**j)
+                        lin[k * 4 + j, k * 4 + i] = l[(i - j) % 4] ** (2**j)
         elif e == 8:
             l = [k.from_integer(x) for x in (5, 9, 249, 37, 244, 1, 181, 143)]
             for k in range(length):
                 for i in range(8):
                     for j in range(8):
-                        lin[k*8+j, k*8+i] = l[(i-j) % 8] ** (2**j)
+                        lin[k * 8 + j, k * 8 + i] = l[(i - j) % 8] ** (2**j)
 
         return lin
 
@@ -2324,7 +2398,7 @@ class SR_gf2n(SR_generic):
             """
             D = matrix(self.base_ring(), self._e, self._e)
             for i in range(self._e):
-                D[i, i] = b**(2**i)
+                D[i, i] = b ** (2**i)
             return D
 
         r = self.r
@@ -2333,42 +2407,42 @@ class SR_gf2n(SR_generic):
         k = self.k
         a = k.gen()
 
-        M = matrix(k, r*e, r*e)
+        M = matrix(k, r * e, r * e)
 
         if r == 1:
-            self._insert_matrix_into_matrix(M,   D(1), 0, 0)
+            self._insert_matrix_into_matrix(M, D(1), 0, 0)
 
         elif r == 2:
-            self._insert_matrix_into_matrix(M, D(a+1), 0, 0)
-            self._insert_matrix_into_matrix(M, D(a+1), e, e)
-            self._insert_matrix_into_matrix(M,   D(a), e, 0)
-            self._insert_matrix_into_matrix(M,   D(a), 0, e)
+            self._insert_matrix_into_matrix(M, D(a + 1), 0, 0)
+            self._insert_matrix_into_matrix(M, D(a + 1), e, e)
+            self._insert_matrix_into_matrix(M, D(a), e, 0)
+            self._insert_matrix_into_matrix(M, D(a), 0, e)
 
         elif r == 4:
-            self._insert_matrix_into_matrix(M,   D(a),   0,   0)
-            self._insert_matrix_into_matrix(M,   D(a),   e,   e)
-            self._insert_matrix_into_matrix(M,   D(a), 2*e, 2*e)
-            self._insert_matrix_into_matrix(M,   D(a), 3*e, 3*e)
+            self._insert_matrix_into_matrix(M, D(a), 0, 0)
+            self._insert_matrix_into_matrix(M, D(a), e, e)
+            self._insert_matrix_into_matrix(M, D(a), 2 * e, 2 * e)
+            self._insert_matrix_into_matrix(M, D(a), 3 * e, 3 * e)
 
-            self._insert_matrix_into_matrix(M, D(a+1),   0,   e)
-            self._insert_matrix_into_matrix(M, D(a+1),   e, 2*e)
-            self._insert_matrix_into_matrix(M, D(a+1), 2*e, 3*e)
-            self._insert_matrix_into_matrix(M, D(a+1), 3*e,   0)
+            self._insert_matrix_into_matrix(M, D(a + 1), 0, e)
+            self._insert_matrix_into_matrix(M, D(a + 1), e, 2 * e)
+            self._insert_matrix_into_matrix(M, D(a + 1), 2 * e, 3 * e)
+            self._insert_matrix_into_matrix(M, D(a + 1), 3 * e, 0)
 
-            self._insert_matrix_into_matrix(M,   D(1),   0, 2*e)
-            self._insert_matrix_into_matrix(M,   D(1),   e, 3*e)
-            self._insert_matrix_into_matrix(M,   D(1), 2*e,   0)
-            self._insert_matrix_into_matrix(M,   D(1), 3*e, 1*e)
+            self._insert_matrix_into_matrix(M, D(1), 0, 2 * e)
+            self._insert_matrix_into_matrix(M, D(1), e, 3 * e)
+            self._insert_matrix_into_matrix(M, D(1), 2 * e, 0)
+            self._insert_matrix_into_matrix(M, D(1), 3 * e, 1 * e)
 
-            self._insert_matrix_into_matrix(M,   D(1),   0, 3*e)
-            self._insert_matrix_into_matrix(M,   D(1),   e,   0)
-            self._insert_matrix_into_matrix(M,   D(1), 2*e, 1*e)
-            self._insert_matrix_into_matrix(M,   D(1), 3*e, 2*e)
+            self._insert_matrix_into_matrix(M, D(1), 0, 3 * e)
+            self._insert_matrix_into_matrix(M, D(1), e, 0)
+            self._insert_matrix_into_matrix(M, D(1), 2 * e, 1 * e)
+            self._insert_matrix_into_matrix(M, D(1), 3 * e, 2 * e)
 
-        mix_columns = matrix(k, r*c*e, r*c*e)
+        mix_columns = matrix(k, r * c * e, r * c * e)
 
         for i in range(c):
-            self._insert_matrix_into_matrix(mix_columns, M, r*e*i, r*e*i)
+            self._insert_matrix_into_matrix(mix_columns, M, r * e * i, r * e * i)
 
         return mix_columns
 
@@ -2400,7 +2474,7 @@ class SR_gf2n(SR_generic):
             x106*w106 + 1,
             x107*w107 + 1]
         """
-        return [xi[j, 0]*wi[j, 0] + 1 for j in range(length)]
+        return [xi[j, 0] * wi[j, 0] + 1 for j in range(length)]
 
     def field_polynomials(self, name, i, l=None):
         r"""
@@ -2431,10 +2505,14 @@ class SR_gf2n(SR_generic):
         e = self._e
 
         if l is None:
-            l = r*c
+            l = r * c
 
         _vars = self.vars(name, i, l, e)
-        return [_vars[e*j+k]**2 - _vars[e*j+(k+1) % e] for j in range(l) for k in range(e)]
+        return [
+            _vars[e * j + k] ** 2 - _vars[e * j + (k + 1) % e]
+            for j in range(l)
+            for k in range(e)
+        ]
 
 
 class SR_gf2(SR_generic):
@@ -2481,16 +2559,24 @@ class SR_gf2(SR_generic):
         k = GF(2)
 
         if d is None:
-            return matrix(k, r*c*e, 1)
-        if isinstance(d, Matrix) and d.ncols() == c and d.nrows() == r and d.base_ring() == self.k:
-            l = flatten([self.phi(x) for x in d.transpose().list()], (Vector_modn_dense,list,tuple))
-            return matrix(k, r*c*e, 1, l)
+            return matrix(k, r * c * e, 1)
+        if (
+            isinstance(d, Matrix)
+            and d.ncols() == c
+            and d.nrows() == r
+            and d.base_ring() == self.k
+        ):
+            l = flatten(
+                [self.phi(x) for x in d.transpose().list()],
+                (Vector_modn_dense, list, tuple),
+            )
+            return matrix(k, r * c * e, 1, l)
         if isinstance(d, (list, tuple)):
-            if len(d) == self.r*self.c:
-                l = flatten([self.phi(x) for x in d], (Vector_modn_dense,list,tuple))
-                return matrix(k, r*c*e, 1, l)
-            if len(d) == self.r*self.c*self.e:
-                return matrix(k, r*c*e, 1, d)
+            if len(d) == self.r * self.c:
+                l = flatten([self.phi(x) for x in d], (Vector_modn_dense, list, tuple))
+                return matrix(k, r * c * e, 1, l)
+            if len(d) == self.r * self.c * self.e:
+                return matrix(k, r * c * e, 1, d)
             raise TypeError
         else:
             raise TypeError
@@ -2518,10 +2604,12 @@ class SR_gf2(SR_generic):
             sage: sr.is_vector(B)
             True
         """
-        return isinstance(d, Matrix) and \
-               d.nrows() == self.r*self.c*self.e and \
-               d.ncols() == 1 and \
-               d.base_ring() == GF(2)
+        return (
+            isinstance(d, Matrix)
+            and d.nrows() == self.r * self.c * self.e
+            and d.ncols() == 1
+            and d.base_ring() == GF(2)
+        )
 
     def phi(self, l, diffusion_matrix=False):
         r"""
@@ -2552,14 +2640,18 @@ class SR_gf2(SR_generic):
         r, c, e = self.r, self.c, self.e
 
         # handle diffusion layer matrices first
-        if isinstance(l, Matrix) and diffusion_matrix and \
-           l.nrows() == r*c and l.ncols() == r*c and \
-           l.base_ring() == self.k:
-            B = matrix(GF(2), r*c*e, r*c*e)
-            for x in range(r*c):
-                for y in range(r*c):
+        if (
+            isinstance(l, Matrix)
+            and diffusion_matrix
+            and l.nrows() == r * c
+            and l.ncols() == r * c
+            and l.base_ring() == self.k
+        ):
+            B = matrix(GF(2), r * c * e, r * c * e)
+            for x in range(r * c):
+                for y in range(r * c):
                     T = self._mul_matrix(l[x, y])
-                    self._insert_matrix_into_matrix(B, T, x*e, y*e)
+                    self._insert_matrix_into_matrix(B, T, x * e, y * e)
             return B
 
         # ground field elements
@@ -2580,7 +2672,7 @@ class SR_gf2(SR_generic):
         if isinstance(l, tuple):
             return tuple(ret)
         if isinstance(l, Matrix):
-            return matrix(GF(2), l.ncols(), l.nrows()*self.e, ret).transpose()
+            return matrix(GF(2), l.ncols(), l.nrows() * self.e, ret).transpose()
         raise TypeError
 
     def antiphi(self, l):
@@ -2608,7 +2700,7 @@ class SR_gf2(SR_generic):
 
         ret = []
         for i in range(0, len(l2), e):
-            ret.append( self.k(V(list(reversed(l2[i:i+e])))) )
+            ret.append(self.k(V(list(reversed(l2[i : i + e])))))
 
         if isinstance(l, list):
             return ret
@@ -2634,12 +2726,12 @@ class SR_gf2(SR_generic):
         r = self.r
         c = self.c
         k = self.k
-        bs = r*c
-        shift_rows = matrix(k, r*c, r*c)
+        bs = r * c
+        shift_rows = matrix(k, r * c, r * c)
         for x in range(c):
             for y in range(r):
-                _r = ((x*r)+y)
-                _c = ((x*r)+((r+1)*y)) % bs
+                _r = (x * r) + y
+                _c = ((x * r) + ((r + 1) * y)) % bs
                 shift_rows[_r, _c] = 1
         return self.phi(shift_rows, diffusion_matrix=True)
 
@@ -2665,18 +2757,17 @@ class SR_gf2(SR_generic):
             M = matrix(k, r, r, 1)
 
         elif r == 2:
-            M = matrix(k, r, r, [a+1, a, a, a+1])
+            M = matrix(k, r, r, [a + 1, a, a, a + 1])
 
         elif r == 4:
-            M = matrix(k, r, [a, a+1, 1, 1,
-                             1, a, a+1, 1,
-                             1, 1, a, a+1,
-                             a+1, 1, 1, a])
+            M = matrix(
+                k, r, [a, a + 1, 1, 1, 1, a, a + 1, 1, 1, 1, a, a + 1, a + 1, 1, 1, a]
+            )
 
-        mix_columns = matrix(k, r*c, r*c)
+        mix_columns = matrix(k, r * c, r * c)
 
         for i in range(c):
-            self._insert_matrix_into_matrix(mix_columns, M, r*i, r*i)
+            self._insert_matrix_into_matrix(mix_columns, M, r * i, r * i)
 
         return self.phi(mix_columns, diffusion_matrix=True)
 
@@ -2705,29 +2796,89 @@ class SR_gf2(SR_generic):
         r, c, e = self.r, self.c, self.e
 
         if length is None:
-            length = r*c
+            length = r * c
 
         if e == 8:
-            Z = matrix(GF(2), 8, 8, [1, 0, 0, 0, 1, 1, 1, 1,
-                                  1, 1, 0, 0, 0, 1, 1, 1,
-                                  1, 1, 1, 0, 0, 0, 1, 1,
-                                  1, 1, 1, 1, 0, 0, 0, 1,
-                                  1, 1, 1, 1, 1, 0, 0, 0,
-                                  0, 1, 1, 1, 1, 1, 0, 0,
-                                  0, 0, 1, 1, 1, 1, 1, 0,
-                                  0, 0, 0, 1, 1, 1, 1, 1])
+            Z = matrix(
+                GF(2),
+                8,
+                8,
+                [
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                ],
+            )
         else:
-            Z = matrix(GF(2), 4, 4, [1, 1, 1, 0,
-                                  0, 1, 1, 1,
-                                  1, 0, 1, 1,
-                                  1, 1, 0, 1])
+            Z = matrix(GF(2), 4, 4, [1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1])
 
-        Z = Z.transpose() # account for endianess mismatch
+        Z = Z.transpose()  # account for endianess mismatch
 
-        lin = matrix(GF(2), length*e, length*e)
+        lin = matrix(GF(2), length * e, length * e)
 
         for i in range(length):
-            self._insert_matrix_into_matrix(lin, Z, i*e, i*e)
+            self._insert_matrix_into_matrix(lin, Z, i * e, i * e)
         return lin
 
     def _mul_matrix(self, x):
@@ -2757,8 +2908,7 @@ class SR_gf2(SR_generic):
         e = self.e
         a = k.gen()
 
-        columns = [list(reversed((x * a**i)._vector_()))
-                   for i in reversed(range(e))]
+        columns = [list(reversed((x * a**i)._vector_())) for i in reversed(range(e))]
         return matrix(GF(2), e, e, columns).transpose()
 
     def _square_matrix(self):
@@ -2784,10 +2934,12 @@ class SR_gf2(SR_generic):
 
         columns = []
         for i in reversed(range(e)):
-            columns.append( list(reversed(((a**i)**2)._vector_())) )
-        return matrix(GF(2), e , e, columns).transpose()
+            columns.append(list(reversed(((a**i) ** 2)._vector_())))
+        return matrix(GF(2), e, e, columns).transpose()
 
-    def inversion_polynomials_single_sbox(self, x=None, w=None, biaffine_only=None, correct_only=None):
+    def inversion_polynomials_single_sbox(
+        self, x=None, w=None, biaffine_only=None, correct_only=None
+    ):
         """
         Return inversion polynomials of a single S-Box.
 
@@ -2857,8 +3009,10 @@ class SR_gf2(SR_generic):
 
         if x is None and w is None:
             # make sure it prints like in the book.
-            names = ["w%d" % i for i in reversed(range(e))] + ["x%d" % i for i in reversed(range(e))]
-            P = PolynomialRing(GF(2), e*2, names, order='lex')
+            names = ["w%d" % i for i in reversed(range(e))] + [
+                "x%d" % i for i in reversed(range(e))
+            ]
+            P = PolynomialRing(GF(2), e * 2, names, order='lex')
             x = P.gens()[e:]
             w = P.gens()[:e]
         else:
@@ -2875,131 +3029,1544 @@ class SR_gf2(SR_generic):
                 w = w.column(0).list()
 
         if e == 4:
-            w3,w2,w1,w0 = w
-            x3,x2,x1,x0 = x
+            w3, w2, w1, w0 = w
+            x3, x2, x1, x0 = x
 
-            l = [w3*x3 + w3*x0 + w2*x1 + w1*x2 + w0*x3,
-                 w3*x3 + w3*x2 + w2*x3 + w2*x0 + w1*x1 + w0*x2,
-                 w3*x2 + w3*x1 + w2*x3 + w2*x2 + w1*x3 + w1*x0 + w0*x1,
-                 w3*x3 + w3*x2 + w3*x0 + w2*x2 + w1*x3 + w1*x1 + w0*x3 + x3,
-                 w3*x1 + w2*x3 + w2*x2 + w2*x0 + w1*x2 + w0*x3 + w0*x1 + x2,
-                 w3*x3 + w3*x2 + w3*x1 + w2*x1 + w1*x3 + w1*x2 + w1*x0 + w0*x2 + x1,
-                 w3*x2 + w2*x3 + w2*x1 + w1*x3 + w0*x2 + w0*x0 + x0,
-                 w3*x3 + w3*x1 + w3*x0 + w3 + w2*x3 + w2*x2 + w1*x1 + w0*x3,
-                 w3*x2 + w3*x0 + w2*x2 + w2*x1 + w2 + w1*x3 + w1*x0 + w0*x2,
-                 w3*x3 + w3*x1 + w2*x3 + w2*x1 + w2*x0 + w1*x3 + w1*x2 + w1 + w0*x1,
-                 w3*x2 + w3*x1 + w2*x3 + w2*x0 + w1*x2 + w0*x0 + w0]
+            l = [
+                w3 * x3 + w3 * x0 + w2 * x1 + w1 * x2 + w0 * x3,
+                w3 * x3 + w3 * x2 + w2 * x3 + w2 * x0 + w1 * x1 + w0 * x2,
+                w3 * x2 + w3 * x1 + w2 * x3 + w2 * x2 + w1 * x3 + w1 * x0 + w0 * x1,
+                w3 * x3
+                + w3 * x2
+                + w3 * x0
+                + w2 * x2
+                + w1 * x3
+                + w1 * x1
+                + w0 * x3
+                + x3,
+                w3 * x1
+                + w2 * x3
+                + w2 * x2
+                + w2 * x0
+                + w1 * x2
+                + w0 * x3
+                + w0 * x1
+                + x2,
+                w3 * x3
+                + w3 * x2
+                + w3 * x1
+                + w2 * x1
+                + w1 * x3
+                + w1 * x2
+                + w1 * x0
+                + w0 * x2
+                + x1,
+                w3 * x2 + w2 * x3 + w2 * x1 + w1 * x3 + w0 * x2 + w0 * x0 + x0,
+                w3 * x3
+                + w3 * x1
+                + w3 * x0
+                + w3
+                + w2 * x3
+                + w2 * x2
+                + w1 * x1
+                + w0 * x3,
+                w3 * x2
+                + w3 * x0
+                + w2 * x2
+                + w2 * x1
+                + w2
+                + w1 * x3
+                + w1 * x0
+                + w0 * x2,
+                w3 * x3
+                + w3 * x1
+                + w2 * x3
+                + w2 * x1
+                + w2 * x0
+                + w1 * x3
+                + w1 * x2
+                + w1
+                + w0 * x1,
+                w3 * x2 + w3 * x1 + w2 * x3 + w2 * x0 + w1 * x2 + w0 * x0 + w0,
+            ]
 
             if not correct_only:
-                l.append(w3*x1 + w2*x2 + w1*x3 + w0*x0 + 1)
+                l.append(w3 * x1 + w2 * x2 + w1 * x3 + w0 * x0 + 1)
 
             if not biaffine_only:
-                l.extend([w3*x2 + w3*x1 + w3*x0 + w2*x3 + w2*x1 + w1*x3 + w1*x2 + w0*x3 + x3**2 + x3*x2 + x3*x1 + x2**2 + x1**2,
-                          w3*x2 + w2*x2 + w2*x1 + w2*x0 + w1*x3 + w1*x1 + w0*x3 + w0*x2 + x3*x2 + x3*x1 + x3*x0 + x2**2 + x2*x1 + x2*x0 + x1*x0,
-                          w3*x2 + w3*x1 + w2*x2 + w1*x2 + w1*x1 + w1*x0 + w0*x3 + w0*x1 + x3**2 + x3*x2 + x2*x0 + x1*x0,
-                          w3*x3 + w3*x1 + w2*x3 + w2*x2 + w1*x3 + w0*x3 + w0*x2 + w0*x1 + w0*x0 + x3*x1 + x2*x1 + x2*x0 + x0**2,
-                          w3**2 + w3*w2 + w3*w1 + w3*x2 + w3*x1 + w3*x0 + w2**2 + w2*x3 + w2*x1 + w1**2 + w1*x3 + w1*x2 + w0*x3,
-                          w3*w2 + w3*w1 + w3*w0 + w3*x1 + w3*x0 + w2**2 + w2*w1 + w2*w0 + w2*x3 + w2*x2 + w2*x0 + w1*w0 + w1*x2 + w1*x1 + w0*x2,
-                          w3**2 + w3*w2 + w3*x0 + w2*w0 + w2*x3 + w2*x2 + w2*x1 + w1*w0 + w1*x3 + w1*x1 + w1*x0 + w0*x1,
-                          w3*w1 + w3*x3 + w3*x2 + w3*x1 + w3*x0 + w2*w1 + w2*w0 + w2*x2 + w2*x0 + w1*x3 + w1*x0 + w0**2 + w0*x0])
+                l.extend(
+                    [
+                        w3 * x2
+                        + w3 * x1
+                        + w3 * x0
+                        + w2 * x3
+                        + w2 * x1
+                        + w1 * x3
+                        + w1 * x2
+                        + w0 * x3
+                        + x3**2
+                        + x3 * x2
+                        + x3 * x1
+                        + x2**2
+                        + x1**2,
+                        w3 * x2
+                        + w2 * x2
+                        + w2 * x1
+                        + w2 * x0
+                        + w1 * x3
+                        + w1 * x1
+                        + w0 * x3
+                        + w0 * x2
+                        + x3 * x2
+                        + x3 * x1
+                        + x3 * x0
+                        + x2**2
+                        + x2 * x1
+                        + x2 * x0
+                        + x1 * x0,
+                        w3 * x2
+                        + w3 * x1
+                        + w2 * x2
+                        + w1 * x2
+                        + w1 * x1
+                        + w1 * x0
+                        + w0 * x3
+                        + w0 * x1
+                        + x3**2
+                        + x3 * x2
+                        + x2 * x0
+                        + x1 * x0,
+                        w3 * x3
+                        + w3 * x1
+                        + w2 * x3
+                        + w2 * x2
+                        + w1 * x3
+                        + w0 * x3
+                        + w0 * x2
+                        + w0 * x1
+                        + w0 * x0
+                        + x3 * x1
+                        + x2 * x1
+                        + x2 * x0
+                        + x0**2,
+                        w3**2
+                        + w3 * w2
+                        + w3 * w1
+                        + w3 * x2
+                        + w3 * x1
+                        + w3 * x0
+                        + w2**2
+                        + w2 * x3
+                        + w2 * x1
+                        + w1**2
+                        + w1 * x3
+                        + w1 * x2
+                        + w0 * x3,
+                        w3 * w2
+                        + w3 * w1
+                        + w3 * w0
+                        + w3 * x1
+                        + w3 * x0
+                        + w2**2
+                        + w2 * w1
+                        + w2 * w0
+                        + w2 * x3
+                        + w2 * x2
+                        + w2 * x0
+                        + w1 * w0
+                        + w1 * x2
+                        + w1 * x1
+                        + w0 * x2,
+                        w3**2
+                        + w3 * w2
+                        + w3 * x0
+                        + w2 * w0
+                        + w2 * x3
+                        + w2 * x2
+                        + w2 * x1
+                        + w1 * w0
+                        + w1 * x3
+                        + w1 * x1
+                        + w1 * x0
+                        + w0 * x1,
+                        w3 * w1
+                        + w3 * x3
+                        + w3 * x2
+                        + w3 * x1
+                        + w3 * x0
+                        + w2 * w1
+                        + w2 * w0
+                        + w2 * x2
+                        + w2 * x0
+                        + w1 * x3
+                        + w1 * x0
+                        + w0**2
+                        + w0 * x0,
+                    ]
+                )
             return l
 
-        w7,w6,w5,w4,w3,w2,w1,w0 = w
-        x7,x6,x5,x4,x3,x2,x1,x0 = x
+        w7, w6, w5, w4, w3, w2, w1, w0 = w
+        x7, x6, x5, x4, x3, x2, x1, x0 = x
 
-        l = [w7*x7 + w7*x5 + w7*x4 + w7*x0 + w6*x6 + w6*x5 + w6*x1 + w5*x7 + w5*x6 + w5*x2 + w4*x7 + w4*x3 + w3*x4 + w2*x5 + w1*x6 + w0*x7,
-             w7*x6 + w7*x4 + w7*x3 + w6*x7 + w6*x5 + w6*x4 + w6*x0 + w5*x6 + w5*x5 + w5*x1 + w4*x7 + w4*x6 + w4*x2 + w3*x7 + w3*x3 + w2*x4 + w1*x5 + w0*x6,
-             w7*x5 + w7*x3 + w7*x2 + w6*x6 + w6*x4 + w6*x3 + w5*x7 + w5*x5 + w5*x4 + w5*x0 + w4*x6 + w4*x5 + w4*x1 + w3*x7 + w3*x6 + w3*x2 + w2*x7 + w2*x3 + w1*x4 + w0*x5,
-             w7*x7 + w7*x4 + w7*x2 + w7*x1 + w6*x5 + w6*x3 + w6*x2 + w5*x6 + w5*x4 + w5*x3 + w4*x7 + w4*x5 + w4*x4 + w4*x0 + w3*x6 + w3*x5 + w3*x1 + w2*x7 + w2*x6 + w2*x2 + w1*x7 + w1*x3 + w0*x4,
-             w7*x7 + w7*x6 + w7*x5 + w7*x4 + w7*x3 + w7*x1 + w6*x7 + w6*x6 + w6*x5 + w6*x4 + w6*x2 + w5*x7 + w5*x6 + w5*x5 + w5*x3 + w4*x7 + w4*x6 + w4*x4 + w3*x7 + w3*x5 + w3*x0 + w2*x6 + w2*x1
-                 + w1*x7 + w1*x2 + w0*x3,
-             w7*x6 + w7*x3 + w7*x2 + w6*x7 + w6*x4 + w6*x3 + w5*x5 + w5*x4 + w4*x6 + w4*x5 + w3*x7 + w3*x6 + w2*x7 + w2*x0 + w1*x1 + w0*x2,
-             w7*x7 + w7*x5 + w7*x2 + w7*x1 + w6*x6 + w6*x3 + w6*x2 + w5*x7 + w5*x4 + w5*x3 + w4*x5 + w4*x4 + w3*x6 + w3*x5 + w2*x7 + w2*x6 + w1*x7 + w1*x0 + w0*x1,
-             w7*x6 + w7*x5 + w7*x2 + w7*x0 + w6*x7 + w6*x4 + w6*x3 + w5*x7 + w5*x6 + w5*x3 + w5*x1 + w4*x5 + w4*x4 + w3*x7 + w3*x4 + w3*x2 + w2*x6 + w2*x5 + w1*x5 + w1*x3 + w0*x7 + w0*x6 + x7,
-             w7*x6 + w7*x3 + w7*x2 + w6*x6 + w6*x5 + w6*x2 + w6*x0 + w5*x7 + w5*x4 + w5*x3 + w4*x7 + w4*x6 + w4*x3 + w4*x1 + w3*x5 + w3*x4 + w2*x7 + w2*x4 + w2*x2 + w1*x6 + w1*x5 + w0*x5 + w0*x3
-                 + x6,
-             w7*x7 + w7*x5 + w7*x4 + w7*x1 + w6*x6 + w6*x3 + w6*x2 + w5*x6 + w5*x5 + w5*x2 + w5*x0 + w4*x7 + w4*x4 + w4*x3 + w3*x7 + w3*x6 + w3*x3 + w3*x1 + w2*x5 + w2*x4 + w1*x7 + w1*x4 + w1*x2
-                 + w0*x6 + w0*x5 + x5,
-             w7*x7 + w7*x5 + w7*x2 + w7*x1 + w6*x7 + w6*x5 + w6*x4 + w6*x1 + w5*x6 + w5*x3 + w5*x2 + w4*x6 + w4*x5 + w4*x2 + w4*x0 + w3*x7 + w3*x4 + w3*x3 + w2*x7 + w2*x6 + w2*x3 + w2*x1 + w1*x5
-                 + w1*x4 + w0*x7 + w0*x4 + w0*x2 + x4,
-             w7*x5 + w7*x4 + w7*x3 + w7*x2 + w6*x5 + w6*x4 + w6*x3 + w6*x2 + w6*x1 + w5*x6 + w5*x5 + w5*x4 + w5*x3 + w4*x6 + w4*x5 + w4*x4 + w4*x3 + w4*x2 + w3*x7 + w3*x6 + w3*x5 + w3*x4 + w3*x0
-                 + w2*x7 + w2*x6 + w2*x5 + w2*x4 + w2*x3 + w1*x7 + w1*x6 + w1*x5 + w1*x1 + w0*x7 + w0*x6 + w0*x5 + w0*x4 + x3,
-             w7*x7 + w7*x6 + w7*x5 + w7*x4 + w7*x3 + w7*x1 + w6*x7 + w6*x5 + w6*x2 + w5*x7 + w5*x6 + w5*x5 + w5*x4 + w5*x2 + w4*x6 + w4*x3 + w3*x7 + w3*x6 + w3*x5 + w3*x3 + w2*x7 + w2*x4 + w2*x0
-                 + w1*x7 + w1*x6 + w1*x4 + w0*x5 + w0*x1 + x2,
-             w7*x6 + w7*x4 + w7*x1 + w6*x7 + w6*x6 + w6*x5 + w6*x4 + w6*x3 + w6*x1 + w5*x7 + w5*x5 + w5*x2 + w4*x7 + w4*x6 + w4*x5 + w4*x4 + w4*x2 + w3*x6 + w3*x3 + w2*x7 + w2*x6 + w2*x5 + w2*x3
-                 + w1*x7 + w1*x4 + w1*x0 + w0*x7 + w0*x6 + w0*x4 + x1,
-             w7*x7 + w7*x4 + w7*x3 + w6*x7 + w6*x6 + w6*x3 + w6*x1 + w5*x5 + w5*x4 + w4*x7 + w4*x4 + w4*x2 + w3*x6 + w3*x5 + w2*x5 + w2*x3 + w1*x7 + w1*x6 + w0*x6 + w0*x4 + w0*x0 + x0,
-             w7*x6 + w7*x5 + w7*x3 + w7*x0 + w7 + w6*x7 + w6*x5 + w6*x2 + w6*x0 + w5*x7 + w5*x4 + w5*x2 + w5*x1 + w4*x6 + w4*x4 + w4*x3 + w3*x6 + w3*x5 + w3*x1 + w2*x7 + w2*x3 + w1*x5 + w0*x7,
-             w7*x5 + w7*x4 + w7*x2 + w6*x7 + w6*x6 + w6*x4 + w6*x1 + w6 + w5*x6 + w5*x3 + w5*x1 + w5*x0 + w4*x5 + w4*x3 + w4*x2 + w3*x7 + w3*x5 + w3*x4 + w3*x0 + w2*x7 + w2*x6 + w2*x2 + w1*x4
-                 + w0*x6,
-             w7*x7 + w7*x4 + w7*x3 + w7*x1 + w6*x6 + w6*x5 + w6*x3 + w6*x0 + w5*x7 + w5*x5 + w5*x2 + w5*x0 + w5 + w4*x7 + w4*x4 + w4*x2 + w4*x1 + w3*x6 + w3*x4 + w3*x3 + w2*x6 + w2*x5 + w2*x1
-                 + w1*x7 + w1*x3 + w0*x5,
-             w7*x7 + w7*x6 + w7*x3 + w7*x2 + w7*x0 + w6*x5 + w6*x4 + w6*x2 + w5*x7 + w5*x6 + w5*x4 + w5*x1 + w4*x6 + w4*x3 + w4*x1 + w4*x0 + w4 + w3*x5 + w3*x3 + w3*x2 + w2*x7 + w2*x5 + w2*x4
-                 + w2*x0 + w1*x7 + w1*x6 + w1*x2 + w0*x4,
-             w7*x3 + w7*x2 + w7*x1 + w7*x0 + w6*x5 + w6*x4 + w6*x3 + w6*x2 + w6*x1 + w6*x0 + w5*x7 + w5*x6 + w5*x5 + w5*x4 + w5*x3 + w5*x2 + w5*x1 + w5*x0 + w4*x7 + w4*x6 + w4*x5 + w4*x4
-                 + w4*x3 + w4*x2 + w4*x0 + w3*x7 + w3*x6 + w3*x5 + w3*x4 + w3*x2 + w3 + w2*x7 + w2*x6 + w2*x4 + w1*x6 + w1*x1 + w0*x3,
-             w7*x7 + w7*x6 + w7*x5 + w7*x3 + w7*x2 + w7*x1 + w6*x7 + w6*x5 + w6*x4 + w6*x3 + w6*x1 + w5*x7 + w5*x6 + w5*x5 + w5*x3 + w5*x0 + w4*x7 + w4*x5 + w4*x2 + w4*x1 + w3*x7 + w3*x4
-                 + w3*x3 + w2*x6 + w2*x5 + w2 + w1*x7 + w1*x0 + w0*x2,
-             w7*x6 + w7*x5 + w7*x4 + w7*x2 + w7*x1 + w7*x0 + w6*x7 + w6*x6 + w6*x4 + w6*x3 + w6*x2 + w6*x0 + w5*x6 + w5*x5 + w5*x4 + w5*x2 + w4*x7 + w4*x6 + w4*x4 + w4*x1 + w4*x0 + w3*x6
-                 + w3*x3 + w3*x2 + w2*x5 + w2*x4 + w1*x7 + w1*x6 + w1 + w0*x1,
-             w7*x7 + w7*x6 + w7*x4 + w7*x1 + w6*x6 + w6*x3 + w6*x1 + w6*x0 + w5*x5 + w5*x3 + w5*x2 + w4*x7 + w4*x5 + w4*x4 + w4*x0 + w3*x7 + w3*x6 + w3*x2 + w2*x4 + w1*x6 + w0*x0 + w0]
+        l = [
+            w7 * x7
+            + w7 * x5
+            + w7 * x4
+            + w7 * x0
+            + w6 * x6
+            + w6 * x5
+            + w6 * x1
+            + w5 * x7
+            + w5 * x6
+            + w5 * x2
+            + w4 * x7
+            + w4 * x3
+            + w3 * x4
+            + w2 * x5
+            + w1 * x6
+            + w0 * x7,
+            w7 * x6
+            + w7 * x4
+            + w7 * x3
+            + w6 * x7
+            + w6 * x5
+            + w6 * x4
+            + w6 * x0
+            + w5 * x6
+            + w5 * x5
+            + w5 * x1
+            + w4 * x7
+            + w4 * x6
+            + w4 * x2
+            + w3 * x7
+            + w3 * x3
+            + w2 * x4
+            + w1 * x5
+            + w0 * x6,
+            w7 * x5
+            + w7 * x3
+            + w7 * x2
+            + w6 * x6
+            + w6 * x4
+            + w6 * x3
+            + w5 * x7
+            + w5 * x5
+            + w5 * x4
+            + w5 * x0
+            + w4 * x6
+            + w4 * x5
+            + w4 * x1
+            + w3 * x7
+            + w3 * x6
+            + w3 * x2
+            + w2 * x7
+            + w2 * x3
+            + w1 * x4
+            + w0 * x5,
+            w7 * x7
+            + w7 * x4
+            + w7 * x2
+            + w7 * x1
+            + w6 * x5
+            + w6 * x3
+            + w6 * x2
+            + w5 * x6
+            + w5 * x4
+            + w5 * x3
+            + w4 * x7
+            + w4 * x5
+            + w4 * x4
+            + w4 * x0
+            + w3 * x6
+            + w3 * x5
+            + w3 * x1
+            + w2 * x7
+            + w2 * x6
+            + w2 * x2
+            + w1 * x7
+            + w1 * x3
+            + w0 * x4,
+            w7 * x7
+            + w7 * x6
+            + w7 * x5
+            + w7 * x4
+            + w7 * x3
+            + w7 * x1
+            + w6 * x7
+            + w6 * x6
+            + w6 * x5
+            + w6 * x4
+            + w6 * x2
+            + w5 * x7
+            + w5 * x6
+            + w5 * x5
+            + w5 * x3
+            + w4 * x7
+            + w4 * x6
+            + w4 * x4
+            + w3 * x7
+            + w3 * x5
+            + w3 * x0
+            + w2 * x6
+            + w2 * x1
+            + w1 * x7
+            + w1 * x2
+            + w0 * x3,
+            w7 * x6
+            + w7 * x3
+            + w7 * x2
+            + w6 * x7
+            + w6 * x4
+            + w6 * x3
+            + w5 * x5
+            + w5 * x4
+            + w4 * x6
+            + w4 * x5
+            + w3 * x7
+            + w3 * x6
+            + w2 * x7
+            + w2 * x0
+            + w1 * x1
+            + w0 * x2,
+            w7 * x7
+            + w7 * x5
+            + w7 * x2
+            + w7 * x1
+            + w6 * x6
+            + w6 * x3
+            + w6 * x2
+            + w5 * x7
+            + w5 * x4
+            + w5 * x3
+            + w4 * x5
+            + w4 * x4
+            + w3 * x6
+            + w3 * x5
+            + w2 * x7
+            + w2 * x6
+            + w1 * x7
+            + w1 * x0
+            + w0 * x1,
+            w7 * x6
+            + w7 * x5
+            + w7 * x2
+            + w7 * x0
+            + w6 * x7
+            + w6 * x4
+            + w6 * x3
+            + w5 * x7
+            + w5 * x6
+            + w5 * x3
+            + w5 * x1
+            + w4 * x5
+            + w4 * x4
+            + w3 * x7
+            + w3 * x4
+            + w3 * x2
+            + w2 * x6
+            + w2 * x5
+            + w1 * x5
+            + w1 * x3
+            + w0 * x7
+            + w0 * x6
+            + x7,
+            w7 * x6
+            + w7 * x3
+            + w7 * x2
+            + w6 * x6
+            + w6 * x5
+            + w6 * x2
+            + w6 * x0
+            + w5 * x7
+            + w5 * x4
+            + w5 * x3
+            + w4 * x7
+            + w4 * x6
+            + w4 * x3
+            + w4 * x1
+            + w3 * x5
+            + w3 * x4
+            + w2 * x7
+            + w2 * x4
+            + w2 * x2
+            + w1 * x6
+            + w1 * x5
+            + w0 * x5
+            + w0 * x3
+            + x6,
+            w7 * x7
+            + w7 * x5
+            + w7 * x4
+            + w7 * x1
+            + w6 * x6
+            + w6 * x3
+            + w6 * x2
+            + w5 * x6
+            + w5 * x5
+            + w5 * x2
+            + w5 * x0
+            + w4 * x7
+            + w4 * x4
+            + w4 * x3
+            + w3 * x7
+            + w3 * x6
+            + w3 * x3
+            + w3 * x1
+            + w2 * x5
+            + w2 * x4
+            + w1 * x7
+            + w1 * x4
+            + w1 * x2
+            + w0 * x6
+            + w0 * x5
+            + x5,
+            w7 * x7
+            + w7 * x5
+            + w7 * x2
+            + w7 * x1
+            + w6 * x7
+            + w6 * x5
+            + w6 * x4
+            + w6 * x1
+            + w5 * x6
+            + w5 * x3
+            + w5 * x2
+            + w4 * x6
+            + w4 * x5
+            + w4 * x2
+            + w4 * x0
+            + w3 * x7
+            + w3 * x4
+            + w3 * x3
+            + w2 * x7
+            + w2 * x6
+            + w2 * x3
+            + w2 * x1
+            + w1 * x5
+            + w1 * x4
+            + w0 * x7
+            + w0 * x4
+            + w0 * x2
+            + x4,
+            w7 * x5
+            + w7 * x4
+            + w7 * x3
+            + w7 * x2
+            + w6 * x5
+            + w6 * x4
+            + w6 * x3
+            + w6 * x2
+            + w6 * x1
+            + w5 * x6
+            + w5 * x5
+            + w5 * x4
+            + w5 * x3
+            + w4 * x6
+            + w4 * x5
+            + w4 * x4
+            + w4 * x3
+            + w4 * x2
+            + w3 * x7
+            + w3 * x6
+            + w3 * x5
+            + w3 * x4
+            + w3 * x0
+            + w2 * x7
+            + w2 * x6
+            + w2 * x5
+            + w2 * x4
+            + w2 * x3
+            + w1 * x7
+            + w1 * x6
+            + w1 * x5
+            + w1 * x1
+            + w0 * x7
+            + w0 * x6
+            + w0 * x5
+            + w0 * x4
+            + x3,
+            w7 * x7
+            + w7 * x6
+            + w7 * x5
+            + w7 * x4
+            + w7 * x3
+            + w7 * x1
+            + w6 * x7
+            + w6 * x5
+            + w6 * x2
+            + w5 * x7
+            + w5 * x6
+            + w5 * x5
+            + w5 * x4
+            + w5 * x2
+            + w4 * x6
+            + w4 * x3
+            + w3 * x7
+            + w3 * x6
+            + w3 * x5
+            + w3 * x3
+            + w2 * x7
+            + w2 * x4
+            + w2 * x0
+            + w1 * x7
+            + w1 * x6
+            + w1 * x4
+            + w0 * x5
+            + w0 * x1
+            + x2,
+            w7 * x6
+            + w7 * x4
+            + w7 * x1
+            + w6 * x7
+            + w6 * x6
+            + w6 * x5
+            + w6 * x4
+            + w6 * x3
+            + w6 * x1
+            + w5 * x7
+            + w5 * x5
+            + w5 * x2
+            + w4 * x7
+            + w4 * x6
+            + w4 * x5
+            + w4 * x4
+            + w4 * x2
+            + w3 * x6
+            + w3 * x3
+            + w2 * x7
+            + w2 * x6
+            + w2 * x5
+            + w2 * x3
+            + w1 * x7
+            + w1 * x4
+            + w1 * x0
+            + w0 * x7
+            + w0 * x6
+            + w0 * x4
+            + x1,
+            w7 * x7
+            + w7 * x4
+            + w7 * x3
+            + w6 * x7
+            + w6 * x6
+            + w6 * x3
+            + w6 * x1
+            + w5 * x5
+            + w5 * x4
+            + w4 * x7
+            + w4 * x4
+            + w4 * x2
+            + w3 * x6
+            + w3 * x5
+            + w2 * x5
+            + w2 * x3
+            + w1 * x7
+            + w1 * x6
+            + w0 * x6
+            + w0 * x4
+            + w0 * x0
+            + x0,
+            w7 * x6
+            + w7 * x5
+            + w7 * x3
+            + w7 * x0
+            + w7
+            + w6 * x7
+            + w6 * x5
+            + w6 * x2
+            + w6 * x0
+            + w5 * x7
+            + w5 * x4
+            + w5 * x2
+            + w5 * x1
+            + w4 * x6
+            + w4 * x4
+            + w4 * x3
+            + w3 * x6
+            + w3 * x5
+            + w3 * x1
+            + w2 * x7
+            + w2 * x3
+            + w1 * x5
+            + w0 * x7,
+            w7 * x5
+            + w7 * x4
+            + w7 * x2
+            + w6 * x7
+            + w6 * x6
+            + w6 * x4
+            + w6 * x1
+            + w6
+            + w5 * x6
+            + w5 * x3
+            + w5 * x1
+            + w5 * x0
+            + w4 * x5
+            + w4 * x3
+            + w4 * x2
+            + w3 * x7
+            + w3 * x5
+            + w3 * x4
+            + w3 * x0
+            + w2 * x7
+            + w2 * x6
+            + w2 * x2
+            + w1 * x4
+            + w0 * x6,
+            w7 * x7
+            + w7 * x4
+            + w7 * x3
+            + w7 * x1
+            + w6 * x6
+            + w6 * x5
+            + w6 * x3
+            + w6 * x0
+            + w5 * x7
+            + w5 * x5
+            + w5 * x2
+            + w5 * x0
+            + w5
+            + w4 * x7
+            + w4 * x4
+            + w4 * x2
+            + w4 * x1
+            + w3 * x6
+            + w3 * x4
+            + w3 * x3
+            + w2 * x6
+            + w2 * x5
+            + w2 * x1
+            + w1 * x7
+            + w1 * x3
+            + w0 * x5,
+            w7 * x7
+            + w7 * x6
+            + w7 * x3
+            + w7 * x2
+            + w7 * x0
+            + w6 * x5
+            + w6 * x4
+            + w6 * x2
+            + w5 * x7
+            + w5 * x6
+            + w5 * x4
+            + w5 * x1
+            + w4 * x6
+            + w4 * x3
+            + w4 * x1
+            + w4 * x0
+            + w4
+            + w3 * x5
+            + w3 * x3
+            + w3 * x2
+            + w2 * x7
+            + w2 * x5
+            + w2 * x4
+            + w2 * x0
+            + w1 * x7
+            + w1 * x6
+            + w1 * x2
+            + w0 * x4,
+            w7 * x3
+            + w7 * x2
+            + w7 * x1
+            + w7 * x0
+            + w6 * x5
+            + w6 * x4
+            + w6 * x3
+            + w6 * x2
+            + w6 * x1
+            + w6 * x0
+            + w5 * x7
+            + w5 * x6
+            + w5 * x5
+            + w5 * x4
+            + w5 * x3
+            + w5 * x2
+            + w5 * x1
+            + w5 * x0
+            + w4 * x7
+            + w4 * x6
+            + w4 * x5
+            + w4 * x4
+            + w4 * x3
+            + w4 * x2
+            + w4 * x0
+            + w3 * x7
+            + w3 * x6
+            + w3 * x5
+            + w3 * x4
+            + w3 * x2
+            + w3
+            + w2 * x7
+            + w2 * x6
+            + w2 * x4
+            + w1 * x6
+            + w1 * x1
+            + w0 * x3,
+            w7 * x7
+            + w7 * x6
+            + w7 * x5
+            + w7 * x3
+            + w7 * x2
+            + w7 * x1
+            + w6 * x7
+            + w6 * x5
+            + w6 * x4
+            + w6 * x3
+            + w6 * x1
+            + w5 * x7
+            + w5 * x6
+            + w5 * x5
+            + w5 * x3
+            + w5 * x0
+            + w4 * x7
+            + w4 * x5
+            + w4 * x2
+            + w4 * x1
+            + w3 * x7
+            + w3 * x4
+            + w3 * x3
+            + w2 * x6
+            + w2 * x5
+            + w2
+            + w1 * x7
+            + w1 * x0
+            + w0 * x2,
+            w7 * x6
+            + w7 * x5
+            + w7 * x4
+            + w7 * x2
+            + w7 * x1
+            + w7 * x0
+            + w6 * x7
+            + w6 * x6
+            + w6 * x4
+            + w6 * x3
+            + w6 * x2
+            + w6 * x0
+            + w5 * x6
+            + w5 * x5
+            + w5 * x4
+            + w5 * x2
+            + w4 * x7
+            + w4 * x6
+            + w4 * x4
+            + w4 * x1
+            + w4 * x0
+            + w3 * x6
+            + w3 * x3
+            + w3 * x2
+            + w2 * x5
+            + w2 * x4
+            + w1 * x7
+            + w1 * x6
+            + w1
+            + w0 * x1,
+            w7 * x7
+            + w7 * x6
+            + w7 * x4
+            + w7 * x1
+            + w6 * x6
+            + w6 * x3
+            + w6 * x1
+            + w6 * x0
+            + w5 * x5
+            + w5 * x3
+            + w5 * x2
+            + w4 * x7
+            + w4 * x5
+            + w4 * x4
+            + w4 * x0
+            + w3 * x7
+            + w3 * x6
+            + w3 * x2
+            + w2 * x4
+            + w1 * x6
+            + w0 * x0
+            + w0,
+        ]
 
         if not correct_only:
-            l.append(w7*x6 + w7*x5 + w7*x1 + w6*x7 + w6*x6 + w6*x2 + w5*x7 + w5*x3 + w4*x4 + w3*x5 + w2*x6 + w1*x7 + w0*x0 + 1)
+            l.append(
+                w7 * x6
+                + w7 * x5
+                + w7 * x1
+                + w6 * x7
+                + w6 * x6
+                + w6 * x2
+                + w5 * x7
+                + w5 * x3
+                + w4 * x4
+                + w3 * x5
+                + w2 * x6
+                + w1 * x7
+                + w0 * x0
+                + 1
+            )
 
         if not biaffine_only:
-            l.extend([w7**2 + w7*w6 + w7*w3 + w7*w1 + w7*x7 + w7*x6 + w7*x5 + w7*x2 + w7*x1 + w7*x0 + w6**2 + w6*w0 + w6*x6 + w6*x5 + w6*x4 + w6*x3 + w6*x1 + w6*x0 + w5**2 + w5*w4 + w5*w3
-                          + w5*w2 + w5*x7 + w5*x5 + w5*x4 + w5*x1 + w5*x0 + w4**2 + w4*w2 + w4*w0 + w4*x5 + w4*x4 + w4*x2 + w3*w2 + w3*x6 + w3*x3 + w3*x1 + w3*x0 + w2*x7 + w2*x5 + w2*x4
-                          + w2*x0 + w1*x4 + w0**2 + w0*x0,
-                      w7*x6 + w7*x4 + w7*x1 + w6*x7 + w6*x6 + w6*x5 + w6*x2 + w5*x7 + w5*x6 + w5*x5 + w5*x4 + w5*x3 + w5*x1 + w4*x5 + w4*x4 + w4*x3 + w4*x1 + w4*x0 + w3*x7 + w3*x5 + w3*x2
-                          + w2*x7 + w2*x6 + w2*x3 + w1*x7 + w1*x6 + w1*x5 + w1*x4 + w1*x2 + w0*x6 + w0*x5 + w0*x4 + w0*x2 + w0*x1 + x7**2 + x7*x6 + x7*x5 + x7*x3 + x7*x1 + x7*x0 + x6*x2
-                          + x6*x1 + x5*x4 + x5*x3 + x5*x2 + x5*x1 + x4*x3 + x4*x2 + x4*x1 + x3**2 + x3*x2 + x2*x1 + x2*x0,
-                      w7*x5 + w7*x4 + w7*x3 + w7*x1 + w7*x0 + w6*x7 + w6*x5 + w6*x2 + w5*x7 + w5*x6 + w5*x3 + w4*x7 + w4*x6 + w4*x5 + w4*x4 + w4*x2 + w3*x6 + w3*x5 + w3*x4 + w3*x2 + w3*x1
-                          + w2*x6 + w2*x3 + w1*x7 + w1*x4 + w0*x7 + w0*x6 + w0*x5 + w0*x3 + x7*x3 + x7*x2 + x6*x5 + x6*x4 + x6*x3 + x6*x2 + x6*x0 + x5*x4 + x5*x3 + x5*x2 + x4**2 + x4*x3
-                          + x3*x2 + x3*x1,
-                      w7*w3 + w7*w2 + w7*x6 + w7*x5 + w7*x4 + w7*x1 + w7*x0 + w6*w5 + w6*w4 + w6*w3 + w6*w2 + w6*w0 + w6*x5 + w6*x4 + w6*x3 + w6*x2 + w6*x0 + w5*w4 + w5*w3 + w5*w2 + w5*x7
-                          + w5*x6 + w5*x4 + w5*x3 + w5*x0 + w4**2 + w4*w3 + w4*x7 + w4*x4 + w4*x3 + w4*x1 + w3*w2 + w3*w1 + w3*x7 + w3*x5 + w3*x2 + w3*x0 + w2*x6 + w2*x4 + w2*x3 + w1*x7
-                          + w1*x3 + w0*x7,
-                      w7*x5 + w7*x2 + w7*x1 + w6*x7 + w6*x6 + w6*x5 + w6*x4 + w6*x2 + w6*x1 + w5*x5 + w5*x3 + w5*x2 + w4*x3 + w4*x2 + w4*x1 + w3*x6 + w3*x3 + w3*x2 + w3*x0 + w2*x7 + w2*x6
-                          + w2*x5 + w2*x3 + w2*x2 + w1*x6 + w1*x4 + w1*x3 + w0*x4 + w0*x3 + w0*x2 + x7*x5 + x7*x4 + x7*x1 + x7*x0 + x6*x0 + x5**2 + x5*x2 + x5*x1 + x5*x0 + x4**2 + x4*x0
-                          + x3*x2 + x3*x0 + x1**2,
-                      w7*w6 + w7*w5 + w7*w4 + w7*w3 + w7*x7 + w7*x5 + w7*x4 + w7*x3 + w7*x0 + w6**2 + w6*w5 + w6*w4 + w6*w2 + w6*w1 + w6*w0 + w6*x7 + w6*x4 + w6*x3 + w6*x2 + w6*x1 + w5*w4
-                          + w5*w1 + w5*w0 + w5*x7 + w5*x6 + w5*x5 + w5*x3 + w5*x2 + w4*w2 + w4*w1 + w4*x7 + w4*x6 + w4*x3 + w4*x2 + w4*x0 + w3*w0 + w3*x7 + w3*x6 + w3*x4 + w3*x1 + w2**2
-                          + w2*x5 + w2*x3 + w2*x2 + w1*x7 + w1*x6 + w1*x2 + w0*x6,
-                      w7*w5 + w7*w4 + w7*w1 + w7*w0 + w7*x6 + w7*x2 + w6*w0 + w6*x6 + w6*x3 + w6*x2 + w6*x1 + w5**2 + w5*w2 + w5*w1 + w5*w0 + w5*x7 + w5*x6 + w5*x5 + w5*x2 + w4**2 + w4*w0
-                          + w4*x6 + w4*x1 + w4*x0 + w3*w2 + w3*w0 + w3*x5 + w3*x4 + w3*x3 + w3*x2 + w3*x1 + w3*x0 + w2*x7 + w2*x6 + w2*x5 + w2*x4 + w2*x3 + w2*x2 + w2*x0 + w1**2 + w1*x7
-                          + w1*x6 + w1*x4 + w0*x3,
-                      w7*x7 + w7*x6 + w7*x5 + w7*x2 + w6*x7 + w6*x6 + w6*x5 + w6*x4 + w6*x3 + w6*x1 + w5*x5 + w5*x4 + w5*x3 + w5*x1 + w5*x0 + w4*x7 + w4*x5 + w4*x2 + w3*x7 + w3*x6 + w3*x3
-                          + w2*x7 + w2*x6 + w2*x5 + w2*x4 + w2*x2 + w1*x6 + w1*x5 + w1*x4 + w1*x2 + w1*x1 + w0*x6 + w0*x3 + x7**2 + x7*x5 + x7*x3 + x6**2 + x6*x5 + x6*x2 + x6*x0 + x5**2
-                          + x4**2 + x4*x3 + x4*x2 + x4*x1 + x3**2 + x3*x1 + x2*x1,
-                      w7**2 + w7*w6 + w7*w5 + w7*w3 + w7*w1 + w7*w0 + w7*x6 + w7*x5 + w7*x3 + w7*x2 + w7*x1 + w6*w2 + w6*w1 + w6*x7 + w6*x6 + w6*x5 + w6*x2 + w6*x1 + w6*x0 + w5*w4 + w5*w3
-                          + w5*w2 + w5*w1 + w5*x6 + w5*x5 + w5*x4 + w5*x3 + w5*x1 + w5*x0 + w4*w3 + w4*w2 + w4*w1 + w4*x7 + w4*x5 + w4*x4 + w4*x1 + w4*x0 + w3**2 + w3*w2 + w3*x5 + w3*x4
-                          + w3*x2 + w2*w1 + w2*w0 + w2*x6 + w2*x3 + w2*x1 + w2*x0 + w1*x7 + w1*x5 + w1*x4 + w1*x0 + w0*x4,
-                      w7*x7 + w7*x5 + w7*x2 + w6*x7 + w6*x6 + w6*x3 + w5*x7 + w5*x6 + w5*x5 + w5*x4 + w5*x2 + w4*x6 + w4*x5 + w4*x4 + w4*x2 + w4*x1 + w3*x6 + w3*x3 + w2*x7 + w2*x4 + w1*x7
-                          + w1*x6 + w1*x5 + w1*x3 + w0*x7 + w0*x6 + w0*x5 + w0*x3 + w0*x2 + w0*x0 + x7**2 + x7*x6 + x7*x3 + x7*x1 + x6**2 + x6*x0 + x5**2 + x5*x4 + x5*x3 + x5*x2 + x4**2
-                          + x4*x2 + x4*x0 + x3*x2 + x0**2,
-                      w7*x7 + w7*x6 + w7*x5 + w7*x4 + w7*x3 + w7*x1 + w6*x5 + w6*x4 + w6*x3 + w6*x1 + w6*x0 + w5*x7 + w5*x5 + w5*x2 + w4*x7 + w4*x6 + w4*x3 + w3*x7 + w3*x6 + w3*x5 + w3*x4
-                          + w3*x2 + w2*x6 + w2*x5 + w2*x4 + w2*x2 + w2*x1 + w1*x6 + w1*x3 + w0*x7 + w0*x4 + x7*x6 + x7*x5 + x7*x4 + x7*x3 + x6**2 + x6*x5 + x6*x4 + x6*x2 + x6*x1 + x6*x0
-                          + x5*x4 + x5*x1 + x5*x0 + x4*x2 + x4*x1 + x3*x0 + x2**2,
-                      w7*x5 + w7*x4 + w7*x3 + w7*x2 + w6*x7 + w6*x1 + w5*x5 + w5*x4 + w5*x3 + w5*x2 + w5*x1 + w4*x7 + w4*x6 + w4*x4 + w4*x3 + w3*x6 + w3*x5 + w3*x4 + w3*x3 + w2*x2 + w2*x0
-                          + w1*x6 + w1*x5 + w1*x4 + w1*x3 + w1*x2 + w0*x7 + w0*x5 + w0*x4 + x7**2 + x7*x4 + x7*x2 + x6*x4 + x6*x3 + x6*x2 + x6*x1 + x5**2 + x5*x4 + x5*x3 + x5*x2 + x5*x0
-                          + x4*x3 + x4*x2 + x4*x1 + x3**2 + x2*x0 + x1*x0,
-                      w7*x6 + w7*x5 + w7*x3 + w7*x2 + w6*x5 + w6*x4 + w6*x3 + w6*x2 + w5*x7 + w5*x1 + w4*x5 + w4*x4 + w4*x3 + w4*x2 + w4*x1 + w3*x7 + w3*x6 + w3*x4 + w3*x3 + w2*x6 + w2*x5
-                          + w2*x4 + w2*x3 + w1*x2 + w1*x0 + w0*x6 + w0*x5 + w0*x4 + w0*x3 + w0*x2 + x7*x5 + x7*x2 + x7*x0 + x6**2 + x6*x5 + x6*x2 + x6*x1 + x6*x0 + x5**2 + x5*x4 + x4**2
-                          + x4*x2 + x4*x1 + x4*x0 + x3**2 + x3*x2 + x1*x0,
-                      w7**2 + w7*w5 + w7*w3 + w7*x7 + w7*x6 + w7*x4 + w7*x3 + w7*x2 + w6**2 + w6*w5 + w6*w2 + w6*w0 + w6*x7 + w6*x6 + w6*x3 + w6*x2 + w6*x1 + w6*x0 + w5**2 + w5*x7 + w5*x6
-                          + w5*x5 + w5*x4 + w5*x2 + w5*x1 + w4**2 + w4*w3 + w4*w2 + w4*w1 + w4*x6 + w4*x5 + w4*x2 + w4*x1 + w3**2 + w3*w1 + w3*x6 + w3*x5 + w3*x3 + w3*x0 + w2*w1 + w2*x7
-                          + w2*x4 + w2*x2 + w2*x1 + w1*x6 + w1*x5 + w1*x1 + w0*x5,
-                      w7*w5 + w7*w2 + w7*w0 + w7*x5 + w7*x3 + w6**2 + w6*w5 + w6*w2 + w6*w1 + w6*w0 + w6*x7 + w6*x3 + w6*x2 + w6*x0 + w5**2 + w5*w4 + w5*x7 + w5*x6 + w5*x4 + w5*x2 + w5*x0
-                          + w4**2 + w4*w2 + w4*w1 + w4*w0 + w4*x6 + w4*x4 + w4*x3 + w4*x2 + w4*x0 + w3**2 + w3*w2 + w3*x7 + w3*x6 + w3*x4 + w3*x3 + w3*x2 + w3*x0 + w2*x7 + w2*x6 + w2*x4
-                          + w2*x1 + w2*x0 + w1*w0 + w1*x5 + w1*x4 + w0*x1,
-                      w7**2 + w7*w4 + w7*w2 + w7*x6 + w7*x4 + w7*x0 + w6*w4 + w6*w3 + w6*w2 + w6*w1 + w6*x4 + w6*x3 + w6*x1 + w5**2 + w5*w4 + w5*w3 + w5*w2 + w5*w0 + w5*x7 + w5*x5 + w5*x3
-                          + w5*x1 + w5*x0 + w4*w3 + w4*w2 + w4*w1 + w4*x7 + w4*x5 + w4*x4 + w4*x3 + w4*x1 + w4*x0 + w3**2 + w3*x7 + w3*x5 + w3*x4 + w3*x3 + w3*x1 + w2*w0 + w2*x7 + w2*x5
-                          + w2*x2 + w2*x1 + w1*w0 + w1*x6 + w1*x5 + w0*x2])
+            l.extend(
+                [
+                    w7**2
+                    + w7 * w6
+                    + w7 * w3
+                    + w7 * w1
+                    + w7 * x7
+                    + w7 * x6
+                    + w7 * x5
+                    + w7 * x2
+                    + w7 * x1
+                    + w7 * x0
+                    + w6**2
+                    + w6 * w0
+                    + w6 * x6
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x1
+                    + w6 * x0
+                    + w5**2
+                    + w5 * w4
+                    + w5 * w3
+                    + w5 * w2
+                    + w5 * x7
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x1
+                    + w5 * x0
+                    + w4**2
+                    + w4 * w2
+                    + w4 * w0
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x2
+                    + w3 * w2
+                    + w3 * x6
+                    + w3 * x3
+                    + w3 * x1
+                    + w3 * x0
+                    + w2 * x7
+                    + w2 * x5
+                    + w2 * x4
+                    + w2 * x0
+                    + w1 * x4
+                    + w0**2
+                    + w0 * x0,
+                    w7 * x6
+                    + w7 * x4
+                    + w7 * x1
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x5
+                    + w6 * x2
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x3
+                    + w5 * x1
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x3
+                    + w4 * x1
+                    + w4 * x0
+                    + w3 * x7
+                    + w3 * x5
+                    + w3 * x2
+                    + w2 * x7
+                    + w2 * x6
+                    + w2 * x3
+                    + w1 * x7
+                    + w1 * x6
+                    + w1 * x5
+                    + w1 * x4
+                    + w1 * x2
+                    + w0 * x6
+                    + w0 * x5
+                    + w0 * x4
+                    + w0 * x2
+                    + w0 * x1
+                    + x7**2
+                    + x7 * x6
+                    + x7 * x5
+                    + x7 * x3
+                    + x7 * x1
+                    + x7 * x0
+                    + x6 * x2
+                    + x6 * x1
+                    + x5 * x4
+                    + x5 * x3
+                    + x5 * x2
+                    + x5 * x1
+                    + x4 * x3
+                    + x4 * x2
+                    + x4 * x1
+                    + x3**2
+                    + x3 * x2
+                    + x2 * x1
+                    + x2 * x0,
+                    w7 * x5
+                    + w7 * x4
+                    + w7 * x3
+                    + w7 * x1
+                    + w7 * x0
+                    + w6 * x7
+                    + w6 * x5
+                    + w6 * x2
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x3
+                    + w4 * x7
+                    + w4 * x6
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x2
+                    + w3 * x6
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x2
+                    + w3 * x1
+                    + w2 * x6
+                    + w2 * x3
+                    + w1 * x7
+                    + w1 * x4
+                    + w0 * x7
+                    + w0 * x6
+                    + w0 * x5
+                    + w0 * x3
+                    + x7 * x3
+                    + x7 * x2
+                    + x6 * x5
+                    + x6 * x4
+                    + x6 * x3
+                    + x6 * x2
+                    + x6 * x0
+                    + x5 * x4
+                    + x5 * x3
+                    + x5 * x2
+                    + x4**2
+                    + x4 * x3
+                    + x3 * x2
+                    + x3 * x1,
+                    w7 * w3
+                    + w7 * w2
+                    + w7 * x6
+                    + w7 * x5
+                    + w7 * x4
+                    + w7 * x1
+                    + w7 * x0
+                    + w6 * w5
+                    + w6 * w4
+                    + w6 * w3
+                    + w6 * w2
+                    + w6 * w0
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x2
+                    + w6 * x0
+                    + w5 * w4
+                    + w5 * w3
+                    + w5 * w2
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x4
+                    + w5 * x3
+                    + w5 * x0
+                    + w4**2
+                    + w4 * w3
+                    + w4 * x7
+                    + w4 * x4
+                    + w4 * x3
+                    + w4 * x1
+                    + w3 * w2
+                    + w3 * w1
+                    + w3 * x7
+                    + w3 * x5
+                    + w3 * x2
+                    + w3 * x0
+                    + w2 * x6
+                    + w2 * x4
+                    + w2 * x3
+                    + w1 * x7
+                    + w1 * x3
+                    + w0 * x7,
+                    w7 * x5
+                    + w7 * x2
+                    + w7 * x1
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x2
+                    + w6 * x1
+                    + w5 * x5
+                    + w5 * x3
+                    + w5 * x2
+                    + w4 * x3
+                    + w4 * x2
+                    + w4 * x1
+                    + w3 * x6
+                    + w3 * x3
+                    + w3 * x2
+                    + w3 * x0
+                    + w2 * x7
+                    + w2 * x6
+                    + w2 * x5
+                    + w2 * x3
+                    + w2 * x2
+                    + w1 * x6
+                    + w1 * x4
+                    + w1 * x3
+                    + w0 * x4
+                    + w0 * x3
+                    + w0 * x2
+                    + x7 * x5
+                    + x7 * x4
+                    + x7 * x1
+                    + x7 * x0
+                    + x6 * x0
+                    + x5**2
+                    + x5 * x2
+                    + x5 * x1
+                    + x5 * x0
+                    + x4**2
+                    + x4 * x0
+                    + x3 * x2
+                    + x3 * x0
+                    + x1**2,
+                    w7 * w6
+                    + w7 * w5
+                    + w7 * w4
+                    + w7 * w3
+                    + w7 * x7
+                    + w7 * x5
+                    + w7 * x4
+                    + w7 * x3
+                    + w7 * x0
+                    + w6**2
+                    + w6 * w5
+                    + w6 * w4
+                    + w6 * w2
+                    + w6 * w1
+                    + w6 * w0
+                    + w6 * x7
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x2
+                    + w6 * x1
+                    + w5 * w4
+                    + w5 * w1
+                    + w5 * w0
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x3
+                    + w5 * x2
+                    + w4 * w2
+                    + w4 * w1
+                    + w4 * x7
+                    + w4 * x6
+                    + w4 * x3
+                    + w4 * x2
+                    + w4 * x0
+                    + w3 * w0
+                    + w3 * x7
+                    + w3 * x6
+                    + w3 * x4
+                    + w3 * x1
+                    + w2**2
+                    + w2 * x5
+                    + w2 * x3
+                    + w2 * x2
+                    + w1 * x7
+                    + w1 * x6
+                    + w1 * x2
+                    + w0 * x6,
+                    w7 * w5
+                    + w7 * w4
+                    + w7 * w1
+                    + w7 * w0
+                    + w7 * x6
+                    + w7 * x2
+                    + w6 * w0
+                    + w6 * x6
+                    + w6 * x3
+                    + w6 * x2
+                    + w6 * x1
+                    + w5**2
+                    + w5 * w2
+                    + w5 * w1
+                    + w5 * w0
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x2
+                    + w4**2
+                    + w4 * w0
+                    + w4 * x6
+                    + w4 * x1
+                    + w4 * x0
+                    + w3 * w2
+                    + w3 * w0
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x3
+                    + w3 * x2
+                    + w3 * x1
+                    + w3 * x0
+                    + w2 * x7
+                    + w2 * x6
+                    + w2 * x5
+                    + w2 * x4
+                    + w2 * x3
+                    + w2 * x2
+                    + w2 * x0
+                    + w1**2
+                    + w1 * x7
+                    + w1 * x6
+                    + w1 * x4
+                    + w0 * x3,
+                    w7 * x7
+                    + w7 * x6
+                    + w7 * x5
+                    + w7 * x2
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x1
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x3
+                    + w5 * x1
+                    + w5 * x0
+                    + w4 * x7
+                    + w4 * x5
+                    + w4 * x2
+                    + w3 * x7
+                    + w3 * x6
+                    + w3 * x3
+                    + w2 * x7
+                    + w2 * x6
+                    + w2 * x5
+                    + w2 * x4
+                    + w2 * x2
+                    + w1 * x6
+                    + w1 * x5
+                    + w1 * x4
+                    + w1 * x2
+                    + w1 * x1
+                    + w0 * x6
+                    + w0 * x3
+                    + x7**2
+                    + x7 * x5
+                    + x7 * x3
+                    + x6**2
+                    + x6 * x5
+                    + x6 * x2
+                    + x6 * x0
+                    + x5**2
+                    + x4**2
+                    + x4 * x3
+                    + x4 * x2
+                    + x4 * x1
+                    + x3**2
+                    + x3 * x1
+                    + x2 * x1,
+                    w7**2
+                    + w7 * w6
+                    + w7 * w5
+                    + w7 * w3
+                    + w7 * w1
+                    + w7 * w0
+                    + w7 * x6
+                    + w7 * x5
+                    + w7 * x3
+                    + w7 * x2
+                    + w7 * x1
+                    + w6 * w2
+                    + w6 * w1
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x5
+                    + w6 * x2
+                    + w6 * x1
+                    + w6 * x0
+                    + w5 * w4
+                    + w5 * w3
+                    + w5 * w2
+                    + w5 * w1
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x3
+                    + w5 * x1
+                    + w5 * x0
+                    + w4 * w3
+                    + w4 * w2
+                    + w4 * w1
+                    + w4 * x7
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x1
+                    + w4 * x0
+                    + w3**2
+                    + w3 * w2
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x2
+                    + w2 * w1
+                    + w2 * w0
+                    + w2 * x6
+                    + w2 * x3
+                    + w2 * x1
+                    + w2 * x0
+                    + w1 * x7
+                    + w1 * x5
+                    + w1 * x4
+                    + w1 * x0
+                    + w0 * x4,
+                    w7 * x7
+                    + w7 * x5
+                    + w7 * x2
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x3
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x2
+                    + w4 * x6
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x2
+                    + w4 * x1
+                    + w3 * x6
+                    + w3 * x3
+                    + w2 * x7
+                    + w2 * x4
+                    + w1 * x7
+                    + w1 * x6
+                    + w1 * x5
+                    + w1 * x3
+                    + w0 * x7
+                    + w0 * x6
+                    + w0 * x5
+                    + w0 * x3
+                    + w0 * x2
+                    + w0 * x0
+                    + x7**2
+                    + x7 * x6
+                    + x7 * x3
+                    + x7 * x1
+                    + x6**2
+                    + x6 * x0
+                    + x5**2
+                    + x5 * x4
+                    + x5 * x3
+                    + x5 * x2
+                    + x4**2
+                    + x4 * x2
+                    + x4 * x0
+                    + x3 * x2
+                    + x0**2,
+                    w7 * x7
+                    + w7 * x6
+                    + w7 * x5
+                    + w7 * x4
+                    + w7 * x3
+                    + w7 * x1
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x1
+                    + w6 * x0
+                    + w5 * x7
+                    + w5 * x5
+                    + w5 * x2
+                    + w4 * x7
+                    + w4 * x6
+                    + w4 * x3
+                    + w3 * x7
+                    + w3 * x6
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x2
+                    + w2 * x6
+                    + w2 * x5
+                    + w2 * x4
+                    + w2 * x2
+                    + w2 * x1
+                    + w1 * x6
+                    + w1 * x3
+                    + w0 * x7
+                    + w0 * x4
+                    + x7 * x6
+                    + x7 * x5
+                    + x7 * x4
+                    + x7 * x3
+                    + x6**2
+                    + x6 * x5
+                    + x6 * x4
+                    + x6 * x2
+                    + x6 * x1
+                    + x6 * x0
+                    + x5 * x4
+                    + x5 * x1
+                    + x5 * x0
+                    + x4 * x2
+                    + x4 * x1
+                    + x3 * x0
+                    + x2**2,
+                    w7 * x5
+                    + w7 * x4
+                    + w7 * x3
+                    + w7 * x2
+                    + w6 * x7
+                    + w6 * x1
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x3
+                    + w5 * x2
+                    + w5 * x1
+                    + w4 * x7
+                    + w4 * x6
+                    + w4 * x4
+                    + w4 * x3
+                    + w3 * x6
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x3
+                    + w2 * x2
+                    + w2 * x0
+                    + w1 * x6
+                    + w1 * x5
+                    + w1 * x4
+                    + w1 * x3
+                    + w1 * x2
+                    + w0 * x7
+                    + w0 * x5
+                    + w0 * x4
+                    + x7**2
+                    + x7 * x4
+                    + x7 * x2
+                    + x6 * x4
+                    + x6 * x3
+                    + x6 * x2
+                    + x6 * x1
+                    + x5**2
+                    + x5 * x4
+                    + x5 * x3
+                    + x5 * x2
+                    + x5 * x0
+                    + x4 * x3
+                    + x4 * x2
+                    + x4 * x1
+                    + x3**2
+                    + x2 * x0
+                    + x1 * x0,
+                    w7 * x6
+                    + w7 * x5
+                    + w7 * x3
+                    + w7 * x2
+                    + w6 * x5
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x2
+                    + w5 * x7
+                    + w5 * x1
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x3
+                    + w4 * x2
+                    + w4 * x1
+                    + w3 * x7
+                    + w3 * x6
+                    + w3 * x4
+                    + w3 * x3
+                    + w2 * x6
+                    + w2 * x5
+                    + w2 * x4
+                    + w2 * x3
+                    + w1 * x2
+                    + w1 * x0
+                    + w0 * x6
+                    + w0 * x5
+                    + w0 * x4
+                    + w0 * x3
+                    + w0 * x2
+                    + x7 * x5
+                    + x7 * x2
+                    + x7 * x0
+                    + x6**2
+                    + x6 * x5
+                    + x6 * x2
+                    + x6 * x1
+                    + x6 * x0
+                    + x5**2
+                    + x5 * x4
+                    + x4**2
+                    + x4 * x2
+                    + x4 * x1
+                    + x4 * x0
+                    + x3**2
+                    + x3 * x2
+                    + x1 * x0,
+                    w7**2
+                    + w7 * w5
+                    + w7 * w3
+                    + w7 * x7
+                    + w7 * x6
+                    + w7 * x4
+                    + w7 * x3
+                    + w7 * x2
+                    + w6**2
+                    + w6 * w5
+                    + w6 * w2
+                    + w6 * w0
+                    + w6 * x7
+                    + w6 * x6
+                    + w6 * x3
+                    + w6 * x2
+                    + w6 * x1
+                    + w6 * x0
+                    + w5**2
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x5
+                    + w5 * x4
+                    + w5 * x2
+                    + w5 * x1
+                    + w4**2
+                    + w4 * w3
+                    + w4 * w2
+                    + w4 * w1
+                    + w4 * x6
+                    + w4 * x5
+                    + w4 * x2
+                    + w4 * x1
+                    + w3**2
+                    + w3 * w1
+                    + w3 * x6
+                    + w3 * x5
+                    + w3 * x3
+                    + w3 * x0
+                    + w2 * w1
+                    + w2 * x7
+                    + w2 * x4
+                    + w2 * x2
+                    + w2 * x1
+                    + w1 * x6
+                    + w1 * x5
+                    + w1 * x1
+                    + w0 * x5,
+                    w7 * w5
+                    + w7 * w2
+                    + w7 * w0
+                    + w7 * x5
+                    + w7 * x3
+                    + w6**2
+                    + w6 * w5
+                    + w6 * w2
+                    + w6 * w1
+                    + w6 * w0
+                    + w6 * x7
+                    + w6 * x3
+                    + w6 * x2
+                    + w6 * x0
+                    + w5**2
+                    + w5 * w4
+                    + w5 * x7
+                    + w5 * x6
+                    + w5 * x4
+                    + w5 * x2
+                    + w5 * x0
+                    + w4**2
+                    + w4 * w2
+                    + w4 * w1
+                    + w4 * w0
+                    + w4 * x6
+                    + w4 * x4
+                    + w4 * x3
+                    + w4 * x2
+                    + w4 * x0
+                    + w3**2
+                    + w3 * w2
+                    + w3 * x7
+                    + w3 * x6
+                    + w3 * x4
+                    + w3 * x3
+                    + w3 * x2
+                    + w3 * x0
+                    + w2 * x7
+                    + w2 * x6
+                    + w2 * x4
+                    + w2 * x1
+                    + w2 * x0
+                    + w1 * w0
+                    + w1 * x5
+                    + w1 * x4
+                    + w0 * x1,
+                    w7**2
+                    + w7 * w4
+                    + w7 * w2
+                    + w7 * x6
+                    + w7 * x4
+                    + w7 * x0
+                    + w6 * w4
+                    + w6 * w3
+                    + w6 * w2
+                    + w6 * w1
+                    + w6 * x4
+                    + w6 * x3
+                    + w6 * x1
+                    + w5**2
+                    + w5 * w4
+                    + w5 * w3
+                    + w5 * w2
+                    + w5 * w0
+                    + w5 * x7
+                    + w5 * x5
+                    + w5 * x3
+                    + w5 * x1
+                    + w5 * x0
+                    + w4 * w3
+                    + w4 * w2
+                    + w4 * w1
+                    + w4 * x7
+                    + w4 * x5
+                    + w4 * x4
+                    + w4 * x3
+                    + w4 * x1
+                    + w4 * x0
+                    + w3**2
+                    + w3 * x7
+                    + w3 * x5
+                    + w3 * x4
+                    + w3 * x3
+                    + w3 * x1
+                    + w2 * w0
+                    + w2 * x7
+                    + w2 * x5
+                    + w2 * x2
+                    + w2 * x1
+                    + w1 * w0
+                    + w1 * x6
+                    + w1 * x5
+                    + w0 * x2,
+                ]
+            )
 
         return l
 
-    def _inversion_polynomials_single_sbox(self, x=None, w=None, biaffine_only=None, correct_only=None):
+    def _inversion_polynomials_single_sbox(
+        self, x=None, w=None, biaffine_only=None, correct_only=None
+    ):
         """
         Generate inversion polynomials of a single S-box.
 
@@ -3031,8 +4598,10 @@ class SR_gf2(SR_generic):
 
         if x is None and w is None:
             # make sure it prints like in the book.
-            names = ["w%d" % i for i in reversed(range(e))] + ["x%d" % i for i in reversed(range(e))]
-            P = PolynomialRing(GF(2), e*2, names, order='lex')
+            names = ["w%d" % i for i in reversed(range(e))] + [
+                "x%d" % i for i in reversed(range(e))
+            ]
+            P = PolynomialRing(GF(2), e * 2, names, order='lex')
             x = matrix(P, e, 1, P.gens()[e:])
             w = matrix(P, e, 1, P.gens()[:e])
         else:
@@ -3049,7 +4618,7 @@ class SR_gf2(SR_generic):
                 w = matrix(P, e, 1, w)
 
         T = self._mul_matrix(self.k.gen())
-        o = matrix(P, e, 1, [0]*(e-1) + [1])
+        o = matrix(P, e, 1, [0] * (e - 1) + [1])
 
         columns = []
         for i in reversed(range(e)):
@@ -3065,14 +4634,14 @@ class SR_gf2(SR_generic):
 
         l = []
         if correct_only:
-            l.append( (Cw * x + o).list()[:-1] )
+            l.append((Cw * x + o).list()[:-1])
         else:
-            l.append( (Cw * x + o).list() )
-        l.append( (Cw * S * x + x).list() )
-        l.append( (Cx * S * w + w).list() )
+            l.append((Cw * x + o).list())
+        l.append((Cw * S * x + x).list())
+        l.append((Cx * S * w + w).list())
         if not biaffine_only:
-            l.append( ((Cw * S**2 + Cx*S)*x).list() )
-            l.append( ((Cx * S**2 + Cw*S)*w).list() )
+            l.append(((Cw * S**2 + Cx * S) * x).list())
+            l.append(((Cx * S**2 + Cw * S) * w).list())
 
         return sum(l, [])
 
@@ -3106,7 +4675,7 @@ class SR_gf2(SR_generic):
         e = self.e
         l = []
         for j in range(0, length, e):
-            l += self.inversion_polynomials_single_sbox(xi[j:j+e], wi[j:j+e])
+            l += self.inversion_polynomials_single_sbox(xi[j : j + e], wi[j : j + e])
         return l
 
     def field_polynomials(self, name, i, l=None):
@@ -3140,12 +4709,14 @@ class SR_gf2(SR_generic):
         e = self._e
 
         if l is None:
-            l = r*c
+            l = r * c
 
         if self._polybori:
             return []
         _vars = self.vars(name, i, l, e)
-        return [_vars[e*j+k]**2 - _vars[e*j+k] for j in range(l) for k in range(e)]
+        return [
+            _vars[e * j + k] ** 2 - _vars[e * j + k] for j in range(l) for k in range(e)
+        ]
 
 
 class SR_gf2_2(SR_gf2):
@@ -3155,7 +4726,10 @@ class SR_gf2_2(SR_gf2):
     In this example, we replace the S-Box inversion polynomials by the
     polynomials generated by the S-Box class.
     """
-    def inversion_polynomials_single_sbox(self, x=None, w=None, biaffine_only=None, correct_only=None, groebner=False):
+
+    def inversion_polynomials_single_sbox(
+        self, x=None, w=None, biaffine_only=None, correct_only=None, groebner=False
+    ):
         """
         Return inversion polynomials of a single S-Box.
 
@@ -3223,13 +4797,15 @@ class SR_gf2_2(SR_gf2):
         e = self.e
         if x is None and w is None:
             # make sure it prints like in the book.
-            names = ["w%d" % i for i in reversed(range(e))] + ["x%d" % i for i in reversed(range(e))]
-            P = PolynomialRing(GF(2), e*2, names, order='lex')
+            names = ["w%d" % i for i in reversed(range(e))] + [
+                "x%d" % i for i in reversed(range(e))
+            ]
+            P = PolynomialRing(GF(2), e * 2, names, order='lex')
             x = P.gens()[e:]
             w = P.gens()[:e]
 
         S = self.sbox(inversion_only=True)
-        F = S.polynomials(w, x, degree=e-2, groebner=groebner)
+        F = S.polynomials(w, x, degree=e - 2, groebner=groebner)
         return F
 
 
@@ -3237,6 +4813,7 @@ class AllowZeroInversionsContext:
     """
     Temporarily allow zero inversion.
     """
+
     def __init__(self, sr):
         """
         EXAMPLES::
@@ -3309,7 +4886,7 @@ def check_consistency(max_n=2, **kwargs):
     for r in (1, 2, 4):
         for c in (1, 2, 4):
             for e in (4, 8):
-                for n in range(1, max_n+1):
+                for n in range(1, max_n + 1):
                     for gf2 in (True, False):
                         zero_division = True
                         while zero_division:
@@ -3317,7 +4894,7 @@ def check_consistency(max_n=2, **kwargs):
                             try:
                                 F, s = sr.polynomial_system()
                                 F = F.subs(s)
-                                consistent &= (F.groebner_basis()[0] != 1)
+                                consistent &= F.groebner_basis()[0] != 1
                                 if not consistent:
                                     print(str(sr) + " is not consistent")
                                 zero_division = False

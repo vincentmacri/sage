@@ -19,6 +19,7 @@ from sage.libs.pari import pari
 from cypari2.handle_error import PariError
 
 from sage.databases.db_modular_polynomials import ClassicalModularPolynomialDatabase
+
 _db = ClassicalModularPolynomialDatabase()
 
 _cache_bound = 100
@@ -130,9 +131,10 @@ def classical_modular_polynomial(l, j=None):
             try:
                 pari_Phi = pari.polmodular(l)
             except PariError:
-                raise NotImplementedError('modular polynomial is not in database and computing it on the fly is not yet implemented')
-            d = {(i, j): c for i, f in enumerate(pari_Phi)
-                 for j, c in enumerate(f)}
+                raise NotImplementedError(
+                    'modular polynomial is not in database and computing it on the fly is not yet implemented'
+                )
+            d = {(i, j): c for i, f in enumerate(pari_Phi) for j, c in enumerate(f)}
             Phi = ZZ['X,Y'](d)
 
         if l <= _cache_bound:

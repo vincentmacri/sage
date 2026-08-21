@@ -2,6 +2,7 @@
 """
 Hecke Monoids
 """
+
 # ****************************************************************************
 #  Copyright (C) 2015 Nicolas M. Thiéry <nthiery at users.sf.net>
 #

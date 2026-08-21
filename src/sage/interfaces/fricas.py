@@ -201,19 +201,27 @@ import sage.interfaces.abc
 from importlib.resources import files
 from sage.env import DOT_SAGE, LOCAL_IDENTIFIER
 from sage.interfaces.tab_completion import ExtraTabCompletion
-from sage.interfaces.expect import Expect, ExpectElement, FunctionElement, ExpectFunction
+from sage.interfaces.expect import (
+    Expect,
+    ExpectElement,
+    FunctionElement,
+    ExpectFunction,
+)
 from sage.misc.instancedoc import instancedoc
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.symbolic.expression', ['register_symbol'])
 lazy_import('sage.symbolic.constants', ['I', 'e', 'pi'])
 
 FRICAS_SINGLE_LINE_START = 3  # where output starts when it fits next to the line number
-FRICAS_MULTI_LINE_START = 2   # and when it doesn't
-FRICAS_LINE_LENGTH = 80       # length of a line, should match the line length in sage
+FRICAS_MULTI_LINE_START = 2  # and when it doesn't
+FRICAS_LINE_LENGTH = 80  # length of a line, should match the line length in sage
 # the following messages have, unfortunately, no markup.
-FRICAS_WHAT_OPERATIONS_STRING = r"Operations whose names satisfy the above pattern\(s\):"
+FRICAS_WHAT_OPERATIONS_STRING = (
+    r"Operations whose names satisfy the above pattern\(s\):"
+)
 FRICAS_ERROR_IN_LIBRARY_CODE = ">> Error detected within library code:"
 FRICAS_SYSTEM_ERROR = ">> System error:"
 
@@ -248,25 +256,27 @@ FRICAS_INIT_CODE = (
     "              (when (member x '(|startAlgebraOutput| |endOfAlgebraOutput|"
     "                                |startKeyedMsg|      |endOfKeyedMsg|))"
     "               (prin1 x)"
-    "               (princ #\\Newline))))")
+    "               (princ #\\Newline))))",
+)
 # code (one-line!) executed after having set up the prompt
 FRICAS_HELPER_CODE = (
-    'sageprint(x:SExpression):String == ' +
-    '(atom? x => (' +
-    'float? x => return float(x)::String;' +
-    'integer? x => return integer(x)::String;' +
-    'string? x => return concat(["_"", string(x)::String, "_""])$String;' +
-    'symbol? x => return string(symbol(x));' +
-    'list? x => return "()");' +
-    'S: List String := [sageprint y for y in destruct x];' +
-    'R: String := new(1 + reduce(_+, [1 + #(s)$String for s in S], 0),' +
-    'space()$Character);' +
-    'copyInto!(R, "(", 1);' +
-    'i := 2;' +
-    'for s in S repeat'
-    '(copyInto!(R, s, i); i := i + 1 + #(s)$String);' +
-    'copyInto!(R, ")", i-1);' +
-    'return R)')
+    'sageprint(x:SExpression):String == '
+    + '(atom? x => ('
+    + 'float? x => return float(x)::String;'
+    + 'integer? x => return integer(x)::String;'
+    + 'string? x => return concat(["_"", string(x)::String, "_""])$String;'
+    + 'symbol? x => return string(symbol(x));'
+    + 'list? x => return "()");'
+    + 'S: List String := [sageprint y for y in destruct x];'
+    + 'R: String := new(1 + reduce(_+, [1 + #(s)$String for s in S], 0),'
+    + 'space()$Character);'
+    + 'copyInto!(R, "(", 1);'
+    + 'i := 2;'
+    + 'for s in S repeat'
+    '(copyInto!(R, s, i); i := i + 1 + #(s)$String);'
+    + 'copyInto!(R, ")", i-1);'
+    + 'return R)'
+)
 
 FRICAS_LINENUMBER_OFF_CODE = ")lisp (setf |$IOindex| NIL)"
 FRICAS_FIRST_PROMPT = r"\(1\) -> "
@@ -277,9 +287,16 @@ class FriCAS(ExtraTabCompletion, Expect):
     """
     Interface to a FriCAS interpreter.
     """
-    def __init__(self, name='fricas', command=None,
-                 script_subdirectory=None, logfile=None,
-                 server=None, server_tmpdir=None):
+
+    def __init__(
+        self,
+        name='fricas',
+        command=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+    ):
         """
         Create an instance of the FriCAS interpreter.
 
@@ -305,25 +322,30 @@ class FriCAS(ExtraTabCompletion, Expect):
         """
         if command is None:
             from sage.features.fricas import FriCAS
+
             command = [FriCAS(), "-nosman"]
 
-        eval_using_file_cutoff = 4096 - 5  # magic number from Expect._eval_line (there might be a bug)
+        eval_using_file_cutoff = (
+            4096 - 5
+        )  # magic number from Expect._eval_line (there might be a bug)
         assert max(len(c) for c in FRICAS_INIT_CODE) < eval_using_file_cutoff
         self.__eval_using_file_cutoff = eval_using_file_cutoff
         self._COMMANDS_CACHE = '%s/%s_commandlist_cache.sobj' % (DOT_SAGE, name)
         # we run the init code in _start to avoid spurious output
-        Expect.__init__(self,
-                        name=name,
-                        prompt=FRICAS_FIRST_PROMPT,
-                        command=command,
-                        script_subdirectory=script_subdirectory,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        init_code=[],
-                        logfile=logfile,
-                        eval_using_file_cutoff=eval_using_file_cutoff)
+        Expect.__init__(
+            self,
+            name=name,
+            prompt=FRICAS_FIRST_PROMPT,
+            command=command,
+            script_subdirectory=script_subdirectory,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            init_code=[],
+            logfile=logfile,
+            eval_using_file_cutoff=eval_using_file_cutoff,
+        )
 
     def _start(self):
         """
@@ -422,8 +444,11 @@ http://fricas.sourceforge.net.
             True
         """
         output = self.eval(")what operations", reformat=False)
-        m = re.search(FRICAS_WHAT_OPERATIONS_STRING + r"\n(.*)\n\|startKeyedMsg\|",
-                      output, flags=re.DOTALL)
+        m = re.search(
+            FRICAS_WHAT_OPERATIONS_STRING + r"\n(.*)\n\|startKeyedMsg\|",
+            output,
+            flags=re.DOTALL,
+        )
         l = m.groups()[0].split()
         return l
 
@@ -452,6 +477,7 @@ http://fricas.sourceforge.net.
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(self._COMMANDS_CACHE)
@@ -509,23 +535,26 @@ http://fricas.sourceforge.net.
         try:
             return self.__remote_tmpfile
         except AttributeError:
-            self.__remote_tmpfile = self._remote_tmpdir() + "/interface_%s:%s.input" % (LOCAL_IDENTIFIER, self.pid())
+            self.__remote_tmpfile = self._remote_tmpdir() + "/interface_%s:%s.input" % (
+                LOCAL_IDENTIFIER,
+                self.pid(),
+            )
             return self.__remote_tmpfile
 
-# what I expect from FriCAS:
+    # what I expect from FriCAS:
 
-# 1.) in set(self, var, value)
-#
-# no markers:
-# there could be some "debugging" output, as in fricas("guessADE([1,1,1,1], debug==true)")
-#
-# startKeyedMsg: an error happened
-#
-# 2.) in get(self, var)
-#
-# |startAlgebraOutput\|...|endOfAlgebraOutput\|
-#
-# 3.) I also need a routine to send a system command and get its output.
+    # 1.) in set(self, var, value)
+    #
+    # no markers:
+    # there could be some "debugging" output, as in fricas("guessADE([1,1,1,1], debug==true)")
+    #
+    # startKeyedMsg: an error happened
+    #
+    # 2.) in get(self, var)
+    #
+    # |startAlgebraOutput\|...|endOfAlgebraOutput\|
+    #
+    # 3.) I also need a routine to send a system command and get its output.
 
     def _check_errors(self, line, output):
         """
@@ -570,18 +599,22 @@ http://fricas.sourceforge.net.
                   "$" to specify which version of the function you need.
         """
         # otherwise there might be a message
-        m = re.search(r"\|startKeyedMsg\|\n(.*)\n\|endOfKeyedMsg\|",
-                      output, flags=re.DOTALL)
+        m = re.search(
+            r"\|startKeyedMsg\|\n(.*)\n\|endOfKeyedMsg\|", output, flags=re.DOTALL
+        )
         if m:
-            replacements = [('|startKeyedMsg|\n', ''),
-                            ('|endOfKeyedMsg|', '')]
+            replacements = [('|startKeyedMsg|\n', ''), ('|endOfKeyedMsg|', '')]
             for old, new in replacements:
                 output = output.replace(old, new)
-            raise RuntimeError("An error occurred when FriCAS evaluated '%s':\n%s" % (line, output))
+            raise RuntimeError(
+                "An error occurred when FriCAS evaluated '%s':\n%s" % (line, output)
+            )
 
         # or even an error
         if FRICAS_ERROR_IN_LIBRARY_CODE in output or FRICAS_SYSTEM_ERROR in output:
-            raise RuntimeError("An error occurred when FriCAS evaluated '%s':\n%s" % (line, output))
+            raise RuntimeError(
+                "An error occurred when FriCAS evaluated '%s':\n%s" % (line, output)
+            )
 
     @staticmethod
     def _register_symbols():
@@ -600,10 +633,19 @@ http://fricas.sourceforge.net.
         from sage.functions.special import elliptic_e, elliptic_f
         from sage.misc.functional import symbolic_sum, symbolic_prod
         from sage.rings.infinity import infinity
-        register_symbol(pi, {'fricas': 'pi'}, 0)  # %pi::INFORM is %pi, but (pi) also exists
-        register_symbol(lambda: infinity, {'fricas': 'infinity'}, 0)  # %infinity::INFORM is (infinity)
-        register_symbol(lambda: infinity, {'fricas': 'plusInfinity'}, 0)  # %plusInfinity::INFORM is (plusInfinity)
-        register_symbol(lambda: -infinity, {'fricas': 'minusInfinity'}, 0)  # %minusInfinity::INFORM is (minusInfinity)
+
+        register_symbol(
+            pi, {'fricas': 'pi'}, 0
+        )  # %pi::INFORM is %pi, but (pi) also exists
+        register_symbol(
+            lambda: infinity, {'fricas': 'infinity'}, 0
+        )  # %infinity::INFORM is (infinity)
+        register_symbol(
+            lambda: infinity, {'fricas': 'plusInfinity'}, 0
+        )  # %plusInfinity::INFORM is (plusInfinity)
+        register_symbol(
+            lambda: -infinity, {'fricas': 'minusInfinity'}, 0
+        )  # %minusInfinity::INFORM is (minusInfinity)
         register_symbol(cos, {'fricas': 'cos'})
         register_symbol(sin, {'fricas': 'sin'})
         register_symbol(tan, {'fricas': 'tan'})
@@ -624,7 +666,7 @@ http://fricas.sourceforge.net.
         register_symbol(lambda x, y: x - y, {'fricas': '-'}, 2)
         register_symbol(lambda x, y: x * y, {'fricas': '*'}, 2)
         register_symbol(lambda x, y: x / y, {'fricas': '/'}, 2)
-        register_symbol(lambda x, y: x ** y, {'fricas': '^'}, 2)
+        register_symbol(lambda x, y: x**y, {'fricas': '^'}, 2)
         register_symbol(lambda f, x: diff(f, x), {'fricas': 'D'}, 2)
         register_symbol(lambda x, y: x + y * I, {'fricas': 'complex'}, 2)
         register_symbol(lambda x: dilog(1 - x), {'fricas': 'dilog'}, 1)
@@ -659,11 +701,26 @@ http://fricas.sourceforge.net.
         register_symbol(_convert_prod, {'fricas': 'product'}, 2)
 
         def explicitly_not_implemented(*args):
-            raise NotImplementedError("the translation of the FriCAS Expression '%s' to sage is not yet implemented" % args)
+            raise NotImplementedError(
+                "the translation of the FriCAS Expression '%s' to sage is not yet implemented"
+                % args
+            )
 
-        register_symbol(lambda *args: explicitly_not_implemented("rootOfADE"), {'fricas': 'rootOfADE'}, 2) # to be removed once we fully on FriCAS 1.3.10+
-        register_symbol(lambda *args: explicitly_not_implemented("FEseries"), {'fricas': 'FEseries'}, 2)
-        register_symbol(lambda *args: explicitly_not_implemented("rootOfRec"), {'fricas': 'rootOfRec'}, 2)
+        register_symbol(
+            lambda *args: explicitly_not_implemented("rootOfADE"),
+            {'fricas': 'rootOfADE'},
+            2,
+        )  # to be removed once we fully on FriCAS 1.3.10+
+        register_symbol(
+            lambda *args: explicitly_not_implemented("FEseries"),
+            {'fricas': 'FEseries'},
+            2,
+        )
+        register_symbol(
+            lambda *args: explicitly_not_implemented("rootOfRec"),
+            {'fricas': 'rootOfRec'},
+            2,
+        )
 
     def set(self, var, value):
         """
@@ -709,8 +766,11 @@ http://fricas.sourceforge.net.
         """
         output = self.eval(str(var), reformat=False)
         # if there is AlgebraOutput we ask no more
-        m = re.search(r"\|startAlgebraOutput\|\n(.*)\n\|endOfAlgebraOutput\|",
-                      output, flags=re.DOTALL)
+        m = re.search(
+            r"\|startAlgebraOutput\|\n(.*)\n\|endOfAlgebraOutput\|",
+            output,
+            flags=re.DOTALL,
+        )
         if m:
             lines = m.groups()[0].split("\n")
             if max(len(line) for line in lines) < FRICAS_LINE_LENGTH:
@@ -853,8 +913,17 @@ http://fricas.sourceforge.net.
         """
         return reduce_load_fricas, tuple([])
 
-    def eval(self, code, strip=True, synchronize=False, locals=None, allow_use_file=True,
-             split_lines='nofile', reformat=True, **kwds):
+    def eval(
+        self,
+        code,
+        strip=True,
+        synchronize=False,
+        locals=None,
+        allow_use_file=True,
+        split_lines='nofile',
+        reformat=True,
+        **kwds,
+    ):
         """
         Evaluate ``code`` using FriCAS.
 
@@ -876,19 +945,27 @@ http://fricas.sourceforge.net.
             sage: fricas("x")
             x
         """
-        output = Expect.eval(self, code, strip=strip,
-                             synchronize=synchronize, locals=locals,
-                             allow_use_file=allow_use_file, split_lines=split_lines,
-                             **kwds)
+        output = Expect.eval(
+            self,
+            code,
+            strip=strip,
+            synchronize=synchronize,
+            locals=locals,
+            allow_use_file=allow_use_file,
+            split_lines=split_lines,
+            **kwds,
+        )
         # we remove carriage returns (\r) to make parsing easier
         # they are sent depending on how fricas was invoked:
         # on linux, "fricas -nox -noclef" sends "\r\n" and "fricas -nosman" sends "\n"
         output = output.replace('\r', '')
         if reformat:
-            replacements = [('|startAlgebraOutput|\n', ''),
-                            ('|endOfAlgebraOutput|', ''),
-                            ('|startKeyedMsg|\n', ''),
-                            ('|endOfKeyedMsg|', '')]
+            replacements = [
+                ('|startAlgebraOutput|\n', ''),
+                ('|endOfAlgebraOutput|', ''),
+                ('|startKeyedMsg|\n', ''),
+                ('|endOfKeyedMsg|', ''),
+            ]
             for old, new in replacements:
                 output = output.replace(old, new)
 
@@ -911,6 +988,7 @@ http://fricas.sourceforge.net.
             sage: fricas([GF(13)(-1)]).typeOf()
             List(PrimeField(13))
         """
+
         def _fricas_init_(x, use_special):
             if isinstance(x, bool):
                 return self._true_symbol() if x else self._false_symbol()
@@ -918,9 +996,11 @@ http://fricas.sourceforge.net.
                 return str(x)
             if isinstance(x, float):
                 from sage.rings.real_double import RDF
+
                 return RDF(x)._fricas_init_()
             if isinstance(x, complex):
                 from sage.rings.complex_double import CDF
+
                 return CDF(x)._fricas_init_()
             if isinstance(x, (list, tuple)):
                 X = ','.join(_fricas_init_(v, True) for v in x)
@@ -1000,6 +1080,7 @@ class FriCASElement(ExpectElement, sage.interfaces.abc.FriCASElement):
 
     .. automethod:: _sage_
     """
+
     def __len__(self):
         """
         Return the length of a list.
@@ -1178,10 +1259,12 @@ class FriCASElement(ExpectElement, sage.interfaces.abc.FriCASElement):
             sage: latex(fricas("integrate(sin(x+1/x),x)"))
             \int ^{\displaystyle x} {{\sin \left( {{\frac{{{{ \%...} ^{2}}+1}}{ \%...}}} \right)} \  {d \%...}}
         """
-        replacements = [(r'\sp ', '^'),
-                        (r'\sp{', '^{'),
-                        (r'\sb ', '_'),
-                        (r'\sb{', '_{')]
+        replacements = [
+            (r'\sp ', '^'),
+            (r'\sp{', '^{'),
+            (r'\sb ', '_'),
+            (r'\sb{', '_{'),
+        ]
         P = self._check_valid()
         s = P.get_string("latex(%s)" % self._name)
         for old, new in replacements:
@@ -1593,7 +1676,13 @@ class FriCASElement(ExpectElement, sage.interfaces.abc.FriCASElement):
             sage: f[1].sage()
             -1/2*sqrt(1/3)*sqrt((3*(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(2/3) + 4)/(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(1/3)) + 1/2*sqrt(-(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(1/3) + 6*sqrt(1/3)/sqrt((3*(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(2/3) + 4)/(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(1/3)) - 4/3/(1/18*I*sqrt(229)*sqrt(3) + 1/2)^(1/3))
         """
-        from sage.interfaces.fricas_translator import SEXParser, SEXPorter, SEXEvaluator, LazyParent
+        from sage.interfaces.fricas_translator import (
+            SEXParser,
+            SEXPorter,
+            SEXEvaluator,
+            LazyParent,
+        )
+
         P = self._check_valid()
         dom_str = P.get_string(f"sageprint(dom({self._name}))")
         dom = SEXParser(dom_str).parse()
@@ -1680,8 +1769,11 @@ def fricas_console():
         -----------------------------------------------------------------------------
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%fricas magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%fricas magics instead.'
+        )
     os.system('fricas -nox')
 
 
@@ -1699,4 +1791,5 @@ def __doctest_cleanup():
         False
     """
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()

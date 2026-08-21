@@ -57,6 +57,7 @@ class BackendIPython(BackendBase):
         """
         shell = kwds['shell']
         from sage.repl.display.formatter import SageDisplayFormatter
+
         shell.display_formatter = SageDisplayFormatter(parent=shell)
         shell.configurables.append(shell.display_formatter)
 
@@ -147,6 +148,7 @@ class BackendIPythonCommandline(BackendIPython):
             * text is not specified
         """
         from sage.repl.rich_output.preferences import DisplayPreferences
+
         return DisplayPreferences(supplemental_plot='never')
 
     def _repr_(self):
@@ -186,12 +188,21 @@ class BackendIPythonCommandline(BackendIPython):
             sage: OutputLatex in supp
             True
         """
-        return set([
-            OutputPlainText, OutputAsciiArt, OutputUnicodeArt, OutputLatex,
-            OutputImagePng, OutputImageGif,
-            OutputImagePdf, OutputImageDvi,
-            OutputSceneJmol, OutputSceneWavefront, OutputSceneThreejs,
-        ])
+        return set(
+            [
+                OutputPlainText,
+                OutputAsciiArt,
+                OutputUnicodeArt,
+                OutputLatex,
+                OutputImagePng,
+                OutputImageGif,
+                OutputImagePdf,
+                OutputImageDvi,
+                OutputSceneJmol,
+                OutputSceneWavefront,
+                OutputSceneThreejs,
+            ]
+        )
 
     def displayhook(self, plain_text, rich_output):
         """
@@ -249,22 +260,27 @@ class BackendIPythonCommandline(BackendIPython):
         if isinstance(rich_output, OutputImagePng):
             # IPython>=9.13 supports inline plots
             from sage.repl.interpreter import inline_plots
+
             if inline_plots():
                 return ({'text/plain': '', 'image/png': rich_output.png.get()}, {})
             msg = self.launch_viewer(
-                rich_output.png.filename(ext='png'), plain_text.text.get_str())
+                rich_output.png.filename(ext='png'), plain_text.text.get_str()
+            )
             return ({'text/plain': msg}, {})
         if isinstance(rich_output, OutputImageGif):
             msg = self.launch_viewer(
-                rich_output.gif.filename(ext='gif'), plain_text.text.get_str())
+                rich_output.gif.filename(ext='gif'), plain_text.text.get_str()
+            )
             return ({'text/plain': msg}, {})
         if isinstance(rich_output, OutputImagePdf):
             msg = self.launch_viewer(
-                rich_output.pdf.filename(ext='pdf'), plain_text.text.get_str())
+                rich_output.pdf.filename(ext='pdf'), plain_text.text.get_str()
+            )
             return ({'text/plain': msg}, {})
         if isinstance(rich_output, OutputImageDvi):
             msg = self.launch_viewer(
-                rich_output.dvi.filename(ext='dvi'), plain_text.text.get_str())
+                rich_output.dvi.filename(ext='dvi'), plain_text.text.get_str()
+            )
             return ({'text/plain': msg}, {})
         if isinstance(rich_output, OutputSceneJmol):
             msg = self.launch_jmol(rich_output, plain_text.text.get_str())
@@ -274,7 +290,8 @@ class BackendIPythonCommandline(BackendIPython):
             return ({'text/plain': msg}, {})
         if isinstance(rich_output, OutputSceneThreejs):
             msg = self.launch_viewer(
-                rich_output.html.filename(ext='html'), plain_text.text.get_str())
+                rich_output.html.filename(ext='html'), plain_text.text.get_str()
+            )
             return ({'text/plain': msg}, {})
         raise TypeError('rich_output type not supported')
 
@@ -331,13 +348,14 @@ class BackendIPythonCommandline(BackendIPython):
         base, dot_ext = os.path.splitext(image_file)
         ext = dot_ext.lstrip(os.path.extsep)
         from sage.misc.viewer import viewer
+
         command = viewer(ext)
         if not command:
             command = viewer.browser()
         from sage.doctest import DOCTEST_MODE
+
         if not DOCTEST_MODE:
-            os.system('{0} {1} 2>/dev/null 1>/dev/null &'
-                      .format(command, image_file))
+            os.system('{0} {1} 2>/dev/null 1>/dev/null &'.format(command, image_file))
         return 'Launched {0} viewer for {1}'.format(ext, plain_text)
 
     def launch_jmol(self, output_jmol, plain_text):
@@ -366,14 +384,16 @@ class BackendIPythonCommandline(BackendIPython):
         """
         from sage.doctest import DOCTEST_MODE
         from sage.interfaces.jmoldata import JmolData
+
         jdata = JmolData()
         if not jdata.is_jmol_available() and not DOCTEST_MODE:
             raise RuntimeError('jmol cannot run, no suitable java version found')
         launch_script = output_jmol.launch_script_filename()
         jmol_cmd = 'jmol'
         if not DOCTEST_MODE:
-            os.system('{0} {1} 2>/dev/null 1>/dev/null &'
-                      .format(jmol_cmd, launch_script))
+            os.system(
+                '{0} {1} 2>/dev/null 1>/dev/null &'.format(jmol_cmd, launch_script)
+            )
         return 'Launched jmol viewer for {0}'.format(plain_text)
 
     def is_in_terminal(self):
@@ -479,13 +499,22 @@ class BackendIPythonNotebook(BackendIPython):
             sage: OutputImageGif in supp
             True
         """
-        return set([
-            OutputPlainText, OutputAsciiArt, OutputUnicodeArt, OutputLatex,
-            OutputHtml,
-            OutputImagePng, OutputImageGif, OutputImageJpg,
-            OutputImageSvg, OutputImagePdf,
-            OutputSceneJmol, OutputSceneThreejs,
-        ])
+        return set(
+            [
+                OutputPlainText,
+                OutputAsciiArt,
+                OutputUnicodeArt,
+                OutputLatex,
+                OutputHtml,
+                OutputImagePng,
+                OutputImageGif,
+                OutputImageJpg,
+                OutputImageSvg,
+                OutputImagePdf,
+                OutputSceneJmol,
+                OutputSceneThreejs,
+            ]
+        )
 
     def displayhook(self, plain_text, rich_output):
         """
@@ -527,41 +556,72 @@ class BackendIPythonNotebook(BackendIPython):
         if isinstance(rich_output, OutputUnicodeArt):
             return ({'text/plain': rich_output.unicode_art.get_str()}, {})
         if isinstance(rich_output, OutputLatex):
-            return ({'text/latex': rich_output.latex.get_str(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'text/latex': rich_output.latex.get_str(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputHtml):
-            data = {'text/html': rich_output.html.get_str(),
-                    'text/plain': plain_text.text.get_str()}
+            data = {
+                'text/html': rich_output.html.get_str(),
+                'text/plain': plain_text.text.get_str(),
+            }
             if rich_output.latex:
                 data['text/latex'] = rich_output.latex.get_str()
             return (data, {})
         if isinstance(rich_output, OutputImagePng):
-            return ({'image/png': rich_output.png.get(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'image/png': rich_output.png.get(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputImageGif):
-            return ({'text/html': rich_output.html_fragment(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'text/html': rich_output.html_fragment(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputImageJpg):
-            return ({'image/jpeg': rich_output.jpg.get(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'image/jpeg': rich_output.jpg.get(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputImageSvg):
-            return ({'image/svg+xml': rich_output.svg.get(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'image/svg+xml': rich_output.svg.get(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputImagePdf):
-            return ({'image/png': rich_output.png.get(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'image/png': rich_output.png.get(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputSceneJmol):
             from sage.repl.display.jsmol_iframe import JSMolHtml
+
             jsmol = JSMolHtml(rich_output, height=500)
-            return ({'text/html': jsmol.iframe(),
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'text/html': jsmol.iframe(),
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         if isinstance(rich_output, OutputSceneThreejs):
             escaped_html = html.escape(rich_output.html.get_str())
             iframe = IFRAME_TEMPLATE.format(
@@ -569,9 +629,13 @@ class BackendIPythonNotebook(BackendIPython):
                 width='100%',
                 height=400,
             )
-            return ({'text/html': iframe,
-                     'text/plain': plain_text.text.get_str(),
-                     }, {})
+            return (
+                {
+                    'text/html': iframe,
+                    'text/plain': plain_text.text.get_str(),
+                },
+                {},
+            )
         raise TypeError('rich_output type not supported')
 
     def threejs_offline_scripts(self):
@@ -589,8 +653,11 @@ class BackendIPythonNotebook(BackendIPython):
         """
         from sage.repl.rich_output import get_display_manager
         from sage.features.threejs import Threejs
+
         CDN_script = get_display_manager().threejs_scripts(online=True)
-        CDN_script = CDN_script.replace('</script>', r'<\/script>').replace('\n', ' \\\n')
+        CDN_script = CDN_script.replace('</script>', r'<\/script>').replace(
+            '\n', ' \\\n'
+        )
         return """
 <script src="/nbextensions/threejs-sage/{}/three.min.js"></script>
 <script>

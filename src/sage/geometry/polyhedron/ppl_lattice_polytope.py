@@ -72,9 +72,15 @@ from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
 from sage.matrix.constructor import matrix
 from ppl import (
-    C_Polyhedron, Linear_Expression, Variable,
-    point, line, Generator, Generator_System,
-    Poly_Con_Relation )
+    C_Polyhedron,
+    Linear_Expression,
+    Variable,
+    point,
+    line,
+    Generator,
+    Generator_System,
+    Poly_Con_Relation,
+)
 
 
 ########################################################################
@@ -100,7 +106,10 @@ def _class_for_LatticePolytope(dim):
         <class 'sage.geometry.polyhedron.ppl_lattice_polytope.LatticePolytope_PPL_class'>
     """
     if dim <= 2:
-        from sage.geometry.polyhedron.ppl_lattice_polygon import LatticePolygon_PPL_class
+        from sage.geometry.polyhedron.ppl_lattice_polygon import (
+            LatticePolygon_PPL_class,
+        )
+
         return LatticePolygon_PPL_class
     return LatticePolytope_PPL_class
 
@@ -157,9 +166,11 @@ def LatticePolytope_PPL(*args):
         if not all(p.is_point() and p.divisor() == 1 for p in polyhedron.generators()):
             raise TypeError('polyhedron has non-integral generators')
         return polytope_class(polyhedron)
-    if len(args) == 1 \
-            and isinstance(args[0], (list, tuple)) \
-            and isinstance(args[0][0], (list,tuple)):
+    if (
+        len(args) == 1
+        and isinstance(args[0], (list, tuple))
+        and isinstance(args[0][0], (list, tuple))
+    ):
         vertices = args[0]
     else:
         vertices = args
@@ -213,7 +224,9 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         if self.n_vertices() == 0:
             desc += 'The empty lattice polytope'
         else:
-            desc += 'A ' + repr(self.affine_dimension()) + '-dimensional lattice polytope'
+            desc += (
+                'A ' + repr(self.affine_dimension()) + '-dimensional lattice polytope'
+            )
         desc += ' in ZZ^' + repr(self.space_dimension())
 
         if self.n_vertices():
@@ -323,7 +336,10 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             return tuple()
         box_min, box_max = self.bounding_box()
         from sage.geometry.integral_points import rectangular_box_points
-        return rectangular_box_points(list(box_min), list(box_max), self, count_only=True)
+
+        return rectangular_box_points(
+            list(box_min), list(box_max), self, count_only=True
+        )
 
     @cached_method
     def integral_points(self):
@@ -394,6 +410,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             return tuple()
         box_min, box_max = self.bounding_box()
         from sage.geometry.integral_points import rectangular_box_points
+
         points = rectangular_box_points(list(box_min), list(box_max), self)
         if not self.n_integral_points.is_in_cache():
             self.n_integral_points.set_cache(len(points))
@@ -430,8 +447,10 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             return tuple()
         box_min, box_max = self.bounding_box()
         from sage.geometry.integral_points import rectangular_box_points
-        points = rectangular_box_points(list(box_min), list(box_max), self,
-                                        return_saturated=True)
+
+        points = rectangular_box_points(
+            list(box_min), list(box_max), self, return_saturated=True
+        )
         if not self.n_integral_points.is_in_cache():
             self.n_integral_points.set_cache(len(points))
         if not self.integral_points.is_in_cache():
@@ -517,8 +536,9 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             ((0, 0), (0, 1))
         """
         from ppl import C_Polyhedron, Poly_Con_Relation
+
         result = []
-        for i,v in enumerate(self.minimized_generators()):
+        for i, v in enumerate(self.minimized_generators()):
             v = C_Polyhedron(v)
             if v.relation_with(constraint).implies(Poly_Con_Relation.saturates()):
                 result.append(self.vertices()[i])
@@ -577,7 +597,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         # in the $codim$-skeleton of the polytope, which is contained
         # in the points that saturate at least $dim$ equations.
         points = [p for p in self._integral_points_saturating() if len(p[1]) >= dim]
-        points = sorted(points, key=lambda x:len(x[1]))
+        points = sorted(points, key=lambda x: len(x[1]))
 
         # iterate over point combinations subject to all points being on one facet.
         def point_combinations_iterator(n, i0=0, saturated=None):
@@ -592,10 +612,10 @@ class LatticePolytope_PPL_class(C_Polyhedron):
                 if n == 1:
                     yield [i]
                 else:
-                    for c in point_combinations_iterator(n-1, i+1, saturated_ieqs):
+                    for c in point_combinations_iterator(n - 1, i + 1, saturated_ieqs):
                         yield [i] + c
 
-        point_lines = [ line(Linear_Expression(p[0].list(),0)) for p in points ]
+        point_lines = [line(Linear_Expression(p[0].list(), 0)) for p in points]
         origin = point()
         fibers = set()
         gs = Generator_System()
@@ -612,7 +632,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
                 continue
             try:
                 fiber = LatticePolytope_PPL(plane)
-            except TypeError:   # not a lattice polytope
+            except TypeError:  # not a lattice polytope
                 continue
             fiber_vertices = tuple(sorted(fiber.vertices()))
             if fiber_vertices not in fibers:
@@ -660,11 +680,11 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         for ps in pointsets:
             points.update(ps)
         points = tuple(sorted(points))
-        Aut = self.lattice_automorphism_group(points,
-                                              point_labels=tuple(range(len(points))))
+        Aut = self.lattice_automorphism_group(
+            points, point_labels=tuple(range(len(points)))
+        )
         point_to_index = {p: i for i, p in enumerate(points)}
-        indexsets = set(frozenset(point_to_index[p] for p in ps)
-                        for ps in pointsets)
+        indexsets = set(frozenset(point_to_index[p] for p in ps) for ps in pointsets)
         orbits = []
         while indexsets:
             idx = indexsets.pop()
@@ -695,6 +715,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             Ambient free module of rank 3 over the principal ideal domain Integer Ring
         """
         from sage.modules.free_module import FreeModule
+
         return FreeModule(ZZ, self.space_dimension())
 
     def contains(self, point_coordinates):
@@ -765,7 +786,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         vertices = self.vertices()
         if not self.contains_origin():
             v0 = vertices[0]
-            vertices = [v-v0 for v in vertices]
+            vertices = [v - v0 for v in vertices]
         return self.ambient_space().span(vertices).saturation()
 
     def affine_lattice_polytope(self):
@@ -791,10 +812,10 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         """
         V = self.affine_space()
         if self.contains_origin():
-            vertices = [ V.coordinates(v) for v in self.vertices() ]
+            vertices = [V.coordinates(v) for v in self.vertices()]
         else:
             v0 = vertices[0]
-            vertices = [ V.coordinates(v-v0) for v in self.vertices() ]
+            vertices = [V.coordinates(v - v0) for v in self.vertices()]
         return LatticePolytope_PPL(*vertices)
 
     def base_projection(self, fiber):
@@ -917,7 +938,7 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             sage: LatticePolytope_PPL((-1,-1), (1,1)).has_IP_property()
             False
         """
-        origin = C_Polyhedron(point(0*Variable(self.space_dimension())))
+        origin = C_Polyhedron(point(0 * Variable(self.space_dimension())))
         is_included = Poly_Con_Relation.is_included()
         saturates = Poly_Con_Relation.saturates()
         for c in self.constraints():
@@ -984,11 +1005,13 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             1152
         """
         if not self.is_full_dimensional():
-            return self.affine_lattice_polytope().\
-                restricted_automorphism_group(vertex_labels=vertex_labels)
+            return self.affine_lattice_polytope().restricted_automorphism_group(
+                vertex_labels=vertex_labels
+            )
         if vertex_labels is None:
             vertex_labels = self.vertices()
         from sage.graphs.graph import Graph
+
         # good coordinates for the vertices
         v_list = []
         for v in self.minimized_generators():
@@ -997,10 +1020,10 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             v_list.append(vector(v_coords))
 
         # Finally, construct the graph
-        Qinv = sum( v.column() * v.row() for v in v_list ).inverse()
+        Qinv = sum(v.column() * v.row() for v in v_list).inverse()
         G = Graph()
         for i in range(len(v_list)):
-            for j in range(i+1,len(v_list)):
+            for j in range(i + 1, len(v_list)):
                 v_i = v_list[i]
                 v_j = v_list[j]
                 G.add_edge(vertex_labels[i], vertex_labels[j], v_i * Qinv * v_j)
@@ -1065,33 +1088,35 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         """
         if not self.is_full_dimensional():
             return self.affine_lattice_polytope().lattice_automorphism_group(
-                point_labels=point_labels)
+                point_labels=point_labels
+            )
 
         if points is None:
             points = self.vertices()
         if point_labels is None:
             point_labels = tuple(points)
-        points = [ vector(ZZ, [1]+v.list()) for v in points ]
+        points = [vector(ZZ, [1] + v.list()) for v in points]
         for p in points:
             p.set_immutable()
 
-        vertices = [ vector(ZZ, [1]+v.list()) for v in self.vertices() ]
+        vertices = [vector(ZZ, [1] + v.list()) for v in self.vertices()]
         pivots = matrix(ZZ, vertices).pivot_rows()
-        basis = matrix(ZZ, [ vertices[i] for i in pivots ])
+        basis = matrix(ZZ, [vertices[i] for i in pivots])
         Mat_ZZ = basis.parent()
         basis_inverse = basis.inverse()
 
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         lattice_gens = []
         G = self.restricted_automorphism_group(
-            vertex_labels=tuple(range(len(vertices))))
+            vertex_labels=tuple(range(len(vertices)))
+        )
         for g in G:
-            image = matrix(ZZ, [ vertices[g(i)] for i in pivots ])
-            m = basis_inverse*image
+            image = matrix(ZZ, [vertices[g(i)] for i in pivots])
+            m = basis_inverse * image
             if m not in Mat_ZZ:
                 continue
-            perm_list = [ point_labels[points.index(p*m)]
-                          for p in points ]
+            perm_list = [point_labels[points.index(p * m)] for p in points]
             lattice_gens.append(perm_list)
         return PermutationGroup(lattice_gens, domain=point_labels)
 
@@ -1155,14 +1180,19 @@ class LatticePolytope_PPL_class(C_Polyhedron):
             ((0, 1), (3, 0), (0, 3), (1, 0))
         """
         from .ppl_lattice_polygon import sub_reflexive_polygons
-        from sage.geometry.polyhedron.lattice_euclidean_group_element import \
-            LatticePolytopesNotIsomorphicError, LatticePolytopeNoEmbeddingError
+        from sage.geometry.polyhedron.lattice_euclidean_group_element import (
+            LatticePolytopesNotIsomorphicError,
+            LatticePolytopeNoEmbeddingError,
+        )
+
         for p, ambient in sub_reflexive_polygons():
             try:
                 return (ambient, p, p.find_isomorphism(self))
             except LatticePolytopesNotIsomorphicError:
                 pass
-        raise LatticePolytopeNoEmbeddingError('not a sub-polytope of a reflexive polygon')
+        raise LatticePolytopeNoEmbeddingError(
+            'not a sub-polytope of a reflexive polygon'
+        )
 
     def embed_in_reflexive_polytope(self, output='hom'):
         """
@@ -1245,6 +1275,6 @@ class LatticePolytope_PPL_class(C_Polyhedron):
         if output == 'points':
             points = dict()
             for p in subreflexive.integral_points():
-                points[ tuple(hom(p)) ] = p
+                points[tuple(hom(p))] = p
             return points
-        raise ValueError('output='+str(output)+' is not valid.')
+        raise ValueError('output=' + str(output) + ' is not valid.')

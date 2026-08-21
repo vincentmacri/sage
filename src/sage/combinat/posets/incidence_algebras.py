@@ -2,6 +2,7 @@
 r"""
 Incidence algebras
 """
+
 # ****************************************************************************
 #       Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -52,6 +53,7 @@ class IncidenceAlgebra(CombinatorialFreeModule):
 
     - :wikipedia:`Incidence_algebra`
     """
+
     def __init__(self, R, P, prefix='I') -> None:
         """
         Initialize ``self``.
@@ -66,8 +68,9 @@ class IncidenceAlgebra(CombinatorialFreeModule):
         if P in FiniteEnumeratedSets():
             cat = cat.FiniteDimensional()
         self._poset = P
-        CombinatorialFreeModule.__init__(self, R, map(tuple, P.relations()),
-                                         prefix=prefix, category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, map(tuple, P.relations()), prefix=prefix, category=cat
+        )
 
     def _repr_term(self, A) -> str:
         """
@@ -295,6 +298,7 @@ class IncidenceAlgebra(CombinatorialFreeModule):
         """
         An element of an incidence algebra.
         """
+
         def __call__(self, x, y):
             """
             Return ``self(x, y)``.
@@ -425,8 +429,8 @@ class IncidenceAlgebra(CombinatorialFreeModule):
             inv = ~M
             L = self.parent()._linear_extension
             return self.parent().sum_of_terms(
-                ((L[i], L[j]), inv[i, j])
-                for i, j in inv.nonzero_positions(copy=False))
+                ((L[i], L[j]), inv[i, j]) for i, j in inv.nonzero_positions(copy=False)
+            )
 
 
 class ReducedIncidenceAlgebra(CombinatorialFreeModule):
@@ -438,6 +442,7 @@ class ReducedIncidenceAlgebra(CombinatorialFreeModule):
     `[x, y]` is isomorphic to `[x', y']` as posets. Thus the delta, Möbius,
     and zeta functions are all elements of `R_P`.
     """
+
     def __init__(self, I, prefix='R') -> None:
         """
         Initialize ``self``.
@@ -466,9 +471,13 @@ class ReducedIncidenceAlgebra(CombinatorialFreeModule):
         equiv_classes = map(sorted, EC.values())
         self._equiv_classes = {cls[0]: cls for cls in equiv_classes}
         cat = Algebras(I.base_ring()).FiniteDimensional().WithBasis()
-        CombinatorialFreeModule.__init__(self, I.base_ring(),
-                                         sorted(self._equiv_classes.keys()),
-                                         prefix=prefix, category=cat)
+        CombinatorialFreeModule.__init__(
+            self,
+            I.base_ring(),
+            sorted(self._equiv_classes.keys()),
+            prefix=prefix,
+            category=cat,
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -690,6 +699,7 @@ class ReducedIncidenceAlgebra(CombinatorialFreeModule):
         """
         An element of a reduced incidence algebra.
         """
+
         def __call__(self, x, y):
             """
             Return ``self(x, y)``.

@@ -125,11 +125,15 @@ def enum_product_projective_rational_field(X, B):
     """
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("ambient space must be product of projective space over the rational field")
+            raise TypeError(
+                "ambient space must be product of projective space over the rational field"
+            )
         X = X(X.base_ring())
     else:
         if not isinstance(X.codomain().ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("codomain must be product of projective space over the rational field")
+            raise TypeError(
+                "codomain must be product of projective space over the rational field"
+            )
 
     R = X.codomain().ambient_space()
     m = R.n_components()
@@ -164,7 +168,7 @@ def enum_product_projective_rational_field(X, B):
             i = 0
         except StopIteration:
             iters[i] = R[i].points_of_bounded_height(bound=B)
-            pt = next(iters[i]) # reset
+            pt = next(iters[i])  # reset
             for j in range(dim[i]):
                 P[dim_prefix[i] + j] = pt[j]
             i += 1
@@ -229,11 +233,15 @@ def enum_product_projective_number_field(X, **kwds):
 
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("ambient space must be product of projective space over the rational field")
+            raise TypeError(
+                "ambient space must be product of projective space over the rational field"
+            )
         X = X(X.base_ring())
     else:
         if not isinstance(X.codomain().ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("codomain must be product of projective space over the rational field")
+            raise TypeError(
+                "codomain must be product of projective space over the rational field"
+            )
 
     R = X.codomain().ambient_space()
 
@@ -286,11 +294,15 @@ def enum_product_projective_finite_field(X):
     """
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("ambient space must be product of projective space over the rational field")
+            raise TypeError(
+                "ambient space must be product of projective space over the rational field"
+            )
         X = X(X.base_ring())
     else:
         if not isinstance(X.codomain().ambient_space(), ProductProjectiveSpaces_ring):
-            raise TypeError("codomain must be product of projective space over the rational field")
+            raise TypeError(
+                "codomain must be product of projective space over the rational field"
+            )
 
     R = X.codomain().ambient_space()
     pts = []
@@ -359,19 +371,19 @@ def sieve(X, bound):
     num_comp = P.n_components()
     comp_dim_relative = [P[i].dimension_relative() + 1 for i in range(num_comp)]
 
-    dim_prefix = [0, comp_dim_relative[0]] # prefixes dim list
+    dim_prefix = [0, comp_dim_relative[0]]  # prefixes dim list
     for i in range(1, len(comp_dim_relative)):
         dim_prefix.append(dim_prefix[i] + comp_dim_relative[i])
 
     dim_max = max(P[i].dimension() for i in range(num_comp))
-    B = RR(2**(dim_max/4+1)*bound**2*(dim_max+1).sqrt())
+    B = RR(2 ** (dim_max / 4 + 1) * bound**2 * (dim_max + 1).sqrt())
     m = []
 
     def sufficient_primes(x):
         r"""
         Return a list of primes whose product is > `x`.
         """
-        small_primes = [2,3]
+        small_primes = [2, 3]
         prod_primes = 6
 
         while prod_primes < x:
@@ -401,11 +413,11 @@ def sieve(X, bound):
         dim = X.ambient_space().dimension()
 
         while current_count > 1:
-            current_list = [] # stores prime which are bigger than least
+            current_list = []  # stores prime which are bigger than least
             updated_list = []
             best_list = []
 
-            least = (RR(B)**(1.00/current_count)).floor()
+            least = (RR(B) ** (1.00 / current_count)).floor()
             for i in range(current_count):
                 current_list.append(next_prime(least))
                 least = current_list[-1]
@@ -414,7 +426,9 @@ def sieve(X, bound):
             prod_prime = prod(current_list)
             least = current_list[0]
             while least != 2 and prod_prime > B and len(updated_list) < current_count:
-                best_list = updated_list + current_list[:current_count - len(updated_list)]
+                best_list = (
+                    updated_list + current_list[: current_count - len(updated_list)]
+                )
                 updated_list.append(previous_prime(least))
                 least = updated_list[-1]
 
@@ -425,9 +439,13 @@ def sieve(X, bound):
             current_count = current_count - 1
 
         best_size = 2
-        best_time = (dim**2)*M[2][-1]**(dim) + (dim_max**5 * (prod(M[2])/M[2][-1])**dim_scheme)
+        best_time = (dim**2) * M[2][-1] ** (dim) + (
+            dim_max**5 * (prod(M[2]) / M[2][-1]) ** dim_scheme
+        )
         for i in range(2, max_length + 1):
-            current_time = (dim**2)*M[i][-1]**(dim) + (dim_max**5 * (prod(M[i])/M[i][-1])**dim_scheme)
+            current_time = (dim**2) * M[i][-1] ** (dim) + (
+                dim_max**5 * (prod(M[i]) / M[i][-1]) ** dim_scheme
+            )
             if current_time < best_time:
                 best_size = i
                 best_time = current_time
@@ -449,7 +467,16 @@ def sieve(X, bound):
         Return a list of rational points modulo all `p` in primes,
         computed parallelly.
         """
-        normalized_input = [((X, p, ), {}) for p in primes_list]
+        normalized_input = [
+            (
+                (
+                    X,
+                    p,
+                ),
+                {},
+            )
+            for p in primes_list
+        ]
         p_iter = p_iter_fork(ncpus())
 
         points_pair = list(p_iter(parallel_function, normalized_input))
@@ -475,9 +502,10 @@ def sieve(X, bound):
                     m[i][j] = point[dim_prefix[i] + j]
 
             # generating matrix to compute LLL reduction for each component
-            M = [matrix(ZZ, comp_dim_relative[i] + 1,
-                        comp_dim_relative[i], m[i])
-                 for i in range(num_comp)]
+            M = [
+                matrix(ZZ, comp_dim_relative[i] + 1, comp_dim_relative[i], m[i])
+                for i in range(num_comp)
+            ]
             A = [M[i].LLL() for i in range(num_comp)]
             point = []
             for i in range(num_comp):
@@ -504,12 +532,16 @@ def sieve(X, bound):
         r"""
         Return list of all rational points lifted parallelly.
         """
-        points = modulo_points.pop()  # remove the list of points corresponding to largest prime
+        points = (
+            modulo_points.pop()
+        )  # remove the list of points corresponding to largest prime
         len_modulo_points.pop()
 
-        normalized_input = [((point, ), {}) for point in points]
+        normalized_input = [((point,), {}) for point in points]
         p_iter = p_iter_fork(ncpus())
-        points_satisfying = list(p_iter(parallel_function_combination, normalized_input))
+        points_satisfying = list(
+            p_iter(parallel_function_combination, normalized_input)
+        )
 
         lifted_points = set()
         for pair in points_satisfying:

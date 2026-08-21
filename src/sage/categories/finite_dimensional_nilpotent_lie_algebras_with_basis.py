@@ -14,8 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.lie_algebras import LieAlgebras
@@ -45,10 +44,13 @@ class FiniteDimensionalNilpotentLieAlgebrasWithBasis(CategoryWithAxiom_over_base
         True
         sage: TestSuite(C1).run()
     """
-    _base_category_class_and_axiom = (LieAlgebras.FiniteDimensional.WithBasis, "Nilpotent")
+
+    _base_category_class_and_axiom = (
+        LieAlgebras.FiniteDimensional.WithBasis,
+        "Nilpotent",
+    )
 
     class ParentMethods:
-
         def _test_nilpotency(self, **options):
             r"""
             Test that ``self`` is nilpotent and has the correct step.
@@ -81,13 +83,19 @@ class FiniteDimensionalNilpotentLieAlgebrasWithBasis(CategoryWithAxiom_over_base
             tester = self._tester(**options)
 
             lcs = self.lower_central_series(submodule=True)
-            tester.assertEqual(lcs[-1].dimension(), 0,
-                msg="final term of lower central series is nonzero")
+            tester.assertEqual(
+                lcs[-1].dimension(),
+                0,
+                msg="final term of lower central series is nonzero",
+            )
 
             step = self.step()
-            tester.assertEqual(len(lcs) - 1, step,
+            tester.assertEqual(
+                len(lcs) - 1,
+                step,
                 msg="claimed nilpotency step %d does not match the "
-                "actual nilpotency step %d" % (step, len(lcs) - 1))
+                "actual nilpotency step %d" % (step, len(lcs) - 1),
+            )
 
         def lie_group(self, name='G', **kwds):
             r"""
@@ -133,6 +141,7 @@ class FiniteDimensionalNilpotentLieAlgebrasWithBasis(CategoryWithAxiom_over_base
                 :class:`~sage.groups.lie_gps.nilpotent_lie_group.NilpotentLieGroup`
             """
             from sage.groups.lie_gps.nilpotent_lie_group import NilpotentLieGroup
+
             return NilpotentLieGroup(self, name, **kwds)
 
         def step(self):

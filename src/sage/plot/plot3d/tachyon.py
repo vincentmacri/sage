@@ -158,6 +158,7 @@ AUTHOR:
 
     - clean up trianglefactory stuff
 """
+
 from .tri_plot import Triangle, SmoothTriangle, TriangleFactory, TrianglePlot
 
 from sage.interfaces.tachyon import tachyon_rt
@@ -365,21 +366,25 @@ class Tachyon(WithEqualityById, SageObject):
         sage: hash(Tachyon()) # random
         140658972348064
     """
-    def __init__(self,
-                 xres=350, yres=350,
-                 zoom=1.0,
-                 antialiasing=False,
-                 aspectratio=1.0,
-                 raydepth=8,
-                 camera_position=None,  # default value (-3, 0, 0),
-                 camera_center=None,  # alternative equivalent name
-                 updir=[0, 0, 1],
-                 look_at=[0, 0, 0],
-                 viewdir=None,
-                 projection='PERSPECTIVE',
-                 focallength='',
-                 aperture='',
-                 frustum=''):
+
+    def __init__(
+        self,
+        xres=350,
+        yres=350,
+        zoom=1.0,
+        antialiasing=False,
+        aspectratio=1.0,
+        raydepth=8,
+        camera_position=None,  # default value (-3, 0, 0),
+        camera_center=None,  # alternative equivalent name
+        updir=[0, 0, 1],
+        look_at=[0, 0, 0],
+        viewdir=None,
+        projection='PERSPECTIVE',
+        focallength='',
+        aperture='',
+        frustum='',
+    ):
         r"""
         Create an instance of the Tachyon class.
 
@@ -409,8 +414,9 @@ class Tachyon(WithEqualityById, SageObject):
         self._objects = []
         if viewdir is None:
             if look_at != self._camera_position:
-                self._viewdir = [look_at[i] - self._camera_position[i]
-                                 for i in range(3)]
+                self._viewdir = [
+                    look_at[i] - self._camera_position[i] for i in range(3)
+                ]
             else:
                 raise ValueError('camera_position and look_at coincide')
         else:
@@ -529,6 +535,7 @@ class Tachyon(WithEqualityById, SageObject):
         filename = tmp_filename(ext='.png')
         self.save(filename, **kwds)
         from sage.repl.rich_output.buffer import OutputBuffer
+
         buf = OutputBuffer.from_file(filename)
         return OutputImagePng(buf)
 
@@ -615,6 +622,7 @@ class Tachyon(WithEqualityById, SageObject):
             ...
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self, **kwds)
 
@@ -646,12 +654,22 @@ class Tachyon(WithEqualityById, SageObject):
            camera
               projection %s""" % (tostr(self._projection))
         if self._focallength != '':
-            camera_out = camera_out + r"""
-              focallength %s""" % (float(self._focallength))
+            camera_out = (
+                camera_out
+                + r"""
+              focallength %s"""
+                % (float(self._focallength))
+            )
         if self._aperture != '':
-            camera_out = camera_out + r"""
-              aperture %s""" % (float(self._aperture))
-        camera_out = camera_out + fr"""
+            camera_out = (
+                camera_out
+                + r"""
+              aperture %s"""
+                % (float(self._aperture))
+            )
+        camera_out = (
+            camera_out
+            + rf"""
               zoom {float(self._zoom)}
               aspectratio {float(self._aspectratio)}
               antialiasing {int(self._antialiasing)}
@@ -659,11 +677,19 @@ class Tachyon(WithEqualityById, SageObject):
               center {tostr(self._camera_position)}
               viewdir {tostr(self._viewdir)}
               updir {tostr(self._updir)}"""
+        )
         if self._frustum != '':
-            camera_out = camera_out + r"""
-              frustum %s""" % (tostr(self._frustum))
-        camera_out = camera_out + r"""
+            camera_out = (
+                camera_out
+                + r"""
+              frustum %s"""
+                % (tostr(self._frustum))
+            )
+        camera_out = (
+            camera_out
+            + r"""
            end_camera"""
+        )
         return camera_out
 
     def str(self):
@@ -688,9 +714,9 @@ class Tachyon(WithEqualityById, SageObject):
         {}
         {}
         {}
-        end_scene""".format(self._res(),
-                            self._camera(),
-                            '\n'.join(x.str() for x in self._objects))
+        end_scene""".format(
+            self._res(), self._camera(), '\n'.join(x.str() for x in self._objects)
+        )
 
     def light(self, center, radius, color):
         r"""
@@ -705,9 +731,9 @@ class Tachyon(WithEqualityById, SageObject):
         """
         self._objects.append(Light(center, radius, color))
 
-    def texfunc(self, type=0, center=(0, 0, 0), rotate=(0, 0, 0),
-                scale=(1, 1, 1),
-                imagefile=''):
+    def texfunc(
+        self, type=0, center=(0, 0, 0), rotate=(0, 0, 0), scale=(1, 1, 1), imagefile=''
+    ):
         r"""
         INPUT:
 
@@ -741,10 +767,20 @@ class Tachyon(WithEqualityById, SageObject):
             raise ValueError("type must be an integer between 0 and 9")
         return Texfunc(type, center, rotate, scale, imagefile=imagefile).str()
 
-    def texture(self, name, ambient=0.2, diffuse=0.8,
-                specular=0.0, opacity=1.0,
-                color=(1.0, 0.0, 0.5), texfunc=0, phong=0, phongsize=.5,
-                phongtype='PLASTIC', imagefile=''):
+    def texture(
+        self,
+        name,
+        ambient=0.2,
+        diffuse=0.8,
+        specular=0.0,
+        opacity=1.0,
+        color=(1.0, 0.0, 0.5),
+        texfunc=0,
+        phong=0,
+        phongsize=0.5,
+        phongtype='PLASTIC',
+        imagefile='',
+    ):
         r"""
         INPUT:
 
@@ -790,10 +826,21 @@ class Tachyon(WithEqualityById, SageObject):
         """
         if texfunc and not isinstance(texfunc, Texfunc):
             texfunc = self.texfunc(int(texfunc), imagefile=imagefile)
-        self._objects.append(Texture(name, ambient, diffuse,
-                                     specular, opacity, color, texfunc,
-                                     phong, phongsize, phongtype,
-                                     imagefile=imagefile))
+        self._objects.append(
+            Texture(
+                name,
+                ambient,
+                diffuse,
+                specular,
+                opacity,
+                color,
+                texfunc,
+                phong,
+                phongsize,
+                phongtype,
+                imagefile=imagefile,
+            )
+        )
 
     def texture_recolor(self, name, colors):
         r"""
@@ -809,7 +856,9 @@ class Tachyon(WithEqualityById, SageObject):
         """
         base_tex = None
         names = []
-        ident = "SAGETEX%d" % len(self._objects)  # don't collide with other texture names
+        ident = "SAGETEX%d" % len(
+            self._objects
+        )  # don't collide with other texture names
 
         for o in self._objects:
             if isinstance(o, Texture) and o._name == name:
@@ -925,10 +974,11 @@ class Tachyon(WithEqualityById, SageObject):
             sage: t._objects[1].get_vertices()
             ([1, 2, 3], [4, 5, 6], [7, 8, 10])
         """
-        self._objects.append(TachyonTriangle(vertex_1, vertex_2, vertex_3,
-                                             texture))
+        self._objects.append(TachyonTriangle(vertex_1, vertex_2, vertex_3, texture))
 
-    def smooth_triangle(self, vertex_1, vertex_2, vertex_3, normal_1, normal_2, normal_3, texture):
+    def smooth_triangle(
+        self, vertex_1, vertex_2, vertex_3, normal_1, normal_2, normal_3, texture
+    ):
         r"""
         Create a triangle along with a normal vector for smoothing.
 
@@ -943,7 +993,11 @@ class Tachyon(WithEqualityById, SageObject):
             sage: t._objects[2].get_normals()
             ([0, 1, 1], [-1, 1, 2], [3, 0, 0])
         """
-        self._objects.append(TachyonSmoothTriangle(vertex_1, vertex_2, vertex_3, normal_1, normal_2, normal_3, texture))
+        self._objects.append(
+            TachyonSmoothTriangle(
+                vertex_1, vertex_2, vertex_3, normal_1, normal_2, normal_3, texture
+            )
+        )
 
     def fractal_landscape(self, res, scale, center, texture):
         r"""
@@ -961,8 +1015,18 @@ class Tachyon(WithEqualityById, SageObject):
         """
         self._objects.append(FractalLandscape(res, scale, center, texture))
 
-    def plot(self, f, xmin_xmax, ymin_ymax, texture, grad_f=None,
-             max_bend=.7, max_depth=5, initial_depth=3, num_colors=None):
+    def plot(
+        self,
+        f,
+        xmin_xmax,
+        ymin_ymax,
+        texture,
+        grad_f=None,
+        max_bend=0.7,
+        max_depth=5,
+        initial_depth=3,
+        num_colors=None,
+    ):
         r"""
         INPUT:
 
@@ -1047,13 +1111,32 @@ class Tachyon(WithEqualityById, SageObject):
         (xmin, xmax) = xmin_xmax
         (ymin, ymax) = ymin_ymax
         factory = TachyonTriangleFactory(self, texture)
-        plot = TrianglePlot(factory, f, (xmin, xmax), (ymin, ymax), g=grad_f,
-                            min_depth=initial_depth, max_depth=max_depth,
-                            max_bend=max_bend, num_colors=num_colors)
+        plot = TrianglePlot(
+            factory,
+            f,
+            (xmin, xmax),
+            (ymin, ymax),
+            g=grad_f,
+            min_depth=initial_depth,
+            max_depth=max_depth,
+            max_bend=max_bend,
+            num_colors=num_colors,
+        )
         self._objects.append(plot)
 
-    def parametric_plot(self, f, t_0, t_f, tex, r=.1, cylinders=True,
-                        min_depth=4, max_depth=8, e_rel=.01, e_abs=.01):
+    def parametric_plot(
+        self,
+        f,
+        t_0,
+        t_f,
+        tex,
+        r=0.1,
+        cylinders=True,
+        min_depth=4,
+        max_depth=8,
+        e_rel=0.01,
+        e_abs=0.01,
+    ):
         r"""
         Plot a space curve as a series of spheres and finite cylinders.
 
@@ -1070,9 +1153,19 @@ class Tachyon(WithEqualityById, SageObject):
             ...
         """
         self._objects.append(
-            ParametricPlot(f, t_0, t_f, tex, r=r, cylinders=cylinders,
-                           min_depth=min_depth, max_depth=max_depth,
-                           e_rel=.01, e_abs=.01))
+            ParametricPlot(
+                f,
+                t_0,
+                t_f,
+                tex,
+                r=r,
+                cylinders=cylinders,
+                min_depth=min_depth,
+                max_depth=max_depth,
+                e_rel=0.01,
+                e_abs=0.01,
+            )
+        )
 
 
 class Light:
@@ -1086,6 +1179,7 @@ class Light:
         sage: q._center
         (1.0, 1.0, 1.0)
     """
+
     def __init__(self, center, radius, color):
         r"""
         Store the center, radius and color.
@@ -1116,7 +1210,7 @@ class Light:
                           rad 1.0
                           color  1.0 1.0 1.0
         """
-        return fr"""
+        return rf"""
         light center {tostr(self._center)}
               rad {self._radius}
               color {tostr(self._color)}
@@ -1124,9 +1218,9 @@ class Light:
 
 
 class Texfunc:
-
-    def __init__(self, ttype=0, center=(0, 0, 0), rotate=(0, 0, 0),
-                 scale=(1, 1, 1), imagefile=''):
+    def __init__(
+        self, ttype=0, center=(0, 0, 0), rotate=(0, 0, 0), scale=(1, 1, 1), imagefile=''
+    ):
         r"""
         Create a texture function.
 
@@ -1164,14 +1258,16 @@ class Texfunc:
                 self._ttype,
                 tostr(self._center),
                 tostr(self._rotate),
-                tostr(self._scale))
+                tostr(self._scale),
+            )
         if self._ttype < 9:
             return r"""%d %s center %s rotate %s scale %s""" % (
                 self._ttype,
                 self._imagefile,
                 tostr(self._center),
                 tostr(self._rotate),
-                tostr(self._scale))
+                tostr(self._scale),
+            )
         if self._ttype == 9:
             return r"""%d %s center %s rotate %s scale %s
             uaxis 1.0 0.0 0.0
@@ -1180,16 +1276,26 @@ class Texfunc:
                 self._imagefile,
                 tostr(self._center),
                 tostr(self._rotate),
-                tostr(self._scale))
+                tostr(self._scale),
+            )
         raise ValueError
 
 
 class Texture:
-
-    def __init__(self, name, ambient=0.2, diffuse=0.8,
-                 specular=0.0, opacity=1.0,
-                 color=(1.0, 0.0, 0.5), texfunc=0,
-                 phong=0, phongsize=0, phongtype='PLASTIC', imagefile=''):
+    def __init__(
+        self,
+        name,
+        ambient=0.2,
+        diffuse=0.8,
+        specular=0.0,
+        opacity=1.0,
+        color=(1.0, 0.0, 0.5),
+        texfunc=0,
+        phong=0,
+        phongsize=0,
+        phongtype='PLASTIC',
+        imagefile='',
+    ):
         r"""
         Store texture information.
 
@@ -1227,10 +1333,19 @@ class Texture:
             sage: t2ws[color_index:color_index+20]
             'color  0.1 0.2 0.3  '
         """
-        return Texture(name, self._ambient, self._diffuse, self._specular,
-                       self._opacity,
-                       color, self._texfunc, self._phong, self._phongsize,
-                       self._phongtype, self._imagefile)
+        return Texture(
+            name,
+            self._ambient,
+            self._diffuse,
+            self._specular,
+            self._opacity,
+            color,
+            self._texfunc,
+            self._phong,
+            self._phongsize,
+            self._phongtype,
+            self._imagefile,
+        )
 
     def str(self):
         r"""
@@ -1247,22 +1362,25 @@ class Texture:
         texdef {} ambient {} diffuse {} specular {} opacity {}
         phong {} {} phong_size {}
         color {} texfunc {}
-        """.format(self._name,
-                   self._ambient,
-                   self._diffuse,
-                   self._specular,
-                   self._opacity,
-                   self._phongtype,
-                   self._phong,
-                   self._phongsize,
-                   tostr(self._color),
-                   self._texfunc)
+        """.format(
+            self._name,
+            self._ambient,
+            self._diffuse,
+            self._specular,
+            self._opacity,
+            self._phongtype,
+            self._phong,
+            self._phongsize,
+            tostr(self._color),
+            self._texfunc,
+        )
 
 
 class Sphere:
     r"""
     A class for creating spheres in tachyon.
     """
+
     def __init__(self, center, radius, texture):
         r"""
         Store the center, radius, and texture information in a class.
@@ -1294,7 +1412,7 @@ class Sphere:
             sage: s.str()
             '\n        sphere center  1.0 1.0 1.0  rad 1.0 r\n        '
         """
-        return fr"""
+        return rf"""
         sphere center {tostr(self._center)} rad {self._radius} {self._texture}
         """
 
@@ -1303,6 +1421,7 @@ class Ring:
     r"""
     An annulus of zero thickness.
     """
+
     def __init__(self, center, normal, inner, outer, texture):
         r"""
         Create a ring with the given center, normal, inner radius,
@@ -1336,8 +1455,13 @@ class Ring:
         """
         return r"""
         ring center {} normal {} inner {} outer {} {}
-        """.format(tostr(self._center), tostr(self._normal),
-                   self._inner, self._outer, self._texture)
+        """.format(
+            tostr(self._center),
+            tostr(self._normal),
+            self._inner,
+            self._outer,
+            self._texture,
+        )
 
 
 class FractalLandscape:
@@ -1346,6 +1470,7 @@ class FractalLandscape:
 
     Does not seem very useful at the moment, but perhaps will be improved in the future.
     """
+
     def __init__(self, res, scale, center, texture):
         r"""
         Create a fractal landscape in tachyon.
@@ -1378,14 +1503,19 @@ class FractalLandscape:
         """
         return r"""
         scape res {} scale {} center {} {}
-        """.format(tostr(self._res, 2, int), tostr(self._scale, 2, int),
-                   tostr(self._center), self._texture)
+        """.format(
+            tostr(self._res, 2, int),
+            tostr(self._scale, 2, int),
+            tostr(self._center),
+            self._texture,
+        )
 
 
 class Cylinder:
     r"""
     An infinite cylinder.
     """
+
     def __init__(self, center, axis, radius, texture):
         r"""
         Create a cylinder with the given parameters.
@@ -1426,6 +1556,7 @@ class Plane:
     r"""
     An infinite plane.
     """
+
     def __init__(self, center, normal, texture):
         r"""
         Create the plane object.
@@ -1454,7 +1585,7 @@ class Plane:
             sage: p.str()
             '\n        plane center  1.0 2.0 3.0  normal  1.0 2.0 4.0  s\n        '
         """
-        return fr"""
+        return rf"""
         plane center {tostr(self._center)} normal {tostr(self._normal)} {self._texture}
         """
 
@@ -1463,6 +1594,7 @@ class FCylinder:
     r"""
     A finite cylinder.
     """
+
     def __init__(self, base, apex, radius, texture):
         r"""
         Create a finite cylinder object.
@@ -1501,6 +1633,7 @@ class Axis_aligned_box:
     r"""
     Box with axis-aligned edges with the given min and max coordinates.
     """
+
     def __init__(self, min_p, max_p, texture):
         r"""
         Create the axis-aligned box object.
@@ -1529,7 +1662,7 @@ class Axis_aligned_box:
             sage: aab.str()
             '\n        box min  0.0 0.0 0.0  max  1.0 1.0 1.0  s\n        '
         """
-        return fr"""
+        return rf"""
         box min {tostr(self._min_p)} max {tostr(self._max_p)} {self._texture}
         """
 
@@ -1538,6 +1671,7 @@ class TachyonTriangle(Triangle):
     r"""
     Basic triangle class.
     """
+
     def str(self):
         r"""
         Return the scene string for a triangle.
@@ -1549,7 +1683,7 @@ class TachyonTriangle(Triangle):
             sage: t.str()
             '\n        TRI V0  -1.0 -1.0 -1.0   V1  0.0 0.0 0.0    V2  1.0 2.0 3.0 \n            0\n        '
         """
-        return fr"""
+        return rf"""
         TRI V0 {tostr(self._a)}  V1 {tostr(self._b)}   V2 {tostr(self._c)}
             {self._color}
         """
@@ -1559,6 +1693,7 @@ class TachyonSmoothTriangle(SmoothTriangle):
     r"""
     A triangle along with a normal vector, which is used for smoothing.
     """
+
     def str(self):
         r"""
         Return the scene string for a smoothed triangle.
@@ -1570,7 +1705,7 @@ class TachyonSmoothTriangle(SmoothTriangle):
             sage: t.str()
             '\n        STRI V0  ...  1.0 0.0 0.0  N1  0.0 1.0 0.0   N2  0.0 0.0 1.0 \n             0\n        '
         """
-        return fr"""
+        return rf"""
         STRI V0 {tostr(self._a)} V1 {tostr(self._b)}  V2 {tostr(self._c)}
              N0 {tostr(self._da)} N1 {tostr(self._db)}  N2 {tostr(self._dc)}
              {self._color}
@@ -1581,6 +1716,7 @@ class TachyonTriangleFactory(TriangleFactory):
     r"""
     A class to produce triangles of various rendering types.
     """
+
     def __init__(self, tach, tex):
         r"""
         Initialize with tachyon instance and texture.
@@ -1653,6 +1789,7 @@ class ParametricPlot:
     r"""
     Parametric plotting routines.
     """
+
     def str(self):
         r"""
         Return the tachyon string representation of the parameterized curve.
@@ -1667,8 +1804,19 @@ class ParametricPlot:
         """
         return "".join(o.str() for o in self._objects)
 
-    def __init__(self, f, t_0, t_f, tex, r=.1, cylinders=True,
-                 min_depth=4, max_depth=8, e_rel=.01, e_abs=.01):
+    def __init__(
+        self,
+        f,
+        t_0,
+        t_f,
+        tex,
+        r=0.1,
+        cylinders=True,
+        min_depth=4,
+        max_depth=8,
+        e_rel=0.01,
+        e_abs=0.01,
+    ):
         r"""
         Create the parametric plotting class.
 
@@ -1710,7 +1858,11 @@ class ParametricPlot:
         """
         if depth < self._max_depth:
             t_mid = (t_f + t_0) / 2
-            f_mid = ((f_f[0] + f_0[0]) / 2, (f_f[1] + f_0[1]) / 2, (f_f[2] + f_0[2]) / 2)
+            f_mid = (
+                (f_f[0] + f_0[0]) / 2,
+                (f_f[1] + f_0[1]) / 2,
+                (f_f[2] + f_0[2]) / 2,
+            )
             f_val = self._f(t_mid)
             if depth < self._min_depth or self.tol(f_mid, f_val):
                 new_depth = depth + 1
@@ -1743,7 +1895,7 @@ class ParametricPlot:
             True
         """
         a, b, c = val
-        delta = sqrt((a - est[0])**2 + (b - est[1])**2 + (c - est[2])**2)
+        delta = sqrt((a - est[0]) ** 2 + (b - est[1]) ** 2 + (c - est[2]) ** 2)
         if delta < self._e_abs:
             return True
 

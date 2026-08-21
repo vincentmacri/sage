@@ -27,7 +27,17 @@ To import these names into the global namespace, use::
 # ****************************************************************************
 
 from sage.misc.lazy_import import lazy_import
-lazy_import("sage.stats.distributions.discrete_gaussian_integer", ["DiscreteGaussianDistributionIntegerSampler"])
-lazy_import("sage.stats.distributions.discrete_gaussian_lattice", ["DiscreteGaussianDistributionLatticeSampler"])
-lazy_import("sage.stats.distributions.discrete_gaussian_polynomial", ["DiscreteGaussianDistributionPolynomialSampler"])
+
+lazy_import(
+    "sage.stats.distributions.discrete_gaussian_integer",
+    ["DiscreteGaussianDistributionIntegerSampler"],
+)
+lazy_import(
+    "sage.stats.distributions.discrete_gaussian_lattice",
+    ["DiscreteGaussianDistributionLatticeSampler"],
+)
+lazy_import(
+    "sage.stats.distributions.discrete_gaussian_polynomial",
+    ["DiscreteGaussianDistributionPolynomialSampler"],
+)
 del lazy_import

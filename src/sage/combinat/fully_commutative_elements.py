@@ -18,6 +18,7 @@ A draft of this code was written during an REU project at University of
 Colorado Boulder. We thank Rachel Castro, Joel Courtney, Thomas Magnuson and
 Natalie Schoenhals for their contribution to the project and the code.
 """
+
 # ****************************************************************************
 #  Copyright (C) 2020 Chase Meadors <Chase.Meadors at colorado.edu>,
 #                     Tianyuan Xu   <Tianyuan.Xu at colorado.edu>
@@ -91,7 +92,9 @@ class FullyCommutativeElement(NormalizedClonableList):
             ValueError: the input is not a reduced word of a fully commutative element
         """
         if not self.is_fully_commutative():
-            raise ValueError('the input is not a reduced word of a fully commutative element')
+            raise ValueError(
+                'the input is not a reduced word of a fully commutative element'
+            )
 
     def normalize(self):
         r"""
@@ -165,13 +168,15 @@ class FullyCommutativeElement(NormalizedClonableList):
         I = group.index_set()
 
         from sage.rings.integer_ring import ZZ
+
         be_careful = any(i not in ZZ for i in I)
 
         if be_careful:
             Iinv = {i: j for j, i in enumerate(I)}
             word = [Iinv[i] for i in word]
-            braid_rels = [[[Iinv[i] for i in l],
-                           [Iinv[i] for i in r]] for l, r in braid_rels]
+            braid_rels = [
+                [[Iinv[i] for i in l], [Iinv[i] for i in r]] for l, r in braid_rels
+            ]
 
         return is_fully_comm(word, braid_rels)
 
@@ -217,16 +222,21 @@ class FullyCommutativeElement(NormalizedClonableList):
         one_index = kargs.get('one_index', False)
         display_labeling = kargs.get('display_labeling', False)
         # elements of the poset:
-        elements = list(range(1, len(self) + 1)
-                        ) if one_index else list(range(len(self)))
+        elements = (
+            list(range(1, len(self) + 1)) if one_index else list(range(len(self)))
+        )
 
         # get the label of each poset element:
         def letter(index):
             return self[index - 1] if one_index else self[index]
 
         # specify the partial order:
-        relations = [(i, j) for i in elements for j in elements
-                     if i < j and m[letter(i), letter(j)] != 2]
+        relations = [
+            (i, j)
+            for i in elements
+            for j in elements
+            if i < j and m[letter(i), letter(j)] != 2
+        ]
         p = Poset((elements, relations))
 
         if not display_labeling:
@@ -276,18 +286,36 @@ class FullyCommutativeElement(NormalizedClonableList):
                 x = self[i]
 
                 # Draw the node
-                graphics.append(plot.circle(
-                    (x, level), 0.1, fill=True, facecolor='white', edgecolor='blue', zorder=1))
                 graphics.append(
-                    plot.text(str(x), (x, level), color='blue', zorder=2))
+                    plot.circle(
+                        (x, level),
+                        0.1,
+                        fill=True,
+                        facecolor='white',
+                        edgecolor='blue',
+                        zorder=1,
+                    )
+                )
+                graphics.append(plot.text(str(x), (x, level), color='blue', zorder=2))
 
                 neighbors = {z for z in letters if m[x, z] >= 3}
                 for other in neighbors:
                     highest_level = max(
-                        (j + 1 for j in range(level_zero_index) if other in letters_at_level[j]), default=None)
+                        (
+                            j + 1
+                            for j in range(level_zero_index)
+                            if other in letters_at_level[j]
+                        ),
+                        default=None,
+                    )
                     if highest_level:
                         graphics.append(
-                            plot.line([(other, highest_level), (x, level)], color='black', zorder=0))
+                            plot.line(
+                                [(other, highest_level), (x, level)],
+                                color='black',
+                                zorder=0,
+                            )
+                        )
 
         g = sum(graphics)
         g.axes(False)
@@ -487,8 +515,8 @@ class FullyCommutativeElement(NormalizedClonableList):
             especially simple for FC elements because descents are easier to
             find for FC elements.
         """
-        string = []                # to record w_J
-        remaining = self.clone()   # to record w^J
+        string = []  # to record w_J
+        remaining = self.clone()  # to record w^J
 
         if side == 'right':
             remaining._set_list(remaining[::-1])
@@ -725,12 +753,18 @@ class FullyCommutativeElement(NormalizedClonableList):
             # the upper star operation
             ending_letter = cur_string[0] if side == 'left' else cur_string[-1]
             other = next(x for x in J if x != ending_letter)
-            new_string = [other] + cur_string if side == 'left' else cur_string + [other]
+            new_string = (
+                [other] + cur_string if side == 'left' else cur_string + [other]
+            )
         else:
             return None
 
         # concatenate w_J and w^J in the appropriate order
-        combined_data = new_string + list(remaining) if side == 'left' else list(remaining) + new_string
+        combined_data = (
+            new_string + list(remaining)
+            if side == 'left'
+            else list(remaining) + new_string
+        )
 
         # return the result of the star operation in its canonical form
         return self.parent().element_class(self.parent(), combined_data, check=False)
@@ -867,6 +901,7 @@ class FullyCommutativeElements(UniqueRepresentation, Parent):
         sage: CoxeterGroup('B4~xE8~').fully_commutative_elements().category()
         Category of infinite enumerated sets
     """
+
     @staticmethod
     def __classcall_private__(cls, data):
         r"""
@@ -927,7 +962,11 @@ class FullyCommutativeElements(UniqueRepresentation, Parent):
 
         if not isinstance(coxeter_type, CoxeterMatrix):
             # This case handles all finite or affine Coxeter types (or products thereof)
-            ctypes = [coxeter_type] if coxeter_type.is_irreducible() else coxeter_type.component_types()
+            ctypes = (
+                [coxeter_type]
+                if coxeter_type.is_irreducible()
+                else coxeter_type.component_types()
+            )
 
             is_finite = True
             # this type will be FC-finite if and only if each component type is:
@@ -937,7 +976,11 @@ class FullyCommutativeElements(UniqueRepresentation, Parent):
                 # Of the affine Coxeter groups only the groups affine `F_4` and
                 # affine `E_8` are FC-finite; they have rank 5 and rank 9 and
                 # correspond to the groups `F_5` and `E_9` in [Ste1996]_.
-                if not (ctype.is_finite() or (family == 'F' and rank == 5) or (family == 'E' and rank == 9)):
+                if not (
+                    ctype.is_finite()
+                    or (family == 'F' and rank == 5)
+                    or (family == 'E' and rank == 9)
+                ):
                     is_finite = False
                     break
 
@@ -1018,8 +1061,7 @@ class FullyCommutativeElements(UniqueRepresentation, Parent):
             for w in recent_words:
                 for s in letters:
                     if w._still_reduced_fc_after_prepending(s):
-                        sw = self.element_class(
-                            self, [s] + list(w), check=False)
+                        sw = self.element_class(self, [s] + list(w), check=False)
                         # "Add" sw to the "set"
                         new_words[sw] = True
             for w in new_words:

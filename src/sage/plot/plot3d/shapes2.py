@@ -174,7 +174,9 @@ def line3d(points, thickness=1, radius=None, arrow_head=False, **kwds):
     if radius is None:
         L = Line(points, thickness=thickness, arrow_head=arrow_head, **kwds)
         L._set_extra_kwds(kwds)
-        L._extra_kwds['thickness'] = thickness  # remove this line if json_repr is defined
+        L._extra_kwds['thickness'] = (
+            thickness  # remove this line if json_repr is defined
+        )
         return L
     v = []
     if 'texture' in kwds:
@@ -183,8 +185,12 @@ def line3d(points, thickness=1, radius=None, arrow_head=False, **kwds):
     else:
         texture = Texture(kwds)
     for i in range(len(points) - 1):
-        line = shapes.arrow3d if i == len(points)-2 and arrow_head else shapes.LineSegment
-        v.append(line(points[i], points[i+1], texture=texture, radius=radius, **kwds))
+        line = (
+            shapes.arrow3d
+            if i == len(points) - 2 and arrow_head
+            else shapes.LineSegment
+        )
+        v.append(line(points[i], points[i + 1], texture=texture, radius=radius, **kwds))
     w = sum(v)
     w._set_extra_kwds(kwds)
     return w
@@ -289,20 +295,54 @@ def bezier3d(path, **options):
     p0 = vector(path[0][-1])
     t = SR.var('t')
     if len(path[0]) > 2:
-        B = (1-t)**3*vector(path[0][0])+3*t*(1-t)**2*vector(path[0][1])+3*t**2*(1-t)*vector(path[0][-2])+t**3*p0
-        G = P3D.parametric_plot3d(list(B), (0, 1), color=options['color'], aspect_ratio=options['aspect_ratio'], thickness=options['thickness'], opacity=options['opacity'])
+        B = (
+            (1 - t) ** 3 * vector(path[0][0])
+            + 3 * t * (1 - t) ** 2 * vector(path[0][1])
+            + 3 * t**2 * (1 - t) * vector(path[0][-2])
+            + t**3 * p0
+        )
+        G = P3D.parametric_plot3d(
+            list(B),
+            (0, 1),
+            color=options['color'],
+            aspect_ratio=options['aspect_ratio'],
+            thickness=options['thickness'],
+            opacity=options['opacity'],
+        )
     else:
-        G = line3d([path[0][0], p0], color=options['color'], thickness=options['thickness'], opacity=options['opacity'])
+        G = line3d(
+            [path[0][0], p0],
+            color=options['color'],
+            thickness=options['thickness'],
+            opacity=options['opacity'],
+        )
 
     for curve in path[1:]:
         if len(curve) > 1:
             p1 = vector(curve[0])
             p2 = vector(curve[-2])
             p3 = vector(curve[-1])
-            B = (1-t)**3*p0+3*t*(1-t)**2*p1+3*t**2*(1-t)*p2+t**3*p3
-            G += P3D.parametric_plot3d(list(B), (0, 1), color=options['color'], aspect_ratio=options['aspect_ratio'], thickness=options['thickness'], opacity=options['opacity'])
+            B = (
+                (1 - t) ** 3 * p0
+                + 3 * t * (1 - t) ** 2 * p1
+                + 3 * t**2 * (1 - t) * p2
+                + t**3 * p3
+            )
+            G += P3D.parametric_plot3d(
+                list(B),
+                (0, 1),
+                color=options['color'],
+                aspect_ratio=options['aspect_ratio'],
+                thickness=options['thickness'],
+                opacity=options['opacity'],
+            )
         else:
-            G += line3d([p0, curve[0]], color=options['color'], thickness=options['thickness'], opacity=options['opacity'])
+            G += line3d(
+                [p0, curve[0]],
+                color=options['color'],
+                thickness=options['thickness'],
+                opacity=options['opacity'],
+            )
         p0 = vector(curve[-1])
     return G
 
@@ -366,6 +406,7 @@ def polygon3d(points, **options):
         sphinx_plot(polygon3d([[1, 2, 3], [0,1,0], [1,0,1], [3,0,0]], color=(0,1,0), alpha=0.7))
     """
     from sage.plot.plot3d.index_face_set import IndexFaceSet
+
     return IndexFaceSet([range(len(points))], points, **options)
 
 
@@ -401,6 +442,7 @@ def polygons3d(faces, points, **options):
         sphinx_plot(polygons3d(f, v, color='red'))
     """
     from sage.plot.plot3d.index_face_set import IndexFaceSet
+
     return IndexFaceSet(faces, points, **options)
 
 
@@ -435,11 +477,21 @@ def frame3d(lower_left, upper_right, **kwds):
     """
     x0, y0, z0 = lower_left
     x1, y1, z1 = upper_right
-    L1 = line3d([(x0, y0, z0), (x0, y1, z0), (x1, y1, z0),
-                 (x1, y0, z0), (x0, y0, z0),  # top square
-                 (x0, y0, z1), (x0, y1, z1), (x1, y1, z1),
-                 (x1, y0, z1), (x0, y0, z1)],  # bottom square
-                **kwds)
+    L1 = line3d(
+        [
+            (x0, y0, z0),
+            (x0, y1, z0),
+            (x1, y1, z0),
+            (x1, y0, z0),
+            (x0, y0, z0),  # top square
+            (x0, y0, z1),
+            (x0, y1, z1),
+            (x1, y1, z1),
+            (x1, y0, z1),
+            (x0, y0, z1),
+        ],  # bottom square
+        **kwds,
+    )
     # 3 additional lines joining top to bottom
     v2 = line3d([(x0, y1, z0), (x0, y1, z1)], **kwds)
     v3 = line3d([(x1, y0, z0), (x1, y0, z1)], **kwds)
@@ -449,9 +501,9 @@ def frame3d(lower_left, upper_right, **kwds):
     return F
 
 
-def frame_labels(lower_left, upper_right,
-                 label_lower_left, label_upper_right, eps=1,
-                 **kwds):
+def frame_labels(
+    lower_left, upper_right, label_lower_left, label_upper_right, eps=1, **kwds
+):
     """
     Draw correct labels for a given frame in 3-D.
 
@@ -508,11 +560,14 @@ def frame_labels(lower_left, upper_right,
     lx0, ly0, lz0 = label_lower_left
     lx1, ly1, lz1 = label_upper_right
     if (lx1 - lx0) <= 0 or (ly1 - ly0) <= 0 or (lz1 - lz0) <= 0:
-        raise ValueError("ensure the upper right labels are above "
-                         "and to the right of the lower left labels")
+        raise ValueError(
+            "ensure the upper right labels are above "
+            "and to the right of the lower left labels"
+        )
 
     # Helper function for formatting the frame labels
     from math import log
+
     log10 = log(10)
 
     def nd(a):
@@ -522,7 +577,7 @@ def frame_labels(lower_left, upper_right,
         b = a / 2.0
         if b >= 1:
             return "%.1f"
-        n = max(0, 2 - nd(a/2.0))
+        n = max(0, 2 - nd(a / 2.0))
         return "%%.%sf" % n
 
     # Slightly faster than mean for this situation
@@ -532,19 +587,19 @@ def frame_labels(lower_left, upper_right,
     color = (0.3, 0.3, 0.3)
 
     fmt = fmt_string(lx1 - lx0)
-    T = Text(fmt % lx0, color=color).translate((x0, y0-eps, z0))
-    T += Text(fmt % avg(lx0, lx1), color=color).translate((avg(x0, x1), y0-eps, z0))
-    T += Text(fmt % lx1, color=color).translate((x1, y0-eps, z0))
+    T = Text(fmt % lx0, color=color).translate((x0, y0 - eps, z0))
+    T += Text(fmt % avg(lx0, lx1), color=color).translate((avg(x0, x1), y0 - eps, z0))
+    T += Text(fmt % lx1, color=color).translate((x1, y0 - eps, z0))
 
     fmt = fmt_string(ly1 - ly0)
-    T += Text(fmt % ly0, color=color).translate((x1+eps, y0, z0))
-    T += Text(fmt % avg(ly0, ly1), color=color).translate((x1+eps, avg(y0, y1), z0))
-    T += Text(fmt % ly1, color=color).translate((x1+eps, y1, z0))
+    T += Text(fmt % ly0, color=color).translate((x1 + eps, y0, z0))
+    T += Text(fmt % avg(ly0, ly1), color=color).translate((x1 + eps, avg(y0, y1), z0))
+    T += Text(fmt % ly1, color=color).translate((x1 + eps, y1, z0))
 
     fmt = fmt_string(lz1 - lz0)
-    T += Text(fmt % lz0, color=color).translate((x0-eps, y0, z0))
-    T += Text(fmt % avg(lz0, lz1), color=color).translate((x0-eps, y0, avg(z0, z1)))
-    T += Text(fmt % lz1, color=color).translate((x0-eps, y0, z1))
+    T += Text(fmt % lz0, color=color).translate((x0 - eps, y0, z0))
+    T += Text(fmt % avg(lz0, lz1), color=color).translate((x0 - eps, y0, avg(z0, z1)))
+    T += Text(fmt % lz1, color=color).translate((x0 - eps, y0, z1))
     return T
 
 
@@ -630,27 +685,27 @@ def ruler(start, end, ticks=4, sub_ticks=4, absolute=False, snap=False, **kwds):
     dist = math.sqrt(dir.dot_product(dir))
     dir /= dist
 
-    one_tick = dist/ticks * 1.414
-    unit = 10 ** math.floor(math.log(dist/ticks, 10))
+    one_tick = dist / ticks * 1.414
+    unit = 10 ** math.floor(math.log(dist / ticks, 10))
     if unit * 5 < one_tick:
         unit *= 5
     elif unit * 2 < one_tick:
         unit *= 2
 
     if dir[0]:
-        tick = dir.cross_product(vector(RDF, (0, 0, -dist/30)))
+        tick = dir.cross_product(vector(RDF, (0, 0, -dist / 30)))
     elif dir[1]:
-        tick = dir.cross_product(vector(RDF, (0, 0, dist/30)))
+        tick = dir.cross_product(vector(RDF, (0, 0, dist / 30)))
     else:
-        tick = vector(RDF, (dist/30, 0, 0))
+        tick = vector(RDF, (dist / 30, 0, 0))
 
     if snap:
         for i in range(3):
-            start[i] = unit * math.floor(start[i]/unit + 1e-5)
-            end[i] = unit * math.ceil(end[i]/unit - 1e-5)
+            start[i] = unit * math.floor(start[i] / unit + 1e-5)
+            end[i] = unit * math.ceil(end[i] / unit - 1e-5)
 
     if absolute:
-        if dir[0]*dir[1] or dir[1]*dir[2] or dir[0]*dir[2]:
+        if dir[0] * dir[1] or dir[1] * dir[2] or dir[0] * dir[2]:
             raise ValueError("absolute rulers only valid for axis-aligned paths")
         m = max(dir[0], dir[1], dir[2])
         if dir[0] == m:
@@ -659,24 +714,24 @@ def ruler(start, end, ticks=4, sub_ticks=4, absolute=False, snap=False, **kwds):
             off = start[1]
         else:
             off = start[2]
-        first_tick = unit * math.ceil(off/unit - 1e-5) - off
+        first_tick = unit * math.ceil(off / unit - 1e-5) - off
     else:
         off = 0
         first_tick = 0
 
     ruler = shapes.LineSegment(start, end, **kwds)
-    for k in range(1, int(sub_ticks * first_tick/unit)):
-        P = start + dir*(k*unit/sub_ticks)
-        ruler += shapes.LineSegment(P, P + tick/2, **kwds)
-    for d in srange(first_tick, dist + unit/(sub_ticks+1), unit):
-        P = start + dir*d
+    for k in range(1, int(sub_ticks * first_tick / unit)):
+        P = start + dir * (k * unit / sub_ticks)
+        ruler += shapes.LineSegment(P, P + tick / 2, **kwds)
+    for d in srange(first_tick, dist + unit / (sub_ticks + 1), unit):
+        P = start + dir * d
         ruler += shapes.LineSegment(P, P + tick, **kwds)
-        ruler += shapes.Text(str(d+off), **kwds).translate(P - tick)
+        ruler += shapes.Text(str(d + off), **kwds).translate(P - tick)
         if dist - d < unit:
-            sub_ticks = int(sub_ticks * (dist - d)/unit)
+            sub_ticks = int(sub_ticks * (dist - d) / unit)
         for k in range(1, sub_ticks):
-            P += dir * (unit/sub_ticks)
-            ruler += shapes.LineSegment(P, P + tick/2, **kwds)
+            P += dir * (unit / sub_ticks)
+            ruler += shapes.LineSegment(P, P + tick / 2, **kwds)
     return ruler
 
 
@@ -721,12 +776,36 @@ def ruler_frame(lower_left, upper_right, ticks=4, sub_ticks=4, **kwds):
         from sage.plot.plot3d.shapes2 import ruler_frame
         sphinx_plot(ruler_frame([1,2,3],vector([2,3,4]),ticks=6, sub_ticks=2, color='red'))
     """
-    return ruler(lower_left, (upper_right[0], lower_left[1], lower_left[2]), ticks=ticks, sub_ticks=sub_ticks, absolute=True, **kwds) \
-        + ruler(lower_left, (lower_left[0], upper_right[1], lower_left[2]), ticks=ticks, sub_ticks=sub_ticks, absolute=True, **kwds) \
-        + ruler(lower_left, (lower_left[0], lower_left[1], upper_right[2]), ticks=ticks, sub_ticks=sub_ticks, absolute=True, **kwds)
+    return (
+        ruler(
+            lower_left,
+            (upper_right[0], lower_left[1], lower_left[2]),
+            ticks=ticks,
+            sub_ticks=sub_ticks,
+            absolute=True,
+            **kwds,
+        )
+        + ruler(
+            lower_left,
+            (lower_left[0], upper_right[1], lower_left[2]),
+            ticks=ticks,
+            sub_ticks=sub_ticks,
+            absolute=True,
+            **kwds,
+        )
+        + ruler(
+            lower_left,
+            (lower_left[0], lower_left[1], upper_right[2]),
+            ticks=ticks,
+            sub_ticks=sub_ticks,
+            absolute=True,
+            **kwds,
+        )
+    )
 
 
 ###########################
+
 
 @rename_keyword(alpha='opacity')
 def sphere(center=(0, 0, 0), size=1, **kwds):
@@ -890,6 +969,7 @@ class Point(PrimitiveObject):
         sage: point3d((4,3,2),size=2,color='red',opacity=.5)
         Graphics3d Object
     """
+
     def __init__(self, center, size=1, **kwds):
         """
         Create the graphics primitive :class:`Point` in 3-D.
@@ -942,8 +1022,9 @@ class Point(PrimitiveObject):
 
         radius = self.size * TACHYON_PIXEL
         texture = self.texture.id
-        return (f"Sphere center {cen[0]!r} {cen[1]!r} {cen[2]!r} "
-                f"Rad {radius!r} {texture}")
+        return (
+            f"Sphere center {cen[0]!r} {cen[1]!r} {cen[2]!r} Rad {radius!r} {texture}"
+        )
 
     def obj_repr(self, render_params):
         """
@@ -958,6 +1039,7 @@ class Point(PrimitiveObject):
         T = render_params.transform
         if T is None:
             from . import transform
+
             T = transform.Transformation()
         render_params.push_transform(~T)
         S = shapes.Sphere(self.size / 200.0).translate(T(self.loc))
@@ -979,7 +1061,16 @@ class Point(PrimitiveObject):
         name = render_params.unique_name('point')
         transform = render_params.transform
         cen = self.loc if transform is None else transform(self.loc)
-        return ["draw {} DIAMETER {} {{{} {} {}}}\n{}".format(name, int(self.size), cen[0], cen[1], cen[2], self.texture.jmol_str('$' + name))]
+        return [
+            "draw {} DIAMETER {} {{{} {} {}}}\n{}".format(
+                name,
+                int(self.size),
+                cen[0],
+                cen[1],
+                cen[2],
+                self.texture.jmol_str('$' + name),
+            )
+        ]
 
     def threejs_repr(self, render_params):
         r"""
@@ -1072,8 +1163,10 @@ class Line(PrimitiveObject):
         ....:     for i in range(N+1))
         Graphics3d Object
     """
-    def __init__(self, points, thickness=5, corner_cutoff=0.5,
-                 arrow_head=False, **kwds):
+
+    def __init__(
+        self, points, thickness=5, corner_cutoff=0.5, arrow_head=False, **kwds
+    ):
         """
         Create the graphics primitive :class:`Line` in 3-D.
 
@@ -1135,16 +1228,23 @@ class Line(PrimitiveObject):
         for P in self.points[1:]:
             x, y, z = P if T is None else T(P)
             if self.arrow_head and P is self.points[-1]:
-                A = shapes.arrow3d((px, py, pz), (x, y, z), radius=radius, texture=self.texture)
+                A = shapes.arrow3d(
+                    (px, py, pz), (x, y, z), radius=radius, texture=self.texture
+                )
                 render_params.push_transform(~T)
                 cmds.append(A.tachyon_repr(render_params))
                 render_params.pop_transform()
             else:
-                cmd = ('FCylinder base {pos[0]!r} {pos[1]!r} {pos[2]!r} '
-                       'apex {apex[0]!r} {apex[1]!r} {apex[2]!r} '
-                       'rad {radius!r} {texture}').format(
-                           pos=(px, py, pz), apex=(x, y, z), radius=radius,
-                           texture=self.texture.id)
+                cmd = (
+                    'FCylinder base {pos[0]!r} {pos[1]!r} {pos[2]!r} '
+                    'apex {apex[0]!r} {apex[1]!r} {apex[2]!r} '
+                    'rad {radius!r} {texture}'
+                ).format(
+                    pos=(px, py, pz),
+                    apex=(x, y, z),
+                    radius=radius,
+                    texture=self.texture.id,
+                )
                 cmds.append(cmd)
             px, py, pz = x, y, z
         return cmds
@@ -1166,9 +1266,15 @@ class Line(PrimitiveObject):
         T = render_params.transform
         if T is None:
             from . import transform
+
             T = transform.Transformation()
         render_params.push_transform(~T)
-        L = line3d([T(P) for P in self.points], radius=self.thickness / 200.0, arrow_head=self.arrow_head, texture=self.texture)
+        L = line3d(
+            [T(P) for P in self.points],
+            radius=self.thickness / 200.0,
+            arrow_head=self.arrow_head,
+            texture=self.texture,
+        )
         cmds = L.obj_repr(render_params)
         render_params.pop_transform()
         return cmds
@@ -1200,7 +1306,9 @@ class Line(PrimitiveObject):
                     cmds.append(self.texture.jmol_str('$' + name))
                 type = 'arrow' if self.arrow_head and P is last_corner else 'curve'
                 name = render_params.unique_name('line')
-                cmd = "draw {} diameter {} {} {{{} {} {}}} ".format(name, int(self.thickness), type, TP[0], TP[1], TP[2])
+                cmd = "draw {} diameter {} {} {{{} {} {}}} ".format(
+                    name, int(self.thickness), type, TP[0], TP[1], TP[2]
+                )
             else:
                 cmd += " {{{} {} {}}} ".format(*TP)
         cmds.append(cmd)
@@ -1266,7 +1374,7 @@ class Line(PrimitiveObject):
             # no corners
             if max_len is not None:
                 # forced by the maximal number of consecutive smooth points
-                return self.points[:-1][::max_len - 1]
+                return self.points[:-1][:: max_len - 1]
             return [self.points[0]]
 
         if max_len is None:
@@ -1292,9 +1400,9 @@ class Line(PrimitiveObject):
                 count = 1
                 continue
             next_dir = [next[i] - cur[i] for i in range(3)]
-            cos_angle = (dot(prev_dir, next_dir) /
-                         math.sqrt(dot(prev_dir, prev_dir) *
-                                   dot(next_dir, next_dir)))
+            cos_angle = dot(prev_dir, next_dir) / math.sqrt(
+                dot(prev_dir, prev_dir) * dot(next_dir, next_dir)
+            )
             if cos_angle <= corner_cutoff or count > max_len - 1:
                 corners.append(cur)
                 count = 1
@@ -1379,15 +1487,25 @@ class Line(PrimitiveObject):
         thickness = float(self.thickness)
         if self.arrow_head:
             width = thickness / 2.0
-            arrow = shapes.arrow3d(start=points[-2], end=points[-1], width=width,
-                                   color=color, opacity=opacity)
+            arrow = shapes.arrow3d(
+                start=points[-2],
+                end=points[-1],
+                width=width,
+                color=color,
+                opacity=opacity,
+            )
             reprs += arrow.threejs_repr(render_params)
             points = points[:-1]  # The arrow replaces the last line segment.
         if len(points) > 1:
             transform = render_params.transform
             if transform is not None:
                 points = [transform(p) for p in points]
-            line = {'points': points, 'color': color, 'opacity': opacity, 'linewidth': thickness}
+            line = {
+                'points': points,
+                'color': color,
+                'opacity': opacity,
+                'linewidth': thickness,
+            }
             reprs.append(('line', line))
         return reprs
 
@@ -1492,6 +1610,7 @@ def point3d(v, size=5, **kwds):
 
     if l == 0:
         from sage.plot.plot3d.base import Graphics3d
+
         return Graphics3d()
 
     if l == 3:

@@ -49,6 +49,7 @@ class SandpileExamples:
         [-1 -1  3 -1]
         [-1 -1 -1  3]
     """
+
     def __call__(self):
         r"""
         If ``sandpiles()`` is executed, return a helpful message.
@@ -63,8 +64,7 @@ class SandpileExamples:
                 Complete, Cycle, Diamond, Fan, Grid, House, Wheel
         """
         print('Try sandpiles.FOO() where FOO is in the list:\n')
-        print("    " + ", ".join(str(i) for i in dir(sandpiles)
-                                 if i[0] != '_'))
+        print("    " + ", ".join(str(i) for i in dir(sandpiles) if i[0] != '_'))
 
     def Complete(self, n):
         """
@@ -146,10 +146,10 @@ class SandpileExamples:
         """
         f = graphs.WheelGraph(n)
         if n > 2:
-            f.delete_edge(1, n-1)
+            f.delete_edge(1, n - 1)
             if deg_three_verts:
                 f.allow_multiple_edges(True)
-                f.add_edges([(0, 1), (0, n-1)])
+                f.add_edges([(0, 1), (0, n - 1)])
             return Sandpile(f, 0)
         if n == 1:
             return Sandpile(f, 0)
@@ -179,10 +179,10 @@ class SandpileExamples:
             sage: s.dict()
             {(0, 0): {(1, 1): 4}, (1, 1): {(0, 0): 4}}
         """
-        G = graphs.Grid2dGraph(m+2, n+2)
+        G = graphs.Grid2dGraph(m + 2, n + 2)
         G.allow_multiple_edges(True)  # to ensure each vertex ends up with degree 4
-        V = [(i, j) for i in [0, m+1] for j in range(n+2)]
-        V += [(i, j) for j in [0, n+1] for i in range(m+2)]
+        V = [(i, j) for i in [0, m + 1] for j in range(n + 2)]
+        V += [(i, j) for j in [0, n + 1] for i in range(m + 2)]
         G.merge_vertices(V)
         return Sandpile(G, (0, 0))
 

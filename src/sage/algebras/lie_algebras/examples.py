@@ -32,13 +32,21 @@ AUTHORS:
 # ****************************************************************************
 
 from sage.algebras.lie_algebras.virasoro import VirasoroAlgebra
-from sage.algebras.lie_algebras.rank_two_heisenberg_virasoro import RankTwoHeisenbergVirasoro
-from sage.algebras.lie_algebras.symplectic_derivation import SymplecticDerivationLieAlgebra as SymplecticDerivation
+from sage.algebras.lie_algebras.rank_two_heisenberg_virasoro import (
+    RankTwoHeisenbergVirasoro,
+)
+from sage.algebras.lie_algebras.symplectic_derivation import (
+    SymplecticDerivationLieAlgebra as SymplecticDerivation,
+)
 from sage.algebras.lie_algebras.onsager import OnsagerAlgebra
-from sage.algebras.lie_algebras.onsager import OnsagerAlgebraACE as AlternatingCentralExtensionOnsagerAlgebra
+from sage.algebras.lie_algebras.onsager import (
+    OnsagerAlgebraACE as AlternatingCentralExtensionOnsagerAlgebra,
+)
 from sage.algebras.lie_algebras.affine_lie_algebra import AffineLieAlgebra as Affine
 from sage.algebras.lie_algebras.classical_lie_algebra import gl
-from sage.algebras.lie_algebras.classical_lie_algebra import ClassicalMatrixLieAlgebra as ClassicalMatrix
+from sage.algebras.lie_algebras.classical_lie_algebra import (
+    ClassicalMatrixLieAlgebra as ClassicalMatrix,
+)
 
 
 # the next 6 lines are here to silence pyflakes warnings
@@ -93,8 +101,11 @@ def three_dimensional(R, a, b, c, d, names=['X', 'Y', 'Z']):
     X = names[0]
     Y = names[1]
     Z = names[2]
-    from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
-    s_coeff = {(X,Y): {Z:a, Y:d}, (Y,Z): {X:b}, (Z,X): {Y:c, Z:d}}
+    from sage.algebras.lie_algebras.structure_coefficients import (
+        LieAlgebraWithStructureCoefficients,
+    )
+
+    s_coeff = {(X, Y): {Z: a, Y: d}, (Y, Z): {X: b}, (Z, X): {Y: c, Z: d}}
     return LieAlgebraWithStructureCoefficients(R, s_coeff, tuple(names))
 
 
@@ -158,11 +169,16 @@ def three_dimensional_by_rank(R, n, a=None, names=['X', 'Y', 'Z']):
 
     if n == 0:
         from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
         return AbelianLieAlgebra(R, names=names)
 
     if n == 1:
-        L = three_dimensional(R, 0, 1, 0, 0, names=names)  # Strictly upper triangular matrices
-        L.rename("Lie algebra of 3x3 strictly upper triangular matrices over {}".format(R))
+        L = three_dimensional(
+            R, 0, 1, 0, 0, names=names
+        )  # Strictly upper triangular matrices
+        L.rename(
+            "Lie algebra of 3x3 strictly upper triangular matrices over {}".format(R)
+        )
         return L
 
     if n == 2:
@@ -171,22 +187,34 @@ def three_dimensional_by_rank(R, n, a=None, names=['X', 'Y', 'Z']):
         X = names[0]
         Y = names[1]
         Z = names[2]
-        from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
+        from sage.algebras.lie_algebras.structure_coefficients import (
+            LieAlgebraWithStructureCoefficients,
+        )
+
         if a == 0:
-            s_coeff = {(X,Y): {Y:R.one()}, (X,Z): {Y:R(a)}}
+            s_coeff = {(X, Y): {Y: R.one()}, (X, Z): {Y: R(a)}}
             # Why use R(a) here if R == 0 ? Also this has rank 1.
             L = LieAlgebraWithStructureCoefficients(R, s_coeff, tuple(names))
-            L.rename("Degenerate Lie algebra of dimension 3 and rank 2 over {}".format(R))
+            L.rename(
+                "Degenerate Lie algebra of dimension 3 and rank 2 over {}".format(R)
+            )
         else:
-            s_coeff = {(X,Y): {Y:R.one()}, (X,Z): {Y:R.one(), Z:R.one()}}
+            s_coeff = {(X, Y): {Y: R.one()}, (X, Z): {Y: R.one(), Z: R.one()}}
             # a doesn't appear here :/
             L = LieAlgebraWithStructureCoefficients(R, s_coeff, tuple(names))
-            L.rename("Lie algebra of dimension 3 and rank 2 with parameter {} over {}".format(a, R))
+            L.rename(
+                "Lie algebra of dimension 3 and rank 2 with parameter {} over {}".format(
+                    a, R
+                )
+            )
         return L
 
     if n == 3:
         # return sl(R, 2)
-        from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
+        from sage.algebras.lie_algebras.structure_coefficients import (
+            LieAlgebraWithStructureCoefficients,
+        )
+
         E = names[0]
         F = names[1]
         H = names[2]
@@ -222,15 +250,20 @@ def affine_transformations_line(R, names=['X', 'Y'], representation='bracket'):
     names = tuple(names)
     if representation == 'matrix':
         from sage.matrix.matrix_space import MatrixSpace
+
         MS = MatrixSpace(R, 2, sparse=True)
         one = R.one()
-        gens = tuple(MS({(0,i):one}) for i in range(2))
+        gens = tuple(MS({(0, i): one}) for i in range(2))
         from sage.algebras.lie_algebras.lie_algebra import LieAlgebraFromAssociative
+
         return LieAlgebraFromAssociative(MS, gens, names=names)
     X = names[0]
     Y = names[1]
-    from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
-    s_coeff = {(X,Y): {Y:R.one()}}
+    from sage.algebras.lie_algebras.structure_coefficients import (
+        LieAlgebraWithStructureCoefficients,
+    )
+
+    s_coeff = {(X, Y): {Y: R.one()}}
     L = LieAlgebraWithStructureCoefficients(R, s_coeff, names=names)
     L.rename("Lie algebra of affine transformations of a line over {}".format(R))
     return L
@@ -255,12 +288,19 @@ def abelian(R, names=None, index_set=None):
         index_set = names
         names = None
     from sage.rings.infinity import infinity
-    if (index_set is not None
-            and not isinstance(index_set, (list, tuple))
-            and index_set.cardinality() == infinity):
-        from sage.algebras.lie_algebras.abelian import InfiniteDimensionalAbelianLieAlgebra
+
+    if (
+        index_set is not None
+        and not isinstance(index_set, (list, tuple))
+        and index_set.cardinality() == infinity
+    ):
+        from sage.algebras.lie_algebras.abelian import (
+            InfiniteDimensionalAbelianLieAlgebra,
+        )
+
         return InfiniteDimensionalAbelianLieAlgebra(R, index_set=index_set)
     from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
     return AbelianLieAlgebra(R, names=names, index_set=index_set)
 
 
@@ -284,13 +324,17 @@ def Heisenberg(R, n, representation='structure'):
         Heisenberg algebra of rank 3 over Rational Field
     """
     from sage.rings.infinity import infinity
+
     if n == infinity:
         from sage.algebras.lie_algebras.heisenberg import InfiniteHeisenbergAlgebra
+
         return InfiniteHeisenbergAlgebra(R)
     if representation == "matrix":
         from sage.algebras.lie_algebras.heisenberg import HeisenbergAlgebra_matrix
+
         return HeisenbergAlgebra_matrix(R, n)
     from sage.algebras.lie_algebras.heisenberg import HeisenbergAlgebra
+
     return HeisenbergAlgebra(R, n)
 
 
@@ -310,6 +354,7 @@ def regular_vector_fields(R):
         The Lie algebra of regular vector fields over Rational Field
     """
     from sage.algebras.lie_algebras.virasoro import LieAlgebraRegularVectorFields
+
     return LieAlgebraRegularVectorFields(R)
 
 
@@ -331,6 +376,7 @@ def pwitt(R, p):
         The 5-Witt Lie algebra over Finite Field of size 5
     """
     from sage.algebras.lie_algebras.virasoro import WittLieAlgebra_charp
+
     return WittLieAlgebra_charp(R, p)
 
 
@@ -364,14 +410,19 @@ def upper_triangular_matrices(R, n):
     """
     from sage.matrix.matrix_space import MatrixSpace
     from sage.algebras.lie_algebras.lie_algebra import LieAlgebraFromAssociative
+
     MS = MatrixSpace(R, n, sparse=True)
     one = R.one()
-    names = tuple('n{}'.format(i) for i in range(n-1))
+    names = tuple('n{}'.format(i) for i in range(n - 1))
     names += tuple('t{}'.format(i) for i in range(n))
-    gens = [MS({(i,i+1):one}) for i in range(n-1)]
-    gens += [MS({(i,i):one}) for i in range(n)]
+    gens = [MS({(i, i + 1): one}) for i in range(n - 1)]
+    gens += [MS({(i, i): one}) for i in range(n)]
     L = LieAlgebraFromAssociative(MS, gens, names=names)
-    L.rename("Lie algebra of {}-dimensional upper triangular matrices over {}".format(n, L.base_ring()))
+    L.rename(
+        "Lie algebra of {}-dimensional upper triangular matrices over {}".format(
+            n, L.base_ring()
+        )
+    )
     return L
 
 
@@ -408,13 +459,19 @@ def strictly_upper_triangular_matrices(R, n):
     """
     from sage.matrix.matrix_space import MatrixSpace
     from sage.algebras.lie_algebras.lie_algebra import LieAlgebraFromAssociative
+
     MS = MatrixSpace(R, n, sparse=True)
     one = R.one()
-    names = tuple('n{}'.format(i) for i in range(n-1))
-    gens = tuple(MS({(i,i+1): one}) for i in range(n-1))
+    names = tuple('n{}'.format(i) for i in range(n - 1))
+    gens = tuple(MS({(i, i + 1): one}) for i in range(n - 1))
     L = LieAlgebraFromAssociative(MS, gens, names=names)
-    L.rename("Lie algebra of {}-dimensional strictly upper triangular matrices over {}".format(n, L.base_ring()))
+    L.rename(
+        "Lie algebra of {}-dimensional strictly upper triangular matrices over {}".format(
+            n, L.base_ring()
+        )
+    )
     return L
+
 
 #####################################################################
 #  Classical Lie algebras
@@ -464,10 +521,14 @@ def sl(R, n, representation='bracket'):
         True
     """
     if representation == 'bracket':
-        from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
-        return LieAlgebraChevalleyBasis(R, ['A', n-1])
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            LieAlgebraChevalleyBasis,
+        )
+
+        return LieAlgebraChevalleyBasis(R, ['A', n - 1])
     if representation == 'matrix':
         from sage.algebras.lie_algebras.classical_lie_algebra import sl as sl_matrix
+
         return sl_matrix(R, n)
     raise ValueError("invalid representation")
 
@@ -513,12 +574,18 @@ def su(R, n, representation='matrix'):
         True
     """
     if representation == 'bracket':
-        from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
-        return LieAlgebraChevalleyBasis(R, ['A', n-1])
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            LieAlgebraChevalleyBasis,
+        )
+
+        return LieAlgebraChevalleyBasis(R, ['A', n - 1])
     if representation == 'matrix':
-        from sage.algebras.lie_algebras.classical_lie_algebra import MatrixCompactRealForm
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            MatrixCompactRealForm,
+        )
         from sage.combinat.root_system.cartan_type import CartanType
-        return MatrixCompactRealForm(R, CartanType(['A', n-1]))
+
+        return MatrixCompactRealForm(R, CartanType(['A', n - 1]))
     raise ValueError("invalid representation")
 
 
@@ -590,12 +657,16 @@ def so(R, n, representation='bracket'):
         True
     """
     if representation == 'bracket':
-        from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            LieAlgebraChevalleyBasis,
+        )
+
         if n % 2 == 0:
-            return LieAlgebraChevalleyBasis(R, ['D', n//2])
-        return LieAlgebraChevalleyBasis(R, ['B', (n-1)//2])
+            return LieAlgebraChevalleyBasis(R, ['D', n // 2])
+        return LieAlgebraChevalleyBasis(R, ['B', (n - 1) // 2])
     if representation == 'matrix':
         from sage.algebras.lie_algebras.classical_lie_algebra import so as so_matrix
+
         return so_matrix(R, n)
     raise ValueError("invalid representation")
 
@@ -672,9 +743,13 @@ def sp(R, n, representation='bracket'):
     if n % 2:
         raise ValueError("n must be even")
     if representation == 'bracket':
-        from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
-        return LieAlgebraChevalleyBasis(R, ['C', n//2])
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            LieAlgebraChevalleyBasis,
+        )
+
+        return LieAlgebraChevalleyBasis(R, ['C', n // 2])
     if representation == 'matrix':
         from sage.algebras.lie_algebras.classical_lie_algebra import sp as sp_matrix
+
         return sp_matrix(R, n)
     raise ValueError("invalid representation")

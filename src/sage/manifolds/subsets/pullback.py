@@ -134,9 +134,11 @@ class ManifoldSubsetPullback(ManifoldSubset):
         sage: N.point((2,0)) in D
         False
     """
+
     @staticmethod
-    def __classcall_private__(cls, map, codomain_subset, inverse=None,
-                              name=None, latex_name=None):
+    def __classcall_private__(
+        cls, map, codomain_subset, inverse=None, name=None, latex_name=None
+    ):
         """
         Normalize arguments and delegate to other constructors.
 
@@ -174,7 +176,10 @@ class ManifoldSubsetPullback(ManifoldSubset):
         if inverse is None:
             if isinstance(map, Chart):
                 from sage.misc.latex import latex
-                inverse_latex_name = '(' + ','.join(str(latex(x)) + '^{-1}' for x in map) + ')'
+
+                inverse_latex_name = (
+                    '(' + ','.join(str(latex(x)) + '^{-1}' for x in map) + ')'
+                )
                 inverse_name = '_'.join(repr(x) for x in map) + '_inv'
             else:
                 map_name = map._name or 'f'
@@ -189,6 +194,7 @@ class ManifoldSubsetPullback(ManifoldSubset):
             codomain_subset_name = codomain_subset._name
         except AttributeError:
             from sage.misc.latex import latex
+
             codomain_subset_latex_name = str(latex(codomain_subset))
             s = repr(codomain_subset)
             if len(s) > 10:
@@ -204,16 +210,18 @@ class ManifoldSubsetPullback(ManifoldSubset):
             name = inverse_name + '_' + codomain_subset_name
 
         if cls._is_open(codomain_subset):
-
             try:
                 coord_def = cls._coord_def(map, codomain_subset)
             except NotImplementedError:
                 pass
             else:
-                return map.domain().open_subset(name=name, latex_name=latex_name,
-                                                coord_def=coord_def)
+                return map.domain().open_subset(
+                    name=name, latex_name=latex_name, coord_def=coord_def
+                )
 
-        self = super().__classcall__(cls, map, codomain_subset, inverse, name, latex_name)
+        self = super().__classcall__(
+            cls, map, codomain_subset, inverse, name, latex_name
+        )
 
         return self
 
@@ -315,8 +323,9 @@ class ManifoldSubsetPullback(ManifoldSubset):
                     cs = codomain_subset.minimized_constraints()
                     if cs.has_equalities():
                         return False
-                    return not any(constraint.is_nonstrict_inequality()
-                                   for constraint in cs)
+                    return not any(
+                        constraint.is_nonstrict_inequality() for constraint in cs
+                    )
 
         return False
 
@@ -360,11 +369,11 @@ class ManifoldSubsetPullback(ManifoldSubset):
         conjunction = []
         if interval.lower() != minus_infinity:
             if interval.lower_closed():
-                condition = (expr >= interval.lower())
-                negation = (expr < interval.lower())
+                condition = expr >= interval.lower()
+                negation = expr < interval.lower()
             else:
-                condition = (expr > interval.lower())
-                negation = (expr <= interval.lower())
+                condition = expr > interval.lower()
+                negation = expr <= interval.lower()
             if negation:
                 # known to be false
                 return ()
@@ -374,11 +383,11 @@ class ManifoldSubsetPullback(ManifoldSubset):
 
         if interval.upper() != infinity:
             if interval.upper_closed():
-                condition = (expr <= interval.upper())
-                negation = (expr > interval.upper())
+                condition = expr <= interval.upper()
+                negation = expr > interval.upper()
             else:
-                condition = (expr < interval.upper())
-                negation = (expr >= interval.upper())
+                condition = expr < interval.upper()
+                negation = expr >= interval.upper()
             if negation:
                 # known to be false
                 return ()
@@ -466,14 +475,13 @@ class ManifoldSubsetPullback(ManifoldSubset):
 
         expr = vector(SR, expr)
         for constraint in polyhedron.Hrepresentation():
-
             if constraint.is_inequality():
                 if relint:
-                    condition = (constraint.eval(expr) > 0)
+                    condition = constraint.eval(expr) > 0
                 else:
-                    condition = (constraint.eval(expr) >= 0)
+                    condition = constraint.eval(expr) >= 0
             else:
-                condition = (constraint.eval(expr) == 0)
+                condition = constraint.eval(expr) == 0
             if not condition:
                 # not known to be true
                 conjunction.append(condition)
@@ -528,22 +536,31 @@ class ManifoldSubsetPullback(ManifoldSubset):
             {Chart (R^2, (x, y)): [x^2 + y^2 > 1, x^2 + y^2 < 4]}
         """
         if isinstance(map, ScalarField) and isinstance(codomain_subset, RealSet):
-
-            return {chart: ManifoldSubsetPullback._realset_restriction(func.expr(),
-                                                                       codomain_subset)
-                    for chart, func in map._express.items()}
+            return {
+                chart: ManifoldSubsetPullback._realset_restriction(
+                    func.expr(), codomain_subset
+                )
+                for chart, func in map._express.items()
+            }
 
         if isinstance(map, Chart):
-
             chart = map
 
             if isinstance(codomain_subset, RealSet):
-                return {chart: ManifoldSubsetPullback._realset_restriction(chart[0],
-                                                                           codomain_subset)}
+                return {
+                    chart: ManifoldSubsetPullback._realset_restriction(
+                        chart[0], codomain_subset
+                    )
+                }
 
-            if isinstance(codomain_subset, RelativeInterior) and isinstance(codomain_subset.closure(), sage.geometry.abc.Polyhedron):
-                return {chart: ManifoldSubsetPullback._polyhedron_restriction(
-                                   chart, codomain_subset.closure(), relint=True)}
+            if isinstance(codomain_subset, RelativeInterior) and isinstance(
+                codomain_subset.closure(), sage.geometry.abc.Polyhedron
+            ):
+                return {
+                    chart: ManifoldSubsetPullback._polyhedron_restriction(
+                        chart, codomain_subset.closure(), relint=True
+                    )
+                }
 
         raise NotImplementedError
 
@@ -566,19 +583,24 @@ class ManifoldSubsetPullback(ManifoldSubset):
         """
         if inverse is None and isinstance(map, Chart):
             chart = map
-            scalar_codomain = (isinstance(codomain_subset, RealSet)
-                               or any(field.has_coerce_map_from(codomain_subset)
-                                      for field in (CDF, RDF, CLF, RLF)))
+            scalar_codomain = isinstance(codomain_subset, RealSet) or any(
+                field.has_coerce_map_from(codomain_subset)
+                for field in (CDF, RDF, CLF, RLF)
+            )
             if scalar_codomain:
                 if chart.domain().dimension() != 1:
-                    raise ValueError('to pull back a set of scalars by a chart, the manifold must be 1-dimensional')
+                    raise ValueError(
+                        'to pull back a set of scalars by a chart, the manifold must be 1-dimensional'
+                    )
                 map = chart.domain().scalar_field({chart: chart[0]})
 
                 def _inverse(coord):
                     return self.point((coord,), chart=chart)
             else:
+
                 def _inverse(coords):
                     return self.point(coords, chart=map)
+
                 inverse = _inverse
 
         self._map = map
@@ -816,7 +838,10 @@ class ManifoldSubsetPullback(ManifoldSubset):
             # Regardless of their base_ring, we treat polyhedra as closed
             # convex subsets of R^n
             return True
-        elif isinstance(self._codomain_subset, FreeModule_generic) and self._codomain_subset.rank() != infinity:
+        elif (
+            isinstance(self._codomain_subset, FreeModule_generic)
+            and self._codomain_subset.rank() != infinity
+        ):
             if self._codomain_subset.base_ring() in MetricSpaces().Complete():
                 # Closed topological vector subspace
                 return True
@@ -824,7 +849,10 @@ class ManifoldSubsetPullback(ManifoldSubset):
                 if self._codomain_subset.coordinate_ring().is_subring(QQ):
                     # Discrete subgroup of R^n
                     return True
-                if self._codomain_subset.rank() == self._codomain_subset.base_extend(RR).dimension():
+                if (
+                    self._codomain_subset.rank()
+                    == self._codomain_subset.base_extend(RR).dimension()
+                ):
                     # Discrete subgroup of R^n
                     return True
         elif self._codomain_subset in Sets().Finite():
@@ -836,7 +864,9 @@ class ManifoldSubsetPullback(ManifoldSubset):
                 except ImportError:
                     pass
                 else:
-                    if isinstance(self._codomain_subset, (NNC_Polyhedron, C_Polyhedron)):
+                    if isinstance(
+                        self._codomain_subset, (NNC_Polyhedron, C_Polyhedron)
+                    ):
                         # ppl polyhedra can decide closedness authoritatively
                         return self._codomain_subset.is_topologically_closed()
         return super().is_closed()
@@ -872,8 +902,12 @@ class ManifoldSubsetPullback(ManifoldSubset):
             codomain_subset_closure = self._codomain_subset.closure()
         except AttributeError:
             return super().closure()
-        closure = ManifoldSubsetPullback(self._map, codomain_subset_closure,
-                                         inverse=self._inverse,
-                                         name=name, latex_name=latex_name)
+        closure = ManifoldSubsetPullback(
+            self._map,
+            codomain_subset_closure,
+            inverse=self._inverse,
+            name=name,
+            latex_name=latex_name,
+        )
         closure.declare_superset(self)
         return closure

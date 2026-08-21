@@ -60,6 +60,7 @@ def has_internet() -> bool:
         FeatureTestResult('internet', True)
     """
     from sage.features.internet import Internet
+
     return Internet().is_present()
 
 
@@ -74,6 +75,7 @@ def has_latex() -> bool:
         FeatureTestResult('latex', True)
     """
     from sage.features.latex import latex
+
     return latex().is_present()
 
 
@@ -88,6 +90,7 @@ def has_xelatex() -> bool:
         FeatureTestResult('xelatex', True)
     """
     from sage.features.latex import xelatex
+
     return xelatex().is_present()
 
 
@@ -102,6 +105,7 @@ def has_pdflatex() -> bool:
         FeatureTestResult('pdflatex', True)
     """
     from sage.features.latex import pdflatex
+
     return pdflatex().is_present()
 
 
@@ -116,6 +120,7 @@ def has_lualatex() -> bool:
         FeatureTestResult('lualatex', True)
     """
     from sage.features.latex import lualatex
+
     return lualatex().is_present()
 
 
@@ -130,6 +135,7 @@ def has_magma() -> bool:
         True
     """
     from sage.features.interfaces import Magma
+
     return Magma().is_present()
 
 
@@ -144,6 +150,7 @@ def has_matlab() -> bool:
         True
     """
     from sage.features.interfaces import Matlab
+
     return Matlab().is_present()
 
 
@@ -158,6 +165,7 @@ def has_mathematica() -> bool:
         True
     """
     from sage.features.interfaces import Mathematica
+
     return Mathematica().is_present()
 
 
@@ -172,6 +180,7 @@ def has_maple() -> bool:
         True
     """
     from sage.features.interfaces import Maple
+
     return Maple().is_present()
 
 
@@ -186,6 +195,7 @@ def has_macaulay2() -> bool:
         True
     """
     from sage.features.interfaces import Macaulay2
+
     return Macaulay2().is_present()
 
 
@@ -200,6 +210,7 @@ def has_octave() -> bool:
         True
     """
     from sage.features.interfaces import Octave
+
     return Octave().is_present()
 
 
@@ -214,6 +225,7 @@ def has_pandoc() -> bool:
         FeatureTestResult('pandoc', True)
     """
     from sage.features.pandoc import Pandoc
+
     return Pandoc().is_present()
 
 
@@ -228,6 +240,7 @@ def has_scilab() -> bool:
         True
     """
     from sage.interfaces.scilab import scilab
+
     try:
         scilab('2+3')
         return True
@@ -246,6 +259,7 @@ def has_cplex() -> bool:
         FeatureTestResult('cplex', True)
     """
     from sage.features.mip_backends import CPLEX
+
     return CPLEX().is_present()
 
 
@@ -260,6 +274,7 @@ def has_gurobi() -> bool:
         FeatureTestResult('gurobi', True)
     """
     from sage.features.mip_backends import Gurobi
+
     return Gurobi().is_present()
 
 
@@ -274,6 +289,7 @@ def has_graphviz() -> bool:
         FeatureTestResult('graphviz', True)
     """
     from sage.features.graphviz import Graphviz
+
     return Graphviz().is_present()
 
 
@@ -288,6 +304,7 @@ def has_ffmpeg() -> bool:
         FeatureTestResult('ffmpeg', True)
     """
     from sage.features.ffmpeg import FFmpeg
+
     return FFmpeg().is_present()
 
 
@@ -302,6 +319,7 @@ def has_imagemagick() -> bool:
         FeatureTestResult('imagemagick', True)
     """
     from sage.features.imagemagick import ImageMagick
+
     return ImageMagick().is_present()
 
 
@@ -317,6 +335,7 @@ def has_rubiks() -> bool:
         FeatureTestResult('rubiks', True)
     """
     from sage.features.rubiks import Rubiks
+
     return Rubiks().is_present()
 
 
@@ -331,6 +350,7 @@ def has_4ti2() -> bool:
         FeatureTestResult('4ti2', True)
     """
     from sage.features.four_ti_2 import FourTi2
+
     return FourTi2().is_present()
 
 
@@ -349,16 +369,21 @@ def external_features():
         Feature('internet')
     """
     from sage.features.internet import Internet
+
     yield Internet()
     import sage.features.latex
+
     yield from sage.features.latex.all_features()
     import sage.features.ffmpeg
+
     yield from sage.features.ffmpeg.all_features()
     import sage.features.interfaces
+
     for feature in sage.features.interfaces.all_features():
         if feature.is_external():
             yield feature
     from sage.features.mip_backends import CPLEX, Gurobi
+
     yield CPLEX()
     yield Gurobi()
 
@@ -410,6 +435,7 @@ class AvailableSoftware:
         sage: available_software.issuperset(set(['internet','latex'])) # random, optional - internet latex
         True
     """
+
     def __init__(self):
         """
         Initialization.
@@ -426,13 +452,16 @@ class AvailableSoftware:
         # shared among subprocesses. Thus we use Array class from the
         # multiprocessing module.
         from sage.features.all import all_features
+
         self._external_features = set(external_features())
         features = set(self._external_features)
         features.update(all_features())
         self._features = sorted(features, key=lambda feature: feature.name)
-        self._indices = {feature.name: idx for idx, feature in enumerate(self._features)}
-        self._seen = Array('i', len(self._features)) # initialized to zeroes
-        self._hidden = Array('i', len(self._features)) # initialized to zeroes
+        self._indices = {
+            feature.name: idx for idx, feature in enumerate(self._features)
+        }
+        self._seen = Array('i', len(self._features))  # initialized to zeroes
+        self._hidden = Array('i', len(self._features))  # initialized to zeroes
 
     def __contains__(self, item):
         """
@@ -488,16 +517,17 @@ class AvailableSoftware:
         # the list. Note that when defer_feature_checks is not set,
         # *no* BuildFeatures are runtime-detectable.
         from sage.features.build_feature import BuildFeature
-        def build_time_only(f):
-            return ( isinstance(f, BuildFeature)
-                     and
-                     not f.is_runtime_detectable() )
 
-        return [feature.name
-                for feature, seen in zip(self._features, self._seen)
-                if seen >= 0
-                and (self._allow_external or feature not in self._external_features)
-                and not build_time_only(feature)]
+        def build_time_only(f):
+            return isinstance(f, BuildFeature) and not f.is_runtime_detectable()
+
+        return [
+            feature.name
+            for feature, seen in zip(self._features, self._seen)
+            if seen >= 0
+            and (self._allow_external or feature not in self._external_features)
+            and not build_time_only(feature)
+        ]
 
     def seen(self):
         """
@@ -513,14 +543,15 @@ class AvailableSoftware:
         # the list. Note that when defer_feature_checks is not set,
         # *no* BuildFeatures are runtime-detectable.
         from sage.features.build_feature import BuildFeature
+
         def build_time_only(f):
-            return ( isinstance(f, BuildFeature)
-                     and
-                     not f.is_runtime_detectable() )
-        return [feature.name
-                for feature, seen in zip(self._features, self._seen)
-                if seen > 0
-                and not build_time_only(feature)]
+            return isinstance(f, BuildFeature) and not f.is_runtime_detectable()
+
+        return [
+            feature.name
+            for feature, seen in zip(self._features, self._seen)
+            if seen > 0 and not build_time_only(feature)
+        ]
 
     def hidden(self):
         """
@@ -542,9 +573,11 @@ class AvailableSoftware:
              'database_ellcurves',...
              'database_graphs'...]
         """
-        return [feature.name
-                for feature, hidden in zip(self._features, self._hidden)
-                if hidden > 0]
+        return [
+            feature.name
+            for feature, hidden in zip(self._features, self._hidden)
+            if hidden > 0
+        ]
 
 
 available_software = AvailableSoftware()

@@ -35,8 +35,16 @@ from sage.categories.graded_hopf_algebras import GradedHopfAlgebras
 from sage.combinat.composition import Compositions
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.ncsf_qsym.generic_basis_code import BasesOfQSymOrNCSF
-from sage.combinat.ncsf_qsym.combinatorics import (coeff_pi, coeff_lp,
-        coeff_sp, coeff_ell, m_to_s_stat, number_of_fCT, number_of_SSRCT, compositions_order)
+from sage.combinat.ncsf_qsym.combinatorics import (
+    coeff_pi,
+    coeff_lp,
+    coeff_sp,
+    coeff_ell,
+    m_to_s_stat,
+    number_of_fCT,
+    number_of_SSRCT,
+    compositions_order,
+)
 from sage.combinat.partition import Partition
 from sage.combinat.permutation import Permutations
 from sage.matrix.constructor import matrix
@@ -409,7 +417,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             sage: TestSuite(NonCommutativeSymmetricFunctions(QQ)).run()
         """
         # change the line below to assert R in Rings() once MRO issues from #15536, #15475 are resolved
-        assert R in Fields() or R in Rings()  # side effect of this statement assures MRO exists for R
+        assert (
+            R in Fields() or R in Rings()
+        )  # side effect of this statement assures MRO exists for R
         self._base = R  # Won't be needed once CategoryObject won't override base_ring
         cat = GradedHopfAlgebras(R).WithRealizations().Cocommutative()
         Parent.__init__(self, category=cat)
@@ -422,25 +432,33 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
         ribbon = self.ribbon()
 
         # complete to ribbon, and back
-        complete.module_morphism(ribbon.sum_of_fatter_compositions,
-                                 codomain=ribbon).register_as_coercion()
-        ribbon.module_morphism(complete.alternating_sum_of_fatter_compositions,
-                               codomain=complete).register_as_coercion()
+        complete.module_morphism(
+            ribbon.sum_of_fatter_compositions, codomain=ribbon
+        ).register_as_coercion()
+        ribbon.module_morphism(
+            complete.alternating_sum_of_fatter_compositions, codomain=complete
+        ).register_as_coercion()
 
-        complete.algebra_morphism(elementary.alternating_sum_of_compositions,
-                                  codomain=elementary).register_as_coercion()
-        elementary.algebra_morphism(complete.alternating_sum_of_compositions,
-                                    codomain=complete).register_as_coercion()
+        complete.algebra_morphism(
+            elementary.alternating_sum_of_compositions, codomain=elementary
+        ).register_as_coercion()
+        elementary.algebra_morphism(
+            complete.alternating_sum_of_compositions, codomain=complete
+        ).register_as_coercion()
 
-        complete.algebra_morphism(Psi._from_complete_on_generators,
-                                  codomain=Psi).register_as_coercion()
-        Psi.algebra_morphism(Psi._to_complete_on_generators,
-                             codomain=complete).register_as_coercion()
+        complete.algebra_morphism(
+            Psi._from_complete_on_generators, codomain=Psi
+        ).register_as_coercion()
+        Psi.algebra_morphism(
+            Psi._to_complete_on_generators, codomain=complete
+        ).register_as_coercion()
 
-        complete.algebra_morphism(Phi._from_complete_on_generators,
-                                  codomain=Phi).register_as_coercion()
-        Phi.algebra_morphism(Phi._to_complete_on_generators,
-                             codomain=complete).register_as_coercion()
+        complete.algebra_morphism(
+            Phi._from_complete_on_generators, codomain=Phi
+        ).register_as_coercion()
+        Phi.algebra_morphism(
+            Phi._to_complete_on_generators, codomain=complete
+        ).register_as_coercion()
 
     def _repr_(self) -> str:  # could be taken care of by the category
         r"""
@@ -469,8 +487,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
         """
         return self.complete()
 
-    _shorthands = ('S', 'R', 'L', 'Phi', 'Psi', 'nM', 'I',
-                   'dQS', 'dYQS', 'ZL', 'ZR')
+    _shorthands = ('S', 'R', 'L', 'Phi', 'Psi', 'nM', 'I', 'dQS', 'dYQS', 'ZL', 'ZR')
 
     def dual(self):
         r"""
@@ -488,6 +505,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             Quasisymmetric functions over the Rational Field
         """
         from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
+
         return QuasiSymmetricFunctions(self.base_ring())
 
     class Bases(Category_realization_of_parent):
@@ -520,11 +538,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             R = self.base().base_ring()
             from .generic_basis_code import GradedModulesWithInternalProduct
-            return [BasesOfQSymOrNCSF(self.base()),
-                    GradedModulesWithInternalProduct(R).Realizations()]
+
+            return [
+                BasesOfQSymOrNCSF(self.base()),
+                GradedModulesWithInternalProduct(R).Realizations(),
+            ]
 
         class ParentMethods:
-
             def to_symmetric_function_on_basis(self, I):
                 r"""
                 The image of the basis element indexed by ``I`` under the map
@@ -705,7 +725,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 return self(res)
 
         class ElementMethods:
-
             def verschiebung(self, n):
                 r"""
                 Return the image of the noncommutative symmetric function
@@ -833,8 +852,11 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 parent = self.parent()
                 S = parent.realization_of().S()
                 C = parent._indices
-                dct = {C([i // n for i in I]): coeff
-                       for (I, coeff) in S(self) if all(i % n == 0 for i in I)}
+                dct = {
+                    C([i // n for i in I]): coeff
+                    for (I, coeff) in S(self)
+                    if all(i % n == 0 for i in I)
+                }
                 return parent(S._from_dict(dct))
 
             def bernstein_creation_operator(self, n):
@@ -1562,8 +1584,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                         # Now, both lam and mu are nonempty.
                         sum_mu = sum(mu_list)
                         stab = 1 + sum_lam + sum_mu
-                        S_lam_stabilized = comp_parent(_Compositions([stab - sum_lam] + lam_list))
-                        S_mu_stabilized = comp_parent(_Compositions([stab - sum_mu] + mu_list))
+                        S_lam_stabilized = comp_parent(
+                            _Compositions([stab - sum_lam] + lam_list)
+                        )
+                        S_mu_stabilized = comp_parent(
+                            _Compositions([stab - sum_mu] + mu_list)
+                        )
                         lam_star_mu = S_lam_stabilized.internal_product(S_mu_stabilized)
                         # lam_star_mu is now a non-commutative symmetric function
                         # in the S-basis.
@@ -1619,6 +1645,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     else:
                         n = self.degree()
                 from sage.combinat.descent_algebra import DescentAlgebra
+
                 S = NonCommutativeSymmetricFunctions(self.base_ring()).S()
                 S_expansion = S(self)
                 B = DescentAlgebra(self.base_ring(), n).B()
@@ -1665,7 +1692,11 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 S = NonCommutativeSymmetricFunctions(self.base_ring()).S()
                 S_expansion = S(self)
-                return sum(S_expansion.coefficient(I)*S._to_symmetric_group_algebra_on_basis(I) for I in S_expansion.support())
+                return sum(
+                    S_expansion.coefficient(I)
+                    * S._to_symmetric_group_algebra_on_basis(I)
+                    for I in S_expansion.support()
+                )
                 # TODO:
                 # This is ugly (uses global sum function) and undefined if self
                 # is not homogeneous. Improve?
@@ -1783,8 +1814,11 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     ....:     == S[i].to_ncsym() for i in range(6))
                     True
                 """
-                from sage.combinat.ncsym.ncsym import SymmetricFunctionsNonCommutingVariables
+                from sage.combinat.ncsym.ncsym import (
+                    SymmetricFunctionsNonCommutingVariables,
+                )
                 from sage.combinat.set_partition import SetPartitions
+
                 P = self.parent()
                 S = P.realization_of().complete()
                 R = P.base_ring()
@@ -1797,12 +1831,21 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
 
                     def c_num(A):
                         return R(prod(factorial(i) for i in A.shape()))
-                    return prod(m.sum_of_terms([(SP(A), R(c_num(A) / factorial(n)))
-                                                for A in SetPartitions(n)], distinct=True)
-                                for n in I)
 
-                return m.linear_combination((on_basis(I), coeff)
-                                            for I, coeff in S(self))
+                    return prod(
+                        m.sum_of_terms(
+                            [
+                                (SP(A), R(c_num(A) / factorial(n)))
+                                for A in SetPartitions(n)
+                            ],
+                            distinct=True,
+                        )
+                        for n in I
+                    )
+
+                return m.linear_combination(
+                    (on_basis(I), coeff) for I, coeff in S(self)
+                )
 
             def to_fqsym(self):
                 r"""
@@ -1854,14 +1897,17 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                      + F[4, 1, 2, 3] + F[4, 2, 1, 3] + F[4, 2, 3, 1]
                 """
                 from sage.combinat.fqsym import FreeQuasisymmetricFunctions
+
                 P = self.parent()
                 S = P.realization_of().complete()
                 F = FreeQuasisymmetricFunctions(P.base_ring()).F()
 
                 def on_basis(I):
-                    return F.prod(F[Permutations(i)(range(1, i+1))] for i in I)
-                return F.linear_combination((on_basis(I), coeff)
-                                            for I, coeff in S(self))
+                    return F.prod(F[Permutations(i)(range(1, i + 1))] for i in I)
+
+                return F.linear_combination(
+                    (on_basis(I), coeff) for I, coeff in S(self)
+                )
 
             def to_fsym(self):
                 r"""
@@ -1908,6 +1954,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     G[12|3] + G[123]
                 """
                 from sage.combinat.chas.fsym import FreeSymmetricFunctions
+
                 G = FreeSymmetricFunctions(self.base_ring()).G()
                 return G(self)
 
@@ -1979,6 +2026,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 NSym = self.parent().realization_of()
                 L = NSym.L()
                 from sage.algebras.free_algebra import FreeAlgebra
+
                 P = FreeAlgebra(NSym.base_ring(), n, alphabet)
                 x = P.gens()
 
@@ -1989,10 +2037,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                         return P.one()
                     if k > i:
                         return P.zero()
-                    return x[i-1] * image_of_L_k(k - 1, i - 1) + image_of_L_k(k, i - 1)
+                    return x[i - 1] * image_of_L_k(k - 1, i - 1) + image_of_L_k(
+                        k, i - 1
+                    )
 
                 def on_basis(comp):
                     return P.prod(image_of_L_k(k, n) for k in comp)
+
                 return L._apply_module_morphism(L(self), on_basis, codomain=P)
 
     class MultiplicativeBases(Category_realization_of_parent):
@@ -2029,7 +2080,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             return [self.base().Bases()]
 
         class ParentMethods:
-
             @cached_method
             def algebra_generators(self):
                 """
@@ -2049,7 +2099,10 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 from sage.sets.family import Family
                 from sage.sets.positive_integers import PositiveIntegers
-                return Family(PositiveIntegers(), lambda i: self.monomial(self._indices([i])))
+
+                return Family(
+                    PositiveIntegers(), lambda i: self.monomial(self._indices([i]))
+                )
 
             def product_on_basis(self, composition1, composition2):
                 """
@@ -2135,9 +2188,10 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     Category of endsets of modules with basis over Rational Field
                 """
                 from sage.combinat.ncsf_qsym.generic_basis_code import AlgebraMorphism
+
                 return AlgebraMorphism(self, on_generators, **keywords)
 
-            def to_symmetric_function_on_generators( self, i ):
+            def to_symmetric_function_on_generators(self, i):
                 r"""
                 Morphism of the generators to symmetric functions.
 
@@ -2196,7 +2250,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     h[1, 1, 1, 1] - 3*h[2, 1, 1] + 3*h[3, 1]
                 """
                 codom = self.to_symmetric_function_on_generators(1).parent()
-                return self.algebra_morphism(self.to_symmetric_function_on_generators, codomain=codom)
+                return self.algebra_morphism(
+                    self.to_symmetric_function_on_generators, codomain=codom
+                )
 
             @lazy_attribute
             def antipode(self):
@@ -2220,7 +2276,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     Generic endomorphism of Non-Commutative Symmetric Functions over the Rational Field in the Complete basis
                 """
                 if hasattr(self, "antipode_on_generators"):
-                    return self.algebra_morphism(self.antipode_on_generators, codomain=self, anti=True)
+                    return self.algebra_morphism(
+                        self.antipode_on_generators, codomain=self, anti=True
+                    )
                 return NotImplemented
 
             @lazy_attribute
@@ -2242,8 +2300,11 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                       To:   Non-Commutative Symmetric Functions over the Rational Field in the Complete basis # Non-Commutative Symmetric Functions over the Rational Field in the Complete basis
                 """
                 from sage.categories.tensor import tensor
+
                 if hasattr(self, "coproduct_on_generators"):
-                    return self.algebra_morphism(self.coproduct_on_generators, codomain=tensor([self, self]))
+                    return self.algebra_morphism(
+                        self.coproduct_on_generators, codomain=tensor([self, self])
+                    )
                 return NotImplemented
 
     class MultiplicativeBasesOnGroupLikeElements(Category_realization_of_parent):
@@ -2297,7 +2358,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             return [self.base().MultiplicativeBases()]
 
         class ParentMethods:
-
             def antipode_on_basis(self, composition):
                 """
                 Return the application of the antipode to a basis element.
@@ -2327,7 +2387,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     sage: S[2,3].coproduct().apply_multilinear_morphism(lambda be,ga: S(be).antipode()*S(ga))
                     0
                 """
-                return (-1)**len(composition) * self.alternating_sum_of_finer_compositions(composition.reversed())
+                return (-1) ** len(
+                    composition
+                ) * self.alternating_sum_of_finer_compositions(composition.reversed())
 
             # @cached_method?
             def coproduct_on_generators(self, i):
@@ -2360,8 +2422,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
 
                 def C(i):
                     return self._indices([i]) if i else self._indices([])
+
                 T = self.tensor_square()
-                return T.sum_of_monomials( (C(j), C(i-j)) for j in range(i+1) )
+                return T.sum_of_monomials((C(j), C(i - j)) for j in range(i + 1))
 
     class MultiplicativeBasesOnPrimitiveElements(Category_realization_of_parent):
         r"""
@@ -2416,7 +2479,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             return [self.base().MultiplicativeBases()]
 
         class ParentMethods:
-
             def antipode_on_generators(self, i):
                 r"""
                 Return the image of a generator of a primitive basis of
@@ -2448,7 +2510,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 if i < 1:
                     raise ValueError("Not a positive integer: {}".format(i))
-                return - self.algebra_generators()[i]
+                return -self.algebra_generators()[i]
 
             def coproduct_on_generators(self, i):
                 r"""
@@ -2479,6 +2541,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     raise ValueError("Not a positive integer: {}".format(i))
                 x = self.algebra_generators()[i]
                 from sage.categories.tensor import tensor
+
                 return tensor([self.one(), x]) + tensor([x, self.one()])
 
     class Ribbon(CombinatorialFreeModule, BindableClass):
@@ -2553,9 +2616,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(R(L(R[comp])) == R[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='R', bracket=False,
-                                             category=NCSF.Bases())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='R',
+                bracket=False,
+                category=NCSF.Bases(),
+            )
 
         def dual(self):
             r"""
@@ -2604,8 +2672,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 return self.monomial(J)
             if not J._list:
                 return self.monomial(I)
-            return self.monomial(self._indices(I[:] + J[:])) + \
-                   self.monomial(self._indices(I[:-1] + [I[-1]+J[0]] + J[1:]))
+            return self.monomial(self._indices(I[:] + J[:])) + self.monomial(
+                self._indices(I[:-1] + [I[-1] + J[0]] + J[1:])
+            )
 
         def antipode_on_basis(self, composition):
             """
@@ -2641,7 +2710,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             if composition.size() % 2 == 0:
                 return self[composition.conjugate()]
-            return - self[composition.conjugate()]
+            return -self[composition.conjugate()]
 
         def to_symmetric_function_on_basis(self, I):
             r"""
@@ -2674,7 +2743,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             return s(I.to_skew_partition())
 
         class Element(CombinatorialFreeModule.Element):
-
             def verschiebung(self, n):
                 r"""
                 Return the image of the noncommutative symmetric function
@@ -2809,11 +2877,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     J = I.meet([n] * m)
                     Jn = C([j // n for j in J])
                     if (len(I) - len(J)) % 2:
-                        return (Jn, - coeff)
+                        return (Jn, -coeff)
                     return (Jn, coeff)
-                return parent.sum_of_terms([ribbon_mapper(I, coeff)
-                                            for (I, coeff) in self
-                                            if sum(I) % n == 0])
+
+                return parent.sum_of_terms(
+                    [ribbon_mapper(I, coeff) for (I, coeff) in self if sum(I) % n == 0]
+                )
 
             def star_involution(self):
                 r"""
@@ -2944,9 +3013,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: S = NonCommutativeSymmetricFunctions(QQ).complete()
                 sage: TestSuite(S).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='S', bracket=False,
-                                             category=NCSF.MultiplicativeBasesOnGroupLikeElements())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='S',
+                bracket=False,
+                category=NCSF.MultiplicativeBasesOnGroupLikeElements(),
+            )
 
         def dual(self):
             r"""
@@ -2991,6 +3065,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 0
             """
             from sage.combinat.integer_matrices import IntegerMatrices
+
             IM = IntegerMatrices(I, J)
             return self.sum_of_monomials(IM.to_composition(m) for m in IM)
 
@@ -3021,7 +3096,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 h[]
             """
             h = SymmetricFunctions(self.base_ring()).complete()
-            return h[Partition(sorted(I,reverse=True))]
+            return h[Partition(sorted(I, reverse=True))]
 
         @lazy_attribute
         def to_symmetric_function(self):
@@ -3083,12 +3158,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             n = sum(I)
             from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
             from sage.sets.set import Set
+
             if n == 0:
-                return SymmetricGroupAlgebra(self.base_ring(),n).one()
-            sga = SymmetricGroupAlgebra(self.base_ring(),n)
-            J = [j-1 for j in I.to_subset()]
-            return sga.sum_of_monomials( p for K in Set(J).subsets()
-                                         for p in Permutations(descents=(K,n)) )
+                return SymmetricGroupAlgebra(self.base_ring(), n).one()
+            sga = SymmetricGroupAlgebra(self.base_ring(), n)
+            J = [j - 1 for j in I.to_subset()]
+            return sga.sum_of_monomials(
+                p for K in Set(J).subsets() for p in Permutations(descents=(K, n))
+            )
 
         class Element(CombinatorialFreeModule.Element):
             """
@@ -3168,9 +3245,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     True
                 """
                 parent = self.parent()
-                return parent.sum( (-1) ** (I.size() - len(I)) * coeff
-                                   * parent.alternating_sum_of_finer_compositions(I)
-                                   for I, coeff in self._monomial_coefficients.items() )
+                return parent.sum(
+                    (-1) ** (I.size() - len(I))
+                    * coeff
+                    * parent.alternating_sum_of_finer_compositions(I)
+                    for I, coeff in self._monomial_coefficients.items()
+                )
 
     S = complete = Complete
 
@@ -3242,12 +3322,16 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(L(S(L[comp])) == L[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='L', bracket=False,
-                                             category=NCSF.MultiplicativeBasesOnGroupLikeElements())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='L',
+                bracket=False,
+                category=NCSF.MultiplicativeBasesOnGroupLikeElements(),
+            )
 
         class Element(CombinatorialFreeModule.Element):
-
             def verschiebung(self, n):
                 r"""
                 Return the image of the noncommutative symmetric function
@@ -3379,11 +3463,17 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 parent = self.parent()
                 C = parent._indices
-                return parent.sum_of_terms([(C([i // n for i in I]),
-                                            coeff * (-1) ** (sum(I) * (n-1) // n))
-                                            for (I, coeff) in self
-                                            if all(i % n == 0 for i in I)],
-                                           distinct=True)
+                return parent.sum_of_terms(
+                    [
+                        (
+                            C([i // n for i in I]),
+                            coeff * (-1) ** (sum(I) * (n - 1) // n),
+                        )
+                        for (I, coeff) in self
+                        if all(i % n == 0 for i in I)
+                    ],
+                    distinct=True,
+                )
 
             def star_involution(self):
                 r"""
@@ -3543,10 +3633,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     True
                 """
                 parent = self.parent()
-                return parent.sum( (-1) ** (I.size() - len(I)) * coeff
-                                   * parent.alternating_sum_of_finer_compositions(I)
-                                   for I, coeff in
-                                   self._monomial_coefficients.items() )
+                return parent.sum(
+                    (-1) ** (I.size() - len(I))
+                    * coeff
+                    * parent.alternating_sum_of_finer_compositions(I)
+                    for I, coeff in self._monomial_coefficients.items()
+                )
 
     L = elementary = Elementary
 
@@ -3635,9 +3727,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(Psi(S(Psi[comp])) == Psi[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='Psi', bracket=False,
-                                             category=NCSF.MultiplicativeBasesOnPrimitiveElements())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='Psi',
+                bracket=False,
+                category=NCSF.MultiplicativeBasesOnPrimitiveElements(),
+            )
 
         def _from_complete_on_generators(self, n):
             r"""
@@ -3665,8 +3762,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             # Equation (58) of NCSF I article
             one = self.base_ring().one()
             I = self._indices([n])
-            return self.sum_of_terms( ( (J, one/coeff_pi(J,I)) for J in Compositions(n) ),
-                                      distinct=True )
+            return self.sum_of_terms(
+                ((J, one / coeff_pi(J, I)) for J in Compositions(n)), distinct=True
+            )
 
         def _to_complete_on_generators(self, n):
             r"""
@@ -3701,8 +3799,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             minus_one = -self.base_ring().one()
             complete = self.realization_of().complete()
-            return complete.sum_of_terms( ((J, minus_one**(len(J)+1)*coeff_lp(J,[n]))
-                        for J in Compositions(n)), distinct=True )
+            return complete.sum_of_terms(
+                (
+                    (J, minus_one ** (len(J) + 1) * coeff_lp(J, [n]))
+                    for J in Compositions(n)
+                ),
+                distinct=True,
+            )
 
         def internal_product_on_basis_by_bracketing(self, I, J):
             r"""
@@ -3846,8 +3949,10 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 # part is now the last part of K.
 
                 # Find a part `K_k` such that `|J_{K_k}| = I_k`
-                Ik = I[len(K) - 1] # -1 for indexing
-                cur_sum = sum(J[j] for j in part[:-1]) # The last entry hasn't been added yet
+                Ik = I[len(K) - 1]  # -1 for indexing
+                cur_sum = sum(
+                    J[j] for j in part[:-1]
+                )  # The last entry hasn't been added yet
 
                 while cur_sum != Ik:
                     part[-1] += 1
@@ -3862,7 +3967,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                     elif part[-1] in base and cur_sum + J[part[-1]] <= Ik:
                         cur_sum += J[part[-1]]
                         base.remove(part[-1])
-                        if cur_sum < Ik: # Still more work to do
+                        if cur_sum < Ik:  # Still more work to do
                             part.append(part[-1])
 
                 # If the last part is empty (i.e. we didn't find a part): backtrack
@@ -3884,7 +3989,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             return result
 
         class Element(CombinatorialFreeModule.Element):
-
             def verschiebung(self, n):
                 r"""
                 Return the image of the noncommutative symmetric function
@@ -4016,11 +4120,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 parent = self.parent()
                 C = parent._indices
-                return parent.sum_of_terms([(C([i // n for i in I]),
-                                            coeff * (n ** len(I)))
-                                            for (I, coeff) in self
-                                            if all(i % n == 0 for i in I)],
-                                           distinct=True)
+                return parent.sum_of_terms(
+                    [
+                        (C([i // n for i in I]), coeff * (n ** len(I)))
+                        for (I, coeff) in self
+                        if all(i % n == 0 for i in I)
+                    ],
+                    distinct=True,
+                )
 
     class Phi(CombinatorialFreeModule, BindableClass):
         r"""
@@ -4077,9 +4184,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(Phi(S(Phi[comp])) == Phi[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='Phi', bracket=False,
-                                             category=NCSF.MultiplicativeBasesOnPrimitiveElements())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='Phi',
+                bracket=False,
+                category=NCSF.MultiplicativeBasesOnPrimitiveElements(),
+            )
 
         def _from_complete_on_generators(self, n):
             r"""
@@ -4106,8 +4218,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             # Proposition 4.9 of NCSF I article
             one = self.base_ring().one()
-            return self.sum_of_terms( ( (J, one / coeff_sp(J,[n])) for J in Compositions(n) ),
-                                      distinct=True )
+            return self.sum_of_terms(
+                ((J, one / coeff_sp(J, [n])) for J in Compositions(n)), distinct=True
+            )
 
         def _to_complete_on_generators(self, n):
             r"""
@@ -4135,12 +4248,15 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             # Proposition 4.9 of NCSF I article
             minus_one = -self.base_ring().one()
             complete = self.realization_of().complete()
-            return complete.sum_of_terms( ( (J, minus_one**(len(J)+1) * n / coeff_ell(J,[n]))
-                                            for J in Compositions(n) ),
-                                          distinct=True )
+            return complete.sum_of_terms(
+                (
+                    (J, minus_one ** (len(J) + 1) * n / coeff_ell(J, [n]))
+                    for J in Compositions(n)
+                ),
+                distinct=True,
+            )
 
         class Element(CombinatorialFreeModule.Element):
-
             def verschiebung(self, n):
                 r"""
                 Return the image of the noncommutative symmetric function
@@ -4274,11 +4390,14 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 """
                 parent = self.parent()
                 C = parent._indices
-                return parent.sum_of_terms([(C([i // n for i in I]),
-                                            coeff * (n ** len(I)))
-                                            for (I, coeff) in self
-                                            if all(i % n == 0 for i in I)],
-                                           distinct=True)
+                return parent.sum_of_terms(
+                    [
+                        (C([i // n for i in I]), coeff * (n ** len(I)))
+                        for (I, coeff) in self
+                        if all(i % n == 0 for i in I)
+                    ],
+                    distinct=True,
+                )
 
             def star_involution(self):
                 r"""
@@ -4471,24 +4590,27 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(nM(S(nM[comp])) == nM[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='nM', bracket=False,
-                                             category=NCSF.Bases())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='nM',
+                bracket=False,
+                category=NCSF.Bases(),
+            )
             category = self.category()
 
             NCSF = NonCommutativeSymmetricFunctions(self.base_ring())
             S = NCSF.complete()
             Psi = NCSF.Psi()
             to_S = self.module_morphism(
-                    on_basis=self._to_complete_on_basis,
-                    codomain=S,
-                    category=category)
+                on_basis=self._to_complete_on_basis, codomain=S, category=category
+            )
             to_S.register_as_coercion()
 
             from_psi = Psi.module_morphism(
-                        on_basis=self._from_psi_on_basis,
-                        codomain=self,
-                        category=category)
+                on_basis=self._from_psi_on_basis, codomain=self, category=category
+            )
             from_psi.register_as_coercion()
 
         def _to_complete_on_basis(self, I):
@@ -4519,9 +4641,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 S[1, 1, 1] - 2*S[1, 2] - S[2, 1] + 3*S[3]
             """
             S = NonCommutativeSymmetricFunctions(self.base_ring()).S()
-            return S.sum_of_terms( ( (K, m_to_s_stat(self.base_ring(),I,K))
-                                     for K in Compositions(sum(I)) ),
-                                   distinct=True )
+            return S.sum_of_terms(
+                (
+                    (K, m_to_s_stat(self.base_ring(), I, K))
+                    for K in Compositions(sum(I))
+                ),
+                distinct=True,
+            )
             # Note: sum(I) works both if I is a list and if I is a composition
             # (although the latter case doesn't work in IPython, cf.
             # trac #15163).
@@ -4558,8 +4684,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             for J in Compositions(I.size()):
                 if I.is_finer(J):
                     len_of_J = len(J)
-                    p = [0] + self._indices(I).refinement_splitting_lengths(J).partial_sums()
-                    sum_of_elements += prod( (len_of_J - k)**(p[k+1]-p[k]) for k in range(len_of_J) ) * M(J)
+                    p = [0] + self._indices(I).refinement_splitting_lengths(
+                        J
+                    ).partial_sums()
+                    sum_of_elements += prod(
+                        (len_of_J - k) ** (p[k + 1] - p[k]) for k in range(len_of_J)
+                    ) * M(J)
             return sum_of_elements
 
     nM = monomial = Monomial
@@ -4632,21 +4762,24 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: all(I(S(I[comp])) == I[comp] for comp in Compositions(5))
                 True
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='I', bracket=False,
-                                             category=NCSF.Bases())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='I',
+                bracket=False,
+                category=NCSF.Bases(),
+            )
             category = self.category()
             S = self.realization_of().complete()
             to_S = self.module_morphism(
-                    on_basis=self._to_complete_on_basis,
-                    codomain=S,
-                    category=category)
+                on_basis=self._to_complete_on_basis, codomain=S, category=category
+            )
             to_S.register_as_coercion()
 
             from_S = S.module_morphism(
-                        on_basis=self._from_complete_on_basis,
-                        codomain=self,
-                        category=category)
+                on_basis=self._from_complete_on_basis, codomain=self, category=category
+            )
             from_S.register_as_coercion()
 
         def _realization_name(self):
@@ -4687,9 +4820,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 S[1, 2]
             """
             S = NonCommutativeSymmetricFunctions(self.base_ring()).complete()
-            if any( d < 0 for d in alpha ):
+            if any(d < 0 for d in alpha):
                 return S.zero()
-            return S( [ d for d in alpha if d > 0 ] )
+            return S([d for d in alpha if d > 0])
 
         @cached_method
         def _to_complete_on_basis(self, alpha):
@@ -4722,8 +4855,11 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 return self._H([1])
             la = len(alpha_list)
             S = NonCommutativeSymmetricFunctions(self.base_ring()).complete()
-            return S.sum( sigma.signature()*self._H( [alpha_list[i]+sigma[i]-(i+1) for i in range(la)] )
-                          for sigma in Permutations(la) )
+            return S.sum(
+                sigma.signature()
+                * self._H([alpha_list[i] + sigma[i] - (i + 1) for i in range(la)])
+                for sigma in Permutations(la)
+            )
 
         @cached_method
         def _from_complete_on_basis(self, comp_content):
@@ -4752,9 +4888,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             I = NonCommutativeSymmetricFunctions(self.base_ring()).I()
             if not comp_content._list:
                 return I([])
-            return I.sum_of_terms( ( (comp_shape, number_of_fCT(comp_content, comp_shape))
-                                     for comp_shape in Compositions(sum(comp_content)) ),
-                                   distinct=True )
+            return I.sum_of_terms(
+                (
+                    (comp_shape, number_of_fCT(comp_content, comp_shape))
+                    for comp_shape in Compositions(sum(comp_content))
+                ),
+                distinct=True,
+            )
 
         def dual(self):
             r"""
@@ -4837,7 +4977,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
 
                 C = Compositions()
                 P = self.parent()
-                return P.sum_of_terms( (C([n] + list(m)), c) for m,c in self )
+                return P.sum_of_terms((C([n] + list(m)), c) for m, c in self)
 
     I = Immaculate
 
@@ -4918,21 +5058,24 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 True
                 sage: TestSuite(dQS).run() # long time
             """
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='dQS', bracket=False,
-                                             category=NCSF.Bases())
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='dQS',
+                bracket=False,
+                category=NCSF.Bases(),
+            )
             category = self.category()
             self._S = self.realization_of().complete()
             to_S = self.module_morphism(
-                    on_basis=self._to_complete_on_basis,
-                    codomain=self._S,
-                    category=category)
+                on_basis=self._to_complete_on_basis, codomain=self._S, category=category
+            )
             to_S.register_as_coercion()
 
             from_S = self._S.module_morphism(
-                        on_basis=self._from_complete_on_basis,
-                        codomain=self,
-                        category=category)
+                on_basis=self._from_complete_on_basis, codomain=self, category=category
+            )
             from_S.register_as_coercion()
 
         def _realization_name(self):
@@ -4977,9 +5120,12 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             CO = compositions_order(n)
             # ZZ is faster than over QQ for inverting a matrix
             from sage.rings.integer_ring import ZZ
+
             MS = MatrixSpace(ZZ, len(CO))
-            return (MS([[number_of_SSRCT(al,be) for be in CO] for al in CO]).inverse(),
-                    CO)
+            return (
+                MS([[number_of_SSRCT(al, be) for be in CO] for al in CO]).inverse(),
+                CO,
+            )
 
         @cached_method
         def _to_complete_on_basis(self, comp):
@@ -5004,9 +5150,10 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 return self.one()
             T, comps = self._to_complete_transition_matrix(comp.size())
             i = comps.index(comp)
-            return self._S._from_dict({c: T[i,j] for j,c in enumerate(comps)
-                                       if T[i,j] != 0},
-                                      remove_zeros=False)
+            return self._S._from_dict(
+                {c: T[i, j] for j, c in enumerate(comps) if T[i, j] != 0},
+                remove_zeros=False,
+            )
 
         @cached_method
         def _from_complete_on_basis(self, comp_content):
@@ -5034,9 +5181,13 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             if not comp_content._list:
                 return self([])
-            return self.sum_of_terms( ( (comp_shape, number_of_SSRCT(comp_content, comp_shape))
-                                     for comp_shape in Compositions(sum(comp_content)) ),
-                                   distinct=True )
+            return self.sum_of_terms(
+                (
+                    (comp_shape, number_of_SSRCT(comp_content, comp_shape))
+                    for comp_shape in Compositions(sum(comp_content))
+                ),
+                distinct=True,
+            )
 
         def dual(self):
             r"""
@@ -5088,7 +5239,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 s[]
             """
             s = SymmetricFunctions(self.base_ring()).s()
-            return s[Partition(sorted(I,reverse=True))]
+            return s[Partition(sorted(I, reverse=True))]
 
     dQS = dualQuasisymmetric_Schur
 
@@ -5149,19 +5300,24 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 sage: TestSuite(dYQS).run() # long time
             """
             category = NCSF.Bases()
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                             prefix='dYQS', bracket=False,
-                                             category=category)
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='dYQS',
+                bracket=False,
+                category=category,
+            )
 
             self._S = NCSF.complete()
             self._dQS = NCSF.dualQuasisymmetric_Schur()
-            self.module_morphism(on_basis=self._to_complete_on_basis,
-                                 codomain=self._S,
-                                 category=category).register_as_coercion()
+            self.module_morphism(
+                on_basis=self._to_complete_on_basis, codomain=self._S, category=category
+            ).register_as_coercion()
 
-            self._S.module_morphism(on_basis=self._from_complete_on_basis,
-                                    codomain=self,
-                                    category=category).register_as_coercion()
+            self._S.module_morphism(
+                on_basis=self._from_complete_on_basis, codomain=self, category=category
+            ).register_as_coercion()
 
         def _realization_name(self):
             r"""
@@ -5193,8 +5349,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 S[1, 3, 1] - S[1, 4] - S[2, 3] + S[5]
             """
             elt = self._dQS._to_complete_on_basis(comp.reversed())
-            return self._S._from_dict({al.reversed(): c for al, c in elt},
-                                      coerce=False, remove_zeros=False)
+            return self._S._from_dict(
+                {al.reversed(): c for al, c in elt}, coerce=False, remove_zeros=False
+            )
 
         def _from_complete_on_basis(self, comp):
             r"""
@@ -5220,8 +5377,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 dYQS[2, 1, 1] + dYQS[2, 2] + 2*dYQS[3, 1] + dYQS[4]
             """
             elt = self._dQS._from_complete_on_basis(comp.reversed())
-            return self._from_dict({al.reversed(): c for al, c in elt},
-                                   coerce=False, remove_zeros=False)
+            return self._from_dict(
+                {al.reversed(): c for al, c in elt}, coerce=False, remove_zeros=False
+            )
 
         def dual(self):
             r"""
@@ -5274,7 +5432,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 s[]
             """
             s = SymmetricFunctions(self.base_ring()).s()
-            return s[Partition(sorted(I,reverse=True))]
+            return s[Partition(sorted(I, reverse=True))]
 
     dYQS = dualYoungQuasisymmetric_Schur
 
@@ -5349,19 +5507,26 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 True
             """
             cat = NCSF.MultiplicativeBasesOnPrimitiveElements()
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                                prefix='ZL', bracket=False,
-                                                category=cat)
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='ZL',
+                bracket=False,
+                category=cat,
+            )
 
             # Register coercions
             S = self.realization_of().S()
 
-            to_complete = self.algebra_morphism(self._to_complete_on_generator,
-                                                codomain=S)
+            to_complete = self.algebra_morphism(
+                self._to_complete_on_generator, codomain=S
+            )
             to_complete.register_as_coercion()
 
-            from_complete = S.module_morphism(on_basis=self._from_complete_on_basis,
-                                              codomain=self)
+            from_complete = S.module_morphism(
+                on_basis=self._from_complete_on_basis, codomain=self
+            )
             from_complete.register_as_coercion()
 
         def _to_complete_on_generator(self, n):
@@ -5392,8 +5557,9 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
 
             from sage.combinat.partitions import ZS1_iterator
             from sage.rings.integer_ring import ZZ
+
             it = ZS1_iterator(n)
-            next(it) # Skip the unique length 1 partition
+            next(it)  # Skip the unique length 1 partition
             res = S[n]
             for p in it:
                 d = {}
@@ -5418,6 +5584,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 [1/6   0   1   1]
             """
             from sage.matrix.constructor import matrix
+
             S = self.realization_of().S()
             m = []
             for I in Compositions(n):
@@ -5443,7 +5610,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             m = self._complete_to_zassenhaus_transition_matrix_inverse(n)
             C = Compositions(n)
             coeffs = m[C.rank(I)]
-            return self._from_dict({J: coeffs[i] for i,J in enumerate(C)})
+            return self._from_dict({J: coeffs[i] for i, J in enumerate(C)})
 
     ZL = Zassenhaus_left
 
@@ -5526,18 +5693,25 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 True
             """
             cat = NCSF.MultiplicativeBasesOnPrimitiveElements()
-            CombinatorialFreeModule.__init__(self, NCSF.base_ring(), Compositions(),
-                                                prefix='ZR', bracket=False,
-                                                category=cat)
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSF.base_ring(),
+                Compositions(),
+                prefix='ZR',
+                bracket=False,
+                category=cat,
+            )
 
             # Register coercions
             S = self.realization_of().S()
-            to_complete = self.algebra_morphism(self._to_complete_on_generator,
-                                                codomain=S)
+            to_complete = self.algebra_morphism(
+                self._to_complete_on_generator, codomain=S
+            )
             to_complete.register_as_coercion()
 
-            from_complete = S.module_morphism(on_basis=self._from_complete_on_basis,
-                                              codomain=self)
+            from_complete = S.module_morphism(
+                on_basis=self._from_complete_on_basis, codomain=self
+            )
             from_complete.register_as_coercion()
 
         def _to_complete_on_generator(self, n):
@@ -5569,15 +5743,20 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
 
             from sage.combinat.partitions import ZS1_iterator
             from sage.rings.integer_ring import ZZ
+
             it = ZS1_iterator(n)
-            next(it) # Skip the unique length 1 partition
+            next(it)  # Skip the unique length 1 partition
             res = S[n]
             for p in it:
                 d = {}
                 for part in p:
                     d[part] = d.get(part, 0) + 1
                 coeff = ZZ(prod(factorial(d[e]) for e in d))
-                res = res - prod(self._to_complete_on_generator(i) for i in reversed(p)) / coeff
+                res = (
+                    res
+                    - prod(self._to_complete_on_generator(i) for i in reversed(p))
+                    / coeff
+                )
             return res
 
         @cached_method
@@ -5595,6 +5774,7 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
                 [1/6   1   0   1]
             """
             from sage.matrix.constructor import matrix
+
             S = self.realization_of().S()
             m = []
             for I in Compositions(n):
@@ -5620,6 +5800,6 @@ class NonCommutativeSymmetricFunctions(UniqueRepresentation, Parent):
             m = self._complete_to_zassenhaus_transition_matrix_inverse(n)
             C = Compositions(n)
             coeffs = m[C.rank(I)]
-            return self._from_dict({J: coeffs[i] for i,J in enumerate(C)})
+            return self._from_dict({J: coeffs[i] for i, J in enumerate(C)})
 
     ZR = Zassenhaus_right

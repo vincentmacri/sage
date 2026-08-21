@@ -45,8 +45,7 @@ from .element import ModularFormElement, GradedModularFormElement
 from .space import ModularFormsSpace
 
 
-def _span_of_forms_in_weight(forms, weight, prec,
-                             stop_dim=None, use_random=False):
+def _span_of_forms_in_weight(forms, weight, prec, stop_dim=None, use_random=False):
     r"""
     Utility function. Given a nonempty list of pairs ``(k,f)``, where `k` is an
     integer and `f` is a power series, and a weight l, return all weight l
@@ -111,12 +110,13 @@ def _span_of_forms_in_weight(forms, weight, prec,
 
     n = len(forms)
     R = forms[0][1].base_ring()
-    V = R ** prec
+    V = R**prec
     W = V.zero_submodule()
     shortforms = [f[1].truncate_powerseries(prec) for f in forms]
 
     # List of weights
     from sage.combinat.integer_vector_weighted import WeightedIntegerVectors
+
     wts = list(WeightedIntegerVectors(weight, [f[0] for f in forms]))
     t = verbose("calculated weight list", t)
     N = len(wts)
@@ -127,7 +127,7 @@ def _span_of_forms_in_weight(forms, weight, prec,
         shuffle(wts)
 
         for c in range(N):
-            w = V(prod(shortforms[i]**wts[c][i] for i in range(n)).padded_list(prec))
+            w = V(prod(shortforms[i] ** wts[c][i] for i in range(n)).padded_list(prec))
             if w in W:
                 continue
             W = V.span(list(W.gens()) + [w])
@@ -138,8 +138,7 @@ def _span_of_forms_in_weight(forms, weight, prec,
         verbose("Nothing worked", t)
         return W
 
-    G = [V(prod(forms[i][1]**c[i] for i in range(n)).padded_list(prec))
-         for c in wts]
+    G = [V(prod(forms[i][1] ** c[i] for i in range(n)).padded_list(prec)) for c in wts]
     t = verbose(f'found {N} candidates', t)
     W = V.span(G)
     verbose(f'span has dimension {W.rank()}', t)
@@ -238,7 +237,9 @@ class ModularFormsRing(Parent):
             raise ValueError("group (=%s) should be a congruence subgroup" % group)
 
         if base_ring != ZZ and not base_ring.is_field() and not base_ring.is_finite():
-            raise ValueError("base ring (=%s) should be QQ, ZZ or a finite prime field" % base_ring)
+            raise ValueError(
+                "base ring (=%s) should be QQ, ZZ or a finite prime field" % base_ring
+            )
 
         self.__group = group
         self.__cached_maxweight = ZZ(-1)
@@ -312,7 +313,9 @@ class ModularFormsRing(Parent):
             1 - 504*q - 16632*q^2 - 122976*q^3 - 532728*q^4 - 1575504*q^5 + O(q^6)
         """
         if self.base_ring() is not QQ:
-            raise NotImplementedError("the base ring of the given ring of modular form should be QQ")
+            raise NotImplementedError(
+                "the base ring of the given ring of modular form should be QQ"
+            )
         return self(self.gen_forms()[i])
 
     def ngens(self) -> int:
@@ -383,8 +386,9 @@ class ModularFormsRing(Parent):
         if gens is None:
             gens = self.gen_forms()
         degs = [f.weight() for f in gens]
-        return PolynomialRing(self.base_ring(), len(gens), names,
-                              order=TermOrder('wdeglex', degs))
+        return PolynomialRing(
+            self.base_ring(), len(gens), names, order=TermOrder('wdeglex', degs)
+        )
 
     def _generators_variables_dictionary(self, poly_parent, gens):
         r"""
@@ -406,13 +410,17 @@ class ModularFormsRing(Parent):
              x: 1 + 24*q^3 + O(q^6)}
         """
         if poly_parent.base_ring() != self.base_ring():
-            raise ValueError('the base ring of `poly_parent` must be the same as the base ring of the modular forms ring')
+            raise ValueError(
+                'the base ring of `poly_parent` must be the same as the base ring of the modular forms ring'
+            )
         nb_var = poly_parent.ngens()
         nb_gens = self.ngens()
         if nb_var != nb_gens:
-            raise ValueError('the number of variables (%s) must be equal to'
-                             ' the number of generators of the modular forms'
-                             ' ring (%s)' % (nb_var, self.ngens()))
+            raise ValueError(
+                'the number of variables (%s) must be equal to'
+                ' the number of generators of the modular forms'
+                ' ring (%s)' % (nb_var, self.ngens())
+            )
         return {poly_parent.gen(i): self(gens[i]) for i in range(nb_var)}
 
     def from_polynomial(self, polynomial, gens=None):
@@ -476,7 +484,9 @@ class ModularFormsRing(Parent):
             * add conversion for symbolic expressions?
         """
         if not self.base_ring() == QQ:  # this comes from the method gens_form
-            raise NotImplementedError("conversion from polynomial is not implemented if the base ring is not Q")
+            raise NotImplementedError(
+                "conversion from polynomial is not implemented if the base ring is not Q"
+            )
         if not isinstance(polynomial, MPolynomial):
             raise TypeError('`polynomial` must be a multivariate polynomial')
         if gens is None:
@@ -537,10 +547,15 @@ class ModularFormsRing(Parent):
         elif isinstance(forms_datum, self.element_class):
             forms_dictionary = forms_datum._forms_dictionary
         elif isinstance(forms_datum, ModularFormElement):
-            if self.group().is_subgroup(forms_datum.group()) and self.base_ring().has_coerce_map_from(forms_datum.base_ring()):
+            if self.group().is_subgroup(
+                forms_datum.group()
+            ) and self.base_ring().has_coerce_map_from(forms_datum.base_ring()):
                 forms_dictionary = {forms_datum.weight(): forms_datum}
             else:
-                raise ValueError('the group (%s) and/or the base ring (%s) of the given modular form is not consistent with the base space: %s' % (forms_datum.group(), forms_datum.base_ring(), self))
+                raise ValueError(
+                    'the group (%s) and/or the base ring (%s) of the given modular form is not consistent with the base space: %s'
+                    % (forms_datum.group(), forms_datum.base_ring(), self)
+                )
         elif forms_datum in self.base_ring():
             forms_dictionary = {0: forms_datum}
         elif isinstance(forms_datum, MPolynomial):
@@ -548,7 +563,9 @@ class ModularFormsRing(Parent):
         elif isinstance(forms_datum, PowerSeries_poly):
             raise NotImplementedError("conversion from q-expansion not yet implemented")
         else:
-            raise TypeError('the defining data structure should be a single modular form, a ring element, a list of modular forms, a multivariate polynomial or a dictionary')
+            raise TypeError(
+                'the defining data structure should be a single modular form, a ring element, a list of modular forms, a multivariate polynomial or a dictionary'
+            )
         return self.element_class(self, forms_dictionary)
 
     def zero(self):
@@ -635,8 +652,9 @@ class ModularFormsRing(Parent):
         if not isinstance(other, ModularFormsRing):
             return NotImplemented
 
-        return richcmp((self.group(), self.base_ring()),
-                       (other.group(), other.base_ring()), op)
+        return richcmp(
+            (self.group(), self.base_ring()), (other.group(), other.base_ring()), op
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -666,8 +684,7 @@ class ModularFormsRing(Parent):
         """
         return ModularForms(self.group(), weight)
 
-    def generators(self, maxweight=8, prec=10, start_gens=[],
-                   start_weight=2) -> list:
+    def generators(self, maxweight=8, prec=10, start_gens=[], start_weight=2) -> list:
         r"""
         Return a list of generators of this ring as a list of pairs
         `(k, f)` where `k` is an integer and `f` is a univariate power
@@ -813,9 +830,11 @@ class ModularFormsRing(Parent):
         for x in start_gens:
             if len(x) == 2:
                 if x[1].prec() < prec:
-                    raise ValueError("Requested precision cannot be higher"
-                                     " than precision of approximate starting "
-                                     "generators!")
+                    raise ValueError(
+                        "Requested precision cannot be higher"
+                        " than precision of approximate starting "
+                        "generators!"
+                    )
                 sgs.append((x[0], x[1], None))
             else:
                 sgs.append(x)
@@ -906,10 +925,13 @@ class ModularFormsRing(Parent):
              (3, 1 + 12*q^2 + 64*q^3 + 60*q^4 + 160*q^6 + 384*q^7 + 252*q^8 + O(q^9), 1 + 12*q^2 + 64*q^3 + 60*q^4 + O(q^6)),
              (3, q + 4*q^2 + 8*q^3 + 16*q^4 + 26*q^5 + 32*q^6 + 48*q^7 + 64*q^8 + O(q^9), q + 4*q^2 + 8*q^3 + 16*q^4 + 26*q^5 + O(q^6))]
         """
-        default_params = (start_gens == () and start_weight == 2)
+        default_params = start_gens == () and start_weight == 2
 
         if default_params and self.__cached_maxweight != -1:
-            verbose("Already know generators up to weight %s -- using those" % self.__cached_maxweight)
+            verbose(
+                "Already know generators up to weight %s -- using those"
+                % self.__cached_maxweight
+            )
 
             if self.__cached_maxweight >= maxweight:
                 return [(k, f, F) for k, f, F in self.__cached_gens if k <= maxweight]
@@ -929,7 +951,9 @@ class ModularFormsRing(Parent):
         for x in start_gens:
             k, f, F = x
             if F is None and f.prec() < working_prec:
-                raise ValueError("Need start gens to precision at least %s" % working_prec)
+                raise ValueError(
+                    "Need start gens to precision at least %s" % working_prec
+                )
             elif f is None or f.prec() < working_prec:
                 f = F.qexp(working_prec).change_ring(self.base_ring())
             G.append((k, f, F))
@@ -939,7 +963,6 @@ class ModularFormsRing(Parent):
             k += 1
 
         while k <= maxweight:
-
             if self.modular_forms_of_weight(k).dimension() == 0:
                 k += increment
                 continue
@@ -968,7 +991,10 @@ class ModularFormsRing(Parent):
             # 3. If the dimension is less, compute a basis for G, and
             #    try adding basis elements of M into G.
 
-            verbose("Known generators span a subspace of dimension %s of space of dimension %s" % (F.dimension(), M.dimension()))
+            verbose(
+                "Known generators span a subspace of dimension %s of space of dimension %s"
+                % (F.dimension(), M.dimension())
+            )
             if self.base_ring() == ZZ:
                 verbose("saturation index is %s" % F.index_in_saturation())
 
@@ -979,7 +1005,9 @@ class ModularFormsRing(Parent):
             else:
                 B = M.q_integral_basis(working_prec)
             t = verbose("done computing forms", t)
-            V = F.ambient_module().submodule_with_basis([f.padded_list(kprec) for f in B])
+            V = F.ambient_module().submodule_with_basis(
+                [f.padded_list(kprec) for f in B]
+            )
             Q = V / F
             for q in Q.gens():
                 try:
@@ -1058,13 +1086,23 @@ class ModularFormsRing(Parent):
         gen_weight = min(6, weight)
 
         while True:
-            verbose("Trying to generate the %s-dimensional space at weight %s using generators of weight up to %s" % (d, weight, gen_weight))
+            verbose(
+                "Trying to generate the %s-dimensional space at weight %s using generators of weight up to %s"
+                % (d, weight, gen_weight)
+            )
             G = self.generators(maxweight=gen_weight, prec=working_prec)
-            V = _span_of_forms_in_weight(G, weight, prec=working_prec, use_random=use_random, stop_dim=d)
-            if V.rank() == d and (self.base_ring().is_field() or V.index_in_saturation() == 1):
+            V = _span_of_forms_in_weight(
+                G, weight, prec=working_prec, use_random=use_random, stop_dim=d
+            )
+            if V.rank() == d and (
+                self.base_ring().is_field() or V.index_in_saturation() == 1
+            ):
                 break
             gen_weight += 1
-            verbose("Need more generators: trying again with generators of weight up to %s" % gen_weight)
+            verbose(
+                "Need more generators: trying again with generators of weight up to %s"
+                % gen_weight
+            )
 
         R = G[0][1].parent()
         return [R(list(x), prec=prec) for x in V.gens()]
@@ -1085,7 +1123,9 @@ class ModularFormsRing(Parent):
 
         if self.__cached_cusp_maxweight > -1:
             k = self.__cached_cusp_maxweight + 1
-            verbose("Already calculated cusp gens up to weight %s -- using those" % (k-1))
+            verbose(
+                "Already calculated cusp gens up to weight %s -- using those" % (k - 1)
+            )
 
             # we may need to increase the precision of the cached cusp
             # generators
@@ -1107,22 +1147,29 @@ class ModularFormsRing(Parent):
 
             for j, f, F in G:
                 for g in self.q_expansion_basis(k - j, prec=kprec):
-                    flist.append(g*f)
+                    flist.append(g * f)
             A = self.base_ring() ** kprec
             W = A.span([A(f.padded_list(kprec)) for f in flist])
 
             S = self.modular_forms_of_weight(k).cuspidal_submodule()
-            if (W.rank() == S.dimension()
-                    and (self.base_ring().is_field() or W.index_in_saturation() == 1)):
+            if W.rank() == S.dimension() and (
+                self.base_ring().is_field() or W.index_in_saturation() == 1
+            ):
                 verbose("Nothing new in weight %s" % k, t)
                 k += 1
                 continue
 
-            t = verbose("Known cusp generators span a submodule of dimension %s of space of dimension %s" % (W.rank(), S.dimension()), t)
+            t = verbose(
+                "Known cusp generators span a submodule of dimension %s of space of dimension %s"
+                % (W.rank(), S.dimension()),
+                t,
+            )
 
             B = S.q_integral_basis(prec=working_prec)
-            V = A.span([A(f.change_ring(self.base_ring()).padded_list(kprec)) for f in B])
-            Q = V/W
+            V = A.span(
+                [A(f.change_ring(self.base_ring()).padded_list(kprec)) for f in B]
+            )
+            Q = V / W
 
             for q in Q.gens():
                 try:
@@ -1195,20 +1242,28 @@ class ModularFormsRing(Parent):
         gen_weight = min(6, weight)
 
         while True:
-            verbose("Trying to generate the %s-dimensional cuspidal submodule at weight %s using generators of weight up to %s" % (d, weight, gen_weight))
+            verbose(
+                "Trying to generate the %s-dimensional cuspidal submodule at weight %s using generators of weight up to %s"
+                % (d, weight, gen_weight)
+            )
             G = self.cuspidal_ideal_generators(maxweight=gen_weight, prec=working_prec)
 
             flist = []
             for j, f, F in G:
                 for g in self.q_expansion_basis(weight - j, prec=working_prec):
-                    flist.append(g*f)
+                    flist.append(g * f)
 
             A = self.base_ring() ** working_prec
             W = A.span([A(f.padded_list(working_prec)) for f in flist])
-            if W.rank() == d and (self.base_ring().is_field() or W.index_in_saturation() == 1):
+            if W.rank() == d and (
+                self.base_ring().is_field() or W.index_in_saturation() == 1
+            ):
                 break
             gen_weight += 1
-            verbose("Need more generators: trying again with generators of weight up to %s" % gen_weight)
+            verbose(
+                "Need more generators: trying again with generators of weight up to %s"
+                % gen_weight
+            )
 
         R = G[0][1].parent()
         return [R(list(x), prec=prec) for x in W.gens()]

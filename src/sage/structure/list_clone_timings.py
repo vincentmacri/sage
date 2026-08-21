@@ -84,7 +84,6 @@ from sage.structure.list_clone_demo import IncreasingArrays
 
 
 class IncreasingArraysPy(IncreasingArrays):
-
     class Element(ClonableArray):
         """
         A small class for testing :class:`ClonableArray`: Increasing Lists.
@@ -109,8 +108,8 @@ class IncreasingArraysPy(IncreasingArrays):
                 ...
                 ValueError: Lists is not increasing
             """
-            for i in range(len(self)-1):
-                if self[i] >= self[i+1]:
+            for i in range(len(self) - 1):
+                if self[i] >= self[i + 1]:
                     raise ValueError("Lists is not increasing")
 
 

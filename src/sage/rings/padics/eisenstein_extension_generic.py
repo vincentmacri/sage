@@ -34,8 +34,10 @@ class EisensteinExtensionGeneric(pAdicExtensionGeneric):
             sage: S.<x> = A[]                                                           # needs sage.libs.ntl
             sage: B.<t> = A.ext(x^2+7)  # indirect doctest                              # needs sage.libs.ntl sage.rings.padics
         """
-        pAdicExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
-        #self._precompute()
+        pAdicExtensionGeneric.__init__(
+            self, poly, prec, print_mode, names, element_class
+        )
+        # self._precompute()
 
     def _extension_type(self):
         """
@@ -133,16 +135,16 @@ class EisensteinExtensionGeneric(pAdicExtensionGeneric):
             return self.ground_ring().residue_ring(1)
         raise NotImplementedError
 
-    #def discriminant(self, K=None):
+    # def discriminant(self, K=None):
     #    if K is self:
     #        return 1
     #    else:
     #        raise NotImplementedError
 
-    #def automorphisms(self):
+    # def automorphisms(self):
     #    raise NotImplementedError
 
-    #def galois_group(self):
+    # def galois_group(self):
     #    r"""
     #    Returns the Galois group of ``self``'s fraction field over Qp.
     #    """
@@ -153,10 +155,10 @@ class EisensteinExtensionGeneric(pAdicExtensionGeneric):
     #    ##
     #    raise NotImplementedError
 
-    #def is_abelian(self):
+    # def is_abelian(self):
     #    raise NotImplementedError
 
-    #def is_normal(self):
+    # def is_normal(self):
     #    raise NotImplementedError
 
     def gen(self, n=0):
@@ -173,7 +175,7 @@ class EisensteinExtensionGeneric(pAdicExtensionGeneric):
         """
         if n != 0:
             raise IndexError("only one generator")
-        return self([0,1])
+        return self([0, 1])
 
     def uniformizer_pow(self, n):
         """
@@ -221,6 +223,7 @@ class EisensteinExtensionGeneric(pAdicExtensionGeneric):
             't'
         """
         return self.variable_name()
+
 
 #     def has_pth_root(self):
 #         raise NotImplementedError

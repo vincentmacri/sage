@@ -90,7 +90,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod import Mod
 from sage.arith.misc import random_prime
 from sage.groups.generic import order_from_multiple, multiple
-from sage.groups.additive_abelian.additive_abelian_wrapper import AdditiveAbelianGroupWrapper
+from sage.groups.additive_abelian.additive_abelian_wrapper import (
+    AdditiveAbelianGroupWrapper,
+)
 from sage.quadratic_forms.binary_qf import BinaryQF
 
 from sage.libs.pari import pari
@@ -141,7 +143,9 @@ class BQFClassGroup(Parent, UniqueRepresentation):
             if not self._disc or self._disc % 4 not in (0, 1):
                 raise ValueError('not a discriminant')
             if self._disc > 0:
-                raise NotImplementedError('positive discriminants are not yet supported')
+                raise NotImplementedError(
+                    'positive discriminants are not yet supported'
+                )
         super().__init__()
 
     def _element_constructor_(self, F, *, check=True):
@@ -214,8 +218,8 @@ class BQFClassGroup(Parent, UniqueRepresentation):
             a = random_prime(B, proof=False, lbound=3)
             if self._disc.kronecker(a) == 1:
                 break
-        b = ZZ(Mod(self._disc, 4*a).sqrt())
-        c = (b**2 - self._disc) // (4*a)
+        b = ZZ(Mod(self._disc, 4 * a).sqrt())
+        c = (b**2 - self._disc) // (4 * a)
         if randrange(2):
             b = -b
         return self(BinaryQF([a, b, c]))
@@ -282,6 +286,7 @@ class BQFClassGroup(Parent, UniqueRepresentation):
         # notion of class number. We may need the *narrow* class
         # number here; see PARI's documentation for qfbclassno().
         from sage.rings.number_field.order import quadratic_order_class_number
+
         return quadratic_order_class_number(self._disc)
 
     cardinality = order
@@ -410,7 +415,9 @@ class BQFClassGroup_element(AdditiveGroupElement):
             if not F.is_primitive():
                 raise ValueError('given quadratic form is not primitive')
             if not F.is_positive_definite():
-                raise NotImplementedError('only positive definite forms are currently supported')
+                raise NotImplementedError(
+                    'only positive definite forms are currently supported'
+                )
         if reduce:
             F = F.reduced_form()
         self._form = F
@@ -700,6 +707,7 @@ class BQFClassGroupQuotientMorphism(Morphism):
         sage: proj(elt) == proj2(proj1(elt))
         True
     """
+
     def __init__(self, G, H) -> None:
         r"""
         Initialize this morphism between class groups of binary

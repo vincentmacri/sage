@@ -183,8 +183,9 @@ class Dokchitser(SageObject):
     __globals_re = None
     __instance = 0  # Monotonically increasing unique instance ID
     __n_instances = 0  # Number of currently allocated instances
-    __template_filename = os.path.join(SAGE_EXTCODE, 'pari', 'dokchitser',
-                                       'computel.gp.template')
+    __template_filename = os.path.join(
+        SAGE_EXTCODE, 'pari', 'dokchitser', 'computel.gp.template'
+    )
     __init = False
 
     def __new__(cls, *args, **kwargs):
@@ -194,9 +195,17 @@ class Dokchitser(SageObject):
         cls.__instance += 1
         return inst
 
-    def __init__(self, conductor, gammaV, weight, eps,
-                 poles=None, residues='automatic', prec=53,
-                 init=None):
+    def __init__(
+        self,
+        conductor,
+        gammaV,
+        weight,
+        eps,
+        poles=None,
+        residues='automatic',
+        prec=53,
+        init=None,
+    ):
         """
         Initialization of Dokchitser calculator EXAMPLES::
 
@@ -221,11 +230,13 @@ class Dokchitser(SageObject):
         D = copy.copy(self.__dict__)
         if '_Dokchitser__gp' in D:
             del D['_Dokchitser__gp']
-        return reduce_load_dokchitser, (D, )
+        return reduce_load_dokchitser, (D,)
 
     def _repr_(self) -> str:
         return "Dokchitser L-series of conductor %s and weight %s" % (
-            self.conductor, self.weight)
+            self.conductor,
+            self.weight,
+        )
 
     def __del__(self):
         self._teardown_gp(self.__instance)
@@ -246,6 +257,7 @@ class Dokchitser(SageObject):
             template = string.Template(tf.read())
 
         from tempfile import NamedTemporaryFile
+
         with NamedTemporaryFile(suffix='.gp', mode='w+t') as f:
             f.write(template.substitute(i=str(self.__instance)))
             f.flush()
@@ -263,9 +275,11 @@ class Dokchitser(SageObject):
     @classmethod
     def _instantiate_gp(cls):
         from sage.env import DOT_SAGE
+
         logfile = os.path.join(DOT_SAGE, 'dokchitser.log')
-        cls.__gp = sage.interfaces.gp.Gp(script_subdirectory='dokchitser',
-                                         logfile=logfile)
+        cls.__gp = sage.interfaces.gp.Gp(
+            script_subdirectory='dokchitser', logfile=logfile
+        )
         # Read the script template and parse out all indexed global variables
         # (easy because they all end in "_$i" and there's nothing else in the
         # script that uses $)
@@ -276,7 +290,8 @@ class Dokchitser(SageObject):
                     cls.__globals.add(m.group(1))
 
         cls.__globals_re = re.compile(
-            '([^a-zA-Z0-9_]|^)(%s)([^a-zA-Z0-9_]|$)' % '|'.join(cls.__globals))
+            '([^a-zA-Z0-9_]|^)(%s)([^a-zA-Z0-9_]|$)' % '|'.join(cls.__globals)
+        )
 
     @classmethod
     def _teardown_gp(cls, instance=None):
@@ -297,8 +312,7 @@ class Dokchitser(SageObject):
         ``self.gp().eval('L_N(1)')`` where ``N`` is ``self.__instance``.
         """
 
-        cmd = '%s_%d(%s)' % (func, self.__instance,
-                             ','.join(str(a) for a in args))
+        cmd = '%s_%d(%s)' % (func, self.__instance, ','.join(str(a) for a in args))
         return self._gp_eval(cmd)
 
     def _gp_set_inst(self, varname, value):
@@ -323,12 +337,18 @@ class Dokchitser(SageObject):
         try:
             t = self.gp().eval(s)
         except (RuntimeError, TypeError):
-            raise RuntimeError("unable to create L-series, due to precision or other limits in PARI")
+            raise RuntimeError(
+                "unable to create L-series, due to precision or other limits in PARI"
+            )
         if not self.__init and '***' in t:
             # After init_coeffs is called, future calls to this method should
             # return the full output for further parsing
-            raise RuntimeError("unable to create L-series, due to precision or other limits in PARI")
-        t = t.replace("  *** _^_: Warning: normalizing a series with 0 leading term.\n", "")
+            raise RuntimeError(
+                "unable to create L-series, due to precision or other limits in PARI"
+            )
+        t = t.replace(
+            "  *** _^_: Warning: normalizing a series with 0 leading term.\n", ""
+        )
         return t
 
     def __check_init(self):
@@ -368,11 +388,15 @@ class Dokchitser(SageObject):
 
     num_coeffs = cost
 
-    def init_coeffs(self, v, cutoff=1,
-                    w=None,
-                    pari_precode='',
-                    max_imaginary_part=0,
-                    max_asymp_coeffs=40):
+    def init_coeffs(
+        self,
+        v,
+        cutoff=1,
+        w=None,
+        pari_precode='',
+        max_imaginary_part=0,
+        max_asymp_coeffs=40,
+    ):
         """
         Set the coefficients `a_n` of the `L`-series.
 
@@ -439,8 +463,12 @@ class Dokchitser(SageObject):
                 self._instantiate_gp()
 
             def repl(m):
-                return '%s%s_%d%s' % (m.group(1), m.group(2), self.__instance,
-                                      m.group(3))
+                return '%s%s_%d%s' % (
+                    m.group(1),
+                    m.group(2),
+                    self.__instance,
+                    m.group(3),
+                )
 
             # If any of the pre-code contains references to some of the
             # templated global variables we must replace those as well
@@ -466,10 +494,8 @@ class Dokchitser(SageObject):
             else:
                 w = ','.join(CC(a)._pari_init_() for a in w)
                 self._gp_eval('Bvec = [%s]' % w)
-                self._gp_call_inst('initLdata', '"Avec[k]"', cutoff,
-                                   '"Bvec[k]"')
-        self.__init = (v, cutoff, w, pari_precode, max_imaginary_part,
-                       max_asymp_coeffs)
+                self._gp_call_inst('initLdata', '"Avec[k]"', cutoff, '"Bvec[k]"')
+        self.__init = (v, cutoff, w, pari_precode, max_imaginary_part, max_asymp_coeffs)
 
     def _clear_value_cache(self):
         del self.__values
@@ -522,7 +548,7 @@ class Dokchitser(SageObject):
             i = z.rfind('\n')
             msg = z[:i].replace('digits', 'decimal digits')
             verbose(msg, level=-1)
-            ans = CC(z[i + 1:])
+            ans = CC(z[i + 1 :])
             self.__values[s, c] = ans
             return ans
         ans = CC(z)
@@ -601,7 +627,10 @@ class Dokchitser(SageObject):
             z = self._gp_call_inst('Lseries', a, '', k - 1)
             z = self.gp()('Vecrev(Pol(%s))' % z)
         except TypeError as msg:
-            raise RuntimeError("%s\nUnable to compute Taylor expansion (try lowering the number of terms)" % msg)
+            raise RuntimeError(
+                "%s\nUnable to compute Taylor expansion (try lowering the number of terms)"
+                % msg
+            )
         r = repr(z)
         if 'pole' in r:
             raise ArithmeticError(r)

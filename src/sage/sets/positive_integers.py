@@ -47,6 +47,7 @@ class PositiveIntegers(IntegerRangeInfinite):
 
         sage: TestSuite(PositiveIntegers()).run()
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -88,5 +89,6 @@ class PositiveIntegers(IntegerRangeInfinite):
         """
         from sympy import Naturals
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return Naturals

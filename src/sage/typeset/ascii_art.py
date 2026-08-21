@@ -183,7 +183,9 @@ class AsciiArt(CharacterArt):
 
 
 _ascii_art_factory = CharacterArtFactory(
-    AsciiArt, str, '_ascii_art_',
+    AsciiArt,
+    str,
+    '_ascii_art_',
     (symbol.ascii_left_parenthesis, symbol.ascii_right_parenthesis),
     (symbol.ascii_left_square_bracket, symbol.ascii_right_square_bracket),
     (symbol.ascii_left_curly_brace, symbol.ascii_right_curly_brace),
@@ -287,7 +289,9 @@ def ascii_art(*obj, **kwds):
         separator = _ascii_art_factory.build(separator, baseline=sep_baseline)
     elif sep_baseline is not None:
         from copy import copy
+
         separator = copy(separator)
         separator._baseline = sep_baseline
-    return _ascii_art_factory.concatenate(obj, separator, empty_ascii_art,
-                                          baseline=baseline)
+    return _ascii_art_factory.concatenate(
+        obj, separator, empty_ascii_art, baseline=baseline
+    )

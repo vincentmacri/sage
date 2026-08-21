@@ -2,6 +2,7 @@
 """
 `k`-Schur functions
 """
+
 # ****************************************************************************
 #       Copyright (C) 2011 Jason Bandlow <jbandlow@gmail.com>,
 #                     2012 Anne Schilling <anne@math.ucdavis.edu>
@@ -124,7 +125,7 @@ class KBoundedSubspace(UniqueRepresentation, Parent):
             s_to_h = h._internal_coerce_map_from(s)
             ks_to_kh = kh.retract * s_to_h * ks.lift
             kh.register_coercion(ks_to_kh)
-        # temporary workaround until handled by trac 125959
+            # temporary workaround until handled by trac 125959
             self.one = ConstantFunction(ks.one())
         self.zero = ConstantFunction(ks.zero())
 
@@ -174,8 +175,7 @@ class KBoundedSubspace(UniqueRepresentation, Parent):
              3-bounded Symmetric Functions over Univariate Polynomial Ring in t over Rational Field in the 3-split basis]
         """
         if self.t == 1:
-            return [self.kschur(), self.ksplit(), self.khomogeneous(),
-                self.K_kschur()]
+            return [self.kschur(), self.ksplit(), self.khomogeneous(), self.K_kschur()]
         return [self.kschur(), self.ksplit()]
 
     def kschur(self):
@@ -309,11 +309,14 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
                  and Category of subobjects of filtered modules with basis over Univariate Polynomial Ring in t over Rational Field]
         """
         R = self.base().base_ring()
-        category = GradedHopfAlgebrasWithBasis(R) if self.t == 1 else GradedCoalgebrasWithBasis(R)
+        category = (
+            GradedHopfAlgebrasWithBasis(R)
+            if self.t == 1
+            else GradedCoalgebrasWithBasis(R)
+        )
         return [Realizations(self.base()), category.Subobjects()]
 
     class ParentMethods:
-
         def _element_constructor_(self, x):
             r"""
             Needed to rewrite the element constructor because of a bug in free_module.py.
@@ -343,11 +346,15 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
             if x in R:
                 if x == 0:
                     return self.zero()
-                raise TypeError("do not know how to make x (= %s) an element of %s" % (x, self))
+                raise TypeError(
+                    "do not know how to make x (= %s) an element of %s" % (x, self)
+                )
             # x is an element of the basis enumerated set;
             elif x in self._indices:
                 return self.monomial(self._indices(x))
-            raise TypeError("do not know how to make x (= %s) an element of self (=%s)" % (x, self))
+            raise TypeError(
+                "do not know how to make x (= %s) an element of self (=%s)" % (x, self)
+            )
 
         def _convert_map_from_(self, Q):
             r"""
@@ -404,7 +411,9 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
                     c = Partition(c)
 
             if c not in self._indices:
-                raise TypeError("do not know how to make %s an element of %s" % (c, self))
+                raise TypeError(
+                    "do not know how to make %s an element of %s" % (c, self)
+                )
             return self.monomial(c)
 
         def _repr_term(self, c):
@@ -475,8 +484,9 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
             # todo: Q should be set by getting the degree n index set for
             # `other`.
             Q = Partitions(n)
-            return matrix([[other(self[row]).coefficient(col) for col in Q]
-                           for row in P])
+            return matrix(
+                [[other(self[row]).coefficient(col) for col in Q] for row in P]
+            )
 
         def _an_element_(self):
             r"""
@@ -547,6 +557,7 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
 
             def cpfunc(x, y):
                 return tensor([self(x), self(y)])
+
             return source_basis(lifted).coproduct().apply_multilinear_morphism(cpfunc)
 
         def antipode(self, element):
@@ -749,6 +760,7 @@ class KBoundedSubspaceBases(Category_realization_of_parent):
 
             def invert(x):
                 return s.base_ring()(x.subs(t=1 / t))
+
             return self.parent()(s(self).map_coefficients(invert).omega())
 
         def is_schur_positive(self, *args, **kwargs):
@@ -982,10 +994,13 @@ class kSchur(CombinatorialFreeModule):
             sage: kSchur(KB)
             3-bounded Symmetric Functions over Rational Field with t=1 in the 3-Schur basis
         """
-        CombinatorialFreeModule.__init__(self, kBoundedRing.base_ring(),
+        CombinatorialFreeModule.__init__(
+            self,
+            kBoundedRing.base_ring(),
             kBoundedRing.indices(),
             category=KBoundedSubspaceBases(kBoundedRing, kBoundedRing.t),
-            prefix='ks%d' % kBoundedRing.k)
+            prefix='ks%d' % kBoundedRing.k,
+        )
 
         self._kBoundedRing = kBoundedRing
 
@@ -996,14 +1011,19 @@ class kSchur(CombinatorialFreeModule):
 
         self.ambient = ConstantFunction(s)
 
-        self.lift = self._module_morphism(self._to_schur_on_basis,
-                codomain=s, triangular='lower', unitriangular=True,
-                inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None)
+        self.lift = self._module_morphism(
+            self._to_schur_on_basis,
+            codomain=s,
+            triangular='lower',
+            unitriangular=True,
+            inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None,
+        )
 
         self.lift.register_as_coercion()
 
-        self.retract = SetMorphism(Hom(s, self, SetsWithPartialMaps()),
-                self.lift.preimage)
+        self.retract = SetMorphism(
+            Hom(s, self, SetsWithPartialMaps()), self.lift.preimage
+        )
         self.register_conversion(self.retract)
 
     # The following are meant to be inherited with the category framework, but
@@ -1011,8 +1031,12 @@ class kSchur(CombinatorialFreeModule):
     # this problem.
     __getitem__ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "__getitem__")
     _repr_term = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_repr_term")
-    _convert_map_from_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_convert_map_from_")
-    _element_constructor_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_element_constructor_")
+    _convert_map_from_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_convert_map_from_"
+    )
+    _element_constructor_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_element_constructor_"
+    )
 
     def _repr_(self):
         """
@@ -1066,10 +1090,13 @@ class kSchur(CombinatorialFreeModule):
             # in this case factor out maximal rectangles for speed
             pexp = p.to_exp() + [0] * self.k
             katom = p.k_irreducible(self.k).k_atom(self.k)
-            return s.sum_of_monomials(tab.shape() for tab in katom) * prod(s([r + 1] * (self.k - r)) for r in range(self.k) for m in range(pexp[r] // (self.k - r)))
+            return s.sum_of_monomials(tab.shape() for tab in katom) * prod(
+                s([r + 1] * (self.k - r))
+                for r in range(self.k)
+                for m in range(pexp[r] // (self.k - r))
+            )
         katom = p.k_atom(self.k)
-        return s.sum_of_terms((tab.shape(), self.t**tab.charge())
-                              for tab in katom)
+        return s.sum_of_terms((tab.shape(), self.t ** tab.charge()) for tab in katom)
 
     def _product_on_basis_via_rectangles(self, left, right):
         r"""
@@ -1111,11 +1138,25 @@ class kSchur(CombinatorialFreeModule):
         heart = self.retract(leftir * rightir)
         leftexp = left.to_exp()
         rightexp = right.to_exp()
-        rects = sum(([r + 1] * (self.k - r) for r in range(len(leftexp))
-                     for m in range(leftexp[r] // (self.k - r))), [])
-        rects += sum(([r + 1] * (self.k - r) for r in range(len(rightexp))
-                      for m in range(rightexp[r] // (self.k - r))), [])
-        return heart.map_support(lambda lam: Partition(sorted(lam + rects, reverse=True)))
+        rects = sum(
+            (
+                [r + 1] * (self.k - r)
+                for r in range(len(leftexp))
+                for m in range(leftexp[r] // (self.k - r))
+            ),
+            [],
+        )
+        rects += sum(
+            (
+                [r + 1] * (self.k - r)
+                for r in range(len(rightexp))
+                for m in range(rightexp[r] // (self.k - r))
+            ),
+            [],
+        )
+        return heart.map_support(
+            lambda lam: Partition(sorted(lam + rects, reverse=True))
+        )
 
     def product_on_basis(self, left, right):
         r"""
@@ -1238,10 +1279,13 @@ class kSplit(CombinatorialFreeModule):
             sage: ks4(ksp4[3,2,2,1])
             ks4[3, 2, 2, 1] + t*ks4[3, 3, 1, 1] + t*ks4[3, 3, 2]
         """
-        CombinatorialFreeModule.__init__(self, kBoundedRing.base_ring(),
+        CombinatorialFreeModule.__init__(
+            self,
+            kBoundedRing.base_ring(),
             kBoundedRing.indices(),
             category=KBoundedSubspaceBases(kBoundedRing, kBoundedRing.t),
-            prefix='ksp%d' % kBoundedRing.k)
+            prefix='ksp%d' % kBoundedRing.k,
+        )
 
         self._kBoundedRing = kBoundedRing
 
@@ -1252,14 +1296,19 @@ class kSplit(CombinatorialFreeModule):
 
         self.ambient = ConstantFunction(s)
 
-        self.lift = self._module_morphism(self._to_schur_on_basis,
-                codomain=s, triangular='lower', unitriangular=True,
-                inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None)
+        self.lift = self._module_morphism(
+            self._to_schur_on_basis,
+            codomain=s,
+            triangular='lower',
+            unitriangular=True,
+            inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None,
+        )
 
         self.lift.register_as_coercion()
 
-        self.retract = SetMorphism(Hom(s, self, SetsWithPartialMaps()),
-                self.lift.preimage)
+        self.retract = SetMorphism(
+            Hom(s, self, SetsWithPartialMaps()), self.lift.preimage
+        )
         self.register_conversion(self.retract)
 
     # The following are meant to be inherited with the category framework, but
@@ -1267,8 +1316,12 @@ class kSplit(CombinatorialFreeModule):
     # this problem.
     __getitem__ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "__getitem__")
     _repr_term = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_repr_term")
-    _convert_map_from_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_convert_map_from_")
-    _element_constructor_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_element_constructor_")
+    _convert_map_from_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_convert_map_from_"
+    )
+    _element_constructor_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_element_constructor_"
+    )
 
     def _repr_(self):
         r"""
@@ -1352,10 +1405,13 @@ class kHomogeneous(CombinatorialFreeModule):
             sage: kHomogeneous(KB)
             3-bounded Symmetric Functions over Rational Field with t=1 in the 3-bounded homogeneous basis
         """
-        CombinatorialFreeModule.__init__(self, kBoundedRing.base_ring(),
+        CombinatorialFreeModule.__init__(
+            self,
+            kBoundedRing.base_ring(),
             kBoundedRing.indices(),
             category=KBoundedSubspaceBases(kBoundedRing, kBoundedRing.t),
-            prefix='h%d' % kBoundedRing.k)
+            prefix='h%d' % kBoundedRing.k,
+        )
 
         self._kBoundedRing = kBoundedRing
 
@@ -1364,16 +1420,21 @@ class kHomogeneous(CombinatorialFreeModule):
 
         h = self.realization_of().ambient().homogeneous()
 
-        self.lift = self._module_morphism(lambda x: h[x],
-                codomain=h, triangular='lower', unitriangular=True,
-                inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None)
+        self.lift = self._module_morphism(
+            lambda x: h[x],
+            codomain=h,
+            triangular='lower',
+            unitriangular=True,
+            inverse_on_support=lambda p: p if p.get_part(0) <= self.k else None,
+        )
 
         self.ambient = ConstantFunction(h)
 
         self.lift.register_as_coercion()
 
-        self.retract = SetMorphism(Hom(h, self, SetsWithPartialMaps()),
-                self.lift.preimage)
+        self.retract = SetMorphism(
+            Hom(h, self, SetsWithPartialMaps()), self.lift.preimage
+        )
         self.register_conversion(self.retract)
 
     # The following are meant to be inherited with the category framework, but
@@ -1381,8 +1442,12 @@ class kHomogeneous(CombinatorialFreeModule):
     # this problem.
     __getitem__ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "__getitem__")
     _repr_term = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_repr_term")
-    _convert_map_from_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_convert_map_from_")
-    _element_constructor_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_element_constructor_")
+    _convert_map_from_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_convert_map_from_"
+    )
+    _element_constructor_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_element_constructor_"
+    )
 
     def _repr_(self):
         """
@@ -1393,7 +1458,10 @@ class kHomogeneous(CombinatorialFreeModule):
             sage: kH._repr_()
             '3-bounded Symmetric Functions over Rational Field with t=1 in the 3-bounded homogeneous basis'
         """
-        return self.realization_of()._repr_() + ' in the %s-bounded homogeneous basis' % (self.k)
+        return (
+            self.realization_of()._repr_()
+            + ' in the %s-bounded homogeneous basis' % (self.k)
+        )
 
 
 class K_kSchur(CombinatorialFreeModule):
@@ -1429,10 +1497,15 @@ class K_kSchur(CombinatorialFreeModule):
             sage: g(h[1,1])
             -Kks3[1] + Kks3[1, 1] + Kks3[2]
         """
-        CombinatorialFreeModule.__init__(self, kBoundedRing.base_ring(),
+        CombinatorialFreeModule.__init__(
+            self,
+            kBoundedRing.base_ring(),
             kBoundedRing.indices(),
-            category=KBoundedSubspaceBases(kBoundedRing, kBoundedRing.base_ring().one()),
-            prefix='Kks%d' % kBoundedRing.k)
+            category=KBoundedSubspaceBases(
+                kBoundedRing, kBoundedRing.base_ring().one()
+            ),
+            prefix='Kks%d' % kBoundedRing.k,
+        )
 
         self._kBoundedRing = kBoundedRing
 
@@ -1448,7 +1521,9 @@ class K_kSchur(CombinatorialFreeModule):
         kh_to_g = kh.module_morphism(self._kh_to_g_on_basis, codomain=self)
         kh_to_g.register_as_coercion()
         h = self.realization_of().ambient().h()
-        lift = self._module_morphism(self.lift, triangular='lower', unitriangular=True, codomain=h)
+        lift = self._module_morphism(
+            self.lift, triangular='lower', unitriangular=True, codomain=h
+        )
         lift.register_as_coercion()
         retract = h._module_morphism(self.retract, codomain=self)
         # retract = SetMorphism(Hom(h, self, SetsWithPartialMaps()), lift.preimage)
@@ -1459,7 +1534,9 @@ class K_kSchur(CombinatorialFreeModule):
     # this problem.
     __getitem__ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "__getitem__")
     _repr_term = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_repr_term")
-    _element_constructor_ = raw_getattr(KBoundedSubspaceBases.ParentMethods, "_element_constructor_")
+    _element_constructor_ = raw_getattr(
+        KBoundedSubspaceBases.ParentMethods, "_element_constructor_"
+    )
 
     def _repr_(self):
         r"""
@@ -1496,6 +1573,7 @@ class K_kSchur(CombinatorialFreeModule):
         """
         from sage.algebras.iwahori_hecke_algebra import IwahoriHeckeAlgebra
         from sage.combinat.root_system.weyl_group import WeylGroup
+
         W = WeylGroup(['A', self.k, 1])
         H = IwahoriHeckeAlgebra(W, 0, base_ring=self.base_ring()).T()
         Hgens = H.algebra_generators()
@@ -1522,7 +1600,10 @@ class K_kSchur(CombinatorialFreeModule):
             sage: g._homogeneous_basis(Partition([]))
             1
         """
-        return prod(self._homogeneous_generators_noncommutative_variables_zero_Hecke(la[i]) for i in range(len(la)))
+        return prod(
+            self._homogeneous_generators_noncommutative_variables_zero_Hecke(la[i])
+            for i in range(len(la))
+        )
 
     def homogeneous_basis_noncommutative_variables_zero_Hecke(self, la):
         r"""
@@ -1579,10 +1660,14 @@ class K_kSchur(CombinatorialFreeModule):
         for i in range(m + 1):
             for x in Partitions(m - i, max_part=self.k):
                 f = mon(G(x, m))
-                vec = [f.coefficient(y) for j in range(m + 1)
-                       for y in Partitions(m - j, max_part=self.k)]
+                vec = [
+                    f.coefficient(y)
+                    for j in range(m + 1)
+                    for y in Partitions(m - j, max_part=self.k)
+                ]
                 new_mat.append(vec)
         from sage.matrix.constructor import Matrix
+
         return Matrix(new_mat)
 
     @cached_method
@@ -1618,6 +1703,7 @@ class K_kSchur(CombinatorialFreeModule):
                 else:
                     vec.append(0)
         from sage.modules.free_module_element import vector
+
         vec = vector(vec)
         sol = M.solve_right(vec)
         new_function = h.zero()
@@ -1681,7 +1767,11 @@ class K_kSchur(CombinatorialFreeModule):
         SF = SymmetricFunctions(self.base_ring())
         h = SF.h()
         S = h(self._g_to_kh_on_basis(la)).support()
-        return sum(h(self._g_to_kh_on_basis(la)).coefficient(x) * self.homogeneous_basis_noncommutative_variables_zero_Hecke(x) for x in S)
+        return sum(
+            h(self._g_to_kh_on_basis(la)).coefficient(x)
+            * self.homogeneous_basis_noncommutative_variables_zero_Hecke(x)
+            for x in S
+        )
 
     def _kh_to_g_on_basis(self, la):
         r"""
@@ -1710,8 +1800,9 @@ class K_kSchur(CombinatorialFreeModule):
             return self([])
         h = self.realization_of().khomogeneous()
         f = h(self(la)) - h(la)
-        return self(la) - sum(self._kh_to_g_on_basis(x) * f.coefficient(x)
-                              for x in f.support())
+        return self(la) - sum(
+            self._kh_to_g_on_basis(x) * f.coefficient(x) for x in f.support()
+        )
 
     def product(self, x, y):
         r"""

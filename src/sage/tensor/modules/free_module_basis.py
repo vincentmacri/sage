@@ -73,6 +73,7 @@ class Basis_abstract(UniqueRepresentation, AbstractFamily):
         (2, Element e_2 of the Rank-3 free module M over the Integer Ring),
         (3, Element e_3 of the Rank-3 free module M over the Integer Ring)]
     """
+
     def __init__(self, fmodule, symbol, latex_symbol, indices, latex_indices):
         """
         Initialize ``self``.
@@ -268,12 +269,13 @@ class Basis_abstract(UniqueRepresentation, AbstractFamily):
                 start -= si
             if stop is not None:
                 stop -= si
-            return self._vec[start:stop:index.step]
+            return self._vec[start : stop : index.step]
         n = self._fmodule._rank
         i = index - si
-        if i < 0 or i > n-1:
-            raise IndexError("out of range: {} not in [{},{}]".format(i+si, si,
-                                                                      n-1+si))
+        if i < 0 or i > n - 1:
+            raise IndexError(
+                "out of range: {} not in [{},{}]".format(i + si, si, n - 1 + si)
+            )
         return self._vec[i]
 
     def _latex_(self):
@@ -318,8 +320,14 @@ class Basis_abstract(UniqueRepresentation, AbstractFamily):
         """
         return self._fmodule
 
-    def set_name(self, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, index_position='down'):
+    def set_name(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        index_position='down',
+    ):
         r"""
         Set (or change) the text name and LaTeX name of ``self``.
 
@@ -400,8 +408,7 @@ class Basis_abstract(UniqueRepresentation, AbstractFamily):
         # LaTeX symbols:
         if isinstance(latex_symbol, (list, tuple)):
             if len(latex_symbol) != n:
-                raise ValueError(
-                              "latex_symbol must contain {} strings".format(n))
+                raise ValueError("latex_symbol must contain {} strings".format(n))
             if len(set(latex_symbol)) != n:
                 raise ValueError("the individual symbols must be different")
         else:
@@ -419,6 +426,7 @@ class Basis_abstract(UniqueRepresentation, AbstractFamily):
         self._latex_name = r"\left(" + ",".join(latex_symbol) + r"\right)"
         for i in range(n):
             self._vec[i].set_name(symbol[i], latex_name=latex_symbol[i])
+
 
 # ****************************************************************************
 
@@ -487,8 +495,10 @@ class FreeModuleCoBasis(Basis_abstract):
 
         sage: TestSuite(f).run()
     """
-    def __init__(self, basis, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None):
+
+    def __init__(
+        self, basis, symbol, latex_symbol=None, indices=None, latex_indices=None
+    ):
         r"""
         TESTS::
 
@@ -499,8 +509,9 @@ class FreeModuleCoBasis(Basis_abstract):
             sage: TestSuite(f).run()
         """
         self._basis = basis
-        Basis_abstract.__init__(self, basis._fmodule, symbol, latex_symbol,
-                                indices, latex_indices)
+        Basis_abstract.__init__(
+            self, basis._fmodule, symbol, latex_symbol, indices, latex_indices
+        )
         # The individual linear forms:
         vl = []
         fmodule = self._fmodule
@@ -511,8 +522,13 @@ class FreeModuleCoBasis(Basis_abstract):
             vl.append(v)
         self._vec = tuple(vl)
         # The names:
-        self.set_name(symbol, latex_symbol=latex_symbol, indices=indices,
-                      latex_indices=latex_indices, index_position='up')
+        self.set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position='up',
+        )
 
     def _test_iter_len(self, **options):
         r"""
@@ -550,6 +566,7 @@ class FreeModuleCoBasis(Basis_abstract):
              Rank-3 free module M over the Integer Ring
         """
         return "Dual basis {} on the {}".format(self._name, self._fmodule)
+
 
 # ****************************************************************************
 
@@ -662,13 +679,21 @@ class FreeModuleBasis(Basis_abstract):
         sage: TestSuite(f).run()
         sage: TestSuite(g).run()
     """
+
     # The following class attribute must be redefined by any derived class:
     _cobasis_class = FreeModuleCoBasis
 
     @staticmethod
-    def __classcall_private__(cls, fmodule, symbol, latex_symbol=None,
-                              indices=None, latex_indices=None,
-                              symbol_dual=None, latex_symbol_dual=None):
+    def __classcall_private__(
+        cls,
+        fmodule,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -696,15 +721,27 @@ class FreeModuleBasis(Basis_abstract):
             symbol_dual = tuple(symbol_dual)
         if isinstance(latex_symbol_dual, list):
             latex_symbol_dual = tuple(latex_symbol_dual)
-        return super().__classcall__(cls, fmodule, symbol,
-                                     latex_symbol=latex_symbol,
-                                     indices=indices,
-                                     latex_indices=latex_indices,
-                                     symbol_dual=symbol_dual,
-                                     latex_symbol_dual=latex_symbol_dual)
+        return super().__classcall__(
+            cls,
+            fmodule,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
-    def __init__(self, fmodule, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, symbol_dual=None, latex_symbol_dual=None):
+    def __init__(
+        self,
+        fmodule,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Initialize ``self``.
 
@@ -716,8 +753,9 @@ class FreeModuleBasis(Basis_abstract):
             sage: e = FreeModuleBasis(M, 'e', latex_symbol=r'\epsilon')
             sage: TestSuite(e).run()
         """
-        Basis_abstract.__init__(self, fmodule, symbol, latex_symbol, indices,
-                                latex_indices)
+        Basis_abstract.__init__(
+            self, fmodule, symbol, latex_symbol, indices, latex_indices
+        )
         # The basis is added to the module list of bases
         fmodule._known_bases.append(self)
         # The individual vectors:
@@ -729,8 +767,13 @@ class FreeModuleBasis(Basis_abstract):
             vl.append(v)
         self._vec = tuple(vl)
         # The names:
-        self.set_name(symbol, latex_symbol=latex_symbol, indices=indices,
-                      latex_indices=latex_indices, index_position='down')
+        self.set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position='down',
+        )
         # The first defined basis is considered as the default one:
         if fmodule._def_basis is None:
             fmodule._def_basis = self
@@ -745,11 +788,14 @@ class FreeModuleBasis(Basis_abstract):
         # identity map of the general linear group:
         if fmodule._general_linear_group is not None:
             from .comp import KroneckerDelta
+
             gl = fmodule._general_linear_group
             gl.one()._components[self] = KroneckerDelta(
-                fmodule._ring, self,
+                fmodule._ring,
+                self,
                 start_index=fmodule._sindex,
-                output_formatter=fmodule._output_formatter)
+                output_formatter=fmodule._output_formatter,
+            )
         # The dual basis:
         self._symbol_dual = symbol_dual
         self._latex_symbol_dual = latex_symbol_dual
@@ -763,10 +809,12 @@ class FreeModuleBasis(Basis_abstract):
         if latex_symbol_dual is None:
             latex_symbol_dual = latex_symbol
         self._dual_basis = type(self)._cobasis_class(
-            self, symbol_dual,
+            self,
+            symbol_dual,
             latex_symbol=latex_symbol_dual,
             indices=indices,
-            latex_indices=latex_indices)
+            latex_indices=latex_indices,
+        )
 
     # ##### Methods to be redefined by derived classes of FreeModuleBasis #####
 
@@ -787,9 +835,15 @@ class FreeModuleBasis(Basis_abstract):
         """
         return "Basis {} on the {}".format(self._name, self._fmodule)
 
-    def _new_instance(self, symbol, latex_symbol=None, indices=None,
-                      latex_indices=None, symbol_dual=None,
-                      latex_symbol_dual=None):
+    def _new_instance(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Construct a new basis on the same module as ``self``.
 
@@ -834,10 +888,15 @@ class FreeModuleBasis(Basis_abstract):
             sage: _.dual_basis()
             Dual basis (E^x,E^y,E^z) on the Rank-3 free module M over the Integer Ring
         """
-        return FreeModuleBasis(self._fmodule, symbol, latex_symbol=latex_symbol,
-                               indices=indices, latex_indices=latex_indices,
-                               symbol_dual=symbol_dual,
-                               latex_symbol_dual=latex_symbol_dual)
+        return FreeModuleBasis(
+            self._fmodule,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     # ##### End of methods to be redefined by derived classes #####
 
@@ -877,8 +936,7 @@ class FreeModuleBasis(Basis_abstract):
         # Copy of the components of each element of the family:
         for i, ff in enumerate(family):
             if ff not in fmodule:
-                raise TypeError("{} is not an element of {}".format(ff,
-                                                                    fmodule))
+                raise TypeError("{} is not an element of {}".format(ff, fmodule))
             vs = self._vec[i]
             for basis, comp in ff._components.items():
                 vs._components[basis] = comp.copy()
@@ -955,9 +1013,16 @@ class FreeModuleBasis(Basis_abstract):
         """
         return self._dual_basis
 
-    def new_basis(self, change_of_basis, symbol, latex_symbol=None,
-                  indices=None, latex_indices=None, symbol_dual=None,
-                  latex_symbol_dual=None):
+    def new_basis(
+        self,
+        change_of_basis,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Define a new module basis from ``self``.
 
@@ -1028,48 +1093,57 @@ class FreeModuleBasis(Basis_abstract):
              Rational Field
         """
         from .free_module_automorphism import FreeModuleAutomorphism
+
         if not isinstance(change_of_basis, FreeModuleAutomorphism):
-            raise TypeError("the argument change_of_basis must be some " +
-                            "instance of FreeModuleAutomorphism")
+            raise TypeError(
+                "the argument change_of_basis must be some "
+                + "instance of FreeModuleAutomorphism"
+            )
         fmodule = self._fmodule
         # self._new_instance used instead of FreeModuleBasis for a correct
         # construction in case of derived classes:
-        the_new_basis = self._new_instance(symbol, latex_symbol=latex_symbol,
-                                           indices=indices,
-                                           latex_indices=latex_indices,
-                                           symbol_dual=symbol_dual,
-                                           latex_symbol_dual=latex_symbol_dual)
+        the_new_basis = self._new_instance(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         transf = change_of_basis.copy()
         inv_transf = change_of_basis.inverse().copy()
         si = fmodule._sindex
         # Components of the new basis vectors in the old basis:
         for i in fmodule.irange():
             for j in fmodule.irange():
-                the_new_basis._vec[i-si].add_comp(self)[[j]] = \
-                    transf.comp(self)[[j, i]]
+                the_new_basis._vec[i - si].add_comp(self)[[j]] = transf.comp(self)[
+                    [j, i]
+                ]
         # Components of the new dual-basis elements in the old dual basis:
         for i in fmodule.irange():
             for j in fmodule.irange():
-                the_new_basis._dual_basis._vec[i-si].add_comp(self)[[j]] = \
+                the_new_basis._dual_basis._vec[i - si].add_comp(self)[[j]] = (
                     inv_transf.comp(self)[[i, j]]
+                )
         # The components of the transformation and its inverse are the same in
         # the two bases:
         for i in fmodule.irange():
             for j in fmodule.irange():
                 ij = [i, j]
                 transf.add_comp(the_new_basis)[ij] = transf.comp(self)[ij]
-                inv_transf.add_comp(the_new_basis)[ij] = \
-                    inv_transf.comp(self)[ij]
+                inv_transf.add_comp(the_new_basis)[ij] = inv_transf.comp(self)[ij]
         # Components of the old basis vectors in the new basis:
         for i in fmodule.irange():
             for j in fmodule.irange():
-                self._vec[i-si].add_comp(the_new_basis)[[j]] = \
-                    inv_transf.comp(self)[[j, i]]
+                self._vec[i - si].add_comp(the_new_basis)[[j]] = inv_transf.comp(self)[
+                    [j, i]
+                ]
         # Components of the old dual-basis elements in the new cobasis:
         for i in fmodule.irange():
             for j in fmodule.irange():
-                self._dual_basis._vec[i-si].add_comp(the_new_basis)[[j]] = \
+                self._dual_basis._vec[i - si].add_comp(the_new_basis)[[j]] = (
                     transf.comp(self)[[i, j]]
+                )
         # The automorphism and its inverse are added to the module's dictionary
         # of changes of bases:
         fmodule._basis_changes[(self, the_new_basis)] = transf

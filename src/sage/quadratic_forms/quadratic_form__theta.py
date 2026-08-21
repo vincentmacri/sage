@@ -9,6 +9,7 @@ AUTHORS:
 
 - Gonzalo Tornaria (2010-03-23): theta series of degree 2
 """
+
 from copy import deepcopy
 
 from sage.rings.power_series_ring import PowerSeriesRing
@@ -61,13 +62,16 @@ def theta_series(self, Max=10, var_str='q', safe_flag=True):
         raise TypeError("Max = {Max} is not an integer >= 0 or an allowed string")
 
     if Max == 'mod_form':
-        raise NotImplementedError("we have to figure out the correct number of Fourier coefficients to use")
+        raise NotImplementedError(
+            "we have to figure out the correct number of Fourier coefficients to use"
+        )
         # return self.theta_by_pari(sturm_bound(self.level(), self.dim() / ZZ(2)) + 1, var_str, safe_flag)
     else:
         return self.theta_by_pari(M, var_str, safe_flag)
 
 
 # ---- Compute the theta function by using the PARI/GP routine qfrep  ----
+
 
 def theta_by_pari(self, Max, var_str='q', safe_flag=True):
     r"""
@@ -114,7 +118,9 @@ def theta_by_pari(self, Max, var_str='q', safe_flag=True):
     # Return the answer
     if not var_str:
         if safe_flag:
-            return deepcopy(theta_vec)         # We must make a copy here to insure the integrity of the cached version!
+            return deepcopy(
+                theta_vec
+            )  # We must make a copy here to insure the integrity of the cached version!
         return theta_vec
     return PowerSeriesRing(ZZ, var_str)(theta_vec, Max)
 
@@ -177,9 +183,11 @@ def theta_by_cholesky(self, q_prec):
     theta = [0] * (q_prec + 1)
     PS = PowerSeriesRing(ZZ, 'q')
 
-    bit_prec = 53                  # TO DO: Set this precision to reflect the appropriate roundoff
-    Cholesky = self.cholesky_decomposition(bit_prec)     # error estimate, to be confident through our desired q-precision.
-    Q = Cholesky      # <----  REDUNDANT!!!
+    bit_prec = 53  # TO DO: Set this precision to reflect the appropriate roundoff
+    Cholesky = self.cholesky_decomposition(
+        bit_prec
+    )  # error estimate, to be confident through our desired q-precision.
+    Q = Cholesky  # <----  REDUNDANT!!!
     R = RealField(bit_prec)
     half = R(0.5)
 
@@ -199,14 +207,14 @@ def theta_by_cholesky(self, q_prec):
 
     done_flag = False
     from_step4_flag = False
-    from_step3_flag = True        # We start by pretending this, since then we get to run through 2 and 3a once. =)
+    from_step3_flag = True  # We start by pretending this, since then we get to run through 2 and 3a once. =)
 
     # Big loop which runs through all vectors
     while not done_flag:
-
         # Loop through until we get to i=1 (so we defined a vector x)
-        while from_step3_flag or from_step4_flag:              # IMPORTANT WARNING:  This replaces a do...while loop, so it may have to be adjusted!
-
+        while (
+            from_step3_flag or from_step4_flag
+        ):  # IMPORTANT WARNING:  This replaces a do...while loop, so it may have to be adjusted!
             # Go to directly to step 3 if we're coming from step 4, otherwise perform step 2.
             if from_step4_flag:
                 from_step4_flag = False
@@ -235,15 +243,25 @@ def theta_by_cholesky(self, q_prec):
         # 4. Solution found (This happens when i=0)
         from_step4_flag = True
         Q_val_double = q_prec - T[0] + Q[0, 0] * (x[0] + U[0]) * (x[0] + U[0])
-        Q_val = floor(Q_val_double + half)        # Note: This rounds the value up, since the "round" function returns a float, but floor returns integer.
+        Q_val = floor(
+            Q_val_double + half
+        )  # Note: This rounds the value up, since the "round" function returns a float, but floor returns integer.
 
         # OPTIONAL SAFETY CHECK:
         eps = 0.000000001
         if abs(Q_val_double - Q_val) > eps:
-            raise RuntimeError("Oh No! We have a problem with the floating point precision... \n"
-                               + " Q_val_double = " + str(Q_val_double) + "\n"
-                               + " Q_val = " + str(Q_val) + "\n"
-                               + " x = " + str(x) + "\n")
+            raise RuntimeError(
+                "Oh No! We have a problem with the floating point precision... \n"
+                + " Q_val_double = "
+                + str(Q_val_double)
+                + "\n"
+                + " Q_val = "
+                + str(Q_val)
+                + "\n"
+                + " x = "
+                + str(x)
+                + "\n"
+            )
 
         if Q_val <= q_prec:
             theta[Q_val] += 2
@@ -303,7 +321,7 @@ def theta_series_degree_2(Q, prec) -> dict:
     if not Q.is_positive_definite():
         raise ValueError("the quadratic form must be positive definite")
     try:
-        X = ZZ(prec - 1)    # maximum discriminant
+        X = ZZ(prec - 1)  # maximum discriminant
     except TypeError:
         raise TypeError("prec is not an integer")
 
@@ -318,7 +336,7 @@ def theta_series_degree_2(Q, prec) -> dict:
 
     t = cputime()
     maxi = (X + 1) // 4
-    v_list = (Q.vectors_by_length(maxi))        # assume a>0
+    v_list = Q.vectors_by_length(maxi)  # assume a>0
     v_list = [[V(c) for c in vs] for vs in v_list]  # coerce vectors into V
     verbose("Computed vectors_by_length", t)
 
@@ -338,6 +356,7 @@ def theta_series_degree_2(Q, prec) -> dict:
 
                 def B_v1(v):
                     return v1_H * v2
+
                 for v2 in v_list[c]:
                     b = abs(B_v1(v2))
                     if b <= a and 4 * a * c - b * b <= X:

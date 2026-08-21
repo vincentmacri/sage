@@ -32,7 +32,7 @@ AUTHORS:
 - Minh Van Nguyen (2009-08): shift cipher, affine cipher
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Kohel <kohel@maths.usyd.edu.au>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -40,16 +40,13 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from random import randint
 
 from sage.arith.misc import inverse_mod, xgcd
 from sage.misc.lazy_import import lazy_import
-from sage.monoids.string_monoid import (
-    StringMonoid_class,
-    AlphabeticStringMonoid)
+from sage.monoids.string_monoid import StringMonoid_class, AlphabeticStringMonoid
 from sage.monoids.string_monoid_element import StringMonoidElement
 from sage.monoids.string_ops import strip_encoding
 from sage.rings.integer import Integer
@@ -67,7 +64,8 @@ from .classical_cipher import (
     ShiftCipher,
     SubstitutionCipher,
     TranspositionCipher,
-    VigenereCipher)
+    VigenereCipher,
+)
 
 
 class AffineCryptosystem(SymmetricKeyCryptosystem):
@@ -270,7 +268,10 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         """
         # sanity check
         if not isinstance(A, AlphabeticStringMonoid):
-            raise TypeError("A (= %s) is not supported as a cipher domain of this affine cryptosystem." % A)
+            raise TypeError(
+                "A (= %s) is not supported as a cipher domain of this affine cryptosystem."
+                % A
+            )
         # List L of invertible linear coefficients modulo n, where n is the
         # alphabet size. Each e in L satisfies gcd(e, n) = 1.
         n = Integer(A.ngens())
@@ -278,8 +279,8 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # Initialize the affine cryptosystem with the plaintext, ciphertext,
         # and key spaces.
         SymmetricKeyCryptosystem.__init__(
-            self, A, A,
-            key_space=(IntegerModRing(A.ngens()), IntegerModRing(A.ngens())))
+            self, A, A, key_space=(IntegerModRing(A.ngens()), IntegerModRing(A.ngens()))
+        )
 
     def __call__(self, a, b):
         r"""
@@ -342,10 +343,13 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
             # a is coprime to n since we assume that the list
             # self._invertible_A contains all the elements of G.
             if (a in self._invertible_A) and (0 <= b < n):
-                return AffineCipher(self, key=(a,b))
+                return AffineCipher(self, key=(a, b))
             raise ValueError
         except Exception:
-            raise ValueError("(a, b) = (%s, %s) is outside the range of acceptable values for a key of this affine cryptosystem." % (a, b))
+            raise ValueError(
+                "(a, b) = (%s, %s) is outside the range of acceptable values for a key of this affine cryptosystem."
+                % (a, b)
+            )
 
     def _repr_(self):
         r"""
@@ -526,8 +530,11 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
 
         # sanity check
         from sage.monoids.string_monoid import AlphabeticStrings
+
         if not isinstance(C.parent(), AlphabeticStringMonoid):
-            raise TypeError("The ciphertext must be capital letters of the English alphabet.")
+            raise TypeError(
+                "The ciphertext must be capital letters of the English alphabet."
+            )
         if str(C) == "":
             raise ValueError("The ciphertext must be a non-empty string.")
 
@@ -554,7 +561,7 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
                     else:
                         OM.setdefault(e, 0.0)
                 # the rank R_{chi^2}(M) of M with secret key (a,b)
-                RMab = [(OM[AS(e)] - EA[e])**2 / EA[e] for e in StrAlph]
+                RMab = [(OM[AS(e)] - EA[e]) ** 2 / EA[e] for e in StrAlph]
                 Rank.append((sum(RMab), (a, b)))
         # Sort in non-decreasing order of chi-square statistic. It's
         # possible that two different keys share the same chi-square
@@ -565,8 +572,7 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # and key[1] indexes b. The value of val is not used at all, making
         # it redundant to access val in the first place. The following line
         # of code is written with readability in mind.
-        [RankedList.append((key, pdict[(key[0], key[1])]))
-             for val, key in Rank]
+        [RankedList.append((key, pdict[(key[0], key[1])])) for val, key in Rank]
         return RankedList
 
     def rank_by_squared_differences(self, C, pdict):
@@ -734,8 +740,11 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
 
         # sanity check
         from sage.monoids.string_monoid import AlphabeticStrings
+
         if not isinstance(C.parent(), AlphabeticStringMonoid):
-            raise TypeError("The ciphertext must be capital letters of the English alphabet.")
+            raise TypeError(
+                "The ciphertext must be capital letters of the English alphabet."
+            )
         if str(C) == "":
             raise ValueError("The ciphertext must be a non-empty string.")
 
@@ -762,7 +771,7 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
                     else:
                         OM.setdefault(e, 0.0)
                 # the rank R_{RSS}(M) of M with secret key (a,b)
-                RMab = [(OM[AS(e)] - EA[e])**2 for e in StrAlph]
+                RMab = [(OM[AS(e)] - EA[e]) ** 2 for e in StrAlph]
                 Rank.append((sum(RMab), (a, b)))
         # Sort in non-decreasing order of squared-differences statistic. It's
         # possible that two different keys share the same squared-differences
@@ -773,8 +782,7 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # and key[1] indexes b. The value of val is not used at all, making
         # it redundant to access val in the first place. The following line
         # of code is written with readability in mind.
-        [RankedList.append((key, pdict[(key[0], key[1])]))
-             for val, key in Rank]
+        [RankedList.append((key, pdict[(key[0], key[1])])) for val, key in Rank]
         return RankedList
 
     def brute_force(self, C, ranking='none'):
@@ -941,10 +949,14 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # Sanity check: ensure that C is encoded using one of the
         # supported alphabets of this affine cryptosystem.
         if not isinstance(C.parent(), AlphabeticStringMonoid):
-            raise TypeError("Ciphertext must be encoded using one of the supported cipher domains of this affine cryptosystem.")
+            raise TypeError(
+                "Ciphertext must be encoded using one of the supported cipher domains of this affine cryptosystem."
+            )
         ranking_functions = ["none", "chisquare", "squared_differences"]
         if ranking not in ranking_functions:
-            raise ValueError("Keyword 'ranking' must be either 'none', 'chisquare', or 'squared_differences'.")
+            raise ValueError(
+                "Keyword 'ranking' must be either 'none', 'chisquare', or 'squared_differences'."
+            )
 
         # Now do the actual task of cryptanalysis by means of exhaustive
         # key search, also known as the brute force method. Let D be a
@@ -955,9 +967,11 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # further optimization. Unless we can justify that this block of
         # code is a bottleneck on the runtime of the method, we should
         # leave it as is.
-        [D.setdefault((a, b), self.deciphering(a, b, C))
-             for a in self._invertible_A
-                 for b in range(self.alphabet_size())]
+        [
+            D.setdefault((a, b), self.deciphering(a, b, C))
+            for a in self._invertible_A
+            for b in range(self.alphabet_size())
+        ]
 
         if ranking == "none":
             return D
@@ -1227,12 +1241,16 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         """
         try:
             from sage.rings.finite_rings.integer_mod import Mod
+
             n = self.alphabet_size()
             aInv = inverse_mod(a, n)
             bInv = Mod(-b * aInv, n).lift()
             return (aInv, bInv)
         except Exception:
-            raise ValueError("(a, b) = (%s, %s) is outside the range of acceptable values for a key of this affine cipher." % (a, b))
+            raise ValueError(
+                "(a, b) = (%s, %s) is outside the range of acceptable values for a key of this affine cipher."
+                % (a, b)
+            )
 
     def random_key(self):
         r"""
@@ -1265,6 +1283,7 @@ class AffineCryptosystem(SymmetricKeyCryptosystem):
         # Return a random element in ZZ/nZZ x ZZ/nZZ where n is the number
         # of elements in the plaintext/ciphertext alphabet.
         from sage.misc.prandom import randint
+
         n = self.alphabet_size()
         L = len(self._invertible_A)
         a = Integer(self._invertible_A[randint(0, L - 1)])
@@ -1375,7 +1394,9 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
             try:
                 A = M(A)
             except Exception:
-                raise TypeError("A (= %s) must specify a square matrix of degree %s." % (A, m))
+                raise TypeError(
+                    "A (= %s) must specify a square matrix of degree %s." % (A, m)
+                )
         return HillCipher(self, A)
 
     def _repr_(self):
@@ -1391,7 +1412,9 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
             'Hill cryptosystem on Free alphabetic string monoid on A-Z of block length 3'
         """
         return "Hill cryptosystem on %s of block length %s" % (
-            self.cipher_domain(), self.block_length())
+            self.cipher_domain(),
+            self.block_length(),
+        )
 
     def block_length(self):
         """
@@ -1443,7 +1466,7 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
         m = M.nrows()
         N = Integer(self.cipher_domain().ngens())
         while True:
-            A = M([randint(0, N-1) for i in range(m**2)])
+            A = M([randint(0, N - 1) for i in range(m**2)])
             if N.gcd(A.det().lift()) == 1:
                 break
         return A
@@ -1474,7 +1497,9 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
         S = self.plaintext_space()
         M = self.key_space()
         if A not in M:
-            raise TypeError("A (= %s) must be a matrix in the key space of %s." % (A, self))
+            raise TypeError(
+                "A (= %s) must be a matrix in the key space of %s." % (A, self)
+            )
         m = self.block_length()
         MatZZ = MatrixSpace(ZZ, m)
         AZ = MatZZ([[A[i, j].lift() for j in range(m)] for i in range(m)])
@@ -1583,7 +1608,9 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
             ValueError: A is not a valid key: must be an invertible matrix in the key space
         """
         if not self._is_valid_key(A):
-            raise ValueError("A is not a valid key: must be an invertible matrix in the key space")
+            raise ValueError(
+                "A is not a valid key: must be an invertible matrix in the key space"
+            )
         i = self(self.inverse_key(A))
         return i(C)
 
@@ -1622,7 +1649,9 @@ class HillCryptosystem(SymmetricKeyCryptosystem):
             ValueError: A is not a valid key: must be an invertible matrix in the key space
         """
         if not self._is_valid_key(A):
-            raise ValueError("A is not a valid key: must be an invertible matrix in the key space")
+            raise ValueError(
+                "A is not a valid key: must be an invertible matrix in the key space"
+            )
         e = self(A)
         return e(M)
 
@@ -1871,11 +1900,16 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
         from sage.monoids.string_monoid import (
             AlphabeticStringMonoid,
             BinaryStringMonoid,
-            HexadecimalStringMonoid)
-        if not isinstance(A, ( AlphabeticStringMonoid,
-                               BinaryStringMonoid,
-                               HexadecimalStringMonoid )):
-            raise TypeError("A (= %s) is not supported as a cipher domain of this shift cryptosystem." % A)
+            HexadecimalStringMonoid,
+        )
+
+        if not isinstance(
+            A, (AlphabeticStringMonoid, BinaryStringMonoid, HexadecimalStringMonoid)
+        ):
+            raise TypeError(
+                "A (= %s) is not supported as a cipher domain of this shift cryptosystem."
+                % A
+            )
         # Initialize the shift cryptosystem with the plaintext, ciphertext,
         # and key spaces.
         SymmetricKeyCryptosystem.__init__(self, A, A, IntegerModRing(A.ngens()))
@@ -1959,7 +1993,10 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
             return ShiftCipher(self, K)
             # from sage.rings.finite_rings.integer_mod import Mod
             # return ShiftCipher(self, Mod(K, self.alphabet_size()).lift())
-        raise ValueError("K (=%s) is outside the range of acceptable values for a key of this shift cryptosystem." % K)
+        raise ValueError(
+            "K (=%s) is outside the range of acceptable values for a key of this shift cryptosystem."
+            % K
+        )
 
     def _repr_(self):
         r"""
@@ -2175,8 +2212,11 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
 
         # sanity check
         from sage.monoids.string_monoid import AlphabeticStrings
+
         if not isinstance(C.parent(), AlphabeticStringMonoid):
-            raise TypeError("The ciphertext must be capital letters of the English alphabet.")
+            raise TypeError(
+                "The ciphertext must be capital letters of the English alphabet."
+            )
         if str(C) == "":
             raise ValueError("The ciphertext must be a non-empty string.")
 
@@ -2202,7 +2242,7 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
                 else:
                     OM.setdefault(e, 0.0)
             # the rank R(M, K) of M with shift key k
-            RMk = [(OM[AS(e)] - EA[e])**2 / EA[e] for e in StrAlph]
+            RMk = [(OM[AS(e)] - EA[e]) ** 2 / EA[e] for e in StrAlph]
             Rank.append((sum(RMk), key))
         # Sort in non-decreasing order of squared-differences statistic. It's
         # possible that two different keys share the same squared-differences
@@ -2407,11 +2447,12 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
         # line that computes the list RMk.
 
         # sanity check
-        from sage.monoids.string_monoid import (
-            AlphabeticStringMonoid,
-            AlphabeticStrings)
+        from sage.monoids.string_monoid import AlphabeticStringMonoid, AlphabeticStrings
+
         if not isinstance(C.parent(), AlphabeticStringMonoid):
-            raise TypeError("The ciphertext must be capital letters of the English alphabet.")
+            raise TypeError(
+                "The ciphertext must be capital letters of the English alphabet."
+            )
         if str(C) == "":
             raise ValueError("The ciphertext must be a non-empty string.")
 
@@ -2437,7 +2478,7 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
                 else:
                     OM.setdefault(e, 0.0)
             # the rank R(M, K) of M with shift key k
-            RMk = [(OM[AS(e)] - EA[e])**2 for e in StrAlph]
+            RMk = [(OM[AS(e)] - EA[e]) ** 2 for e in StrAlph]
             Rank.append((sum(RMk), key))
         # Sort in non-decreasing order of squared-differences statistic. It's
         # possible that two different keys share the same squared-differences
@@ -2645,15 +2686,21 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
         from sage.monoids.string_monoid import (
             AlphabeticStringMonoid,
             BinaryStringMonoid,
-            HexadecimalStringMonoid)
-        if not isinstance(C.parent(), (
-                AlphabeticStringMonoid,
-                BinaryStringMonoid,
-                HexadecimalStringMonoid)):
-            raise TypeError("ciphertext must be encoded using one of the supported cipher domains of this shift cryptosystem.")
+            HexadecimalStringMonoid,
+        )
+
+        if not isinstance(
+            C.parent(),
+            (AlphabeticStringMonoid, BinaryStringMonoid, HexadecimalStringMonoid),
+        ):
+            raise TypeError(
+                "ciphertext must be encoded using one of the supported cipher domains of this shift cryptosystem."
+            )
         ranking_functions = ["none", "chisquare", "squared_differences"]
         if ranking not in ranking_functions:
-            raise ValueError("Keyword 'ranking' must be either 'none', 'chisquare', or 'squared_differences'.")
+            raise ValueError(
+                "Keyword 'ranking' must be either 'none', 'chisquare', or 'squared_differences'."
+            )
 
         # Now do the actual task of cryptanalysis by means of exhaustive key
         # search, also known as the brute force method.
@@ -2963,7 +3010,10 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
             # number of elements in A. If k is a key, then the corresponding
             # inverse key is -k mod n.
             return self.key_space()(-Integer(K)).lift()
-        raise ValueError("K (=%s) is outside the range of acceptable values for a key of this shift cryptosystem." % K)
+        raise ValueError(
+            "K (=%s) is outside the range of acceptable values for a key of this shift cryptosystem."
+            % K
+        )
 
     def random_key(self):
         r"""
@@ -3013,6 +3063,7 @@ class ShiftCryptosystem(SymmetricKeyCryptosystem):
         # Return a random element in ZZ/nZZ where n is the number of elements
         # in the plaintext/ciphertext alphabet and key space.
         from sage.misc.prandom import randint
+
         return Integer(randint(0, self.alphabet_size() - 1))
 
 
@@ -3128,10 +3179,11 @@ class SubstitutionCryptosystem(SymmetricKeyCryptosystem):
             True
         """
         from sage.combinat.permutation import Permutations
+
         S = self.cipher_domain()
         n = S.ngens()
         I = Permutations(n).random_element()
-        return S([ i-1 for i in I ])
+        return S([i - 1 for i in I])
 
     def inverse_key(self, K):
         """
@@ -3159,7 +3211,7 @@ class SubstitutionCryptosystem(SymmetricKeyCryptosystem):
         I = K._element_list
         S = self.cipher_domain()
         n = S.ngens()
-        return S([ I.index(i) for i in range(n) ])
+        return S([I.index(i) for i in range(n)])
 
     def encoding(self, M):
         """
@@ -3318,7 +3370,9 @@ class TranspositionCryptosystem(SymmetricKeyCryptosystem):
             except Exception:
                 raise TypeError("K (= %s) must specify a permutation." % K)
         if not isinstance(K, PermutationGroupElement) and K.parent() == G:
-            raise TypeError("K (= %s) must be a permutation or list specifying a permutation." % K)
+            raise TypeError(
+                "K (= %s) must be a permutation or list specifying a permutation." % K
+            )
         return TranspositionCipher(self, K)
 
     def _repr_(self):
@@ -3334,7 +3388,9 @@ class TranspositionCryptosystem(SymmetricKeyCryptosystem):
             'Transposition cryptosystem on Free alphabetic string monoid on A-Z of block length 14'
         """
         return "Transposition cryptosystem on %s of block length %s" % (
-            self.cipher_domain(), self.block_length())
+            self.cipher_domain(),
+            self.block_length(),
+        )
 
     def random_key(self):
         """
@@ -3579,7 +3635,9 @@ class VigenereCryptosystem(SymmetricKeyCryptosystem):
             'Vigenere cryptosystem on Free alphabetic string monoid on A-Z of period 14'
         """
         return "Vigenere cryptosystem on %s of period %s" % (
-            self.cipher_domain(), self.period())
+            self.cipher_domain(),
+            self.period(),
+        )
 
     def random_key(self):
         """
@@ -3605,7 +3663,7 @@ class VigenereCryptosystem(SymmetricKeyCryptosystem):
         S = self.key_space()
         n = S.ngens()
         m = self.period()
-        return S([ randint(0, n-1) for i in range(m) ])
+        return S([randint(0, n - 1) for i in range(m)])
 
     def inverse_key(self, K):
         """
@@ -3631,7 +3689,7 @@ class VigenereCryptosystem(SymmetricKeyCryptosystem):
         """
         S = self.key_space()
         n = S.ngens()
-        return S([ (-i) % (n) for i in K._element_list ])
+        return S([(-i) % (n) for i in K._element_list])
 
     def encoding(self, M):
         """

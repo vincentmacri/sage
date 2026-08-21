@@ -86,7 +86,9 @@ class PairwiseCompatibleSubsets(RecursivelyEnumeratedSet_forest):
 
     __len__ = None
 
-    def __init__(self, ambient, predicate, maximal=False, element_class=Set_object_enumerated):
+    def __init__(
+        self, ambient, predicate, maximal=False, element_class=Set_object_enumerated
+    ):
         """
         TESTS::
 
@@ -98,13 +100,15 @@ class PairwiseCompatibleSubsets(RecursivelyEnumeratedSet_forest):
             sage: TestSuite(P).run()
         """
         self._ambient = set(ambient)
-        self._roots = ( ((), tuple(reversed(ambient))), )
+        self._roots = (((), tuple(reversed(ambient))),)
         self._predicate = predicate
         self._maximal = maximal
         # TODO: use self.element_class for consistency
         # At this point (2011/03) TestSuite fails if we do so
         self._element_class = element_class
-        RecursivelyEnumeratedSet_forest.__init__(self, algorithm='depth', category=FiniteEnumeratedSets())
+        RecursivelyEnumeratedSet_forest.__init__(
+            self, algorithm='depth', category=FiniteEnumeratedSets()
+        )
 
     def __eq__(self, other):
         """
@@ -119,7 +123,11 @@ class PairwiseCompatibleSubsets(RecursivelyEnumeratedSet_forest):
             sage: P == P
             True
         """
-        return self.__class__ is other.__class__ and self._ambient == other._ambient and self._predicate.__str__() == other._predicate.__str__()
+        return (
+            self.__class__ is other.__class__
+            and self._ambient == other._ambient
+            and self._predicate.__str__() == other._predicate.__str__()
+        )
 
     def __contains__(self, subset):
         """
@@ -141,9 +149,11 @@ class PairwiseCompatibleSubsets(RecursivelyEnumeratedSet_forest):
             sage: Set([4,6]) in P
             False
         """
-        return isinstance(subset, self._element_class ) and \
-            set(subset).issubset(self._ambient) and \
-            all( self._predicate(x,y) for x,y in Subsets(subset,2) )
+        return (
+            isinstance(subset, self._element_class)
+            and set(subset).issubset(self._ambient)
+            and all(self._predicate(x, y) for x, y in Subsets(subset, 2))
+        )
 
     def post_process(self, subset_rest):
         """
@@ -179,6 +189,5 @@ class PairwiseCompatibleSubsets(RecursivelyEnumeratedSet_forest):
         rest = list(rest)
         while rest:
             x = rest.pop()
-            result.append((subset + (x,),
-                           tuple(y for y in rest if predicate(x, y))))
+            result.append((subset + (x,), tuple(y for y in rest if predicate(x, y))))
         return result

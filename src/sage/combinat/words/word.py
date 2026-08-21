@@ -8,6 +8,7 @@ AUTHORS:
 - Sébastien Labbé
 - Franco Saliola
 """
+
 # ***************************************************************************
 #       Copyright (C) 2008 Arnaud Bergeron <abergeron@gmail.com>,
 #                          Amy Glen <amy.glen@gmail.com>,
@@ -25,14 +26,13 @@ from sage.combinat.words.word_char import WordDatatype_char
 from sage.combinat.words.abstract_word import Word_class
 from sage.combinat.words.finite_word import FiniteWord_class
 from sage.combinat.words.infinite_word import InfiniteWord_class
-from .word_datatypes import (WordDatatype_str,
-                             WordDatatype_list,
-                             WordDatatype_tuple)
+from .word_datatypes import WordDatatype_str, WordDatatype_list, WordDatatype_tuple
 from .word_infinite_datatypes import (
     WordDatatype_iter_with_caching,
     WordDatatype_iter,
     WordDatatype_callable_with_caching,
-    WordDatatype_callable)
+    WordDatatype_callable,
+)
 from .morphic import WordDatatype_morphic
 
 lazy_import('sage.monoids.free_monoid_element', 'FreeMonoidElement')
@@ -41,8 +41,9 @@ lazy_import('sage.monoids.free_monoid_element', 'FreeMonoidElement')
 # Word_class to Word and imbedding Word as its __call__ method.
 
 
-def Word(data=None, alphabet=None, length=None, datatype=None,
-         caching=True, RSK_data=None):
+def Word(
+    data=None, alphabet=None, length=None, datatype=None, caching=True, RSK_data=None
+):
     r"""
     Construct a word.
 
@@ -194,22 +195,33 @@ def Word(data=None, alphabet=None, length=None, datatype=None,
     if RSK_data is not None:
         # if a list of a semistandard and a standard tableau or a pair of lists
         from sage.combinat.tableau import Tableau
-        if isinstance(RSK_data, (tuple, list)) and len(RSK_data) == 2 and \
-                all(isinstance(x, Tableau) for x in RSK_data):
+
+        if (
+            isinstance(RSK_data, (tuple, list))
+            and len(RSK_data) == 2
+            and all(isinstance(x, Tableau) for x in RSK_data)
+        ):
             from sage.combinat.rsk import RSK_inverse
+
             return RSK_inverse(*RSK_data, output='word')
-        if isinstance(RSK_data, (tuple, list)) and len(RSK_data) == 2 and \
-                all(isinstance(x, (list, tuple)) for x in RSK_data):
+        if (
+            isinstance(RSK_data, (tuple, list))
+            and len(RSK_data) == 2
+            and all(isinstance(x, (list, tuple)) for x in RSK_data)
+        ):
             from sage.combinat.rsk import RSK_inverse
+
             P, Q = map(Tableau, RSK_data)
             return RSK_inverse(P, Q, 'word')
         raise ValueError("input must be a pair of tableaux")
 
     # Create the parent object
     from .words import Words
+
     parent = Words(alphabet)
 
     return parent(data=data, length=length, datatype=datatype, caching=caching)
+
 
 #######################################################################
 #                                                                     #
@@ -279,6 +291,7 @@ class FiniteWord_char(WordDatatype_char, FiniteWord_class):
         sage: w == loads(dumps(w))
         True
     """
+
     pass
 
 
@@ -301,6 +314,7 @@ class FiniteWord_list(WordDatatype_list, FiniteWord_class):
         sage: w == loads(dumps(w))
         True
     """
+
     pass
 
 
@@ -323,6 +337,7 @@ class FiniteWord_str(WordDatatype_str, FiniteWord_class):
         sage: w == loads(dumps(w))
         True
     """
+
     pass
 
 
@@ -345,6 +360,7 @@ class FiniteWord_tuple(WordDatatype_tuple, FiniteWord_class):
         sage: w == loads(dumps(w))
         True
     """
+
     pass
 
 
@@ -372,6 +388,7 @@ class FiniteWord_iter_with_caching(WordDatatype_iter_with_caching, FiniteWord_cl
         sage: type(z)
         <class 'sage.combinat.words.word.FiniteWord_list'>
     """
+
     pass
 
 
@@ -401,10 +418,13 @@ class FiniteWord_iter(WordDatatype_iter, FiniteWord_class):
         sage: type(z)
         <class 'sage.combinat.words.word.FiniteWord_list'>
     """
+
     pass
 
 
-class FiniteWord_callable_with_caching(WordDatatype_callable_with_caching, FiniteWord_class):
+class FiniteWord_callable_with_caching(
+    WordDatatype_callable_with_caching, FiniteWord_class
+):
     r"""
     Finite word represented by a callable (with caching).
 
@@ -453,6 +473,7 @@ class FiniteWord_callable_with_caching(WordDatatype_callable_with_caching, Finit
         sage: type(z)
         <class 'sage.combinat.words.word.FiniteWord_list'>
     """
+
     pass
 
 
@@ -483,12 +504,16 @@ class FiniteWord_callable(WordDatatype_callable, FiniteWord_class):
         sage: type(z)
         <class 'sage.combinat.words.word.FiniteWord_callable'>
     """
+
     pass
 
 
 # #### Infinite Words ####
 
-class InfiniteWord_iter_with_caching(WordDatatype_iter_with_caching, InfiniteWord_class):
+
+class InfiniteWord_iter_with_caching(
+    WordDatatype_iter_with_caching, InfiniteWord_class
+):
     r"""
     Infinite word represented by an iterable (with caching).
 
@@ -530,6 +555,7 @@ class InfiniteWord_iter_with_caching(WordDatatype_iter_with_caching, InfiniteWor
         ....:     print("No exception raised, unexpected")
         TypeError raised in dumps() as expected
     """
+
     pass
 
 
@@ -575,10 +601,13 @@ class InfiniteWord_iter(WordDatatype_iter, InfiniteWord_class):
         ....:     print("No exception raised, unexpected")
         TypeError raised in dumps() as expected
     """
+
     pass
 
 
-class InfiniteWord_callable_with_caching(WordDatatype_callable_with_caching, InfiniteWord_class):
+class InfiniteWord_callable_with_caching(
+    WordDatatype_callable_with_caching, InfiniteWord_class
+):
     r"""
     Infinite word represented by a callable (with caching).
 
@@ -606,6 +635,7 @@ class InfiniteWord_callable_with_caching(WordDatatype_callable_with_caching, Inf
         sage: type(z)
         <class 'sage.combinat.words.word.InfiniteWord_callable_with_caching'>
     """
+
     pass
 
 
@@ -638,10 +668,12 @@ class InfiniteWord_callable(WordDatatype_callable, InfiniteWord_class):
         sage: type(z)
         <class 'sage.combinat.words.word.InfiniteWord_callable'>
     """
+
     pass
 
 
 # #### Words of unknown length ####
+
 
 class Word_iter_with_caching(WordDatatype_iter_with_caching, Word_class):
     r"""
@@ -683,6 +715,7 @@ class Word_iter_with_caching(WordDatatype_iter_with_caching, Word_class):
         ....:     print("No exception raised, unexpected")
         TypeError raised in dumps() as expected
     """
+
     pass
 
 
@@ -726,10 +759,12 @@ class Word_iter(WordDatatype_iter, Word_class):
         ....:     print("No exception raised, unexpected")
         TypeError raised in dumps() as expected
     """
+
     pass
 
 
 # #### Morphic Words ####
+
 
 class FiniteWord_morphic(WordDatatype_morphic, FiniteWord_class):
     r"""
@@ -755,6 +790,7 @@ class FiniteWord_morphic(WordDatatype_morphic, FiniteWord_class):
         sage: loads(dumps(w))
         word: ab
     """
+
     pass
 
 
@@ -782,4 +818,5 @@ class InfiniteWord_morphic(WordDatatype_morphic, InfiniteWord_class):
         sage: loads(dumps(w))
         word: abaababaabaababaababaabaababaabaababaaba...
     """
+
     pass

@@ -75,8 +75,12 @@ from sage.rings.rational_field import QQ
 from sage.categories.rings import Rings
 
 from sage.structure.all import Sequence
-from sage.structure.richcmp import (richcmp_method, richcmp, rich_to_bool,
-                                    richcmp_not_equal)
+from sage.structure.richcmp import (
+    richcmp_method,
+    richcmp,
+    rich_to_bool,
+    richcmp_not_equal,
+)
 
 from .element import ModularFormElement, Newform
 from . import defaults
@@ -90,6 +94,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
     """
     A generic space of modular forms.
     """
+
     Element = ModularFormElement
 
     def __init__(self, group, weight, character, base_ring, category=None):
@@ -126,13 +131,17 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         if not isinstance(group, arithgroup.CongruenceSubgroupBase):
             raise TypeError("group (=%s) must be a congruence subgroup" % group)
         weight = Integer(weight)
-        if not ((character is None) or isinstance(character, dirichlet.DirichletCharacter)):
+        if not (
+            (character is None) or isinstance(character, dirichlet.DirichletCharacter)
+        ):
             raise TypeError("character must be a Dirichlet character")
         if base_ring not in Rings():
             raise TypeError("base_ring must be a ring")
         self.__sturm_bound = None
         self.__weight, self.__group, self.__character = weight, group, character
-        hecke.HeckeModule_generic.__init__(self, base_ring, group.level(), category=category)
+        hecke.HeckeModule_generic.__init__(
+            self, base_ring, group.level(), category=category
+        )
 
     def prec(self, new_prec=None):
         """
@@ -349,7 +358,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             sage: E.is_ambient()
             False
         """
-        return False   # returning True is defined in the derived AmbientSpace class.
+        return False  # returning True is defined in the derived AmbientSpace class.
 
     def __normalize_prec(self, prec):
         """
@@ -473,8 +482,10 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         W = self._q_expansion_module()
         pr = W.degree()
         B = self.q_echelon_basis(pr)
-        E = [self(F.linear_combination_of_basis(W.coordinates(f.padded_list(pr))))
-             for f in B]
+        E = [
+            self(F.linear_combination_of_basis(W.coordinates(f.padded_list(pr))))
+            for f in B
+        ]
         return Sequence(E, cr=True, immutable=True)
 
     @cached_method
@@ -540,8 +551,10 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         W = self._q_expansion_module()
         pr = W.degree()
         B = self.q_integral_basis(pr)
-        I = [self.linear_combination_of_basis(
-            W.coordinates(f.padded_list(pr))) for f in B]
+        I = [
+            self.linear_combination_of_basis(W.coordinates(f.padded_list(pr)))
+            for f in B
+        ]
         return Sequence(I, cr=True, immutable=True)
 
     @cached_method
@@ -565,7 +578,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         """
         prec = self.sturm_bound()
         C = self.q_expansion_basis(prec)
-        V = self.base_ring()**prec
+        V = self.base_ring() ** prec
         return V.span_of_basis([f.padded_list(prec) for f in C])
 
     def q_expansion_basis(self, prec=None):
@@ -630,7 +643,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
                 if current_prec == prec:
                     return B
                 if current_prec > prec:
-                    return Sequence([f.add_bigoh(prec) for f in B], immutable=True, cr=True)
+                    return Sequence(
+                        [f.add_bigoh(prec) for f in B], immutable=True, cr=True
+                    )
             except AttributeError:
                 pass
 
@@ -644,7 +659,10 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             tries += 1
             current_prec += d
             if tries > 5:
-                print("WARNING: possible bug in q_expansion_basis for modular forms space %s" % self)
+                print(
+                    "WARNING: possible bug in q_expansion_basis for modular forms space %s"
+                    % self
+                )
         if prec == -1:
             prec = current_prec
         B = Sequence(B, immutable=True, cr=True)
@@ -826,10 +844,15 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             Modular Forms subspace of dimension 4 of Modular Forms space of dimension 9 for Congruence Subgroup Gamma0(44) of weight 2 over Rational Field
         """
         from sage.modular.modform.submodule import ModularFormsSubmodule
+
         if self.ambient_module() != right.ambient_module():
-            raise ArithmeticError(("Sum of %s and %s not defined because " +
-                                    "they do not lie in a common ambient space.") %
-                                   (self, right))
+            raise ArithmeticError(
+                (
+                    "Sum of %s and %s not defined because "
+                    + "they do not lie in a common ambient space."
+                )
+                % (self, right)
+            )
         if self.is_ambient():
             return self
         if right.is_ambient():
@@ -899,7 +922,11 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         if isinstance(from_par, ModularFormsSpace):
             if from_par.ambient() == self:
                 return True
-            if self.is_ambient() and self.group().is_subgroup(from_par.group()) and self.weight() == from_par.weight():
+            if (
+                self.is_ambient()
+                and self.group().is_subgroup(from_par.group())
+                and self.weight() == from_par.weight()
+            ):
                 return True
 
         return False
@@ -1018,9 +1045,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             4 + 6*q + 47*q^2 + 143*q^3 + 358*q^4 + 630*q^5 + O(q^6)
         """
         if isinstance(x, ModularFormElement):
-
             if not check:
                 from copy import copy
+
                 f = copy(x)
                 f._set_parent(self)
                 return f
@@ -1034,18 +1061,26 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             if x.prec() == PlusInfinity():
                 if x == 0:
                     return self.element_class(self, self.free_module().zero())
-                raise TypeError("unable to create modular form from exact nonzero polynomial")
+                raise TypeError(
+                    "unable to create modular form from exact nonzero polynomial"
+                )
             W = self._q_expansion_module()
             if W.degree() <= x.prec():
                 try:
                     x_potential = W.coordinates(x.padded_list(W.degree()))
                 except ArithmeticError:
-                    raise ValueError("q-expansion does not correspond to a form in self")
-                x_potential = self.free_module().linear_combination_of_basis(x_potential)
+                    raise ValueError(
+                        "q-expansion does not correspond to a form in self"
+                    )
+                x_potential = self.free_module().linear_combination_of_basis(
+                    x_potential
+                )
                 x_potential = self.element_class(self, x_potential)
                 for i in range(int(W.degree()), x.prec()):
                     if x_potential[i] != x[i]:
-                        raise ValueError("q-expansion does not correspond to a form in self")
+                        raise ValueError(
+                            "q-expansion does not correspond to a form in self"
+                        )
                 return x_potential
             raise TypeError("q-expansion needed to at least precision %s" % W.degree())
 
@@ -1080,6 +1115,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             TypeError: unsupported operand parent(s) for +: 'Modular Forms space of dimension 7 for Congruence Subgroup Gamma0(5) of weight 12 over Rational Field' and 'Modular Forms space of dimension 1 for Modular Group SL(2,Z) of weight 4 over Rational Field'
         """
         from .ring import ModularFormsRing
+
         if isinstance(other, ModularFormsSpace):
             if self.group() == other.group() and self.base_ring() == other.base_ring():
                 if self.weight() == other.weight():
@@ -1120,10 +1156,18 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
 
         left_ambient = self.ambient()
         right_ambient = other.ambient()
-        lx = params(left_ambient.character(), left_ambient.level(),
-                    left_ambient.weight(), left_ambient.base_ring())
-        rx = params(right_ambient.character(), right_ambient.level(),
-                    right_ambient.weight(), right_ambient.base_ring())
+        lx = params(
+            left_ambient.character(),
+            left_ambient.level(),
+            left_ambient.weight(),
+            left_ambient.base_ring(),
+        )
+        rx = params(
+            right_ambient.character(),
+            right_ambient.level(),
+            right_ambient.weight(),
+            right_ambient.base_ring(),
+        )
         if lx != rx:
             return richcmp_not_equal(lx, rx, op)
         if self.is_ambient() or other.is_ambient():
@@ -1156,10 +1200,13 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             Modular Forms subspace of dimension 5 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
         """
         from .submodule import ModularFormsSubmoduleWithBasis
+
         W = self._q_expansion_module()
         F = self.free_module()
         prec = W.degree()
-        C = [F.linear_combination_of_basis(W.coordinates(f.padded_list(prec))) for f in B]
+        C = [
+            F.linear_combination_of_basis(W.coordinates(f.padded_list(prec))) for f in B
+        ]
         S = F.span_of_basis(C)
         return ModularFormsSubmoduleWithBasis(self.ambient(), S)
 
@@ -1205,7 +1252,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             # Initial guess -- will increase if need be.
             # We add on a few dimensions, so we are likely to
             # detect non-invariant subspaces (if they accidentally occur).
-            prec = p*self.dimension() + 8
+            prec = p * self.dimension() + 8
         try:
             cur, _ = self.__q_expansion_basis
         except AttributeError:
@@ -1217,8 +1264,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         if eps is None:
             raise NotImplementedError
         try:
-            return hecke_operator_on_qexp.hecke_operator_on_basis(B, p,
-                       self.weight(), eps, already_echelonized=False)
+            return hecke_operator_on_qexp.hecke_operator_on_basis(
+                B, p, self.weight(), eps, already_echelonized=False
+            )
         except ValueError:
             # Double the precision.
             return self._compute_hecke_matrix_prime(p, prec=2 * prec + 1)
@@ -1271,9 +1319,20 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
 
         # Try to avoid doing unnecessary computations where possible.
         if self.is_cuspidal():
-            M = self.ambient().cuspidal_submodule().hecke_matrix(n).block_sum(zero_matrix(self.base_ring(), self.ambient().eisenstein_submodule().rank()))
+            M = (
+                self.ambient()
+                .cuspidal_submodule()
+                .hecke_matrix(n)
+                .block_sum(
+                    zero_matrix(
+                        self.base_ring(), self.ambient().eisenstein_submodule().rank()
+                    )
+                )
+            )
         elif self.is_eisenstein():
-            M = zero_matrix(self.base_ring(), self.ambient().cuspidal_submodule().rank()).block_sum(self.ambient().eisenstein_submodule().hecke_matrix(n))
+            M = zero_matrix(
+                self.base_ring(), self.ambient().cuspidal_submodule().rank()
+            ).block_sum(self.ambient().eisenstein_submodule().hecke_matrix(n))
         else:
             M = self.ambient().hecke_matrix(n)
         return M.restrict(self.free_module(), check=(gcd(n, self.level()) > 1))
@@ -1290,9 +1349,11 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             [q - 2*q^2 - q^3 + 2*q^4 + q^5 + O(q^6),
              1 + 12/5*q + 36/5*q^2 + 48/5*q^3 + 84/5*q^4 + 72/5*q^5 + O(q^6)]
         """
-        return Sequence([self.element_class(self, x)
-                         for x in self.free_module().basis()],
-                        immutable=True, cr=True)
+        return Sequence(
+            [self.element_class(self, x) for x in self.free_module().basis()],
+            immutable=True,
+            cr=True,
+        )
 
     def gen(self, n):
         """
@@ -1406,13 +1467,15 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         if self.__sturm_bound is None:
             G = self.group()
             from sage.modular.arithgroup.congroup_gamma1 import Gamma1_class
+
             if isinstance(G, Gamma1_class) and self.character() is not None:
                 from sage.modular.arithgroup.congroup_gamma0 import (
                     Gamma0_constructor as Gamma0,
                 )
+
                 G = Gamma0(self.level())
             # the +1 below is because O(q^prec) has precision prec.
-            self.__sturm_bound = G.sturm_bound(self.weight())+1
+            self.__sturm_bound = G.sturm_bound(self.weight()) + 1
         return self.__sturm_bound
 
     def cuspidal_submodule(self):
@@ -1449,7 +1512,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         except AttributeError:
             pass
         if self.is_ambient():
-            raise NotImplementedError("ambient modular forms spaces must override cuspidal_submodule")
+            raise NotImplementedError(
+                "ambient modular forms spaces must override cuspidal_submodule"
+            )
         C = self.ambient_module().cuspidal_submodule()
         S = self.intersection(C)
         if S.dimension() < self.dimension():
@@ -1496,7 +1561,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             sage: M.cuspidal_submodule().is_cuspidal()
             True
         """
-        return (self.cuspidal_submodule() == self)
+        return self.cuspidal_submodule() == self
 
     @cached_method
     def is_eisenstein(self) -> bool:
@@ -1511,7 +1576,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             sage: M.eisenstein_submodule().is_eisenstein()
             True
         """
-        return (self.eisenstein_submodule() == self)
+        return self.eisenstein_submodule() == self
 
     def new_submodule(self, p=None):
         """
@@ -1563,7 +1628,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             ...
             NotImplementedError: computation of Eisenstein series in this space not yet implemented
         """
-        raise NotImplementedError("computation of Eisenstein series in this space not yet implemented")
+        raise NotImplementedError(
+            "computation of Eisenstein series in this space not yet implemented"
+        )
 
     def decomposition(self):
         """
@@ -1607,13 +1674,16 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         factors = M.cuspidal_subspace().new_subspace().decomposition()
         large_dims = [X.dimension() for X in factors if X.dimension() != 1]
         if large_dims and names is None:
-            raise ValueError("Please specify a name to be used when generating names for generators of Hecke eigenvalue fields corresponding to the newforms.")
+            raise ValueError(
+                "Please specify a name to be used when generating names for generators of Hecke eigenvalue fields corresponding to the newforms."
+            )
         elif names is None:
             # In this case, we don't need a variable name, so insert
             # something to get passed along below
             names = 'a'
-        return [Newform(self, factors[i], names=names + str(i))
-                for i in range(len(factors))]
+        return [
+            Newform(self, factors[i], names=names + str(i)) for i in range(len(factors))
+        ]
 
     @cached_method
     def eisenstein_submodule(self):
@@ -1637,7 +1707,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             return self
 
         if self.is_ambient():
-            raise NotImplementedError("ambient modular forms spaces must override eisenstein_submodule")
+            raise NotImplementedError(
+                "ambient modular forms spaces must override eisenstein_submodule"
+            )
         A = self.ambient_module().eisenstein_submodule()
         E = self.intersection(A)
         if E.dimension() < self.dimension():
@@ -1645,7 +1717,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         else:
             assert E.dimension() == self.dimension()
             self.is_eisenstein.set_cache(True)
-        E.__is_cuspidal = (E.dimension() == 0)
+        E.__is_cuspidal = E.dimension() == 0
         E.is_eisenstein.set_cache(True)
         return E
 
@@ -1678,45 +1750,45 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
         """
         return self.free_module()
 
-# intersect method commented out since it is a duplicate of the intersection method in sage.modular.hecke.submodule
-# -- David Loeffler, 2009-04-30
-#
-#    def intersect(self, right):
-#        """
-#        If self and right live in the same ambient module, return the
-#        intersection of self and right (as submodules).
-#
-#        EXAMPLES::
-#
-#            sage: N = ModularForms(6,4); S = N.cuspidal_subspace()
-#
-#        ::
-#
-#            sage: N.intersect(S)
-#            Modular Forms subspace of dimension 1 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
-#
-#        ::
-#
-#            sage: S.intersect(N)
-#            Modular Forms subspace of dimension 1 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
-#
-#        ::
-#
-#            sage: S.intersect(N.eisenstein_subspace())
-#            Modular Forms subspace of dimension 0 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
-#        """
-#        from sage.modular.modform.all import ModularForms
-#        if self.ambient_module() != right.ambient_module():
-#            raise ArithmeticError("Intersection of %s and %s not defined." %
-#                                  (self, right))
-#        V = self.embedded_submodule().intersection(right.embedded_submodule())
-#        return ModularForms(self.ambient_module(),V)
-#        return self.span([ self(b) for b in V.basis() ])
+    # intersect method commented out since it is a duplicate of the intersection method in sage.modular.hecke.submodule
+    # -- David Loeffler, 2009-04-30
+    #
+    #    def intersect(self, right):
+    #        """
+    #        If self and right live in the same ambient module, return the
+    #        intersection of self and right (as submodules).
+    #
+    #        EXAMPLES::
+    #
+    #            sage: N = ModularForms(6,4); S = N.cuspidal_subspace()
+    #
+    #        ::
+    #
+    #            sage: N.intersect(S)
+    #            Modular Forms subspace of dimension 1 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
+    #
+    #        ::
+    #
+    #            sage: S.intersect(N)
+    #            Modular Forms subspace of dimension 1 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
+    #
+    #        ::
+    #
+    #            sage: S.intersect(N.eisenstein_subspace())
+    #            Modular Forms subspace of dimension 0 of Modular Forms space of dimension 5 for Congruence Subgroup Gamma0(6) of weight 4 over Rational Field
+    #        """
+    #        from sage.modular.modform.all import ModularForms
+    #        if self.ambient_module() != right.ambient_module():
+    #            raise ArithmeticError("Intersection of %s and %s not defined." %
+    #                                  (self, right))
+    #        V = self.embedded_submodule().intersection(right.embedded_submodule())
+    #        return ModularForms(self.ambient_module(),V)
+    #        return self.span([ self(b) for b in V.basis() ])
 
-#    def _key(self):
-#        if self.is_ambient():
-#            return self.__key
-#        return self.__ambient
+    #    def _key(self):
+    #        if self.is_ambient():
+    #            return self.__key
+    #        return self.__ambient
 
     def level(self):
         """
@@ -1747,7 +1819,9 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
             ...
             NotImplementedError: computation of associated modular symbols space not yet implemented
         """
-        raise NotImplementedError("computation of associated modular symbols space not yet implemented")
+        raise NotImplementedError(
+            "computation of associated modular symbols space not yet implemented"
+        )
 
     def find_in_space(self, f, forms=None, prec=None, indep=True):
         """
@@ -1803,7 +1877,7 @@ class ModularFormsSpace(hecke.HeckeModule_generic):
                 n = forms[0].parent().prec()
             else:
                 n = prec
-            V = self.base_ring()**n
+            V = self.base_ring() ** n
             w = [V(g.padded_list(n)) for g in forms]
             if indep:
                 B = V.span_of_basis(w)

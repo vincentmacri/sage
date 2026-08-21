@@ -73,6 +73,7 @@ class FermionicGhostsLieConformalAlgebra(GradedLieConformalAlgebra):
         sage: R.structure_coefficients()
         Finite family {('a', 'c'): ((0, K),),  ('b', 'd'): ((0, K),),  ('c', 'a'): ((0, K),),  ('d', 'b'): ((0, K),)}
     """
+
     def __init__(self, R, ngens=2, names=None, index_set=None) -> None:
         """
         Initialize ``self``.
@@ -83,39 +84,48 @@ class FermionicGhostsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: TestSuite(V).run()
         """
         try:
-            assert (ngens > 0 and not ngens % 2)
+            assert ngens > 0 and not ngens % 2
         except AssertionError:
-            raise ValueError("ngens should be an even positive integer, " +
-                             "got {}".format(ngens))
+            raise ValueError(
+                "ngens should be an even positive integer, " + "got {}".format(ngens)
+            )
         latex_names = None
         half = ngens // 2
         if (names is None) and (index_set is None):
             from sage.misc.defaults import latex_variable_names as laxnames
             from sage.misc.defaults import variable_names as varnames
+
             names = varnames(half, 'b') + varnames(half, 'c')
-            latex_names = tuple(laxnames(half, 'b') +
-                                laxnames(half, 'c')) + ('K',)
+            latex_names = tuple(laxnames(half, 'b') + laxnames(half, 'c')) + ('K',)
 
         from sage.structure.indexed_generators import standardize_names_index_set
-        names, index_set = standardize_names_index_set(names=names,
-                                                       index_set=index_set,
-                                                       ngens=ngens)
+
+        names, index_set = standardize_names_index_set(
+            names=names, index_set=index_set, ngens=ngens
+        )
         from sage.matrix.special import identity_matrix
+
         A = identity_matrix(R, half)
         from sage.matrix.special import block_matrix
+
         gram_matrix = block_matrix([[R.zero(), A], [A, R.zero()]])
-        ghostsdict = {(i, j): {0: {('K', 0): gram_matrix[index_set.rank(i),
-                                                         index_set.rank(j)]}}
-                      for i in index_set for j in index_set}
+        ghostsdict = {
+            (i, j): {0: {('K', 0): gram_matrix[index_set.rank(i), index_set.rank(j)]}}
+            for i in index_set
+            for j in index_set
+        }
         weights = (1,) * half + (0,) * half
         parity = (1,) * ngens
-        super().__init__(R,
-                         ghostsdict, names=names,
-                         latex_names=latex_names,
-                         index_set=index_set,
-                         weights=weights,
-                         parity=parity,
-                         central_elements=('K',))
+        super().__init__(
+            R,
+            ghostsdict,
+            names=names,
+            latex_names=latex_names,
+            index_set=index_set,
+            weights=weights,
+            parity=parity,
+            central_elements=('K',),
+        )
 
     def _repr_(self) -> str:
         """
@@ -126,5 +136,7 @@ class FermionicGhostsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: lie_conformal_algebras.FermionicGhosts(QQ)
             The Fermionic ghosts Lie conformal algebra with generators (b, c, K) over Rational Field
         """
-        return "The Fermionic ghosts Lie conformal algebra with generators {} "\
+        return (
+            "The Fermionic ghosts Lie conformal algebra with generators {} "
             "over {}".format(self.gens(), self.base_ring())
+        )

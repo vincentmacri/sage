@@ -15,7 +15,7 @@ AUTHOR:
 #    the Free Software Foundation, either version 2 of the License, or
 #    (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from sage.rings.homset import RingHomset_generic
 from sage.rings.ring_extension_morphism import RingExtensionHomomorphism
@@ -38,6 +38,7 @@ class RingExtensionHomset(RingHomset_generic):
         sage: type(H)
         <... 'sage.rings.ring_extension_homset.RingExtensionHomset_with_category'>
     """
+
     def __call__(self, *args, **kwargs):
         r"""
         Return the morphism in this parent defined by the

@@ -76,6 +76,7 @@ class WeightedIntegerVectors(Parent, UniqueRepresentation):
         Should the order of the arguments ``n`` and ``weight`` be
         exchanged to simplify the logic?
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None, weight=None):
         """
@@ -285,14 +286,19 @@ class WeightedIntegerVectors_all(DisjointUnionEnumeratedSets):
         self._weights = weight
         from sage.sets.family import Family
         from sage.sets.non_negative_integers import NonNegativeIntegers
+
         # Use "partial" to make the basis function (with the weights
         # argument specified) pickleable.  Otherwise, it seems to
         # cause problems...
         from functools import partial
-        F = Family(NonNegativeIntegers(), partial(WeightedIntegerVectors, weight=weight))
+
+        F = Family(
+            NonNegativeIntegers(), partial(WeightedIntegerVectors, weight=weight)
+        )
         cat = (SetsWithGrading(), InfiniteEnumeratedSets())
-        DisjointUnionEnumeratedSets.__init__(self, F, facade=True, keepkey=False,
-                                             category=cat)
+        DisjointUnionEnumeratedSets.__init__(
+            self, F, facade=True, keepkey=False, category=cat
+        )
 
     def _repr_(self):
         """
@@ -316,9 +322,11 @@ class WeightedIntegerVectors_all(DisjointUnionEnumeratedSets):
             sage: [3,-1,0] in WeightedIntegerVectors([2,1,1])
             False
         """
-        return (isinstance(x, (list, IntegerVector, Permutation))
-                and len(x) == len(self._weights)
-                and all(i in ZZ and i >= 0 for i in x))
+        return (
+            isinstance(x, (list, IntegerVector, Permutation))
+            and len(x) == len(self._weights)
+            and all(i in ZZ and i >= 0 for i in x)
+        )
 
     def subset(self, size=None):
         """
@@ -332,7 +340,7 @@ class WeightedIntegerVectors_all(DisjointUnionEnumeratedSets):
             return self
         return self._family[size]
 
-    def grading(self, x): # or degree / grading
+    def grading(self, x):  # or degree / grading
         """
         EXAMPLES::
 
@@ -382,7 +390,7 @@ def iterator_fast(n, l):
 
     k = 0
     cur = [n // l[k] + one]
-    rem = n - cur[-1] * l[k] # Amount remaining
+    rem = n - cur[-1] * l[k]  # Amount remaining
     while cur:
         cur[-1] -= one
         rem += l[k]
@@ -401,4 +409,9 @@ def iterator_fast(n, l):
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.integer_vector_weighted', 'WeightedIntegerVectors_nweight', WeightedIntegerVectors)
+
+register_unpickle_override(
+    'sage.combinat.integer_vector_weighted',
+    'WeightedIntegerVectors_nweight',
+    WeightedIntegerVectors,
+)

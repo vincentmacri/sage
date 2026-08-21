@@ -8,14 +8,14 @@ AUTHORS:
 - Michael Jung (2019): initial version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019 Michael Jung <micjung at uni-potsdam.de>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.manifolds.vector_bundle_fiber_element import VectorBundleFiberElement
 from sage.symbolic.ring import SR
@@ -158,6 +158,7 @@ class VectorBundleFiber(FiniteRankFreeModule):
         :class:`~sage.tensor.modules.finite_rank_free_module.FiniteRankFreeModule`
         for more documentation.
     """
+
     Element = VectorBundleFiberElement
 
     def __init__(self, vector_bundle, point):
@@ -175,38 +176,45 @@ class VectorBundleFiber(FiniteRankFreeModule):
             sage: TestSuite(Ep).run()
         """
         if point._manifold is not vector_bundle._base_space:
-            raise ValueError("Point must be an element "
-                             "of {}".format(vector_bundle._manifold))
+            raise ValueError(
+                "Point must be an element of {}".format(vector_bundle._manifold)
+            )
         name = "{}_{}".format(vector_bundle._name, point._name)
-        latex_name = r'{}_{{{}}}'.format(vector_bundle._latex_name,
-                                         point._latex_name)
+        latex_name = r'{}_{{{}}}'.format(vector_bundle._latex_name, point._latex_name)
         self._rank = vector_bundle._rank
         self._vbundle = vector_bundle
         self._point = point
         self._base_space = point._manifold
-        FiniteRankFreeModule.__init__(self, SR, self._rank, name=name,
-                                      latex_name=latex_name,
-                                      start_index=self._base_space._sindex)
+        FiniteRankFreeModule.__init__(
+            self,
+            SR,
+            self._rank,
+            name=name,
+            latex_name=latex_name,
+            start_index=self._base_space._sindex,
+        )
         ###
         # Construct basis
-        self._frame_bases = {} # dictionary of bases of the vector bundle fiber
-                        # derived from local frames around the point
-                        # (keys: local frames)
+        self._frame_bases = {}  # dictionary of bases of the vector bundle fiber
+        # derived from local frames around the point
+        # (keys: local frames)
         self._def_basis = None
         for frame in vector_bundle._frames:
             # the frame is used to construct a basis of the vector bundle fiber
             # only if it is a frame for the given point:
             if point in frame.domain():
                 coframe = frame.coframe()
-                basis = self.basis(frame._symbol,
-                                   latex_symbol=frame._latex_symbol,
-                                   indices=frame._indices,
-                                   latex_indices=frame._latex_indices,
-                                   symbol_dual=coframe._symbol,
-                                   latex_symbol_dual=coframe._latex_symbol)
+                basis = self.basis(
+                    frame._symbol,
+                    latex_symbol=frame._latex_symbol,
+                    indices=frame._indices,
+                    latex_indices=frame._latex_indices,
+                    symbol_dual=coframe._symbol,
+                    latex_symbol_dual=coframe._latex_symbol,
+                )
                 self._frame_bases[frame] = basis
                 if self._def_basis is None:
-                    self._def_basis = basis # Declare the first basis as default
+                    self._def_basis = basis  # Declare the first basis as default
         # Initialization of the changes of bases from the existing changes of
         # frames around the point:
         for frame_pair, automorph in self._vbundle._frame_changes.items():
@@ -266,8 +274,7 @@ class VectorBundleFiber(FiniteRankFreeModule):
             sage: E.fiber(p)._repr_()
             'Fiber of E at Point p on the 3-dimensional topological manifold M'
         """
-        return "Fiber of {} at {}".format(self._vbundle._name,
-                                          self._point)
+        return "Fiber of {} at {}".format(self._vbundle._name, self._point)
 
     def dimension(self):
         r"""

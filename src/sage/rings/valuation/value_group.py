@@ -47,6 +47,7 @@ class DiscreteValuationCodomain(UniqueRepresentation, Parent):
 
         sage: TestSuite(C).run() # long time
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -57,8 +58,13 @@ class DiscreteValuationCodomain(UniqueRepresentation, Parent):
         """
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
         from sage.categories.additive_monoids import AdditiveMonoids
+
         UniqueRepresentation.__init__(self)
-        Parent.__init__(self, facade=(QQ, FiniteEnumeratedSet([infinity, -infinity])), category=AdditiveMonoids())
+        Parent.__init__(
+            self,
+            facade=(QQ, FiniteEnumeratedSet([infinity, -infinity])),
+            category=AdditiveMonoids(),
+        )
 
     def _element_constructor_(self, x):
         r"""
@@ -134,6 +140,7 @@ class DiscreteValueGroup(UniqueRepresentation, Parent):
         sage: TestSuite(D2).run()  # long time
         sage: TestSuite(D3).run()  # long time
     """
+
     @staticmethod
     def __classcall__(cls, generator):
         r"""
@@ -158,6 +165,7 @@ class DiscreteValueGroup(UniqueRepresentation, Parent):
             True
         """
         from sage.categories.modules import Modules
+
         self._generator = generator
 
         # We can not set the facade to DiscreteValuationCodomain since there
@@ -235,6 +243,7 @@ class DiscreteValueGroup(UniqueRepresentation, Parent):
         if isinstance(other, DiscreteValueSemigroup):
             return other + self
         from sage.structure.element import Element
+
         if isinstance(other, Element) and QQ.has_coerce_map_from(other.parent()):
             return self + DiscreteValueGroup(other)
         raise ValueError("`other` must be a DiscreteValueGroup or a rational number")
@@ -346,7 +355,9 @@ class DiscreteValueGroup(UniqueRepresentation, Parent):
             sage: DiscreteValueGroup(-3/8).some_elements()
             [3/8, -3/8, 0, 42, 3/2, -3/2, 9/8, -9/8]
         """
-        return [self._generator, -self._generator] + [x for x in QQ.some_elements() if x in self]
+        return [self._generator, -self._generator] + [
+            x for x in QQ.some_elements() if x in self
+        ]
 
     def is_trivial(self):
         r"""
@@ -379,14 +390,16 @@ class DiscreteValueGroup(UniqueRepresentation, Parent):
             (3, 1)
         """
         if s not in self:
-            raise ValueError("s must be in the value group but %r is not in %r." % (s, self))
+            raise ValueError(
+                "s must be in the value group but %r is not in %r." % (s, self)
+            )
 
         i = self.index(subgroup)
-        x = s/self.gen()
+        x = s / self.gen()
         a = x % i
-        if abs(a-i) < a:
+        if abs(a - i) < a:
             a -= i
-        b = (x-a)/i
+        b = (x - a) / i
         return a, b
 
 
@@ -415,6 +428,7 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
         sage: TestSuite(D2).run()               # long time                             # needs sage.geometry.polyhedron
         sage: TestSuite(D3).run()               # long time                             # needs sage.numerical.mip
     """
+
     @staticmethod
     def __classcall__(cls, generators):
         r"""
@@ -449,6 +463,7 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
                 if g == h:
                     continue
                 from sage.rings.semirings.non_negative_integer_semiring import NN
+
                 if h / g in NN:
                     simplified_generators.remove(h)
                     break
@@ -464,6 +479,7 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
             True
         """
         from sage.categories.additive_magmas import AdditiveMagmas
+
         self._generators = generators
 
         category = AdditiveMagmas().AdditiveAssociative().AdditiveUnital()
@@ -500,23 +516,25 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
 
         if len(self._generators) == 1:
             from sage.rings.semirings.non_negative_integer_semiring import NN
+
             exp = target / self._generators[0]
             if exp not in NN:
                 return None
             return {0: exp}
 
-        if len(self._generators) == 2 and self._generators[0] == - self._generators[1]:
+        if len(self._generators) == 2 and self._generators[0] == -self._generators[1]:
             from sage.rings.integer_ring import ZZ
+
             exp = target / self._generators[0]
             if exp not in ZZ:
                 return None
             return {0: exp, 1: 0}
 
         from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
         P = MixedIntegerLinearProgram(maximization=False, solver='ppl')
         x = P.new_variable(integer=True, nonnegative=True)
-        constraint = sum([g * x[i]
-                          for i, g in enumerate(self._generators)]) == target
+        constraint = sum([g * x[i] for i, g in enumerate(self._generators)]) == target
         P.add_constraint(constraint)
         P.set_objective(None)
         try:
@@ -567,7 +585,9 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
         """
         if self.is_trivial():
             return "Trivial Additive Abelian Semigroup"
-        return "Additive Abelian Semigroup generated by %s" % (', '.join(repr(g) for g in self._generators),)
+        return "Additive Abelian Semigroup generated by %s" % (
+            ', '.join(repr(g) for g in self._generators),
+        )
 
     def __add__(self, other):
         r"""
@@ -593,11 +613,16 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
         if isinstance(other, DiscreteValueSemigroup):
             return DiscreteValueSemigroup(self._generators + other._generators)
         if isinstance(other, DiscreteValueGroup):
-            return DiscreteValueSemigroup(self._generators + (other._generator, -other._generator))
+            return DiscreteValueSemigroup(
+                self._generators + (other._generator, -other._generator)
+            )
         from sage.structure.element import Element
+
         if isinstance(other, Element) and QQ.has_coerce_map_from(other.parent()):
             return self + DiscreteValueSemigroup(other)
-        raise ValueError("`other` must be a DiscreteValueGroup, a DiscreteValueSemigroup or a rational number")
+        raise ValueError(
+            "`other` must be a DiscreteValueGroup, a DiscreteValueSemigroup or a rational number"
+        )
 
     def _mul_(self, other, switch_sides=False):
         r"""
@@ -620,7 +645,7 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
             Trivial Additive Abelian Semigroup
         """
         other = QQ.coerce(other)
-        return DiscreteValueSemigroup([g*other for g in self._generators])
+        return DiscreteValueSemigroup([g * other for g in self._generators])
 
     def gens(self) -> tuple:
         r"""
@@ -649,9 +674,9 @@ class DiscreteValueSemigroup(UniqueRepresentation, Parent):
             return
         yield from self._generators
         from sage.rings.integer_ring import ZZ
-        for x in (ZZ**len(self._generators)).some_elements():
-            yield QQ.coerce(sum([abs(c) * g
-                                 for c, g in zip(x, self._generators)]))
+
+        for x in (ZZ ** len(self._generators)).some_elements():
+            yield QQ.coerce(sum([abs(c) * g for c, g in zip(x, self._generators)]))
 
     def is_trivial(self):
         r"""

@@ -2,12 +2,12 @@
 r"""
 Examples of parents endowed with multiple realizations
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.bindable_class import BindableClass
@@ -173,7 +173,9 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                       To:   The subset algebra of {1, 2, 3} over Rational Field in the Out basis
         """
         assert R in Rings()
-        self._base = R  # Won't be needed when CategoryObject won't override anymore base_ring
+        self._base = (
+            R  # Won't be needed when CategoryObject won't override anymore base_ring
+        )
         self._S = S
         Parent.__init__(self, category=Algebras(R).Commutative().WithRealizations())
 
@@ -185,18 +187,26 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
 
         category = self.Bases()
         key = self.indices_key
-        In_to_F = In.module_morphism(F.sum_of_monomials * Subsets,
-                                     codomain=F, category=category,
-                                     triangular='upper', unitriangular=True,
-                                     key=key)
-        In_to_F   .register_as_coercion()
+        In_to_F = In.module_morphism(
+            F.sum_of_monomials * Subsets,
+            codomain=F,
+            category=category,
+            triangular='upper',
+            unitriangular=True,
+            key=key,
+        )
+        In_to_F.register_as_coercion()
         (~In_to_F).register_as_coercion()
 
-        F_to_Out = F.module_morphism(Out.sum_of_monomials * self.supsets,
-                                     codomain=Out, category=category,
-                                     triangular='lower', unitriangular=True,
-                                     key=key)
-        F_to_Out   .register_as_coercion()
+        F_to_Out = F.module_morphism(
+            Out.sum_of_monomials * self.supsets,
+            codomain=Out,
+            category=category,
+            triangular='lower',
+            unitriangular=True,
+            key=key,
+        )
+        F_to_Out.register_as_coercion()
         (~F_to_Out).register_as_coercion()
 
     _shorthands = ("F", "In", "Out")
@@ -304,11 +314,9 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
             """
             A = self.base()
             category = Algebras(A.base_ring()).Commutative()
-            return [A.Realizations(),
-                    category.Realizations().WithBasis()]
+            return [A.Realizations(), category.Realizations().WithBasis()]
 
         class ParentMethods:
-
             def from_set(self, *args):
                 r"""
                 Construct the monomial indexed by the set containing the
@@ -345,6 +353,7 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                     F[{1, 3}]
                 """
                 from sage.rings.integer import Integer
+
                 if isinstance(s, Integer):
                     return self.from_set(*(s,))
                 return self.from_set(*s)
@@ -357,7 +366,10 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                     sage: Sets().WithRealizations().example().In()  # indirect doctest
                     The subset algebra of {1, 2, 3} over Rational Field in the In basis
                 """
-                return "%s in the %s basis" % (self.realization_of(), self._realization_name())
+                return "%s in the %s basis" % (
+                    self.realization_of(),
+                    self._realization_name(),
+                )
 
             # Could this go in the super category Monoids().Realizations() ?
             @cached_method
@@ -407,9 +419,14 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                 The subset algebra of {1, 2, 3} over Rational Field in the Fundamental basis
                 sage: TestSuite(F).run()
             """
-            CombinatorialFreeModule.__init__(self,
-                A.base_ring(), A.indices(),
-                category=A.Bases(), prefix='F', sorting_key=A.indices_key)
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                A.indices(),
+                category=A.Bases(),
+                prefix='F',
+                sorting_key=A.indices_key,
+            )
 
         def product_on_basis(self, left, right):
             r"""
@@ -496,9 +513,14 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                 The subset algebra of {1, 2, 3} over Rational Field in the In basis
                 sage: TestSuite(In).run()
             """
-            CombinatorialFreeModule.__init__(self,
-                A.base_ring(), A.indices(),
-                category=A.Bases(), prefix='In', sorting_key=A.indices_key)
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                A.indices(),
+                category=A.Bases(),
+                prefix='In',
+                sorting_key=A.indices_key,
+            )
 
     class Out(CombinatorialFreeModule, BindableClass):
         r"""
@@ -539,6 +561,11 @@ class SubsetAlgebra(UniqueRepresentation, Parent):
                 The subset algebra of {1, 2, 3} over Rational Field in the Out basis
                 sage: TestSuite(Out).run()
             """
-            CombinatorialFreeModule.__init__(self,
-                A.base_ring(), A.indices(),
-                category=A.Bases(), prefix='Out', sorting_key=A.indices_key)
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                A.indices(),
+                category=A.Bases(),
+                prefix='Out',
+                sorting_key=A.indices_key,
+            )

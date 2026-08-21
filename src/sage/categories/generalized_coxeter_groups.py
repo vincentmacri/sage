@@ -1,7 +1,7 @@
 r"""
 Generalized Coxeter Groups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2016 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -9,12 +9,14 @@ Generalized Coxeter Groups
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.category_with_axiom import CategoryWithAxiom
-from sage.categories.complex_reflection_or_generalized_coxeter_groups import ComplexReflectionOrGeneralizedCoxeterGroups
+from sage.categories.complex_reflection_or_generalized_coxeter_groups import (
+    ComplexReflectionOrGeneralizedCoxeterGroups,
+)
 
 
 class GeneralizedCoxeterGroups(Category_singleton):
@@ -41,6 +43,7 @@ class GeneralizedCoxeterGroups(Category_singleton):
 
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -73,6 +76,7 @@ class GeneralizedCoxeterGroups(Category_singleton):
         """
         The category of finite generalized Coxeter groups.
         """
+
         def extra_super_categories(self):
             """
             Implement that a finite generalized Coxeter group is a
@@ -89,5 +93,8 @@ class GeneralizedCoxeterGroups(Category_singleton):
                 sage: Cat.is_subcategory(ComplexReflectionGroups().Finite().WellGenerated())
                 True
             """
-            from sage.categories.complex_reflection_groups import ComplexReflectionGroups
+            from sage.categories.complex_reflection_groups import (
+                ComplexReflectionGroups,
+            )
+
             return [ComplexReflectionGroups().Finite().WellGenerated()]

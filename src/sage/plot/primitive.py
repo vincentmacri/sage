@@ -1,7 +1,8 @@
 """
 Plotting primitives
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
 #                     2008 Mike Hansen <mhansen@gmail.com>,
@@ -16,7 +17,7 @@ Plotting primitives
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.misc.fast_methods import WithEqualityById
 from sage.structure.sage_object import SageObject
 from sage.misc.verbose import verbose
@@ -42,6 +43,7 @@ class GraphicPrimitive(WithEqualityById, SageObject):
         sage: hash(circle((0,0),1))  # random
         42
     """
+
     def __init__(self, options):
         """
         Create a base class GraphicsPrimitive.  All this does is
@@ -117,8 +119,9 @@ class GraphicPrimitive(WithEqualityById, SageObject):
                 del options[o]
 
         if len(options) != 0:
-            raise NotImplementedError("Unknown plot3d equivalent for {}".format(
-                                      ", ".join(options.keys())))
+            raise NotImplementedError(
+                "Unknown plot3d equivalent for {}".format(", ".join(options.keys()))
+            )
         return options_3d
 
     def set_zorder(self, zorder):
@@ -174,6 +177,7 @@ class GraphicPrimitive(WithEqualityById, SageObject):
         """
         from sage.plot.graphics import do_verify
         from sage.plot.colors import hue
+
         O = dict(self._options)
         if do_verify:
             A = self._allowed_options()
@@ -182,8 +186,7 @@ class GraphicPrimitive(WithEqualityById, SageObject):
             for k, Ok in O.items():
                 if k not in K:
                     do_verify = False
-                    verbose(f"WARNING: Ignoring option '{k}'={Ok}",
-                            level=0)
+                    verbose(f"WARNING: Ignoring option '{k}'={Ok}", level=0)
                     t = True
             if t:
                 s = "\nThe allowed options for %s are:\n" % self
@@ -245,4 +248,5 @@ class GraphicPrimitive_xydata(GraphicPrimitive):
             120.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data(self.xdata, self.ydata, dict=True)

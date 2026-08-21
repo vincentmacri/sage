@@ -20,15 +20,17 @@ def run_tests_in_valgrind() -> None:
     """
     Run the sage.tests.memcheck.run_tests module inside valgrind
     """
-    subprocess.check_call([
-        'valgrind',
-        '--suppressions=src/sage/ext_data/valgrind/valgrind-python.supp',
-        '--show-possibly-lost=no',
-        '--show-reachable=no',
-        './venv/bin/python',
-        '-m',
-        'sage.tests.memcheck.run_tests'
-    ])
+    subprocess.check_call(
+        [
+            'valgrind',
+            '--suppressions=src/sage/ext_data/valgrind/valgrind-python.supp',
+            '--show-possibly-lost=no',
+            '--show-reachable=no',
+            './venv/bin/python',
+            '-m',
+            'sage.tests.memcheck.run_tests',
+        ]
+    )
 
 
 if __name__ == '__main__':

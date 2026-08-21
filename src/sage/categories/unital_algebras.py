@@ -1,6 +1,7 @@
 r"""
 Unital algebras
 """
+
 # ****************************************************************************
 #  Copyright (C) 2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
@@ -49,6 +50,7 @@ class UnitalAlgebras(CategoryWithAxiom_over_base_ring):
         True
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (MagmaticAlgebras, "Unital")
 
     class ParentMethods:
@@ -210,7 +212,7 @@ class UnitalAlgebras(CategoryWithAxiom_over_base_ring):
             # If there is a specialised from_base_ring(), then it should
             # be used unconditionally.
             generic_from_base_ring = self.category().parent_class.from_base_ring
-            from_base_ring = self.from_base_ring   # bound method
+            from_base_ring = self.from_base_ring  # bound method
             if from_base_ring.__func__ != generic_from_base_ring:
                 # Custom from_base_ring()
                 use_from_base_ring = True
@@ -250,9 +252,7 @@ class UnitalAlgebras(CategoryWithAxiom_over_base_ring):
             return mor
 
     class WithBasis(CategoryWithAxiom_over_base_ring):
-
         class ParentMethods:
-
             @abstract_method(optional=True)
             def one_basis(self):
                 """
@@ -381,6 +381,7 @@ class UnitalAlgebras(CategoryWithAxiom_over_base_ring):
          - http://groups.google.fr/group/sage-devel/browse_thread/thread/35a72b1d0a2fc77a/348f42ae77a66d16#348f42ae77a66d16
          - :wikipedia:`Direct_product`
         """
+
         def extra_super_categories(self):
             """
             A Cartesian product of algebras is endowed with a natural

@@ -198,6 +198,7 @@ class VectorField(MultivectorField):
            (x, y) ↦ 2*x^2 - 2*y^2 + 2*x + 2*y
            (t, u) ↦ 2*t*u + 2*t
     """
+
     def __init__(self, vector_field_module, name=None, latex_name=None):
         r"""
         Construct a vector field with values on a non-parallelizable manifold.
@@ -231,8 +232,9 @@ class VectorField(MultivectorField):
 
             Fix ``_test_pickling`` (in the superclass :class:`TensorField`).
         """
-        MultivectorField.__init__(self, vector_field_module, 1, name=name,
-                                  latex_name=latex_name)
+        MultivectorField.__init__(
+            self, vector_field_module, 1, name=name, latex_name=latex_name
+        )
         # Initialization of derived quantities:
         MultivectorField._init_derived(self)
         # Initialization of list of quantities depending on self:
@@ -334,11 +336,11 @@ class VectorField(MultivectorField):
             sage: s == f.differential()(a)
             True
         """
-        if scalar._tensor_type == (0,1):
+        if scalar._tensor_type == (0, 1):
             # This is actually the action of the vector field on a 1-form,
             # as a tensor field of type (1,0):
             return scalar(self)
-        if scalar._tensor_type != (0,0):
+        if scalar._tensor_type != (0, 0):
             raise TypeError("the argument must be a scalar field")
         resu = scalar.differential()(self)
         if not resu.is_immutable():
@@ -347,17 +349,27 @@ class VectorField(MultivectorField):
             else:
                 name = None
             if self._latex_name is not None and scalar._latex_name is not None:
-                latex_name = fr"{self._latex_name}\left({scalar._latex_name}\right)"
+                latex_name = rf"{self._latex_name}\left({scalar._latex_name}\right)"
             else:
                 latex_name = None
             resu.set_name(name=name, latex_name=latex_name)
         return resu
 
     @options(max_range=8, scale=1, color='blue')
-    def plot(self, chart=None, ambient_coords=None, mapping=None,
-             chart_domain=None, fixed_coords=None, ranges=None,
-             number_values=None, steps=None,
-             parameters=None, label_axes=True, **extra_options):
+    def plot(
+        self,
+        chart=None,
+        ambient_coords=None,
+        mapping=None,
+        chart_domain=None,
+        fixed_coords=None,
+        ranges=None,
+        number_values=None,
+        steps=None,
+        parameters=None,
+        label_axes=True,
+        **extra_options,
+    ):
         r"""
         Plot the vector field in a Cartesian graph based on the coordinates
         of some ambient chart.
@@ -683,17 +695,19 @@ class VectorField(MultivectorField):
         if chart is None:
             chart = self._domain.default_chart()
         elif not isinstance(chart, RealChart):
-            raise TypeError("{} is not a chart on a real ".format(chart) +
-                            "manifold")
+            raise TypeError("{} is not a chart on a real ".format(chart) + "manifold")
         if chart_domain is None:
             chart_domain = self._domain.default_chart()
         elif not isinstance(chart_domain, RealChart):
-            raise TypeError("{} is not a chart on a ".format(chart_domain) +
-                            "real manifold")
+            raise TypeError(
+                "{} is not a chart on a ".format(chart_domain) + "real manifold"
+            )
         elif not chart_domain.domain().is_subset(self._domain):
-            raise ValueError("the domain of {} is not ".format(chart_domain) +
-                             "included in the domain of {}".format(self))
-        coords_full = tuple(chart_domain[:]) # all coordinates of chart_domain
+            raise ValueError(
+                "the domain of {} is not ".format(chart_domain)
+                + "included in the domain of {}".format(self)
+            )
+        coords_full = tuple(chart_domain[:])  # all coordinates of chart_domain
         if fixed_coords is None:
             coords = coords_full
         else:
@@ -709,15 +723,19 @@ class VectorField(MultivectorField):
             ambient_coords = tuple(ambient_coords)
         nca = len(ambient_coords)
         if nca != 2 and nca != 3:
-            raise ValueError("the number of ambient coordinates must be " +
-                             "either 2 or 3, not {}".format(nca))
+            raise ValueError(
+                "the number of ambient coordinates must be "
+                + "either 2 or 3, not {}".format(nca)
+            )
         if ranges is None:
             ranges = {}
         ranges0 = {}
         for coord in coords:
             if coord in ranges:
-                ranges0[coord] = (numerical_approx(ranges[coord][0]),
-                                  numerical_approx(ranges[coord][1]))
+                ranges0[coord] = (
+                    numerical_approx(ranges[coord][0]),
+                    numerical_approx(ranges[coord][1]),
+                )
             else:
                 bounds = chart_domain._bounds[coords_full.index(coord)]
                 xmin0 = bounds[0][0]
@@ -727,19 +745,19 @@ class VectorField(MultivectorField):
                 elif bounds[0][1]:
                     xmin = numerical_approx(xmin0)
                 else:
-                    xmin = numerical_approx(xmin0 + 1.e-3)
+                    xmin = numerical_approx(xmin0 + 1.0e-3)
                 if xmax0 == Infinity:
                     xmax = numerical_approx(max_range)
                 elif bounds[1][1]:
                     xmax = numerical_approx(xmax0)
                 else:
-                    xmax = numerical_approx(xmax0 - 1.e-3)
+                    xmax = numerical_approx(xmax0 - 1.0e-3)
                 ranges0[coord] = (xmin, xmax)
         ranges = ranges0
         if number_values is None:
-            if nca == 2: # 2D plot
+            if nca == 2:  # 2D plot
                 number_values = 9
-            else:   # 3D plot
+            else:  # 3D plot
                 number_values = 5
         if not isinstance(number_values, dict):
             number_values0 = {}
@@ -750,11 +768,13 @@ class VectorField(MultivectorField):
             steps = {}
         for coord in coords:
             if coord not in steps:
-                steps[coord] = (ranges[coord][1] - ranges[coord][0]) / \
-                               (number_values[coord]-1)
+                steps[coord] = (ranges[coord][1] - ranges[coord][0]) / (
+                    number_values[coord] - 1
+                )
             else:
                 number_values[coord] = 1 + int(
-                           (ranges[coord][1] - ranges[coord][0]) / steps[coord])
+                    (ranges[coord][1] - ranges[coord][0]) / steps[coord]
+                )
         #
         # 2/ Plots
         #    -----
@@ -794,52 +814,76 @@ class VectorField(MultivectorField):
                 for i in range(ncp):
                     xx[ind_coord[i]] = xmin[i] + ind[i] * step_tab[i]
 
-                if chart_domain.valid_coordinates(*xx, tolerance=1e-13,
-                                                  parameters=parameters):
-
+                if chart_domain.valid_coordinates(
+                    *xx, tolerance=1e-13, parameters=parameters
+                ):
                     # needed a xx*1 to copy the list by value
-                    list_xx.append(xx*1)
+                    list_xx.append(xx * 1)
 
                 # Next index:
                 ret = 1
-                for pos in range(ncp-1,-1,-1):
+                for pos in range(ncp - 1, -1, -1):
                     imax = number_values[coords[pos]] - 1
                     if ind[pos] != imax:
                         ind[pos] += ret
                         ret = 0
                     elif ret == 1:
                         if pos == 0:
-                            ind[pos] = imax + 1 # end point reached
+                            ind[pos] = imax + 1  # end point reached
                         else:
                             ind[pos] = 0
                             ret = 1
 
-            lol = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
-            ind_step = max(1, int(len(list_xx)/nproc/2))
-            local_list = lol(list_xx,ind_step)
+            lol = lambda lst, sz: [lst[i : i + sz] for i in range(0, len(lst), sz)]
+            ind_step = max(1, int(len(list_xx) / nproc / 2))
+            local_list = lol(list_xx, ind_step)
 
             # definition of the list of input parameters
-            listParalInput = [(vector, dom, ind_part,
-                               chart_domain, chart,
-                               ambient_coords, mapping,
-                               scale, color, parameters,
-                               extra_options)
-                              for ind_part in local_list]
+            listParalInput = [
+                (
+                    vector,
+                    dom,
+                    ind_part,
+                    chart_domain,
+                    chart,
+                    ambient_coords,
+                    mapping,
+                    scale,
+                    color,
+                    parameters,
+                    extra_options,
+                )
+                for ind_part in local_list
+            ]
 
             # definition of the parallel function
             @parallel(p_iter='multiprocessing', ncpus=nproc)
-            def add_point_plot(vector, dom, xx_list, chart_domain, chart,
-                               ambient_coords, mapping, scale, color,
-                               parameters, extra_options):
+            def add_point_plot(
+                vector,
+                dom,
+                xx_list,
+                chart_domain,
+                chart,
+                ambient_coords,
+                mapping,
+                scale,
+                color,
+                parameters,
+                extra_options,
+            ):
                 count = 0
                 for xx in xx_list:
                     point = dom(xx, chart=chart_domain)
-                    part = vector.at(point).plot(chart=chart,
-                                                 ambient_coords=ambient_coords,
-                                                 mapping=mapping,scale=scale,
-                                                 color=color, print_label=False,
-                                                 parameters=parameters,
-                                                 **extra_options)
+                    part = vector.at(point).plot(
+                        chart=chart,
+                        ambient_coords=ambient_coords,
+                        mapping=mapping,
+                        scale=scale,
+                        color=color,
+                        print_label=False,
+                        parameters=parameters,
+                        **extra_options,
+                    )
                     if count == 0:
                         local_resu = part
                     else:
@@ -855,26 +899,31 @@ class VectorField(MultivectorField):
             # sequential plot
             while ind != ind_max:
                 for i in range(ncp):
-                    xx[ind_coord[i]] = xmin[i] + ind[i]*step_tab[i]
-                if chart_domain.valid_coordinates(*xx, tolerance=1e-13,
-                                                  parameters=parameters):
+                    xx[ind_coord[i]] = xmin[i] + ind[i] * step_tab[i]
+                if chart_domain.valid_coordinates(
+                    *xx, tolerance=1e-13, parameters=parameters
+                ):
                     point = dom(xx, chart=chart_domain)
-                    resu += vector.at(point).plot(chart=chart,
-                                                  ambient_coords=ambient_coords,
-                                                  mapping=mapping, scale=scale,
-                                                  color=color, print_label=False,
-                                                  parameters=parameters,
-                                                  **extra_options)
+                    resu += vector.at(point).plot(
+                        chart=chart,
+                        ambient_coords=ambient_coords,
+                        mapping=mapping,
+                        scale=scale,
+                        color=color,
+                        print_label=False,
+                        parameters=parameters,
+                        **extra_options,
+                    )
                 # Next index:
                 ret = 1
-                for pos in range(ncp-1, -1, -1):
+                for pos in range(ncp - 1, -1, -1):
                     imax = number_values[coords[pos]] - 1
                     if ind[pos] != imax:
                         ind[pos] += ret
                         ret = 0
                     elif ret == 1:
                         if pos == 0:
-                            ind[pos] = imax + 1 # end point reached
+                            ind[pos] = imax + 1  # end point reached
                         else:
                             ind[pos] = 0
                             ret = 1
@@ -885,9 +934,10 @@ class VectorField(MultivectorField):
                 # to show()), instead of using the method
                 # Graphics.axes_labels() since the latter is not robust w.r.t.
                 # graph addition
-                resu._extra_kwds['axes_labels'] = [r'$'+latex(ac)+r'$'
-                                                   for ac in ambient_coords]
-            else: # 3D graphic
+                resu._extra_kwds['axes_labels'] = [
+                    r'$' + latex(ac) + r'$' for ac in ambient_coords
+                ]
+            else:  # 3D graphic
                 labels = [str(ac) for ac in ambient_coords]
                 resu = set_axes_labels(resu, *labels)
         return resu
@@ -1015,8 +1065,7 @@ class VectorField(MultivectorField):
             0
         """
         if self._domain.dim() < 3:
-            raise ValueError("the curl is not defined in dimension lower " +
-                             "than 3")
+            raise ValueError("the curl is not defined in dimension lower " + "than 3")
         default_metric = metric is None
         if default_metric:
             metric = self._domain.metric()
@@ -1025,12 +1074,18 @@ class VectorField(MultivectorField):
         if self._name is not None:
             if default_metric:
                 resu._name = "curl({})".format(self._name)
-                resu._latex_name = r"\mathrm{curl}\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = (
+                    r"\mathrm{curl}\left(" + self._latex_name + r"\right)"
+                )
             else:
                 resu._name = "curl_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\mathrm{curl}_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\mathrm{curl}_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1141,11 +1196,11 @@ class VectorField(MultivectorField):
         # From the above operation the name of resu is "g(u,v')" where
         # g = metric._name, u = self._name, v = other._name
         # For a default metric, we change it to "u.v":
-        if (default_metric and self._name is not None and
-            other._name is not None):
+        if default_metric and self._name is not None and other._name is not None:
             resu._name = "{}.{}".format(self._name, other._name)
-            resu._latex_name = "{" + self._latex_name + r"}\cdot{" + \
-                               other._latex_name + "}"
+            resu._latex_name = (
+                "{" + self._latex_name + r"}\cdot{" + other._latex_name + "}"
+            )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1236,12 +1291,16 @@ class VectorField(MultivectorField):
         if self._name is not None:
             if default_metric:
                 resu._name = "|{}|".format(self._name)
-                resu._latex_name = r"\left\|" + self._latex_name + \
-                                   r"\right\|"
+                resu._latex_name = r"\left\|" + self._latex_name + r"\right\|"
             else:
                 resu._name = "|{}|_{}".format(self._name, metric._name)
-                resu._latex_name = r"\left\|" + self._latex_name + \
-                                   r"\right\| _{" + metric._latex_name + "}"
+                resu._latex_name = (
+                    r"\left\|"
+                    + self._latex_name
+                    + r"\right\| _{"
+                    + metric._latex_name
+                    + "}"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1350,8 +1409,9 @@ class VectorField(MultivectorField):
             C' x e_x = e_y - cos(t) e_z
         """
         if self._ambient_domain.dim() != 3:
-            raise ValueError("the cross product is not defined in dimension " +
-                             "different from 3")
+            raise ValueError(
+                "the cross product is not defined in dimension " + "different from 3"
+            )
         default_metric = metric is None
         if default_metric:
             metric = self._ambient_domain.metric()
@@ -1364,11 +1424,11 @@ class VectorField(MultivectorField):
             other = other.along(dest_map)
         resu = eps.contract(1, 2, self.wedge(other), 0, 1) / 2
         # The result is named "u x v" only for a default metric:
-        if (default_metric and self._name is not None and
-            other._name is not None):
+        if default_metric and self._name is not None and other._name is not None:
             resu._name = "{} x {}".format(self._name, other._name)
-            resu._latex_name = "{" + self._latex_name + r"}\times{" + \
-                               other._latex_name + "}"
+            resu._latex_name = (
+                "{" + self._latex_name + r"}\times{" + other._latex_name + "}"
+            )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1376,11 +1436,11 @@ class VectorField(MultivectorField):
 
     cross = cross_product
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
-class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal,
-                       VectorField):
+class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal, VectorField):
     r"""
     Vector field along a differentiable manifold, with values on a
     parallelizable manifold.
@@ -1585,6 +1645,7 @@ class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal,
         sage: w.at(p) == v.at(Phi(p))
         True
     """
+
     def __init__(self, vector_field_module, name=None, latex_name=None):
         r"""
         Construct a vector field with values on a parallelizable manifold.
@@ -1614,8 +1675,9 @@ class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal,
             True
             sage: TestSuite(u).run()
         """
-        FiniteRankFreeModuleElement.__init__(self, vector_field_module,
-                                             name=name, latex_name=latex_name)
+        FiniteRankFreeModuleElement.__init__(
+            self, vector_field_module, name=name, latex_name=latex_name
+        )
         # MultivectorFieldParal attributes:
         self._domain = vector_field_module._domain
         self._ambient_domain = vector_field_module._ambient_domain
@@ -1627,7 +1689,7 @@ class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal,
         # Initialization of list of quantities depending on self:
         self._init_dependencies()
 
-    def _repr_(self) :
+    def _repr_(self):
         r"""
         String representation of ``self``.
 
@@ -1677,8 +1739,7 @@ class VectorFieldParal(FiniteRankFreeModuleElement, MultivectorFieldParal,
             sage: v = M.vector_field(name='v')
             sage: v._del_derived()
         """
-        MultivectorFieldParal._del_derived(self,
-                                           del_restrictions=del_restrictions)
+        MultivectorFieldParal._del_derived(self, del_restrictions=del_restrictions)
         VectorField._del_derived(self)
         self._del_dependencies()
 

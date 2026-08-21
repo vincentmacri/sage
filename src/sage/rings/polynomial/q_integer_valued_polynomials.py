@@ -7,6 +7,7 @@ AUTHORS:
 
 - Frédéric Chapoton (2024-03): Initial version
 """
+
 # ****************************************************************************
 #  Copyright (C) 2024 Frédéric Chapoton <chapoton-math-unistra-fr>
 #
@@ -67,7 +68,7 @@ def q_int_x(n, q=None):
     else:
         ring_q = q.parent()
     x = polygen(ring_q, 'x')
-    return q_int(n - 1, q) + q**(n - 1) * x
+    return q_int(n - 1, q) + q ** (n - 1) * x
 
 
 def q_binomial_x(m, n, q=None):
@@ -110,8 +111,7 @@ def q_binomial_x(m, n, q=None):
     ring = PolynomialRing(ring_q.fraction_field(), 'x')
     if n == 0:
         return ring.one()
-    return ring.prod(q_int_x(m + 2 - i, q) / q_int(i, q)
-                     for i in range(1, n + 1))
+    return ring.prod(q_int_x(m + 2 - i, q) / q_int(i, q) for i in range(1, n + 1))
 
 
 class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
@@ -180,6 +180,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
         S[0] - (1/2*q^-3)*S[2] + (1/2*q^-4+q^-3+q^-2+1/2*q^-1)*S[3]
         - (1/2*q^-4+1/2*q^-3+q^-2+1/2*q^-1+1/2)*S[4]
     """
+
     @staticmethod
     def __classcall_private__(cls, R, q=None) -> None:
         """
@@ -287,8 +288,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             """
             A = self.base()
             category = Algebras(A.base_ring()).Commutative().Filtered()
-            return [A.Realizations(),
-                    category.Realizations().WithBasis()]
+            return [A.Realizations(), category.Realizations().WithBasis()]
 
         class ParentMethods:
             def ground_ring(self):
@@ -543,6 +543,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
 
             \sum_{k=0}^{n_1} (-1)^k q^{\binom{k}{2} - n_1 * n_2} \genfrac{[}{]}{0pt}{}{n_1}{k}_q \genfrac{[}{]}{0pt}{}{n_1+n_2-k}{n_1}_q S[n_1 + n_2 - k].
         """
+
         def __init__(self, A):
             r"""
             Initialize ``self``.
@@ -554,11 +555,14 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 in the shifted basis
                 sage: TestSuite(F).run()  # not tested
             """
-            CombinatorialFreeModule.__init__(self, A.base_ring(),
-                                             NonNegativeIntegers(),
-                                             category=A.Bases(),
-                                             prefix="S",
-                                             latex_prefix=r"\mathbb{S}")
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                NonNegativeIntegers(),
+                category=A.Bases(),
+                prefix="S",
+                latex_prefix=r"\mathbb{S}",
+            )
 
         def _an_element_(self):
             """
@@ -572,8 +576,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             """
             NonNeg = self.basis().keys()
             ring = self.base_ring()
-            return self.element_class(self, {NonNeg(0): ring(2),
-                                             NonNeg(2): ring(4)})
+            return self.element_class(self, {NonNeg(0): ring(2), NonNeg(2): ring(4)})
 
         def _realization_name(self) -> str:
             r"""
@@ -604,11 +607,15 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             if j < i:
                 j, i = i, j
             q = self.q()
-            return self._from_dict({i + j - k: (-1)**k
-                                    * q_binomial(i, k)
-                                    * q_binomial(i + j - k, i)
-                                    * q**(binomial(k, 2) - i * j)
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {
+                    i + j - k: (-1) ** k
+                    * q_binomial(i, k)
+                    * q_binomial(i + j - k, i)
+                    * q ** (binomial(k, 2) - i * j)
+                    for k in range(i + 1)
+                }
+            )
 
         def _from_binomial_basis(self, i):
             """
@@ -632,9 +639,13 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             i = ZZ(i)
             R = self.base_ring()
             q = self.q()
-            return self._from_dict({k: R((-1)**(i - k) * q_binomial(i, k))
-                                    * q**(-i**2 + binomial(i - k, 2))
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {
+                    k: R((-1) ** (i - k) * q_binomial(i, k))
+                    * q ** (-(i**2) + binomial(i - k, 2))
+                    for k in range(i + 1)
+                }
+            )
 
         def from_h_vector(self, hv):
             """
@@ -657,11 +668,18 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             ring = self.base_ring()
             q = self.q()
             d = len(hv) - 1
-            m = matrix(ring, d + 1, d + 1,
-                       [(-1)**(d - j) * q_binomial(d - i, d - j, q) *
-                        q**(-d * (d - i) + binomial(d - j, 2))
-                        for j in range(d + 1)
-                        for i in range(d + 1)])
+            m = matrix(
+                ring,
+                d + 1,
+                d + 1,
+                [
+                    (-1) ** (d - j)
+                    * q_binomial(d - i, d - j, q)
+                    * q ** (-d * (d - i) + binomial(d - j, 2))
+                    for j in range(d + 1)
+                    for i in range(d + 1)
+                ],
+            )
             v = vector(ring, [hv[i] for i in range(d + 1)])
             return sum(ring(c) * B[i] for i, c in enumerate(m * v))
 
@@ -788,8 +806,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             if isinstance(R, QuantumValuedPolynomialRing.Shifted):
                 return self.base_ring().has_coerce_map_from(R.base_ring())
             if isinstance(R, QuantumValuedPolynomialRing.Binomial):
-                return R.module_morphism(self._from_binomial_basis,
-                                         codomain=self)
+                return R.module_morphism(self._from_binomial_basis, codomain=self)
             return self.base_ring().has_coerce_map_from(R)
 
         def _poly(self, i):
@@ -872,13 +889,15 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 q = A.q()
 
                 def on_basis(n):
-                    return {A._indices(j): q**(k * j)
-                            * q_binomial(k + n - 1 - j, n - j)
-                            for j in range(n + 1)}
+                    return {
+                        A._indices(j): q ** (k * j) * q_binomial(k + n - 1 - j, n - j)
+                        for j in range(n + 1)
+                    }
 
                 mc = self._monomial_coefficients
-                ret = linear_combination((on_basis(index), coeff)
-                                         for index, coeff in mc.items())
+                ret = linear_combination(
+                    (on_basis(index), coeff) for index, coeff in mc.items()
+                )
                 return A.element_class(A, ret)
 
             def derivative_at_minus_one(self):
@@ -923,10 +942,12 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 q = self.parent().q()
 
                 def fn(j, i):
-                    return ((-1)**(d - j) *
-                            q**(binomial(d - j + i + 1, 2) -
-                                binomial(i + 1, 2)) *
-                            q_binomial(d - i, d - j))
+                    return (
+                        (-1) ** (d - j)
+                        * q ** (binomial(d - j + i + 1, 2) - binomial(i + 1, 2))
+                        * q_binomial(d - i, d - j)
+                    )
+
                 m = matrix(ring, d + 1, d + 1, fn)
                 v = vector(ring, [self.coefficient(i) for i in range(d + 1)])
                 return m * v
@@ -976,7 +997,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 frac_R = R.fraction_field()
                 q, t = R.gens()
                 denom = R.prod(1 - q**i * t for i in range(d))
-                numer = sum(frac_R(v[i]) * t**(d - 1 - i) for i in range(d))
+                numer = sum(frac_R(v[i]) * t ** (d - 1 - i) for i in range(d))
                 return numer / denom
 
     S = Shifted
@@ -996,6 +1017,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
 
             \sum_{k=0}^{n_1} q^{(k-n_1)(k-n_2)} \genfrac{[}{]}{0pt}{}{n_1}{k}_q \genfrac{[}{]}{0pt}{}{n_1+n_2-k}{n_1}_q B[n_1 + n_2 - k].
         """
+
         def __init__(self, A) -> None:
             r"""
             Initialize ``self``.
@@ -1007,11 +1029,14 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 in the binomial basis
                 sage: TestSuite(F).run()  # not tested
             """
-            CombinatorialFreeModule.__init__(self, A.base_ring(),
-                                             NonNegativeIntegers(),
-                                             category=A.Bases(),
-                                             prefix="B",
-                                             latex_prefix=r"\mathbb{B}")
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                NonNegativeIntegers(),
+                category=A.Bases(),
+                prefix="B",
+                latex_prefix=r"\mathbb{B}",
+            )
 
         def _realization_name(self) -> str:
             r"""
@@ -1045,11 +1070,14 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 j, i = i, j
 
             q = self.q()
-            return self._from_dict({i + j - k:
-                                    q_binomial(i, k)
-                                    * q_binomial(i + j - k, i)
-                                    * q**((k - i) * (k - j))
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {
+                    i + j - k: q_binomial(i, k)
+                    * q_binomial(i + j - k, i)
+                    * q ** ((k - i) * (k - j))
+                    for k in range(i + 1)
+                }
+            )
 
         def _from_shifted_basis(self, i):
             """
@@ -1072,9 +1100,9 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             i = ZZ(i)
             R = self.base_ring()
             q = self.q()
-            return self._from_dict({k: R(q_binomial(i, k))
-                                    * q**(k**2)
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {k: R(q_binomial(i, k)) * q ** (k**2) for k in range(i + 1)}
+            )
 
         def _element_constructor_(self, x):
             r"""
@@ -1197,8 +1225,7 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
             if isinstance(R, QuantumValuedPolynomialRing.Binomial):
                 return self.base_ring().has_coerce_map_from(R.base_ring())
             if isinstance(R, QuantumValuedPolynomialRing.Shifted):
-                return R.module_morphism(self._from_shifted_basis,
-                                         codomain=self)
+                return R.module_morphism(self._from_shifted_basis, codomain=self)
             return self.base_ring().has_coerce_map_from(R)
 
         def _poly(self, i):
@@ -1251,13 +1278,15 @@ class QuantumValuedPolynomialRing(UniqueRepresentation, Parent):
                 q = A.q()
 
                 def on_basis(n):
-                    return {A._indices(j): q**((k + j - n) * j)
-                            * q_binomial(k, n - j)
-                            for j in range(n + 1)}
+                    return {
+                        A._indices(j): q ** ((k + j - n) * j) * q_binomial(k, n - j)
+                        for j in range(n + 1)
+                    }
 
                 mc = self._monomial_coefficients
-                ret = linear_combination((on_basis(index), coeff)
-                                         for index, coeff in mc.items())
+                ret = linear_combination(
+                    (on_basis(index), coeff) for index, coeff in mc.items()
+                )
                 return A.element_class(A, ret)
 
     B = Binomial

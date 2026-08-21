@@ -135,11 +135,18 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
         ...
         ValueError: 'base_field' must be a field (and Ring of integers modulo 4 is not one)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, base_field, length, default_encoder_name,
-                 default_decoder_name, metric='Hamming') -> None:
+    def __init__(
+        self,
+        base_field,
+        length,
+        default_encoder_name,
+        default_decoder_name,
+        metric='Hamming',
+    ) -> None:
         """
         Initialize mandatory parameters that any linear code shares.
 
@@ -180,11 +187,17 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
         self._registered_encoders['Systematic'] = LinearCodeSystematicEncoder
 
         if not base_field.is_field():
-            raise ValueError("'base_field' must be a field (and {} is not one)".format(base_field))
+            raise ValueError(
+                "'base_field' must be a field (and {} is not one)".format(base_field)
+            )
         if default_encoder_name not in self._registered_encoders:
-            raise ValueError("You must set a valid encoder as default encoder for this code, by filling in the dictionary of registered encoders")
+            raise ValueError(
+                "You must set a valid encoder as default encoder for this code, by filling in the dictionary of registered encoders"
+            )
         if default_decoder_name not in self._registered_decoders:
-            raise ValueError("You must set a valid decoder as default decoder for this code, by filling in the dictionary of registered decoders")
+            raise ValueError(
+                "You must set a valid decoder as default decoder for this code, by filling in the dictionary of registered decoders"
+            )
 
         # if not self.dimension() <= length:
         #     raise ValueError("The dimension of the code can be at most its length, {}".format(length))
@@ -219,7 +232,7 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             sage: C.ambient_space()
             Vector space of dimension 7 over Finite Field of size 2
         """
-        return VectorSpace(self.base_ring(),self.length())
+        return VectorSpace(self.base_ring(), self.length())
 
     def generator_matrix(self, encoder_name=None, **kwargs):
         r"""
@@ -268,10 +281,12 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             False
         """
         # Fail without computing the generator matrix if possible:
-        if not (isinstance(other, AbstractLinearCodeNoMetric)
-                and self.length() == other.length()
-                and self.dimension() == other.dimension()
-                and self.base_ring() == other.base_ring()):
+        if not (
+            isinstance(other, AbstractLinearCodeNoMetric)
+            and self.length() == other.length()
+            and self.dimension() == other.dimension()
+            and self.base_ring() == other.base_ring()
+        ):
             return False
         # Check that basis elements of `other` are all in `self.`
         # Since we're over a field and since the dimensions match, the codes
@@ -357,7 +372,7 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             sage: len(C)
             16
         """
-        return self.base_ring().order()**self.dimension()
+        return self.base_ring().order() ** self.dimension()
 
     __len__ = cardinality
 
@@ -407,7 +422,10 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
         """
         gens = self.gens()
         from sage.structure.sequence import Sequence
-        return Sequence(gens, universe=self.ambient_space(), check=False, immutable=True, cr=True)
+
+        return Sequence(
+            gens, universe=self.ambient_space(), check=False, immutable=True, cr=True
+        )
 
     @cached_method
     def parity_check_matrix(self):
@@ -489,7 +507,7 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             sage: C.syndrome(c)
             (0, 0, 0, 0, 0, 0, 0, 0)
         """
-        return self.parity_check_matrix()*r
+        return self.parity_check_matrix() * r
 
     def __contains__(self, v) -> bool:
         r"""
@@ -541,8 +559,12 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             [1 2 0 1]
             [1 2 1 0]
         """
-        systematic_positions = tuple(systematic_positions) if systematic_positions else None
-        return self.encoder("Systematic", systematic_positions=systematic_positions).generator_matrix()
+        systematic_positions = (
+            tuple(systematic_positions) if systematic_positions else None
+        )
+        return self.encoder(
+            "Systematic", systematic_positions=systematic_positions
+        ).generator_matrix()
 
     def standard_form(self, return_permutation=True):
         r"""
@@ -592,6 +614,7 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
         E = self.encoder("Systematic")
         if E.systematic_positions() == tuple(range(self.dimension())):
             from sage.combinat.permutation import Permutation
+
             return self, Permutation([])
         perm = E.systematic_permutation()
         return self.permuted_code(perm), perm
@@ -713,8 +736,8 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             sage: L[10].is_immutable()
             True
         """
-        from sage.modules.finite_submodule_iter import \
-                                                FiniteFieldsubspace_iterator
+        from sage.modules.finite_submodule_iter import FiniteFieldsubspace_iterator
+
         return FiniteFieldsubspace_iterator(self.generator_matrix(), immutable=True)
 
     def __getitem__(self, i):
@@ -795,17 +818,19 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
         # list(self)[i] and self[i] both return the same element.
 
         F = self.base_ring()
-        maxindex = F.order()**self.dimension() - 1
+        maxindex = F.order() ** self.dimension() - 1
         if i < 0 or i > maxindex:
-            raise IndexError("The value of the index 'i' (={}) must be between "
-                             "0 and 'q^k -1' (={}), inclusive, where 'q' is "
-                             "the size of the base field and 'k' is the "
-                             "dimension of the code.".format(i, maxindex))
+            raise IndexError(
+                "The value of the index 'i' (={}) must be between "
+                "0 and 'q^k -1' (={}), inclusive, where 'q' is "
+                "the size of the base field and 'k' is the "
+                "dimension of the code.".format(i, maxindex)
+            )
 
         a = F.primitive_element()
         m = F.degree()
         p = F.prime_subfield().order()
-        A = [a ** k for k in range(m)]
+        A = [a**k for k in range(m)]
         G = self.generator_matrix()
         N = self.dimension() * F.degree()  # the total length of p-adic vector
         ivec = Integer(i).digits(p, padto=N)
@@ -930,7 +955,9 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             True
         """
         if not hasattr(self, "_generic_constructor"):
-            raise NotImplementedError("Generic constructor not set for the class of codes")
+            raise NotImplementedError(
+                "Generic constructor not set for the class of codes"
+            )
         G = copy(self.generator_matrix())
         G.permute_columns(p)
         return self._generic_constructor(G)
@@ -953,7 +980,9 @@ class AbstractLinearCodeNoMetric(AbstractCode, Module):
             [21, 3] linear code over GF(4)
         """
         if not hasattr(self, "_generic_constructor"):
-            raise NotImplementedError("Generic constructor not set for the class of codes")
+            raise NotImplementedError(
+                "Generic constructor not set for the class of codes"
+            )
         return self._generic_constructor(self.parity_check_matrix())
 
     def is_self_dual(self) -> bool:
@@ -1125,14 +1154,22 @@ class LinearCodeSystematicEncoder(Encoder):
             Systematic encoder for [7, 4] linear code over GF(2)
         """
         super().__init__(code)
-        self._systematic_positions = tuple(systematic_positions) if systematic_positions else None
+        self._systematic_positions = (
+            tuple(systematic_positions) if systematic_positions else None
+        )
         if systematic_positions:
             # Test that systematic_positions consists of integers in the right
             # range. We test that len(systematic_positions) = code.dimension()
             # in self.generator_matrix() to avoid possible infinite recursion.
-            if (not all( e in ZZ and e >= 0 and e < code.length() for e in systematic_positions)) \
-               or len(systematic_positions) != len(set(systematic_positions)):
-                raise ValueError("systematic positions must be a tuple of distinct integers in the range 0 to n-1 where n is the length of the code")
+            if (
+                not all(
+                    e in ZZ and e >= 0 and e < code.length()
+                    for e in systematic_positions
+                )
+            ) or len(systematic_positions) != len(set(systematic_positions)):
+                raise ValueError(
+                    "systematic positions must be a tuple of distinct integers in the range 0 to n-1 where n is the length of the code"
+                )
             # Test that the systematic positions are an information set
             self.generator_matrix()
 
@@ -1155,9 +1192,11 @@ class LinearCodeSystematicEncoder(Encoder):
             sage: E1 == E3
             False
         """
-        return isinstance(other, LinearCodeSystematicEncoder)\
-                and self.code() == other.code()\
-                and self.systematic_positions() == other.systematic_positions()
+        return (
+            isinstance(other, LinearCodeSystematicEncoder)
+            and self.code() == other.code()
+            and self.systematic_positions() == other.systematic_positions()
+        )
 
     def _repr_(self):
         r"""
@@ -1247,21 +1286,25 @@ class LinearCodeSystematicEncoder(Encoder):
             if self._use_pc_matrix == 1:
                 self._use_pc_matrix = 2
                 return C.parity_check_matrix().right_kernel_matrix()
-            raise ValueError("a parity check matrix must be specified if LinearCodeSystematicEncoder is the default encoder")
+            raise ValueError(
+                "a parity check matrix must be specified if LinearCodeSystematicEncoder is the default encoder"
+            )
         else:
             self._use_pc_matrix = 1
             M = copy(C.generator_matrix())
         if not self._systematic_positions:
             M.echelonize()
         else:
-            k = M.nrows() # it is important that k is *not* computed as C.dimension() to avoid possible cyclic dependency
+            k = M.nrows()  # it is important that k is *not* computed as C.dimension() to avoid possible cyclic dependency
             if len(self._systematic_positions) != k:
-                raise ValueError("systematic_positions must be a tuple of length equal to the dimension of the code")
+                raise ValueError(
+                    "systematic_positions must be a tuple of length equal to the dimension of the code"
+                )
             # Permute the columns of M and bring to reduced row echelon formb
             perm = self.systematic_permutation()
             M.permute_columns(perm)
             M.echelonize()
-            if M[:,:k].is_singular():
+            if M[:, :k].is_singular():
                 raise ValueError("systematic_positions are not an information set")
             M.permute_columns(perm.inverse())
         M.set_immutable()
@@ -1286,7 +1329,7 @@ class LinearCodeSystematicEncoder(Encoder):
         systematic_positions = self.systematic_positions()
         k = len(systematic_positions)
         lp = [None] * n
-        for (i, j) in zip(range(k), systematic_positions):
+        for i, j in zip(range(k), systematic_positions):
             lp[i] = j
         j = k
         set_sys_pos = set(systematic_positions)
@@ -1295,6 +1338,7 @@ class LinearCodeSystematicEncoder(Encoder):
                 lp[j] = i
                 j += 1
         from sage.combinat.permutation import Permutation
+
         return Permutation([1 + e for e in lp])
 
     def systematic_positions(self):
@@ -1347,4 +1391,8 @@ class LinearCodeSystematicEncoder(Encoder):
             sage: E.systematic_positions()
             (0, 1, 3)
         """
-        return self._systematic_positions if self._systematic_positions else self.generator_matrix().pivots()
+        return (
+            self._systematic_positions
+            if self._systematic_positions
+            else self.generator_matrix().pivots()
+        )

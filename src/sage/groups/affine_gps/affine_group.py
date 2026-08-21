@@ -16,7 +16,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 ##############################################################################
 
-
 from sage.groups.group import Group
 from sage.categories.groups import Groups
 from sage.groups.matrix_gps.linear import GL
@@ -30,6 +29,7 @@ from sage.groups.affine_gps.group_element import AffineGroupElement
 
 
 #################################################################
+
 
 class AffineGroup(UniqueRepresentation, Group):
     r"""
@@ -145,6 +145,7 @@ class AffineGroup(UniqueRepresentation, Group):
 
     -  :wikipedia:`Affine_group`
     """
+
     @staticmethod
     def __classcall__(cls, *args, **kwds):
         """
@@ -174,8 +175,10 @@ class AffineGroup(UniqueRepresentation, Group):
         if len(args) == 2:
             degree, ring = args
             from sage.rings.integer import Integer
+
             if isinstance(ring, Integer):
                 from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
                 var = kwds.get('var', 'a')
                 ring = FiniteField(ring, var)
         return super().__classcall__(cls, degree, ring)
@@ -273,8 +276,7 @@ class AffineGroup(UniqueRepresentation, Group):
             sage: latex(G)
             \mathrm{Aff}_{6}(\Bold{F}_{5})
         """
-        return "\\mathrm{Aff}_{%s}(%s)" % (self.degree(),
-                                           self.base_ring()._latex_())
+        return "\\mathrm{Aff}_{%s}(%s)" % (self.degree(), self.base_ring()._latex_())
 
     def _repr_(self):
         """
@@ -285,8 +287,7 @@ class AffineGroup(UniqueRepresentation, Group):
             sage: AffineGroup(6, GF(5))
             Affine Group of degree 6 over Finite Field of size 5
         """
-        return "Affine Group of degree %s over %s" % (self.degree(),
-                                                      self.base_ring())
+        return "Affine Group of degree %s over %s" % (self.degree(), self.base_ring())
 
     def cardinality(self):
         """
@@ -302,7 +303,7 @@ class AffineGroup(UniqueRepresentation, Group):
             +Infinity
         """
         card_GL = self._GL.cardinality()
-        return card_GL * self.base_ring().cardinality()**self.degree()
+        return card_GL * self.base_ring().cardinality() ** self.degree()
 
     def degree(self):
         """
@@ -402,7 +403,9 @@ class AffineGroup(UniqueRepresentation, Group):
                   [2 3 0]     [0]
         """
         A = self.matrix_space()(A)
-        return self.element_class(self, A, self.vector_space().zero(), check=True, convert=False)
+        return self.element_class(
+            self, A, self.vector_space().zero(), check=True, convert=False
+        )
 
     def translation(self, b):
         r"""
@@ -423,7 +426,9 @@ class AffineGroup(UniqueRepresentation, Group):
                   [0 0 1]     [3]
         """
         b = self.vector_space()(b)
-        return self.element_class(self, self.matrix_space().one(), b, check=False, convert=False)
+        return self.element_class(
+            self, self.matrix_space().one(), b, check=False, convert=False
+        )
 
     def reflection(self, v):
         """
@@ -461,7 +466,9 @@ class AffineGroup(UniqueRepresentation, Group):
         except ZeroDivisionError:
             raise ValueError('v has norm zero')
         A = self.matrix_space().one() - v.column() * (v.row() * two_norm2inv)
-        return self.element_class(self, A, self.vector_space().zero(), check=True, convert=False)
+        return self.element_class(
+            self, A, self.vector_space().zero(), check=True, convert=False
+        )
 
     def random_element(self):
         """
@@ -530,8 +537,11 @@ class AffineGroup(UniqueRepresentation, Group):
         """
         mats = self._GL.some_elements()
         vecs = self.vector_space().some_elements()
-        return [self.element_class(self, A, b, check=False, convert=False)
-                for A in mats for b in vecs]
+        return [
+            self.element_class(self, A, b, check=False, convert=False)
+            for A in mats
+            for b in vecs
+        ]
 
     def __iter__(self):
         """

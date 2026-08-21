@@ -66,11 +66,14 @@ from sage.structure.richcmp import rich_to_bool
 
 
 class Lisp(Expect):
-    def __init__(self,
-                 maxread=None, script_subdirectory=None,
-                 logfile=None,
-                 server=None,
-                 server_tmpdir=None):
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+    ):
         """
         EXAMPLES::
 
@@ -78,38 +81,32 @@ class Lisp(Expect):
             sage: lisp == loads(dumps(lisp))
             True
         """
-        Expect.__init__(self,
-
-                        # The capitalized version of this is used for printing.
-                        name='Lisp',
-
-                        # This is regexp of the input prompt.  If you
-                        # can change it to be very obfuscated that
-                        # would be better.  Even better is to use
-                        # sequence numbers.
-                        prompt='> ',
-
-                        # This is the command that starts up your program
-                        command='ecl',
-
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-
-                        # If this is true, then whenever the user presses Control-C to
-                        # interrupt a calculation, the whole interface is restarted.
-                        restart_on_ctrlc=False,
-
-                        # If true, print out a message when starting
-                        # up the command when you first send a command
-                        # to this interface.
-                        verbose_start=False,
-
-                        logfile=logfile,
-
-                        # If an input is longer than this number of characters, then
-                        # try to switch to outputting to a file.
-                        eval_using_file_cutoff=1024)
+        Expect.__init__(
+            self,
+            # The capitalized version of this is used for printing.
+            name='Lisp',
+            # This is regexp of the input prompt.  If you
+            # can change it to be very obfuscated that
+            # would be better.  Even better is to use
+            # sequence numbers.
+            prompt='> ',
+            # This is the command that starts up your program
+            command='ecl',
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            # If this is true, then whenever the user presses Control-C to
+            # interrupt a calculation, the whole interface is restarted.
+            restart_on_ctrlc=False,
+            # If true, print out a message when starting
+            # up the command when you first send a command
+            # to this interface.
+            verbose_start=False,
+            logfile=logfile,
+            # If an input is longer than this number of characters, then
+            # try to switch to outputting to a file.
+            eval_using_file_cutoff=1024,
+        )
 
         self.__seq = 0
         self.__in_seq = 1
@@ -140,7 +137,7 @@ class Lisp(Expect):
                         s = self.__in_seq + 1
                         M = self._eval_line(L, wait_for_prompt=self._prompt)
                         if M.startswith(L + "\n"):
-                            M = M[len(L):]      # skip L in case it was echoed
+                            M = M[len(L) :]  # skip L in case it was echoed
                         x.append(M.strip())
                         self.__in_seq = s
                     except TypeError as s:
@@ -176,7 +173,10 @@ class Lisp(Expect):
         cmd = '(setq %s %s)' % (var, value)
         out = self.eval(cmd)
         if '***' in out:
-            raise TypeError("Error executing code in Sage\nCODE:\n\t%s\nSAGE ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Sage\nCODE:\n\t%s\nSAGE ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -306,10 +306,10 @@ class Lisp(Expect):
             sage: lisp.version()
             'Version information is given by lisp.console().'
         """
-#        import subprocess
-#        p = subprocess.Popen('ecl --version', shell=True, stdin=subprocess.PIPE,
-#                             stdout = subprocess.PIPE, stderr=subprocess.PIPE)
-#        return AsciiArtString(p.stdout.read())
+        #        import subprocess
+        #        p = subprocess.Popen('ecl --version', shell=True, stdin=subprocess.PIPE,
+        #                             stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+        #        return AsciiArtString(p.stdout.read())
         return "Version information is given by lisp.console()."
 
     def _object_class(self):
@@ -361,8 +361,10 @@ class Lisp(Expect):
             ...
             NotImplementedError: ...
         """
-        raise NotImplementedError("We should never reach here in the Lisp interface. " +
-                                  "Please report this as a bug.")
+        raise NotImplementedError(
+            "We should never reach here in the Lisp interface. "
+            + "Please report this as a bug."
+        )
 
     def help(self, command):
         """
@@ -558,6 +560,9 @@ def lisp_console():
         ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%lisp magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%lisp magics instead.'
+        )
     os.system('ecl')

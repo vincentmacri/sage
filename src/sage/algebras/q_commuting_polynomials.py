@@ -48,6 +48,7 @@ class qCommutingPolynomials_generic(CombinatorialFreeModule):
     This is a graded `R`-algebra with a natural basis given by monomials
     written in increasing order with respect to some total order on `I`.
     """
+
     @staticmethod
     def __classcall__(cls, q, n=None, B=None, base_ring=None, names=None):
         r"""
@@ -71,6 +72,7 @@ class qCommutingPolynomials_generic(CombinatorialFreeModule):
         if names is None:
             raise ValueError("the names of the variables must be given")
         from sage.structure.category_object import normalize_names
+
         if n is None:
             if isinstance(names, str):
                 n = names.count(',') + 1
@@ -81,7 +83,7 @@ class qCommutingPolynomials_generic(CombinatorialFreeModule):
         if B is None:
             B = matrix.zero(ZZ, n)
             for i in range(n):
-                for j in range(i+1, n):
+                for j in range(i + 1, n):
                     B[i, j] = 1
                     B[j, i] = -1
             B.set_immutable()
@@ -108,10 +110,16 @@ class qCommutingPolynomials_generic(CombinatorialFreeModule):
         if base_ring not in CommutativeRings():
             raise ValueError("the base ring must be a commutative ring")
         category = Algebras(base_ring).WithBasis().Graded()
-        CombinatorialFreeModule.__init__(self, base_ring, indices,
-                                         bracket=False, prefix='',
-                                         sorting_key=qCommutingPolynomials_generic._term_key,
-                                         names=names, category=category)
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            indices,
+            bracket=False,
+            prefix='',
+            sorting_key=qCommutingPolynomials_generic._term_key,
+            names=names,
+            category=category,
+        )
 
     @staticmethod
     def _term_key(x):
@@ -275,6 +283,7 @@ class qCommutingPolynomials(qCommutingPolynomials_generic):
         sage: all(f[b] == q_binomial(10, b.list()[1], q^3) for b in f.support())
         True
     """
+
     def __init__(self, q, B, names):
         r"""
         Initialize ``self``.
@@ -286,7 +295,9 @@ class qCommutingPolynomials(qCommutingPolynomials_generic):
             sage: TestSuite(R).run()
         """
         indices = FreeAbelianMonoid(len(names), names)
-        qCommutingPolynomials_generic.__init__(self, q, B, indices, indices.variable_names())
+        qCommutingPolynomials_generic.__init__(
+            self, q, B, indices, indices.variable_names()
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -304,7 +315,9 @@ class qCommutingPolynomials(qCommutingPolynomials_generic):
             [-1 -1  0]
         """
         names = ", ".join(self.variable_names())
-        return "{}-commuting polynomial ring in {} over {} with matrix:\n{}".format(self._q, names, self.base_ring(), self._B)
+        return "{}-commuting polynomial ring in {} over {} with matrix:\n{}".format(
+            self._q, names, self.base_ring(), self._B
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -395,8 +408,12 @@ class qCommutingPolynomials(qCommutingPolynomials_generic):
 
         # This could be made more efficient
         B = self._B
-        qpow = sum(exp * sum(B[j, i] * val for j, val in enumerate(Ly[:i])) for i, exp in enumerate(Lx) if exp)
-        return self.term(x * y, self._q ** qpow)
+        qpow = sum(
+            exp * sum(B[j, i] * val for j, val in enumerate(Ly[:i]))
+            for i, exp in enumerate(Lx)
+            if exp
+        )
+        return self.term(x * y, self._q**qpow)
 
 
 class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
@@ -451,6 +468,7 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
         sage: all(f[b] == q_binomial(10, -b.list()[1], q^3) for b in f.support())
         True
     """
+
     def __init__(self, q, B, names):
         r"""
         Initialize ``self``.
@@ -481,7 +499,9 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
             [-1 -1  0]
         """
         names = ", ".join(self.variable_names())
-        return "{}-commuting Laurent polynomial ring in {} over {} with matrix:\n{}".format(self._q, names, self.base_ring(), self._B)
+        return "{}-commuting Laurent polynomial ring in {} over {} with matrix:\n{}".format(
+            self._q, names, self.base_ring(), self._B
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -495,6 +515,7 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
             \mathrm{Frac}(\Bold{Z}[q])[x^{\pm}, y^{\pm}, z^{\pm}]_{q}
         """
         from sage.misc.latex import latex
+
         names = ", ".join(r"{}^{{\pm}}".format(v) for v in self.variable_names())
         return "{}[{}]_{{{}}}".format(latex(self.base_ring()), names, self._q)
 
@@ -516,7 +537,7 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
         if not m:
             return '1'
         G = self._display_group
-        return repr(G.prod(g ** val for g, val in zip(G.gens(), m) if val != 0))
+        return repr(G.prod(g**val for g, val in zip(G.gens(), m) if val != 0))
 
     def _latex_term(self, m) -> str:
         r"""
@@ -536,7 +557,7 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
         if not m:
             return '1'
         G = self._display_group
-        return latex(G.prod(g ** val for g, val in zip(G.gens(), m) if val != 0))
+        return latex(G.prod(g**val for g, val in zip(G.gens(), m) if val != 0))
 
     @cached_method
     def one_basis(self):
@@ -628,10 +649,14 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
 
         # This could be made more efficient
         B = self._B
-        qpow = sum(exp * sum(B[j, i] * y[j] for j in range(i)) for i, exp in enumerate(x) if exp)
+        qpow = sum(
+            exp * sum(B[j, i] * y[j] for j in range(i))
+            for i, exp in enumerate(x)
+            if exp
+        )
         ret = x + y
         ret.set_immutable()
-        return self.term(ret, self._q ** qpow)
+        return self.term(ret, self._q**qpow)
 
     class Element(qCommutingPolynomials_generic.Element):
         def __invert__(self):
@@ -664,8 +689,11 @@ class qCommutingLaurentPolynomials(qCommutingPolynomials_generic):
                 m, c = next(iter(self._monomial_coefficients.items()))
                 ret = -m
                 n = len(m)
-                qpow = sum(exp * sum(B[j, i] * m[j] for j in range(i+1, n))
-                           for i, exp in enumerate(m) if exp)
+                qpow = sum(
+                    exp * sum(B[j, i] * m[j] for j in range(i + 1, n))
+                    for i, exp in enumerate(m)
+                    if exp
+                )
                 ret.set_immutable()
                 return P.term(ret, ~c * q**-qpow)
             return super().__invert__()

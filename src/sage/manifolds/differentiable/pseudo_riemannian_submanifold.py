@@ -205,8 +205,7 @@ from sage.rings.integer import Integer
 from sage.symbolic.ring import SR
 
 
-class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
-                                  DifferentiableSubmanifold):
+class PseudoRiemannianSubmanifold(PseudoRiemannianManifold, DifferentiableSubmanifold):
     r"""
     Pseudo-Riemannian submanifold.
 
@@ -302,10 +301,22 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
         :mod:`~sage.manifolds.manifold` and
         :mod:`~sage.manifolds.differentiable.differentiable_submanifold`
     """
-    def __init__(self, n, name, ambient=None, metric_name=None,
-                 signature=None, base_manifold=None, diff_degree=infinity,
-                 latex_name=None, metric_latex_name=None, start_index=0,
-                 category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        ambient=None,
+        metric_name=None,
+        signature=None,
+        base_manifold=None,
+        diff_degree=infinity,
+        latex_name=None,
+        metric_latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a pseudo-Riemannian submanifold.
 
@@ -341,17 +352,23 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
         if metric_name is None:
             metric_name = 'gamma'
             metric_latex_name = r'\gamma'
-        PseudoRiemannianManifold.__init__(self, n, name=name,
-                                          metric_name=metric_name,
-                                          signature=signature,
-                                          base_manifold=base_manifold,
-                                          diff_degree=diff_degree,
-                                          latex_name=latex_name,
-                                          metric_latex_name=metric_latex_name,
-                                          start_index=start_index,
-                                          category=category)
-        if not (ambient is None
-                or isinstance(ambient, (PseudoRiemannianManifold, DegenerateManifold))):
+        PseudoRiemannianManifold.__init__(
+            self,
+            n,
+            name=name,
+            metric_name=metric_name,
+            signature=signature,
+            base_manifold=base_manifold,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            category=category,
+        )
+        if not (
+            ambient is None
+            or isinstance(ambient, (PseudoRiemannianManifold, DegenerateManifold))
+        ):
             raise TypeError("ambient must be a pseudo-Riemannian manifold")
         self._init_immersion(ambient=ambient)
         self._difft = None
@@ -398,9 +415,11 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             return super(PseudoRiemannianManifold, self).__repr__()
         if self._embedded:
             return "{}-dimensional {} submanifold {} embedded in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+                self._dim, self._structure.name, self._name, self._ambient
+            )
         return "{}-dimensional {} submanifold {} immersed in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+            self._dim, self._structure.name, self._name, self._ambient
+        )
 
     def open_subset(self, name, latex_name=None, coord_def={}, supersets=None):
         r"""
@@ -462,15 +481,18 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
              2-dimensional Riemannian submanifold N embedded in the
               3-dimensional Riemannian manifold M
         """
-        resu = PseudoRiemannianSubmanifold(self._dim, name,
-                                           ambient=self._ambient,
-                                           metric_name=self._metric_name,
-                                           signature=self._metric_signature,
-                                           base_manifold=self._manifold,
-                                           diff_degree=self._diff_degree,
-                                           latex_name=latex_name,
-                                           metric_latex_name=self._metric_latex_name,
-                                           start_index=self._sindex)
+        resu = PseudoRiemannianSubmanifold(
+            self._dim,
+            name,
+            ambient=self._ambient,
+            metric_name=self._metric_name,
+            signature=self._metric_signature,
+            base_manifold=self._manifold,
+            diff_degree=self._diff_degree,
+            latex_name=latex_name,
+            metric_latex_name=self._metric_latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:
@@ -555,13 +577,13 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
         if self._first_fundamental_form is None:
             self._first_fundamental_form = super().metric()
             self._first_fundamental_form.set(
-                               self._immersion.pullback(self.ambient_metric()))
+                self._immersion.pullback(self.ambient_metric())
+            )
         return self._first_fundamental_form
 
     induced_metric = first_fundamental_form
 
-    def metric(self, name=None, signature=None, latex_name=None,
-               dest_map=None):
+    def metric(self, name=None, signature=None, latex_name=None, dest_map=None):
         r"""
         Return the induced metric (first fundamental form) or define a new
         metric tensor on the submanifold.
@@ -631,8 +653,9 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
         """
         if name is None or name == self._metric_name:
             return self.first_fundamental_form()
-        return super().metric(name=name, signature=signature,
-                              latex_name=latex_name, dest_map=dest_map)
+        return super().metric(
+            name=name, signature=signature, latex_name=latex_name, dest_map=dest_map
+        )
 
     @cached_method
     def difft(self):
@@ -671,11 +694,11 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
              z/sqrt(x^2 + y^2 + z^2) dz
         """
         if self._dim_foliation == 0:
-            raise ValueError("A foliation is needed to "
-                             "perform this calculation")
+            raise ValueError("A foliation is needed to perform this calculation")
         self._difft = self._t_inverse[self._var[0]].differential()
-        self._difft.set_name("d" + self._var[0]._repr_(),
-                             r"\mathrm{d}" + self._var[0]._latex_())
+        self._difft.set_name(
+            "d" + self._var[0]._repr_(), r"\mathrm{d}" + self._var[0]._latex_()
+        )
         return self._difft
 
     @cached_method
@@ -715,13 +738,13 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
              + z/sqrt(x^2 + y^2 + z^2) e_z
         """
         if self._dim_foliation == 0:
-            raise ValueError("A foliation is needed to perform "
-                             "this calculation")
+            raise ValueError("A foliation is needed to perform this calculation")
         param = self._var[0]
         self._gradt = self._t_inverse[param].gradient()
-        self._gradt.set_name("grad({})".format(param),
-                             r"\mathrm{grad}\left(" + param._latex_()
-                             + r"\right)")
+        self._gradt.set_name(
+            "grad({})".format(param),
+            r"\mathrm{grad}\left(" + param._latex_() + r"\right)",
+        )
         return self._gradt
 
     @cached_method
@@ -854,15 +877,15 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             sage: n.restrict(U).display(format_spec=spher)  # long time
             n = -cos(phi)*sin(the) e_X - sin(phi)*sin(the) e_Y - cos(the) e_Z
         """
-        if self._dim_foliation != 0:    # case of a foliation
+        if self._dim_foliation != 0:  # case of a foliation
             self._normal = self._sgn * self.lapse() * self.gradt()
             self._normal.set_name("n")
             return self._normal
         # case of no foliation:
         max_frame = self._ambient.default_frame().along(self._immersion)
-        self._normal = self.multivector_field(self._ambient._dim - self._dim,
-                                              name='n',
-                                              dest_map=self._immersion)
+        self._normal = self.multivector_field(
+            self._ambient._dim - self._dim, name='n', dest_map=self._immersion
+        )
 
         # an auxiliary function:
         def calc_normal(chart):
@@ -870,30 +893,42 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             Calculate the normal vector field according to the formula in the
             documentation in a given chart.
             """
-            eps = self.ambient_metric().volume_form(self._dim).along(
-                self._immersion).restrict(chart.domain())
+            eps = (
+                self.ambient_metric()
+                .volume_form(self._dim)
+                .along(self._immersion)
+                .restrict(chart.domain())
+            )
             args = list(range(self._dim)) + [eps] + list(range(self._dim))
             r = self.irange()
-            n_form = self._immersion.restrict(chart.domain()).pushforward(
-                chart.frame()[next(r)]).down(
-                self.ambient_metric().along(self._immersion).restrict(
-                    chart.domain()))
+            n_form = (
+                self._immersion.restrict(chart.domain())
+                .pushforward(chart.frame()[next(r)])
+                .down(
+                    self.ambient_metric()
+                    .along(self._immersion)
+                    .restrict(chart.domain())
+                )
+            )
             for i in r:
                 n_form = n_form.wedge(
-                    self._immersion.restrict(chart.domain()).pushforward(
-                        chart.frame()[i]).down(
-                        self.ambient_metric().along(
-                            self._immersion).restrict(
-                            chart.domain())))
+                    self._immersion.restrict(chart.domain())
+                    .pushforward(chart.frame()[i])
+                    .down(
+                        self.ambient_metric()
+                        .along(self._immersion)
+                        .restrict(chart.domain())
+                    )
+                )
             n_comp = (n_form.contract(*args) / factorial(self._dim)).contract(
-                self.ambient_metric().inverse().along(self._immersion))
+                self.ambient_metric().inverse().along(self._immersion)
+            )
             if self._ambient._dim - self._dim == 1:
                 n_comp = n_comp / n_comp.norm(self.ambient_metric())
 
             norm_rst = self._normal.restrict(chart.domain())
             norm_rst.add_comp(max_frame.restrict(chart.domain()))[:] = n_comp[:]
-            self._normal.add_comp_by_continuation(max_frame, chart.domain(),
-                                                  chart)
+            self._normal.add_comp_by_continuation(max_frame, chart.domain(), chart)
 
         # start breadth-first graph exploration
         marked = set()
@@ -918,7 +953,8 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
                         if vp in v._supercharts and vp not in marked:
                             f.put(vp)
                             self._normal.add_comp_by_continuation(
-                                max_frame.restrict(vp.domain()), v.domain(), vp)
+                                max_frame.restrict(vp.domain()), v.domain(), vp
+                            )
                             marked.add(vp)
 
                         # case coordinates change
@@ -981,14 +1017,16 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             [-2*x/(x^2 + 4)    4/(x^2 + 4)]
         """
         if self._ambient._dim - self._dim != 1:
-            raise NotImplementedError("ambient_first_fundamental_form() is "
-                                      "implemented only for hypersurfaces")
+            raise NotImplementedError(
+                "ambient_first_fundamental_form() is implemented only for hypersurfaces"
+            )
         if self._ambient_first_fundamental_form is None:
             g = self.ambient_metric()
             if self._dim_foliation == 0:  # case no foliation
                 g = g.along(self._immersion)
             self._ambient_first_fundamental_form = g - self._sgn * g.contract(
-                self.normal()) * g.contract(self.normal())
+                self.normal()
+            ) * g.contract(self.normal())
             self._ambient_first_fundamental_form.set_name("gamma", r"\gamma")
         return self._ambient_first_fundamental_form
 
@@ -1031,10 +1069,10 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
                (th_E3, ph_E3, r_E3) ↦ 1
         """
         if self._dim_foliation == 0:
-            raise ValueError("A foliation is needed "
-                             "to perform this calculation")
-        self._lapse = 1 / (self._sgn * self.ambient_metric()(
-            self.gradt(), self.gradt())).sqrt()
+            raise ValueError("A foliation is needed to perform this calculation")
+        self._lapse = (
+            1 / (self._sgn * self.ambient_metric()(self.gradt(), self.gradt())).sqrt()
+        )
         self._lapse.set_name("N")
         return self._lapse
 
@@ -1074,11 +1112,12 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             beta = 0
         """
         if self._dim_foliation == 0:
-            raise ValueError("A foliation is needed "
-                             "to perform this calculation")
+            raise ValueError("A foliation is needed to perform this calculation")
         sia = self._ambient._sindex
-        self._shift = self._adapted_charts[0].frame()[self._dim + sia]\
+        self._shift = (
+            self._adapted_charts[0].frame()[self._dim + sia]
             - self.lapse() * self.normal()
+        )
         self._shift.set_name("beta", r"\beta")
         return self._shift
 
@@ -1130,41 +1169,51 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             [ 2*x/(x^2 + 4)   -4/(x^2 + 4)]
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("ambient_second_fundamental_form is defined only "
-                             "for hypersurfaces")
+            raise ValueError(
+                "ambient_second_fundamental_form is defined only for hypersurfaces"
+            )
         if self._ambient_second_fundamental_form is None:
             if self._dim_foliation == 0:
-                self._ambient_second_fundamental_form = self.tensor_field(0, 2,
-                                        sym=[(0, 1)], dest_map=self._immersion)
+                self._ambient_second_fundamental_form = self.tensor_field(
+                    0, 2, sym=[(0, 1)], dest_map=self._immersion
+                )
                 k = self.second_fundamental_form()
                 g = self.ambient_metric().along(self._immersion)
                 max_frame = self._ambient.default_frame().along(self._immersion)
                 for chart in self.top_charts():
-                    pf = [self._immersion.restrict(chart.domain()).pushforward(
-                        chart.frame()[i]) for i in self.irange()]
+                    pf = [
+                        self._immersion.restrict(chart.domain()).pushforward(
+                            chart.frame()[i]
+                        )
+                        for i in self.irange()
+                    ]
                     for i in range(self._dim):
                         pf[i] = pf[i] / g(pf[i], pf[i])
                     gam_rst = sum(
-                        g.restrict(chart.domain()).contract(pf[i]) *
-                        g.restrict(chart.domain()).contract(pf[j]) *
-                        self.scalar_field({chart: k.comp(chart.frame())[:][i, j]})
-                        for i in range(self._dim) for j in range(self._dim))
+                        g.restrict(chart.domain()).contract(pf[i])
+                        * g.restrict(chart.domain()).contract(pf[j])
+                        * self.scalar_field({chart: k.comp(chart.frame())[:][i, j]})
+                        for i in range(self._dim)
+                        for j in range(self._dim)
+                    )
                     gam_rst._sym = ((0, 1),)
                     self._ambient_second_fundamental_form.set_restriction(gam_rst)
 
                 charts = iter(self.top_charts())
                 self._ambient_second_fundamental_form.add_comp_by_continuation(
-                    max_frame, next(charts).domain())
+                    max_frame, next(charts).domain()
+                )
                 for chart in charts:
                     self._ambient_second_fundamental_form.add_expr_from_subdomain(
-                        max_frame, chart.domain())
+                        max_frame, chart.domain()
+                    )
             else:
                 nab = self.ambient_metric().connection('nabla', r'\nabla')
-                self._ambient_second_fundamental_form = \
-                    -self.ambient_metric().contract(nab(self.normal())) \
-                    - nab(self.normal()).contract(self.normal())\
-                    .contract(self.ambient_metric())\
-                    * self.normal().contract(self.ambient_metric())
+                self._ambient_second_fundamental_form = -self.ambient_metric().contract(
+                    nab(self.normal())
+                ) - nab(self.normal()).contract(self.normal()).contract(
+                    self.ambient_metric()
+                ) * self.normal().contract(self.ambient_metric())
             self._ambient_second_fundamental_form.set_name("K")
         return self._ambient_second_fundamental_form
 
@@ -1231,11 +1280,11 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             K = 2*sqrt(u^4 + 2*u^2 + 2)*u/(u^6 + 3*u^4 + 4*u^2 + 2) du⊗du
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("second_fundamental_form is defined only for"
-                             + " hypersurfaces")
+            raise ValueError(
+                "second_fundamental_form is defined only for" + " hypersurfaces"
+            )
         if self._second_fundamental_form is None:
-            resu = self.vector_field_module().tensor((0, 2), name='K',
-                                                      sym=[(0, 1)])
+            resu = self.vector_field_module().tensor((0, 2), name='K', sym=[(0, 1)])
             if self._dim_foliation != 0:
                 inverse_subs = {v: k for k, v in self._subs[0].items()}
                 asff = self.ambient_second_fundamental_form()
@@ -1243,43 +1292,66 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
                 dsi = self._ambient._sindex - self._sindex
                 for i in self.irange():
                     for j in self.irange(start=i):
-                        resu[i, j] = asff[adapted_chart.frame(),
-                                          i + dsi, j + dsi,
-                                          adapted_chart].expr().subs(inverse_subs)
+                        resu[i, j] = (
+                            asff[adapted_chart.frame(), i + dsi, j + dsi, adapted_chart]
+                            .expr()
+                            .subs(inverse_subs)
+                        )
             else:
                 nab = self.ambient_metric().connection('nabla', r'\nabla')
                 n = self.normal()
 
                 for chart in self.atlas():
                     gamma_n = matrix(SR, self._dim + 1, self._dim + 1)
-                    subs = dict(zip(self._ambient.default_chart()[:],
-                                    self._immersion.expression(chart)))
+                    subs = dict(
+                        zip(
+                            self._ambient.default_chart()[:],
+                            self._immersion.expression(chart),
+                        )
+                    )
                     for i in range(self._dim + 1):
                         for j in range(self._dim + 1):
-                            Gam_ij = [nab[self._ambient.frames()[0],
-                                          :][i][j][k].expr().subs(subs)
-                                      for k in range(self._dim + 1)]
-                            gamma_n[i, j] = chart.simplify(sum(
-                                Gam_ij[k] *
-                                n.restrict(chart.domain()).comp(
-                                  n.restrict(chart.domain())._fmodule.bases()[0])
-                                [:][k].expr() for k in range(self._dim + 1)))
+                            Gam_ij = [
+                                nab[self._ambient.frames()[0], :][i][j][k]
+                                .expr()
+                                .subs(subs)
+                                for k in range(self._dim + 1)
+                            ]
+                            gamma_n[i, j] = chart.simplify(
+                                sum(
+                                    Gam_ij[k]
+                                    * n.restrict(chart.domain())
+                                    .comp(
+                                        n.restrict(chart.domain())._fmodule.bases()[0]
+                                    )[:][k]
+                                    .expr()
+                                    for k in range(self._dim + 1)
+                                )
+                            )
                     dXdu = self._immersion.differential_functions(chart)
                     dNdu = matrix(SR, self._dim + 1, self._dim)
                     for i in range(self._dim + 1):
                         for j in range(self._dim):
-                            dNdu[i, j] = n.restrict(chart.domain()).comp(
-                                n.restrict(chart.domain())._fmodule.bases()[0])[:,
-                                chart][i].diff(chart[:][j]).expr()
-                    g = self.ambient_metric().along(
-                        self._immersion.restrict(chart.domain())).restrict(
-                        chart.domain())[:, chart]
+                            dNdu[i, j] = (
+                                n.restrict(chart.domain())
+                                .comp(n.restrict(chart.domain())._fmodule.bases()[0])[
+                                    :, chart
+                                ][i]
+                                .diff(chart[:][j])
+                                .expr()
+                            )
+                    g = (
+                        self.ambient_metric()
+                        .along(self._immersion.restrict(chart.domain()))
+                        .restrict(chart.domain())[:, chart]
+                    )
                     K = dXdu.transpose() * g * (dNdu + gamma_n * dXdu)
                     si = self._sindex
                     for i in self.irange():
                         for j in self.irange(i):  # since K is symmetric
                             resu[chart.frame(), i, j, chart] = chart.simplify(
-                                                      K[i - si, j - si].expr())
+                                K[i - si, j - si].expr()
+                            )
 
             self._second_fundamental_form = resu
         return self._second_fundamental_form
@@ -1332,8 +1404,9 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             0
         """
         if self._ambient._dim - self._dim != 1:
-            raise NotImplementedError("projector() is implemented only for "
-                                      "hypersurfaces")
+            raise NotImplementedError(
+                "projector() is implemented only for hypersurfaces"
+            )
         g = self.ambient_metric().inverse()
         if self._dim_foliation == 0:
             g = g.along(self._immersion)
@@ -1388,11 +1461,12 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
         Note that the output of ``project()`` is not cached.
         """
         if self._ambient._dim - self._dim != 1:
-            raise NotImplementedError("project() is implemented only for "
-                                      "hypersurfaces")
+            raise NotImplementedError("project() is implemented only for hypersurfaces")
         resu = tensor.copy()
-        resu.set_name(tensor._name + "_" + self._name,
-                      r"{" + tensor._latex_() + r"}_{" + self._latex_() + r"}")
+        resu.set_name(
+            tensor._name + "_" + self._name,
+            r"{" + tensor._latex_() + r"}_{" + self._latex_() + r"}",
+        )
         for i in range(tensor.tensor_type()[0]):
             resu = self.projector().contract(1, resu, i)
         for i in range(tensor.tensor_type()[1]):
@@ -1469,8 +1543,9 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             (th_E3, ph_E3, r_E3) ↦ 1
         """
         if self._ambient._dim - self._dim != 1:
-            raise NotImplementedError("mixed_projection() is implemented only "
-                                      "for hypersurfaces")
+            raise NotImplementedError(
+                "mixed_projection() is implemented only for hypersurfaces"
+            )
         if isinstance(indices, (Integer, int)):
             indices = list(range(indices))
 
@@ -1482,8 +1557,8 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             g = g.along(self._immersion)
 
         multiprojector = 1
-        k = tensor.tensor_rank()      # order of the tensor
-        kp = 2 * k - len(indices)       # order of the multiprojector
+        k = tensor.tensor_rank()  # order of the tensor
+        kp = 2 * k - len(indices)  # order of the multiprojector
         for i in range(tensor.tensor_type()[1]):
             if i in indices:
                 multiprojector = multiprojector * self.normal()
@@ -1494,8 +1569,12 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
                 multiprojector = multiprojector * self.normal().contract(g)
             else:
                 multiprojector = multiprojector * self.projector()
-        args = list(range(kp - tensor.tensor_type()[0], kp)) + list(range(
-                tensor.tensor_type()[1])) + [tensor] + list(range(k))
+        args = (
+            list(range(kp - tensor.tensor_type()[0], kp))
+            + list(range(tensor.tensor_type()[1]))
+            + [tensor]
+            + list(range(k))
+        )
         return multiprojector.contract(*args)
 
     @cached_method
@@ -1540,12 +1619,14 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             on V: y ↦ -1
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("gauss_curvature is defined only for "
-                             "hypersurfaces")
+            raise ValueError("gauss_curvature is defined only for hypersurfaces")
         a = self.shape_operator()
         self._gauss_curvature = self.scalar_field(
-            {chart: a[chart.frame(), :, chart].determinant()
-             for chart in self.top_charts()})
+            {
+                chart: a[chart.frame(), :, chart].determinant()
+                for chart in self.top_charts()
+            }
+        )
         return self._gauss_curvature
 
     @cached_method
@@ -1597,12 +1678,14 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             e_0 = ∂/∂x
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("principal directions is defined only for "
-                             "hypersurfaces")
+            raise ValueError("principal directions is defined only for hypersurfaces")
         a = self.shape_operator()
         pr_d = matrix(
-            [[a[chart.frame(), :, chart][i, j].expr() for i in self.irange()]
-             for j in self.irange()]).eigenvectors_right()
+            [
+                [a[chart.frame(), :, chart][i, j].expr() for i in self.irange()]
+                for j in self.irange()
+            ]
+        ).eigenvectors_right()
         res = []
         v = self.vector_field()
         counter = self.irange()
@@ -1665,16 +1748,19 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             on W: y ↦ -1
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("principal_curvatures is defined only for "
-                             "hypersurfaces")
+            raise ValueError("principal_curvatures is defined only for hypersurfaces")
         a = self.shape_operator()
         res = matrix(
-            [[a[chart.frame(), :, chart][i, j].expr() for i in self.irange()]
-             for j in self.irange()]).eigenvalues()
+            [
+                [a[chart.frame(), :, chart][i, j].expr() for i in self.irange()]
+                for j in self.irange()
+            ]
+        ).eigenvalues()
         counter = self.irange()
         for i in range(self._dim):
-            res[i] = self.scalar_field({chart: res[i]},
-                                       name="k_{}".format(next(counter)))
+            res[i] = self.scalar_field(
+                {chart: res[i]}, name="k_{}".format(next(counter))
+            )
         self._principal_curvatures[chart] = res
         return res
 
@@ -1720,12 +1806,15 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             on V: y ↦ -1
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("mean_curvature is defined only for "
-                             "hypersurfaces")
-        self._shape_operator = self.scalar_field({chart: self._sgn * sum(
-            self.principal_curvatures(chart)).expr(chart) / self._dim
-                                                  for chart in
-                                                  self.top_charts()})
+            raise ValueError("mean_curvature is defined only for hypersurfaces")
+        self._shape_operator = self.scalar_field(
+            {
+                chart: self._sgn
+                * sum(self.principal_curvatures(chart)).expr(chart)
+                / self._dim
+                for chart in self.top_charts()
+            }
+        )
         return self._shape_operator
 
     @cached_method
@@ -1771,10 +1860,10 @@ class PseudoRiemannianSubmanifold(PseudoRiemannianManifold,
             -∂/∂x⊗dx
         """
         if self._ambient._dim - self._dim != 1:
-            raise ValueError("shape_operator is defined only for "
-                             "hypersurfaces")
+            raise ValueError("shape_operator is defined only for hypersurfaces")
         self._shape_operator = self.second_fundamental_form().contract(
-                                               self.induced_metric().inverse())
+            self.induced_metric().inverse()
+        )
         return self._shape_operator
 
     def clear_cache(self):

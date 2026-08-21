@@ -230,7 +230,7 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
                     # IntegerModRing is significantly faster than Zq
                     self._Zq = IntegerModRing(self._p**self._N)
                     if self._sqrtp:
-                        self._Zq0 = IntegerModRing(self._p**(self._N - 1))
+                        self._Zq0 = IntegerModRing(self._p ** (self._N - 1))
                     self._Qq = Qq(self._p, prec=self._N, type='capped-rel')
                     self._w = 1
                 else:
@@ -526,20 +526,20 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
         M1 = matrix(
             self._Zq,
             self._d,
-            lambda m, n: m1
-            if m == n + 1
-            else self._r * f_co[m]
-            if n == self._d - 1
-            else 0,
+            lambda m, n: (
+                m1 if m == n + 1 else self._r * f_co[m] if n == self._d - 1 else 0
+            ),
         )
         M0 = matrix(
             self._Zq,
             self._d,
-            lambda m, n: m0
-            if m == n + 1
-            else (self._r - s) * m * f_co[m]
-            if n == self._d - 1
-            else 0,
+            lambda m, n: (
+                m0
+                if m == n + 1
+                else (self._r - s) * m * f_co[m]
+                if n == self._d - 1
+                else 0
+            ),
         )
 
         return ((m0, m1), (M0, M1))
@@ -587,17 +587,15 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
         f_co = (
             [0 for i in range(d - 2)] + self._flift.list() + [0 for i in range(d - 1)]
         )
-        fd_co = (
-            [0 for i in range(d - 1)] + self._dflift.list() + [0 for i in range(d)]
-        )
+        fd_co = [0 for i in range(d - 1)] + self._dflift.list() + [0 for i in range(d)]
 
-        rows = [f_co[d - 2 - i:-i - 1] for i in range(d - 1)]
-        rows += [fd_co[d - 1 - i:-i - 1] for i in range(d)]
+        rows = [f_co[d - 2 - i : -i - 1] for i in range(d - 1)]
+        rows += [fd_co[d - 1 - i : -i - 1] for i in range(d)]
 
         m = matrix(rows).transpose().inverse()
 
         a_foo = m[0:d, 0:d]
-        b_foo = m[d - 1:2 * d - 1, 0:d]
+        b_foo = m[d - 1 : 2 * d - 1, 0:d]
         a_foo = matrix(d, d, lambda i, j: 1 if i == j and i != d - 1 else 0) * a_foo
         foo = matrix(d, d, lambda i, j: j if i == j - 1 else 0)
         bp_foo = foo * b_foo
@@ -1056,9 +1054,10 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
             for j in range(1, self._r):
                 s0 = (j * self._p) % self._r
                 for i in range(self._d - 1):
-                    m[(s0 - 1) * (self._d - 1):s0 * (self._d - 1),
-                      i + (j - 1) * (self._d - 1),
-                      ] = self._frob(i, j + self._epsilon * self._r, N0)
+                    m[
+                        (s0 - 1) * (self._d - 1) : s0 * (self._d - 1),
+                        i + (j - 1) * (self._d - 1),
+                    ] = self._frob(i, j + self._epsilon * self._r, N0)
             return m
 
         self._init_frob(N)
@@ -1069,9 +1068,7 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
         current = FrobP
         total = FrobP
         for i in range(self._n - 1):
-            current = matrix(
-                [[entry.frobenius() for entry in row] for row in current]
-            )
+            current = matrix([[entry.frobenius() for entry in row] for row in current])
             total = total * current
         total = matrix([[elt.add_bigoh(self._N0) for elt in row] for row in total])
         return total
@@ -1251,11 +1248,11 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
                         phi = euler_phi(i)
                         G = IntegerModRing(i)
                         ki = G(self._q).multiplicative_order()
-                        denom = denom * (T ** ki - 1) ** (phi // ki)
+                        denom = denom * (T**ki - 1) ** (phi // ki)
                 return denom
             # Non-monic
             x = PolynomialRing(self._Fq, "x").gen()
-            f = x ** self._delta - lc
+            f = x**self._delta - lc
             L = f.splitting_field("a")
             roots = [r for r, _ in f.change_ring(L).roots()]
             roots_dict = {r: i for i, r in enumerate(roots)}
@@ -1288,7 +1285,7 @@ class CyclicCover_finite_field(cycliccover_generic.CyclicCover_generic):
         cp = cp.padded_list(self._genus + 1)
         cpZZ = [None for _ in range(2 * self._genus + 1)]
         cpZZ[0] = 1
-        cpZZ[-1] = self._p ** self._genus
+        cpZZ[-1] = self._p**self._genus
         for i in range(1, self._genus + 1):
             cmod = cp[i]
             bound = binomial(2 * self._genus, i) * self._p ** (i * self._n * 0.5)

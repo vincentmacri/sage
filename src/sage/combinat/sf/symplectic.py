@@ -177,8 +177,9 @@ class SymmetricFunctionAlgebra_symplectic(sfa.SymmetricFunctionAlgebra_generic):
             sage: sp = SymmetricFunctions(QQ).sp()
             sage: TestSuite(sp).run()
         """
-        sfa.SymmetricFunctionAlgebra_generic.__init__(self, Sym, "symplectic",
-                                                      'sp', graded=False)
+        sfa.SymmetricFunctionAlgebra_generic.__init__(
+            self, Sym, "symplectic", 'sp', graded=False
+        )
 
         # We make a strong reference since we use it for our computations
         #   and so we can define the coercion below (only codomains have
@@ -186,11 +187,19 @@ class SymmetricFunctionAlgebra_symplectic(sfa.SymmetricFunctionAlgebra_generic):
         self._s = Sym.schur()
 
         # Setup the coercions
-        M = self._s.module_morphism(self._s_to_sp_on_basis, codomain=self,
-                                    triangular='upper', unitriangular=True)
+        M = self._s.module_morphism(
+            self._s_to_sp_on_basis,
+            codomain=self,
+            triangular='upper',
+            unitriangular=True,
+        )
         M.register_as_coercion()
-        Mi = self.module_morphism(self._sp_to_s_on_basis, codomain=self._s,
-                                  triangular='upper', unitriangular=True)
+        Mi = self.module_morphism(
+            self._sp_to_s_on_basis,
+            codomain=self._s,
+            triangular='upper',
+            unitriangular=True,
+        )
         Mi.register_as_coercion()
 
     @cached_method
@@ -213,13 +222,19 @@ class SymmetricFunctionAlgebra_symplectic(sfa.SymmetricFunctionAlgebra_generic):
         R = self.base_ring()
         n = sum(lam)
         return self._s._from_dict(
-            {mu: R.sum((-1)**j * lrcalc.lrcoef_unsafe(lam, mu, nu)
-                       for nu in Partitions(2 * j)
-                       if all(nu.leg_length(i, i) == nu.arm_length(i, i) + 1
-                              for i in range(nu.frobenius_rank()))
-                       )
-             for j in range(n // 2 + 1)  # // 2 for horizontal dominoes
-             for mu in Partitions(n - 2 * j)})
+            {
+                mu: R.sum(
+                    (-1) ** j * lrcalc.lrcoef_unsafe(lam, mu, nu)
+                    for nu in Partitions(2 * j)
+                    if all(
+                        nu.leg_length(i, i) == nu.arm_length(i, i) + 1
+                        for i in range(nu.frobenius_rank())
+                    )
+                )
+                for j in range(n // 2 + 1)  # // 2 for horizontal dominoes
+                for mu in Partitions(n - 2 * j)
+            }
+        )
 
     @cached_method
     def _s_to_sp_on_basis(self, lam):
@@ -248,8 +263,12 @@ class SymmetricFunctionAlgebra_symplectic(sfa.SymmetricFunctionAlgebra_generic):
         R = self.base_ring()
         n = sum(lam)
         return self._from_dict(
-            {mu: R.sum(lrcalc.lrcoef_unsafe(lam, mu,
-                                            sum([[x, x] for x in nu], []))
-                       for nu in Partitions(j))
-             for j in range(n // 2 + 1)  # // 2 for vertical dominoes
-             for mu in Partitions(n - 2 * j)})
+            {
+                mu: R.sum(
+                    lrcalc.lrcoef_unsafe(lam, mu, sum([[x, x] for x in nu], []))
+                    for nu in Partitions(j)
+                )
+                for j in range(n // 2 + 1)  # // 2 for vertical dominoes
+                for mu in Partitions(n - 2 * j)
+            }
+        )

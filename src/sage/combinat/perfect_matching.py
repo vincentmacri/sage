@@ -1,4 +1,3 @@
-
 r"""
 Perfect matchings
 
@@ -91,6 +90,7 @@ class PerfectMatching(SetPartition):
         sage: m.parent()
         Perfect matchings of {}
     """
+
     @staticmethod
     def __classcall_private__(cls, parts):
         """
@@ -153,13 +153,17 @@ class PerfectMatching(SetPartition):
             ValueError: permutation p (= [4, 2, 1, 3]) is not a
              fixed point free involution
         """
-        if ((isinstance(parts, list) and
-             all(isinstance(x, (int, Integer)) for x in parts))
-            or isinstance(parts, Permutation)):
+        if (
+            isinstance(parts, list)
+            and all(isinstance(x, (int, Integer)) for x in parts)
+        ) or isinstance(parts, Permutation):
             s = Permutation(parts)
             if not all(e == 2 for e in s.cycle_type()):
-                raise ValueError("permutation p (= {}) is not a "
-                                 "fixed point free involution".format(s))
+                raise ValueError(
+                    "permutation p (= {}) is not a fixed point free involution".format(
+                        s
+                    )
+                )
             parts = s.to_cycles()
 
         base_set = frozenset(e for p in parts for e in p)
@@ -310,7 +314,9 @@ class PerfectMatching(SetPartition):
         if other is None:
             other = self.parent().an_element()
         elif self.parent() != other.parent():
-            raise ValueError("%s is not a matching of the ground set of %s" % (other, self))
+            raise ValueError(
+                "%s is not a matching of the ground set of %s" % (other, self)
+            )
         remain = self.base_set().set()
         while remain:
             a = remain.pop()
@@ -407,9 +413,9 @@ class PerfectMatching(SetPartition):
             sage: m = PerfectMatching([]); m.loop_type()
             []
         """
-        return Partition(sorted((len(l) // 2
-                                 for l in self.loops_iterator(other)),
-                                reverse=True))
+        return Partition(
+            sorted((len(l) // 2 for l in self.loops_iterator(other)), reverse=True)
+        )
 
     def number_of_loops(self, other=None):
         r"""
@@ -477,6 +483,7 @@ class PerfectMatching(SetPartition):
             []
         """
         from sage.graphs.graph import Graph
+
         return Graph([list(p) for p in self], format='list_of_edges')
 
     def to_noncrossing_set_partition(self):
@@ -502,8 +509,7 @@ class PerfectMatching(SetPartition):
             raise ValueError("matching must be non-crossing")
         else:
             perm = self.to_permutation()
-            perm2 = Permutation([perm[2 * i] // 2
-                                 for i in range(len(perm) // 2)])
+            perm2 = Permutation([perm[2 * i] // 2 for i in range(len(perm) // 2)])
         return SetPartition(perm2.cycle_tuples())
 
 
@@ -574,6 +580,7 @@ class PerfectMatchings(SetPartitions_set):
         sage: S([])
         []
     """
+
     @staticmethod
     def __classcall_private__(cls, s):
         """
@@ -623,8 +630,9 @@ class PerfectMatchings(SetPartitions_set):
         # The iterator from fixed-point-free involutions has the resulting
         #   list of pairs sorted by their minimal element.
         for val in perfect_matchings_iterator(len(s) // 2):
-            yield self.element_class(self, ((s[a], s[b]) for a, b in val),
-                                     check=False, sort=False)
+            yield self.element_class(
+                self, ((s[a], s[b]) for a, b in val), check=False, sort=False
+            )
 
     def __contains__(self, x):
         """
@@ -735,14 +743,18 @@ class PerfectMatchings(SetPartitions_set):
         n = len(self._set)
 
         if n % 2:
-            raise ValueError("there is no perfect matching on an odd number of elements")
+            raise ValueError(
+                "there is no perfect matching on an odd number of elements"
+            )
 
         k = n // 2
         p = Permutations(n).random_element()
         l = list(self._set)
-        return self.element_class(self, [(l[p[2 * i] - 1], l[p[2 * i + 1] - 1])
-                                         for i in range(k)],
-                                  check=False)
+        return self.element_class(
+            self,
+            [(l[p[2 * i] - 1], l[p[2 * i + 1] - 1]) for i in range(k)],
+            check=False,
+        )
 
     @cached_method
     def Weingarten_matrix(self, N):
@@ -761,8 +773,7 @@ class PerfectMatchings(SetPartitions_set):
             [   -1 N + 1    -1]
             [   -1    -1 N + 1]
         """
-        G = matrix([[N**(p1.number_of_loops(p2)) for p1 in self]
-                    for p2 in self])
-        return G**(-1)
+        G = matrix([[N ** (p1.number_of_loops(p2)) for p1 in self] for p2 in self])
+        return G ** (-1)
 
     Element = PerfectMatching

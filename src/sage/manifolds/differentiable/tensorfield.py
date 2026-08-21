@@ -485,19 +485,20 @@ class TensorField(ModuleElementWithMutability):
         self._ambient_domain = vector_field_module._ambient_domain
 
         self._extensions_graph = {self._domain: self}
-                    # dict. of known extensions of self on bigger domains,
-                    # including self, with domains as keys. Its elements can be
-                    # seen as incoming edges on a graph.
+        # dict. of known extensions of self on bigger domains,
+        # including self, with domains as keys. Its elements can be
+        # seen as incoming edges on a graph.
         self._restrictions_graph = {self._domain: self}
-                    # dict. of known restrictions of self on smaller domains,
-                    # including self, with domains as keys. Its elements can be
-                    # seen as outgoing edges on a graph.
+        # dict. of known restrictions of self on smaller domains,
+        # including self, with domains as keys. Its elements can be
+        # seen as outgoing edges on a graph.
 
-        self._restrictions = {} # dict. of restrictions of self on subdomains
-                                # of self._domain, with the subdomains as keys
+        self._restrictions = {}  # dict. of restrictions of self on subdomains
+        # of self._domain, with the subdomains as keys
         # Treatment of symmetry declarations:
         self._sym, self._antisym = CompWithSym._canonicalize_sym_antisym(
-            self._tensor_rank, sym, antisym)
+            self._tensor_rank, sym, antisym
+        )
         # Initialization of derived quantities:
         self._init_derived()
 
@@ -559,7 +560,7 @@ class TensorField(ModuleElementWithMutability):
             Tensor field t of type (1,3) on the 2-dimensional differentiable manifold M
         """
         # Special cases
-        if self._tensor_type == (0,2) and self._sym == ((0,1),):
+        if self._tensor_type == (0, 2) and self._sym == ((0, 1),):
             description = "Field of symmetric bilinear forms "
             if self._name is not None:
                 description += self._name + " "
@@ -569,7 +570,8 @@ class TensorField(ModuleElementWithMutability):
             if self._name is not None:
                 description += self._name + " "
             description += "of type ({},{}) ".format(
-                                    self._tensor_type[0], self._tensor_type[1])
+                self._tensor_type[0], self._tensor_type[1]
+            )
         return self._final_repr(description)
 
     def _latex_(self):
@@ -625,8 +627,7 @@ class TensorField(ModuleElementWithMutability):
             a
         """
         if self.is_immutable():
-            raise ValueError("the name of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the name of an immutable element cannot be changed")
         if name is not None:
             self._name = name
             if latex_name is None:
@@ -653,8 +654,13 @@ class TensorField(ModuleElementWithMutability):
             sage: t1.parent() is t.parent()
             True
         """
-        return type(self)(self._vmodule, self._tensor_type, sym=self._sym,
-                          antisym=self._antisym, parent=self.parent())
+        return type(self)(
+            self._vmodule,
+            self._tensor_type,
+            sym=self._sym,
+            antisym=self._antisym,
+            parent=self.parent(),
+        )
 
     def _final_repr(self, description: str) -> str:
         r"""
@@ -671,8 +677,9 @@ class TensorField(ModuleElementWithMutability):
         if self._domain == self._ambient_domain:
             description += "on the {}".format(self._domain)
         else:
-            description += "along the {} ".format(self._domain) + \
-                           "with values on the {}".format(self._ambient_domain)
+            description += "along the {} ".format(
+                self._domain
+            ) + "with values on the {}".format(self._ambient_domain)
         return description
 
     def _init_derived(self):
@@ -685,7 +692,7 @@ class TensorField(ModuleElementWithMutability):
             sage: t = M.tensor_field(1, 3, name='t')
             sage: t._init_derived()
         """
-        self._lie_derivatives = {} # dict. of Lie derivatives of self (keys: id(vector))
+        self._lie_derivatives = {}  # dict. of Lie derivatives of self (keys: id(vector))
 
     def _del_derived(self):
         r"""
@@ -977,34 +984,48 @@ class TensorField(ModuleElementWithMutability):
             True
         """
         if self.is_immutable():
-            raise ValueError("the restrictions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the restrictions of an immutable element cannot be changed"
+            )
         if not isinstance(rst, TensorField):
             raise TypeError("the argument must be a tensor field")
         if not rst._domain.is_subset(self._domain):
-            raise ValueError("the domain of the declared restriction is not " +
-                             "a subset of the field's domain")
+            raise ValueError(
+                "the domain of the declared restriction is not "
+                + "a subset of the field's domain"
+            )
         if not rst._ambient_domain.is_subset(self._ambient_domain):
-            raise ValueError("the ambient domain of the declared " +
-                             "restriction is not a subset of the " +
-                             "field's ambient domain")
+            raise ValueError(
+                "the ambient domain of the declared "
+                + "restriction is not a subset of the "
+                + "field's ambient domain"
+            )
         if rst._tensor_type != self._tensor_type:
-            raise ValueError("the declared restriction has not the same " +
-                             "tensor type as the current tensor field")
+            raise ValueError(
+                "the declared restriction has not the same "
+                + "tensor type as the current tensor field"
+            )
         if rst._tensor_type != self._tensor_type:
-            raise ValueError("the declared restriction has not the same " +
-                             "tensor type as the current tensor field")
+            raise ValueError(
+                "the declared restriction has not the same "
+                + "tensor type as the current tensor field"
+            )
         if rst._sym != self._sym:
-            raise ValueError("the declared restriction has not the same " +
-                             "symmetries as the current tensor field")
+            raise ValueError(
+                "the declared restriction has not the same "
+                + "symmetries as the current tensor field"
+            )
         if rst._antisym != self._antisym:
-            raise ValueError("the declared restriction has not the same " +
-                             "antisymmetries as the current tensor field")
+            raise ValueError(
+                "the declared restriction has not the same "
+                + "antisymmetries as the current tensor field"
+            )
         if self._domain is rst._domain:
             self.copy_from(rst)
         else:
-            self._restrictions[rst._domain] = rst.copy(name=self._name,
-                                                       latex_name=self._latex_name)
+            self._restrictions[rst._domain] = rst.copy(
+                name=self._name, latex_name=self._latex_name
+            )
         self._is_zero = False  # a priori
 
     def restrict(
@@ -1089,19 +1110,23 @@ class TensorField(ModuleElementWithMutability):
             sage: vU.restrict(U) is vU
             True
         """
-        if (subdomain == self._domain
-                and (dest_map is None or dest_map == self._vmodule._dest_map)):
+        if subdomain == self._domain and (
+            dest_map is None or dest_map == self._vmodule._dest_map
+        ):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subset of " +
-                                 "the field's domain")
+                raise ValueError(
+                    "the provided domain is not a subset of " + "the field's domain"
+                )
             if dest_map is None:
                 dest_map = self._vmodule._dest_map.restrict(subdomain)
             elif not dest_map._codomain.is_subset(self._ambient_domain):
-                raise ValueError("the argument 'dest_map' is not compatible " +
-                                 "with the ambient domain of " +
-                                 "the {}".format(self))
+                raise ValueError(
+                    "the argument 'dest_map' is not compatible "
+                    + "with the ambient domain of "
+                    + "the {}".format(self)
+                )
             # First one tries to get the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
                 if subdomain.is_subset(dom) and subdomain in rst._restrictions:
@@ -1135,10 +1160,14 @@ class TensorField(ModuleElementWithMutability):
 
             # If this fails, the restriction is created from scratch:
             smodule = subdomain.vector_field_module(dest_map=dest_map)
-            res = smodule.tensor(self._tensor_type, name=self._name,
-                                 latex_name=self._latex_name, sym=self._sym,
-                                 antisym=self._antisym,
-                                 specific_type=type(self))
+            res = smodule.tensor(
+                self._tensor_type,
+                name=self._name,
+                latex_name=self._latex_name,
+                sym=self._sym,
+                antisym=self._antisym,
+                specific_type=type(self),
+            )
             res._extensions_graph.update(self._extensions_graph)
             for dom, ext in self._extensions_graph.items():
                 ext._restrictions[subdomain] = res
@@ -1217,7 +1246,7 @@ class TensorField(ModuleElementWithMutability):
         """
         if basis is None:
             basis = self._domain._def_frame
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         rst = self.restrict(basis._domain, dest_map=basis._dest_map)
         return rst._set_comp_unsafe(basis)
 
@@ -1286,12 +1315,11 @@ class TensorField(ModuleElementWithMutability):
              changed
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         self._is_zero = False  # a priori
         if basis is None:
             basis = self._domain._def_frame
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         rst = self.restrict(basis._domain, dest_map=basis._dest_map)
         return rst.set_comp(basis=basis)
 
@@ -1349,7 +1377,7 @@ class TensorField(ModuleElementWithMutability):
         """
         if basis is None:
             basis = self._domain._def_frame
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         rst = self.restrict(basis._domain, dest_map=basis._dest_map)
         return rst._add_comp_unsafe(basis)
 
@@ -1414,12 +1442,11 @@ class TensorField(ModuleElementWithMutability):
              changed
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         self._is_zero = False  # a priori
         if basis is None:
             basis = self._domain._def_frame
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         rst = self.restrict(basis._domain, dest_map=basis._dest_map)
         return rst.add_comp(basis=basis)
 
@@ -1488,18 +1515,19 @@ class TensorField(ModuleElementWithMutability):
         and `a` is defined on the entire manifold `S^2`.
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         dom = frame._domain
         if not dom.is_subset(self._domain):
-            raise ValueError("the vector frame is not defined on a subset " +
-                             "of the tensor field domain")
+            raise ValueError(
+                "the vector frame is not defined on a subset "
+                + "of the tensor field domain"
+            )
         if chart is None:
             chart = dom._def_chart
         sframe = frame.restrict(subdomain)
         schart = chart.restrict(subdomain)
         scomp = self.comp(sframe)
-        resu = self._add_comp_unsafe(frame) # _del_derived is performed here
+        resu = self._add_comp_unsafe(frame)  # _del_derived is performed here
         for ind in resu.non_redundant_index_generator():
             resu[[ind]] = dom.scalar_field({chart: scomp[[ind]].expr(schart)})
 
@@ -1587,15 +1615,19 @@ class TensorField(ModuleElementWithMutability):
             on V: (xp, yp) ↦ 1/(xp^2 + yp^2)
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         dom = frame._domain
         if not dom.is_subset(self._domain):
-            raise ValueError("the vector frame is not defined on a subset " +
-                             "of the tensor field domain")
+            raise ValueError(
+                "the vector frame is not defined on a subset "
+                + "of the tensor field domain"
+            )
         if frame not in self.restrict(frame.domain())._components:
-            raise ValueError("the tensor doesn't have an expression in "
-                             "the frame"+frame._repr_())
+            raise ValueError(
+                "the tensor doesn't have an expression in the frame" + frame._repr_()
+            )
         comp = self._add_comp_unsafe(frame)  # the components stay the same
         scomp = self.restrict(subdomain).comp(frame.restrict(subdomain))
         for ind in comp.non_redundant_index_generator():
@@ -1825,8 +1857,14 @@ class TensorField(ModuleElementWithMutability):
 
     disp = display
 
-    def display_comp(self, frame=None, chart=None, coordinate_labels=True,
-                     only_nonzero=True, only_nonredundant=False):
+    def display_comp(
+        self,
+        frame=None,
+        chart=None,
+        coordinate_labels=True,
+        only_nonzero=True,
+        only_nonredundant=False,
+    ):
         r"""
         Display the tensor components with respect to a given frame,
         one per line.
@@ -1899,19 +1937,24 @@ class TensorField(ModuleElementWithMutability):
                 else:
                     for rst in self._restrictions.values():
                         try:
-                            return rst.display_comp(chart=chart,
-                                       coordinate_labels=coordinate_labels,
-                                       only_nonzero=only_nonzero,
-                                       only_nonredundant=only_nonredundant)
+                            return rst.display_comp(
+                                chart=chart,
+                                coordinate_labels=coordinate_labels,
+                                only_nonzero=only_nonzero,
+                                only_nonredundant=only_nonredundant,
+                            )
                         except ValueError:
                             pass
                 if frame is None:  # should be "is still None" ;-)
                     raise ValueError("a frame must be provided for the display")
         rst = self.restrict(frame.domain(), dest_map=frame._dest_map)
-        return rst.display_comp(frame=frame, chart=chart,
-                                coordinate_labels=coordinate_labels,
-                                only_nonzero=only_nonzero,
-                                only_nonredundant=only_nonredundant)
+        return rst.display_comp(
+            frame=frame,
+            chart=chart,
+            coordinate_labels=coordinate_labels,
+            only_nonzero=only_nonzero,
+            only_nonredundant=only_nonredundant,
+        )
 
     def __getitem__(self, args):
         r"""
@@ -1956,7 +1999,7 @@ class TensorField(ModuleElementWithMutability):
             M → ℝ
             on U: (x, y) ↦ (x + 1)*y + x
         """
-        if isinstance(args, str): # tensor with specified indices
+        if isinstance(args, str):  # tensor with specified indices
             return TensorWithIndices(self, args).update()
         if isinstance(args, list):  # case of [[...]] syntax
             if not isinstance(args[0], (int, Integer, slice)):
@@ -2071,16 +2114,15 @@ class TensorField(ModuleElementWithMutability):
             False
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if other not in self.parent():
-            raise TypeError("the original must be an element of "
-                            f"{self.parent()}")
+            raise TypeError(f"the original must be an element of {self.parent()}")
         self._del_derived()
-        self._del_restrictions() # delete restrictions
+        self._del_restrictions()  # delete restrictions
         for dom, rst in other._restrictions.items():
-            self._restrictions[dom] = rst.copy(name=self._name,
-                                               latex_name=self._latex_name)
+            self._restrictions[dom] = rst.copy(
+                name=self._name, latex_name=self._latex_name
+            )
         self._is_zero = other._is_zero
 
     def copy(self, name=None, latex_name=None):
@@ -2141,8 +2183,7 @@ class TensorField(ModuleElementWithMutability):
             resu._latex_name = latex_name
         # set restrictions
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = rst.copy(name=name,
-                                               latex_name=latex_name)
+            resu._restrictions[dom] = rst.copy(name=name, latex_name=latex_name)
         resu._is_zero = self._is_zero
         return resu
 
@@ -2231,7 +2272,7 @@ class TensorField(ModuleElementWithMutability):
 
         if other is self:
             return True
-        if other in ZZ: # to compare with 0
+        if other in ZZ:  # to compare with 0
             if other == 0:
                 return self.is_zero()
             return False
@@ -2250,8 +2291,7 @@ class TensorField(ModuleElementWithMutability):
             resu = True
             for dom in oc:
                 try:
-                    resu = resu and \
-                            bool(self.restrict(dom) == other.restrict(dom))
+                    resu = resu and bool(self.restrict(dom) == other.restrict(dom))
                 except ValueError:
                     break
             else:
@@ -2271,7 +2311,7 @@ class TensorField(ModuleElementWithMutability):
                 resu = resu and bool(rst == other._restrictions[dom])
             else:
                 return False  # the restrictions are not on the same
-                              # subdomains
+                # subdomains
         return resu
 
     def __ne__(self, other):
@@ -2338,12 +2378,13 @@ class TensorField(ModuleElementWithMutability):
         """
         resu = self._new_instance()
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = + rst
+            resu._restrictions[dom] = +rst
         # Compose names:
         from sage.tensor.modules.format_utilities import (
             format_unop_latex,
             format_unop_txt,
         )
+
         resu._name = format_unop_txt('+', self._name)
         resu._latex_name = format_unop_latex(r'+', self._latex_name)
         return resu
@@ -2384,12 +2425,13 @@ class TensorField(ModuleElementWithMutability):
         """
         resu = self._new_instance()
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = - rst
+            resu._restrictions[dom] = -rst
         # Compose names:
         from sage.tensor.modules.format_utilities import (
             format_unop_latex,
             format_unop_txt,
         )
+
         resu._name = format_unop_txt('-', self._name)
         resu._latex = format_unop_latex(r'-', self._latex_name)
         return resu
@@ -2457,8 +2499,9 @@ class TensorField(ModuleElementWithMutability):
         some_rst = next(iter(resu_rst.values()))
         resu_sym = some_rst._sym
         resu_antisym = some_rst._antisym
-        resu = self._vmodule.tensor(self._tensor_type, sym=resu_sym,
-                                    antisym=resu_antisym)
+        resu = self._vmodule.tensor(
+            self._tensor_type, sym=resu_sym, antisym=resu_antisym
+        )
         resu._restrictions = resu_rst
         if self._name is not None and other._name is not None:
             resu._name = self._name + '+' + other._name
@@ -2525,8 +2568,9 @@ class TensorField(ModuleElementWithMutability):
         some_rst = next(iter(resu_rst.values()))
         resu_sym = some_rst._sym
         resu_antisym = some_rst._antisym
-        resu = self._vmodule.tensor(self._tensor_type, sym=resu_sym,
-                                   antisym=resu_antisym)
+        resu = self._vmodule.tensor(
+            self._tensor_type, sym=resu_sym, antisym=resu_antisym
+        )
         resu._restrictions = resu_rst
         if self._name is not None and other._name is not None:
             resu._name = self._name + '-' + other._name
@@ -2604,9 +2648,9 @@ class TensorField(ModuleElementWithMutability):
             format_mul_latex,
             format_mul_txt,
         )
+
         resu_name = format_mul_txt(scalar._name, '*', self._name)
-        resu_latex = format_mul_latex(scalar._latex_name, r' \cdot ',
-                                      self._latex_name)
+        resu_latex = format_mul_latex(scalar._latex_name, r' \cdot ', self._latex_name)
         resu.set_name(name=resu_name, latex_name=resu_latex)
         return resu
 
@@ -2713,6 +2757,7 @@ class TensorField(ModuleElementWithMutability):
             True
         """
         from sage.manifolds.differentiable.mixed_form import MixedForm
+
         if isinstance(other, MixedForm):
             return other.parent()(self)._mul_(other)
         if not isinstance(other, TensorField):
@@ -2740,9 +2785,9 @@ class TensorField(ModuleElementWithMutability):
             resu_rst.append(self_rr * other_rr)
         k1, l1 = self._tensor_type
         k2, l2 = other._tensor_type
-        resu = vmodule.tensor((k1+k2, l1+l2),
-                              sym=resu_rst[0]._sym,
-                              antisym=resu_rst[0]._antisym)
+        resu = vmodule.tensor(
+            (k1 + k2, l1 + l2), sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym
+        )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
 
@@ -2884,11 +2929,11 @@ class TensorField(ModuleElementWithMutability):
             True
         """
         p = len(args)
-        if p == 1 and self._tensor_type == (1,1):
+        if p == 1 and self._tensor_type == (1, 1):
             # type-(1,1) tensor acting as a field of tangent-space
             # endomorphisms:
             vector = args[0]
-            if vector._tensor_type != (1,0):
+            if vector._tensor_type != (1, 0):
                 raise TypeError("the argument must be a vector field")
             dom_resu = self._domain.intersection(vector._domain)
             if dom_resu.is_manifestly_parallelizable():
@@ -2899,24 +2944,27 @@ class TensorField(ModuleElementWithMutability):
             else:
                 name_resu = None
             if self._latex_name is not None and vector._latex_name is not None:
-                latex_name_resu = r"{}\left({}\right)".format(self._latex_name,
-                                                              vector._latex_name)
+                latex_name_resu = r"{}\left({}\right)".format(
+                    self._latex_name, vector._latex_name
+                )
             else:
                 latex_name_resu = None
             dest_map = vector._vmodule._dest_map
             dest_map_resu = dest_map.restrict(dom_resu)
-            resu = dom_resu.vector_field(name=name_resu,
-                                         latex_name=latex_name_resu,
-                                         dest_map=dest_map_resu)
+            resu = dom_resu.vector_field(
+                name=name_resu, latex_name=latex_name_resu, dest_map=dest_map_resu
+            )
             for dom in self._common_subdomains(vector):
                 if dom.is_subset(dom_resu):
-                    resu._restrictions[dom] = \
-                        self._restrictions[dom](vector._restrictions[dom])
+                    resu._restrictions[dom] = self._restrictions[dom](
+                        vector._restrictions[dom]
+                    )
             return resu
         # Generic case
         if p != self._tensor_rank:
-            raise TypeError("{} arguments must be ".format(self._tensor_rank) +
-                            "provided")
+            raise TypeError(
+                "{} arguments must be ".format(self._tensor_rank) + "provided"
+            )
         # Domain of the result
         dom_resu = self._domain
         ambient_dom = self._ambient_domain
@@ -2952,15 +3000,15 @@ class TensorField(ModuleElementWithMutability):
         res_name = None
         if self._name is not None:
             res_name = self._name + "("
-            for i in range(p-1):
+            for i in range(p - 1):
                 if args[i]._name is not None:
                     res_name += args[i]._name + ","
                 else:
                     res_name = None
                     break
             if res_name is not None:
-                if args[p-1]._name is not None:
-                    res_name += args[p-1]._name + ")"
+                if args[p - 1]._name is not None:
+                    res_name += args[p - 1]._name + ")"
                 else:
                     res_name = None
         resu._name = res_name
@@ -2968,15 +3016,15 @@ class TensorField(ModuleElementWithMutability):
         res_latex = None
         if self._latex_name is not None:
             res_latex = self._latex_name + r"\left("
-            for i in range(p-1):
+            for i in range(p - 1):
                 if args[i]._latex_name is not None:
                     res_latex += args[i]._latex_name + ","
                 else:
                     res_latex = None
                     break
             if res_latex is not None:
-                if args[p-1]._latex_name is not None:
-                    res_latex += args[p-1]._latex_name + r"\right)"
+                if args[p - 1]._latex_name is not None:
+                    res_latex += args[p - 1]._latex_name + r"\right)"
                 else:
                     res_latex = None
         resu._latex_name = res_latex
@@ -3121,15 +3169,15 @@ class TensorField(ModuleElementWithMutability):
         k_con = self._tensor_type[0]
         l_cov = self._tensor_type[1]
         if pos1 < k_con and pos2 < k_con:
-            raise IndexError("contraction on two contravariant indices is " +
-                             "not allowed")
+            raise IndexError(
+                "contraction on two contravariant indices is " + "not allowed"
+            )
         if pos1 >= k_con and pos2 >= k_con:
-            raise IndexError("contraction on two covariant indices is " +
-                             "not allowed")
+            raise IndexError("contraction on two covariant indices is " + "not allowed")
         resu_rst = []
         for rst in self._restrictions.values():
             resu_rst.append(rst.trace(pos1, pos2))
-        if (k_con, l_cov) == (1,1):
+        if (k_con, l_cov) == (1, 1):
             # scalar field result
             resu = self._domain.scalar_field()
             all_zero = True
@@ -3145,8 +3193,11 @@ class TensorField(ModuleElementWithMutability):
                 resu = self._domain._zero_scalar_field
         else:
             # tensor field result
-            resu = self._vmodule.tensor((k_con-1, l_cov-1),
-                            sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym)
+            resu = self._vmodule.tensor(
+                (k_con - 1, l_cov - 1),
+                sym=resu_rst[0]._sym,
+                antisym=resu_rst[0]._antisym,
+            )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
         return resu
@@ -3327,17 +3378,16 @@ class TensorField(ModuleElementWithMutability):
                 it = i
                 break
         else:
-            raise TypeError("a tensor field must be provided in the " +
-                            "argument list")
+            raise TypeError("a tensor field must be provided in the " + "argument list")
         if it == 0:
             pos1 = (self._tensor_rank - 1,)
         else:
             pos1 = args[:it]
-        if it == nargs-1:
+        if it == nargs - 1:
             pos2 = (0,)
         else:
-            pos2 = args[it+1:]
-        ncontr = len(pos1) # number of contractions
+            pos2 = args[it + 1 :]
+        ncontr = len(pos1)  # number of contractions
         if len(pos2) != ncontr:
             raise IndexError("different number of indices for the contraction")
         if self._domain.is_subset(other._domain):
@@ -3367,7 +3417,7 @@ class TensorField(ModuleElementWithMutability):
             other_rr = other_r._restrictions[dom]
             args = pos1 + (other_rr,) + pos2
             resu_rst.append(self_rr.contract(*args))
-        if tensor_type_resu == (0,0):
+        if tensor_type_resu == (0, 0):
             # scalar field result
             resu = dom_resu.scalar_field()
             all_zero = True
@@ -3384,12 +3434,12 @@ class TensorField(ModuleElementWithMutability):
         else:
             # tensor field result
             dest_map = self._vmodule._dest_map
-            dest_map_resu = dest_map.restrict(dom_resu,
-                                              subcodomain=ambient_dom_resu)
+            dest_map_resu = dest_map.restrict(dom_resu, subcodomain=ambient_dom_resu)
             vmodule = dom_resu.vector_field_module(dest_map=dest_map_resu)
 
-            resu = vmodule.tensor(tensor_type_resu, sym=resu_rst[0]._sym,
-                                  antisym=resu_rst[0]._antisym)
+            resu = vmodule.tensor(
+                tensor_type_resu, sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym
+            )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
         return resu
@@ -3448,8 +3498,9 @@ class TensorField(ModuleElementWithMutability):
         resu_rst = []
         for rst in self._restrictions.values():
             resu_rst.append(rst.symmetrize(*pos))
-        resu = self._vmodule.tensor(self._tensor_type, sym=resu_rst[0]._sym,
-                                    antisym=resu_rst[0]._antisym)
+        resu = self._vmodule.tensor(
+            self._tensor_type, sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym
+        )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
         return resu
@@ -3509,8 +3560,9 @@ class TensorField(ModuleElementWithMutability):
         resu_rst = []
         for rst in self._restrictions.values():
             resu_rst.append(rst.antisymmetrize(*pos))
-        resu = self._vmodule.tensor(self._tensor_type, sym=resu_rst[0]._sym,
-                                    antisym=resu_rst[0]._antisym)
+        resu = self._vmodule.tensor(
+            self._tensor_type, sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym
+        )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
         return resu
@@ -3587,7 +3639,7 @@ class TensorField(ModuleElementWithMutability):
             sage: a.lie_der(w)(f) == w(a(f)) - a(w(f))  # long time
             True
         """
-        if vector._tensor_type != (1,0):
+        if vector._tensor_type != (1, 0):
             raise TypeError("the argument must be a vector field")
 
         # The Lie derivative is cached in _lie_derivates while neither
@@ -3597,9 +3649,9 @@ class TensorField(ModuleElementWithMutability):
             resu_rst = []
             for dom, rst in self._restrictions.items():
                 resu_rst.append(rst.lie_derivative(vector.restrict(dom)))
-            resu = self._vmodule.tensor(self._tensor_type,
-                                        sym=resu_rst[0]._sym,
-                                        antisym=resu_rst[0]._antisym)
+            resu = self._vmodule.tensor(
+                self._tensor_type, sym=resu_rst[0]._sym, antisym=resu_rst[0]._antisym
+            )
             for rst in resu_rst:
                 resu._restrictions[rst._domain] = rst
             self._lie_derivatives[id(vector)] = (vector, resu)
@@ -3676,15 +3728,19 @@ class TensorField(ModuleElementWithMutability):
             (5, -1)
         """
         if point not in self._domain:
-            raise ValueError("the {} is not a point in the ".format(point) +
-                             "domain of {}".format(self))
+            raise ValueError(
+                "the {} is not a point in the ".format(point)
+                + "domain of {}".format(self)
+            )
         for dom, rst in self._restrictions.items():
             if point in dom:
                 return rst.at(point)
 
     def up(
         self,
-        non_degenerate_form: Union[PseudoRiemannianMetric, SymplecticForm, PoissonTensorField],
+        non_degenerate_form: Union[
+            PseudoRiemannianMetric, SymplecticForm, PoissonTensorField
+        ],
         pos: Optional[int] = None,
     ) -> TensorField:
         r"""
@@ -3817,7 +3873,7 @@ class TensorField(ModuleElementWithMutability):
             sage: dd1tuu == t # should be true
             True
         """
-        n_con = self._tensor_type[0] # number of contravariant indices = k
+        n_con = self._tensor_type[0]  # number of contravariant indices = k
         if pos is None:
             result = self
             for p in range(n_con, self._tensor_rank):
@@ -3839,7 +3895,9 @@ class TensorField(ModuleElementWithMutability):
             return self.contract(pos, non_degenerate_form.poisson(), 1)
         if isinstance(non_degenerate_form, PoissonTensorField):
             return self.contract(pos, non_degenerate_form, 1)
-        raise ValueError("The non-degenerate form has to be a metric, a symplectic form or a Poisson tensor field")
+        raise ValueError(
+            "The non-degenerate form has to be a metric, a symplectic form or a Poisson tensor field"
+        )
 
     def down(
         self,
@@ -4108,26 +4166,30 @@ class TensorField(ModuleElementWithMutability):
             sage: s.display()
             div(v⊗w) = -y e_x + x e_y
         """
-        n_con = self._tensor_type[0] # number of contravariant indices = k
-        n_cov = self._tensor_type[1] # number of covariant indices = l
+        n_con = self._tensor_type[0]  # number of contravariant indices = k
+        n_cov = self._tensor_type[1]  # number of covariant indices = l
         default_metric = metric is None
         if default_metric:
             metric = self._domain.metric()
         nabla = metric.connection()
         if n_cov == 0:
-            resu = nabla(self).trace(n_con-1, n_con)
+            resu = nabla(self).trace(n_con - 1, n_con)
         else:
-            tup = self.up(metric, self._tensor_rank-1)
+            tup = self.up(metric, self._tensor_rank - 1)
             resu = nabla(tup).trace(n_con, self._tensor_rank)
         if self._name is not None:
             if default_metric:
                 resu._name = "div({})".format(self._name)
-                resu._latex_name = r"\mathrm{div}\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = r"\mathrm{div}\left(" + self._latex_name + r"\right)"
             else:
                 resu._name = "div_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\mathrm{div}_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\mathrm{div}_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -4206,23 +4268,27 @@ class TensorField(ModuleElementWithMutability):
             Delta_h(v) = -(8*x^5 - 2*x^4 - x^2*y^2 + 15*x^3 - 4*x^2 + 6*x
              - 2)/(x^4 + 2*x^2 + 1) e_x - 3*x^3*y/(x^4 + 2*x^2 + 1) e_y
         """
-        n_con = self._tensor_type[0] # number of contravariant indices = k
-        trank = self._tensor_rank    # k + l
+        n_con = self._tensor_type[0]  # number of contravariant indices = k
+        trank = self._tensor_rank  # k + l
         default_metric = metric is None
         if default_metric:
             metric = self._domain.metric()
         nabla = metric.connection()
         tmp = nabla(nabla(self).up(metric, pos=trank))
-        resu = tmp.trace(n_con, trank+1)
+        resu = tmp.trace(n_con, trank + 1)
         if self._name is not None:
             if default_metric:
                 resu._name = "Delta({})".format(self._name)
-                resu._latex_name = r"\Delta\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = r"\Delta\left(" + self._latex_name + r"\right)"
             else:
                 resu._name = "Delta_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\Delta_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\Delta_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -4302,18 +4368,24 @@ class TensorField(ModuleElementWithMutability):
             metric = self._domain.metric()
         nm2 = self._domain.dim() - 2
         if metric.signature() not in [nm2, -nm2]:
-            raise TypeError("the {} is not a Lorentzian ".format(metric) +
-                            "metric; use laplacian() instead")
+            raise TypeError(
+                "the {} is not a Lorentzian ".format(metric)
+                + "metric; use laplacian() instead"
+            )
         resu = self.laplacian(metric=metric)
         if self._name is not None:
             if default_metric:
                 resu._name = "Box({})".format(self._name)
-                resu._latex_name = r"\Box\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = r"\Box\left(" + self._latex_name + r"\right)"
             else:
                 resu._name = "Box_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\Box_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\Box_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -4404,8 +4476,10 @@ class TensorField(ModuleElementWithMutability):
         """
         dom = self._domain
         if self._ambient_domain is not dom:
-            raise ValueError("{} is not a tensor field ".format(self) +
-                             "with values in the {}".format(dom))
+            raise ValueError(
+                "{} is not a tensor field ".format(self)
+                + "with values in the {}".format(dom)
+            )
         if mapping.codomain().is_subset(dom):
             rmapping = mapping
         else:
@@ -4415,16 +4489,22 @@ class TensorField(ModuleElementWithMutability):
                     rmapping = rest
                     break
             else:
-                raise ValueError("the codomain of {} is not ".format(mapping) +
-                                 "included in the domain of {}".format(self))
+                raise ValueError(
+                    "the codomain of {} is not ".format(mapping)
+                    + "included in the domain of {}".format(self)
+                )
         resu_ambient_domain = rmapping.codomain()
         if resu_ambient_domain.is_manifestly_parallelizable():
             return self.restrict(resu_ambient_domain).along(rmapping)
         dom_resu = rmapping.domain()
         vmodule = dom_resu.vector_field_module(dest_map=rmapping)
-        resu = vmodule.tensor(self._tensor_type, name=self._name,
-                              latex_name=self._latex_name, sym=self._sym,
-                              antisym=self._antisym)
+        resu = vmodule.tensor(
+            self._tensor_type,
+            name=self._name,
+            latex_name=self._latex_name,
+            sym=self._sym,
+            antisym=self._antisym,
+        )
         for rdom in resu_ambient_domain._parallelizable_parts:
             if rdom in resu_ambient_domain._top_subsets:
                 for chart1, chart2 in rmapping._coord_expression:
@@ -4521,8 +4601,7 @@ class TensorField(ModuleElementWithMutability):
             rst.set_calc_order(symbol, order, truncate)
         self._del_derived()
 
-    def apply_map(self, fun, frame=None, chart=None,
-                  keep_other_components=False):
+    def apply_map(self, fun, frame=None, chart=None, keep_other_components=False):
         r"""
         Apply a function to the coordinate expressions of all components of
         ``self`` in a given vector frame.
@@ -4646,15 +4725,15 @@ class TensorField(ModuleElementWithMutability):
         if keep_other_components:
             comps = self.comp(frame)._comp
         else:
-            comps = self.set_comp(frame)._comp # set_comp() deletes the
-                                               # components in other frames
+            comps = self.set_comp(frame)._comp  # set_comp() deletes the
+            # components in other frames
         if chart:
             for scalar in comps.values():
                 scalar.add_expr(fun(scalar.expr(chart=chart)), chart=chart)
         else:
             for scalar in comps.values():
                 cfunc_dict = {}  # new dict of chart functions in order not to
-                                 # modify scalar._express while looping on it
+                # modify scalar._express while looping on it
                 for ch, fct in scalar._express.items():
                     cfunc_dict[ch] = ch.function(fun(fct.expr()))
                 scalar._express = cfunc_dict

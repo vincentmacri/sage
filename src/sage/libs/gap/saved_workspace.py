@@ -29,12 +29,11 @@ def timestamp():
         <... 'float'>
     """
     from sage.libs.gap.util import kernel_info
+
     libgap_dir = os.path.dirname(__file__)
     libgap_files = glob.glob(os.path.join(libgap_dir, '*'))
     gap_roots = kernel_info()[2].split(";")
-    gap_packages = sum( (glob.glob(os.path.join(d, 'pkg', '*'))
-                         for d in gap_roots),
-                        [])
+    gap_packages = sum((glob.glob(os.path.join(d, 'pkg', '*')) for d in gap_roots), [])
 
     files = libgap_files + gap_packages
     if len(files) == 0:

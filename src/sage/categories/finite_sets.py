@@ -1,12 +1,12 @@
 r"""
 Finite sets
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.algebra_functor import AlgebrasCategory
@@ -37,8 +37,8 @@ class FiniteSets(CategoryWithAxiom):
         sage: C is Sets().Finite()
         True
     """
-    class SubcategoryMethods:
 
+    class SubcategoryMethods:
         def Infinite(self):
             """
             Incompatible axiom.
@@ -54,7 +54,6 @@ class FiniteSets(CategoryWithAxiom):
             raise TypeError("incompatible axioms: finite and infinite")
 
     class ParentMethods:
-
         def is_finite(self):
             """
             Return ``True`` since ``self`` is finite.
@@ -68,7 +67,6 @@ class FiniteSets(CategoryWithAxiom):
             return True
 
     class Subquotients(SubquotientsCategory):
-
         def extra_super_categories(self):
             r"""
             EXAMPLES::
@@ -89,7 +87,6 @@ class FiniteSets(CategoryWithAxiom):
             return [FiniteSets()]
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             r"""
             EXAMPLES::
@@ -104,4 +101,5 @@ class FiniteSets(CategoryWithAxiom):
                 True
             """
             from sage.categories.modules_with_basis import ModulesWithBasis
+
             return [ModulesWithBasis(self.base_ring()).FiniteDimensional()]

@@ -199,7 +199,9 @@ from sage.rings.power_series_ring import PowerSeriesRing_generic
 from sage.rings.laurent_series_ring import LaurentSeriesRing
 from sage.rings.fraction_field import FractionField_generic
 from sage.rings.quotient_ring import QuotientRing_generic
-from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
+from sage.rings.polynomial.polynomial_quotient_ring import (
+    PolynomialQuotientRing_generic,
+)
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.padics.padic_generic import pAdicGeneric
 from sage.rings.function_field.function_field import FunctionField
@@ -220,6 +222,7 @@ class RingDerivationModule(Module, UniqueRepresentation):
     """
     A class for modules of derivations over a commutative ring.
     """
+
     def __init__(self, domain, codomain, twist=None):
         """
         Initialize this module of derivation.
@@ -266,32 +269,44 @@ class RingDerivationModule(Module, UniqueRepresentation):
 
         if codomain in Rings().Commutative() and codomain.has_coerce_map_from(domain):
             defining_morphism = codomain.coerce_map_from(domain)
-        elif (isinstance(codomain,Map)
-              and codomain.category_for().is_subcategory(Rings())
-              and codomain.domain().has_coerce_map_from(domain)):
+        elif (
+            isinstance(codomain, Map)
+            and codomain.category_for().is_subcategory(Rings())
+            and codomain.domain().has_coerce_map_from(domain)
+        ):
             if codomain.domain() is domain:
                 defining_morphism = codomain
             else:
                 defining_morphism = codomain * codomain.domain().coerce_map_from(domain)
             codomain = defining_morphism.codomain()
         else:
-            raise TypeError("the codomain must be an algebra over the domain"
-                            " or a morphism with the correct domain")
+            raise TypeError(
+                "the codomain must be an algebra over the domain"
+                " or a morphism with the correct domain"
+            )
 
         if twist is not None:
-            if not (isinstance(twist, Map) and twist.category_for().is_subcategory(Rings())):
-                raise TypeError("the twisting homomorphism must be a homomorphism of rings")
+            if not (
+                isinstance(twist, Map) and twist.category_for().is_subcategory(Rings())
+            ):
+                raise TypeError(
+                    "the twisting homomorphism must be a homomorphism of rings"
+                )
             if twist.domain() is not domain:
                 map = twist.domain().coerce_map_from(domain)
                 if map is None:
-                    raise TypeError("the domain of the derivation must coerce"
-                                    " to the domain of the twisting homomorphism")
+                    raise TypeError(
+                        "the domain of the derivation must coerce"
+                        " to the domain of the twisting homomorphism"
+                    )
                 twist = twist * map
             if twist.codomain() is not codomain:
                 map = codomain.coerce_map_from(twist.codomain())
                 if map is None:
-                    raise TypeError("the codomain of the twisting homomorphism"
-                                    " must coerce to the codomain of the derivation")
+                    raise TypeError(
+                        "the codomain of the twisting homomorphism"
+                        " must coerce to the codomain of the derivation"
+                    )
                 twist = map * twist
             # We check if the twisting morphism is the defining morphism
             try:
@@ -323,18 +338,38 @@ class RingDerivationModule(Module, UniqueRepresentation):
             if domain.is_field():
                 self._gens = [1]
                 self._basis = [1]
-        elif (domain is ZZ or domain in NumberFields() or domain in FiniteFields()
-              or isinstance(domain, IntegerModRing_generic)
-              or (isinstance(domain, pAdicGeneric) and (domain.is_field() or domain.absolute_e() == 1))):
+        elif (
+            domain is ZZ
+            or domain in NumberFields()
+            or domain in FiniteFields()
+            or isinstance(domain, IntegerModRing_generic)
+            or (
+                isinstance(domain, pAdicGeneric)
+                and (domain.is_field() or domain.absolute_e() == 1)
+            )
+        ):
             self.Element = RingDerivationWithoutTwist_zero
             self._gens = []
             self._basis = []
             self._dual_basis = []
             self._constants = (domain, True)
-        elif (isinstance(domain, (PolynomialRing_generic, MPolynomialRing_base, PowerSeriesRing_generic, LaurentSeriesRing))
-              or (isinstance(domain, FractionField_generic)
-                  and isinstance(domain.ring(), (PolynomialRing_generic, MPolynomialRing_base)))):
-            self._base_derivation = RingDerivationModule(domain.base_ring(), defining_morphism)
+        elif isinstance(
+            domain,
+            (
+                PolynomialRing_generic,
+                MPolynomialRing_base,
+                PowerSeriesRing_generic,
+                LaurentSeriesRing,
+            ),
+        ) or (
+            isinstance(domain, FractionField_generic)
+            and isinstance(
+                domain.ring(), (PolynomialRing_generic, MPolynomialRing_base)
+            )
+        ):
+            self._base_derivation = RingDerivationModule(
+                domain.base_ring(), defining_morphism
+            )
             self.Element = RingDerivationWithoutTwist_function
             try:
                 self._gens = self._base_derivation.gens() + domain.gens()
@@ -342,7 +377,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
                 pass
             try:
                 self._basis = tuple(self._base_derivation.basis()) + domain.gens()
-                self._dual_basis = tuple(self._base_derivation.dual_basis()) + domain.gens()
+                self._dual_basis = (
+                    tuple(self._base_derivation.dual_basis()) + domain.gens()
+                )
             except NotImplementedError:
                 pass
             constants, sharp = self._base_derivation._constants
@@ -353,7 +390,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
                 # TODO: implement this
                 self._constants = (constants, False)
         elif isinstance(domain, FractionField_generic):
-            self._base_derivation = RingDerivationModule(domain.ring(), defining_morphism)
+            self._base_derivation = RingDerivationModule(
+                domain.ring(), defining_morphism
+            )
             self.Element = RingDerivationWithoutTwist_fraction_field
             try:
                 self._gens = self._base_derivation.gens()
@@ -367,12 +406,15 @@ class RingDerivationModule(Module, UniqueRepresentation):
             constants, sharp = self._base_derivation._constants
             self._constants = (constants.fraction_field(), False)
         elif isinstance(domain, PolynomialQuotientRing_generic):
-            self._base_derivation = RingDerivationModule(domain.base(), defining_morphism)
+            self._base_derivation = RingDerivationModule(
+                domain.base(), defining_morphism
+            )
             modulus = domain.modulus()
             for der in self._base_derivation.gens():
                 if der(modulus) != 0:
-                    raise NotImplementedError("derivations over quotient rings"
-                                              " are not fully supported")
+                    raise NotImplementedError(
+                        "derivations over quotient rings are not fully supported"
+                    )
             self.Element = RingDerivationWithoutTwist_quotient
             try:
                 self._gens = self._base_derivation.gens()
@@ -386,11 +428,17 @@ class RingDerivationModule(Module, UniqueRepresentation):
             constants, sharp = self._base_derivation._constants
             self._constants = (constants, False)  # can we do better?
         elif isinstance(domain, QuotientRing_generic):
-            self._base_derivation = RingDerivationModule(domain.cover_ring(), defining_morphism)
-            if any(der(modulus) != 0 for modulus in domain.defining_ideal().gens()
-                   for der in self._base_derivation.gens()):
-                raise NotImplementedError("derivations over quotient rings"
-                                          " are not fully supported")
+            self._base_derivation = RingDerivationModule(
+                domain.cover_ring(), defining_morphism
+            )
+            if any(
+                der(modulus) != 0
+                for modulus in domain.defining_ideal().gens()
+                for der in self._base_derivation.gens()
+            ):
+                raise NotImplementedError(
+                    "derivations over quotient rings are not fully supported"
+                )
             self.Element = RingDerivationWithoutTwist_quotient
             try:
                 self._gens = self._base_derivation.gens()
@@ -404,14 +452,22 @@ class RingDerivationModule(Module, UniqueRepresentation):
             constants, sharp = self._base_derivation._constants
             self._constants = (constants, False)  # can we do better?
         elif isinstance(domain, RationalFunctionField):
-            from sage.rings.function_field.derivations_rational import FunctionFieldDerivation_rational
+            from sage.rings.function_field.derivations_rational import (
+                FunctionFieldDerivation_rational,
+            )
+
             self.Element = FunctionFieldDerivation_rational
-            self._gens = self._basis = [ None ]
-            self._dual_basis = [ domain.gen() ]
+            self._gens = self._basis = [None]
+            self._dual_basis = [domain.gen()]
         elif isinstance(domain, FunctionField):
             if domain.is_separable():
-                from sage.rings.function_field.derivations_polymod import FunctionFieldDerivation_separable
-                self._base_derivation = RingDerivationModule(domain.base_ring(), defining_morphism)
+                from sage.rings.function_field.derivations_polymod import (
+                    FunctionFieldDerivation_separable,
+                )
+
+                self._base_derivation = RingDerivationModule(
+                    domain.base_ring(), defining_morphism
+                )
                 self.Element = FunctionFieldDerivation_separable
                 try:
                     self._gens = self._base_derivation.gens()
@@ -423,13 +479,16 @@ class RingDerivationModule(Module, UniqueRepresentation):
                 except NotImplementedError:
                     pass
             else:
-                from sage.rings.function_field.derivations_polymod import FunctionFieldDerivation_inseparable
+                from sage.rings.function_field.derivations_polymod import (
+                    FunctionFieldDerivation_inseparable,
+                )
+
                 M, f, self._t = domain.separable_model()
                 self._base_derivation = RingDerivationModule(M, defining_morphism * f)
                 self._d = self._base_derivation(None)
                 self.Element = FunctionFieldDerivation_inseparable
-                self._gens = self._basis = [ None ]
-                self._dual_basis = [ f(M.base_ring().gen()) ]
+                self._gens = self._basis = [None]
+                self._dual_basis = [f(M.base_ring().gen())]
         else:
             raise NotImplementedError("derivations over this ring is not implemented")
         if self._basis is None:
@@ -490,7 +549,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             False
         """
         if isinstance(R, RingDerivationModule):
-            if R.domain().has_coerce_map_from(self._domain) and self._codomain.has_coerce_map_from(R.codomain()):
+            if R.domain().has_coerce_map_from(
+                self._domain
+            ) and self._codomain.has_coerce_map_from(R.codomain()):
                 morR = R.defining_morphism()
                 morS = self._defining_morphism
                 try:
@@ -643,7 +704,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             [x |--> y, y |--> x] - id
         """
         if self._gens is None:
-            raise NotImplementedError("generators are not implemented for this derivation module")
+            raise NotImplementedError(
+                "generators are not implemented for this derivation module"
+            )
         return len(self._gens)
 
     def gens(self) -> tuple:
@@ -671,7 +734,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             ([x |--> y, y |--> x] - id,)
         """
         if self._gens is None:
-            raise NotImplementedError("generators are not implemented for this derivation module")
+            raise NotImplementedError(
+                "generators are not implemented for this derivation module"
+            )
         return tuple(self._gens)
 
     def gen(self, n=0):
@@ -693,7 +758,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             d/dy
         """
         if self._gens is None:
-            raise NotImplementedError("generators are not implemented for this derivation module")
+            raise NotImplementedError(
+                "generators are not implemented for this derivation module"
+            )
         try:
             return self._gens[n]
         except IndexError:
@@ -711,7 +778,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             Family (d/dx, d/dy)
         """
         if self._basis is None:
-            raise NotImplementedError("basis is not implemented for this derivation module")
+            raise NotImplementedError(
+                "basis is not implemented for this derivation module"
+            )
         return Family(self._basis)
 
     def dual_basis(self):
@@ -735,7 +804,9 @@ class RingDerivationModule(Module, UniqueRepresentation):
             Family (x, y)
         """
         if self._dual_basis is None:
-            raise NotImplementedError("basis is not implemented for this derivation module")
+            raise NotImplementedError(
+                "basis is not implemented for this derivation module"
+            )
         return Family(self._dual_basis)
 
     def ring_of_constants(self):
@@ -753,8 +824,10 @@ class RingDerivationModule(Module, UniqueRepresentation):
             Rational Field
         """
         if not self._constants[1]:
-            raise NotImplementedError("the computation of the ring of constants"
-                                      " is not implemented for this derivation module")
+            raise NotImplementedError(
+                "the computation of the ring of constants"
+                " is not implemented for this derivation module"
+            )
         return self._constants[0]
 
     def random_element(self, *args, **kwds):
@@ -769,8 +842,15 @@ class RingDerivationModule(Module, UniqueRepresentation):
             (x^2 + x*y - 3*y^2 + x + 1)*d/dx + (-2*x^2 + 3*x*y + 10*y^2 + 2*x + 8)*d/dy
         """
         if self._gens is None:
-            raise NotImplementedError("generators are not implemented for this derivation module")
-        return self([ self._codomain.random_element(*args, **kwds) for _ in range(len(self._gens)) ])
+            raise NotImplementedError(
+                "generators are not implemented for this derivation module"
+            )
+        return self(
+            [
+                self._codomain.random_element(*args, **kwds)
+                for _ in range(len(self._gens))
+            ]
+        )
 
     def some_elements(self):
         r"""
@@ -806,6 +886,7 @@ class RingDerivation(ModuleElement):
         sage: f(x*y)
         2*x + y
     """
+
     def __call__(self, x):
         """
         Return the image of ``x`` under this derivation.
@@ -867,6 +948,7 @@ class RingDerivationWithoutTwist(RingDerivation):
     """
     An abstract class for untwisted derivations.
     """
+
     def _repr_(self):
         r"""
         Return a string representation of this derivation.
@@ -1102,7 +1184,9 @@ class RingDerivationWithoutTwist(RingDerivation):
         """
         parent = self.parent()
         if parent.domain() is not parent.codomain():
-            raise TypeError("the bracket is only defined for derivations with same domain and codomain")
+            raise TypeError(
+                "the bracket is only defined for derivations with same domain and codomain"
+            )
         arg = [self(other(x)) - other(self(x)) for x in parent.dual_basis()]
         return parent(arg)
 
@@ -1165,7 +1249,9 @@ class RingDerivationWithoutTwist(RingDerivation):
             raise TypeError("the derivation must have the same domain and codomain")
         p = parent.domain().characteristic()
         if not p.is_prime():
-            raise TypeError("the domain of the derivation must have positive and prime characteristic")
+            raise TypeError(
+                "the domain of the derivation must have positive and prime characteristic"
+            )
         arg = []
         for x in parent.dual_basis():
             res = x
@@ -1228,10 +1314,17 @@ class RingDerivationWithoutTwist(RingDerivation):
             if parent.domain().has_coerce_map_from(morphism):
                 morphism = parent.domain().coerce_map_from(morphism)
             else:
-                raise TypeError("the given ring does not coerce to the domain of the derivation")
-        elif not (isinstance(morphism, Map) and morphism.category_for().is_subcategory(Rings())):
+                raise TypeError(
+                    "the given ring does not coerce to the domain of the derivation"
+                )
+        elif not (
+            isinstance(morphism, Map)
+            and morphism.category_for().is_subcategory(Rings())
+        ):
             raise TypeError("you must give a homomorphism of rings")
-        M = RingDerivationModule(morphism.domain(), parent.defining_morphism() * morphism)
+        M = RingDerivationModule(
+            morphism.domain(), parent.defining_morphism() * morphism
+        )
         arg = [self(morphism(x)) for x in M.dual_basis()]
         return M(arg)
 
@@ -1285,8 +1378,13 @@ class RingDerivationWithoutTwist(RingDerivation):
             if morphism.has_coerce_map_from(parent.codomain()):
                 morphism = morphism.coerce_map_from(parent.codomain())
             else:
-                raise TypeError("the codomain of the derivation does not coerce to the given ring")
-        elif not (isinstance(morphism, Map) and morphism.category_for().is_subcategory(Rings())):
+                raise TypeError(
+                    "the codomain of the derivation does not coerce to the given ring"
+                )
+        elif not (
+            isinstance(morphism, Map)
+            and morphism.category_for().is_subcategory(Rings())
+        ):
             raise TypeError("you must give a homomorphism of rings")
         M = RingDerivationModule(parent.domain(), morphism * parent.defining_morphism())
         arg = [morphism(self(x)) for x in M.dual_basis()]
@@ -1330,6 +1428,7 @@ class RingDerivationWithoutTwist_zero(RingDerivationWithoutTwist):
     It is used when the parent is the zero derivation module
     (e.g., when its domain is ``ZZ``, ``QQ``, a finite field, etc.)
     """
+
     def __init__(self, parent, arg=None):
         """
         Initialize this derivation.
@@ -1346,7 +1445,11 @@ class RingDerivationWithoutTwist_zero(RingDerivationWithoutTwist):
 
             sage: TestSuite(der).run()
         """
-        if isinstance(arg, list) and len(arg) == 1 and isinstance(arg[0], RingDerivation):
+        if (
+            isinstance(arg, list)
+            and len(arg) == 1
+            and isinstance(arg[0], RingDerivation)
+        ):
             arg = arg[0]
         if arg and not (isinstance(arg, RingDerivation) and arg.is_zero()):
             raise ValueError("unable to create the derivation")
@@ -1522,6 +1625,7 @@ class RingDerivationWithoutTwist_wrapper(RingDerivationWithoutTwist):
     computation rules for derivations. It is used for derivations
     over fraction fields and quotient rings.
     """
+
     def __init__(self, parent, arg=None):
         """
         Initialize this derivation.
@@ -1537,7 +1641,11 @@ class RingDerivationWithoutTwist_wrapper(RingDerivationWithoutTwist):
             True
             sage: TestSuite(der).run()
         """
-        if isinstance(arg, list) and len(arg) == 1 and isinstance(arg[0], RingDerivation):
+        if (
+            isinstance(arg, list)
+            and len(arg) == 1
+            and isinstance(arg[0], RingDerivation)
+        ):
             arg = arg[0]
         if isinstance(arg, RingDerivationWithoutTwist_wrapper):
             self._base_derivation = arg._base_derivation
@@ -1664,6 +1772,7 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
     are either polynomials, rational fractions, power series or
     Laurent series.
     """
+
     def __init__(self, parent, arg=None):
         """
         Initialize this derivation.
@@ -1686,12 +1795,17 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
         self._images = [codomain.zero() for _ in range(ngens)]
         if arg is None:
             arg = domain.gen()
-        if isinstance(arg, list) and len(arg) == 1 and isinstance(arg[0], RingDerivation):
+        if (
+            isinstance(arg, list)
+            and len(arg) == 1
+            and isinstance(arg[0], RingDerivation)
+        ):
             arg = arg[0]
         if not arg:
             pass
-        elif (isinstance(arg, RingDerivationWithoutTwist_function)
-              and parent.has_coerce_map_from(arg.parent())):
+        elif isinstance(
+            arg, RingDerivationWithoutTwist_function
+        ) and parent.has_coerce_map_from(arg.parent()):
             self._base_derivation = parent._base_derivation(arg._base_derivation)
             self._images = [codomain(x) for x in arg._images]
         elif isinstance(arg, (tuple, list)):
@@ -1735,7 +1849,10 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
             d/dx + d/dy
         """
         base_derivation = self._base_derivation + other._base_derivation
-        im = [ self._images[i] + other._images[i] for i in range(self.parent().domain().ngens()) ]
+        im = [
+            self._images[i] + other._images[i]
+            for i in range(self.parent().domain().ngens())
+        ]
         return type(self)(self.parent(), [base_derivation] + im)
 
     def _sub_(self, other):
@@ -1751,7 +1868,10 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
             d/dx - d/dy
         """
         base_derivation = self._base_derivation - other._base_derivation
-        im = [ self._images[i] - other._images[i] for i in range(self.parent().domain().ngens()) ]
+        im = [
+            self._images[i] - other._images[i]
+            for i in range(self.parent().domain().ngens())
+        ]
         return type(self)(self.parent(), [base_derivation] + im)
 
     def _rmul_(self, factor):
@@ -1769,7 +1889,7 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
         """
         factor = self.parent().codomain()(factor)
         base_derivation = factor * self._base_derivation
-        im = [ factor*x for x in self._images ]
+        im = [factor * x for x in self._images]
         return type(self)(self.parent(), [base_derivation] + im)
 
     def _lmul_(self, factor):
@@ -1811,7 +1931,7 @@ class RingDerivationWithoutTwist_function(RingDerivationWithoutTwist):
             v = defining_morphism(den)
             up = num.map_coefficients(self._base_derivation, codomain)(*domain.gens())
             vp = den.map_coefficients(self._base_derivation, codomain)(*domain.gens())
-            res = (up*v - u*vp) / (v*v)
+            res = (up * v - u * vp) / (v * v)
         else:
             res = x.map_coefficients(self._base_derivation, codomain)(*domain.gens())
         for i in range(len(self._images)):
@@ -1866,6 +1986,7 @@ class RingDerivationWithoutTwist_fraction_field(RingDerivationWithoutTwist_wrapp
     """
     This class handles derivations over fraction fields.
     """
+
     def __hash__(self):
         """
         Return a hash of this derivation.
@@ -1899,13 +2020,14 @@ class RingDerivationWithoutTwist_fraction_field(RingDerivationWithoutTwist_wrapp
         v = defining_morphism(den)
         up = self._base_derivation(u)
         vp = self._base_derivation(v)
-        return (up*v - u*vp) / (v*v)
+        return (up * v - u * vp) / (v * v)
 
 
 class RingDerivationWithoutTwist_quotient(RingDerivationWithoutTwist_wrapper):
     """
     This class handles derivations over quotient rings.
     """
+
     def __hash__(self):
         """
         Return a hash of this derivation.
@@ -1942,6 +2064,7 @@ class RingDerivationWithTwist_generic(RingDerivation):
     morphism of the codomain over the domain) for a scalar
     `\lambda` varying in the codomain.
     """
+
     def __init__(self, parent, scalar=0):
         """
         Initialize this derivation.
@@ -2142,7 +2265,9 @@ class RingDerivationWithTwist_generic(RingDerivation):
             -x + y
         """
         parent = self.parent()
-        return self._scalar * (parent.twisting_morphism()(x) - parent.defining_morphism()(x))
+        return self._scalar * (
+            parent.twisting_morphism()(x) - parent.defining_morphism()(x)
+        )
 
     def list(self):
         """
@@ -2163,7 +2288,7 @@ class RingDerivationWithTwist_generic(RingDerivation):
             sage: f.list()
             [x + y]
         """
-        return [ self._scalar ]
+        return [self._scalar]
 
     def precompose(self, morphism):
         r"""
@@ -2200,11 +2325,19 @@ class RingDerivationWithTwist_generic(RingDerivation):
             if parent.domain().has_coerce_map_from(morphism):
                 morphism = parent.domain().coerce_map_from(morphism)
             else:
-                raise TypeError("the given ring does not coerce to the domain of the derivation")
-        elif not (isinstance(morphism, Map) and morphism.category_for().is_subcategory(Rings())):
+                raise TypeError(
+                    "the given ring does not coerce to the domain of the derivation"
+                )
+        elif not (
+            isinstance(morphism, Map)
+            and morphism.category_for().is_subcategory(Rings())
+        ):
             raise TypeError("you must give a homomorphism of rings")
-        M = RingDerivationModule(morphism.domain(), parent.defining_morphism() * morphism,
-                                 parent.twisting_morphism() * morphism)
+        M = RingDerivationModule(
+            morphism.domain(),
+            parent.defining_morphism() * morphism,
+            parent.twisting_morphism() * morphism,
+        )
         return M(self._scalar)
 
     def postcompose(self, morphism):
@@ -2242,11 +2375,19 @@ class RingDerivationWithTwist_generic(RingDerivation):
             if morphism.has_coerce_map_from(parent.codomain()):
                 morphism = morphism.coerce_map_from(parent.codomain())
             else:
-                raise TypeError("the codomain of the derivation does not coerce to the given ring")
-        elif not (isinstance(morphism, Map) and morphism.category_for().is_subcategory(Rings())):
+                raise TypeError(
+                    "the codomain of the derivation does not coerce to the given ring"
+                )
+        elif not (
+            isinstance(morphism, Map)
+            and morphism.category_for().is_subcategory(Rings())
+        ):
             raise TypeError("you must give a homomorphism of rings")
-        M = RingDerivationModule(parent.domain(), morphism * parent.defining_morphism(),
-                                 morphism * parent.twisting_morphism())
+        M = RingDerivationModule(
+            parent.domain(),
+            morphism * parent.defining_morphism(),
+            morphism * parent.twisting_morphism(),
+        )
         return M(morphism(self._scalar))
 
     def _richcmp_(self, other, op) -> bool:

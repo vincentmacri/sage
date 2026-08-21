@@ -47,6 +47,7 @@ class CryptoMiniSat(SatSolver):
         sage: from sage.sat.solvers.cryptominisat import CryptoMiniSat
         sage: solver = CryptoMiniSat()
     """
+
     def __init__(self, verbosity=0, confl_limit=None, threads=None) -> None:
         r"""
         Construct a new CryptoMiniSat instance.
@@ -61,13 +62,15 @@ class CryptoMiniSat(SatSolver):
         """
         if threads is None:
             from sage.parallel.ncpus import ncpus
+
             threads = ncpus()
         if confl_limit is None:
             from sys import maxsize
+
             confl_limit = maxsize
-        self._solver = Solver(verbose=int(verbosity),
-                              confl_limit=int(confl_limit),
-                              threads=int(threads))
+        self._solver = Solver(
+            verbose=int(verbosity), confl_limit=int(confl_limit), threads=int(threads)
+        )
         self._nvars = 0
         self._clauses = []
 
@@ -292,4 +295,5 @@ class CryptoMiniSat(SatSolver):
         if filename is None:
             return self._clauses
         from sage.sat.solvers.dimacs import DIMACS
+
         DIMACS.render_dimacs(self._clauses, filename, self.nvars())

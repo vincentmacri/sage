@@ -36,14 +36,14 @@ AUTHORS:
 - Michael Jung (2021) : initial version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2021 Michael Jung <m.jung@vu.nl>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.algebras import Algebras
 from sage.manifolds.differentiable.characteristic_cohomology_class import (
@@ -99,6 +99,7 @@ class DeRhamCohomologyClass(AlgebraElement):
         ...
         NotImplementedError: comparison via exact forms is currently not supported
     """
+
     def __init__(self, parent, representative):
         r"""
         Construct an element of the de Rham cohomology ring.
@@ -299,7 +300,9 @@ class DeRhamCohomologyClass(AlgebraElement):
         if isinstance(other, type(self)):
             if self.representative() == other.representative():
                 return True
-        raise NotImplementedError('comparison via exact forms is currently not supported')
+        raise NotImplementedError(
+            'comparison via exact forms is currently not supported'
+        )
 
 
 class DeRhamCohomologyRing(Parent, UniqueRepresentation):
@@ -354,6 +357,7 @@ class DeRhamCohomologyRing(Parent, UniqueRepresentation):
         sage: H.one()
         [one]
     """
+
     def __init__(self, de_rham_complex):
         r"""
         Construct the de Rham cohomology ring.

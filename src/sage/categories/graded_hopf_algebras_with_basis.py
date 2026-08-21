@@ -1,13 +1,14 @@
 r"""
 Graded Hopf algebras with basis
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa  Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2008-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.tensor import tensor
 from sage.categories.graded_modules import GradedModulesCategory
@@ -37,6 +38,7 @@ class GradedHopfAlgebrasWithBasis(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     def example(self):
         """
         Return an example of a graded Hopf algebra with
@@ -47,9 +49,13 @@ class GradedHopfAlgebrasWithBasis(GradedModulesCategory):
             sage: GradedHopfAlgebrasWithBasis(QQ).example()                             # needs sage.modules
             An example of a graded connected Hopf algebra with basis over Rational Field
         """
-        from sage.categories.examples.graded_connected_hopf_algebras_with_basis import \
-            GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator
-        return GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(self.base())
+        from sage.categories.examples.graded_connected_hopf_algebras_with_basis import (
+            GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator,
+        )
+
+        return GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(
+            self.base()
+        )
 
     class ParentMethods:
         pass
@@ -73,6 +79,7 @@ class GradedHopfAlgebrasWithBasis(GradedModulesCategory):
                 sage: TestSuite(GradedHopfAlgebrasWithBasis(QQ).WithRealizations()).run()
             """
             from sage.categories.graded_hopf_algebras import GradedHopfAlgebras
+
             R = self.base_category().base_ring()
             return [GradedHopfAlgebras(R)]
 
@@ -87,9 +94,13 @@ class GradedHopfAlgebrasWithBasis(GradedModulesCategory):
                 sage: GradedHopfAlgebrasWithBasis(QQ).Connected().example()             # needs sage.modules
                 An example of a graded connected Hopf algebra with basis over Rational Field
             """
-            from sage.categories.examples.graded_connected_hopf_algebras_with_basis import \
-                GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator
-            return GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(self.base())
+            from sage.categories.examples.graded_connected_hopf_algebras_with_basis import (
+                GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator,
+            )
+
+            return GradedConnectedCombinatorialHopfAlgebraWithPrimitiveGenerator(
+                self.base()
+            )
 
         class ParentMethods:
             def counit_on_basis(self, i):
@@ -157,8 +168,8 @@ class GradedHopfAlgebrasWithBasis(GradedModulesCategory):
 
                 S = self.antipode_on_basis
                 x__S_Id = tensor([self, self]).module_morphism(
-                    lambda ab: S(ab[0]) * self.monomial(ab[1]),
-                    codomain=self)
+                    lambda ab: S(ab[0]) * self.monomial(ab[1]), codomain=self
+                )
                 return -x__S_Id(
                     self.monomial(index).coproduct()
                     - tensor([self.monomial(index), self.one()])

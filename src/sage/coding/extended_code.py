@@ -11,7 +11,7 @@ Let `C` be a linear code of length `n` over `\GF{q}`. The extended code of `C` i
 See [HP2003]_ (pp 15-16) for details.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2016 David Lucas <david.lucas@inria.fr>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,11 +19,13 @@ See [HP2003]_ (pp 15-16) for details.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-from .linear_code import (AbstractLinearCode,
-        LinearCodeSyndromeDecoder,
-        LinearCodeNearestNeighborDecoder)
+from .linear_code import (
+    AbstractLinearCode,
+    LinearCodeSyndromeDecoder,
+    LinearCodeNearestNeighborDecoder,
+)
 from .encoder import Encoder
 from .decoder import Decoder
 from sage.misc.cachefunc import cached_method
@@ -65,8 +67,9 @@ class ExtendedCode(AbstractLinearCode):
         """
         if not isinstance(C, AbstractLinearCode):
             raise ValueError("Provided code must be a linear code")
-        super().__init__(C.base_ring(), C.length() + 1,
-                         "ExtendedMatrix", "OriginalDecoder")
+        super().__init__(
+            C.base_ring(), C.length() + 1, "ExtendedMatrix", "OriginalDecoder"
+        )
         self._original_code = C
         self._dimension = C.dimension()
 
@@ -82,8 +85,10 @@ class ExtendedCode(AbstractLinearCode):
             sage: C1 == C2
             True
         """
-        return isinstance(other, ExtendedCode)\
-                and self.original_code() == other.original_code()
+        return (
+            isinstance(other, ExtendedCode)
+            and self.original_code() == other.original_code()
+        )
 
     def _repr_(self):
         r"""
@@ -248,8 +253,10 @@ class ExtendedCodeExtendedMatrixEncoder(Encoder):
             sage: D1 is D2
             False
         """
-        return isinstance(other, ExtendedCodeExtendedMatrixEncoder) \
-                and self.code() == other.code()
+        return (
+            isinstance(other, ExtendedCodeExtendedMatrixEncoder)
+            and self.code() == other.code()
+        )
 
     @cached_method
     def generator_matrix(self):
@@ -323,8 +330,13 @@ class ExtendedCodeOriginalCodeDecoder(Decoder):
             raise TypeError("code has to be an instance of ExtendedCode class")
 
         original_code = code.original_code()
-        if original_decoder is not None and not original_decoder.code() == original_code:
-            raise ValueError("Original decoder must have the original code as associated code")
+        if (
+            original_decoder is not None
+            and not original_decoder.code() == original_code
+        ):
+            raise ValueError(
+                "Original decoder must have the original code as associated code"
+            )
         elif original_decoder is None:
             self._original_decoder = original_code.decoder()
         else:
@@ -332,8 +344,9 @@ class ExtendedCodeOriginalCodeDecoder(Decoder):
         self._decoder_type = copy(self._decoder_type)
         self._decoder_type.remove("dynamic")
         self._decoder_type = self._original_decoder.decoder_type()
-        super().__init__(code, code.ambient_space(),
-                         self._original_decoder.connected_encoder())
+        super().__init__(
+            code, code.ambient_space(), self._original_decoder.connected_encoder()
+        )
 
     def _repr_(self):
         r"""
@@ -361,7 +374,10 @@ class ExtendedCodeOriginalCodeDecoder(Decoder):
             sage: latex(D)
             \textnormal{Decoder of } Extension of [15, 7, 9] Reed-Solomon Code over GF(16) \textnormal{ through } Gao decoder for [15, 7, 9] Reed-Solomon Code over GF(16)
         """
-        return "\\textnormal{Decoder of } %s \\textnormal{ through } %s" % (self.code(), self.original_decoder())
+        return "\\textnormal{Decoder of } %s \\textnormal{ through } %s" % (
+            self.code(),
+            self.original_decoder(),
+        )
 
     def original_decoder(self):
         r"""

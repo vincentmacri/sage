@@ -1,22 +1,23 @@
 r"""
 Topological Spaces
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.cartesian_product import CartesianProductsCategory
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 from sage.categories.sets_cat import Sets
 
 
 class TopologicalSpacesCategory(RegressiveCovariantConstructionCategory):
-
     _functor_category = "Topological"
 
     def _repr_object_names(self):
@@ -50,6 +51,7 @@ class TopologicalSpaces(TopologicalSpacesCategory):
 
         sage: TestSuite(Sets().Topological()).run()
     """
+
     # We must override the general object because the names don't match
     _base_category_class = (Sets,)
 

@@ -247,9 +247,7 @@ def pytest_collect_file(
             return SageDoctestModule.from_parent(parent, path=file_path)
 
 
-def pytest_ignore_collect(
-    collection_path: Path, config: pytest.Config
-) -> bool | None:
+def pytest_ignore_collect(collection_path: Path, config: pytest.Config) -> bool | None:
     """
     This hook is called when collecting test files, and can be used to
     prevent considering this path for collection by returning ``True``.
@@ -263,12 +261,9 @@ def pytest_ignore_collect(
         # fails with Meson.  Permit only traversal of the package itself and
         # its explicit pytest modules, which handle unavailable optional build
         # dependencies before importing sage_docbuild.
-        if (
-            collection_path == sage_docbuild
-            or (
-                collection_path.parent == sage_docbuild
-                and collection_path.name.endswith("_test.py")
-            )
+        if collection_path == sage_docbuild or (
+            collection_path.parent == sage_docbuild
+            and collection_path.name.endswith("_test.py")
         ):
             return None
         return True
@@ -385,6 +380,7 @@ def tmpfile():
     """
     from os import unlink
     from tempfile import NamedTemporaryFile
+
     t = NamedTemporaryFile(delete=False)
     yield t
     unlink(t.name)

@@ -70,8 +70,10 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
             [3 4], [-1  0]
             )
         """
-        return (MatrixGroup,
-                tuple(g.matrix() for g in self.gens()) + ({'check': False},))
+        return (
+            MatrixGroup,
+            tuple(g.matrix() for g in self.gens()) + ({'check': False},),
+        )
 
     def as_permutation_group(self, algorithm=None, seed=None):
         r"""
@@ -185,16 +187,19 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
         # memory locations and will change if you change the order of
         # doctests and/or architecture
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         if not self.is_finite():
             raise NotImplementedError("group must be finite")
         if seed is not None:
             from sage.libs.gap.libgap import libgap
+
             libgap.set_seed(ZZ(seed))
         iso = self._libgap_().IsomorphismPermGroup()
         if algorithm == "smaller":
             iso = iso.Image().SmallerDegreePermutationRepresentation()
-        return PermutationGroup(iso.Image().GeneratorsOfGroup().sage(),
-                                canonicalize=False)
+        return PermutationGroup(
+            iso.Image().GeneratorsOfGroup().sage(), canonicalize=False
+        )
 
     def module_composition_factors(self, algorithm=None):
         r"""
@@ -225,6 +230,7 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
         For more on MeatAxe notation, see :gap:`chap69`.
         """
         from sage.libs.gap.libgap import libgap
+
         F = self.base_ring()
         if not F.is_finite():
             raise NotImplementedError("base ring must be finite")
@@ -238,9 +244,10 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
         MCFs = compo(M)
         if algorithm == "verbose":
             print(str(MCFs) + "\n")
-        return sorted((MCF['field'].sage(),
-                       MCF['dimension'].sage(),
-                       MCF['IsIrreducible'].sage()) for MCF in MCFs)
+        return sorted(
+            (MCF['field'].sage(), MCF['dimension'].sage(), MCF['IsIrreducible'].sage())
+            for MCF in MCFs
+        )
 
     def invariant_generators(self):
         r"""
@@ -310,8 +317,8 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
           rings of finite groups", :arxiv:`math/0703035`.
         """
         from sage.interfaces.singular import singular
-        from sage.rings.polynomial.polynomial_ring_constructor import \
-            PolynomialRing
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         gens = self.gens()
         singular.LIB("finvar.lib")
         n = self.degree()  # len((gens[0].matrix()).rows())
@@ -322,11 +329,15 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
             FieldStr = str(F.characteristic())
         elif hasattr(F, 'polynomial'):  # we got an algebraic extension
             if len(F.gens()) > 1:
-                raise NotImplementedError("can only deal with finite fields and (simple algebraic extensions of) the rationals")
+                raise NotImplementedError(
+                    "can only deal with finite fields and (simple algebraic extensions of) the rationals"
+                )
             FieldStr = '(%d,%s)' % (F.characteristic(), str(F.gen()))
         else:  # we have a transcendental extension
-            FieldStr = '(%d,%s)' % (F.characteristic(),
-                                    ','.join(str(p) for p in F.gens()))
+            FieldStr = '(%d,%s)' % (
+                F.characteristic(),
+                ','.join(str(p) for p in F.gens()),
+            )
 
         # Setting Singular's variable names
         # We need to make sure that field generator and variables get different names.
@@ -334,55 +345,76 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
             VarStr = 'y'
         else:
             VarStr = 'x'
-        VarNames = '(' + ','.join(VarStr+str(i) for i in range(1, n+1))+')'
+        VarNames = '(' + ','.join(VarStr + str(i) for i in range(1, n + 1)) + ')'
         # The function call and affectation below have side-effects. Do not remove!
         # (even if pyflakes say so)
         R = singular.ring(FieldStr, VarNames, 'dp')  # noqa: F841
         if hasattr(F, 'polynomial') and F.gen() != 1:
             # we have to define minpoly
-            singular.eval('minpoly = '+str(F.polynomial()).replace('x',str(F.gen())))
-        A = [singular.matrix(n,n,str((x.matrix()).list())) for x in gens]
+            singular.eval('minpoly = ' + str(F.polynomial()).replace('x', str(F.gen())))
+        A = [singular.matrix(n, n, str((x.matrix()).list())) for x in gens]
         Lgens = ','.join(x.name() for x in A)
-        PR = PolynomialRing(F, n, [VarStr+str(i) for i in range(1,n+1)])
+        PR = PolynomialRing(F, n, [VarStr + str(i) for i in range(1, n + 1)])
 
         if q == 0 or (q > 0 and self.cardinality() % q):
             from sage.matrix.constructor import Matrix
+
             try:
                 elements = [g.matrix() for g in self.list()]
             except (TypeError, ValueError):
                 elements
             if elements is not None:
-                ReyName = 't'+singular._next_var_name()
-                singular.eval('matrix %s[%d][%d]' % (ReyName,
-                                                     self.cardinality(), n))
-                for i in range(1,self.cardinality()+1):
-                    M = Matrix(F, elements[i-1])
+                ReyName = 't' + singular._next_var_name()
+                singular.eval('matrix %s[%d][%d]' % (ReyName, self.cardinality(), n))
+                for i in range(1, self.cardinality() + 1):
+                    M = Matrix(F, elements[i - 1])
                     D = [{} for foobar in range(self.degree())]
-                    for x,y in M.dict().items():
+                    for x, y in M.dict().items():
                         D[x[0]][x[1]] = y
                     for row in range(self.degree()):
                         for t in D[row].items():
-                            singular.eval('%s[%d,%d]=%s[%d,%d]+(%s)*var(%d)'
-                                          % (ReyName,i,row+1,ReyName,i,row+1, repr(t[1]),t[0]+1))
-                IRName = 't'+singular._next_var_name()
-                singular.eval('matrix %s = invariant_algebra_reynolds(%s)' % (IRName,ReyName))
+                            singular.eval(
+                                '%s[%d,%d]=%s[%d,%d]+(%s)*var(%d)'
+                                % (
+                                    ReyName,
+                                    i,
+                                    row + 1,
+                                    ReyName,
+                                    i,
+                                    row + 1,
+                                    repr(t[1]),
+                                    t[0] + 1,
+                                )
+                            )
+                IRName = 't' + singular._next_var_name()
+                singular.eval(
+                    'matrix %s = invariant_algebra_reynolds(%s)' % (IRName, ReyName)
+                )
             else:
-                ReyName = 't'+singular._next_var_name()
+                ReyName = 't' + singular._next_var_name()
                 singular.eval('list %s=group_reynolds((%s))' % (ReyName, Lgens))
-                IRName = 't'+singular._next_var_name()
-                singular.eval('matrix %s = invariant_algebra_reynolds(%s[1])' % (IRName, ReyName))
+                IRName = 't' + singular._next_var_name()
+                singular.eval(
+                    'matrix %s = invariant_algebra_reynolds(%s[1])' % (IRName, ReyName)
+                )
 
-            OUT = [singular.eval(IRName+'[1,%d]' % (j))
-                   for j in range(1, 1+int(singular('ncols('+IRName+')')))]
+            OUT = [
+                singular.eval(IRName + '[1,%d]' % (j))
+                for j in range(1, 1 + int(singular('ncols(' + IRName + ')')))
+            ]
             return [PR(gen) for gen in OUT]
         if self.cardinality() % q == 0:
             PName = 't' + singular._next_var_name()
             SName = 't' + singular._next_var_name()
             singular.eval('matrix %s,%s=invariant_ring(%s)' % (PName, SName, Lgens))
-            OUT = [singular.eval(PName+'[1,%d]' % (j))
-                   for j in range(1,1+singular('ncols('+PName+')'))]
-            OUT += [singular.eval(SName+'[1,%d]' % (j))
-                    for j in range(2,1+singular('ncols('+SName+')'))]
+            OUT = [
+                singular.eval(PName + '[1,%d]' % (j))
+                for j in range(1, 1 + singular('ncols(' + PName + ')'))
+            ]
+            OUT += [
+                singular.eval(SName + '[1,%d]' % (j))
+                for j in range(2, 1 + singular('ncols(' + SName + ')'))
+            ]
             return [PR(gen) for gen in OUT]
 
     def molien_series(self, chi=None, return_series=True, prec=20, variable='t'):
@@ -551,7 +583,9 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
                 L = R
             mol = P(0)
             for g in self:
-                mol += L(chi(g)) / (M.identity_matrix()-t*g.matrix()).det().change_ring(L)
+                mol += L(chi(g)) / (
+                    M.identity_matrix() - t * g.matrix()
+                ).det().change_ring(L)
         elif R.characteristic().divides(N):
             raise NotImplementedError("characteristic cannot divide group order")
         else:  # char p>0
@@ -561,6 +595,7 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
             # don't need to extend further in this case since the order of
             # the roots of unity in the character divide the order of the group
             from sage.rings.number_field.number_field import CyclotomicField
+
             L = CyclotomicField(N, 'v')
             v = L.gen()
             # construct Molien series
@@ -573,11 +608,11 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
                 for e in g.matrix().eigenvalues():
                     # find power such that w**n  = e
                     n = 1
-                    while w**n != e and n < N+1:
+                    while w**n != e and n < N + 1:
                         n += 1
                     # raise v to that power
-                    phi *= (1-t*v**n)
-                mol += P(1)/phi
+                    phi *= 1 - t * v**n
+                mol += P(1) / phi
         # We know the coefficients will be integers
         mol = mol.numerator().change_ring(ZZ) / mol.denominator().change_ring(ZZ)
         # divide by group order
@@ -585,6 +620,7 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
         if return_series:
             if prec == float('inf'):
                 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
+
                 PS = LazyPowerSeriesRing(ZZ, names=(variable,), sparse=P.is_sparse())
             else:
                 PS = PowerSeriesRing(ZZ, variable, default_prec=prec)
@@ -746,7 +782,9 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
             t*x + t*y
         """
         if poly.parent().ngens() != self.degree():
-            raise TypeError("number of variables in polynomial must match size of matrices")
+            raise TypeError(
+                "number of variables in polynomial must match size of matrices"
+            )
         R = FractionField(poly.base_ring())
         C = FractionField(self.base_ring())
         if chi is None:  # then this is the trivial character
@@ -774,12 +812,14 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
                     else:
                         L = C
             else:
-                raise NotImplementedError("not implemented when characteristic divides group order")
+                raise NotImplementedError(
+                    "not implemented when characteristic divides group order"
+                )
             poly = poly.change_ring(L)
             poly_gens = vector(poly.parent().gens())
             F = L.zero()
             for g in self:
-                F += poly(*g.matrix()*vector(poly.parent().gens()))
+                F += poly(*g.matrix() * vector(poly.parent().gens()))
             F /= self.order()
             return F
         # non-trivial character case
@@ -809,12 +849,14 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
                     L1 = fields[0].composite_fields(fields[1])[0]
                     L = L1.composite_fields(fields[2])[0]
         else:
-            raise NotImplementedError("nontrivial characters not implemented for characteristic > 0")
+            raise NotImplementedError(
+                "nontrivial characters not implemented for characteristic > 0"
+            )
         poly = poly.change_ring(L)
         poly_gens = vector(poly.parent().gens())
         F = L.zero()
         for g in self:
-            F += L(chi(g)) * poly(*g.matrix().change_ring(L)*poly_gens)
+            F += L(chi(g)) * poly(*g.matrix().change_ring(L) * poly_gens)
         F /= self.order()
         try:  # attempt to move F to base_ring of polynomial
             F = F.change_ring(R)
@@ -910,15 +952,19 @@ class FinitelyGeneratedMatrixGroup_gap(MatrixGroup_gap):
         if R is None:
             R = PolynomialRing(self.base_ring(), 'x', D)
         elif R.ngens() != D:
-            raise TypeError("number of variables in polynomial ring must match size of matrices")
+            raise TypeError(
+                "number of variables in polynomial ring must match size of matrices"
+            )
 
-        ms = self.molien_series(prec=deg+1,chi=chi)
+        ms = self.molien_series(prec=deg + 1, chi=chi)
         if ms[deg].is_zero():
             return []
         inv = set()
         for e in IntegerVectors(deg, D):
             F = self.reynolds_operator(R.monomial(*e), chi=chi)
-            if not F.is_zero() and _new_invariant_is_linearly_independent((F := F/F.lc()), inv):
+            if not F.is_zero() and _new_invariant_is_linearly_independent(
+                (F := F / F.lc()), inv
+            ):
                 inv.add(F)
                 if len(inv) == ms[deg]:
                     break
@@ -939,4 +985,7 @@ def _new_invariant_is_linearly_independent(F, invariants):
     """
     if len(invariants) == 0:
         return True
-    return PolynomialSequence(invariants).coefficients_monomials()[0].rank() != PolynomialSequence(list(invariants)+[F]).coefficients_monomials()[0].rank()
+    return (
+        PolynomialSequence(invariants).coefficients_monomials()[0].rank()
+        != PolynomialSequence(list(invariants) + [F]).coefficients_monomials()[0].rank()
+    )

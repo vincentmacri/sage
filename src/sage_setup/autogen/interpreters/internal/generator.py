@@ -11,7 +11,6 @@
 
 """Implements the generic interpreter generator."""
 
-
 from collections import defaultdict
 from io import StringIO
 
@@ -98,10 +97,18 @@ class InterpreterGenerator:
         if d.uses_error_handler:
             self.uses_error_handler = True
 
-        w(je(ri(4, """
+        w(
+            je(
+                ri(
+                    4,
+                    """
             case {{ d.opcode }}: /* {{ d.name }} */
               {
-        """), d=d))
+        """,
+                ),
+                d=d,
+            )
+        )
 
         # If the inputs to an instruction come from the stack,
         # then we want to generate code for the inputs in reverse order:
@@ -124,13 +131,20 @@ class InterpreterGenerator:
             if not ch.is_stack():
                 # Shouldn't hardcode 'code' here
                 if ch.name == 'code':
-                    w("        %s i%d = %s;\n" % (chst.c_local_type(), i, string_of_addr(ch)))
+                    w(
+                        "        %s i%d = %s;\n"
+                        % (chst.c_local_type(), i, string_of_addr(ch))
+                    )
                 elif input_len is not None:
-                    w("        %s i%d = %s + ai%d;\n" %
-                      (chst.c_ptr_type(), i, ch.name, i))
+                    w(
+                        "        %s i%d = %s + ai%d;\n"
+                        % (chst.c_ptr_type(), i, ch.name, i)
+                    )
                 else:
-                    w("        %s i%d = %s[ai%d];\n" %
-                      (chst.c_local_type(), i, ch.name, i))
+                    w(
+                        "        %s i%d = %s[ai%d];\n"
+                        % (chst.c_local_type(), i, ch.name, i)
+                    )
 
         for i in reversed(range(len(d.inputs))):
             (ch, addr, input_len) = d.inputs[i]
@@ -152,20 +166,25 @@ class InterpreterGenerator:
             if output_len is not None:
                 w("        int n_o%d = %s;\n" % (i, string_of_addr(output_len)))
                 if ch.is_stack():
-                    w("        %s o%d = %s;\n" %
-                      (chst.c_ptr_type(), i, ch.name))
+                    w("        %s o%d = %s;\n" % (chst.c_ptr_type(), i, ch.name))
                     w("        %s += n_o%d;\n" % (ch.name, i))
                 else:
-                    w("        %s o%d = %s + ao%d;\n" %
-                      (chst.c_ptr_type(), i, ch.name, i))
+                    w(
+                        "        %s o%d = %s + ao%d;\n"
+                        % (chst.c_ptr_type(), i, ch.name, i)
+                    )
             else:
                 if not chst.cheap_copies():
                     if ch.is_stack():
-                        w("        %s o%d = *%s++;\n" %
-                          (chst.c_local_type(), i, ch.name))
+                        w(
+                            "        %s o%d = *%s++;\n"
+                            % (chst.c_local_type(), i, ch.name)
+                        )
                     else:
-                        w("        %s o%d = %s[ao%d];\n" %
-                          (chst.c_local_type(), i, ch.name, i))
+                        w(
+                            "        %s o%d = %s[ao%d];\n"
+                            % (chst.c_local_type(), i, ch.name, i)
+                        )
                 else:
                     w("        %s o%d;\n" % (chst.c_local_type(), i))
         w(indent_lines(8, d.code.rstrip('\n') + '\n'))
@@ -178,12 +197,21 @@ class InterpreterGenerator:
                     w("        Py_DECREF(i%d);\n" % i)
                     stack_offsets[ch] += 1
                 else:
-                    w(je(ri(8, """
+                    w(
+                        je(
+                            ri(
+                                8,
+                                """
                         int {{ iter }};
                         for ({{ iter }} = 0; {{ iter }} < n_i{{ i }}; {{ iter }}++) {
                           Py_CLEAR(i{{ i }}[{{ iter }}]);
                         }
-                    """), iter='_interp_iter_%d' % i, i=i))
+                    """,
+                            ),
+                            iter='_interp_iter_%d' % i,
+                            i=i,
+                        )
+                    )
 
         for i in range(len(d.outputs)):
             ch = d.outputs[i][0]
@@ -204,11 +232,17 @@ class InterpreterGenerator:
                 else:
                     w("        %s[ao%d] = o%d;\n" % (ch.name, i, i))
 
-        w(je(ri(6,
-            """\
+        w(
+            je(
+                ri(
+                    6,
+                    """\
                 }
                 break;
-            """)))
+            """,
+                )
+            )
+        )
 
     def func_header(self, cython=False):
         r"""
@@ -241,12 +275,19 @@ class InterpreterGenerator:
             ret_ty = s.return_type.c_decl_type()
             if cython:
                 ret_ty = s.return_type.cython_decl_type()
-        return je(ri(0, """\
+        return je(
+            ri(
+                0,
+                """\
             {{ ret_ty }} interp_{{ s.name }}(
             {%- for ch in s.chunks %}
             {%    if not loop.first %},
                     {% endif %}{{ ch.declare_parameter() }}
-            {%- endfor %})"""), ret_ty=ret_ty, s=s)
+            {%- endfor %})""",
+            ),
+            ret_ty=ret_ty,
+            s=s,
+        )
 
     def write_interpreter(self, write):
         r"""
@@ -273,7 +314,11 @@ class InterpreterGenerator:
         """
         s = self._spec
         w = write
-        w(je(ri(0, """
+        w(
+            je(
+                ri(
+                    0,
+                    """
             /* {{ warn }} */
             #include <Python.h>
 
@@ -282,11 +327,22 @@ class InterpreterGenerator:
             {{ myself.func_header() }} {
               while (1) {
                 switch (*code++) {
-            """), s=s, myself=self, i=indent_lines, warn=AUTOGEN_WARN))
+            """,
+                ),
+                s=s,
+                myself=self,
+                i=indent_lines,
+                warn=AUTOGEN_WARN,
+            )
+        )
 
         for instr_desc in s.instr_descs:
             self.gen_code(instr_desc, w)
-        w(je(ri(0, """
+        w(
+            je(
+                ri(
+                    0,
+                    """
                 }
               }
             {% if myself.uses_error_handler %}
@@ -295,7 +351,13 @@ class InterpreterGenerator:
             {% endif %}
             }
 
-            """), s=s, i=indent_lines, myself=self))
+            """,
+                ),
+                s=s,
+                i=indent_lines,
+                myself=self,
+            )
+        )
 
     def write_wrapper(self, write):
         r"""
@@ -331,7 +393,10 @@ class InterpreterGenerator:
             if ch.name == 'args':
                 arg_ch = ch
 
-        the_call = je(ri(0, """
+        the_call = je(
+            ri(
+                0,
+                """
                     {% if s.return_type %}return {% endif -%}
             {% if s.adjust_retval %}{{ s.adjust_retval }}({% endif %}
             interp_{{ s.name }}({{ arg_ch.pass_argument() }}
@@ -340,9 +405,16 @@ class InterpreterGenerator:
             {% endfor %}
                         ){% if s.adjust_retval %}){% endif %}
 
-            """), s=s, arg_ch=arg_ch)
+            """,
+            ),
+            s=s,
+            arg_ch=arg_ch,
+        )
 
-        the_call_c = je(ri(0, """
+        the_call_c = je(
+            ri(
+                0,
+                """
                     {% if s.return_type %}result[0] = {% endif %}
             interp_{{ s.name }}(args
             {% for ch in s.chunks[1:] %}
@@ -350,9 +422,17 @@ class InterpreterGenerator:
             {% endfor %}
                         )
 
-            """), s=s, arg_ch=arg_ch)
+            """,
+            ),
+            s=s,
+            arg_ch=arg_ch,
+        )
 
-        w(je(ri(0, """
+        w(
+            je(
+                ri(
+                    0,
+                    """
             # {{ warn }}
             {{ s.pyx_header }}
 
@@ -462,10 +542,19 @@ class InterpreterGenerator:
             {% endfor %}
              ],
              ipow_range={{ s.ipow_range }})
-            """), s=s, myself=self, types=types, arg_ch=arg_ch,
-             indent_lines=indent_lines, the_call=the_call,
-             the_call_c=the_call_c, do_cleanup=do_cleanup,
-             warn=AUTOGEN_WARN))
+            """,
+                ),
+                s=s,
+                myself=self,
+                types=types,
+                arg_ch=arg_ch,
+                indent_lines=indent_lines,
+                the_call=the_call,
+                the_call_c=the_call_c,
+                do_cleanup=do_cleanup,
+                warn=AUTOGEN_WARN,
+            )
+        )
 
     def write_pxd(self, write):
         r"""
@@ -500,7 +589,11 @@ class InterpreterGenerator:
             if ch.name == 'args':
                 arg_ch = ch
 
-        w(je(ri(0, """
+        w(
+            je(
+                ri(
+                    0,
+                    """
             # {{ warn }}
 
             from cpython.ref cimport PyObject
@@ -521,8 +614,16 @@ class InterpreterGenerator:
                                  {{ arg_ch.storage_type.c_ptr_type() }} args,
                                  {{ arg_ch.storage_type.c_reference_type() }} result) except 0
             {% endif %}
-            """), s=s, myself=self, types=types, indent_lines=indent_lines,
-             arg_ch=arg_ch, warn=AUTOGEN_WARN))
+            """,
+                ),
+                s=s,
+                myself=self,
+                types=types,
+                indent_lines=indent_lines,
+                arg_ch=arg_ch,
+                warn=AUTOGEN_WARN,
+            )
+        )
 
     def get_interpreter(self):
         r"""

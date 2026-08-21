@@ -87,6 +87,7 @@ class QuasiRibbonTableau(SkewTableau):
         True
         sage: TestSuite(Q).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, rows):
         r"""
@@ -174,7 +175,8 @@ class QuasiRibbonTableau(SkewTableau):
         # Each row length in the composition is the number of non-None entries
         # in that row.
         return Composition(
-            [sum(entry is not None for entry in row) for row in self.rows()])
+            [sum(entry is not None for entry in row) for row in self.rows()]
+        )
 
     def width(self):
         """
@@ -346,17 +348,16 @@ class QuasiRibbonTableau(SkewTableau):
             parent = self.parent()
             return self, parent.element_class(parent, [])
 
-        top_rows = rows[:row_index] + [rows[row_index][:col_index + 1]]
-        tail = rows[row_index][col_index + 1:]
+        top_rows = rows[:row_index] + [rows[row_index][: col_index + 1]]
+        tail = rows[row_index][col_index + 1 :]
         if tail:
-            bottom_rows = [tail] + rows[row_index + 1:]
+            bottom_rows = [tail] + rows[row_index + 1 :]
         else:
-            bottom_rows = rows[row_index + 1:]
+            bottom_rows = rows[row_index + 1 :]
 
         parent = self.parent()
         element_class = parent.element_class
-        return (element_class(parent, top_rows),
-                element_class(parent, bottom_rows))
+        return (element_class(parent, top_rows), element_class(parent, bottom_rows))
 
     @staticmethod
     def _insert_letter(rows, a):
@@ -397,13 +398,13 @@ class QuasiRibbonTableau(SkewTableau):
             row_index, col_index = site
 
             new_rows = rows[:row_index]
-            new_rows.append(rows[row_index][:col_index + 1] + [a])
+            new_rows.append(rows[row_index][: col_index + 1] + [a])
 
-            tail = rows[row_index][col_index + 1:]
+            tail = rows[row_index][col_index + 1 :]
             if tail:
                 new_rows.append(tail)
 
-            new_rows.extend(rows[row_index + 1:])
+            new_rows.extend(rows[row_index + 1 :])
 
         return new_rows
 
@@ -520,8 +521,7 @@ class QuasiRibbonTableau(SkewTableau):
                 f"but should begin in column {expected_shift}",
             )
             tester.assertTrue(
-                all(entries[i] <= entries[i + 1]
-                    for i in range(len(entries) - 1)),
+                all(entries[i] <= entries[i + 1] for i in range(len(entries) - 1)),
                 f"row {row_index} is not weakly increasing",
             )
 
@@ -530,13 +530,10 @@ class QuasiRibbonTableau(SkewTableau):
         width = max((len(row) for row in rows), default=0)
         for col in range(width):
             entries = [
-                row[col]
-                for row in rows
-                if col < len(row) and row[col] is not None
+                row[col] for row in rows if col < len(row) and row[col] is not None
             ]
             tester.assertTrue(
-                all(entries[i] < entries[i + 1]
-                    for i in range(len(entries) - 1)),
+                all(entries[i] < entries[i + 1] for i in range(len(entries) - 1)),
                 f"column {col} is not strictly increasing",
             )
 
@@ -566,8 +563,11 @@ class QuasiRibbonTableaux(SkewTableaux):
         [[1, 2], [None, 3]],
         [[2, 2], [None, 3]]]
     """
+
     @staticmethod
-    def __classcall_private__(cls, shape=None, max_entry=None, size=None, category=None):
+    def __classcall_private__(
+        cls, shape=None, max_entry=None, size=None, category=None
+    ):
         """
         Normalize input before constructing the parent object.
 
@@ -616,10 +616,9 @@ class QuasiRibbonTableaux(SkewTableaux):
             if max_entry < 0:
                 raise ValueError("max_entry must be nonnegative")
 
-        return super().__classcall__(cls, shape=shape,
-                                     max_entry=max_entry,
-                                     size=size,
-                                     category=category)
+        return super().__classcall__(
+            cls, shape=shape, max_entry=max_entry, size=size, category=category
+        )
 
     def __init__(self, shape=None, max_entry=None, size=None, category=None):
         """
@@ -675,13 +674,15 @@ class QuasiRibbonTableaux(SkewTableaux):
             if self._max_entry is None:
                 return "Quasi-ribbon tableaux of shape {}".format(self._shape)
             return "Quasi-ribbon tableaux of shape {} with entries at most {}".format(
-                self._shape, self._max_entry)
+                self._shape, self._max_entry
+            )
 
         if self._size is not None:
             if self._max_entry is None:
                 return "Quasi-ribbon tableaux of size {}".format(self._size)
             return "Quasi-ribbon tableaux of size {} with entries at most {}".format(
-                self._size, self._max_entry)
+                self._size, self._max_entry
+            )
 
         if self._max_entry is None:
             return "Quasi-ribbon tableaux"
@@ -739,8 +740,7 @@ class QuasiRibbonTableaux(SkewTableaux):
         """
         try:
             clean_rows = [
-                [ZZ(entry) for entry in row if entry is not None]
-                for row in rows
+                [ZZ(entry) for entry in row if entry is not None] for row in rows
             ]
         except (TypeError, ValueError):
             raise TypeError("entries must be positive integers or None")
@@ -831,7 +831,9 @@ class QuasiRibbonTableaux(SkewTableaux):
         elif self._size is not None:
             S = Compositions(self._size, max_length=self._max_entry)
         else:
-            raise NotImplementedError("iteration requires either shape or size to be specified")
+            raise NotImplementedError(
+                "iteration requires either shape or size to be specified"
+            )
 
         from itertools import accumulate, combinations_with_replacement
 
@@ -859,7 +861,7 @@ class QuasiRibbonTableaux(SkewTableaux):
                 rows = []
                 pos = 0
                 for s in shape:
-                    rows.append(word[pos:pos+s])
+                    rows.append(word[pos : pos + s])
                     pos += s
 
                 yield self.element_class(self, rows)
@@ -895,8 +897,7 @@ class QuasiRibbonTableaux(SkewTableaux):
             except (TypeError, ValueError):
                 return False
 
-        if (self._shape is not None
-                and Q.to_composition() != self._shape):
+        if self._shape is not None and Q.to_composition() != self._shape:
             return False
 
         if self._max_entry is not None:
@@ -927,8 +928,10 @@ class QuasiRibbonTableaux(SkewTableaux):
             return infinity
         if self._shape is None:
             n = self._size
-            return sum(binomial(n - 1, r - 1) * binomial(self._max_entry + n - r, n)
-                       for r in range(1, n+1))
+            return sum(
+                binomial(n - 1, r - 1) * binomial(self._max_entry + n - r, n)
+                for r in range(1, n + 1)
+            )
 
         n = self._shape.size()
         return binomial(self._max_entry + n - len(self._shape), n)

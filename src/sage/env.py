@@ -158,8 +158,12 @@ SAGE_EXTCODE = var("SAGE_EXTCODE", join(SAGE_LIB, "sage", "ext_data"))
 SAGE_LOCAL = var("SAGE_LOCAL")
 SAGE_SHARE = var("SAGE_SHARE", join(SAGE_LOCAL, "share"))
 SAGE_DOC = var("SAGE_DOC", join(SAGE_SHARE, "doc", "sage"))
-SAGE_LOCAL_SPKG_INST = var("SAGE_LOCAL_SPKG_INST", join(SAGE_LOCAL, "var", "lib", "sage", "installed"))
-SAGE_SPKG_INST = var("SAGE_SPKG_INST", join(SAGE_LOCAL, "var", "lib", "sage", "installed"))  # deprecated
+SAGE_LOCAL_SPKG_INST = var(
+    "SAGE_LOCAL_SPKG_INST", join(SAGE_LOCAL, "var", "lib", "sage", "installed")
+)
+SAGE_SPKG_INST = var(
+    "SAGE_SPKG_INST", join(SAGE_LOCAL, "var", "lib", "sage", "installed")
+)  # deprecated
 
 # source tree of the Sage distribution
 SAGE_ROOT = var("SAGE_ROOT") or None
@@ -295,16 +299,18 @@ def sage_include_directories(use_sources=False):
         True
     """
     from sage.misc.superseded import deprecation
+
     deprecation(40765, 'use sage.config.get_include_dirs() instead')
 
     if use_sources:
         dirs = [SAGE_SRC]
     else:
         import sage
-        dirs = [os.path.dirname(directory)
-                for directory in sage.__path__]
+
+        dirs = [os.path.dirname(directory) for directory in sage.__path__]
     try:
         import numpy
+
         dirs.append(numpy.get_include())
     except ModuleNotFoundError:
         pass
@@ -316,8 +322,18 @@ def sage_include_directories(use_sources=False):
     return dirs
 
 
-default_required_modules = ('fflas-ffpack', 'givaro', 'gsl', 'linbox', 'Singular',
-                            'libpng', 'gdlib', 'm4ri', 'zlib', 'ecl')
+default_required_modules = (
+    'fflas-ffpack',
+    'givaro',
+    'gsl',
+    'linbox',
+    'Singular',
+    'libpng',
+    'gdlib',
+    'm4ri',
+    'zlib',
+    'ecl',
+)
 
 
 default_optional_modules = ('lapack',)
@@ -386,8 +402,10 @@ def cython_aliases(required_modules=None, optional_modules=None):
 
     aliases = {}
 
-    for lib, required in itertools.chain(((lib, True) for lib in required_modules),
-                                         ((lib, False) for lib in optional_modules)):
+    for lib, required in itertools.chain(
+        ((lib, True) for lib in required_modules),
+        ((lib, False) for lib in optional_modules),
+    ):
         var = lib.upper().replace("-", "") + "_"
         if lib == 'zlib':
             aliases[var + "CFLAGS"] = ""
@@ -396,23 +414,38 @@ def cython_aliases(required_modules=None, optional_modules=None):
                 libs = pkgconfig.libs(lib)
             except pkgconfig.PackageNotFoundError:
                 from collections import defaultdict
+
                 pc = defaultdict(list, {'libraries': ['z']})
                 libs = "-lz"
         elif lib == 'ecl':
             try:
                 # Determine ecl-specific compiler arguments using the ecl-config script
-                ecl_cflags = subprocess.run([ECL_CONFIG, "--cflags"], check=True, capture_output=True, text=True).stdout.split()
-                ecl_libs = subprocess.run([ECL_CONFIG, "--libs"], check=True, capture_output=True, text=True).stdout.split()
+                ecl_cflags = subprocess.run(
+                    [ECL_CONFIG, "--cflags"], check=True, capture_output=True, text=True
+                ).stdout.split()
+                ecl_libs = subprocess.run(
+                    [ECL_CONFIG, "--libs"], check=True, capture_output=True, text=True
+                ).stdout.split()
             except subprocess.CalledProcessError:
                 if required:
                     raise
                 else:
                     continue
-            aliases["ECL_CFLAGS"] = list(filter(lambda s: not s.startswith('-I'), ecl_cflags))
-            aliases["ECL_INCDIR"] = [s[2:] for s in filter(lambda s: s.startswith('-I'), ecl_cflags)]
-            aliases["ECL_LIBDIR"] = [s[2:] for s in filter(lambda s: s.startswith('-L'), ecl_libs)]
-            aliases["ECL_LIBRARIES"] = [s[2:] for s in filter(lambda s: s.startswith('-l'), ecl_libs)]
-            aliases["ECL_LIBEXTRA"] = list(filter(lambda s: not s.startswith(('-l', '-L')), ecl_libs))
+            aliases["ECL_CFLAGS"] = list(
+                filter(lambda s: not s.startswith('-I'), ecl_cflags)
+            )
+            aliases["ECL_INCDIR"] = [
+                s[2:] for s in filter(lambda s: s.startswith('-I'), ecl_cflags)
+            ]
+            aliases["ECL_LIBDIR"] = [
+                s[2:] for s in filter(lambda s: s.startswith('-L'), ecl_libs)
+            ]
+            aliases["ECL_LIBRARIES"] = [
+                s[2:] for s in filter(lambda s: s.startswith('-l'), ecl_libs)
+            ]
+            aliases["ECL_LIBEXTRA"] = list(
+                filter(lambda s: not s.startswith(('-l', '-L')), ecl_libs)
+            )
             continue
         else:
             try:
@@ -431,7 +464,9 @@ def cython_aliases(required_modules=None, optional_modules=None):
         # include search order matters.
         aliases[var + "INCDIR"] = pc['include_dirs']
         aliases[var + "LIBDIR"] = pc['library_dirs']
-        aliases[var + "LIBEXTRA"] = list(filter(lambda s: not s.startswith(('-l', '-L')), libs.split()))
+        aliases[var + "LIBEXTRA"] = list(
+            filter(lambda s: not s.startswith(('-l', '-L')), libs.split())
+        )
         aliases[var + "LIBRARIES"] = pc['libraries']
 
     # uname-specific flags
@@ -442,8 +477,7 @@ def cython_aliases(required_modules=None, optional_modules=None):
             return value
         return alternative
 
-    aliases["LINUX_NOEXECSTACK"] = uname_specific("Linux", ["-Wl,-z,noexecstack"],
-                                                  [])
+    aliases["LINUX_NOEXECSTACK"] = uname_specific("Linux", ["-Wl,-z,noexecstack"], [])
 
     # LinBox needs special care because it actually requires C++11 with
     # GNU extensions: -std=c++11 does not work, you need -std=gnu++11
@@ -496,7 +530,9 @@ def sage_data_paths(name: str = '') -> set[str]:
         }
         paths.add(user_data_dir("sagemath"))
         paths.add(user_data_dir())
-        for path in site_data_dir("sagemath", multipath=True).split(os.pathsep) + site_data_dir(multipath=True).split(os.pathsep):
+        for path in site_data_dir("sagemath", multipath=True).split(
+            os.pathsep
+        ) + site_data_dir(multipath=True).split(os.pathsep):
             paths.add(path)
     else:
         paths = set(SAGE_DATA_PATH.split(os.pathsep))

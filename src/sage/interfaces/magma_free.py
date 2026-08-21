@@ -47,8 +47,11 @@ def magma_free_eval(code: str, strip=True, columns=0):
     refererUrl = "http://%s%s" % (server, refererPath)
     code = "SetColumns(%s);\n" % columns + code
     params = urlencode({'input': code})
-    headers = {"Content-type": "application/x-www-form-urlencoded",
-               "Accept": "Accept: text/html, application/xml, application/xhtml+xml", "Referer": refererUrl}
+    headers = {
+        "Content-type": "application/x-www-form-urlencoded",
+        "Accept": "Accept: text/html, application/xml, application/xhtml+xml",
+        "Referer": refererUrl,
+    }
     conn = httplib.HTTPConnection(server)
     conn.request("POST", processPath, params, headers)
     response = conn.getresponse()
@@ -79,6 +82,7 @@ class MagmaFree:
         sage: magma_free("Factorization(9290348092384)")  # optional - internet
         [ <2, 5>, <290323377887, 1> ]
     """
+
     def eval(self, x, **kwds):
         return magma_free_eval(x)
 

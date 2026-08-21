@@ -47,8 +47,16 @@ from copy import copy
 from sage.graphs.digraph import DiGraph
 
 
-def _initialize_digraph(G, edges, name=None, weighted=None, sparse=None,
-                        data_structure=None, immutable=None, hash_labels=None):
+def _initialize_digraph(
+    G,
+    edges,
+    name=None,
+    weighted=None,
+    sparse=None,
+    data_structure=None,
+    immutable=None,
+    hash_labels=None,
+):
     r"""
     Helper method to return a directed graph built from ``G``.
 
@@ -140,8 +148,10 @@ def _initialize_digraph(G, edges, name=None, weighted=None, sparse=None,
         # data_structure is already defined so there is nothing left to do
         # here. Did the user try to define too much ?
         if immutable is not None or sparse is not None:
-            raise ValueError("you cannot define 'immutable' or 'sparse' "
-                             "when 'data_structure' has a value")
+            raise ValueError(
+                "you cannot define 'immutable' or 'sparse' "
+                "when 'data_structure' has a value"
+            )
     # At this point, data_structure is None.
     elif immutable is True:
         data_structure = 'static_sparse'
@@ -162,6 +172,7 @@ def _initialize_digraph(G, edges, name=None, weighted=None, sparse=None,
     if data_structure is None:
         from sage.graphs.base.dense_graph import DenseGraphBackend
         from sage.graphs.base.sparse_graph import SparseGraphBackend
+
         if isinstance(G._backend, DenseGraphBackend):
             data_structure = "dense"
         elif isinstance(G._backend, SparseGraphBackend):
@@ -176,15 +187,17 @@ def _initialize_digraph(G, edges, name=None, weighted=None, sparse=None,
     if hash_labels is None:
         hash_labels = G._hash_labels
 
-    D = DiGraph(data=[G, edges],
-                format='vertices_and_edges',
-                data_structure=data_structure,
-                multiedges=G.allows_multiple_edges(),
-                loops=G.allows_loops(),
-                weighted=weighted,
-                pos=copy(G.get_pos()),
-                name=name,
-                hash_labels=hash_labels)
+    D = DiGraph(
+        data=[G, edges],
+        format='vertices_and_edges',
+        data_structure=data_structure,
+        multiedges=G.allows_multiple_edges(),
+        loops=G.allows_loops(),
+        weighted=weighted,
+        pos=copy(G.get_pos()),
+        name=name,
+        hash_labels=hash_labels,
+    )
 
     # Copy attributes '_assoc' and '_embedding' if set
     D._copy_attribute_from(G, '_assoc')
@@ -193,8 +206,15 @@ def _initialize_digraph(G, edges, name=None, weighted=None, sparse=None,
     return D
 
 
-def orient(G, f, weighted=None, data_structure=None, sparse=None,
-           immutable=None, hash_labels=None):
+def orient(
+    G,
+    f,
+    weighted=None,
+    data_structure=None,
+    sparse=None,
+    immutable=None,
+    hash_labels=None,
+):
     r"""
     Return an oriented version of `G` according the input function `f`.
 
@@ -312,9 +332,16 @@ def orient(G, f, weighted=None, data_structure=None, sparse=None,
     """
     edges = (f(e) for e in G.edge_iterator())
     name = f"Orientation of {G.name()}"
-    return _initialize_digraph(G, edges, name=name, weighted=weighted,
-                               data_structure=data_structure, sparse=sparse,
-                               immutable=immutable, hash_labels=hash_labels)
+    return _initialize_digraph(
+        G,
+        edges,
+        name=name,
+        weighted=weighted,
+        data_structure=data_structure,
+        sparse=sparse,
+        immutable=immutable,
+        hash_labels=hash_labels,
+    )
 
 
 def orientations(G, data_structure=None, sparse=None):
@@ -434,16 +461,21 @@ def orientations(G, data_structure=None, sparse=None):
         name = 'An orientation of ' + name
 
     if not G.size():
-        yield _initialize_digraph(G, [], name=name,
-                                  data_structure=data_structure, sparse=sparse)
+        yield _initialize_digraph(
+            G, [], name=name, data_structure=data_structure, sparse=sparse
+        )
         return
 
-    E = [[(u, v, label), (v, u, label)] if u != v else [(u, v, label)]
-         for u, v, label in G.edge_iterator()]
+    E = [
+        [(u, v, label), (v, u, label)] if u != v else [(u, v, label)]
+        for u, v, label in G.edge_iterator()
+    ]
     from itertools import product
+
     for edges in product(*E):
-        yield _initialize_digraph(G, edges, name=name,
-                                  data_structure=data_structure, sparse=sparse)
+        yield _initialize_digraph(
+            G, edges, name=name, data_structure=data_structure, sparse=sparse
+        )
 
 
 def acyclic_orientations(G):
@@ -595,9 +627,9 @@ def acyclic_orientations(G):
         return edge_labels
 
     def is_upset_of_poset(Poset, subset, keys):
-        for (u, v) in subset:
-            for (w, x) in keys:
-                if (Poset[(u, v), (w, x)] == 1 and (w, x) not in subset):
+        for u, v in subset:
+            for w, x in keys:
+                if Poset[(u, v), (w, x)] == 1 and (w, x) not in subset:
                     return False
         return True
 
@@ -614,28 +646,35 @@ def acyclic_orientations(G):
         new_G = DiGraph()
 
         # Process vertices up to starting_of_Ek
-        new_G.add_edges([(v, u) if globO[(u, v)] == 1 else (u, v) for u, v in keys[:starting_of_Ek]])
+        new_G.add_edges(
+            [(v, u) if globO[(u, v)] == 1 else (u, v) for u, v in keys[:starting_of_Ek]]
+        )
 
         # Process vertices starting from starting_of_Ek
-        new_G.add_vertices([u for u, _ in keys[starting_of_Ek:]] + [v for _, v in keys[starting_of_Ek:]])
+        new_G.add_vertices(
+            [u for u, _ in keys[starting_of_Ek:]]
+            + [v for _, v in keys[starting_of_Ek:]]
+        )
 
-        if (globO[(k-1, k)] == 1):
+        if globO[(k - 1, k)] == 1:
             new_G.add_edge(k, k - 1)
         else:
-            new_G.add_edge(k-1, k)
+            new_G.add_edge(k - 1, k)
 
         for i in range(starting_of_Ek, m - 1):
             for j in range(starting_of_Ek, m - 1):
                 u, v = keys[i]
                 w, x = keys[j]
                 # w should be reachable from u and v should be reachable from x
-                if w in new_G.depth_first_search(u) and v in new_G.depth_first_search(x):
+                if w in new_G.depth_first_search(u) and v in new_G.depth_first_search(
+                    x
+                ):
                     Poset[(u, v), (w, x)] = 1
 
         # For each subset of the base set of E_k, check if it is an upset or not
         upsets = []
-        for subset in Subsets(keys[starting_of_Ek:m-1]):
-            if (is_upset_of_poset(Poset, subset, keys[starting_of_Ek:m-1])):
+        for subset in Subsets(keys[starting_of_Ek : m - 1]):
+            if is_upset_of_poset(Poset, subset, keys[starting_of_Ek : m - 1]):
                 upsets.append(list(subset))
 
         for upset in upsets:
@@ -657,7 +696,7 @@ def acyclic_orientations(G):
             return
 
         starting_of_Ek = 0
-        for (u, v) in keys:
+        for u, v in keys:
             if u >= k - 1 or v >= k - 1:
                 break
             else:
@@ -668,15 +707,15 @@ def acyclic_orientations(G):
 
         # For each orientation of G_k-2, yield acyclic orientations
         for alpha in orientations_G_small:
-            for (u, v) in alpha:
+            for u, v in alpha:
                 globO[(u, v)] = alpha[(u, v)]
 
             # Orienting H_k as 1
-            globO[(k-1, k)] = 1
+            globO[(k - 1, k)] = 1
             yield from generate_orientations(globO, starting_of_Ek, m, k, keys)
 
             # Orienting H_k as 0
-            globO[(k-1, k)] = 0
+            globO[(k - 1, k)] = 0
             yield from generate_orientations(globO, starting_of_Ek, m, k, keys)
 
     # Reorder vertices based on the logic in reorder_vertices function
@@ -771,6 +810,7 @@ def strong_orientation(G):
         Multi-digraph on 3 vertices
     """
     from sage.graphs.base.dense_graph import DenseGraphBackend
+
     if isinstance(G._backend, DenseGraphBackend):
         data_structure = "dense"
     else:
@@ -806,8 +846,11 @@ def strong_orientation(G):
         # If we discovered a new vertex
         if seen.get(e[1], False) is False:
             d.add_edge(e)
-            next_.extend(ee for ee in G.edges_incident(e[1])
-                         if ((e[0], e[1]) != (ee[0], ee[1])) and ((e[0], e[1]) != (ee[1], ee[0])))
+            next_.extend(
+                ee
+                for ee in G.edges_incident(e[1])
+                if ((e[0], e[1]) != (ee[0], ee[1])) and ((e[0], e[1]) != (ee[1], ee[0]))
+            )
             i += 1
             seen[e[1]] = i
 
@@ -947,7 +990,7 @@ def strong_orientations_iterator(G):
     previousWord = 0
 
     # the orientation of one edge is fixed so we consider one edge less
-    nr = 2**(len(A) - 1)
+    nr = 2 ** (len(A) - 1)
     for i in range(nr):
         word = (i >> 1) ^ i
         bitChanged = word ^ previousWord
@@ -1081,10 +1124,12 @@ def random_orientation(G):
         - :meth:`~sage.graphs.digraph_generators.DiGraphGenerators.nauty_directg`
     """
     from sage.graphs.graph import Graph
+
     if not isinstance(G, Graph):
         raise ValueError("the input parameter must be a Graph")
 
     from sage.misc.prandom import getrandbits
+
     rbits = getrandbits(G.size())
     edges = []
     for u, v, l in G.edge_iterator():
@@ -1094,8 +1139,9 @@ def random_orientation(G):
     return _initialize_digraph(G, edges, name=f"Random orientation of {G.name()}")
 
 
-def minimum_outdegree_orientation(G, use_edge_labels=False, solver=None, verbose=0,
-                                  *, integrality_tolerance=1e-3):
+def minimum_outdegree_orientation(
+    G, use_edge_labels=False, solver=None, verbose=0, *, integrality_tolerance=1e-3
+):
     r"""
     Return an orientation of `G` with the smallest possible maximum outdegree.
 
@@ -1166,8 +1212,10 @@ def minimum_outdegree_orientation(G, use_edge_labels=False, solver=None, verbose
     """
     G._scream_if_not_simple()
     if G.is_directed():
-        raise ValueError("Cannot compute an orientation of a DiGraph. "
-                         "Please convert it to a Graph if you really mean it.")
+        raise ValueError(
+            "Cannot compute an orientation of a DiGraph. "
+            "Please convert it to a Graph if you really mean it."
+        )
 
     if use_edge_labels:
         from sage.rings.real_mpfr import RR
@@ -1176,6 +1224,7 @@ def minimum_outdegree_orientation(G, use_edge_labels=False, solver=None, verbose
             label = G.edge_label(e[0], e[1])
             return label if label in RR else 1
     else:
+
         def weight(e):
             return 1
 
@@ -1198,22 +1247,32 @@ def minimum_outdegree_orientation(G, use_edge_labels=False, solver=None, verbose
         return 1 - variable
 
     for u in G:
-        p.add_constraint(p.sum(weight(e) * outgoing(u, e, orientation[frozenset(e)])
-                               for e in G.edge_iterator(vertices=[u], labels=False))
-                         - degree['max'], max=0)
+        p.add_constraint(
+            p.sum(
+                weight(e) * outgoing(u, e, orientation[frozenset(e)])
+                for e in G.edge_iterator(vertices=[u], labels=False)
+            )
+            - degree['max'],
+            max=0,
+        )
 
     p.set_objective(degree['max'])
 
     p.solve(log=verbose)
 
-    orientation = p.get_values(orientation, convert=bool, tolerance=integrality_tolerance)
+    orientation = p.get_values(
+        orientation, convert=bool, tolerance=integrality_tolerance
+    )
 
     # Return the resulting orientation
-    return G.orient(lambda e: e if orientation[frozenset(e[:2])] else (e[1], e[0], e[2]))
+    return G.orient(
+        lambda e: e if orientation[frozenset(e[:2])] else (e[1], e[0], e[2])
+    )
 
 
-def bounded_outdegree_orientation(G, bound, solver=None, verbose=False,
-                                  *, integrality_tolerance=1e-3):
+def bounded_outdegree_orientation(
+    G, bound, solver=None, verbose=False, *, integrality_tolerance=1e-3
+):
     r"""
     Return an orientation of `G` such that every vertex `v` has out-degree less
     than `b(v)`.
@@ -1356,8 +1415,10 @@ def bounded_outdegree_orientation(G, bound, solver=None, verbose=False,
     # Adding the edges (s,v) and ((u,v),t)
     d.add_edges(('s', vertices_id[v], b[v]) for v in vertices)
 
-    d.add_edges(((vertices_id[u], vertices_id[v]), 't', 1)
-                for u, v in G.edges(sort=False, labels=None))
+    d.add_edges(
+        ((vertices_id[u], vertices_id[v]), 't', 1)
+        for u, v in G.edges(sort=False, labels=None)
+    )
 
     # each v is linked to its incident edges
 
@@ -1367,18 +1428,28 @@ def bounded_outdegree_orientation(G, bound, solver=None, verbose=False,
         d.add_edge(v, (u, v), 1)
 
     # Solving the maximum flow
-    value, flow = d.flow('s', 't', value_only=False, integer=True,
-                         use_edge_labels=True, solver=solver, verbose=verbose,
-                         integrality_tolerance=integrality_tolerance)
+    value, flow = d.flow(
+        's',
+        't',
+        value_only=False,
+        integer=True,
+        use_edge_labels=True,
+        solver=solver,
+        verbose=verbose,
+        integrality_tolerance=integrality_tolerance,
+    )
 
     if value != G.size():
         raise ValueError("No orientation exists for the given bound")
 
     # The flow graph may not contain all the vertices, if they are
     # not part of the flow...
-    edges = ((vertices[u], vertices[vv if vv != u else uu])
-             for u in range(n) if u in flow
-             for uu, vv in flow.neighbors_out(u))
+    edges = (
+        (vertices[u], vertices[vv if vv != u else uu])
+        for u in range(n)
+        if u in flow
+        for uu, vv in flow.neighbors_out(u)
+    )
 
     return _initialize_digraph(G, edges)
 
@@ -1460,7 +1531,6 @@ def eulerian_orientation(G):
         odd.append(v)
     # Stops when there is no edge left
     while True:
-
         # If there is an edge adjacent to the current one
         if g.degree(v):
             e = next(g.edge_iterator(v))

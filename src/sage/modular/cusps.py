@@ -64,6 +64,7 @@ class Cusp(Element):
         sage: a.parent() is b.parent()
         True
     """
+
     def __init__(self, a, b=None, parent=None, check=True):
         r"""
         Create the cusp a/b in `\mathbb{P}^1(\QQ)`, where if b=0
@@ -176,8 +177,9 @@ class Cusp(Element):
             elif isinstance(a, Rational):
                 self.__a = a.numer()
                 self.__b = a.denom()
-            elif (isinstance(a, InfinityElement) or
-                  (isinstance(a, pari_gen) and a.type() == 't_INFINITY')):
+            elif isinstance(a, InfinityElement) or (
+                isinstance(a, pari_gen) and a.type() == 't_INFINITY'
+            ):
                 self.__a = ZZ.one()
                 self.__b = ZZ.zero()
             elif isinstance(a, Cusp):
@@ -209,7 +211,9 @@ class Cusp(Element):
             return
 
         if isinstance(b, InfinityElement):
-            if isinstance(a, InfinityElement) or (isinstance(a, Cusp) and a.is_infinity()):
+            if isinstance(a, InfinityElement) or (
+                isinstance(a, Cusp) and a.is_infinity()
+            ):
                 raise TypeError("unable to convert (%r, %r) to a cusp" % (a, b))
             self.__a = ZZ.zero()
             self.__b = ZZ.one()
@@ -464,8 +468,7 @@ class Cusp(Element):
         """
         return Cusp(-self.__a, self.__b)
 
-    def is_gamma0_equiv(self, other, N,
-                        transformation=None) -> bool | tuple[bool, Any]:
+    def is_gamma0_equiv(self, other, N, transformation=None) -> bool | tuple[bool, Any]:
         r"""
         Return whether ``self`` and ``other`` are equivalent modulo the action of
         `\Gamma_0(N)` via linear fractional transformations.
@@ -520,7 +523,9 @@ class Cusp(Element):
         Modular Elliptic Curves', or Prop 2.27 of Stein's Ph.D. thesis.
         """
         if transformation not in [False, True, "matrix", None, "corner"]:
-            raise ValueError("Value %s of the optional argument transformation is not valid.")
+            raise ValueError(
+                "Value %s of the optional argument transformation is not valid."
+            )
 
         if not isinstance(other, Cusp):
             other = Cusp(other)
@@ -600,7 +605,7 @@ class Cusp(Element):
         a = s1 * v2 - s2 * v1
         assert (a % g).is_zero()
         # solve x*v1*v2 + a = 0 (mod N).
-        d, x0, y0 = (v1 * v2).xgcd(N)          # x0*v1*v2 + y0*N = d = g.
+        d, x0, y0 = (v1 * v2).xgcd(N)  # x0*v1*v2 + y0*N = d = g.
         # so x0*v1*v2 - g = 0 (mod N)
         x = -x0 * ZZ(a / g)
         # now  x*v1*v2 + a = 0 (mod N)
@@ -612,9 +617,9 @@ class Cusp(Element):
         if transformation == "matrix":
             C = s1p * v2 - s2 * v1
             if C % (M * v1 * v2) == 0:
-                k = - C // (M * v1 * v2)
+                k = -C // (M * v1 * v2)
             else:
-                k = - (C / (M * v1 * v2)).round("away")
+                k = -(C / (M * v1 * v2)).round("away")
 
             s1pp = s1p + k * M * v1
             # C += k*M*v1*v2  # is now the smallest in absolute value
@@ -633,7 +638,7 @@ class Cusp(Element):
 
         # mainly for backwards compatibility and
         # for how it is used in modular symbols
-        A = (u2 * s1p - r2 * v1)
+        A = u2 * s1p - r2 * v1
         if u2 != 0 and v1 != 0:
             A = A % (u2 * v1 * M)
         return (True, A)
@@ -687,9 +692,9 @@ class Cusp(Element):
         u2 = other.__a
         v2 = other.__b
         g = v1.gcd(N)
-        if ((v2 - v1) % N == 0 and (u2 - u1) % g == 0):
+        if (v2 - v1) % N == 0 and (u2 - u1) % g == 0:
             return True, 1
-        if ((v2 + v1) % N == 0 and (u2 + u1) % g == 0):
+        if (v2 + v1) % N == 0 and (u2 + u1) % g == 0:
             return True, -1
         return False, 0
 
@@ -763,6 +768,7 @@ class Cusp(Element):
             0
         """
         from sage.modular.arithgroup.congroup_gammaH import GammaH_class
+
         if not isinstance(other, Cusp):
             other = Cusp(other)
         if not isinstance(G, GammaH_class):
@@ -816,11 +822,13 @@ class Cusp(Element):
             Set P^1(QQ) of all cusps
         """
         if not self_on_left:
-            if (isinstance(g, Matrix) and g.base_ring() is ZZ
-                    and g.ncols() == 2 == g.nrows()):
+            if (
+                isinstance(g, Matrix)
+                and g.base_ring() is ZZ
+                and g.ncols() == 2 == g.nrows()
+            ):
                 a, b, c, d = g.list()
-                return Cusp(a * self.__a + b * self.__b,
-                            c * self.__a + d * self.__b)
+                return Cusp(a * self.__a + b * self.__b, c * self.__a + d * self.__b)
 
     def apply(self, g):
         """
@@ -836,8 +844,9 @@ class Cusp(Element):
             sage: Cusp(0).apply([1,-3,0,1])
             -3
         """
-        return Cusp(g[0] * self.__a + g[1] * self.__b,
-                    g[2] * self.__a + g[3] * self.__b)
+        return Cusp(
+            g[0] * self.__a + g[1] * self.__b, g[2] * self.__a + g[3] * self.__b
+        )
 
     def galois_action(self, t, N):
         r"""
@@ -1007,6 +1016,7 @@ class Cusps_class(Singleton, Parent):
         sage: loads(C.dumps()) == C
         True
     """
+
     def __init__(self):
         r"""
         The set of cusps, i.e. `\mathbb{P}^1(\QQ)`.

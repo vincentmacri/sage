@@ -11,6 +11,7 @@ AUTHORS:
 
 - Jeroen Demeyer (2017-2018): Refactored and moved to ``cardinality.py``.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008-2009 John Cremona
 #
@@ -157,8 +158,8 @@ def _cardinality_with_j_invariant_1728(self):
             # unity, so the traces are 2*pi, -2*pi, 0, -pi, +pi;
             # -pi, +pi.
             delta = self.discriminant()
-            discube = (delta**((q - 1) // 3) == k(1))
-            pi = (-2)**(d // 2)
+            discube = delta ** ((q - 1) // 3) == k(1)
+            pi = (-2) ** (d // 2)
             if discube:
                 a = k.gen()
                 b = a
@@ -192,7 +193,7 @@ def _cardinality_with_j_invariant_1728(self):
                 u = delta.sqrt()
                 if not u.is_square():
                     u = -u
-                tr = ((self.a3()**2 + self.a6()) / u).trace()
+                tr = ((self.a3() ** 2 + self.a6()) / u).trace()
                 if tr == 0:
                     t = 0
                 else:
@@ -214,9 +215,9 @@ def _cardinality_with_j_invariant_1728(self):
             A4 = self.a4() - self.a1() * self.a3()  # = -b4 = 2*b4
             if A4.is_square():
                 u = A4.sqrt()
-                t = (-3)**(d // 2)
+                t = (-3) ** (d // 2)
                 i = k(-1).sqrt()
-                A6 = self.a3()**2 + self.a6()   # = b6
+                A6 = self.a3() ** 2 + self.a6()  # = b6
                 if (A6 / (i * u * A4)).trace() == 0:
                     t *= 2
                 else:
@@ -234,8 +235,8 @@ def _cardinality_with_j_invariant_1728(self):
         if d % 2:
             t = 0
         else:
-            t = (-p)**(d // 2)
-            w = (self.c4() / k(48))**((q - 1) // 4)
+            t = (-p) ** (d // 2)
+            w = (self.c4() / k(48)) ** ((q - 1) // 4)
             if w == 1:
                 t = 2 * t
             elif w == -1:
@@ -255,7 +256,7 @@ def _cardinality_with_j_invariant_1728(self):
             a, b = -b, a
         if (a + b + 1) % 4 == 0:
             a, b = -a, -b
-        pi = a + b * i        # Now pi=a+b*i with (a,b)=(1,0),(3,2) mod 4
+        pi = a + b * i  # Now pi=a+b*i with (a,b)=(1,0),(3,2) mod 4
 
         # Lift to Frobenius for [0,0,0,-1,0] over GF(p^d):
         if d > 1:
@@ -263,7 +264,7 @@ def _cardinality_with_j_invariant_1728(self):
             a, b = pi.list()
 
         # Compute appropriate quartic twist:
-        w = (self.c4() / k(48))**((q - 1) // 4)
+        w = (self.c4() / k(48)) ** ((q - 1) // 4)
         if w == 1:
             t = 2 * a
         elif w == -1:
@@ -323,8 +324,8 @@ def _cardinality_with_j_invariant_0(self):
         if d % 2:
             t = 0
         else:
-            t = (-p)**(d // 2)
-            w = (self.c6() / k(-864))**((q - 1) // 6)
+            t = (-p) ** (d // 2)
+            w = (self.c6() / k(-864)) ** ((q - 1) // 6)
             if w == 1:
                 t = 2 * t
             elif w == -1:
@@ -352,18 +353,18 @@ def _cardinality_with_j_invariant_0(self):
             a, b = pi.list()
 
         # Compute appropriate sextic twist:
-        w = (self.c6() / k(-864))**((q - 1) // 6)
+        w = (self.c6() / k(-864)) ** ((q - 1) // 6)
 
         if w == 1:
             t = 2 * a + b  # = Trace(pi)
         elif w == -1:
             t = -2 * a - b  # = Trace(-pi)
         elif w == z:
-            t = a - b    # = Trace(pi*zeta6)
+            t = a - b  # = Trace(pi*zeta6)
         elif w == z**2:
             t = -a - 2 * b  # = Trace(pi*zeta6**2)
         elif w == z**4:
-            t = b - a    # = Trace(pi*zeta6**4)
+            t = b - a  # = Trace(pi*zeta6**4)
         elif w == z**5:
             t = a + 2 * b  # = Trace(pi*zeta6**5)
 
@@ -387,8 +388,9 @@ def cardinality_exhaustive(self):
         sage: E.cardinality_exhaustive()
         64
     """
-    self._order = Integer(1 + sum(len(self.lift_x(x, all=True))
-                                  for x in self.base_field()))
+    self._order = Integer(
+        1 + sum(len(self.lift_x(x, all=True)) for x in self.base_field())
+    )
     return self._order
 
 
@@ -451,21 +453,21 @@ def cardinality_bsgs(self, verbose=False):
     # kmin=kmax.
 
     if q > 2**10:
-        N1 = ZZ(2)**sum([e for P, e in E1._p_primary_torsion_basis(2)])
-        N2 = ZZ(2)**sum([e for P, e in E2._p_primary_torsion_basis(2)])
+        N1 = ZZ(2) ** sum([e for P, e in E1._p_primary_torsion_basis(2)])
+        N2 = ZZ(2) ** sum([e for P, e in E2._p_primary_torsion_basis(2)])
         if q > 2**20:
-            N1 *= ZZ(3)**sum([e for P, e in E1._p_primary_torsion_basis(3)])
-            N2 *= ZZ(3)**sum([e for P, e in E2._p_primary_torsion_basis(3)])
+            N1 *= ZZ(3) ** sum([e for P, e in E1._p_primary_torsion_basis(3)])
+            N2 *= ZZ(3) ** sum([e for P, e in E2._p_primary_torsion_basis(3)])
             if q > 2**40:
-                N1 *= ZZ(5)**sum([e for P, e in E1._p_primary_torsion_basis(5)])
-                N2 *= ZZ(5)**sum([e for P, e in E2._p_primary_torsion_basis(5)])
+                N1 *= ZZ(5) ** sum([e for P, e in E1._p_primary_torsion_basis(5)])
+                N2 *= ZZ(5) ** sum([e for P, e in E2._p_primary_torsion_basis(5)])
         # We now know that t=q+1 (mod N1) and t=-(q+1) (mod N2)
         a = q1
         M = N1
         g, u, v = M.xgcd(N2)  # g==u*M+v*N2
         if N2 > g:
             a = (a * v * N2 - q1 * u * M) // g
-            M *= (N2 // g)  # = lcm(M,N2)
+            M *= N2 // g  # = lcm(M,N2)
             a = a % M
             if verbose:
                 print("(a,M)=", (a, M))
@@ -497,7 +499,7 @@ def cardinality_bsgs(self, verbose=False):
         if n > g:
             # update congruence a (mod M) with q+1 (mod n)
             a = (a * v * n + q1 * u * M) // g
-            M *= (n // g)  # = lcm(M,n)
+            M *= n // g  # = lcm(M,n)
             a = a % M
             if verbose:
                 print("(a,M)=", (a, M))
@@ -521,7 +523,7 @@ def cardinality_bsgs(self, verbose=False):
         if n > g:
             # update congruence a (mod M) with -(q+1) (mod n)
             a = (a * v * n - q1 * u * M) // g
-            M *= (n // g)  # = lcm(M,n)
+            M *= n // g  # = lcm(M,n)
             a = a % M
             if verbose:
                 print("(a,M)=", (a, M))

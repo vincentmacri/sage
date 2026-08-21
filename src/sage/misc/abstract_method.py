@@ -156,8 +156,10 @@ class AbstractMethod:
             sage: x.__module__
             '__main__'
         """
-        assert (isinstance(f, types.FunctionType) or
-                getattr(type(f), '__name__', None) == 'cython_function_or_method')
+        assert (
+            isinstance(f, types.FunctionType)
+            or getattr(type(f), '__name__', None) == 'cython_function_or_method'
+        )
         assert isinstance(optional, bool)
         self._f = f
         self._optional = optional
@@ -178,7 +180,11 @@ class AbstractMethod:
             sage: abstract_method(version, optional = True)
             <optional abstract method version at ...>
         """
-        return "<" + ("optional " if self._optional else "") + "abstract method %s at %s>" % (self.__name__, hex(id(self._f)))
+        return (
+            "<"
+            + ("optional " if self._optional else "")
+            + "abstract method %s at %s>" % (self.__name__, hex(id(self._f)))
+        )
 
     def _sage_src_lines_(self):
         r"""
@@ -195,6 +201,7 @@ class AbstractMethod:
             27
         """
         from sage.misc.sageinspect import sage_getsourcelines
+
         return sage_getsourcelines(self._f)
 
     def __get__(self, instance, cls):
@@ -260,8 +267,7 @@ def abstract_methods_of_class(cls):
         {'optional': ['optional1', 'optional2'],
          'required': ['required1', 'required2']}
     """
-    result = {"required": [],
-              "optional": []}
+    result = {"required": [], "optional": []}
     for name in dir(cls):
         entry = getattr(cls, name)
         if not isinstance(entry, AbstractMethod):

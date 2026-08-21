@@ -169,7 +169,6 @@ from copy import deepcopy
 
 
 class PseudolineArrangement:
-
     def __init__(self, seq, encoding='auto'):
         r"""
         Create an arrangement of pseudolines.
@@ -234,61 +233,62 @@ class PseudolineArrangement:
         """
 
         # Sequence of transpositions
-        if (encoding == "transpositions" or
-            (encoding == "auto" and len(seq[0]) == 2 and len(seq) > 3)):
-
+        if encoding == "transpositions" or (
+            encoding == "auto" and len(seq[0]) == 2 and len(seq) > 3
+        ):
             self._n = max(map(max, seq)) + 1
-            if (self._n * (self._n-1))/2 != len(seq):
+            if (self._n * (self._n - 1)) / 2 != len(seq):
                 raise ValueError(
-                    "A line is numbered "+str(self._n-1)+" but the number" +
-                    " of transpositions is different from binomial(" +
-                    str(self._n-1)+",2). Are the lines numbered from 0 to n-1?" +
-                    " Are they really non-parallel? Please check the documentation.")
+                    "A line is numbered "
+                    + str(self._n - 1)
+                    + " but the number"
+                    + " of transpositions is different from binomial("
+                    + str(self._n - 1)
+                    + ",2). Are the lines numbered from 0 to n-1?"
+                    + " Are they really non-parallel? Please check the documentation."
+                )
 
             self._permutations = [[] for i in range(self._n)]
 
-            for i,j in seq:
+            for i, j in seq:
                 self._permutations[i].append(j)
                 self._permutations[j].append(i)
 
         # Sequence of permutations
-        elif (encoding == "permutations" or
-            (encoding == "auto" and (len(seq[0]) == len(seq)-1) and max(seq[0]) > 1)):
-
+        elif encoding == "permutations" or (
+            encoding == "auto" and (len(seq[0]) == len(seq) - 1) and max(seq[0]) > 1
+        ):
             self._n = len(seq)
             self._permutations = [list(_) for _ in seq]
 
-            if max(map(max, seq)) != self._n - 1 :
+            if max(map(max, seq)) != self._n - 1:
                 raise ValueError("Are the lines really numbered from 0 to n-1?")
 
         # Felsner encoding
-        elif (encoding == "Felsner" or
-            (encoding == "auto" and len(seq[0]) == len(seq) - 1)):
-
+        elif encoding == "Felsner" or (
+            encoding == "auto" and len(seq[0]) == len(seq) - 1
+        ):
             seq = deepcopy(seq)
             self._n = len(seq)
             ordering = list(range(self._n))
 
             self._permutations = [[] for i in range(self._n)]
 
-            crossings = (self._n * (self._n-1))/2
+            crossings = (self._n * (self._n - 1)) / 2
 
             i = 0
             while crossings > 0:
-                if (seq[i] and
-                    (seq[i][0] == 0 and
-                     seq[i+1][0] == 1)):
-
+                if seq[i] and (seq[i][0] == 0 and seq[i + 1][0] == 1):
                     crossings -= 1
 
-                    self._permutations[ordering[i]].append(ordering[i+1])
-                    self._permutations[ordering[i+1]].append(ordering[i])
+                    self._permutations[ordering[i]].append(ordering[i + 1])
+                    self._permutations[ordering[i + 1]].append(ordering[i])
 
-                    ordering[i], ordering[i+1] = ordering[i+1], ordering[i]
-                    seq[i], seq[i+1] = seq[i+1], seq[i]
+                    ordering[i], ordering[i + 1] = ordering[i + 1], ordering[i]
+                    seq[i], seq[i + 1] = seq[i + 1], seq[i]
 
                     seq[i].pop(0)
-                    seq[i+1].pop(0)
+                    seq[i + 1].pop(0)
 
                     if i > 0 and seq[i - 1]:
                         i -= 1
@@ -297,11 +297,14 @@ class PseudolineArrangement:
                 else:
                     i += 1
         else:
-
             if encoding != "auto":
-                raise ValueError("The value of encoding must be one of 'transpositions', 'permutations', 'Felsner' or 'auto'.")
+                raise ValueError(
+                    "The value of encoding must be one of 'transpositions', 'permutations', 'Felsner' or 'auto'."
+                )
 
-            raise ValueError("The encoding you used could not be guessed. Your input string is probably badly formatted, or you have at most 3 lines and we cannot distinguish the encoding. Please specify the encoding you used.")
+            raise ValueError(
+                "The encoding you used could not be guessed. Your input string is probably badly formatted, or you have at most 3 lines and we cannot distinguish the encoding. Please specify the encoding you used."
+            )
 
     def transpositions(self):
         r"""
@@ -327,10 +330,9 @@ class PseudolineArrangement:
         t = []
         perm = deepcopy(self._permutations)
 
-        crossings = (self._n * (self._n-1))/2
+        crossings = (self._n * (self._n - 1)) / 2
 
         while crossings > 0:
-
             i = 0
 
             while perm[i] == []:
@@ -343,11 +345,12 @@ class PseudolineArrangement:
 
                 if k > self._n:
                     raise ValueError(
-                        "It looks like the data does not correspond to a" +
-                        "pseudoline arrangement. We have found k>2 lines" +
-                        "such that the ith line meets the (i+1)th before" +
-                        " the (i-1)th (this creates a cyclic dependency)" +
-                        " which is totally impossible.")
+                        "It looks like the data does not correspond to a"
+                        + "pseudoline arrangement. We have found k>2 lines"
+                        + "such that the ith line meets the (i+1)th before"
+                        + " the (i-1)th (this creates a cyclic dependency)"
+                        + " which is totally impossible."
+                    )
 
             t.append((i, perm[i][0]))
             perm[perm[i][0]].pop(0)
@@ -356,7 +359,9 @@ class PseudolineArrangement:
             crossings -= 1
 
         if max(map(len, perm)) != 0:
-            raise ValueError("There has been an error while computing the transpositions.")
+            raise ValueError(
+                "There has been an error while computing the transpositions."
+            )
 
         return t
 
@@ -395,7 +400,7 @@ class PseudolineArrangement:
 
         m = [[] for i in range(self._n)]
 
-        for i,j in self.transpositions():
+        for i, j in self.transpositions():
             if i < j:
                 i, j = j, i
 
@@ -435,35 +440,36 @@ class PseudolineArrangement:
         from sage.plot.line import line
         from sage.plot.text import text
 
-        lines = [[(0,self._n-1-i)] for i in range(self._n)]
+        lines = [[(0, self._n - 1 - i)] for i in range(self._n)]
 
-        for i,j in self.transpositions():
+        for i, j in self.transpositions():
             iy = lines[i][-1][1]
             jy = lines[j][-1][1]
 
             lines[i].append((x, iy))
             lines[j].append((x, jy))
 
-            if abs(iy-jy) != 1:
+            if abs(iy - jy) != 1:
                 raise ValueError(
-                    "There has been a problem while plotting the figure. It " +
-                    "seems that the lines are not correctly ordered. Please " +
-                    "check the pseudolines modules documentation, there is a "
-                    + "warning about that. ")
+                    "There has been a problem while plotting the figure. It "
+                    + "seems that the lines are not correctly ordered. Please "
+                    + "check the pseudolines modules documentation, there is a "
+                    + "warning about that. "
+                )
 
-            lines[i].append((x+2,jy))
-            lines[j].append((x+2,iy))
+            lines[i].append((x + 2, jy))
+            lines[j].append((x + 2, iy))
 
             x += 2
 
-        L = line([(1,1)])
+        L = line([(1, 1)])
 
         for i, l in enumerate(lines):
-            l.append((x+2, l[-1][1]))
+            l.append((x + 2, l[-1][1]))
             L += line(l)
 
-            L += text(str(i), (0, l[0][1]+.3), horizontal_alignment='right')
-            L += text(str(i), (x+2, l[-1][1]+.3), horizontal_alignment='left')
+            L += text(str(i), (0, l[0][1] + 0.3), horizontal_alignment='right')
+            L += text(str(i), (x + 2, l[-1][1] + 0.3), horizontal_alignment='left')
 
         return L.show(axes=False, **args)
 

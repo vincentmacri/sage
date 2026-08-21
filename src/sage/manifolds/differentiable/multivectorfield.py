@@ -154,6 +154,7 @@ class MultivectorField(TensorField):
         f*(a∧b) = (1/2*u^5 - 1/2*u^3*v^2 - 1/2*u^2*v^3 + u^3 + 1/2*(u^4 + 2*u^2)*v)
           ∂/∂u∧∂/∂v
     """
+
     def __init__(self, vector_field_module, degree, name=None, latex_name=None):
         r"""
         Construct a multivector field.
@@ -194,10 +195,16 @@ class MultivectorField(TensorField):
 
             Fix ``_test_pickling`` (in the superclass :class:`TensorField`).
         """
-        TensorField.__init__(self, vector_field_module, (degree, 0), name=name,
-                             latex_name=latex_name, antisym=range(degree),
-                             parent=vector_field_module.exterior_power(degree))
-        self._init_derived() # initialization of derived quantities
+        TensorField.__init__(
+            self,
+            vector_field_module,
+            (degree, 0),
+            name=name,
+            latex_name=latex_name,
+            antisym=range(degree),
+            parent=vector_field_module.exterior_power(degree),
+        )
+        self._init_derived()  # initialization of derived quantities
 
     def _repr_(self):
         r"""
@@ -302,14 +309,17 @@ class MultivectorField(TensorField):
         """
         from sage.tensor.modules.format_utilities import is_atomic
         from sage.typeset.unicode_characters import unicode_wedge
+
         if self._domain.is_subset(other._domain):
             if not self._ambient_domain.is_subset(other._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         elif other._domain.is_subset(self._domain):
             if not other._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         dom_resu = self._domain.intersection(other._domain)
         ambient_dom_resu = self._ambient_domain.intersection(other._ambient_domain)
         self_r = self.restrict(dom_resu)
@@ -337,16 +347,17 @@ class MultivectorField(TensorField):
                 olname = '(' + olname + ')'
             resu_latex_name = slname + r'\wedge ' + olname
         dest_map = self._vmodule._dest_map
-        dest_map_resu = dest_map.restrict(dom_resu,
-                                          subcodomain=ambient_dom_resu)
+        dest_map_resu = dest_map.restrict(dom_resu, subcodomain=ambient_dom_resu)
         vmodule = dom_resu.vector_field_module(dest_map=dest_map_resu)
         resu_degree = self._tensor_rank + other._tensor_rank
-        resu = vmodule.alternating_contravariant_tensor(resu_degree,
-                                    name=resu_name, latex_name=resu_latex_name)
+        resu = vmodule.alternating_contravariant_tensor(
+            resu_degree, name=resu_name, latex_name=resu_latex_name
+        )
         for dom in self_r._restrictions:
             if dom in other_r._restrictions:
                 resu._restrictions[dom] = self_r._restrictions[dom].wedge(
-                                          other_r._restrictions[dom])
+                    other_r._restrictions[dom]
+                )
         return resu
 
     def interior_product(self, form):
@@ -453,14 +464,17 @@ class MultivectorField(TensorField):
             True
         """
         from sage.tensor.modules.format_utilities import is_atomic
+
         if self._domain.is_subset(form._domain):
             if not self._ambient_domain.is_subset(form._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         elif form._domain.is_subset(self._domain):
             if not form._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         dom_resu = self._domain.intersection(form._domain)
         ambient_dom_resu = self._ambient_domain.intersection(form._ambient_domain)
         self_r = self.restrict(dom_resu)
@@ -488,25 +502,25 @@ class MultivectorField(TensorField):
             resu_latex_name = r'\iota_{' + slname + '} ' + olname
         # Domain and computation of the result
         dest_map = self._vmodule._dest_map
-        dest_map_resu = dest_map.restrict(dom_resu,
-                                          subcodomain=ambient_dom_resu)
+        dest_map_resu = dest_map.restrict(dom_resu, subcodomain=ambient_dom_resu)
         vmodule = dom_resu.vector_field_module(dest_map=dest_map_resu)
         resu_degree = form._tensor_rank - self._tensor_rank
-        resu = vmodule.alternating_form(resu_degree,
-                                        name=resu_name,
-                                        latex_name=resu_latex_name)
+        resu = vmodule.alternating_form(
+            resu_degree, name=resu_name, latex_name=resu_latex_name
+        )
         for dom in self_r._restrictions:
             if dom in form_r._restrictions:
-                resu._restrictions[dom] = \
-                    self_r._restrictions[dom].interior_product(
-                        form_r._restrictions[dom])
+                resu._restrictions[dom] = self_r._restrictions[dom].interior_product(
+                    form_r._restrictions[dom]
+                )
         if resu_degree == 0:
             if not resu._express:
                 # only the restrictions to subdomains have
                 # been initialized
                 for chart in dom_resu.top_charts():
-                    resu._express[chart] = \
-                        resu.restrict(chart.domain()).coord_function(chart)
+                    resu._express[chart] = resu.restrict(chart.domain()).coord_function(
+                        chart
+                    )
         return resu
 
     def bracket(self, other):
@@ -627,21 +641,25 @@ class MultivectorField(TensorField):
             of standards identities involving the Schouten-Nijenhuis bracket
         """
         from sage.manifolds.differentiable.scalarfield import DiffScalarField
+
         pp = self._tensor_rank
-        mp1 = (-1)**(pp+1)
+        mp1 = (-1) ** (pp + 1)
         if isinstance(other, DiffScalarField):
             resu = other.differential().interior_product(self)
             if mp1 == 1:
                 return resu
-            return - resu
+            return -resu
         # Some checks:
         if not isinstance(other, (MultivectorField, MultivectorFieldParal)):
             raise TypeError("{} is not a multivector field".format(other))
-        if (self._vmodule.destination_map() is not self._domain.identity_map()
-            or other._vmodule.destination_map() is not
-            other._domain.identity_map()):
-            raise ValueError("the Schouten-Nijenhuis bracket is defined " +
-                             "only for fields with a trivial destination map")
+        if (
+            self._vmodule.destination_map() is not self._domain.identity_map()
+            or other._vmodule.destination_map() is not other._domain.identity_map()
+        ):
+            raise ValueError(
+                "the Schouten-Nijenhuis bracket is defined "
+                + "only for fields with a trivial destination map"
+            )
         # Search for a common domain
         dom_resu = self._domain.intersection(other._domain)
         self_r = self.restrict(dom_resu)
@@ -656,20 +674,24 @@ class MultivectorField(TensorField):
         if self._name is not None and other._name is not None:
             resu_name = '[' + self._name + ',' + other._name + ']'
         if self._latex_name is not None and other._latex_name is not None:
-            resu_latex_name = r'\left[' + self._latex_name + ',' + \
-                              other._latex_name + r'\right]'
+            resu_latex_name = (
+                r'\left[' + self._latex_name + ',' + other._latex_name + r'\right]'
+            )
         vmodule = dom_resu.vector_field_module()
         deg_resu = pp + other._tensor_rank - 1  # degree of the result
-        resu = vmodule.alternating_contravariant_tensor(deg_resu,
-                                    name=resu_name, latex_name=resu_latex_name)
+        resu = vmodule.alternating_contravariant_tensor(
+            deg_resu, name=resu_name, latex_name=resu_latex_name
+        )
         for dom in self_r._restrictions:
             if dom in other_r._restrictions:
                 resu._restrictions[dom] = self_r._restrictions[dom].bracket(
-                                          other_r._restrictions[dom])
+                    other_r._restrictions[dom]
+                )
         return resu
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
     r"""
@@ -857,8 +879,8 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
         sage: ab.lie_der(a)
         2-vector field on the 3-dimensional differentiable manifold R3
     """
-    def __init__(self, vector_field_module, degree, name=None,
-                 latex_name=None):
+
+    def __init__(self, vector_field_module, degree, name=None, latex_name=None):
         r"""
         Construct a multivector field.
 
@@ -885,8 +907,9 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
             sage: a1.parent() is a.parent()
             True
         """
-        AlternatingContrTensor.__init__(self, vector_field_module, degree,
-                                        name=name, latex_name=latex_name)
+        AlternatingContrTensor.__init__(
+            self, vector_field_module, degree, name=name, latex_name=latex_name
+        )
         # TensorFieldParal attributes:
         self._vmodule = vector_field_module
         self._domain = vector_field_module._domain
@@ -1050,12 +1073,14 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
             return self * other
         if self._domain.is_subset(other._domain):
             if not self._ambient_domain.is_subset(other._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         elif other._domain.is_subset(self._domain):
             if not other._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for exterior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for exterior " + "product"
+                )
         dom_resu = self._domain.intersection(other._domain)
         self_r = self.restrict(dom_resu)
         other_r = other.restrict(dom_resu)
@@ -1165,12 +1190,14 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
         """
         if self._domain.is_subset(form._domain):
             if not self._ambient_domain.is_subset(form._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         elif form._domain.is_subset(self._domain):
             if not form._ambient_domain.is_subset(self._ambient_domain):
-                raise ValueError("incompatible ambient domains for interior " +
-                                 "product")
+                raise ValueError(
+                    "incompatible ambient domains for interior " + "product"
+                )
         dom_resu = self._domain.intersection(form._domain)
         self_r = self.restrict(dom_resu)
         form_r = form.restrict(dom_resu)
@@ -1407,21 +1434,25 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
         from sage.combinat.permutation import Permutation
         from sage.manifolds.differentiable.scalarfield import DiffScalarField
         from sage.tensor.modules.comp import CompFullyAntiSym, Components, CompWithSym
+
         pp = self._tensor_rank
-        mp1 = (-1)**(pp+1)
+        mp1 = (-1) ** (pp + 1)
         if isinstance(other, DiffScalarField):
             resu = other.differential().interior_product(self)
             if mp1 == 1:
                 return resu
-            return - resu
+            return -resu
         # Some checks:
         if not isinstance(other, (MultivectorField, MultivectorFieldParal)):
             raise TypeError("{} is not a multivector field".format(other))
-        if (self._vmodule.destination_map() is not self._domain.identity_map()
-            or other._vmodule.destination_map() is not
-            other._domain.identity_map()):
-            raise ValueError("the Schouten-Nijenhuis bracket is defined " +
-                             "only for fields with a trivial destination map")
+        if (
+            self._vmodule.destination_map() is not self._domain.identity_map()
+            or other._vmodule.destination_map() is not other._domain.identity_map()
+        ):
+            raise ValueError(
+                "the Schouten-Nijenhuis bracket is defined "
+                + "only for fields with a trivial destination map"
+            )
         # Search for a common domain
         dom_resu = self._domain.intersection(other._domain)
         self_r = self.restrict(dom_resu)
@@ -1433,52 +1464,76 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
         chart = coord_frame.chart()
         dom_resu = chart.domain()
         fmodule = dom_resu.vector_field_module()
-        ring = fmodule.base_ring() # same as dom_resu.scalar_field_algebra()
+        ring = fmodule.base_ring()  # same as dom_resu.scalar_field_algebra()
         aa = self_r.comp(coord_frame)  # components A^{i_1...i_p}
-        bb = other_r.comp(coord_frame) # components B^{j_1...j_q}
+        bb = other_r.comp(coord_frame)  # components B^{j_1...j_q}
         qq = other._tensor_rank
         deg_resu = pp + qq - 1  # degree of the result
         if deg_resu == 1:
-            resuc = Components(ring, coord_frame, 1,
-                               start_index=fmodule._sindex,
-                               output_formatter=fmodule._output_formatter)
+            resuc = Components(
+                ring,
+                coord_frame,
+                1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         else:
-            resuc = CompFullyAntiSym(ring, coord_frame, deg_resu,
-                                     start_index=fmodule._sindex,
-                                     output_formatter=fmodule._output_formatter)
+            resuc = CompFullyAntiSym(
+                ring,
+                coord_frame,
+                deg_resu,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         # Partial derivatives of the components of self:
         if pp == 1:
-            daa = Components(ring, coord_frame, 2,
-                             start_index=fmodule._sindex,
-                             output_formatter=fmodule._output_formatter)
+            daa = Components(
+                ring,
+                coord_frame,
+                2,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         else:
-            daa = CompWithSym(ring, coord_frame, pp+1,
-                              start_index=fmodule._sindex,
-                              output_formatter=fmodule._output_formatter,
-                              antisym=range(pp))
+            daa = CompWithSym(
+                ring,
+                coord_frame,
+                pp + 1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+                antisym=range(pp),
+            )
         for ind, val in aa._comp.items():
             for k in fmodule.irange():
-                daa[[ind+(k,)]] = val.coord_function(chart).diff(k)
+                daa[[ind + (k,)]] = val.coord_function(chart).diff(k)
         # Partial derivatives of the components of other:
         if qq == 1:
-            dbb = Components(ring, coord_frame, 2,
-                             start_index=fmodule._sindex,
-                             output_formatter=fmodule._output_formatter)
+            dbb = Components(
+                ring,
+                coord_frame,
+                2,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         else:
-            dbb = CompWithSym(ring, coord_frame, qq+1,
-                              start_index=fmodule._sindex,
-                              output_formatter=fmodule._output_formatter,
-                              antisym=range(qq))
+            dbb = CompWithSym(
+                ring,
+                coord_frame,
+                qq + 1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+                antisym=range(qq),
+            )
         for ind, val in bb._comp.items():
             for k in fmodule.irange():
-                dbb[[ind+(k,)]] = val.coord_function(chart).diff(k)
+                dbb[[ind + (k,)]] = val.coord_function(chart).diff(k)
         # Computation
         for ind in resuc.non_redundant_index_generator():
             sind = set(ind)  # {i_1, i_2, ..., i_{p+q-1}}
             # Term a^{l j_2 ... j_p} \partial_l b^{k_1 ... k_q}
             # with (j_2,...,j_p,k_1,...,k_q) spanning all permutations of
             # (i_1, i_2, ..., i_{p+q-1})
-            for sind_a in combinations(sind, pp-1):
+            for sind_a in combinations(sind, pp - 1):
                 sind_b = sind.difference(sind_a)
                 ind_a = tuple(sorted(sind_a))
                 ind_b = tuple(sorted(sind_b))
@@ -1487,14 +1542,14 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
                     sum += aa[[(l,) + ind_a]] * dbb[[ind_b + (l,)]]
                 ind_ab = ind_a + ind_b
                 sign = Permutation([ind_ab.index(i) + 1 for i in ind]).signature()
-                if mp1*sign == 1:
+                if mp1 * sign == 1:
                     resuc[[ind]] += sum
                 else:
                     resuc[[ind]] -= sum
             # Term b^{l k_2 ... k_q} \partial_l a^{j_1 ... j_p}
             # with (j_1,...,j_p,k_2,...,k_q) spanning all permutations of
             # (i_1, i_2, ..., i_{p+q-1})
-            for sind_b in combinations(sind, qq-1):
+            for sind_b in combinations(sind, qq - 1):
                 sind_a = sind.difference(sind_b)
                 ind_a = tuple(sorted(sind_a))
                 ind_b = tuple(sorted(sind_b))
@@ -1513,9 +1568,11 @@ class MultivectorFieldParal(AlternatingContrTensor, TensorFieldParal):
         if self._name is not None and other._name is not None:
             resu_name = '[' + self._name + ',' + other._name + ']'
         if self._latex_name is not None and other._latex_name is not None:
-            resu_latex_name = r'\left[' + self._latex_name + ',' + \
-                              other._latex_name + r'\right]'
+            resu_latex_name = (
+                r'\left[' + self._latex_name + ',' + other._latex_name + r'\right]'
+            )
         # Creation of the multivector with the components obtained above:
-        resu = fmodule.tensor_from_comp((deg_resu, 0), resuc, name=resu_name,
-                                        latex_name=resu_latex_name)
+        resu = fmodule.tensor_from_comp(
+            (deg_resu, 0), resuc, name=resu_name, latex_name=resu_latex_name
+        )
         return resu

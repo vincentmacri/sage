@@ -88,7 +88,6 @@ OUTER_HTML_TEMPLATE = """
 
 
 class JSMolHtml(SageObject):
-
     def __init__(self, jmol, path_to_jsmol=None, width='100%', height='100%'):
         """
         INPUT:
@@ -116,6 +115,7 @@ class JSMolHtml(SageObject):
             JSmol Window 500x300
         """
         from sage.repl.rich_output.output_graphics3d import OutputSceneJmol
+
         if not isinstance(jmol, OutputSceneJmol):
             jmol = jmol._rich_repr_jmol()
         self._jmol = jmol
@@ -152,13 +152,12 @@ class JSMolHtml(SageObject):
                     command, obj, meshfile = line.split(b' ', 3)
                     assert command == b'pmesh'
                     if meshfile not in [b'dots\n', b'mesh\n']:
-                        assert (meshfile.startswith(b'"') and
-                                meshfile.endswith(b'"\n'))
+                        assert meshfile.startswith(b'"') and meshfile.endswith(b'"\n')
                         meshfile = bytes_to_str(meshfile[1:-2])  # strip quotes
                         script += [
                             'pmesh {0} inline "'.format(bytes_to_str(obj)),
                             bytes_to_str(self._zip.open(meshfile).read()),
-                            '"\n'
+                            '"\n',
                         ]
                         continue
                 script += [bytes_to_str(line)]
@@ -253,9 +252,11 @@ class JSMolHtml(SageObject):
             </iframe>
         """
         escaped_inner_html = self.inner_html().replace('"', '&quot;')
-        return IFRAME_TEMPLATE.format(width=self._width,
-                                      height=self._height,
-                                      escaped_inner_html=escaped_inner_html)
+        return IFRAME_TEMPLATE.format(
+            width=self._width,
+            height=self._height,
+            escaped_inner_html=escaped_inner_html,
+        )
 
     def outer_html(self):
         """

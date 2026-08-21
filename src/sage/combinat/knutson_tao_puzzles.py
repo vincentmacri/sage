@@ -27,6 +27,7 @@ tested afterwards by Liz Beazley and Ed Richmond.
       R. Vakil, A geometric Littlewood-Richardson rule, :arxiv:`math/0302294`
       or K. Purbhoo, Puzzles, Tableaux and Mosaics, :arxiv:`0705.1184`.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Franco Saliola <saliola@gmail.com>,
 #                     2013 Allen Knutson,
@@ -41,12 +42,14 @@ tested afterwards by Liz Beazley and Ed Richmond.
 from __future__ import annotations
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.graphics", "Graphics")
 lazy_import("sage.plot.polygon", "polygon")
 lazy_import("sage.plot.line", "line")
 lazy_import("sage.plot.text", "text")
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.finite_rings.integer_mod_ring import Integers
+
 lazy_import("sage.plot.plot", "graphics_array")
 from sage.misc.cachefunc import cached_method
 from sage.structure.unique_representation import UniqueRepresentation
@@ -127,9 +130,11 @@ class PuzzlePiece:
             sage: delta.color()
             'yellow'
         """
-        colors = {('0', '0', '0'): 'red',
-                  ('1', '1', '1'): 'blue',
-                  ('2', '2', '2'): 'green'}
+        colors = {
+            ('0', '0', '0'): 'red',
+            ('1', '1', '1'): 'blue',
+            ('2', '2', '2'): 'green',
+        }
         border = self.border()
         if border in colors:
             color = colors[border]
@@ -143,8 +148,9 @@ class PuzzlePiece:
             color = 'white'
         return color
 
-    def _plot_label(self, label, coords, fontcolor=(0.3, 0.3, 0.3),
-                    fontsize=15, rotation=0):
+    def _plot_label(
+        self, label, coords, fontcolor=(0.3, 0.3, 0.3), fontsize=15, rotation=0
+    ):
         r"""
         TESTS::
 
@@ -153,11 +159,14 @@ class PuzzlePiece:
             sage: delta._plot_label('1',(1,1))    # not tested
         """
         if label in ('0', '1', '2'):
-            return text(label, coords, color=fontcolor, fontsize=fontsize, rotation=rotation)
+            return text(
+                label, coords, color=fontcolor, fontsize=fontsize, rotation=rotation
+            )
         return Graphics()
 
-    def _plot_piece(self, coords, border_color=(0.5, 0.5, 0.5),
-                    border_thickness=1, style='fill'):
+    def _plot_piece(
+        self, coords, border_color=(0.5, 0.5, 0.5), border_thickness=1, style='fill'
+    ):
         r"""
         TESTS::
 
@@ -167,7 +176,9 @@ class PuzzlePiece:
         """
         if style == 'fill':
             P = polygon(coords, color=self.color())
-            P += polygon(coords, fill=False, color=border_color, thickness=border_thickness)
+            P += polygon(
+                coords, fill=False, color=border_color, thickness=border_thickness
+            )
             return P
         if style == 'edges':
             if isinstance(self, DeltaPiece):
@@ -178,9 +189,11 @@ class PuzzlePiece:
                 edges = self.edges()
             P = Graphics()
             for i, edge in enumerate(edges):
-                P += line([coords[i], coords[(i + 1) % 3]],
-                          color=self.edge_color(edge),
-                          thickness=border_thickness)
+                P += line(
+                    [coords[i], coords[(i + 1) % 3]],
+                    color=self.edge_color(edge),
+                    thickness=border_thickness,
+                )
             return P
         return NotImplemented
 
@@ -256,7 +269,9 @@ class NablaPiece(PuzzlePiece):
             sage: NablaPiece('1','2','3')
             3\1/2
         """
-        self._edge_labels = dict(north=north, south_east=south_east, south_west=south_west)
+        self._edge_labels = dict(
+            north=north, south_east=south_east, south_west=south_west
+        )
 
     def __eq__(self, other) -> bool:
         r"""
@@ -272,8 +287,10 @@ class NablaPiece(PuzzlePiece):
             False
         """
         if isinstance(other, NablaPiece):
-            return (self.border() == other.border() and
-                    self._edge_labels == other._edge_labels)
+            return (
+                self.border() == other.border()
+                and self._edge_labels == other._edge_labels
+            )
         return False
 
     def __hash__(self):
@@ -297,9 +314,7 @@ class NablaPiece(PuzzlePiece):
             sage: NablaPiece('1','2','3')
             3\1/2
         """
-        return r"%s\%s/%s" % (self['south_west'],
-                              self['north'],
-                              self['south_east'])
+        return r"%s\%s/%s" % (self['south_west'], self['north'], self['south_east'])
 
     def clockwise_rotation(self) -> NablaPiece:
         r"""
@@ -314,9 +329,11 @@ class NablaPiece(PuzzlePiece):
             sage: nabla.clockwise_rotation()
             2\3/1
         """
-        return NablaPiece(north=self['south_west'],
-                          south_east=self['north'],
-                          south_west=self['south_east'])
+        return NablaPiece(
+            north=self['south_west'],
+            south_east=self['north'],
+            south_west=self['south_east'],
+        )
 
     def half_turn_rotation(self) -> DeltaPiece:
         r"""
@@ -331,9 +348,11 @@ class NablaPiece(PuzzlePiece):
             sage: nabla.half_turn_rotation()
             2/1\3
         """
-        return DeltaPiece(south=self['north'],
-                          north_west=self['south_east'],
-                          north_east=self['south_west'])
+        return DeltaPiece(
+            south=self['north'],
+            north_west=self['south_east'],
+            north_east=self['south_west'],
+        )
 
     def edges(self) -> tuple:
         r"""
@@ -373,7 +392,9 @@ class DeltaPiece(PuzzlePiece):
             sage: DeltaPiece('1','2','3')
             2/1\3
         """
-        self._edge_labels = dict(south=south, north_west=north_west, north_east=north_east)
+        self._edge_labels = dict(
+            south=south, north_west=north_west, north_east=north_east
+        )
 
     def __eq__(self, other) -> bool:
         r"""
@@ -389,8 +410,10 @@ class DeltaPiece(PuzzlePiece):
             False
         """
         if isinstance(other, DeltaPiece):
-            return (self.border() == other.border() and
-                    self._edge_labels == other._edge_labels)
+            return (
+                self.border() == other.border()
+                and self._edge_labels == other._edge_labels
+            )
         return False
 
     def __hash__(self):
@@ -414,9 +437,7 @@ class DeltaPiece(PuzzlePiece):
             sage: DeltaPiece('1','2','3')
             2/1\3
         """
-        return r"%s/%s\%s" % (self['north_west'],
-                              self['south'],
-                              self['north_east'])
+        return r"%s/%s\%s" % (self['north_west'], self['south'], self['north_east'])
 
     def clockwise_rotation(self) -> DeltaPiece:
         r"""
@@ -431,9 +452,11 @@ class DeltaPiece(PuzzlePiece):
             sage: delta.clockwise_rotation()
             1/3\2
         """
-        return DeltaPiece(south=self['north_east'],
-                          north_west=self['south'],
-                          north_east=self['north_west'])
+        return DeltaPiece(
+            south=self['north_east'],
+            north_west=self['south'],
+            north_east=self['north_west'],
+        )
 
     def half_turn_rotation(self) -> NablaPiece:
         r"""
@@ -448,9 +471,11 @@ class DeltaPiece(PuzzlePiece):
             sage: delta.half_turn_rotation()
             3\1/2
         """
-        return NablaPiece(north=self['south'],
-                          south_east=self['north_west'],
-                          south_west=self['north_east'])
+        return NablaPiece(
+            north=self['south'],
+            south_east=self['north_west'],
+            south_west=self['north_east'],
+        )
 
     def edges(self) -> tuple:
         r"""
@@ -495,10 +520,12 @@ class RhombusPiece(PuzzlePiece):
         """
         self._north_piece = north_piece
         self._south_piece = south_piece
-        self._edge_labels = dict(north_west=north_piece['north_west'],
-                                 north_east=north_piece['north_east'],
-                                 south_east=south_piece['south_east'],
-                                 south_west=south_piece['south_west'])
+        self._edge_labels = dict(
+            north_west=north_piece['north_west'],
+            north_east=north_piece['north_east'],
+            south_east=south_piece['south_east'],
+            south_west=south_piece['south_west'],
+        )
 
     def __eq__(self, other) -> bool:
         r"""
@@ -515,10 +542,12 @@ class RhombusPiece(PuzzlePiece):
             False
         """
         if isinstance(other, RhombusPiece):
-            return (self.border() == other.border() and
-                    self._north_piece == other._north_piece and
-                    self._south_piece == other._south_piece and
-                    self._edge_labels == other._edge_labels)
+            return (
+                self.border() == other.border()
+                and self._north_piece == other._north_piece
+                and self._south_piece == other._south_piece
+                and self._edge_labels == other._edge_labels
+            )
         return False
 
     def __hash__(self):
@@ -590,8 +619,12 @@ class RhombusPiece(PuzzlePiece):
             sage: RhombusPiece(delta,nabla)
             2/\3  6\/5
         """
-        return r"%s/\%s  %s\/%s" % (self['north_west'], self['north_east'],
-                                    self['south_west'], self['south_east'])
+        return r"%s/\%s  %s\/%s" % (
+            self['north_west'],
+            self['north_east'],
+            self['south_west'],
+            self['south_east'],
+        )
 
     def edges(self) -> tuple:
         r"""
@@ -789,7 +822,9 @@ class PuzzlePieces:
             ['T1|3']
         """
         self.add_forbidden_label('T%s|%s' % (label1, label2))
-        self.add_piece(NablaPiece('T%s|%s' % (label1, label2), label1, label2), rotations=180)
+        self.add_piece(
+            NablaPiece('T%s|%s' % (label1, label2), label1, label2), rotations=180
+        )
 
     def __repr__(self) -> str:
         r"""
@@ -873,8 +908,11 @@ class PuzzlePieces:
             sage: sorted([p for p in pieces.boundary_deltas()], key=str)
             [a/c\b, c/b\a]
         """
-        return tuple(delta for delta in self.delta_pieces()
-                    if delta['south'] not in self._forbidden_border_labels)
+        return tuple(
+            delta
+            for delta in self.delta_pieces()
+            if delta['south'] not in self._forbidden_border_labels
+        )
 
 
 def H_grassmannian_pieces():
@@ -998,8 +1036,14 @@ def HT_two_step_pieces():
        2/2(10)\10, 2/20\0, 2/21\1, 2/2\2, 20/0\2, 21/(21)0\0, 21/1\2]
     """
     pieces = H_two_step_pieces()
-    for label1, label2 in (('0', '1'), ('0', '2'), ('1', '2'),
-                           ('10', '2'), ('0', '21'), ('10', '21')):
+    for label1, label2 in (
+        ('0', '1'),
+        ('0', '2'),
+        ('1', '2'),
+        ('10', '2'),
+        ('0', '21'),
+        ('10', '21'),
+    ):
         pieces.add_T_piece(label1, label2)
     return pieces
 
@@ -1039,16 +1083,17 @@ def BK_pieces(max_letter):
         Nablas : [1\1/1, 1\2(1)/2, 1\3(1)/3, 2(1)\2/1, 2\1/2(1), 2\2/2, 2\3(2)/3, 3(1)\3/1, 3(2)\3/2, 3\1/3(1), 3\2/3(2), 3\3/3]
         Deltas : [1/1\1, 1/2\2(1), 1/3\3(1), 2(1)/1\2, 2/2(1)\1, 2/2\2, 2/3\3(2), 3(1)/1\3, 3(2)/2\3, 3/3(1)\1, 3/3(2)\2, 3/3\3]
     """
-    forbidden_border_labels = ['%s(%s)' % (i, j)
-                               for i in range(1, max_letter + 1)
-                               for j in range(1, i)]
+    forbidden_border_labels = [
+        '%s(%s)' % (i, j) for i in range(1, max_letter + 1) for j in range(1, i)
+    ]
     pieces = PuzzlePieces(forbidden_border_labels)
     for i in range(1, max_letter + 1):
         piece = DeltaPiece('%s' % i, '%s' % i, '%s' % i)
         pieces.add_piece(piece, rotations=60)
         for j in range(1, i):
-            piece = DeltaPiece(north_west='%s' % i, north_east='%s' % j,
-                               south='%s(%s)' % (i, j))
+            piece = DeltaPiece(
+                north_west='%s' % i, north_east='%s' % j, south='%s(%s)' % (i, j)
+            )
             pieces.add_piece(piece, rotations=60)
     return pieces
 
@@ -1303,6 +1348,7 @@ class PuzzleFilling:
             '{}'
         """
         from pprint import pformat
+
         return pformat(self._squares)
 
     def __iter__(self):
@@ -1359,16 +1405,28 @@ class PuzzleFilling:
         for (k, d), piece in zip(coords, self):
             if isinstance(piece, RhombusPiece):
                 for i, triangle in enumerate(piece):
-                    P += triangle._plot_piece([(k, d - 2 * i), (k - 1, d - 1), (k + 1, d - 1)], style=style)
+                    P += triangle._plot_piece(
+                        [(k, d - 2 * i), (k - 1, d - 1), (k + 1, d - 1)], style=style
+                    )
                 if labels:
-                    P += piece._plot_label(piece['north_west'], (k - 0.5, d - 0.5), rotation=60)
-                    P += piece._plot_label(piece['north_east'], (k + 0.5, d - 0.5), rotation=-60)
+                    P += piece._plot_label(
+                        piece['north_west'], (k - 0.5, d - 0.5), rotation=60
+                    )
+                    P += piece._plot_label(
+                        piece['north_east'], (k + 0.5, d - 0.5), rotation=-60
+                    )
                     P += piece._plot_label(piece.north_piece()['south'], (k, d - 1))
             else:
-                P += piece._plot_piece([(k, d), (k - 1, d - 1), (k + 1, d - 1)], style=style)
+                P += piece._plot_piece(
+                    [(k, d), (k - 1, d - 1), (k + 1, d - 1)], style=style
+                )
                 if labels:
-                    P += piece._plot_label(piece['north_west'], (k - 0.5, d - 0.5), rotation=60)
-                    P += piece._plot_label(piece['north_east'], (k + 0.5, d - 0.5), rotation=-60)
+                    P += piece._plot_label(
+                        piece['north_west'], (k - 0.5, d - 0.5), rotation=60
+                    )
+                    P += piece._plot_label(
+                        piece['north_east'], (k + 0.5, d - 0.5), rotation=-60
+                    )
                     P += piece._plot_label(piece['south'], (k, d - 1))
         P.set_aspect_ratio(1.73)
         P.axes(False)
@@ -1396,11 +1454,11 @@ class PuzzleFilling:
             sage: view(solns[0], viewer='pdf')  # not tested
         """
         from collections import defaultdict
+
         label_colors = defaultdict(lambda: None)
         label_colors.update({'0': 'red', '1': 'blue', '2': 'green'})
         edge_colors = defaultdict(lambda: None)
-        edge_colors.update({'0': 'red', '1': 'blue',
-                            '2': 'green', 'K': 'orange'})
+        edge_colors.update({'0': 'red', '1': 'blue', '2': 'green', 'K': 'orange'})
 
         s = r"""\begin{tikzpicture}[yscale=1.73]"""
         coords = [(k, -d) for d in range(self._n) for k in range(-d, d + 1, 2)]
@@ -1430,20 +1488,31 @@ class PuzzleFilling:
             s = r"""\path[] (%s, %s)""" % (k, d - 2 * i)
             s += r"""-- (%s, %s) """ % (k - 1, d - 1)
             if label_colors[label2]:
-                s += r"""node[midway, color=%s] {$%s$} """ % (label_colors[label2], label2)
+                s += r"""node[midway, color=%s] {$%s$} """ % (
+                    label_colors[label2],
+                    label2,
+                )
             s += r"""-- (%s, %s) """ % (k + 1, d - 1)
             if label_colors[label1]:
-                s += r"""node[midway, color=%s] {$%s$} """ % (label_colors[label1], label1)
+                s += r"""node[midway, color=%s] {$%s$} """ % (
+                    label_colors[label1],
+                    label1,
+                )
             s += r"""-- (%s, %s) """ % (k, d - 2 * i)
             if label_colors[label3]:
-                s += r"""node[midway, color=%s] {$%s$} """ % (label_colors[label3], label3)
+                s += r"""node[midway, color=%s] {$%s$} """ % (
+                    label_colors[label3],
+                    label3,
+                )
             s += ";\n"
             return s
 
         for (k, d), piece in zip(coords, self):
             for tikzcmd in (tikztriangle_fill, tikztriangle_edges, tikzlabels):
                 if isinstance(piece, RhombusPiece):
-                    for i, triangle in enumerate([piece.north_piece(), piece.south_piece()]):
+                    for i, triangle in enumerate(
+                        [piece.north_piece(), piece.south_piece()]
+                    ):
                         if i == 0:
                             s += tikzcmd(triangle.color(), k, d, i, *triangle.border())
                         else:
@@ -2056,9 +2125,11 @@ class KnutsonTaoPuzzleSolver(UniqueRepresentation):
             sage: ps._fill_piece('0', '0', ps._bottom_deltas)
             [0/0\0]
         """
-        return [piece for piece in pieces
-                if (piece['north_west'] == nw_label and
-                    piece['north_east'] == ne_label)]
+        return [
+            piece
+            for piece in pieces
+            if (piece['north_west'] == nw_label and piece['north_east'] == ne_label)
+        ]
 
     @cached_method
     def _fill_strip(self, nw_labels, ne_label, pieces, final_pieces=None):
@@ -2160,8 +2231,10 @@ class KnutsonTaoPuzzleSolver(UniqueRepresentation):
             if i == 1:
                 nw_labels = PP._nw_labels
             else:
-                nw_labels = tuple(PP._squares[i - 1, k]['south_east']
-                                  for k in range(i, len(lamda) + 1))
+                nw_labels = tuple(
+                    PP._squares[i - 1, k]['south_east']
+                    for k in range(i, len(lamda) + 1)
+                )
 
             # grab ne labels
             ne_label = PP._ne_labels[i - 1]
@@ -2266,6 +2339,7 @@ class KnutsonTaoPuzzleSolver(UniqueRepresentation):
              (('2', '1', '1', '0', '2'), 1)]
         """
         from collections import defaultdict
+
         R = PolynomialRing(Integers(), 'y', len(lamda) + 1)
         z = defaultdict(R.zero)
         for p in self(lamda, mu):

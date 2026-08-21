@@ -12,7 +12,10 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.categories.covariant_functorial_construction import CovariantFunctorialConstruction, CovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    CovariantFunctorialConstruction,
+    CovariantConstructionCategory,
+)
 from sage.typeset.unicode_characters import unicode_otimes
 
 
@@ -47,6 +50,7 @@ class TensorProductFunctor(CovariantFunctorialConstruction):
 
         sage: TestSuite(tensor).run()
     """
+
     _functor_name = "tensor"
     _functor_category = "TensorProducts"
     symbol = " # "
@@ -81,6 +85,7 @@ class TensorProductsCategory(CovariantConstructionCategory):
         \mathbf{TensorProducts}(\mathbf{WithBasis}_{\Bold{Q}})
         sage: TestSuite(C).run()
     """
+
     _functor_category = "TensorProducts"
 
     def TensorProducts(self):

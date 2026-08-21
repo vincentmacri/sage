@@ -4,13 +4,14 @@ Overrides to unpickle old matrix groups
 
 from sage.structure.sage_object import register_unpickle_override
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.group_element_gap import MatrixGroupElement_gap
 from sage.groups.matrix_gps.linear import GL, LinearMatrixGroup_generic
 
 
 class LegacyMatrixGroup(FinitelyGeneratedMatrixGroup_gap):
-
     def __setstate__(self, state):
         """
         Restore from old pickle.
@@ -34,17 +35,19 @@ class LegacyMatrixGroup(FinitelyGeneratedMatrixGroup_gap):
         ring = state['_MatrixGroup_gap__R']
         degree = state['_MatrixGroup_gap__n']
         from sage.libs.gap.libgap import libgap
+
         libgap_group = libgap.Group(libgap(matrix_gens))
         self.__init__(degree, ring, libgap_group)
 
 
 register_unpickle_override(
-    'sage.groups.matrix_gps.matrix_group', 'MatrixGroup_gens_finite_field',
-    LegacyMatrixGroup)
+    'sage.groups.matrix_gps.matrix_group',
+    'MatrixGroup_gens_finite_field',
+    LegacyMatrixGroup,
+)
 
 
 class LegacyMatrixGroupElement(MatrixGroupElement_gap):
-
     def __setstate__(self, state):
         """
         Restore from old pickle.
@@ -77,12 +80,13 @@ class LegacyMatrixGroupElement(MatrixGroupElement_gap):
 
 
 register_unpickle_override(
-    'sage.groups.matrix_gps.matrix_group_element', 'MatrixGroupElement',
-    LegacyMatrixGroupElement)
+    'sage.groups.matrix_gps.matrix_group_element',
+    'MatrixGroupElement',
+    LegacyMatrixGroupElement,
+)
 
 
 class LegacyGeneralLinearGroup(LinearMatrixGroup_generic):
-
     def __setstate__(self, state):
         """
         Restore from old pickle.
@@ -102,9 +106,13 @@ class LegacyGeneralLinearGroup(LinearMatrixGroup_generic):
         ring = state['_MatrixGroup_gap__R']
         n = state['_MatrixGroup_gap__n']
         G = GL(n, ring)
-        self.__init__(G.degree(), G.base_ring(), G._special, G._name_string, G._latex_string)
+        self.__init__(
+            G.degree(), G.base_ring(), G._special, G._name_string, G._latex_string
+        )
 
 
 register_unpickle_override(
-    'sage.groups.matrix_gps.general_linear', 'GeneralLinearGroup_finite_field',
-    LegacyGeneralLinearGroup)
+    'sage.groups.matrix_gps.general_linear',
+    'GeneralLinearGroup_finite_field',
+    LegacyGeneralLinearGroup,
+)

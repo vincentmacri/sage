@@ -13,6 +13,7 @@ AUTHOR:
 Functions
 ^^^^^^^^^
 """
+
 # ###########################################################################
 #  Copyright (C) 2012 Martin Albrecht <martinralbrecht@googlemail.com>
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -245,8 +246,7 @@ def solve(F, converter=None, solver=None, n=1, target_variables=None, **kwds):
         from sage.sat.solvers import CryptoMiniSat as solver
 
     if not isinstance(solver, SatSolver):
-        solver_kwds = {k[2:]: v for k, v in kwds.items()
-                       if k.startswith("s_")}
+        solver_kwds = {k[2:]: v for k, v in kwds.items() if k.startswith("s_")}
 
         solver = solver(**solver_kwds)
 
@@ -256,8 +256,7 @@ def solve(F, converter=None, solver=None, n=1, target_variables=None, **kwds):
         from sage.sat.converters.polybori import CNFEncoder as converter
 
     if not isinstance(converter, ANF2CNFConverter):
-        converter_kwds = {k[2:]: v for k, v in kwds.items()
-                          if k.startswith("c_")}
+        converter_kwds = {k[2:]: v for k, v in kwds.items() if k.startswith("c_")}
 
         converter = converter(solver, P, **converter_kwds)
 
@@ -275,7 +274,9 @@ def solve(F, converter=None, solver=None, n=1, target_variables=None, **kwds):
             if n is not None and len(S) == n:
                 break
 
-            exclude_solution = tuple(-rho[x] if s[rho[x]] else rho[x] for x in target_variables)
+            exclude_solution = tuple(
+                -rho[x] if s[rho[x]] else rho[x] for x in target_variables
+            )
             solver.add_clause(exclude_solution)
 
         else:
@@ -301,7 +302,9 @@ def solve(F, converter=None, solver=None, n=1, target_variables=None, **kwds):
     return S
 
 
-def learn(F, converter=None, solver=None, max_learnt_length=3, interreduction=False, **kwds):
+def learn(
+    F, converter=None, solver=None, max_learnt_length=3, interreduction=False, **kwds
+):
     """
     Learn new polynomials by running SAT-solver ``solver`` on
     SAT-instance produced by ``converter`` from ``F``.
@@ -358,8 +361,7 @@ def learn(F, converter=None, solver=None, max_learnt_length=3, interreduction=Fa
     if solver is None:
         from sage.sat.solvers.cryptominisat import CryptoMiniSat as solver
 
-    solver_kwds = {k[2:]: v for k, v in kwds.items()
-                   if k.startswith("s_")}
+    solver_kwds = {k[2:]: v for k, v in kwds.items() if k.startswith("s_")}
 
     solver = solver(**solver_kwds)
 
@@ -368,8 +370,7 @@ def learn(F, converter=None, solver=None, max_learnt_length=3, interreduction=Fa
     if converter is None:
         from sage.sat.converters.polybori import CNFEncoder as converter
 
-    converter_kwds = {k[2:]: v for k, v in kwds.items()
-                      if k.startswith("c_")}
+    converter_kwds = {k[2:]: v for k, v in kwds.items() if k.startswith("c_")}
 
     converter = converter(solver, P, **converter_kwds)
 

@@ -15,7 +15,8 @@ AUTHORS:
 Functions
 =========
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2018 Darij Grinberg <darijgrinberg@gmail.com>,
 #                     2018 Tom Roby <tomrobyuconn@gmail.com>
 #
@@ -23,10 +24,13 @@ Functions
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-from sage.dynamics.finite_dynamical_system import DiscreteDynamicalSystem, \
-        FiniteDynamicalSystem, InvertibleDiscreteDynamicalSystem, \
-        InvertibleFiniteDynamicalSystem
+# *****************************************************************************
+from sage.dynamics.finite_dynamical_system import (
+    DiscreteDynamicalSystem,
+    FiniteDynamicalSystem,
+    InvertibleDiscreteDynamicalSystem,
+    InvertibleFiniteDynamicalSystem,
+)
 
 
 def permutation(pi, invertible=True):
@@ -60,10 +64,13 @@ def permutation(pi, invertible=True):
         False
     """
     from sage.combinat.permutation import Permutation
+
     pi = Permutation(pi)
     n = len(pi)
-    X = range(1, n+1)
-    return InvertibleFiniteDynamicalSystem(X, pi, inverse=pi.inverse(), create_tuple=True)
+    X = range(1, n + 1)
+    return InvertibleFiniteDynamicalSystem(
+        X, pi, inverse=pi.inverse(), create_tuple=True
+    )
 
 
 def one_line(xs):
@@ -90,6 +97,7 @@ def one_line(xs):
 
     def pi(i):
         return xs2[i - 1]
+
     return FiniteDynamicalSystem(X, pi, create_tuple=True)
 
 
@@ -137,11 +145,15 @@ def bitstring_rotation(n, ones=None):
     """
     if ones is None:
         from sage.categories.cartesian_product import cartesian_product
-        X = cartesian_product([[0,1]] * n)
+
+        X = cartesian_product([[0, 1]] * n)
     else:
         from itertools import combinations
-        X = [tuple((1 if i in cs else 0) for i in range(n))
-             for cs in combinations(range(n), ones)]
+
+        X = [
+            tuple((1 if i in cs else 0) for i in range(n))
+            for cs in combinations(range(n), ones)
+        ]
     if n == 0:
         phi = lambda x: x
         psi = phi
@@ -235,6 +247,7 @@ def striker_sweep(E, predicate, elements, lazy=False):
     """
     from sage.combinat.subset import Subsets
     from sage.sets.set import Set
+
     X = [F for F in Subsets(E) if predicate(F)]
 
     def phi(F):
@@ -250,6 +263,7 @@ def striker_sweep(E, predicate, elements, lazy=False):
             if predicate(G):
                 F = G
         return F
+
     return InvertibleFiniteDynamicalSystem(X, phi, inverse=psi)
 
 
@@ -275,10 +289,12 @@ def syt_promotion(lam):
     """
     from sage.combinat.partition import Partition
     from sage.combinat.tableau import StandardTableaux
+
     lam = Partition(lam)
     X = StandardTableaux(lam)
-    return InvertibleFiniteDynamicalSystem(X, lambda T: T.promotion(),
-                                           inverse=lambda T: T.promotion_inverse())
+    return InvertibleFiniteDynamicalSystem(
+        X, lambda T: T.promotion(), inverse=lambda T: T.promotion_inverse()
+    )
 
 
 def order_ideal_rowmotion(P):
@@ -305,6 +321,7 @@ def order_ideal_rowmotion(P):
         True
     """
     from sage.sets.set import Set
+
     X = [Set(P.order_ideal(A)) for A in P.antichains()]
     # Using P.order_ideals_lattice() instead causes intransparency issues:
     # sage can't always do P.rowmotion(I) when I is in P.order_ideals_lattice().
@@ -316,6 +333,7 @@ def order_ideal_rowmotion(P):
         for i in P.linear_extension():
             result = P.order_ideal_toggle(result, i)
         return result
+
     return InvertibleFiniteDynamicalSystem(X, phi, inverse=psi)
 
 
@@ -335,16 +353,18 @@ def semidistributive_rowmotion(L):
     H = L._hasse_diagram
     meet_irr = [u for u in H if sum(1 for _ in H.upper_covers_iterator(u)) == 1]
     join_irr = [u for u in H if sum(1 for _ in H.lower_covers_iterator(u)) == 1]
-    kappa_dual = {L._vertex_to_element(u): L._vertex_to_element(H.kappa_dual(u))
-                  for u in meet_irr}
-    row0 = {a: L.join(kappa_dual[e] for e in L.canonical_meetands(a))
-            for a in L}
+    kappa_dual = {
+        L._vertex_to_element(u): L._vertex_to_element(H.kappa_dual(u)) for u in meet_irr
+    }
+    row0 = {a: L.join(kappa_dual[e] for e in L.canonical_meetands(a)) for a in L}
 
-    kappa = {L._vertex_to_element(u): L._vertex_to_element(H.kappa(u))
-             for u in join_irr}
-    row1 = {a: L.meet(kappa[e] for e in L.canonical_joinands(a))
-            for a in L}
-    return InvertibleFiniteDynamicalSystem(L, lambda a: row0[a], inverse=lambda a: row1[a])
+    kappa = {
+        L._vertex_to_element(u): L._vertex_to_element(H.kappa(u)) for u in join_irr
+    }
+    row1 = {a: L.meet(kappa[e] for e in L.canonical_joinands(a)) for a in L}
+    return InvertibleFiniteDynamicalSystem(
+        L, lambda a: row0[a], inverse=lambda a: row1[a]
+    )
 
 
 def bulgarian_solitaire(n):
@@ -398,6 +418,7 @@ def bulgarian_solitaire(n):
         False
     """
     from sage.combinat.partition import Partitions, _Partitions
+
     X = Partitions(n)
 
     def phi(lam):

@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (07-15-2013): Initial implementation
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -76,6 +76,7 @@ class LieAlgebras(Category_over_base_ring):
         Many of these tests should use Lie algebras that are not the minimal
         example and need to be added after :issue:`16820` (and :issue:`16823`).
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -109,9 +110,9 @@ class LieAlgebras(Category_over_base_ring):
             """
             return self._with_axiom("Nilpotent")
 
-    Graded = LazyImport('sage.categories.graded_lie_algebras',
-                        'GradedLieAlgebras',
-                        as_name='Graded')
+    Graded = LazyImport(
+        'sage.categories.graded_lie_algebras', 'GradedLieAlgebras', as_name='Graded'
+    )
 
     # TODO: Find some way to do this without copying most of the logic.
     def _repr_object_names(self):
@@ -134,7 +135,13 @@ class LieAlgebras(Category_over_base_ring):
         base = self.base()
         if isinstance(base, Category):
             if isinstance(base, JoinCategory):
-                name = '('+' and '.join(C._repr_object_names() for C in base.super_categories())+')'
+                name = (
+                    '('
+                    + ' and '.join(
+                        C._repr_object_names() for C in base.super_categories()
+                    )
+                    + ')'
+                )
             else:
                 name = base._repr_object_names()
         else:
@@ -164,16 +171,24 @@ class LieAlgebras(Category_over_base_ring):
         if gens is None:
             from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
             from sage.rings.rational_field import QQ
+
             gens = SymmetricGroupAlgebra(QQ, 3).algebra_generators()
         from sage.categories.examples.lie_algebras import Example
+
         return Example(gens)
 
-    WithBasis = LazyImport('sage.categories.lie_algebras_with_basis',
-                           'LieAlgebrasWithBasis', as_name='WithBasis')
+    WithBasis = LazyImport(
+        'sage.categories.lie_algebras_with_basis',
+        'LieAlgebrasWithBasis',
+        as_name='WithBasis',
+    )
 
     class FiniteDimensional(CategoryWithAxiom_over_base_ring):
-        WithBasis = LazyImport('sage.categories.finite_dimensional_lie_algebras_with_basis',
-                               'FiniteDimensionalLieAlgebrasWithBasis', as_name='WithBasis')
+        WithBasis = LazyImport(
+            'sage.categories.finite_dimensional_lie_algebras_with_basis',
+            'FiniteDimensionalLieAlgebrasWithBasis',
+            as_name='WithBasis',
+        )
 
         def extra_super_categories(self):
             """
@@ -209,6 +224,7 @@ class LieAlgebras(Category_over_base_ring):
             sage: C = LieAlgebras(QQ).Nilpotent()
             sage: TestSuite(C).run()
         """
+
         class ParentMethods:
             @abstract_method
             def step(self):
@@ -235,8 +251,8 @@ class LieAlgebras(Category_over_base_ring):
                 return True
 
     class ParentMethods:
-        #@abstract_method
-        #def lie_algebra_generators(self):
+        # @abstract_method
+        # def lie_algebra_generators(self):
         #    """
         #    Return the generators of ``self`` as a Lie algebra.
         #    """
@@ -488,8 +504,8 @@ class LieAlgebras(Category_over_base_ring):
                 NotImplementedError: subalgebras not yet implemented: see #17416
             """
             raise NotImplementedError("subalgebras not yet implemented: see #17416")
-            #from sage.algebras.lie_algebras.subalgebra import LieSubalgebra
-            #return LieSubalgebra(gens, names, index_set, category)
+            # from sage.algebras.lie_algebras.subalgebra import LieSubalgebra
+            # return LieSubalgebra(gens, names, index_set, category)
 
         def ideal(self, *gens, **kwds):
             r"""
@@ -517,13 +533,13 @@ class LieAlgebras(Category_over_base_ring):
                 NotImplementedError: ideals not yet implemented: see #16824
             """
             raise NotImplementedError("ideals not yet implemented: see #16824")
-            #from sage.algebras.lie_algebras.ideal import LieIdeal
-            #if len(gens) == 1 and isinstance(gens[0], (list, tuple)):
+            # from sage.algebras.lie_algebras.ideal import LieIdeal
+            # if len(gens) == 1 and isinstance(gens[0], (list, tuple)):
             #    gens = gens[0]
-            #names = kwds.pop("names", None)
-            #index_set = kwds.pop("index_set", None)
-            #category = kwds.pop("category", None)
-            #return LieIdeal(gens, names, index_set, category)
+            # names = kwds.pop("names", None)
+            # index_set = kwds.pop("index_set", None)
+            # category = kwds.pop("category", None)
+            # return LieIdeal(gens, names, index_set, category)
 
         def is_ideal(self, A):
             """
@@ -538,8 +554,8 @@ class LieAlgebras(Category_over_base_ring):
             if A == self:
                 return True
             raise NotImplementedError("ideals not yet implemented: see #16824")
-            #from sage.algebras.lie_algebras.ideal import LieIdeal
-            #return isinstance(self, LieIdeal) and self._ambient is A
+            # from sage.algebras.lie_algebras.ideal import LieIdeal
+            # return isinstance(self, LieIdeal) and self._ambient is A
 
         @abstract_method(optional=True)
         def killing_form(self, x, y):
@@ -706,9 +722,12 @@ class LieAlgebras(Category_over_base_ring):
                 sage: L.options._reset()  # reset the printing options
             """
             if self not in LieAlgebras.Nilpotent and prec is None:
-                raise ValueError("the Lie algebra is not known to be nilpotent,"
-                                 " so you must specify the precision")
+                raise ValueError(
+                    "the Lie algebra is not known to be nilpotent,"
+                    " so you must specify the precision"
+                )
             from sage.algebras.lie_algebras.bch import bch_iterator
+
             if prec is None:
                 return self.sum(Z for Z in bch_iterator(X, Y))
             bch = bch_iterator(X, Y)
@@ -745,6 +764,7 @@ class LieAlgebras(Category_over_base_ring):
                  strictly upper triangular matrices over Rational Field
             """
             from sage.algebras.lie_algebras.representation import TrivialRepresentation
+
             return TrivialRepresentation(self)
 
         def representation(self, f=None, index_set=None, on_basis=False, **kwargs):
@@ -788,7 +808,10 @@ class LieAlgebras(Category_over_base_ring):
             """
             if f is None and on_basis is False and index_set is None:
                 return self.trivial_representation(**kwargs)
-            from sage.algebras.lie_algebras.representation import RepresentationByMorphism
+            from sage.algebras.lie_algebras.representation import (
+                RepresentationByMorphism,
+            )
+
             return RepresentationByMorphism(self, f, index_set, on_basis, **kwargs)
 
         def _test_jacobi_identity(self, **options):
@@ -819,9 +842,11 @@ class LieAlgebras(Category_over_base_ring):
             """
             tester = self._tester(**options)
             elts = tester.some_elements()
-            jacobi = lambda x, y, z: self.bracket(x, self.bracket(y, z)) + \
-                self.bracket(y, self.bracket(z, x)) + \
-                self.bracket(z, self.bracket(x, y))
+            jacobi = lambda x, y, z: (
+                self.bracket(x, self.bracket(y, z))
+                + self.bracket(y, self.bracket(z, x))
+                + self.bracket(z, self.bracket(x, y))
+            )
             zero = self.zero()
             for x in elts:
                 for y in elts:
@@ -901,13 +926,16 @@ class LieAlgebras(Category_over_base_ring):
             tester = self._tester(**options)
             S = tester.some_elements()
             from sage.misc.misc import some_tuples
-            for x,y,z in some_tuples(S, 3, tester._max_runs):
+
+            for x, y, z in some_tuples(S, 3, tester._max_runs):
                 # left distributivity
-                tester.assertEqual(self.bracket(x, (y + z)),
-                                   self.bracket(x, y) + self.bracket(x, z))
+                tester.assertEqual(
+                    self.bracket(x, (y + z)), self.bracket(x, y) + self.bracket(x, z)
+                )
                 # right distributivity
-                tester.assertEqual(self.bracket((x + y), z),
-                                   self.bracket(x, z) + self.bracket(y, z))
+                tester.assertEqual(
+                    self.bracket((x + y), z), self.bracket(x, z) + self.bracket(y, z)
+                )
 
     class ElementMethods:
         @coerce_binop
@@ -1049,6 +1077,7 @@ class LiftMorphism(Morphism):
     The natural lifting morphism from a Lie algebra to its
     enveloping algebra.
     """
+
     def __init__(self, domain, codomain):
         """
         Initialize ``self``.

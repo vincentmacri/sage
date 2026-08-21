@@ -44,6 +44,7 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
         sage: K.<a> = NumberField(x^3 - 3, 'a')
         sage: Conic([a, 1, -1])._test_pickling()
     """
+
     def __init__(self, A, f) -> None:
         r"""
         See ``Conic`` for full documentation.
@@ -62,8 +63,9 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
         # all infinite primes such that self has no point over the completion
         self._infinite_obstructions = None
 
-    def has_rational_point(self, point=False, obstruction=False,
-                           algorithm='default', read_cache=True):
+    def has_rational_point(
+        self, point=False, obstruction=False, algorithm='default', read_cache=True
+    ):
         r"""
         Return ``True`` if and only if ``self`` has a point
         defined over its base field `B`.
@@ -222,8 +224,11 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
                 return False
             # `_(in)finite_obstructions` is ``None`` if the cache is empty,
             # so we explicitly check against a list:
-            if (not point) and self._finite_obstructions == [] and \
-               self._infinite_obstructions == []:
+            if (
+                (not point)
+                and self._finite_obstructions == []
+                and self._infinite_obstructions == []
+            ):
                 # list of local obstructions is computed and empty, return True
                 if obstruction:
                     return True, None
@@ -240,21 +245,23 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
         B = self.base_ring()
 
         if algorithm == 'default':
-            ret = self.has_rational_point(point=True, obstruction=False,
-                                          algorithm='rnfisnorm',
-                                          read_cache=False)
+            ret = self.has_rational_point(
+                point=True, obstruction=False, algorithm='rnfisnorm', read_cache=False
+            )
             if ret[0]:
                 if point or obstruction:
                     return ret
                 return True
             if obstruction:
-                ret = self.has_rational_point(point=False, obstruction=True,
-                                              algorithm='local',
-                                              read_cache=False)
+                ret = self.has_rational_point(
+                    point=False, obstruction=True, algorithm='local', read_cache=False
+                )
                 if ret[0]:
-                    raise RuntimeError("Outputs of algorithms in "
-                                       "has_rational_point disagree "
-                                       "for conic %s" % self)
+                    raise RuntimeError(
+                        "Outputs of algorithms in "
+                        "has_rational_point disagree "
+                        "for conic %s" % self
+                    )
                 return ret
             if point:
                 return False, None
@@ -262,10 +269,13 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
 
         if algorithm == 'local':
             if point:
-                raise ValueError("Algorithm 'local' cannot be combined "
-                                 "with point = True in has_rational_point")
-            obs = self.local_obstructions(infinite=True, finite=False,
-                                          read_cache=read_cache)
+                raise ValueError(
+                    "Algorithm 'local' cannot be combined "
+                    "with point = True in has_rational_point"
+                )
+            obs = self.local_obstructions(
+                infinite=True, finite=False, read_cache=read_cache
+            )
             if obs:
                 if obstruction:
                     return False, obs[0]
@@ -280,10 +290,13 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
             return False
         if algorithm == 'rnfisnorm':
             from sage.modules.free_module_element import vector
+
             if obstruction:
-                raise ValueError("Algorithm rnfisnorm cannot be combined "
-                                 "with obstruction = True in "
-                                 "has_rational_point")
+                raise ValueError(
+                    "Algorithm rnfisnorm cannot be combined "
+                    "with obstruction = True in "
+                    "has_rational_point"
+                )
             D, T = self.diagonal_matrix()
             abc = [D[0, 0], D[1, 1], D[2, 2]]
             for j in range(3):
@@ -314,9 +327,9 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
             L = K.extension(X**2 - d * den**2, names='y')
             isnorm = BtoK(-abc[2] / abc[0]).is_norm(L, element=True)
             if isnorm[0]:
-
-                pt = self.point(T * vector([KtoB(isnorm[1][0]),
-                                            KtoB(isnorm[1][1] * den), 1]))
+                pt = self.point(
+                    T * vector([KtoB(isnorm[1][0]), KtoB(isnorm[1][1] * den), 1])
+                )
                 if point:
                     return True, pt
                 return True
@@ -324,14 +337,18 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
                 return False, None
             return False
         if algorithm == 'qfsolve':
-            raise TypeError("Algorithm qfsolve in has_rational_point only "
-                            "for conics over QQ, not over %s" % B)
+            raise TypeError(
+                "Algorithm qfsolve in has_rational_point only "
+                "for conics over QQ, not over %s" % B
+            )
         if obstruction:
-            raise ValueError("Invalid combination: obstruction=True and "
-                             "algorithm=%s" % algorithm)
+            raise ValueError(
+                "Invalid combination: obstruction=True and algorithm=%s" % algorithm
+            )
 
         return ProjectiveConic_field.has_rational_point(
-            self, point=point, algorithm=algorithm, read_cache=False)
+            self, point=point, algorithm=algorithm, read_cache=False
+        )
 
     def is_locally_solvable(self, p) -> bool:
         r"""
@@ -376,7 +393,13 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
                 from sage.rings.qqbar import AA
                 from sage.rings.real_lazy import RLF
 
-                if not (isinstance(p, Map) and p.category_for().is_subcategory(Rings())) or p.codomain() is AA or p.codomain() is RLF:
+                if (
+                    not (
+                        isinstance(p, Map) and p.category_for().is_subcategory(Rings())
+                    )
+                    or p.codomain() is AA
+                    or p.codomain() is RLF
+                ):
                     self._local_obstruction = p
             return False
 
@@ -424,6 +447,7 @@ class ProjectiveConic_number_field(ProjectiveConic_field):
                 obs0 = self._infinite_obstructions
             else:
                 from sage.rings.qqbar import AA
+
                 for b in B.embeddings(AA):
                     if not self.is_locally_solvable(b):
                         obs0.append(b)

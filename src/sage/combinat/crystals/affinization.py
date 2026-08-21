@@ -3,7 +3,7 @@ r"""
 Affinization crystals
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -16,7 +16,7 @@ Affinization crystals
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -94,8 +94,9 @@ class AffinizationOfCrystal(UniqueRepresentation, Parent):
         self._B = B
         self._cartan_type = B.cartan_type()
         Parent.__init__(self, category=(RegularCrystals(), InfiniteEnumeratedSets()))
-        self.module_generators = tuple([self.element_class(self, b, 0)
-                                        for b in B.module_generators])
+        self.module_generators = tuple(
+            [self.element_class(self, b, 0) for b in B.module_generators]
+        )
 
     def _repr_(self):
         """
@@ -159,6 +160,7 @@ class AffinizationOfCrystal(UniqueRepresentation, Parent):
                 } (0)
             """
             from sage.misc.latex import latex
+
             return latex(self._b) + "({})".format(self._m)
 
         def __hash__(self):
@@ -233,7 +235,7 @@ class AffinizationOfCrystal(UniqueRepresentation, Parent):
             if bp is None:
                 return None
             if i == 0:
-                return self.__class__(self.parent(), bp, self._m+1)
+                return self.__class__(self.parent(), bp, self._m + 1)
             return self.__class__(self.parent(), bp, self._m)
 
         def f(self, i):
@@ -261,7 +263,7 @@ class AffinizationOfCrystal(UniqueRepresentation, Parent):
             if bp is None:
                 return None
             if i == 0:
-                return self.__class__(self.parent(), bp, self._m-1)
+                return self.__class__(self.parent(), bp, self._m - 1)
             return self.__class__(self.parent(), bp, self._m)
 
         def epsilon(self, i):
@@ -327,4 +329,7 @@ class AffinizationOfCrystal(UniqueRepresentation, Parent):
             """
             WLR = self.parent().weight_lattice_realization()
             La = WLR.fundamental_weights()
-            return WLR.sum(c*La[i] for i,c in self._b.weight()) + self._m * WLR.null_root()
+            return (
+                WLR.sum(c * La[i] for i, c in self._b.weight())
+                + self._m * WLR.null_root()
+            )

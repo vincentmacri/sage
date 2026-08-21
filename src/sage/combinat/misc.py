@@ -52,15 +52,15 @@ class DoublyLinkedList:
         self.l = l
         self.next_value = {}
         self.next_value['begin'] = l[0]
-        self.next_value[l[n-1]] = 'end'
-        for i in range(n-1):
-            self.next_value[l[i]] = l[i+1]
+        self.next_value[l[n - 1]] = 'end'
+        for i in range(n - 1):
+            self.next_value[l[i]] = l[i + 1]
 
         self.prev_value = {}
         self.prev_value['end'] = l[-1]
         self.prev_value[l[0]] = 'begin'
-        for i in range(1,n):
-            self.prev_value[l[i]] = l[i-1]
+        for i in range(1, n):
+            self.prev_value[l[i]] = l[i - 1]
 
     def __eq__(self, other):
         """
@@ -74,10 +74,12 @@ class DoublyLinkedList:
             sage: dll == dll2
             False
         """
-        return (isinstance(other, DoublyLinkedList) and
-            self.l == other.l and
-            self.next_value == other.next_value and
-            self.prev_value == other.prev_value)
+        return (
+            isinstance(other, DoublyLinkedList)
+            and self.l == other.l
+            and self.next_value == other.next_value
+            and self.prev_value == other.prev_value
+        )
 
     def __ne__(self, other):
         """
@@ -231,7 +233,10 @@ def umbral_operation(poly):
     exponents = poly.exponents()
     coefficients = poly.coefficients()
     length = len(exponents)
-    return sum(coefficients[i]*_monomial_exponent_to_lower_factorial(exponents[i], x) for i in range(length))
+    return sum(
+        coefficients[i] * _monomial_exponent_to_lower_factorial(exponents[i], x)
+        for i in range(length)
+    )
 
 
 class IterableFunctionCall:
@@ -301,7 +306,11 @@ class IterableFunctionCall:
             sage: repr(IterableFunctionCall(iter, [1,2,3]))
             'Iterable function call <built-in function iter> with args=([1, 2, 3],) and kwargs={}'
         """
-        return "Iterable function call %s with args=%s and kwargs=%s" % (self.f, self.args, self.kwargs)
+        return "Iterable function call %s with args=%s and kwargs=%s" % (
+            self.f,
+            self.args,
+            self.kwargs,
+        )
 
 
 def check_integer_list_constraints(l, **kwargs):
@@ -369,7 +378,7 @@ def check_integer_list_constraints(l, **kwargs):
         max_length = len(outer)
         for i in range(max_length):
             if outer[i] == "inf":
-                outer[i] = n+1
+                outer[i] = n + 1
     if inner is not None:
         min_length = len(inner)
 
@@ -383,10 +392,20 @@ def check_integer_list_constraints(l, **kwargs):
     filters['max_part'] = lambda x: max(x) <= max_part
     filters['min_length'] = lambda x: len(x) >= min_length
     filters['max_length'] = lambda x: len(x) <= max_length
-    filters['min_slope'] = lambda x: min((x[i + 1] - x[i] for i in range(len(x) - 1)), default=min_slope + 1) >= min_slope
-    filters['max_slope'] = lambda x: max((x[i + 1] - x[i] for i in range(len(x) - 1)), default=max_slope - 1) <= max_slope
-    filters['outer'] = lambda x: len(outer) >= len(x) and min(outer[i] - x[i] for i in range(len(x))) >= 0
-    filters['inner'] = lambda x: len(x) >= len(inner) and max(inner[i] - x[i] for i in range(len(inner))) <= 0
+    filters['min_slope'] = lambda x: (
+        min((x[i + 1] - x[i] for i in range(len(x) - 1)), default=min_slope + 1)
+        >= min_slope
+    )
+    filters['max_slope'] = lambda x: (
+        max((x[i + 1] - x[i] for i in range(len(x) - 1)), default=max_slope - 1)
+        <= max_slope
+    )
+    filters['outer'] = lambda x: (
+        len(outer) >= len(x) and min(outer[i] - x[i] for i in range(len(x))) >= 0
+    )
+    filters['inner'] = lambda x: (
+        len(x) >= len(inner) and max(inner[i] - x[i] for i in range(len(inner))) <= 0
+    )
 
     for key in kwargs:
         result = [x for x in result if filters[key](x)]

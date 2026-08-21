@@ -51,8 +51,10 @@ class LieConformalAlgebraWithBasis(CombinatorialFreeModule):
         sage: R._repr_generator(R.0)
         'e'
     """
-    def __init__(self, R, basis_keys=None, element_class=None, category=None,
-                 prefix=None, **kwds):
+
+    def __init__(
+        self, R, basis_keys=None, element_class=None, category=None, prefix=None, **kwds
+    ):
         """
         Initialize ``self``.
 
@@ -72,5 +74,12 @@ class LieConformalAlgebraWithBasis(CombinatorialFreeModule):
         except ValueError:
             category = default_category.Super().or_subcategory(category)
 
-        super().__init__(R, basis_keys=basis_keys, element_class=element_class,
-                         category=category, prefix=prefix, names=None, **kwds)
+        super().__init__(
+            R,
+            basis_keys=basis_keys,
+            element_class=element_class,
+            category=category,
+            prefix=prefix,
+            names=None,
+            **kwds,
+        )

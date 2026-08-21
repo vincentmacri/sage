@@ -91,16 +91,18 @@ def repr_short_to_parent(s: str):
             e_se.__traceback__ = None
 
         raise combine_exceptions(
-            ValueError("Cannot create a parent out of '%s'." % (s,)),
-            e_ag, e_se)
+            ValueError("Cannot create a parent out of '%s'." % (s,)), e_ag, e_se
+        )
 
     P = extract(s)
 
     from sage.misc.lazy_import import LazyImport
+
     if type(P) is LazyImport:
         P = P._get_object()
 
     from sage.structure.parent import Parent
+
     if not isinstance(P, Parent):
         raise ValueError("'%s' does not describe a parent." % (s,))
     return P
@@ -153,10 +155,17 @@ def parent_to_repr_short(P) -> str:
     from sage.rings.real_mpfr import RR
     from sage.symbolic.ring import SR
 
-    abbreviations = {ZZ: 'ZZ', QQ: 'QQ', SR: 'SR',
-                     RR: 'RR', CC: 'CC',
-                     RIF: 'RIF', CIF: 'CIF',
-                     RBF: 'RBF', CBF: 'CBF'}
+    abbreviations = {
+        ZZ: 'ZZ',
+        QQ: 'QQ',
+        SR: 'SR',
+        RR: 'RR',
+        CC: 'CC',
+        RIF: 'RIF',
+        CIF: 'CIF',
+        RBF: 'RBF',
+        CBF: 'CBF',
+    }
 
     def abbreviate(P):
         try:
@@ -169,10 +178,10 @@ def parent_to_repr_short(P) -> str:
             pass
         raise ValueError('Cannot abbreviate %s.' % (P,))
 
-    poly = isinstance(P, (PolynomialRing_generic,
-                          MPolynomialRing_base))
-    power = isinstance(P, (PowerSeriesRing_generic,
-                           MPowerSeriesRing_generic, LazyPowerSeriesRing))
+    poly = isinstance(P, (PolynomialRing_generic, MPolynomialRing_base))
+    power = isinstance(
+        P, (PowerSeriesRing_generic, MPowerSeriesRing_generic, LazyPowerSeriesRing)
+    )
 
     if poly or power:
         if poly:
@@ -256,6 +265,7 @@ def split_str_by_op(string: str, op: str, strip_parentheses=True) -> tuple:
         sage: split_str_by_op('(e^(n*log(n)))^SR.subring(no_variables=True)', '*')
         ('(e^(n*log(n)))^SR.subring(no_variables=True)',)
     """
+
     def is_balanced(s: str) -> bool:
         open = 0
         for let in s:
@@ -270,16 +280,16 @@ def split_str_by_op(string: str, op: str, strip_parentheses=True) -> tuple:
     factors = []
     balanced = True
     if string and op is not None and string.startswith(op):
-        raise ValueError("'%s' is invalid since it starts with a '%s'." %
-                         (string, op))
+        raise ValueError("'%s' is invalid since it starts with a '%s'." % (string, op))
     for s in string.split(op):
         if not s:
             factors[-1] += op
             balanced = False
             continue
         if not s.strip():
-            raise ValueError("'%s' is invalid since a '%s' follows a '%s'." %
-                             (string, op, op))
+            raise ValueError(
+                "'%s' is invalid since a '%s' follows a '%s'." % (string, op, op)
+            )
         if not balanced:
             s = factors.pop() + (op if op else '') + s
         balanced = is_balanced(s)
@@ -352,7 +362,7 @@ def repr_op(left, op: str, right=None, latex=False) -> str:
             return s
         if any(sig in s for sig in signals) or latex and s.startswith(r'\frac'):
             if latex:
-                return fr'\left({s}\right)'
+                return rf'\left({s}\right)'
             return f'({s})'
         return s
 
@@ -396,8 +406,10 @@ def combine_exceptions(e, *f):
         >> *previous* TypeError: Inner.
     """
     import re
-    msg = ('\n *previous* ' +
-           '\n *and* '.join("%s: %s" % (ff.__class__.__name__, str(ff)) for ff in f))
+
+    msg = '\n *previous* ' + '\n *and* '.join(
+        "%s: %s" % (ff.__class__.__name__, str(ff)) for ff in f
+    )
     msg = re.sub(r'^([>]* \*previous\*)', r'>\1', msg, flags=re.MULTILINE)
     msg = re.sub(r'^([>]* \*and\*)', r'>\1', msg, flags=re.MULTILINE)
     msg = str(e.args if len(e.args) > 1 else e.args[0]) + msg
@@ -427,8 +439,8 @@ def substitute_raise_exception(element, e):
         > *previous* Exception: blub
     """
     raise combine_exceptions(
-        type(e)('Cannot substitute in %s in %s.' %
-                (element, element.parent())), e)
+        type(e)('Cannot substitute in %s in %s.' % (element, element.parent())), e
+    )
 
 
 def bidirectional_merge_overlapping(A, B, key=None):
@@ -523,8 +535,7 @@ def bidirectional_merge_overlapping(A, B, key=None):
     def find_overlapping_index(A, B):
         if len(B) > len(A) - 2:
             raise StopIteration
-        matches = iter(i for i in range(1, len(A) - len(B))
-                       if A[i:i+len(B)] == B)
+        matches = iter(i for i in range(1, len(A) - len(B)) if A[i : i + len(B)] == B)
         return next(matches)
 
     def find_mergedoverlapping_index(A, B):
@@ -535,8 +546,7 @@ def bidirectional_merge_overlapping(A, B, key=None):
 
         Adapted from https://stackoverflow.com/a/30056066/1052778.
         """
-        matches = iter(i for i in range(min(len(A), len(B)), 0, -1)
-                       if A[-i:] == B[:i])
+        matches = iter(i for i in range(min(len(A), len(B)), 0, -1) if A[-i:] == B[:i])
         return next(matches, 0)
 
     i = find_mergedoverlapping_index(Akeys, Bkeys)
@@ -552,14 +562,14 @@ def bidirectional_merge_overlapping(A, B, key=None):
     except StopIteration:
         pass
     else:
-        return A, A[:i] + B + A[i+len(B):]
+        return A, A[:i] + B + A[i + len(B) :]
 
     try:
         i = find_overlapping_index(Bkeys, Akeys)
     except StopIteration:
         pass
     else:
-        return B[:i] + A + B[i+len(A):], B
+        return B[:i] + A + B[i + len(A) :], B
 
     raise ValueError('Input does not have an overlap.')
 
@@ -670,10 +680,9 @@ def bidirectional_merge_sorted(A, B, key=None):
         Akeys = tuple(key(a) for a in A)
         Bkeys = tuple(key(b) for b in B)
 
-    matches = tuple((i, j)
-                    for i, a in enumerate(Akeys)
-                    for j, b in enumerate(Bkeys)
-                    if a == b)
+    matches = tuple(
+        (i, j) for i, a in enumerate(Akeys) for j, b in enumerate(Bkeys) if a == b
+    )
     if not matches:
         raise RuntimeError('no common elements')
 
@@ -685,17 +694,17 @@ def bidirectional_merge_sorted(A, B, key=None):
         if not all(a <= b for a, b in zip(last, current)):
             raise RuntimeError('sorting in lists not compatible')
         if last[0] == current[0]:
-            resultA.extend(B[last[1]:current[1]])
-            resultB.extend(B[last[1]:current[1]])
+            resultA.extend(B[last[1] : current[1]])
+            resultB.extend(B[last[1] : current[1]])
         elif last[1] == current[1]:
-            resultA.extend(A[last[0]:current[0]])
-            resultB.extend(A[last[0]:current[0]])
+            resultA.extend(A[last[0] : current[0]])
+            resultB.extend(A[last[0] : current[0]])
         else:
             raise RuntimeError('sorting not unique')
         if current != end:
             resultA.append(A[current[0]])
             resultB.append(B[current[1]])
-            last = (current[0]+1, current[1]+1)
+            last = (current[0] + 1, current[1] + 1)
 
     return (resultA, resultB)
 
@@ -785,6 +794,7 @@ class NotImplementedOZero(NotImplementedError):
     which is raised when the result is O(0) which means 0
     for sufficiently large values of the variable.
     """
+
     def __init__(self, asymptotic_ring=None, var=None, exact_part=0):
         r"""
         INPUT:
@@ -831,12 +841,15 @@ class NotImplementedOZero(NotImplementedError):
 
         if var is None:
             var = ', '.join(str(g) for g in asymptotic_ring.gens())
-        message = ('got {}\n'.format(('{} + '.format(exact_part) if exact_part else '')
-                                     + 'O(0)') +
-                   'The error term O(0) '
-                   'means 0 for sufficiently large {}.'.format(var))
+        message = 'got {}\n'.format(
+            ('{} + '.format(exact_part) if exact_part else '') + 'O(0)'
+        ) + 'The error term O(0) means 0 for sufficiently large {}.'.format(var)
 
-        if asymptotic_ring is not None and isinstance(exact_part, int) and exact_part == 0:
+        if (
+            asymptotic_ring is not None
+            and isinstance(exact_part, int)
+            and exact_part == 0
+        ):
             exact_part = asymptotic_ring.zero()
         self.exact_part = exact_part
 
@@ -849,6 +862,7 @@ class NotImplementedBZero(NotImplementedError):
     which is raised when the result is B(0) which means 0
     for sufficiently large values of the variable.
     """
+
     def __init__(self, asymptotic_ring=None, var=None, exact_part=0):
         r"""
         INPUT:
@@ -902,21 +916,24 @@ class NotImplementedBZero(NotImplementedError):
 
         if var is None:
             var = ', '.join(str(g) for g in asymptotic_ring.gens())
-        message = ('got {}\n'.format(('{} + '.format(exact_part) if exact_part else '')
-                                     + 'B(0)') +
-                   'The error term B(0) '
-                   'means 0 for sufficiently large {}.'.format(var))
+        message = 'got {}\n'.format(
+            ('{} + '.format(exact_part) if exact_part else '') + 'B(0)'
+        ) + 'The error term B(0) means 0 for sufficiently large {}.'.format(var)
 
-        if asymptotic_ring is not None and isinstance(exact_part, int) and exact_part == 0:
+        if (
+            asymptotic_ring is not None
+            and isinstance(exact_part, int)
+            and exact_part == 0
+        ):
             exact_part = asymptotic_ring.zero()
         self.exact_part = exact_part
 
         super().__init__(message)
 
 
-def transform_category(category,
-                       subcategory_mapping, axiom_mapping,
-                       initial_category=None):
+def transform_category(
+    category, subcategory_mapping, axiom_mapping, initial_category=None
+):
     r"""
     Transform ``category`` to a new category according to the given
     mappings.
@@ -1023,6 +1040,7 @@ def transform_category(category,
     """
     if initial_category is None:
         from sage.categories.objects import Objects
+
         result = Objects()
     else:
         result = initial_category
@@ -1031,16 +1049,14 @@ def transform_category(category,
         if category.is_subcategory(A):
             result &= B
         elif mandatory:
-            raise ValueError('%s is not a subcategory of %s.' %
-                             (category, A))
+            raise ValueError('%s is not a subcategory of %s.' % (category, A))
 
     axioms = category.axioms()
     for A, B, mandatory in axiom_mapping:
         if A in axioms:
             result = result._with_axiom(B)
         elif mandatory:
-            raise ValueError('%s does not have axiom %s.' %
-                             (category, A))
+            raise ValueError('%s does not have axiom %s.' % (category, A))
 
     return result
 
@@ -1063,6 +1079,7 @@ class Locals(dict):
         sage: locals['log']
         <function log at 0x...>
     """
+
     def __getitem__(self, key):
         r"""
         Return an item.
@@ -1100,7 +1117,9 @@ class Locals(dict):
             TypeError: locals dictionary is frozen,
             therefore does not support item assignment
         """
-        raise TypeError('locals dictionary is frozen, therefore does not support item assignment')
+        raise TypeError(
+            'locals dictionary is frozen, therefore does not support item assignment'
+        )
 
     @cached_method
     def _data_(self):
@@ -1149,8 +1168,8 @@ class Locals(dict):
             <function log at 0x...>
         """
         from sage.functions.log import log
-        return {
-            'log': log}
+
+        return {'log': log}
 
 
 class WithLocals(SageObject):
@@ -1167,6 +1186,7 @@ class WithLocals(SageObject):
         sage: A.locals()
         {'a': 42}
     """
+
     @staticmethod
     def _convert_locals_(locals):
         r"""

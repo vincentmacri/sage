@@ -3,7 +3,7 @@
 Stream Cryptosystems
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Kohel <kohel@maths.usyd.edu.au>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@ Stream Cryptosystems
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.arith.misc import gcd, power_mod
 from sage.crypto.cryptosystem import SymmetricKeyCryptosystem
@@ -30,6 +30,7 @@ class LFSRCryptosystem(SymmetricKeyCryptosystem):
     """
     Linear feedback shift register cryptosystem class
     """
+
     def __init__(self, field=None):
         """
         Create a linear feedback shift cryptosystem.
@@ -74,14 +75,19 @@ class LFSRCryptosystem(SymmetricKeyCryptosystem):
         - ``key`` -- a polynomial and initial state of the LFSR
         """
         if not isinstance(key, (list, tuple)) and len(key) == 2:
-            raise TypeError("Argument key (= %s) must be a list of tuple of length 2" % key)
+            raise TypeError(
+                "Argument key (= %s) must be a list of tuple of length 2" % key
+            )
         poly, IS = key
         if not isinstance(poly, Polynomial):
             raise TypeError("poly (= %s) must be a polynomial." % poly)
         if not isinstance(IS, (list, tuple)):
             raise TypeError("IS (= %s) must be an initial in the key space." % IS)
         if len(IS) != poly.degree():
-            raise TypeError("The length of IS (= %s) must equal the degree of poly (= %s)" % (IS, poly))
+            raise TypeError(
+                "The length of IS (= %s) must equal the degree of poly (= %s)"
+                % (IS, poly)
+            )
         return LFSRCipher(self, poly, IS)
 
     def _repr_(self):
@@ -107,6 +113,7 @@ class ShrinkingGeneratorCryptosystem(SymmetricKeyCryptosystem):
     """
     Shrinking generator cryptosystem class
     """
+
     def __init__(self, field=None):
         """
         Create a shrinking generator cryptosystem.
@@ -141,11 +148,15 @@ class ShrinkingGeneratorCryptosystem(SymmetricKeyCryptosystem):
         and decimating cipher e2
         """
         if not isinstance(key, (list, tuple)) and len(key) == 2:
-            raise TypeError("Argument key (= %s) must be a list of tuple of length 2" % key)
+            raise TypeError(
+                "Argument key (= %s) must be a list of tuple of length 2" % key
+            )
         e1 = key[0]
         e2 = key[1]
         if not isinstance(e1, LFSRCipher) or not isinstance(e2, LFSRCipher):
-            raise TypeError("The key (= (%s,%s)) must be a tuple of two LFSR ciphers." % key)
+            raise TypeError(
+                "The key (= (%s,%s)) must be a tuple of two LFSR ciphers." % key
+            )
         return ShrinkingGeneratorCipher(self, e1, e2)
 
     def _repr_(self):
@@ -168,8 +179,9 @@ class ShrinkingGeneratorCryptosystem(SymmetricKeyCryptosystem):
             raise TypeError("Argument M = %s does not encode in the cipher domain" % M)
 
 
-def blum_blum_shub(length, seed=None, p=None, q=None,
-                   lbound=None, ubound=None, ntries=100):
+def blum_blum_shub(
+    length, seed=None, p=None, q=None, lbound=None, ubound=None, ntries=100
+):
     r"""
     The Blum-Blum-Shub (BBS) pseudorandom bit generator.
 
@@ -351,7 +363,9 @@ def blum_blum_shub(length, seed=None, p=None, q=None,
     if length < 0:
         raise ValueError("The length of the bit string must be positive.")
     if (p is None) and (p == q == lbound == ubound):
-        raise ValueError("Either specify values for p and q, or specify values for the lower and upper bounds.")
+        raise ValueError(
+            "Either specify values for p and q, or specify values for the lower and upper bounds."
+        )
     # Use pre-computed Blum primes. Both the parameters p and q are
     # assumed to be Blum primes. No attempts are made to ensure that they
     # are indeed Blum primes.
@@ -368,7 +382,9 @@ def blum_blum_shub(length, seed=None, p=None, q=None,
             randq = random_blum_prime(lbound, ubound, ntries=ntries)
     # no pre-computed primes given, and no appropriate bounds given
     else:
-        raise ValueError("Either specify values for p and q, or specify values for the lower and upper bounds.")
+        raise ValueError(
+            "Either specify values for p and q, or specify values for the lower and upper bounds."
+        )
     # By now, we should have two distinct Blum primes.
     n = randp * randq
     # If no seed is provided, select a random seed.

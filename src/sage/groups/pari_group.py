@@ -54,8 +54,10 @@ class PariGroup:
             sage: G1 == G2
             False
         """
-        return (isinstance(other, PariGroup) and
-            (self.__x, self.__degree) == (other.__x, other.__degree))
+        return isinstance(other, PariGroup) and (self.__x, self.__degree) == (
+            other.__x,
+            other.__degree,
+        )
 
     def __ne__(self, other):
         """

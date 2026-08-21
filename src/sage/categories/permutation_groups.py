@@ -1,12 +1,12 @@
 r"""
 Permutation groups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2011      Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
@@ -47,6 +47,7 @@ class PermutationGroups(Category):
         sage: C = PermutationGroups()
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -59,4 +60,6 @@ class PermutationGroups(Category):
         """
         return [Groups()]
 
-    Finite = LazyImport('sage.categories.finite_permutation_groups', 'FinitePermutationGroups')
+    Finite = LazyImport(
+        'sage.categories.finite_permutation_groups', 'FinitePermutationGroups'
+    )

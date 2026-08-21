@@ -16,6 +16,7 @@ AUTHORS:
 - Florent Hivert (2009-04)
 - Christian Stump (2012-11) added pretty printing
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Florent Hivert <Florent.Hivert@univ-rouen.fr>,
 #
@@ -277,6 +278,7 @@ class NonDecreasingParkingFunction(Element):
             True
         """
         from sage.combinat.dyck_word import CompleteDyckWords_all
+
         return CompleteDyckWords_all().from_non_decreasing_parking_function(self)
 
     def __len__(self) -> int:
@@ -551,6 +553,7 @@ class NonDecreasingParkingFunctions_n(UniqueRepresentation, Parent):
             True
         """
         from sage.combinat.dyck_word import DyckWords
+
         n = self.n
         dw = DyckWords(n).random_element()
         return NonDecreasingParkingFunction.from_dyck_word(dw)
@@ -606,6 +609,7 @@ class NonDecreasingParkingFunctions_n(UniqueRepresentation, Parent):
 
         Complexity: constant amortized time.
         """
+
         def iterator_rec(n):
             """
             TESTS::
@@ -626,6 +630,7 @@ class NonDecreasingParkingFunctions_n(UniqueRepresentation, Parent):
                     res.append(i)
                     yield res
             return
+
         for res in iterator_rec(self.n):
             yield NonDecreasingParkingFunction(res)
 

@@ -4,7 +4,9 @@ import sys
 from subprocess import PIPE, Popen
 
 
-def check_executable(args, input='', timeout=100.0, pydebug_ignore_warnings=False, **kwds):
+def check_executable(
+    args, input='', timeout=100.0, pydebug_ignore_warnings=False, **kwds
+):
     r"""
     Run the program defined by ``args`` using the string ``input`` on
     the standard input.
@@ -57,16 +59,19 @@ def check_executable(args, input='', timeout=100.0, pydebug_ignore_warnings=Fals
     except KeyError:
         pass
 
-    __with_pydebug = hasattr(sys, 'gettotalrefcount')   # This is a Python debug build (--with-pydebug)
+    __with_pydebug = hasattr(
+        sys, 'gettotalrefcount'
+    )  # This is a Python debug build (--with-pydebug)
     if __with_pydebug and pydebug_ignore_warnings:
-        pexpect_env['PYTHONWARNINGS'] = ','.join([
-            'ignore::DeprecationWarning',
-        ])
+        pexpect_env['PYTHONWARNINGS'] = ','.join(
+            [
+                'ignore::DeprecationWarning',
+            ]
+        )
 
     kwds['encoding'] = kwds.pop('encoding', 'utf-8')
 
-    p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, env=pexpect_env,
-              **kwds)
+    p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, env=pexpect_env, **kwds)
     if input:
         p.stdin.write(input)
 
@@ -95,13 +100,13 @@ def check_executable(args, input='', timeout=100.0, pydebug_ignore_warnings=Fals
         if fdout in rlist:
             s = p.stdout.read(1024)
             if not s:
-                fdout = None   # EOF
+                fdout = None  # EOF
                 p.stdout.close()
             out.append(s)
         if fderr in rlist:
             s = p.stderr.read(1024)
             if not s:
-                fderr = None   # EOF
+                fderr = None  # EOF
                 p.stderr.close()
             err.append(s)
 

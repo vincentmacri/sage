@@ -112,12 +112,12 @@ def dhsw_snf(mat, verbose=False):
                             if not new_col.is_zero():
                                 check_leading = True
             if not new_col.is_zero():
-                new_mat.set_column(j-zero_cols, new_col.column(0))
+                new_mat.set_column(j - zero_cols, new_col.column(0))
                 i = new_col.nonzero_positions_in_column(0)[0]
                 if i in leading_positions:
-                    leading_positions[i].append(j-zero_cols)
+                    leading_positions[i].append(j - zero_cols)
                 else:
-                    leading_positions[i] = [j-zero_cols]
+                    leading_positions[i] = [j - zero_cols]
             else:
                 zero_cols += 1
     # pass 2:
@@ -151,9 +151,9 @@ def dhsw_snf(mat, verbose=False):
                         unit, A, B = r.xgcd(-s)  # unit ought to be 1 here
                         jth_col = new_mat.column(j)
                         nth_col = new_mat.column(n)
-                        new_mat.set_column(j, r*jth_col + s*nth_col)
-                        new_mat.set_column(n, B*jth_col + A*nth_col)
-                        nth = B*jth + A*nth
+                        new_mat.set_column(j, r * jth_col + s * nth_col)
+                        new_mat.set_column(n, B * jth_col + A * nth_col)
+                        nth = B * jth + A * nth
                         jth = g
                         # at this point, jth should divide nth
                         quo = nth.divide_knowing_divisible_by(jth)
@@ -191,14 +191,14 @@ def dhsw_snf(mat, verbose=False):
         if verbose:
             print("new matrix: %s by %s" % (new_mat.nrows(), new_mat.ncols()))
         if new_mat.is_sparse():
-            ed = [1]*add_to_rank + new_mat.dense_matrix().elementary_divisors()
+            ed = [1] * add_to_rank + new_mat.dense_matrix().elementary_divisors()
         else:
-            ed = [1]*add_to_rank + new_mat.elementary_divisors()
+            ed = [1] * add_to_rank + new_mat.elementary_divisors()
     else:
         if verbose:
             print("new matrix: all pivots are 1 or -1")
-        ed = [1]*add_to_rank
+        ed = [1] * add_to_rank
 
     if len(ed) < rows:
-        return ed + [0]*(rows - len(ed))
+        return ed + [0] * (rows - len(ed))
     return ed[:rows]

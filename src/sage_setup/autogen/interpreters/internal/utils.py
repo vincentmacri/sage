@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,10 +7,9 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 """Miscellaneous utility routines used for the interpreter generator."""
-
 
 import os
 import textwrap
@@ -84,8 +83,7 @@ def indent_lines(n, text):
     """
     lines = text.splitlines(True)
     spaces = ' ' * n
-    return ''.join((spaces if line.strip() else '') + line
-                   for line in lines)
+    return ''.join((spaces if line.strip() else '') + line for line in lines)
 
 
 def reindent_lines(n, text):

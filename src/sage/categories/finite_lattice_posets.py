@@ -41,6 +41,7 @@ class FiniteLatticePosets(CategoryWithAxiom):
         True
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def extra_super_categories(self):
         r"""
@@ -56,7 +57,6 @@ class FiniteLatticePosets(CategoryWithAxiom):
         return [LatticePosets().Bounded()]
 
     class ParentMethods:
-
         def join_irreducibles(self):
             r"""
             Return the join-irreducible elements of this finite lattice.
@@ -180,8 +180,9 @@ class FiniteLatticePosets(CategoryWithAxiom):
             """
             if self.cardinality() == 1:
                 from sage.combinat.posets.posets import Poset
+
                 return Poset({self[0]: []})
-            return self.subposet(self.join_irreducibles()+self.meet_irreducibles())
+            return self.subposet(self.join_irreducibles() + self.meet_irreducibles())
 
         ######################################################################
         # Lattice morphisms
@@ -251,6 +252,7 @@ class FiniteLatticePosets(CategoryWithAxiom):
             # ensure that this is a poset morphism. It actually may
             # be sufficient to check just joins (or just meets).
             from sage.combinat.subset import Subsets
+
             for x, y in Subsets(self, 2):
                 if f(self.join(x, y)) != codomain.join(f(x), f(y)):
                     return False

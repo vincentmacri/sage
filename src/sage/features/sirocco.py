@@ -16,6 +16,7 @@ Features for testing the presence of ``sirocco``
 from sage.config import sirocco_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Sirocco(BuildModule):
     r"""
     A :class:`~sage.features.Feature` which describes whether the
@@ -40,6 +41,7 @@ class Sirocco(BuildModule):
         FeatureTestResult('sirocco', True)
 
     """
+
     _enabled_in_build = sirocco_enabled
 
     def __init__(self):

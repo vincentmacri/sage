@@ -142,8 +142,17 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         sage: hash(ModularSymbols(11,2)) != hash(ModularSymbols(11,4))
         True
     """
-    def __init__(self, group, weight, sign, base_ring,
-                 character=None, custom_init=None, category=None):
+
+    def __init__(
+        self,
+        group,
+        weight,
+        sign,
+        base_ring,
+        character=None,
+        custom_init=None,
+        category=None,
+    ):
         """
         Initialize a space of modular symbols.
 
@@ -164,7 +173,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         """
         weight = int(weight)
         if weight <= 1:
-            raise ValueError("Weight (=%s) Modular symbols of weight <= 1 not defined." % weight)
+            raise ValueError(
+                "Weight (=%s) Modular symbols of weight <= 1 not defined." % weight
+            )
         if not isinstance(group, arithgroup.CongruenceSubgroupBase):
             raise TypeError("group must be a congruence subgroup")
 
@@ -175,9 +186,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         if character is None and isinstance(group, arithgroup.Gamma0_class):
             character = TrivialCharacter(group.level(), base_ring)
 
-        ModularSymbolsSpace.__init__(self, group, weight,
-                                     character, sign, base_ring,
-                                     category=category)
+        ModularSymbolsSpace.__init__(
+            self, group, weight, character, sign, base_ring, category=category
+        )
 
         if custom_init is not None:
             custom_init(self)
@@ -189,12 +200,16 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
 
         rank = self.rank()
         if formula is not None:
-            assert rank == formula, \
-                   "Computed dimension (=%s) of ambient space \"%s\" doesn't match dimension formula (=%s)!\n" % (rank, self, formula) + \
-                   "ModularSymbolsAmbient: group = %s, weight = %s, sign = %s, base_ring = %s, character = %s" % (
-                       group, weight, sign, base_ring, character)
+            assert rank == formula, (
+                "Computed dimension (=%s) of ambient space \"%s\" doesn't match dimension formula (=%s)!\n"
+                % (rank, self, formula)
+                + "ModularSymbolsAmbient: group = %s, weight = %s, sign = %s, base_ring = %s, character = %s"
+                % (group, weight, sign, base_ring, character)
+            )
 
-        AmbientHeckeModule.__init__(self, base_ring, rank, group.level(), weight, category=category)
+        AmbientHeckeModule.__init__(
+            self, base_ring, rank, group.level(), weight, category=category
+        )
 
     def new_submodule(self, p=None):
         r"""
@@ -291,10 +306,10 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             self.__p1list = p1list.P1List(self.level())
         return self.__p1list
 
-#     See the file relation_matrix.py
-#
-#     def relation_matrix(self):
-#         raise NotImplementedError
+    #     See the file relation_matrix.py
+    #
+    #     def relation_matrix(self):
+    #         raise NotImplementedError
 
     def compute_presentation(self):
         r"""
@@ -305,8 +320,8 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             sage: ModularSymbols(11,2).compute_presentation() # no output
         """
         B, basis, mod = relation_matrix.compute_presentation(
-            self.manin_symbols(), self.sign(),
-            self.base_ring())
+            self.manin_symbols(), self.sign(), self.base_ring()
+        )
         self._manin_generators = self.manin_symbols().manin_symbol_list()
         self._manin_basis = basis
         self._manin_gens_to_basis = B
@@ -439,9 +454,11 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         """
         if isinstance(x, FreeModuleElement):
             if x.degree() != self.dimension():
-                raise TypeError("Incompatible degrees: x has degree "
-                                f"{x.degree()} but modular symbols space has "
-                                f"dimension {self.dimension()}")
+                raise TypeError(
+                    "Incompatible degrees: x has degree "
+                    f"{x.degree()} but modular symbols space has "
+                    f"dimension {self.dimension()}"
+                )
             return self.element_class(self, x)
 
         if isinstance(x, (ManinSymbol, element.ModularSymbolsElement)):
@@ -559,9 +576,11 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             if len(x) == 3:
                 # Manin symbol of the form (i, u, v), which corresponds to [X^i*Y^(k-2-i), (u,v)].
                 if x[0] < 0 or x[0] > self.weight() - 2:
-                    raise ValueError("The first entry of the tuple (=%s)\
-                        must be an integer between 0 and k-2 (=%s)." % (
-                        x, self.weight() - 2))
+                    raise ValueError(
+                        "The first entry of the tuple (=%s)\
+                        must be an integer between 0 and k-2 (=%s)."
+                        % (x, self.weight() - 2)
+                    )
             else:
                 raise ValueError("x (=%s) must be of length 2 or 3" % x)
         # end check
@@ -631,9 +650,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                     w = 0
                 else:
                     x = c[k][0]
-                    y = c[k-1][0]
+                    y = c[k - 1][0]
                     z = c[k][1]
-                    w = c[k-1][1]
+                    w = c[k - 1][1]
                     if k % 2 == 0:
                         y = -y
                         w = -w
@@ -647,27 +666,27 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                 # method 1: write out solution. this is currently
                 # incorrect, because it ends up doing 0^0 in the sum,
                 # so I'll fix it and do timings soon.
-#                for s in range(self.weight()-two+1):
-#                    coeff = sum([ binomial(i,t)*binomial(self.weight()-two-i,s-t)*
-#                                  x**t * y**(i-t) * z**(s-t) *
-#                                  w**(self.weight()-two-i-s+t) for t in range(0,s) ])
-#                    m = coeff * self.manin_symbol((s, y, w), check=False)
-#                    a += m
+                #                for s in range(self.weight()-two+1):
+                #                    coeff = sum([ binomial(i,t)*binomial(self.weight()-two-i,s-t)*
+                #                                  x**t * y**(i-t) * z**(s-t) *
+                #                                  w**(self.weight()-two-i-s+t) for t in range(0,s) ])
+                #                    m = coeff * self.manin_symbol((s, y, w), check=False)
+                #                    a += m
 
                 # method 2
-                p1 = x*X+y
-                p2 = z*X+w
+                p1 = x * X + y
+                p2 = z * X + w
                 if i == 0:
                     p1 = R(one)
-                if (self.weight()-2-i == 0):
+                if self.weight() - 2 - i == 0:
                     p2 = R(one)
-                poly = (p1**i) * (p2**(self.weight()-2-i))
-                for s in range(self.weight()-1):  # k-2+1 = k-1
+                poly = (p1**i) * (p2 ** (self.weight() - 2 - i))
+                for s in range(self.weight() - 1):  # k-2+1 = k-1
                     a += poly[s] * self.manin_symbol((s, z, w), check=False)
         else:
             for k in range(1, len(c)):
                 u = c[k][1]
-                v = c[k-1][1]
+                v = c[k - 1][1]
                 if k % 2 == 0:
                     v = -v
                 x = self.manin_symbol((i, u, v), check=False)
@@ -740,10 +759,12 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             if len(x) == 2:
                 x = [0, x[0], x[1]]
             elif len(x) == 3:
-                if x[0] < 0 or x[0] > self.weight()-2:
-                    raise ValueError("The first entry of the tuple (=%s)\
-                        must be an integer between 0 and k-2 (=%s)." % (
-                        x, self.weight()-2))
+                if x[0] < 0 or x[0] > self.weight() - 2:
+                    raise ValueError(
+                        "The first entry of the tuple (=%s)\
+                        must be an integer between 0 and k-2 (=%s)."
+                        % (x, self.weight() - 2)
+                    )
             else:
                 raise ValueError("x (=%s) must be of length 2 or 3" % x)
             i = Integer(x[0])
@@ -794,9 +815,12 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             try:
                 f = R(f)
             except TypeError:
-                raise ValueError("f must be coercible to a polynomial \
-                    over %s" % self.base_ring())
-            if (not f.is_homogeneous()) or (f.degree() != self.weight()-2):
+                raise ValueError(
+                    "f must be coercible to a polynomial \
+                    over %s"
+                    % self.base_ring()
+                )
+            if (not f.is_homogeneous()) or (f.degree() != self.weight() - 2):
                 raise ValueError("f must be a homogeneous polynomial of degree k-2")
             alpha = Cusp(x[1])
             beta = Cusp(x[2])
@@ -956,7 +980,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             [4860    0 2049]
         """
         # note -- p doesn't have to be prime despite the function name
-        p = int(Integer(p))   # go through Integer so p = 2.5 gives an error.
+        p = int(Integer(p))  # go through Integer so p = 2.5 gives an error.
         if isinstance(rows, list):
             rows = tuple(rows)
         try:
@@ -1063,9 +1087,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                 # Apply h to the polynomial part
                 a, b, c, d = tuple(h)
                 # P gives the ordered coefficients of (a*X+b*Y)^i*(c*X+d*Y)^(j-i)
-                P = apply_to_monomial(i, k-2, a, b, c, d)
+                P = apply_to_monomial(i, k - 2, a, b, c, d)
                 # Apply h to the (u,v) part of the Manin symbol
-                (uu, vv) = (u*a+v*c, u*b+v*d)
+                (uu, vv) = (u * a + v * c, u * b + v * d)
 
                 # For the generalized Heilbronn operator, we through away any
                 # symbols for which the (u,v) part of the symbol doesn't have
@@ -1073,8 +1097,8 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                 if t != 1:
                     if uu % t != 0 or vv % t != 0:
                         continue
-                    uu = uu//t
-                    vv = vv//t
+                    uu = uu // t
+                    vv = vv // t
 
                 # Now coerce each Manin symbol
                 #
@@ -1084,7 +1108,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                 # Note that we coerce in Manin symbols as tuples.
                 for m in range(len(P)):
                     x = M((m, uu, vv))
-                    z += x*P[m]
+                    z += x * P[m]
 
             rows.append(z.element())
 
@@ -1101,8 +1125,17 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             sage: m # indirect doctest
             Modular Symbols space of dimension 3 for Gamma_0(1) of weight 12 with sign 0 over Rational Field
         """
-        return "Modular Symbols space of dimension %s and weight %s for %s with sign %s and character %s over %s" % (
-            self.dimension(), self.weight(), self.group(), self.sign(), self.character()._repr_short_(), self.base_ring())
+        return (
+            "Modular Symbols space of dimension %s and weight %s for %s with sign %s and character %s over %s"
+            % (
+                self.dimension(),
+                self.weight(),
+                self.group(),
+                self.sign(),
+                self.character()._repr_short_(),
+                self.base_ring(),
+            )
+        )
 
     def _latex_(self):
         r"""
@@ -1119,10 +1152,12 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             sage: latex(m)
             \mathrm{ModSym}_{2}(\Gamma_1(7),\left[\zeta_{6}\right];\Bold{Q}(\zeta_{6}))
         """
-        return "\\mathrm{ModSym}_{%s}(%s,%s;%s)" % (self.weight(),
-                                                    latex(self.group()),
-                                                    latex(list(self.character().values_on_gens())),
-                                                    latex(self.base_ring()))
+        return "\\mathrm{ModSym}_{%s}(%s,%s;%s)" % (
+            self.weight(),
+            latex(self.group()),
+            latex(list(self.character().values_on_gens())),
+            latex(self.base_ring()),
+        )
 
     def _matrix_of_operator_on_modular_symbols(self, codomain, R):
         r"""
@@ -1170,7 +1205,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             for c, x in b.modular_symbol_rep():
                 for g in R:
                     y = x.apply(g)
-                    v += y*c
+                    v += y * c
             w = codomain(v).element()
             rows.append(w)
         M = MatrixSpace(self.base_ring(), len(rows), codomain.degree(), sparse=False)
@@ -1258,12 +1293,16 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         if chi is not None:
             dec = [u for u in chi.decomposition() if chi.modulus().divides(d)]
             if not all((u**2).is_trivial() for u in dec):
-                raise ValueError("Atkin-Lehner W_d only defined when d-primary part of character is trivial or quadratic")
+                raise ValueError(
+                    "Atkin-Lehner W_d only defined when d-primary part of character is trivial or quadratic"
+                )
 
         if self.sign() != 0:
             # AL operator problematic on signed spaces
-            if self.diamond_bracket_matrix(crt(-1, 1, d, N/d)) != 1:
-                raise ValueError("Atkin-Lehner operator not defined on signed space (use sign=0)")
+            if self.diamond_bracket_matrix(crt(-1, 1, d, N / d)) != 1:
+                raise ValueError(
+                    "Atkin-Lehner operator not defined on signed space (use sign=0)"
+                )
 
         W = self.group().atkin_lehner_matrix(d).list()
         return self._action_on_modular_symbols(W)
@@ -1303,7 +1342,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             E = [x.element() for x in I]
             zero = self.base_ring()(0)
             n = int(B.dimension())
-            E = sum([list(x) + [zero]*(n - len(x)) for x in E], [])
+            E = sum([list(x) + [zero] * (n - len(x)) for x in E], [])
 
             A = W(E)
             H = Hom(self, B)
@@ -1384,7 +1423,10 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             if self.base_ring().characteristic() == 0:
                 d = self._cuspidal_submodule_dimension_formula()
                 if d is not None:
-                    assert d == S.dimension(), "According to dimension formulas the cuspidal subspace of \"%s\" has dimension %s; however, computing it using modular symbols we obtained %s, so there is a bug (please report!)." % (self, d, S.dimension())
+                    assert d == S.dimension(), (
+                        "According to dimension formulas the cuspidal subspace of \"%s\" has dimension %s; however, computing it using modular symbols we obtained %s, so there is a bug (please report!)."
+                        % (self, d, S.dimension())
+                    )
             self.__cuspidal_submodule = S
         return self.__cuspidal_submodule
 
@@ -1563,9 +1605,11 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         """
         if isinstance(x, ManinSymbol):
             if not x.parent().weight() == self.weight():
-                raise ArithmeticError("incompatible weights: Manin symbol\
-                    has weight %s, but modular symbols space has weight %s" % (
-                    x.parent().weight(), self.weight()))
+                raise ArithmeticError(
+                    "incompatible weights: Manin symbol\
+                    has weight %s, but modular symbols space has weight %s"
+                    % (x.parent().weight(), self.weight())
+                )
             t = self.manin_symbols().index(x.tuple())
             if isinstance(t, tuple):
                 i, scalar = t
@@ -1644,54 +1688,54 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             (Modular Symbols subspace of dimension 2 of Modular Symbols space of dimension 7 and level 38, weight 2, character [zeta3], sign 1, over Cyclotomic Field of order 3 and degree 2)
         """
 
-#         EXAMPLES::
+        #         EXAMPLES::
 
-#             sage: M = ModularSymbols(Gamma0(22), 2); M
-#             Modular Symbols space of dimension 7 for Gamma_0(22) of weight 2 with sign 0 over Rational Field
-#             sage: M.factorization():
-#             ...    print b.dimension(), b.level(), e
-#             1 11 2
-#             1 11 2
-#             1 11 2
-#             1 22 1
+        #             sage: M = ModularSymbols(Gamma0(22), 2); M
+        #             Modular Symbols space of dimension 7 for Gamma_0(22) of weight 2 with sign 0 over Rational Field
+        #             sage: M.factorization():
+        #             ...    print b.dimension(), b.level(), e
+        #             1 11 2
+        #             1 11 2
+        #             1 11 2
+        #             1 22 1
 
-#         An example with sign 1::
+        #         An example with sign 1::
 
-#             sage: M = ModularSymbols(Gamma0(22), 2, sign=1); M
-#             Modular Symbols space of dimension 5 for Gamma_0(22) of weight 2 with sign 1 over Rational Field
-#             sage: for b, e in M.factorization():
-#             ...    print b.dimension(), b.level(), e
-#             1 11 2
-#             1 11 2
-#             1 22 1
+        #             sage: M = ModularSymbols(Gamma0(22), 2, sign=1); M
+        #             Modular Symbols space of dimension 5 for Gamma_0(22) of weight 2 with sign 1 over Rational Field
+        #             sage: for b, e in M.factorization():
+        #             ...    print b.dimension(), b.level(), e
+        #             1 11 2
+        #             1 11 2
+        #             1 22 1
 
-#         An example for Gamma1::
+        #         An example for Gamma1::
 
-#             sage: M = ModularSymbols(Gamma1(26), 2, sign=1); M
-#             Modular Symbols space of dimension 33 for Gamma_1(26) of weight 2 with sign 1 over Rational Field
-#             sage: for b, e in M.factorization():
-#             ...    print b.dimension(), b.level(), e
-#             1 13 2
-#             1 13 2
-#             1 13 2
-#             2 13 2
-#             2 13 2
-#             2 13 2
-#             2 13 2
-#             2 13 2
-#             1 26 1
-#             1 26 1
-#             1 26 1
-#             2 26 1
-#             2 26 1
+        #             sage: M = ModularSymbols(Gamma1(26), 2, sign=1); M
+        #             Modular Symbols space of dimension 33 for Gamma_1(26) of weight 2 with sign 1 over Rational Field
+        #             sage: for b, e in M.factorization():
+        #             ...    print b.dimension(), b.level(), e
+        #             1 13 2
+        #             1 13 2
+        #             1 13 2
+        #             2 13 2
+        #             2 13 2
+        #             2 13 2
+        #             2 13 2
+        #             2 13 2
+        #             1 26 1
+        #             1 26 1
+        #             1 26 1
+        #             2 26 1
+        #             2 26 1
 
-#         An example with level divisible by a square::
+        #         An example with level divisible by a square::
 
-#             sage: M = ModularSymbols(Gamma0(2*9),2); M
-#             ???
-#             sage: for b, e in M.factorization():
-#             ...    print b.dimension(), b.level(), e
-#             ???
+        #             sage: M = ModularSymbols(Gamma0(2*9),2); M
+        #             ???
+        #             sage: for b, e in M.factorization():
+        #             ...    print b.dimension(), b.level(), e
+        #             ???
         try:
             return self._factorization
         except AttributeError:
@@ -1757,14 +1801,16 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                     A._is_simple = True
                     D.append((A, n))
         # The Eisenstein part
-        D.extend((E, 1) for E in
-                 self.eisenstein_submodule().decomposition(anemic=True))
+        D.extend((E, 1) for E in self.eisenstein_submodule().decomposition(anemic=True))
 
         r = self.dimension()
         s = sum(A.rank() * mult for A, mult in D)
         D = Factorization(D, cr=True, sort=False)
         D.sort()
-        assert r == s, "bug in factorization --  self has dimension %s, but sum of dimensions of factors is %s\n%s" % (r, s, D)
+        assert r == s, (
+            "bug in factorization --  self has dimension %s, but sum of dimensions of factors is %s\n%s"
+            % (r, s, D)
+        )
         self._factorization = D
         return self._factorization
 
@@ -1790,7 +1836,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             return self.__is_cuspidal
         except AttributeError:
             S = self.ambient_hecke_module().cuspidal_submodule()
-            self.__is_cuspidal = (S.dimension() == self.dimension())
+            self.__is_cuspidal = S.dimension() == self.dimension()
         return self.__is_cuspidal
 
     @cached_method
@@ -1914,7 +1960,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         """
         if sign == self.sign():
             return self
-        return modsym.ModularSymbols(self.group(), self.weight(), sign=sign, base_ring=self.base_ring())
+        return modsym.ModularSymbols(
+            self.group(), self.weight(), sign=sign, base_ring=self.base_ring()
+        )
 
     def modular_symbols_of_weight(self, k):
         r"""
@@ -1940,7 +1988,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         """
         if k == self.weight():
             return self
-        return modsym.ModularSymbols(self.group(), weight=k, sign=self.sign(), base_ring=self.base_ring())
+        return modsym.ModularSymbols(
+            self.group(), weight=k, sign=self.sign(), base_ring=self.base_ring()
+        )
 
     def _compute_sign_submodule(self, sign, compute_dual=True):
         r"""
@@ -2044,7 +2094,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             sage: ModularSymbols(Gamma1(13), 5).diamond_bracket_operator(6).charpoly().factor()
             (x^2 + 1)^8 * (x^4 - x^2 + 1)^10
         """
-        return self.__heilbronn_operator(self, [[d, 0, 0, d]], 1).matrix() * d**(2 - self.weight())
+        return self.__heilbronn_operator(self, [[d, 0, 0, d]], 1).matrix() * d ** (
+            2 - self.weight()
+        )
 
     def submodule(self, M, dual_free_module=None, check=True):
         r"""
@@ -2094,7 +2146,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
                 if not isinstance(M, (list, tuple)):
                     M = M.gens()
                 M = V.span([V(x.element()) for x in M])
-        return subspace.ModularSymbolsSubspace(self, M, dual_free_module=dual_free_module, check=check)
+        return subspace.ModularSymbolsSubspace(
+            self, M, dual_free_module=dual_free_module, check=check
+        )
 
     def twisted_winding_element(self, i, eps):
         r"""
@@ -2133,8 +2187,10 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             raise ValueError("i must be between 0 and k-2.")
 
         m = eps.modulus()
-        return self.sum(eps(a) * self.modular_symbol([i, Cusp(0), Cusp(a / m)])
-                        for a in m.coprime_integers(m))
+        return self.sum(
+            eps(a) * self.modular_symbol([i, Cusp(0), Cusp(a / m)])
+            for a in m.coprime_integers(m)
+        )
 
     ######################################################################
     # Z-module of integral modular symbols.
@@ -2246,9 +2302,11 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             raise ValueError("unknown algorithm '%s'" % algorithm)
         W = B.row_module()
         if d != 1:
-            W = W.scale(1/d)
+            W = W.scale(1 / d)
         self.__integral_structure = W
-        assert W.rank() == self.rank(), "there is a bug in computing integral structure on modular symbols"
+        assert W.rank() == self.rank(), (
+            "there is a bug in computing integral structure on modular symbols"
+        )
         return self.__integral_structure
 
     ######################################################################
@@ -2336,9 +2394,10 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
 
         if nz is not None:
             R = self.hecke_images(nz, v)
-            return [(R * m, D[i].dual_eigenvector(names=names[i],
-                                                  lift=False, nz=nz))
-                    for i, m in enumerate(B)]
+            return [
+                (R * m, D[i].dual_eigenvector(names=names[i], lift=False, nz=nz))
+                for i, m in enumerate(B)
+            ]
 
         # No single i works, so we do something less uniform.
         ans = []
@@ -2350,8 +2409,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             else:
                 R = self.hecke_images(nz, v)
                 cache[nz] = R
-            ans.append((R * B[i], D[i].dual_eigenvector(names=names[i],
-                                                        lift=False, nz=nz)))
+            ans.append(
+                (R * B[i], D[i].dual_eigenvector(names=names[i], lift=False, nz=nz))
+            )
         return ans
 
     def __pari__(self):
@@ -2365,7 +2425,9 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             ...
             NotImplementedError: PARI modular symbols are only implemented for Gamma0(n)
         """
-        raise NotImplementedError('PARI modular symbols are only implemented for Gamma0(n)')
+        raise NotImplementedError(
+            'PARI modular symbols are only implemented for Gamma0(n)'
+        )
 
     def _pari_pairing(self):
         r"""
@@ -2407,6 +2469,7 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             return self._pari_tensor().inverse()
         from sage.matrix.constructor import matrix
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         P = self.__pari__()
         I = matrix.identity(self.rank()).__pari__()
         m = Integer(self.weight() - 2)
@@ -2421,9 +2484,11 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
             i = s.i
             a, b, c, d = s.lift_to_sl2z()
             e = [R(p) for p in P.mseval(I, matrix(2, 2, [b, a, d, c]))]
-            g = (d * x - b)**i * (-c * x + a)**(m - i)
-            return [sum(f[j] * g[m - j] / m.binomial(j) for j in range(m + 1))
-                    for f in e]
+            g = (d * x - b) ** i * (-c * x + a) ** (m - i)
+            return [
+                sum(f[j] * g[m - j] / m.binomial(j) for j in range(m + 1)) for f in e
+            ]
+
         return matrix([ev(s) for s in self.manin_symbols_basis()])
 
     def _pari_tensor(self):
@@ -2468,7 +2533,8 @@ class ModularSymbolsAmbient(ModularSymbolsSpace, AmbientHeckeModule):
         if self.weight() != 2:
             return self._pari_pairing().inverse()
         from sage.matrix.constructor import matrix
-        gens = self.__pari__().mspathgens()[0][:self.rank()].sage()
+
+        gens = self.__pari__().mspathgens()[0][: self.rank()].sage()
         # gens is a basis for the space of modular symbols of weight 2
         # (in the sense of Sage), and the distinguished basis of the
         # corresponding PARI space of modular symbols is dual to this.
@@ -2505,6 +2571,7 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
         sage: ModularSymbols(36,4).dimension()
         36
     """
+
     def __init__(self, N, k, sign, F, custom_init=None, category=None):
         r"""
         Initialize a space of modular symbols of weight `k` for
@@ -2542,9 +2609,15 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
         if sign not in [-1, 0, 1]:
             raise TypeError("sign must be an int in [-1,0,1]")
 
-        ModularSymbolsAmbient.__init__(self, weight=k, group=arithgroup.Gamma0(N),
-                                       sign=sign, base_ring=F,
-                                       custom_init=custom_init, category=category)
+        ModularSymbolsAmbient.__init__(
+            self,
+            weight=k,
+            group=arithgroup.Gamma0(N),
+            sign=sign,
+            base_ring=F,
+            custom_init=custom_init,
+            category=category,
+        )
 
     def _dimension_formula(self):
         r"""
@@ -2566,7 +2639,7 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
                 return 0
             if k > 2:
                 return 2 * self.group().dimension_cusp_forms(k) + self.group().ncusps()
-            return 2*self.group().dimension_cusp_forms(k) + self.group().ncusps() - 1
+            return 2 * self.group().dimension_cusp_forms(k) + self.group().ncusps() - 1
         raise NotImplementedError
 
     def _repr_(self):
@@ -2579,9 +2652,16 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
             sage: M # indirect doctest
             Modular Symbols space of dimension 32 for Gamma_0(37) of weight 6 with sign 0 over Rational Field
         """
-        return ("Modular Symbols space of dimension %s for Gamma_0(%s) of weight %s with sign %s " +
-                "over %s") % (self.dimension(), self.level(), self.weight(), self.sign(),
-                              self.base_ring())
+        return (
+            "Modular Symbols space of dimension %s for Gamma_0(%s) of weight %s with sign %s "
+            + "over %s"
+        ) % (
+            self.dimension(),
+            self.level(),
+            self.weight(),
+            self.sign(),
+            self.base_ring(),
+        )
 
     def _cuspidal_submodule_dimension_formula(self):
         r"""
@@ -2637,7 +2717,9 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
         elif isinstance(M.group(), arithgroup.Gamma1_class):
             H = arithgroup.degeneracy_coset_representatives_gamma1(level, N, 1)
         else:
-            raise NotImplementedError("Degeneracy raising maps not implemented for GammaH levels")
+            raise NotImplementedError(
+                "Degeneracy raising maps not implemented for GammaH levels"
+            )
 
         # 2. The map is
         #        [P,pi(g)] |--> sum_{h in H} [P, pi(h*g)]
@@ -2656,7 +2738,7 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
             i = s.i
             # We apply each matrix in H according to the above formula
             for h in H:
-                hg = h*g
+                hg = h * g
                 z += M((i, hg[1, 0], hg[1, 1]))
             rows.append(z.element())
 
@@ -2698,7 +2780,8 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
         except AttributeError:
             pass
         self.__boundary_space = boundary.BoundarySpace_wtk_g0(
-            self.level(), self.weight(), self.sign(), self.base_ring())
+            self.level(), self.weight(), self.sign(), self.base_ring()
+        )
         return self.__boundary_space
 
     def manin_symbols(self):
@@ -2717,7 +2800,8 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
             return self.__manin_symbols
         except AttributeError:
             self.__manin_symbols = ManinSymbolList_gamma0(
-                level=self.level(), weight=self.weight())
+                level=self.level(), weight=self.weight()
+            )
         return self.__manin_symbols
 
     def _hecke_images(self, i, v):
@@ -2762,8 +2846,9 @@ class ModularSymbolsAmbient_wtk_g0(ModularSymbolsAmbient):
         # the kernel of the dual space corresponding to self.
         c = self.manin_generators()[self.manin_basis()[i]]
         N = self.level()
-        return heilbronn.hecke_images_gamma0_weight_k(c.u, c.v, c.i, N, self.weight(),
-                                                      v, self.manin_gens_to_basis())
+        return heilbronn.hecke_images_gamma0_weight_k(
+            c.u, c.v, c.i, N, self.weight(), v, self.manin_gens_to_basis()
+        )
 
     @cached_method
     def __pari__(self):
@@ -2814,6 +2899,7 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         sage: ModularSymbols(Gamma0(12),2)
         Modular Symbols space of dimension 5 for Gamma_0(12) of weight 2 with sign 0 over Rational Field
     """
+
     def __init__(self, N, sign, F, custom_init=None, category=None):
         """
         Initialize a space of modular symbols.
@@ -2833,8 +2919,9 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
 
             sage: M = ModularSymbols(Gamma0(12),2)
         """
-        ModularSymbolsAmbient_wtk_g0.__init__(self, N=N, k=2, sign=sign, F=F,
-                                              custom_init=custom_init, category=category)
+        ModularSymbolsAmbient_wtk_g0.__init__(
+            self, N=N, k=2, sign=sign, F=F, custom_init=custom_init, category=category
+        )
 
     def _dimension_formula(self):
         r"""
@@ -2851,7 +2938,7 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         if self.base_ring().characteristic() == 0:
             if self.sign() != 0:
                 return None
-            return 2*self.group().dimension_cusp_forms(2) + self.group().ncusps() - 1
+            return 2 * self.group().dimension_cusp_forms(2) + self.group().ncusps() - 1
         raise NotImplementedError
 
     def _cuspidal_submodule_dimension_formula(self):
@@ -2925,7 +3012,9 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         P1 = self.p1list()
         mod2term = self._mod2term
         R = self.manin_gens_to_basis()
-        W = R.new_matrix(nrows=len(B), ncols=R.nrows())  # the 0 with given number of rows and cols.
+        W = R.new_matrix(
+            nrows=len(B), ncols=R.nrows()
+        )  # the 0 with given number of rows and cols.
         tm = verbose("Matrix non-reduced", tm)
         for j, i in enumerate(B):
             # The following step is where most of the time is spent.
@@ -2947,10 +3036,12 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
                 if k != -1:
                     f, s = mod2term[k]
                     if s != 0:
-                        W[j, f] = W[j, f] + s*m
+                        W[j, f] = W[j, f] + s * m
         tm = verbose("done making non-reduced matrix", tm)
-        verbose("start matrix-matrix (%s x %s) times (%s x %s) multiply to get Tp" % (W.nrows(), W.ncols(),
-                                                                                      R.nrows(), R.ncols()))
+        verbose(
+            "start matrix-matrix (%s x %s) times (%s x %s) multiply to get Tp"
+            % (W.nrows(), W.ncols(), R.nrows(), R.ncols())
+        )
         if hasattr(W, '_matrix_times_matrix_dense'):
             Tp = W._matrix_times_matrix_dense(R)
             verbose("done matrix multiply and computing Hecke operator", tm)
@@ -2978,7 +3069,8 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         except AttributeError:
             pass
         self.__boundary_space = boundary.BoundarySpace_wtk_g0(
-            self.level(), self.weight(), self.sign(), self.base_ring())
+            self.level(), self.weight(), self.sign(), self.base_ring()
+        )
         return self.__boundary_space
 
     def _hecke_image_of_ith_basis_vector(self, n, i):
@@ -3006,8 +3098,9 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         """
         c = self.manin_generators()[self.manin_basis()[i]]
         N = self.level()
-        I = heilbronn.hecke_images_gamma0_weight2(c.u, c.v, N, [n],
-                                                  self.manin_gens_to_basis())
+        I = heilbronn.hecke_images_gamma0_weight2(
+            c.u, c.v, N, [n], self.manin_gens_to_basis()
+        )
         return self(I[0])
 
     def _hecke_images(self, i, v):
@@ -3041,8 +3134,9 @@ class ModularSymbolsAmbient_wt2_g0(ModularSymbolsAmbient_wtk_g0):
         # the kernel of the dual space corresponding to self.
         c = self.manin_generators()[self.manin_basis()[i]]
         N = self.level()
-        return heilbronn.hecke_images_gamma0_weight2(c.u, c.v, N, v,
-                                                     self.manin_gens_to_basis())
+        return heilbronn.hecke_images_gamma0_weight2(
+            c.u, c.v, N, v, self.manin_gens_to_basis()
+        )
 
 
 class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
@@ -3095,13 +3189,15 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
 
             sage: M = ModularSymbols(Gamma1(7),3)
         """
-        ModularSymbolsAmbient.__init__(self,
-                weight=weight,
-                group=arithgroup.Gamma1(level),
-                sign=sign,
-                base_ring=F,
-                custom_init=custom_init,
-                category=category)
+        ModularSymbolsAmbient.__init__(
+            self,
+            weight=weight,
+            group=arithgroup.Gamma1(level),
+            sign=sign,
+            base_ring=F,
+            custom_init=custom_init,
+            category=category,
+        )
 
     def _dimension_formula(self):
         r"""
@@ -3120,7 +3216,7 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
         level, weight, sign = self.level(), self.weight(), self.sign()
         if sign != 0:
             return None
-        d = 2*self.group().dimension_cusp_forms(weight) + self.group().ncusps()
+        d = 2 * self.group().dimension_cusp_forms(weight) + self.group().ncusps()
         if level == 1 and weight % 2:
             return 0
         if weight == 2:
@@ -3142,8 +3238,16 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
             sage: M # indirect doctest
             Modular Symbols space of dimension 8 for Gamma_1(7) of weight 3 with sign 0 over Rational Field
         """
-        return ("Modular Symbols space of dimension %s for Gamma_1(%s) of weight %s with sign %s over %s"
-                % (self.dimension(), self.level(), self.weight(), self.sign(), self.base_ring()))
+        return (
+            "Modular Symbols space of dimension %s for Gamma_1(%s) of weight %s with sign %s over %s"
+            % (
+                self.dimension(),
+                self.level(),
+                self.weight(),
+                self.sign(),
+                self.base_ring(),
+            )
+        )
 
     def _cuspidal_submodule_dimension_formula(self):
         r"""
@@ -3239,7 +3343,7 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
             i = s.i
             # We apply each matrix in H according to the above formula
             for h in H:
-                hg = h*g
+                hg = h * g
                 z += M((i, hg[1, 0], hg[1, 1]))
             rows.append(z.element())
 
@@ -3260,7 +3364,8 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
         except AttributeError:
             pass
         self.__boundary_space = boundary.BoundarySpace_wtk_g1(
-            self.level(), self.weight(), self.sign(), self.base_ring())
+            self.level(), self.weight(), self.sign(), self.base_ring()
+        )
         return self.__boundary_space
 
     def manin_symbols(self):
@@ -3279,7 +3384,8 @@ class ModularSymbolsAmbient_wtk_g1(ModularSymbolsAmbient):
             return self.__manin_symbols
         except AttributeError:
             self.__manin_symbols = ManinSymbolList_gamma1(
-                level=self.level(), weight=self.weight())
+                level=self.level(), weight=self.weight()
+            )
         return self.__manin_symbols
 
 
@@ -3303,11 +3409,15 @@ class ModularSymbolsAmbient_wtk_gamma_h(ModularSymbolsAmbient):
             sage: ModularSymbols(GammaH(15,[4]),2)
             Modular Symbols space of dimension 9 for Congruence Subgroup Gamma_H(15) with H generated by [4] of weight 2 with sign 0 over Rational Field
         """
-        ModularSymbolsAmbient.__init__(self,
-                weight=weight, group=group,
-                sign=sign, base_ring=F,
-                custom_init=custom_init,
-                category=category)
+        ModularSymbolsAmbient.__init__(
+            self,
+            weight=weight,
+            group=group,
+            sign=sign,
+            base_ring=F,
+            custom_init=custom_init,
+            category=category,
+        )
 
     def _dimension_formula(self):
         r"""
@@ -3332,8 +3442,16 @@ class ModularSymbolsAmbient_wtk_gamma_h(ModularSymbolsAmbient):
             sage: M # indirect doctest
             Modular Symbols space of dimension 9 for Congruence Subgroup Gamma_H(15) with H generated by [4] of weight 2 with sign 0 over Rational Field
         """
-        return ("Modular Symbols space of dimension %s for %s of weight %s with sign %s over %s"
-                % (self.dimension(), self.group(), self.weight(), self.sign(), self.base_ring()))
+        return (
+            "Modular Symbols space of dimension %s for %s of weight %s with sign %s over %s"
+            % (
+                self.dimension(),
+                self.group(),
+                self.weight(),
+                self.sign(),
+                self.base_ring(),
+            )
+        )
 
     def _cuspidal_submodule_dimension_formula(self):
         r"""
@@ -3407,7 +3525,8 @@ class ModularSymbolsAmbient_wtk_gamma_h(ModularSymbolsAmbient):
         except AttributeError:
             pass
         self.__boundary_space = boundary.BoundarySpace_wtk_gamma_h(
-            self.group(), self.weight(), self.sign(), self.base_ring())
+            self.group(), self.weight(), self.sign(), self.base_ring()
+        )
         return self.__boundary_space
 
     def manin_symbols(self):
@@ -3426,7 +3545,8 @@ class ModularSymbolsAmbient_wtk_gamma_h(ModularSymbolsAmbient):
             return self.__manin_symbols
         except AttributeError:
             self.__manin_symbols = ManinSymbolList_gamma_h(
-                group=self.group(), weight=self.weight())
+                group=self.group(), weight=self.weight()
+            )
         return self.__manin_symbols
 
 
@@ -3478,14 +3598,16 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             True
         """
         level = eps.modulus()
-        ModularSymbolsAmbient.__init__(self,
-                weight=weight,
-                group=arithgroup.Gamma1(level),
-                sign=sign,
-                base_ring=base_ring,
-                character=eps.change_ring(base_ring),
-                custom_init=custom_init,
-                category=category)
+        ModularSymbolsAmbient.__init__(
+            self,
+            weight=weight,
+            group=arithgroup.Gamma1(level),
+            sign=sign,
+            base_ring=base_ring,
+            character=eps.change_ring(base_ring),
+            custom_init=custom_init,
+            category=category,
+        )
 
     def _repr_(self):
         r"""
@@ -3498,10 +3620,17 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             sage: M # indirect doctest
             Modular Symbols space of dimension 2 and level 5, weight 3, character [zeta4], sign 0, over Cyclotomic Field of order 4 and degree 2
         """
-        return ("Modular Symbols space of dimension %s and level %s, weight %s, character %s, sign %s, " +
-                "over %s") % (self.dimension(), self.level(), self.weight(),
-                              self.character()._repr_short_(), self.sign(),
-                              self.base_ring())
+        return (
+            "Modular Symbols space of dimension %s and level %s, weight %s, character %s, sign %s, "
+            + "over %s"
+        ) % (
+            self.dimension(),
+            self.level(),
+            self.weight(),
+            self.character()._repr_short_(),
+            self.sign(),
+            self.base_ring(),
+        )
 
     def _cuspidal_submodule_dimension_formula(self):
         r"""
@@ -3522,7 +3651,9 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             m = 2
         else:
             m = 1
-        return m * self.group().dimension_cusp_forms(self.weight(), eps=self.character())
+        return m * self.group().dimension_cusp_forms(
+            self.weight(), eps=self.character()
+        )
 
     def _cuspidal_new_submodule_dimension_formula(self):
         r"""
@@ -3543,9 +3674,13 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             m = 2
         else:
             m = 1
-        return m * self.group().dimension_new_cusp_forms(self.weight(), eps=self.character())
+        return m * self.group().dimension_new_cusp_forms(
+            self.weight(), eps=self.character()
+        )
 
-    def _matrix_of_operator_on_modular_symbols(self, codomain, R, character_twist=False):
+    def _matrix_of_operator_on_modular_symbols(
+        self, codomain, R, character_twist=False
+    ):
         r"""
         INPUT:
 
@@ -3584,9 +3719,9 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
                 for g in R:
                     y = x.apply(g)
                     if character_twist:
-                        v += y*c*eps(g[0])
+                        v += y * c * eps(g[0])
                     else:
-                        v += y*c
+                        v += y * c
             w = codomain(v).element()
             rows.append(w)
         M = MatrixSpace(self.base_ring(), len(rows), codomain.degree(), sparse=False)
@@ -3681,7 +3816,8 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
         except AttributeError:
             pass
         self.__boundary_space = boundary.BoundarySpace_wtk_eps(
-            self.character(), self.weight(), self.sign())
+            self.character(), self.weight(), self.sign()
+        )
         return self.__boundary_space
 
     def manin_symbols(self):
@@ -3701,7 +3837,8 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             return self.__manin_symbols
         except AttributeError:
             self.__manin_symbols = ManinSymbolList_character(
-                character=self.character(), weight=self.weight())
+                character=self.character(), weight=self.weight()
+            )
         return self.__manin_symbols
 
     def modular_symbols_of_level(self, N):
@@ -3732,7 +3869,10 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
         elif N % self.level() == 0:
             eps = self.character().extend(N)
         else:
-            raise ValueError("The level N (=%s) must be a divisor or multiple of the modulus of the character (=%s)" % (N, self.level()))
+            raise ValueError(
+                "The level N (=%s) must be a divisor or multiple of the modulus of the character (=%s)"
+                % (N, self.level())
+            )
         return modsym.ModularSymbols(eps, self.weight(), self.sign(), self.base_ring())
 
     def modular_symbols_of_sign(self, sign):
@@ -3763,7 +3903,9 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             sage: M.modular_symbols_of_sign(-1)
             Modular Symbols space of dimension 0 and level 5, weight 2, character [zeta4], sign -1, over Cyclotomic Field of order 4 and degree 2
         """
-        return modsym.ModularSymbols(self.character(), self.weight(), sign, self.base_ring())
+        return modsym.ModularSymbols(
+            self.character(), self.weight(), sign, self.base_ring()
+        )
 
     def modular_symbols_of_weight(self, k):
         r"""
@@ -3819,14 +3961,18 @@ class ModularSymbolsAmbient_wtk_eps(ModularSymbolsAmbient):
             [ 0  1  1 -1 -1  0 -1  1  1  0  1  2  0 -2  2]
         """
         if self.weight() != 2:
-            raise NotImplementedError("Hecke images only implemented when the weight is 2")
+            raise NotImplementedError(
+                "Hecke images only implemented when the weight is 2"
+            )
         chi = self.character()
         # Find basis vector for ambient space such that it is not in
         # the kernel of the dual space corresponding to self.
         c = self.manin_generators()[self.manin_basis()[i]]
         N = self.level()
         if chi.order() > 2:
-            return heilbronn.hecke_images_nonquad_character_weight2(c.u, c.v, N,
-                v, chi, self.manin_gens_to_basis())
-        return heilbronn.hecke_images_quad_character_weight2(c.u, c.v, N,
-            v, chi, self.manin_gens_to_basis())
+            return heilbronn.hecke_images_nonquad_character_weight2(
+                c.u, c.v, N, v, chi, self.manin_gens_to_basis()
+            )
+        return heilbronn.hecke_images_quad_character_weight2(
+            c.u, c.v, N, v, chi, self.manin_gens_to_basis()
+        )

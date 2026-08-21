@@ -79,7 +79,7 @@ def ZZ_points_of_bounded_height(PS, dim, bound):
 
     points_of_bounded_height = set()
 
-    for t in itertools.product(range(-bound, bound+1), repeat=dim+1):
+    for t in itertools.product(range(-bound, bound + 1), repeat=dim + 1):
         if gcd(t) == 1:
             point = PS(t)
             if point not in points_of_bounded_height:
@@ -132,15 +132,19 @@ def QQ_points_of_bounded_height(PS, dim, bound, normalize=False):
 
     unit_tuples = list(itertools.product([-1, 1], repeat=dim))
     points_of_bounded_height = set()
-    increasing_tuples = itertools.combinations_with_replacement(range(floor(bound + 1)), dim + 1)
+    increasing_tuples = itertools.combinations_with_replacement(
+        range(floor(bound + 1)), dim + 1
+    )
     for t in increasing_tuples:
         if gcd(t) == 1:
             for p in itertools.permutations(t):
                 for u in unit_tuples:
-                    point = PS([a*b for a, b in zip(u, p)] + [p[dim]])
+                    point = PS([a * b for a, b in zip(u, p)] + [p[dim]])
                     if point not in points_of_bounded_height:
                         if normalize:
-                            point.scale_by(lcm([point[i].denominator() for i in range(dim + 1)]))
+                            point.scale_by(
+                                lcm([point[i].denominator() for i in range(dim + 1)])
+                            )
 
                         points_of_bounded_height.add(point)
                         yield point
@@ -205,7 +209,9 @@ def IQ_points_of_bounded_height(PS, K, dim, bound):
 
         points_in_class_a = set()
         t = len(a_coordinates) - 1
-        increasing_tuples = itertools.combinations_with_replacement(range(t + 1), dim + 1)
+        increasing_tuples = itertools.combinations_with_replacement(
+            range(t + 1), dim + 1
+        )
         for index_tuple in increasing_tuples:
             point_coordinates = [a_coordinates[i] for i in index_tuple]
             if a == K.ideal(point_coordinates):
@@ -329,7 +335,7 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
     for c in pari(cut_fund_unit_logs).qflll().python():
         new_unit = 1
         for i in range(r):
-            new_unit *= fundamental_units[i]**c[i]
+            new_unit *= fundamental_units[i] ** c[i]
         lll_fund_units.append(new_unit)
     fundamental_units = lll_fund_units
     fund_unit_logs = list(map(log_embed, fundamental_units))
@@ -337,7 +343,7 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
     possible_norm_set = set()
     for i in range(class_number):
         for k in range(1, floor(bound + 1)):
-            possible_norm_set.add(k*class_group_ideal_norms[i])
+            possible_norm_set.add(k * class_group_ideal_norms[i])
 
     principal_ideal_gens = {}
     negative_norm_units = K.elements_of_norm(-1)
@@ -354,35 +360,37 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
             pr_ideal_gen_logs[y] = log_embed(y)
 
     fund_parallelotope_vertices = []
-    for coefficient_tuple in itertools.product([-1/2, 1/2], repeat=r):
-        vertex = sum([coefficient_tuple[i]*fund_unit_logs[i] for i in range(r)])
+    for coefficient_tuple in itertools.product([-1 / 2, 1 / 2], repeat=r):
+        vertex = sum([coefficient_tuple[i] * fund_unit_logs[i] for i in range(r)])
         fund_parallelotope_vertices.append(vertex)
 
-    D_numbers = [max(vertex[v] for vertex in fund_parallelotope_vertices)
-                 for v in range(r + 1)]
+    D_numbers = [
+        max(vertex[v] for vertex in fund_parallelotope_vertices) for v in range(r + 1)
+    ]
 
-    A_numbers = [min(pr_ideal_gen_logs[y][v] for y in pr_ideal_gen_logs)
-                 for v in range(r + 1)]
+    A_numbers = [
+        min(pr_ideal_gen_logs[y][v] for y in pr_ideal_gen_logs) for v in range(r + 1)
+    ]
 
     aux_constant = (1 / K_degree) * Reals(norm_bound).log()
 
-    L_numbers = [aux_constant + D_numbers[v] - A_numbers[v]
-                 for v in range(r1)]
-    L_numbers.extend(2 * aux_constant + D_numbers[v] - A_numbers[v]
-                     for v in range(r1, r + 1))
+    L_numbers = [aux_constant + D_numbers[v] - A_numbers[v] for v in range(r1)]
+    L_numbers.extend(
+        2 * aux_constant + D_numbers[v] - A_numbers[v] for v in range(r1, r + 1)
+    )
     L_numbers = vector(L_numbers).change_ring(QQ)
 
     T = column_matrix(fund_unit_logs).delete_rows([r]).change_ring(QQ)
 
     # insert_row only takes integers, see https://github.com/sagemath/sage/issues/11328
-    M = ((-1)*matrix.identity(r)).insert_row(r, [Integer(1) for i in range(r)])
+    M = ((-1) * matrix.identity(r)).insert_row(r, [Integer(1) for i in range(r)])
     M = M.transpose().insert_row(0, [Integer(0) for i in range(r + 1)]).transpose()
     M = M.change_ring(QQ)
     M.set_column(0, L_numbers)
     vertices = map(vector, Polyhedron(ieqs=list(M)).vertices())
 
     T_it = T.inverse().transpose()
-    unit_polytope = Polyhedron([v*T_it for v in vertices])
+    unit_polytope = Polyhedron([v * T_it for v in vertices])
 
     coordinate_space = {}
     coordinate_space[0] = [[K(0), log_embed(0)]]
@@ -392,8 +400,8 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
     for n in int_points:
         new_unit = 1
         for j in range(r):
-            new_unit *= fundamental_units[j]**n[j]
-        new_unit_log = sum([n[j]*fund_unit_logs[j] for j in range(r)])
+            new_unit *= fundamental_units[j] ** n[j]
+        new_unit_log = sum([n[j] * fund_unit_logs[j] for j in range(r)])
         units_with_logs[n] = [new_unit, new_unit_log]
 
     for norm in principal_ideal_gens:
@@ -404,7 +412,10 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
                 y_log = pr_ideal_gen_logs[y]
                 g_log = unit_log + y_log
                 bool1 = all(g_log[i] <= aux_constant + D_numbers[i] for i in range(r1))
-                bool2 = all(g_log[j] <= 2 * aux_constant + D_numbers[j] for j in range(r1, r + 1))
+                bool2 = all(
+                    g_log[j] <= 2 * aux_constant + D_numbers[j]
+                    for j in range(r1, r + 1)
+                )
                 if bool1 and bool2:
                     g = unit * y
                     coordinate_list.append([g, g_log])
@@ -415,7 +426,7 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
         a = class_group_ideals[m]
         a_norm = class_group_ideal_norms[m]
         log_a_norm = Reals(a_norm).log()
-        a_const = (logB + log_a_norm)/K_degree
+        a_const = (logB + log_a_norm) / K_degree
         a_coordinates = []
 
         for k in range(floor(bound + 1)):
@@ -424,23 +435,34 @@ def points_of_bounded_height(PS, K, dim, bound, prec=53):
                 for pair in coordinate_space[norm]:
                     g, g_log = pair
                     if g in a:
-                        bool1 = all(g_log[i] <= a_const + D_numbers[i] for i in range(r1))
-                        bool2 = all(g_log[j] <= 2 * a_const + D_numbers[j] for j in range(r1, r + 1))
+                        bool1 = all(
+                            g_log[i] <= a_const + D_numbers[i] for i in range(r1)
+                        )
+                        bool2 = all(
+                            g_log[j] <= 2 * a_const + D_numbers[j]
+                            for j in range(r1, r + 1)
+                        )
                         if bool1 and bool2:
                             a_coordinates.append(pair)
 
         t = len(a_coordinates) - 1
         points_in_class_a = set()
-        increasing_tuples = itertools.combinations_with_replacement(range(t + 1), dim + 1)
+        increasing_tuples = itertools.combinations_with_replacement(
+            range(t + 1), dim + 1
+        )
         log_arch_height_bound = logB + log_a_norm
         for index_tuple in increasing_tuples:
             point_coordinates = [a_coordinates[i][0] for i in index_tuple]
             point_coordinate_logs = [a_coordinates[i][1] for i in index_tuple]
-            log_arch_height = sum([max([x[i] for x in point_coordinate_logs]) for i in range(r + 1)])
-            if log_arch_height <= log_arch_height_bound and a == K.ideal(point_coordinates):
+            log_arch_height = sum(
+                [max([x[i] for x in point_coordinate_logs]) for i in range(r + 1)]
+            )
+            if log_arch_height <= log_arch_height_bound and a == K.ideal(
+                point_coordinates
+            ):
                 for p in itertools.permutations(point_coordinates):
                     for u in unit_tuples:
-                        point = PS([i*j for i, j in zip(u, p)] + [p[dim]])
+                        point = PS([i * j for i, j in zip(u, p)] + [p[dim]])
 
                         if point not in points_in_class_a:
                             points_in_class_a.add(point)

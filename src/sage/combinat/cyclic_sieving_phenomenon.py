@@ -13,6 +13,7 @@ AUTHORS:
 
 - Christian Stump
 """
+
 # ****************************************************************************
 #       Copyright (C) 2010 Christian Stump christian.stump@univie.ac.at
 #
@@ -97,8 +98,9 @@ def CyclicSievingPolynomial(L, cyc_act=None, order=None, get_order=False):
 
     if order:
         if order.mod(n):
-            raise ValueError("order is not a multiple of the order"
-                             " of the cyclic action")
+            raise ValueError(
+                "order is not a multiple of the order of the cyclic action"
+            )
     else:
         order = n
 
@@ -106,11 +108,10 @@ def CyclicSievingPolynomial(L, cyc_act=None, order=None, get_order=False):
         if i == 0:
             j = sum(orbit_sizes.values())
         else:
-            j = sum(orb for l, orb in orbit_sizes.items()
-                    if not ZZ(i).mod(n // l))
+            j = sum(orb for l, orb in orbit_sizes.items() if not ZZ(i).mod(n // l))
         p += j * q**i
 
-    p = p(q**(order // n))
+    p = p(q ** (order // n))
 
     return [p, order] if get_order else p
 
@@ -151,8 +152,7 @@ def CyclicSievingCheck(L, cyc_act, f, order=None) -> bool:
         sage: CyclicSievingCheck( S42, cyc_act, p )
         True
     """
-    p1, n = CyclicSievingPolynomial(L, cyc_act=cyc_act, order=order,
-                                    get_order=True)
+    p1, n = CyclicSievingPolynomial(L, cyc_act=cyc_act, order=order, get_order=True)
     R = p1.parent()
     q = R.gen()
     return p1 == R(f).mod(q**n - 1)

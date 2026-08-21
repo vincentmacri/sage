@@ -18,6 +18,7 @@ Miscellaneous matrix functions
 # ****************************************************************************
 
 from sage.categories.fields import Fields
+
 _Fields = Fields()
 
 
@@ -283,7 +284,7 @@ def permanental_minor_polynomial(A, permanent_only=False, var='t', prec=None):
             p1 = {}
         else:
             p1 = {0: K.one()}
-        a = A[i]   # the i-th row of A
+        a = A[i]  # the i-th row of A
         for j in range(len(a)):
             if a[j]:
                 p1[1 << j] = a[j] * t
@@ -294,7 +295,7 @@ def permanental_minor_polynomial(A, permanent_only=False, var='t', prec=None):
         j = 0
         while j < len(vars_to_do):
             jj = vars_to_do[j]
-            if all(A[k][jj] == 0 for k in range(i+1, nrows)):
+            if all(A[k][jj] == 0 for k in range(i + 1, nrows)):
                 mask_free += 1 << jj
                 vars_to_do.remove(jj)
             else:
@@ -305,8 +306,10 @@ def permanental_minor_polynomial(A, permanent_only=False, var='t', prec=None):
         return K.zero()
 
     if len(p) != 1 or 0 not in p:
-        raise RuntimeError("Something is wrong! Certainly a problem in the"
-                           " algorithm... please contact sage-devel@googlegroups.com")
+        raise RuntimeError(
+            "Something is wrong! Certainly a problem in the"
+            " algorithm... please contact sage-devel@googlegroups.com"
+        )
 
     p = p[0]
     return p[min(nrows, ncols)] if permanent_only else p

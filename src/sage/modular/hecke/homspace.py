@@ -2,6 +2,7 @@
 r"""
 Hom spaces between Hecke modules
 """
+
 # ****************************************************************************
 #  Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -28,6 +29,7 @@ class HeckeModuleHomspace(HomsetWithBase):
     A space of homomorphisms between two objects in the category of Hecke
     modules over a given base ring.
     """
+
     def __init__(self, X, Y, category=None) -> None:
         r"""
         Create the space of homomorphisms between X and Y, which must have the
@@ -51,7 +53,9 @@ class HeckeModuleHomspace(HomsetWithBase):
             sage: H = M.Hom(M)
             sage: TestSuite(H).run(skip='_test_elements')
         """
-        if not isinstance(X, HeckeModule_generic) or not isinstance(Y, HeckeModule_generic):
+        if not isinstance(X, HeckeModule_generic) or not isinstance(
+            Y, HeckeModule_generic
+        ):
             raise TypeError("X and Y must be Hecke modules")
         if X.base_ring() != Y.base_ring():
             raise TypeError("X and Y must have the same base ring")

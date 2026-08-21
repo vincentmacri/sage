@@ -35,23 +35,30 @@ design catalog:
 - :ref:`sage.combinat.designs.subhypergraph_search`
 - :ref:`sage.combinat.designs.evenly_distributed_sets`
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
+
 install_doc(__package__, __doc__)
 
 from sage.misc.lazy_import import lazy_import
 
 
 lazy_import('sage.combinat.designs.incidence_structures', 'IncidenceStructure')
-lazy_import('sage.combinat.designs.incidence_structures',
-            'IncidenceStructure', 'BlockDesign')
+lazy_import(
+    'sage.combinat.designs.incidence_structures', 'IncidenceStructure', 'BlockDesign'
+)
 
-lazy_import('sage.combinat.designs.incidence_structures',
-            'IncidenceStructure', as_='Hypergraph')
+lazy_import(
+    'sage.combinat.designs.incidence_structures', 'IncidenceStructure', as_='Hypergraph'
+)
 
-lazy_import('sage.combinat.designs.covering_design',
-            ['CoveringDesign', 'schonheim', 'trivial_covering_design'])
+lazy_import(
+    'sage.combinat.designs.covering_design',
+    ['CoveringDesign', 'schonheim', 'trivial_covering_design'],
+)
 
 from sage.combinat.designs import design_catalog as designs
+
 del lazy_import
 del install_doc

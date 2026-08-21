@@ -15,6 +15,7 @@ TESTS::
     sage: loads(dumps(s)) == s
     True
 """
+
 # ****************************************************************************
 #       Sage: Open Source Mathematical Software
 #
@@ -50,6 +51,7 @@ class ModularSymbol(SageObject):
     r"""
     The modular symbol `X^i\cdot Y^{k-2-i}\cdot \{\alpha, \beta\}`.
     """
+
     def __init__(self, space, i, alpha, beta):
         """
         Initialise a modular symbol.
@@ -133,9 +135,11 @@ class ModularSymbol(SageObject):
             polypart = ''
         else:
             polypart = latex(self.polynomial_part())
-        return "%s\\left\\{%s, %s\\right\\}" % (polypart,
-                                                latex(self.__alpha),
-                                                latex(self.__beta))
+        return "%s\\left\\{%s, %s\\right\\}" % (
+            polypart,
+            latex(self.__alpha),
+            latex(self.__beta),
+        )
 
     def __richcmp__(self, other, op):
         """
@@ -159,9 +163,11 @@ class ModularSymbol(SageObject):
         """
         if not isinstance(other, ModularSymbol):
             return NotImplemented
-        return richcmp((self.__space, -self.__i, self.__alpha, self.__beta),
-                       (other.__space,-other.__i,other.__alpha,other.__beta),
-                       op)
+        return richcmp(
+            (self.__space, -self.__i, self.__alpha, self.__beta),
+            (other.__space, -other.__i, other.__alpha, other.__beta),
+            op,
+        )
 
     def __hash__(self):
         """
@@ -201,7 +207,7 @@ class ModularSymbol(SageObject):
             X^22*Y^4
         """
         i = self.__i
-        return X**i*Y**(self.weight()-2-i)
+        return X**i * Y ** (self.weight() - 2 - i)
 
     def i(self):
         r"""
@@ -321,8 +327,13 @@ class ModularSymbol(SageObject):
         coeffs = apply_to_monomial(i, k - 2, d, -b, -c, a)
         g_alpha = self.__alpha.apply(g)
         g_beta = self.__beta.apply(g)
-        return formal_sum.FormalSum([(coeffs[j], ModularSymbol(space, j, g_alpha, g_beta))
-                                     for j in reversed(range(k-1)) if coeffs[j] != 0])
+        return formal_sum.FormalSum(
+            [
+                (coeffs[j], ModularSymbol(space, j, g_alpha, g_beta))
+                for j in reversed(range(k - 1))
+                if coeffs[j] != 0
+            ]
+        )
 
     def __manin_symbol_rep(self, alpha):
         """
@@ -345,19 +356,23 @@ class ModularSymbol(SageObject):
         space = self.__space
         i = self.__i
         k = space.weight()
-        v = [(0,1), (1,0)]
+        v = [(0, 1), (1, 0)]
         if not alpha.is_infinity():
             cf = alpha._rational_().continued_fraction()
-            v.extend((cf.p(k),cf.q(k)) for k in range(len(cf)))
+            v.extend((cf.p(k), cf.q(k)) for k in range(len(cf)))
         sign = 1
         z = formal_sum.FormalSum(0)
-        for j in range(1,len(v)):
-            c = sign*v[j][1]
-            d = v[j-1][1]
-            coeffs = apply_to_monomial(i, k-2, sign*v[j][0], v[j-1][0],
-                                       sign*v[j][1], v[j-1][1])
-            w = [(coeffs[j], ManinSymbol(space, (j, c, d)))
-                 for j in range(k-1) if coeffs[j] != 0]
+        for j in range(1, len(v)):
+            c = sign * v[j][1]
+            d = v[j - 1][1]
+            coeffs = apply_to_monomial(
+                i, k - 2, sign * v[j][0], v[j - 1][0], sign * v[j][1], v[j - 1][1]
+            )
+            w = [
+                (coeffs[j], ManinSymbol(space, (j, c, d)))
+                for j in range(k - 1)
+                if coeffs[j] != 0
+            ]
             z += formal_sum.FormalSum(w)
             sign *= -1
         return z
@@ -380,4 +395,4 @@ class ModularSymbol(SageObject):
         """
         alpha = self.__alpha
         beta = self.__beta
-        return -1*self.__manin_symbol_rep(alpha) + self.__manin_symbol_rep(beta)
+        return -1 * self.__manin_symbol_rep(alpha) + self.__manin_symbol_rep(beta)

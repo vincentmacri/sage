@@ -72,8 +72,7 @@ AUTHORS:
 from sage.categories.groups import Groups
 from sage.structure.category_object import normalize_names
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.groups.abelian_gps.dual_abelian_group_element import (
-    DualAbelianGroupElement)
+from sage.groups.abelian_gps.dual_abelian_group_element import DualAbelianGroupElement
 from sage.misc.mrange import mrange
 from sage.misc.cachefunc import cached_method
 from sage.groups.group import AbelianGroup as AbelianGroupBase
@@ -95,6 +94,7 @@ class DualAbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         Dual of Abelian Group isomorphic to Z/15Z x Z/7Z x Z/8Z x Z/9Z
         over Complex Field with 53 bits of precision
     """
+
     Element = DualAbelianGroupElement
 
     def __init__(self, G, names, base_ring) -> None:
@@ -151,7 +151,10 @@ class DualAbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             sage: print(Fd)
             DualAbelianGroup( AbelianGroup ( 3, (5, 64, 729) ) )
         """
-        s = "DualAbelianGroup( AbelianGroup ( %s, %s ) )" % (self.ngens(), self.gens_orders())
+        s = "DualAbelianGroup( AbelianGroup ( %s, %s ) )" % (
+            self.ngens(),
+            self.gens_orders(),
+        )
         return s
 
     def _repr_(self):
@@ -180,7 +183,12 @@ class DualAbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             if x == 0:
                 gp = gp + "Z x "
         gp = gp[:-2].strip()
-        s = 'Dual of Abelian Group isomorphic to ' + gp + ' over ' + str(self.base_ring())
+        s = (
+            'Dual of Abelian Group isomorphic to '
+            + gp
+            + ' over '
+            + str(self.base_ring())
+        )
         return s
 
     def _latex_(self):
@@ -194,7 +202,10 @@ class DualAbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             sage: Fd._latex_()
             '$\\mathrm{DualAbelianGroup}( AbelianGroup ( 3, (2, 2, 2) ) )$'
         """
-        return r"$\mathrm{DualAbelianGroup}( AbelianGroup ( %s, %s ) )$" % (self.ngens(), self.gens_orders())
+        return r"$\mathrm{DualAbelianGroup}( AbelianGroup ( %s, %s ) )$" % (
+            self.ngens(),
+            self.gens_orders(),
+        )
 
     def random_element(self):
         """
@@ -220,10 +231,11 @@ class DualAbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             ....:     found[len([b for b in [x,y,z] if abs(X(b)-1)>10^(-8)])] = True
         """
         from sage.misc.prandom import randint
+
         result = self.one()
         for g in self.gens():
             order = g.order()
-            result *= g**(randint(0, order))
+            result *= g ** (randint(0, order))
         return result
 
     def gen(self, i=0):

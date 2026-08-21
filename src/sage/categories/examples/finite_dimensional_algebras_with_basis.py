@@ -2,15 +2,17 @@
 r"""
 Example of a finite dimensional algebra with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008-2015 Franco Saliola <saliola@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
-from sage.categories.finite_dimensional_algebras_with_basis import FiniteDimensionalAlgebrasWithBasis
+from sage.categories.finite_dimensional_algebras_with_basis import (
+    FiniteDimensionalAlgebrasWithBasis,
+)
 from sage.combinat.free_module import CombinatorialFreeModule
 
 
@@ -37,13 +39,20 @@ class KroneckerQuiverPathAlgebra(CombinatorialFreeModule):
         """
         basis_keys = ['x', 'y', 'a', 'b']
         self._nonzero_products = {
-            'xx':'x', 'xa':'a', 'xb':'b',
-            'yy':'y', 'ay':'a', 'by':'b'
-            }
+            'xx': 'x',
+            'xa': 'a',
+            'xb': 'b',
+            'yy': 'y',
+            'ay': 'a',
+            'by': 'b',
+        }
 
         CombinatorialFreeModule.__init__(
-            self, base_ring, basis_keys,
-            category=FiniteDimensionalAlgebrasWithBasis(base_ring))
+            self,
+            base_ring,
+            basis_keys,
+            category=FiniteDimensionalAlgebrasWithBasis(base_ring),
+        )
 
     def _repr_(self):
         r"""
@@ -54,9 +63,11 @@ class KroneckerQuiverPathAlgebra(CombinatorialFreeModule):
             the path algebra of the Kronecker quiver
             (containing the arrows a:x->y and b:x->y) over Rational Field
         """
-        return "An example of a finite dimensional algebra with basis: " \
-            "the path algebra of the Kronecker quiver " \
+        return (
+            "An example of a finite dimensional algebra with basis: "
+            "the path algebra of the Kronecker quiver "
             "(containing the arrows a:x->y and b:x->y) over %s " % (self.base_ring())
+        )
 
     def one(self):
         r"""
@@ -108,8 +119,8 @@ class KroneckerQuiverPathAlgebra(CombinatorialFreeModule):
             sage: x*a*y
             a
         """
-        if w1+w2 in self._nonzero_products:
-            return self.monomial(self._nonzero_products[w1+w2])
+        if w1 + w2 in self._nonzero_products:
+            return self.monomial(self._nonzero_products[w1 + w2])
         return self.zero()
 
     @cached_method

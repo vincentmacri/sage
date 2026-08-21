@@ -17,7 +17,6 @@ AUTHORS:
 #                         https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.misc.misc import try_read
 
 
@@ -114,7 +113,8 @@ def _from_whatever(data, fmt=None, immutable=False):
             except TypeError:
                 raise TypeError(
                     "must be a string, an iterable of strings, or a readable "
-                    "file-like object")
+                    "file-like object"
+                )
 
     if fmt == 'graph6':
         kwargs = {'format': fmt}
@@ -132,8 +132,7 @@ def _from_whatever(data, fmt=None, immutable=False):
             continue
 
         if '\n' in line:
-            out.append(_from_whatever(line.splitlines(), fmt=fmt,
-                                      immutable=immutable))
+            out.append(_from_whatever(line.splitlines(), fmt=fmt, immutable=immutable))
         else:
             out.append(Graph(line, immutable=immutable, **kwargs))
 
@@ -315,6 +314,7 @@ def to_graphics_array(graph_list, **kwds):
         Graphics Array of size 3 x 4
     """
     from sage.graphs import graph
+
     plist = []
     for graph_i in graph_list:
         if isinstance(graph_i, graph.GenericGraph):
@@ -329,12 +329,15 @@ def to_graphics_array(graph_list, **kwds):
                 kwds['graph_border'] = True
                 plist.append(graph_i.plot(**kwds))
             else:
-                plist.append(graph_i.plot(pos=pos, vertex_size=50,
-                                          vertex_labels=False,
-                                          graph_border=True))
+                plist.append(
+                    graph_i.plot(
+                        pos=pos, vertex_size=50, vertex_labels=False, graph_border=True
+                    )
+                )
         else:
             raise TypeError('param list must be a list of Sage (di)graphs.')
     from sage.plot.plot import graphics_array
+
     return graphics_array(plist, ncols=4)
 
 
@@ -405,5 +408,5 @@ def show_graphs(graph_list, **kwds):
     """
     graph_list = list(graph_list)
     for i in range(len(graph_list) // 20 + 1):
-        graph_slice = graph_list[20 * i: 20 * (i + 1)]
+        graph_slice = graph_list[20 * i : 20 * (i + 1)]
         to_graphics_array(graph_slice, **kwds).show()

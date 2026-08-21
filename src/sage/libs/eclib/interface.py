@@ -25,6 +25,7 @@ Check that ``eclib`` is imported as needed::
     sage: [k for k in sys.modules if k.startswith("sage.libs.eclib")]
     ['...']
 """
+
 import sys
 
 from sage.libs.eclib.mwrank import _Curvedata, _mw, _two_descent, parse_point_list
@@ -116,8 +117,7 @@ class mwrank_EllipticCurve(SageObject):
         except (TypeError, ValueError):
             raise TypeError("ainvs must be a list or tuple of integers.")
         self.__ainvs = a_int
-        self.__curve = _Curvedata(a_int[0], a_int[1], a_int[2],
-                                  a_int[3], a_int[4])
+        self.__curve = _Curvedata(a_int[0], a_int[1], a_int[2], a_int[3], a_int[4])
 
         if verbose:
             self.__verbose = True
@@ -249,19 +249,31 @@ class mwrank_EllipticCurve(SageObject):
         # we do not assume a1, a2, a3 are reduced to {0,1}, {-1,0,1}, {0,1}
 
         def coeff(a):
-            return ''.join([" +" if a > 0 else " -",
-                            " " + str(abs(a)) if abs(a) > 1 else ""])
+            return ''.join(
+                [" +" if a > 0 else " -", " " + str(abs(a)) if abs(a) > 1 else ""]
+            )
 
-        return ''.join(['y^2',
-                        ' '.join([coeff(a1), 'xy']) if a1 else '',
-                        ' '.join([coeff(a3), 'y']) if a3 else '',
-                        ' = x^3',
-                        ' '.join([coeff(a2), 'x^2']) if a2 else '',
-                        ' '.join([coeff(a4), 'x']) if a4 else '',
-                        ' '.join([" +" if a6 > 0 else " -", str(abs(a6))]) if a6 else ''])
+        return ''.join(
+            [
+                'y^2',
+                ' '.join([coeff(a1), 'xy']) if a1 else '',
+                ' '.join([coeff(a3), 'y']) if a3 else '',
+                ' = x^3',
+                ' '.join([coeff(a2), 'x^2']) if a2 else '',
+                ' '.join([coeff(a4), 'x']) if a4 else '',
+                ' '.join([" +" if a6 > 0 else " -", str(abs(a6))]) if a6 else '',
+            ]
+        )
 
-    def two_descent(self, verbose=True, selmer_only=False, first_limit=20,
-                    second_limit=8, n_aux=-1, second_descent=True):
+    def two_descent(
+        self,
+        verbose=True,
+        selmer_only=False,
+        first_limit=20,
+        second_limit=8,
+        n_aux=-1,
+        second_descent=True,
+    ):
         r"""
         Compute 2-descent data for this curve.
 
@@ -345,15 +357,17 @@ class mwrank_EllipticCurve(SageObject):
         first_limit = int(first_limit)
         second_limit = int(second_limit)
         n_aux = int(n_aux)
-        second_descent = int(second_descent)    # convert from bool to (int) 0 or 1
+        second_descent = int(second_descent)  # convert from bool to (int) 0 or 1
         self.__descent = _two_descent()
-        self.__descent.do_descent(self.__curve,
-                                  verbose,
-                                  selmer_only,
-                                  first_limit,
-                                  second_limit,
-                                  n_aux,
-                                  second_descent)
+        self.__descent.do_descent(
+            self.__curve,
+            verbose,
+            selmer_only,
+            first_limit,
+            second_limit,
+            n_aux,
+            second_descent,
+        )
         if not self.__descent.ok():
             raise RuntimeError("A 2-descent did not complete successfully.")
         self.__saturate = -2  # not yet saturated
@@ -823,7 +837,12 @@ class mwrank_MordellWeil(SageObject):
             sage: EQ.__reduce__()
             (<class 'sage.libs.eclib.interface.mwrank_MordellWeil'>, (y^2 + y = x^3 - 7 x + 6, True, 1, 999))
         """
-        return mwrank_MordellWeil, (self.__curve, self.__verbose, self.__pp, self.__maxr)
+        return mwrank_MordellWeil, (
+            self.__curve,
+            self.__verbose,
+            self.__pp,
+            self.__maxr,
+        )
 
     def __repr__(self):
         r"""
@@ -994,7 +1013,10 @@ class mwrank_MordellWeil(SageObject):
         saturation_bound = int(saturation_bound)
         for P in v:
             if not isinstance(P, (list, tuple)) or len(P) != 3:
-                raise TypeError("v (=%s) must be a list of 3-tuples (or 3-element lists) of ints" % v)
+                raise TypeError(
+                    "v (=%s) must be a list of 3-tuples (or 3-element lists) of ints"
+                    % v
+                )
             self.__mw.process(P, saturation_bound)
 
     def regulator(self):
@@ -1297,9 +1319,15 @@ class mwrank_MordellWeil(SageObject):
         int_bits = sys.maxsize.bit_length()
         max_height_limit = int_bits * 0.693147  # log(2.0) = 0.693147 approx
         if height_limit >= max_height_limit:
-            raise ValueError("The height limit must be < {} = {}log(2) on a {}-bit machine.".format(max_height_limit, int_bits, int_bits + 1))
+            raise ValueError(
+                "The height limit must be < {} = {}log(2) on a {}-bit machine.".format(
+                    max_height_limit, int_bits, int_bits + 1
+                )
+            )
 
-        moduli_option = 0  # Use Stoll's sieving program... see strategies in ratpoints-1.4.c
+        moduli_option = (
+            0  # Use Stoll's sieving program... see strategies in ratpoints-1.4.c
+        )
 
         verbose = bool(verbose)
         self.__mw.search(height_limit, moduli_option, verbose)

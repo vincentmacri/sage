@@ -90,10 +90,9 @@ def Words(alphabet=None, length=None, finite=True, infinite=True):
         sage: Words('natural numbers')
         Finite and infinite words over Non negative integers
     """
-    if isinstance(alphabet, (FiniteWords,
-                             InfiniteWords,
-                             FiniteOrInfiniteWords,
-                             Words_n)):
+    if isinstance(
+        alphabet, (FiniteWords, InfiniteWords, FiniteOrInfiniteWords, Words_n)
+    ):
         return alphabet
 
     if length is None:
@@ -108,7 +107,9 @@ def Words(alphabet=None, length=None, finite=True, infinite=True):
     elif isinstance(length, (int, Integer)):
         return Words_n(FiniteWords(alphabet), length)
 
-    raise ValueError("do not know how to make a combinatorial class of words from your input")
+    raise ValueError(
+        "do not know how to make a combinatorial class of words from your input"
+    )
 
 
 class AbstractLanguage(Parent):
@@ -120,6 +121,7 @@ class AbstractLanguage(Parent):
     simply disappear or become a common base class for all languages. In the
     latter case, its name would possibly change to ``Language``.
     """
+
     def __init__(self, alphabet=None, category=None):
         r"""
         INPUT:
@@ -140,10 +142,13 @@ class AbstractLanguage(Parent):
         """
         if isinstance(alphabet, (int, Integer)):
             from sage.sets.integer_range import IntegerRange
+
             alphabet = IntegerRange(1, alphabet + 1)
-        elif (alphabet == "integers" or
-              alphabet == "positive integers" or
-              alphabet == "natural numbers"):
+        elif (
+            alphabet == "integers"
+            or alphabet == "positive integers"
+            or alphabet == "natural numbers"
+        ):
             alphabet = build_alphabet(name=alphabet)
         else:
             alphabet = build_alphabet(alphabet)
@@ -159,8 +164,11 @@ class AbstractLanguage(Parent):
             self.sortkey_letters = self._sortkey_trivial
         elif N < 36:
             try:
-                if all(alphabet.unrank(i) > alphabet.unrank(j)
-                       for i in range(N) for j in range(i)):
+                if all(
+                    alphabet.unrank(i) > alphabet.unrank(j)
+                    for i in range(N)
+                    for j in range(i)
+                ):
                     self.sortkey_letters = self._sortkey_trivial
             except TypeError:
                 pass
@@ -218,6 +226,7 @@ class AbstractLanguage(Parent):
         if self.alphabet().cardinality() not in ZZ:
             raise NotImplementedError('size of alphabet must be finite')
         from sage.combinat.words.morphism import WordMorphism
+
         return WordMorphism({a: a for a in self.alphabet()})
 
     def _check(self, w, length=40):
@@ -305,8 +314,9 @@ class AbstractLanguage(Parent):
             sage: FiniteWords([0,1]) == FiniteWords([0,1,2,3])
             False
         """
-        return self is other or (type(self) is type(other) and
-                                 self.alphabet() == other.alphabet())
+        return self is other or (
+            type(self) is type(other) and self.alphabet() == other.alphabet()
+        )
 
     def __ne__(self, other) -> bool:
         r"""
@@ -464,6 +474,7 @@ class FiniteWords(AbstractLanguage):
             True
         """
         from sage.combinat.words import word
+
         classes = {
             'list': word.FiniteWord_list,
             'str': word.FiniteWord_str,
@@ -471,16 +482,18 @@ class FiniteWords(AbstractLanguage):
             'callable_with_caching': word.FiniteWord_callable_with_caching,
             'callable': word.FiniteWord_callable,
             'iter_with_caching': word.FiniteWord_iter_with_caching,
-            'iter': word.FiniteWord_iter}
+            'iter': word.FiniteWord_iter,
+        }
 
         # test whether or not we can use the class Finiteword_char
-        if (self.alphabet().cardinality() <= 256 and
-                all(isinstance(i, (int, Integer)) and
-                    0 <= i < 256 for i in self.alphabet())):
+        if self.alphabet().cardinality() <= 256 and all(
+            isinstance(i, (int, Integer)) and 0 <= i < 256 for i in self.alphabet()
+        ):
             L = self.alphabet().list()
             key = self.sortkey_letters
-            if (all(L[i] < L[i + 1] for i in range(len(L) - 1)) and
-                    all(key(L[i]) < key(L[i + 1]) for i in range(len(L) - 1))):
+            if all(L[i] < L[i + 1] for i in range(len(L) - 1)) and all(
+                key(L[i]) < key(L[i + 1]) for i in range(len(L) - 1)
+            ):
                 classes['char'] = word.FiniteWord_char
 
         return classes
@@ -519,15 +532,19 @@ class FiniteWords(AbstractLanguage):
         # are needed
         ###########################
         from sage.combinat.words.word_char import WordDatatype_char
+
         if isinstance(data, WordDatatype_char):
             data = list(data)
             if 'char' in self._element_classes:
                 return self._element_classes['char'](self, data)
             return self._element_classes['list'](self, data)
 
-        from sage.combinat.words.word_datatypes import (WordDatatype_str,
-                                                        WordDatatype_list,
-                                                        WordDatatype_tuple)
+        from sage.combinat.words.word_datatypes import (
+            WordDatatype_str,
+            WordDatatype_list,
+            WordDatatype_tuple,
+        )
+
         if isinstance(data, WordDatatype_str):
             return self._element_classes['str'](self, data._data)
         if isinstance(data, WordDatatype_tuple):
@@ -535,8 +552,11 @@ class FiniteWords(AbstractLanguage):
         if isinstance(data, WordDatatype_list):
             return self._element_classes['list'](self, data._data)
 
-        from sage.combinat.words.word_infinite_datatypes import \
-            (WordDatatype_callable, WordDatatype_iter)
+        from sage.combinat.words.word_infinite_datatypes import (
+            WordDatatype_callable,
+            WordDatatype_iter,
+        )
+
         if isinstance(data, WordDatatype_callable):
             length = data.length()
             data = data._func
@@ -546,7 +566,9 @@ class FiniteWords(AbstractLanguage):
             data = iter(data)
             return self._word_from_iter(data, length, caching=False)
 
-        raise TypeError("any instance of Word_class must be an instance of WordDatatype")
+        raise TypeError(
+            "any instance of Word_class must be an instance of WordDatatype"
+        )
 
     def _word_from_callable(self, data, length, caching=True):
         r"""
@@ -851,6 +873,7 @@ class FiniteWords(AbstractLanguage):
                 w = self._word_from_iter(data, length, caching)
             elif datatype == 'pickled_function':
                 from sage.misc.fpickle import unpickle_function
+
                 data = unpickle_function(data)
                 w = self._word_from_callable(data, length, caching)
             else:
@@ -885,13 +908,16 @@ class FiniteWords(AbstractLanguage):
 
         elif isinstance(data, Iterable):
             from sage.combinat.words.abstract_word import Word_class
+
             if isinstance(data, Word_class):
                 w = self._word_from_word(data)
             else:
                 w = self._word_from_iter(data, length, caching)
 
         else:
-            raise ValueError("cannot guess a datatype from data (=%s); please specify one" % data)
+            raise ValueError(
+                "cannot guess a datatype from data (=%s); please specify one" % data
+            )
 
         if check:
             self._check(w)
@@ -975,7 +1001,9 @@ class FiniteWords(AbstractLanguage):
             raise TypeError("the parameter l (=%r) must be an integer" % l)
         cls = self._element_classes['tuple']
         if not self.alphabet().is_finite():
-            raise NotImplementedError("cannot iterate over words for infinite alphabets")
+            raise NotImplementedError(
+                "cannot iterate over words for infinite alphabets"
+            )
         for w in itertools.product(self.alphabet(), repeat=l):
             yield cls(self, w)
 
@@ -1048,7 +1076,10 @@ class FiniteWords(AbstractLanguage):
             False
         """
         from sage.combinat.words.finite_word import FiniteWord_class
-        return isinstance(x, FiniteWord_class) and x.parent().alphabet() == self.alphabet()
+
+        return (
+            isinstance(x, FiniteWord_class) and x.parent().alphabet() == self.alphabet()
+        )
 
     def random_element(self, length=None, *args, **kwds):
         r"""
@@ -1080,8 +1111,9 @@ class FiniteWords(AbstractLanguage):
         """
         if length is None:
             length = ZZ.random_element(0, 10)
-        return self([self.alphabet().random_element(*args, **kwds)
-                     for x in range(length)])
+        return self(
+            [self.alphabet().random_element(*args, **kwds) for x in range(length)]
+        )
 
     def iter_morphisms(self, arg=None, codomain=None, min_length=1):
         r"""
@@ -1281,18 +1313,21 @@ class FiniteWords(AbstractLanguage):
         # None, or [arg] otherwise)
         if arg is None:
             from sage.combinat.integer_lists.nn import IntegerListsNN
+
             compositions = IntegerListsNN(length=n, min_part=min_length)
         elif isinstance(arg, tuple):
             from sage.combinat.integer_lists import IntegerListsLex
+
             a, b = arg
-            compositions = IntegerListsLex(min_sum=a, max_sum=b - 1,
-                                           length=n, min_part=min_length)
+            compositions = IntegerListsLex(
+                min_sum=a, max_sum=b - 1, length=n, min_part=min_length
+            )
         else:
             arg = list(arg)
-            if (not len(arg) == n or not
-                    all(isinstance(a, (int, Integer)) for a in arg)):
+            if not len(arg) == n or not all(isinstance(a, (int, Integer)) for a in arg):
                 raise TypeError(
-                    "arg (=%s) must be an iterable of %s integers" % (arg, n))
+                    "arg (=%s) must be an iterable of %s integers" % (arg, n)
+                )
             compositions = [arg]
 
         # set the codomain
@@ -1301,10 +1336,13 @@ class FiniteWords(AbstractLanguage):
         elif isinstance(codomain, FiniteOrInfiniteWords):
             codomain = codomain.finite_words()
         elif not isinstance(codomain, FiniteWords):
-            raise TypeError("codomain (=%s) must be an instance of FiniteWords" % codomain)
+            raise TypeError(
+                "codomain (=%s) must be an instance of FiniteWords" % codomain
+            )
 
         # iterate through the morphisms
         from sage.combinat.words.morphism import WordMorphism
+
         for composition in compositions:
             cuts = [0] + list(composition)
             for i in range(1, len(cuts)):
@@ -1314,7 +1352,7 @@ class FiniteWords(AbstractLanguage):
                 d = {}
                 i = 0
                 for a in self.alphabet():
-                    d[a] = big_word[cuts[i]:cuts[i + 1]]
+                    d[a] = big_word[cuts[i] : cuts[i + 1]]
                     i += 1
                 yield WordMorphism(d, codomain=codomain)
 
@@ -1407,11 +1445,13 @@ class InfiniteWords(AbstractLanguage):
             True
         """
         from sage.combinat.words import word
+
         return {
             'callable_with_caching': word.InfiniteWord_callable_with_caching,
             'callable': word.InfiniteWord_callable,
             'iter_with_caching': word.InfiniteWord_iter_with_caching,
-            'iter': word.InfiniteWord_iter}
+            'iter': word.InfiniteWord_iter,
+        }
 
     def random_element(self, *args, **kwds):
         r"""
@@ -1429,6 +1469,7 @@ class InfiniteWords(AbstractLanguage):
         """
         rd = self.alphabet().random_element
         from itertools import count
+
         return self._word_from_iter(rd(*args, **kwds) for i in count())
 
     def _word_from_word(self, data):
@@ -1466,15 +1507,20 @@ class InfiniteWords(AbstractLanguage):
         # Otherwise, if self is not the parent of `data`, then we try to
         # recover the data, the length and the datatype of the input `data`
         ###########################
-        from sage.combinat.words.word_infinite_datatypes import (WordDatatype_callable,
-                                                                 WordDatatype_iter)
+        from sage.combinat.words.word_infinite_datatypes import (
+            WordDatatype_callable,
+            WordDatatype_iter,
+        )
+
         if isinstance(data, WordDatatype_callable):
             data = data._func
             return self._word_from_callable(data, caching=False)
         if isinstance(data, WordDatatype_iter):
             data = iter(data)
             return self._word_from_iter(data, caching=False)
-        raise TypeError("any instance of Word_class must be an instance of WordDatatype")
+        raise TypeError(
+            "any instance of Word_class must be an instance of WordDatatype"
+        )
 
     def _word_from_callable(self, data, caching=True):
         r"""
@@ -1605,6 +1651,7 @@ class InfiniteWords(AbstractLanguage):
                 w = self._word_from_iter(data, caching)
             elif datatype == 'pickled_function':
                 from sage.misc.fpickle import unpickle_function
+
                 data = unpickle_function(data)
                 w = self._word_from_callable(data, caching)
             else:
@@ -1615,13 +1662,16 @@ class InfiniteWords(AbstractLanguage):
 
         elif isinstance(data, Iterable):
             from sage.combinat.words.abstract_word import Word_class
+
             if isinstance(data, Word_class):
                 w = self._word_from_word(data)
             else:
                 w = self._word_from_iter(data, caching)
 
         else:
-            raise ValueError("cannot guess a datatype from data (=%s); please specify one" % data)
+            raise ValueError(
+                "cannot guess a datatype from data (=%s); please specify one" % data
+            )
 
         if check:
             self._check(w)
@@ -1662,6 +1712,7 @@ class InfiniteWords(AbstractLanguage):
         some_letters = list(self.alphabet().some_elements())
         if len(some_letters) > 1:
             from sage.combinat.words.word_generators import words
+
             letters = some_letters[:2]
             return self(words.ThueMorseWord(alphabet=letters))
         letter = some_letters[0]
@@ -1724,8 +1775,11 @@ class FiniteOrInfiniteWords(AbstractLanguage):
              'iter_with_caching': <class 'sage.combinat.words.word.Word_iter_with_caching'>}
         """
         from sage.combinat.words import word
-        return {'iter_with_caching': word.Word_iter_with_caching,
-                'iter': word.Word_iter}
+
+        return {
+            'iter_with_caching': word.Word_iter_with_caching,
+            'iter': word.Word_iter,
+        }
 
     def __hash__(self):
         r"""
@@ -1793,8 +1847,14 @@ class FiniteOrInfiniteWords(AbstractLanguage):
             Infinite words over {'a', 'b'}
         """
         P = data.parent()
-        if P is self or P is self.finite_words() or P is self.infinite_words() or \
-           P == self or P == self.finite_words() or P == self.infinite_words():
+        if (
+            P is self
+            or P is self.finite_words()
+            or P is self.infinite_words()
+            or P == self
+            or P == self.finite_words()
+            or P == self.infinite_words()
+        ):
             return data
         if data.is_finite():
             return self.finite_words()._word_from_word(data)
@@ -2087,19 +2147,28 @@ class FiniteOrInfiniteWords(AbstractLanguage):
 
         # now build finite/infinite or unknown length words
         if length == 'finite' or length in ZZ:
-            return self.finite_words()(data, datatype=datatype, length=length, caching=caching, check=check)
+            return self.finite_words()(
+                data, datatype=datatype, length=length, caching=caching, check=check
+            )
 
         if length == 'infinite' or length == Infinity:
-            return self.infinite_words()(data, datatype=datatype, check=check, caching=caching)
+            return self.infinite_words()(
+                data, datatype=datatype, check=check, caching=caching
+            )
 
         if length == 'unknown' or length is None:
             from sage.combinat.words.abstract_word import Word_class
+
             if isinstance(data, Word_class):
                 w = self._word_from_word(data)
             elif isinstance(data, Iterable):
                 w = self._word_from_iter(data, caching)
             else:
-                raise ValueError("cannot guess a datatype from data (={!r}); please specify one".format(data))
+                raise ValueError(
+                    "cannot guess a datatype from data (={!r}); please specify one".format(
+                        data
+                    )
+                )
 
             if check:
                 w.parent()._check(w)
@@ -2123,6 +2192,7 @@ class Words_n(Parent):
     r"""
     The set of words of fixed length on a given alphabet.
     """
+
     def __init__(self, words, n):
         r"""
         INPUT:
@@ -2284,6 +2354,7 @@ class Words_n(Parent):
             Words of length 5 over {1, 2, 3}
         """
         from sage.combinat.words.word_options import word_options
+
         if word_options['old_repr']:
             return "Words over {} of length {}".format(self.alphabet(), self._n)
         return "Words of length {} over {}".format(self._n, self.alphabet())
@@ -2380,8 +2451,18 @@ class Words_n(Parent):
 ###############
 
 
-register_unpickle_override("sage.combinat.words.words", "Words_over_OrderedAlphabet", FiniteOrInfiniteWords)
-register_unpickle_override("sage.combinat.words.words", "Words_over_Alphabet", FiniteOrInfiniteWords)
-register_unpickle_override("sage.combinat.words.words", "FiniteWords_length_k_over_OrderedAlphabet", Words_n)
-register_unpickle_override("sage.combinat.words.words", "FiniteWords_over_OrderedAlphabet", FiniteWords)
-register_unpickle_override("sage.combinat.words.words", "InfiniteWords_over_OrderedAlphabet", InfiniteWords)
+register_unpickle_override(
+    "sage.combinat.words.words", "Words_over_OrderedAlphabet", FiniteOrInfiniteWords
+)
+register_unpickle_override(
+    "sage.combinat.words.words", "Words_over_Alphabet", FiniteOrInfiniteWords
+)
+register_unpickle_override(
+    "sage.combinat.words.words", "FiniteWords_length_k_over_OrderedAlphabet", Words_n
+)
+register_unpickle_override(
+    "sage.combinat.words.words", "FiniteWords_over_OrderedAlphabet", FiniteWords
+)
+register_unpickle_override(
+    "sage.combinat.words.words", "InfiniteWords_over_OrderedAlphabet", InfiniteWords
+)

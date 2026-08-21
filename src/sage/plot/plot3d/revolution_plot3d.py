@@ -27,7 +27,16 @@ from sage.plot.plot3d.parametric_plot3d import parametric_plot3d
 
 
 @rename_keyword(alpha='opacity')
-def revolution_plot3d(curve, trange, phirange=None, parallel_axis='z', axis=(0, 0), print_vector=False, show_curve=False, **kwds):
+def revolution_plot3d(
+    curve,
+    trange,
+    phirange=None,
+    parallel_axis='z',
+    axis=(0, 0),
+    print_vector=False,
+    show_curve=False,
+    **kwds,
+):
     r"""
     Return a plot of a revolved curve.
 
@@ -278,31 +287,32 @@ def revolution_plot3d(curve, trange, phirange=None, parallel_axis='z', axis=(0, 
         # (0,0) must be handled separately for the phase value
         if x0 != 0 or y0 != 0:
             phase = atan2(y - y0, x - x0)
-        R = sqrt((x-x0)**2 + (y-y0)**2)
-        v = (R*cos(phi+phase)+x0, R*sin(phi+phase)+y0, z)
+        R = sqrt((x - x0) ** 2 + (y - y0) ** 2)
+        v = (R * cos(phi + phase) + x0, R * sin(phi + phase) + y0, z)
     elif parallel_axis == 'x':
         y0 = axis[0]
         z0 = axis[1]
         # (0,0) must be handled separately for the phase value
         if z0 != 0 or y0 != 0:
             phase = atan2(z - z0, y - y0)
-        R = sqrt((y-y0)**2 + (z-z0)**2)
-        v = (x, R*cos(phi+phase)+y0, R*sin(phi+phase)+z0)
+        R = sqrt((y - y0) ** 2 + (z - z0) ** 2)
+        v = (x, R * cos(phi + phase) + y0, R * sin(phi + phase) + z0)
     elif parallel_axis == 'y':
         x0 = axis[0]
         z0 = axis[1]
         # (0,0) must be handled separately for the phase value
         if z0 != 0 or x0 != 0:
             phase = atan2(z - z0, x - x0)
-        R = sqrt((x-x0)**2 + (z-z0)**2)
-        v = (R*cos(phi+phase)+x0, y, R*sin(phi+phase)+z0)
+        R = sqrt((x - x0) ** 2 + (z - z0) ** 2)
+        v = (R * cos(phi + phase) + x0, y, R * sin(phi + phase) + z0)
 
     if print_vector:
         print(v)
 
     if show_curve:
-        curveplot = parametric_plot3d((x, y, z), trange, thickness=2,
-                                      rgbcolor=(1, 0, 0))
+        curveplot = parametric_plot3d(
+            (x, y, z), trange, thickness=2, rgbcolor=(1, 0, 0)
+        )
         return parametric_plot3d(v, trange, phirange, **kwds) + curveplot
 
     return parametric_plot3d(v, trange, phirange, **kwds)

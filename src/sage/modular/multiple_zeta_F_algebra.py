@@ -19,6 +19,7 @@ AUTHORS:
 
 - Frédéric Chapoton (2022-09): Initial version
 """
+
 # ****************************************************************************
 #  Copyright (C) 2022 Frédéric Chapoton <chapoton-unistra-fr>
 #
@@ -129,7 +130,7 @@ def basis_f_odd_iterator(n, start=3) -> Iterator[tuple]:
         yield (n,)
     for k in range(start, n, 2):
         for word in basis_f_odd_iterator(n - k, start=start):
-            yield word + (k, )
+            yield word + (k,)
 
 
 def basis_f_iterator(n, start=3) -> Iterator[tuple]:
@@ -267,6 +268,7 @@ class F_algebra(CombinatorialFreeModule):
         sage: s = f2*f3+f5; s
         f5 + f2*f3
     """
+
     def __init__(self, R, start=3) -> None:
         r"""
         Initialize ``self``.
@@ -297,9 +299,9 @@ class F_algebra(CombinatorialFreeModule):
         self._start = start
         Indices = NonNegativeIntegers().cartesian_product(W_Odds(start))
         cat = BialgebrasWithBasis(R).Commutative().Graded()
-        CombinatorialFreeModule.__init__(self, R, Indices,
-                                         latex_prefix='', prefix='f',
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, Indices, latex_prefix='', prefix='f', category=cat
+        )
 
     def _repr_term(self, pw) -> str:
         r"""
@@ -408,8 +410,7 @@ class F_algebra(CombinatorialFreeModule):
         if not w1:
             return self.basis()[(p, w2)]
         letter = w1[:1]
-        return self.sum_of_monomials((p, letter + u)
-                                     for u in w1[1:].shuffle(w2))
+        return self.sum_of_monomials((p, letter + u) for u in w1[1:].shuffle(w2))
 
     @lazy_attribute
     def half_product(self):
@@ -425,9 +426,9 @@ class F_algebra(CombinatorialFreeModule):
             f2^3*f3f5f7 + f2^3*f3f7f5
         """
         half = self.half_product_on_basis
-        return self._module_morphism(self._module_morphism(half, position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(half, position=0, codomain=self), position=1
+        )
 
     def gen(self, i):
         r"""
@@ -457,8 +458,8 @@ class F_algebra(CombinatorialFreeModule):
             return self.monomial(self._indices((0, [i])))
         # now powers of f2
         i = i // 2
-        B = bernoulli(2 * i) * (-1)**(i - 1)
-        B *= ZZ(2)**(3 * i - 1) * ZZ(3)**i / ZZ(2 * i).factorial()
+        B = bernoulli(2 * i) * (-1) ** (i - 1)
+        B *= ZZ(2) ** (3 * i - 1) * ZZ(3) ** i / ZZ(2 * i).factorial()
         return B * f2**i
 
     def _an_element_(self):
@@ -485,8 +486,7 @@ class F_algebra(CombinatorialFreeModule):
             sage: F.some_elements()
             [0, 1, f2, f3 + f5]
         """
-        return [self.zero(), self.one(), self.gen(2),
-                self.gen(3) + self.gen(5)]
+        return [self.zero(), self.one(), self.gen(2), self.gen(3) + self.gen(5)]
 
     def coproduct_on_basis(self, pw):
         r"""
@@ -530,8 +530,7 @@ class F_algebra(CombinatorialFreeModule):
         """
         p, w = pw
         TS = self.tensor_square()
-        return TS.sum_of_monomials(((0, w[:i]), (p, w[i:]))
-                                   for i in range(len(w) + 1))
+        return TS.sum_of_monomials(((0, w[:i]), (p, w[i:])) for i in range(len(w) + 1))
 
     def degree_on_basis(self, pw):
         """
@@ -574,8 +573,10 @@ class F_algebra(CombinatorialFreeModule):
         """
         if isinstance(vec, (list, tuple)):
             vec = vector(vec)
-        return self.sum(cf * self.monomial(bi)
-                        for cf, bi in zip(vec, basis_f_iterator(N, self._start)))
+        return self.sum(
+            cf * self.monomial(bi)
+            for cf, bi in zip(vec, basis_f_iterator(N, self._start))
+        )
 
     def _element_constructor_(self, x):
         r"""
@@ -748,8 +749,9 @@ class F_algebra(CombinatorialFreeModule):
                 return vector(BR, [])
             a, b = next(iter(self))[0]
             N = 2 * a + sum(int(x) for x in b)
-            return vector(BR, [self.coefficient(b)
-                               for b in basis_f_iterator(N, F._start)])
+            return vector(
+                BR, [self.coefficient(b) for b in basis_f_iterator(N, F._start)]
+            )
 
         def without_f2(self):
             """
@@ -783,6 +785,8 @@ class F_algebra(CombinatorialFreeModule):
             """
             F = self.parent()
             no_f2 = self.without_f2()
-            return F.sum_of_terms(((0, w), cf)
-                                  for (a, b), cf in no_f2.coproduct()
-                                  for w in shuffle(a[1], b[1].reversal(), False))
+            return F.sum_of_terms(
+                ((0, w), cf)
+                for (a, b), cf in no_f2.coproduct()
+                for w in shuffle(a[1], b[1].reversal(), False)
+            )

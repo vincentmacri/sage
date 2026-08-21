@@ -13,6 +13,7 @@ AUTHORS:
 - Christian Stump, Travis Scrimshaw (2013-04-11): Added Cartan matrix as
   possible input for Dynkin diagrams.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim@ucdavis.edu>
@@ -189,7 +190,9 @@ def DynkinDiagram(*args, **kwds):
                 return mat.cartan_type().dynkin_diagram()
             except AttributeError:
                 ct = CartanType(*args)
-                raise ValueError("Dynkin diagram data not yet hardcoded for type %s" % ct)
+                raise ValueError(
+                    "Dynkin diagram data not yet hardcoded for type %s" % ct
+                )
         if len(args) > 1:
             index_set = tuple(args[1])
         elif "index_set" in kwds:
@@ -197,7 +200,7 @@ def DynkinDiagram(*args, **kwds):
         else:
             index_set = mat.index_set()
         D = DynkinDiagram_class(index_set=index_set)
-        for (i, j) in mat.nonzero_positions():
+        for i, j in mat.nonzero_positions():
             if i != j:
                 D.add_edge(index_set[i], index_set[j], -mat[j, i])
         return D
@@ -251,8 +254,7 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
     are initialized from the index set of this Cartan type.
     """
 
-    def __init__(self, t=None, index_set=None, odd_isotropic_roots=[],
-                 **options):
+    def __init__(self, t=None, index_set=None, odd_isotropic_roots=[], **options):
         """
         Initialize ``self``.
 
@@ -293,8 +295,8 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
         result = ct.ascii_art() + "\n" if hasattr(ct, "ascii_art") else ""
 
         if ct is None or isinstance(ct, CartanMatrix):
-            return result+"Dynkin diagram of rank %s" % self.rank()
-        return result+"%s" % ct._repr_(compact=True)
+            return result + "Dynkin diagram of rank %s" % self.rank()
+        return result + "%s" % ct._repr_(compact=True)
 
     def _rich_repr_(self, display_manager, **kwds):
         """
@@ -341,10 +343,13 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             return "Dynkin diagram of rank {}".format(self.rank())
 
         from sage.graphs.graph_latex import setup_latex_preamble
+
         setup_latex_preamble()
 
         ret = "\\begin{{tikzpicture}}[scale={}]\n".format(scale)
-        ret += "\\draw (-1,0) node[anchor=east] {{${}$}};\n".format(self.cartan_type()._latex_())
+        ret += "\\draw (-1,0) node[anchor=east] {{${}$}};\n".format(
+            self.cartan_type()._latex_()
+        )
         ret += self.cartan_type()._latex_dynkin_diagram()
         ret += "\\end{tikzpicture}"
         return ret
@@ -377,8 +382,8 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             [(2, 3, 1), (3, 2, 1)]
         """
         DiGraph.add_edge(self, i, j, label)
-        if not self.has_edge(j,i):
-            self.add_edge(j,i,1)
+        if not self.has_edge(j, i):
+            self.add_edge(j, i, 1)
 
     def __hash__(self):
         """
@@ -391,12 +396,14 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
         """
         # Should assert for immutability!
 
-        #return hash(self.cartan_type(), self.vertices(sort=True), tuple(self.edges(sort=True)))
+        # return hash(self.cartan_type(), self.vertices(sort=True), tuple(self.edges(sort=True)))
         # FIXME: self.edges() currently tests at some point whether
         # self is a vertex of itself which causes an infinite
         # recursion loop. Current workaround: call self.edge_iterator directly
         verts = self.vertices(sort=True)
-        return hash((self.cartan_type(), tuple(verts), tuple(self.edge_iterator(verts))))
+        return hash(
+            (self.cartan_type(), tuple(verts), tuple(self.edge_iterator(verts)))
+        )
 
     @staticmethod
     def an_instance():
@@ -416,10 +423,10 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
         """
         # hyperbolic Dynkin diagram of Exercise 4.9 p. 57 of Kac Infinite Dimensional Lie Algebras.
         g = DynkinDiagram()
-        g.add_vertices([1,2,3])
-        g.add_edge(1,2,2)
-        g.add_edge(1,3)
-        g.add_edge(2,3)
+        g.add_vertices([1, 2, 3])
+        g.add_edge(1, 2, 2)
+        g.add_edge(1, 3)
+        g.add_edge(2, 3)
         return g
 
     ##########################################################################
@@ -522,11 +529,15 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             sage: D.dual().edges(sort=True)
             []
         """
-        result = DynkinDiagram_class(None, odd_isotropic_roots=self._odd_isotropic_roots)
+        result = DynkinDiagram_class(
+            None, odd_isotropic_roots=self._odd_isotropic_roots
+        )
         result.add_vertices(self.vertices(sort=True))
         for source, target, label in self.edges(sort=False):
             result.add_edge(target, source, label)
-        result._cartan_type = self._cartan_type.dual() if self._cartan_type is not None else None
+        result._cartan_type = (
+            self._cartan_type.dual() if self._cartan_type is not None else None
+        )
         return result
 
     def relabel(self, *args, **kwds):
@@ -790,7 +801,7 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             [(3, 2), (2, -1), (4, -2)]
         """
         val = 2 if j not in self._odd_isotropic_roots else 0
-        return [(j,val)] + [(i,-m) for (j1, i, m) in self.outgoing_edges(j)]
+        return [(j, val)] + [(i, -m) for (j1, i, m) in self.outgoing_edges(j)]
 
     def row(self, i):
         """
@@ -805,7 +816,7 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             [(3, 2), (2, -1), (4, -2)]
         """
         val = 2 if i not in self._odd_isotropic_roots else 0
-        return [(i,val)] + [(j,-m) for (j, i1, m) in self.incoming_edges(i)]
+        return [(i, val)] + [(j, -m) for (j, i1, m) in self.incoming_edges(i)]
 
     @cached_method
     def coxeter_diagram(self):
@@ -830,17 +841,19 @@ class DynkinDiagram_class(DiGraph, CartanType_abstract):
             True
         """
         from sage.rings.infinity import infinity
+
         scalarproducts_to_order = {0: 2, 1: 3, 2: 4, 3: 6}
         from sage.graphs.graph import Graph
+
         coxeter_diagram = Graph(multiedges=False)
         I = self.index_set()
         coxeter_diagram.add_vertices(I)
         for i in I:
             for j in self.neighbors_out(i):
                 # avoid adding the edge twice
-                if not coxeter_diagram.has_edge(i,j):
-                    val = scalarproducts_to_order.get(self[i,j]*self[j,i], infinity)
-                    coxeter_diagram.add_edge(i,j, val)
+                if not coxeter_diagram.has_edge(i, j):
+                    val = scalarproducts_to_order.get(self[i, j] * self[j, i], infinity)
+                    coxeter_diagram.add_edge(i, j, val)
         return coxeter_diagram.copy(immutable=True)
 
 

@@ -106,11 +106,11 @@ class CartesianProduct_iters(EnumeratedSetFromIterator):
             # we can not use self.__iterate__ directly because
             # that leads to an infinite recursion in __eq__
             return self.__iterate__()
+
         name = "Cartesian product of " + ", ".join(map(str, self.iters))
-        EnumeratedSetFromIterator.__init__(self, iterfunc,
-                                           name=name,
-                                           category=category,
-                                           cache=False)
+        EnumeratedSetFromIterator.__init__(
+            self, iterfunc, name=name, category=category, cache=False
+        )
 
     def __hash__(self):
         r"""
@@ -142,7 +142,9 @@ class CartesianProduct_iters(EnumeratedSetFromIterator):
             False
         """
         try:
-            return len(x) == len(self.iters) and all(x[i] in self.iters[i] for i in range(len(self.iters)))
+            return len(x) == len(self.iters) and all(
+                x[i] in self.iters[i] for i in range(len(self.iters))
+            )
         except (TypeError, IndexError):
             return False
 

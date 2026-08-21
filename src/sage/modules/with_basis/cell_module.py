@@ -58,6 +58,7 @@ class CellModule(CombinatorialFreeModule):
     - :wikipedia:`Cellular_algebra`
     - http://webusers.imj-prg.fr/~bernhard.keller/ictp2006/lecturenotes/xi.pdf
     """
+
     @staticmethod
     def __classcall_private__(cls, A, mu, **kwds):
         """
@@ -88,9 +89,9 @@ class CellModule(CombinatorialFreeModule):
         self._algebra = A
         self._la = mu
         cat = ModulesWithBasis(A.base_ring()).FiniteDimensional()
-        CombinatorialFreeModule.__init__(self, A.base_ring(),
-                                         A.cell_module_indices(mu),
-                                         category=cat, **kwds)
+        CombinatorialFreeModule.__init__(
+            self, A.base_ring(), A.cell_module_indices(mu), category=cat, **kwds
+        )
 
     def _repr_(self):
         """
@@ -117,6 +118,7 @@ class CellModule(CombinatorialFreeModule):
             W_{...}\left(...\right)
         """
         from sage.misc.latex import latex
+
         return "W_{{{}}}\\left({}\\right)".format(latex(self._algebra), latex(self._la))
 
     def cellular_algebra(self):
@@ -209,8 +211,9 @@ class CellModule(CombinatorialFreeModule):
             8
         """
         R = self.base_ring()
-        return R.sum(self._bilinear_form_on_basis(s, t) * cx * cy
-                     for s, cx in x for t, cy in y)
+        return R.sum(
+            self._bilinear_form_on_basis(s, t) * cx * cy for s, cx in x for t, cy in y
+        )
 
     def bilinear_form_matrix(self, ordering=None):
         """
@@ -236,9 +239,11 @@ class CellModule(CombinatorialFreeModule):
             if sordering != set(self.basis().keys()) or len(sordering) != len(ordering):
                 raise ValueError("not an ordering of the basis indices")
         from sage.matrix.matrix_space import MatrixSpace
+
         MS = MatrixSpace(self.base_ring(), len(ordering))
-        return MS([[self._bilinear_form_on_basis(s, t) for t in ordering]
-                   for s in ordering])
+        return MS(
+            [[self._bilinear_form_on_basis(s, t) for t in ordering] for s in ordering]
+        )
 
     @cached_method
     def nonzero_bilinear_form(self):
@@ -263,8 +268,9 @@ class CellModule(CombinatorialFreeModule):
         C = list(self.basis().keys())
         # Since the bilinear form is symmetric, it is sufficient
         #   to check on the upper triangular part
-        return any(self._bilinear_form_on_basis(s, t)
-                   for i, s in enumerate(C) for t in C[i:])
+        return any(
+            self._bilinear_form_on_basis(s, t) for i, s in enumerate(C) for t in C[i:]
+        )
 
     @cached_method
     def radical_basis(self):
@@ -305,9 +311,11 @@ class CellModule(CombinatorialFreeModule):
             sage: R.basis()
             Finite family {}
         """
-        radical = self.submodule(self.radical_basis(),
-                                 category=self.category().Subobjects(),
-                                 already_echelonized=True)
+        radical = self.submodule(
+            self.radical_basis(),
+            category=self.category().Subobjects(),
+            already_echelonized=True,
+        )
         radical.rename("Radical of {}".format(self))
         return radical
 
@@ -366,7 +374,9 @@ class CellModule(CombinatorialFreeModule):
                 W[[1, 2], [3]] + W[[1, 3], [2]]
             """
             # Check for elements coercible to the base ring first
-            ret = CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+            ret = CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
             if ret is not None:
                 return ret
             # See message in CombinatorialFreeModuleElement._acted_upon_
@@ -382,10 +392,14 @@ class CellModule(CombinatorialFreeModule):
                 # scalar = scalar.cellular_involution()
             mc = self._monomial_coefficients
             scalar_mc = scalar.monomial_coefficients(copy=False)
-            D = linear_combination([(P._action_basis(x, k)._monomial_coefficients,
-                                     scalar_mc[x] * mc[k])
-                                    for k in mc for x in scalar_mc],
-                                   factor_on_left=False)
+            D = linear_combination(
+                [
+                    (P._action_basis(x, k)._monomial_coefficients, scalar_mc[x] * mc[k])
+                    for k in mc
+                    for x in scalar_mc
+                ],
+                factor_on_left=False,
+            )
 
             return P._from_dict(D, remove_zeros=False)
 
@@ -403,6 +417,7 @@ class SimpleModule(QuotientModuleWithBasis):
     where `\operatorname{rad}(\lambda)` is the radical of the
     bilinear form `\Phi_{\lambda}`.
     """
+
     def __init__(self, submodule):
         """
         Initialize ``self``.
@@ -479,7 +494,9 @@ class SimpleModule(QuotientModuleWithBasis):
                 sage: 1/2 * elt
                 L[[1, 2], [3]] + L[[1, 3], [2]]
             """
-            ret = CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+            ret = CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
             if ret is not None:
                 return ret
             P = self.parent()

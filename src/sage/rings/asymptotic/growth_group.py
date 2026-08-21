@@ -217,6 +217,7 @@ ACKNOWLEDGEMENT:
 Classes and Methods
 ===================
 """
+
 # ***************************************************************************
 # Copyright (C) 2014--2015 Benjamin Hackl <benjamin.hackl@aau.at>
 #               2014--2015 Daniel Krenn <dev@danielkrenn.at>
@@ -230,15 +231,20 @@ Classes and Methods
 from collections import namedtuple
 
 from sage.misc.lazy_import import lazy_import
-lazy_import('sage.rings.asymptotic.growth_group_cartesian', 'CartesianProductGrowthGroups')
+
+lazy_import(
+    'sage.rings.asymptotic.growth_group_cartesian', 'CartesianProductGrowthGroups'
+)
 
 from sage.categories.pushout import ConstructionFunctor
 from sage.structure.element import MultiplicativeGroupElement
 from sage.structure.factory import UniqueFactory
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
-from sage.structure.unique_representation import (CachedRepresentation,
-                                                  UniqueRepresentation)
+from sage.structure.unique_representation import (
+    CachedRepresentation,
+    UniqueRepresentation,
+)
 from sage.structure.richcmp import richcmp_by_eq_and_lt
 import sage.rings.abc
 from .misc import WithLocals
@@ -317,6 +323,7 @@ class Variable(CachedRepresentation, SageObject):
         sage: v = Variable('(e^(n*log(n)))', ignore=('e',)); repr(v), v.variable_names()
         ('e^(n*log(n))', ('n',))
     """
+
     def __init__(self, var, repr=None, latex_name=None, ignore=None):
         r"""
         See :class:`Variable` for details.
@@ -351,7 +358,9 @@ class Variable(CachedRepresentation, SageObject):
 
         if not isinstance(var, (list, tuple)):
             var = (var,)
-        var = tuple(''.join(split_str_by_op(str(v), None)) for v in var)  # we strip off parentheses
+        var = tuple(
+            ''.join(split_str_by_op(str(v), None)) for v in var
+        )  # we strip off parentheses
 
         if ignore is None:
             ignore = tuple()
@@ -360,10 +369,17 @@ class Variable(CachedRepresentation, SageObject):
         from sage.symbolic.ring import SR
 
         if repr is None:
-            var_bases = tuple(i for i in sum(iter(
-                self.extract_variable_names(v)
-                if not isidentifier(v) else (v,)
-                for v in var), tuple()) if i not in ignore)
+            var_bases = tuple(
+                i
+                for i in sum(
+                    iter(
+                        self.extract_variable_names(v) if not isidentifier(v) else (v,)
+                        for v in var
+                    ),
+                    tuple(),
+                )
+                if i not in ignore
+            )
             var_repr = ', '.join(var)
             if latex_name is None:
                 latex_name = ', '.join(latex(SR(v)) for v in var if v)
@@ -380,8 +396,9 @@ class Variable(CachedRepresentation, SageObject):
                     latex_name = latex(var_repr)
 
         if len(var_bases) != len(set(var_bases)):
-            raise ValueError('Variable names %s are not pairwise distinct.' %
-                             (var_bases,))
+            raise ValueError(
+                'Variable names %s are not pairwise distinct.' % (var_bases,)
+            )
 
         self.var_bases = var_bases
         self.var_repr = var_repr
@@ -579,6 +596,7 @@ class Variable(CachedRepresentation, SageObject):
             ('a', 'b', 'c', 'd')
         """
         from sage.symbolic.ring import SR
+
         if s == '':
             return ()
         return tuple(str(s) for s in SR(s).variables())
@@ -618,10 +636,12 @@ class Variable(CachedRepresentation, SageObject):
             > *previous* ZeroDivisionError: rational division by zero
         """
         from sage.misc.sage_eval import sage_eval
+
         try:
             return sage_eval(self.var_repr, locals=rules)
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
 
@@ -637,6 +657,7 @@ class PartialConversionValueError(ValueError):
     The remaining argument passed on to
     :python:`ValueError<library/exceptions.html#exceptions.ValueError>`.
     """
+
     def __init__(self, element, *args, **kwds):
         r"""
         See :exc:`PartialConversionValueError` for more information.
@@ -675,6 +696,7 @@ class PartialConversionElement(SageObject):
     elements of
     :mod:`cartesian products of growth groups <sage.rings.asymptotic.growth_group_cartesian>`.
     """
+
     def __init__(self, growth_group, raw_element):
         r"""
         See :class:`PartialConversionElement` for more information.
@@ -699,9 +721,10 @@ class PartialConversionElement(SageObject):
             element with parameter -42 (Integer Ring) in Growth Group QQ^n
         """
         from sage.structure.element import parent
-        return 'element with parameter {} ({}) in {}'.format(self.raw_element,
-                                                             parent(self.raw_element),
-                                                             self.growth_group)
+
+        return 'element with parameter {} ({}) in {}'.format(
+            self.raw_element, parent(self.raw_element), self.growth_group
+        )
 
     def split(self):
         r"""
@@ -735,8 +758,8 @@ class PartialConversionElement(SageObject):
             here = self.growth_group.element_class(self.growth_group, raw_here)
         except PartialConversionValueError as e:
             from .misc import combine_exceptions
-            raise combine_exceptions(
-                ValueError('cannot split {}'.format(self)), e)
+
+            raise combine_exceptions(ValueError('cannot split {}'.format(self)), e)
 
         other = PartialConversionElement(self.growth_group, raw_other)
         return here, other
@@ -876,19 +899,23 @@ def _log_(self, base=None):
 
     log_factor = self.log_factor(base=base)
     if not log_factor:
-        raise ArithmeticError('%s is zero, '
-                              'which is not contained in %s.' %
-                              (log_string(self, base), self.parent()))
+        raise ArithmeticError(
+            '%s is zero, '
+            'which is not contained in %s.' % (log_string(self, base), self.parent())
+        )
 
     if len(log_factor) != 1:
-        raise ArithmeticError('Calculating %s results in a sum, '
-                              'which is not contained in %s.' %
-                              (log_string(self, base), self.parent()))
+        raise ArithmeticError(
+            'Calculating %s results in a sum, '
+            'which is not contained in %s.' % (log_string(self, base), self.parent())
+        )
     g, c = log_factor[0]
     if c != 1:
-        raise ArithmeticError('When calculating %s a factor %s != 1 '
-                              'appeared, which is not contained in %s.' %
-                              (log_string(self, base), c, self.parent()))
+        raise ArithmeticError(
+            'When calculating %s a factor %s != 1 '
+            'appeared, which is not contained in %s.'
+            % (log_string(self, base), c, self.parent())
+        )
     return g
 
 
@@ -959,13 +986,14 @@ def _log_factor_(self, base=None, locals=None):
     log_factor = self._log_factor_(base=base, locals=locals)
 
     for g, c in log_factor:
-        if hasattr(g, 'parent') and \
-           isinstance(g.parent(), GenericGrowthGroup):
+        if hasattr(g, 'parent') and isinstance(g.parent(), GenericGrowthGroup):
             continue
         from .misc import log_string
-        raise ArithmeticError('Cannot build %s since %s '
-                              'is not in %s.' % (log_string(self, base),
-                                                 g, self.parent()))
+
+        raise ArithmeticError(
+            'Cannot build %s since %s '
+            'is not in %s.' % (log_string(self, base), g, self.parent())
+        )
 
     return log_factor
 
@@ -1049,8 +1077,9 @@ def _rpow_(self, base):
         Asymptotic Ring <n^ZZ * log(n)^ZZ * UU^n> over Symbolic Constants Subring
     """
     if base == 0:
-        raise ValueError('%s is not an allowed base for calculating the '
-                         'power to %s.' % (base, self))
+        raise ValueError(
+            '%s is not an allowed base for calculating the power to %s.' % (base, self)
+        )
 
     var = str(self)
 
@@ -1060,8 +1089,10 @@ def _rpow_(self, base):
         if base == 'e':
             from sage.rings.integer_ring import ZZ
             from .misc import repr_op
-            MM = MonomialGrowthGroup(ZZ, repr_op('e', '^', var),
-                                     ignore_variables=('e',))
+
+            MM = MonomialGrowthGroup(
+                ZZ, repr_op('e', '^', var), ignore_variables=('e',)
+            )
             element = MM(raw_element=ZZ(1))
         else:
             EEUU = ExponentialGrowthGroup.factory(base.parent(), var)
@@ -1070,7 +1101,7 @@ def _rpow_(self, base):
             except AttributeError:
                 factors = (EEUU,)
             if len(factors) == 1:
-                EE, = factors
+                (EE,) = factors
                 element = EE(raw_element=base)
             else:
                 EE, UU = factors
@@ -1083,9 +1114,13 @@ def _rpow_(self, base):
         return self.parent().one() * element
     except (TypeError, ValueError) as e:
         from .misc import combine_exceptions, repr_op
+
         raise combine_exceptions(
-            ArithmeticError('Cannot construct %s in %s' %
-                            (repr_op(base, '^', var), self.parent())), e)
+            ArithmeticError(
+                'Cannot construct %s in %s' % (repr_op(base, '^', var), self.parent())
+            ),
+            e,
+        )
 
 
 class GenericGrowthElement(MultiplicativeGroupElement):
@@ -1154,13 +1189,16 @@ class GenericGrowthElement(MultiplicativeGroupElement):
         except (TypeError, ValueError) as e:
             from .misc import combine_exceptions
             from sage.structure.element import parent as parent_function
+
             raise combine_exceptions(
                 PartialConversionValueError(
                     PartialConversionElement(parent, raw_element),
-                    '{} ({}) is not in {}'.format(raw_element,
-                                                  parent_function(raw_element),
-                                                  parent.base())),
-                e)
+                    '{} ({}) is not in {}'.format(
+                        raw_element, parent_function(raw_element), parent.base()
+                    ),
+                ),
+                e,
+            )
 
         self._check_()
 
@@ -1268,8 +1306,9 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             sage: ~P.an_element()
             x^(-1)
         """
-        raise NotImplementedError('Inversion of %s not implemented '
-                                  '(in this abstract method).' % (self,))
+        raise NotImplementedError(
+            'Inversion of %s not implemented (in this abstract method).' % (self,)
+        )
 
     _richcmp_ = richcmp_by_eq_and_lt("_eq_", "_lt_")
 
@@ -1413,8 +1452,10 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             NotImplementedError: Cannot determine logarithmized factorization of
             GenericGrowthElement(1/2) in abstract base class.
         """
-        raise NotImplementedError('Cannot determine logarithmized factorization '
-                                  'of %s in abstract base class.' % (self,))
+        raise NotImplementedError(
+            'Cannot determine logarithmized factorization '
+            'of %s in abstract base class.' % (self,)
+        )
 
     rpow = _rpow_
 
@@ -1439,8 +1480,7 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             ...
             ValueError: Cannot compute 2 to the generic element 3^x.
         """
-        raise ValueError('Cannot compute %s to the generic element %s.' %
-                         (base, self))
+        raise ValueError('Cannot compute %s to the generic element %s.' % (base, self))
 
     def factors(self):
         r"""
@@ -1483,9 +1523,13 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             Growth Group Generic(ZZ).
         """
         from .misc import substitute_raise_exception
-        substitute_raise_exception(self, TypeError(
-            'Cannot substitute in the abstract '
-            'base class %s.' % (self.parent(),)))
+
+        substitute_raise_exception(
+            self,
+            TypeError(
+                'Cannot substitute in the abstract base class %s.' % (self.parent(),)
+            ),
+        )
 
     def variable_names(self):
         r"""
@@ -1553,8 +1597,9 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             NotImplementedError: singularity analysis of GenericGrowthElement(2)
             not implemented
         """
-        raise NotImplementedError('singularity analysis of {} '
-                                  'not implemented '.format(self))
+        raise NotImplementedError(
+            'singularity analysis of {} not implemented '.format(self)
+        )
 
     def _find_minimum_(self, valid_from):
         r"""
@@ -1617,6 +1662,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
 
     .. automethod:: _split_raw_element_
     """
+
     # TODO: implement some sort of 'assume', where basic assumptions
     # for the variables can be stored. --> within the Cartesian product
 
@@ -1631,7 +1677,8 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
 
     _determine_category_subcategory_mapping_ = [
         (Sets(), Sets(), True),
-        (Posets(), Posets(), False)]
+        (Posets(), Posets(), False),
+    ]
 
     _determine_category_axiom_mapping_ = []
 
@@ -1703,8 +1750,8 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             TypeError: Asymptotic Ring <z^ZZ> over Rational Field is not a valid base.
         """
         from .asymptotic_ring import AsymptoticRing
-        if not isinstance(base, Parent) or \
-           isinstance(base, AsymptoticRing):
+
+        if not isinstance(base, Parent) or isinstance(base, AsymptoticRing):
             raise TypeError('%s is not a valid base.' % (base,))
 
         if var is None:
@@ -1714,11 +1761,13 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
 
         if category is None:
             from .misc import transform_category
+
             category = transform_category(
                 base.category(),
                 cls._determine_category_subcategory_mapping_,
                 cls._determine_category_axiom_mapping_,
-                initial_category=cls._initial_category_(base))
+                initial_category=cls._initial_category_(base),
+            )
 
         return super().__classcall__(cls, base, var, category)
 
@@ -1745,13 +1794,18 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             True
         """
         from sage.categories.posets import Posets
+
         # The following block can be removed once #19269 is fixed.
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-        if base is ZZ or base is QQ or \
-                isinstance(base, PolynomialRing_generic) and \
-                (base.base_ring() is ZZ or base.base_ring() is QQ):
+
+        if (
+            base is ZZ
+            or base is QQ
+            or isinstance(base, PolynomialRing_generic)
+            and (base.base_ring() is ZZ or base.base_ring() is QQ)
+        ):
             return Posets()
         return None
 
@@ -1845,6 +1899,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             Growth Group Generic(QQ, a, b)
         """
         from .misc import parent_to_repr_short
+
         vars = ', '.join(self._var_.variable_names())
         if vars:
             vars = ', ' + vars
@@ -1946,8 +2001,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
              z^(2/3), z^(-2/3), z^(3/2), z^(-3/2),
              z^(4/5), z^(-4/5), z^(5/4), z^(-5/4), ...)
         """
-        return iter(self.element_class(self, e)
-                    for e in self.base().some_elements())
+        return iter(self.element_class(self, e) for e in self.base().some_elements())
 
     def _create_element_in_extension_(self, raw_element):
         r"""
@@ -1972,8 +2026,9 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
         if raw_element.parent() is self.base():
             parent = self
         else:
-            parent = self._underlying_class()(raw_element.parent(), self._var_,
-                                              category=self.category())
+            parent = self._underlying_class()(
+                raw_element.parent(), self._var_, category=self.category()
+            )
         return parent(raw_element=raw_element)
 
     def le(self, left, right):
@@ -2125,7 +2180,8 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
                         raw_element = self.base()(data._raw_element_)
                     except (TypeError, ValueError) as e:
                         raise combine_exceptions(
-                            ValueError('%s is not in %s.' % (data, self)), e)
+                            ValueError('%s is not in %s.' % (data, self)), e
+                        )
 
             elif isinstance(data, GenericGrowthElement):
                 if data.is_one():
@@ -2136,12 +2192,16 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
                     raise PartialConversionValueError(
                         data,
                         'no conversion of {}: this was already unsuccessful '
-                        'earlier'.format(data))
+                        'earlier'.format(data),
+                    )
                 if not data.is_compatible(self):
                     raise TypeError(
                         'cannot (partially) convert {} because its '
                         'growth group {} is not compatible to this '
-                        'growth group {}'.format(data.raw_element, data.growth_group, self))
+                        'growth group {}'.format(
+                            data.raw_element, data.growth_group, self
+                        )
+                    )
                 raw_element = data.raw_element
 
             else:
@@ -2150,9 +2210,11 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             if raw_element is None:
                 raise ValueError('%s is not in %s.' % (data, self))
         elif not isinstance(data, int) or data != 0:
-            raise ValueError('input is ambiguous: '
-                             '%s as well as raw_element=%s '
-                             'are specified' % (data, raw_element))
+            raise ValueError(
+                'input is ambiguous: '
+                '%s as well as raw_element=%s '
+                'are specified' % (data, raw_element)
+            )
 
         return self.element_class(self, raw_element)
 
@@ -2363,13 +2425,15 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             Growth Group x^ZZ * y^ZZ
             sage: sage.structure.element.coercion_traceback()  # not tested
         """
-        if not isinstance(other, GenericGrowthGroup) and \
-           not (other.construction() is not None and
-                isinstance(other.construction()[0], AbstractGrowthGroupFunctor)):
+        if not isinstance(other, GenericGrowthGroup) and not (
+            other.construction() is not None
+            and isinstance(other.construction()[0], AbstractGrowthGroupFunctor)
+        ):
             return
 
         if set(self.variable_names()).isdisjoint(set(other.variable_names())):
             from sage.categories.cartesian_product import cartesian_product
+
             return cartesian_product([self, other])
 
     def gens_monomial(self) -> tuple:
@@ -2527,6 +2591,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             Growth Group CBF^x * UU_RBF^x
         """
         from sage.categories.cartesian_product import cartesian_product
+
         return cartesian_product((self, self.non_growth_group()))
 
     def non_growth_group(self):
@@ -2690,6 +2755,7 @@ class DecreasingGrowthElementError(ValueError):
     The remaining arguments are passed on to
     :python:`ValueError<library/exceptions.html#exceptions.ValueError>`.
     """
+
     def __init__(self, element, *args, **kwds):
         r"""
         See :exc:`DecreasingGrowthElementError` for more information.
@@ -2793,6 +2859,7 @@ class MonomialGrowthElement(GenericGrowthElement):
         """
         if latex:
             from sage.misc.latex import latex as latex_repr
+
             f = latex_repr
         else:
             f = repr
@@ -2807,10 +2874,17 @@ class MonomialGrowthElement(GenericGrowthElement):
         if self.exponent == 1:
             return var
         if latex:
-            return repr_op(var, '^', latex=True) + \
-                '{' + latex_repr(self.exponent)._latex_() + '}'
-        if self.exponent in ZZ and self.exponent > 0 \
-                or isidentifier(str(self.exponent)):
+            return (
+                repr_op(var, '^', latex=True)
+                + '{'
+                + latex_repr(self.exponent)._latex_()
+                + '}'
+            )
+        if (
+            self.exponent in ZZ
+            and self.exponent > 0
+            or isidentifier(str(self.exponent))
+        ):
             return repr_op(var, '^') + str(self.exponent)
         return repr_op(var, '^') + '(' + str(self.exponent) + ')'
 
@@ -2928,8 +3002,10 @@ class MonomialGrowthElement(GenericGrowthElement):
             x^42
         """
         from .misc import strip_symbolic
+
         return self.parent()._create_element_in_extension_(
-            self.exponent * strip_symbolic(exponent))
+            self.exponent * strip_symbolic(exponent)
+        )
 
     def _log_factor_(self, base=None, locals=None):
         r"""
@@ -2990,15 +3066,15 @@ class MonomialGrowthElement(GenericGrowthElement):
         var = str(self.parent()._var_)
 
         from .misc import split_str_by_op
+
         split = split_str_by_op(var, '^')
         if len(split) == 2:
             b, e = split
-            if base is None and b == 'e' or \
-               base is not None and b == str(base):
+            if base is None and b == 'e' or base is not None and b == str(base):
                 return ((e, coefficient),)
 
         if var.startswith('exp('):
-            assert (var[-1] == ')')
+            assert var[-1] == ')'
             v = var[4:-1]
         else:
             v = 'log(%s)' % (var,)
@@ -3071,6 +3147,7 @@ class MonomialGrowthElement(GenericGrowthElement):
         new_var = var[4:-1]
         if base == 'e':
             from sage.rings.integer_ring import ZZ
+
             M = MonomialGrowthGroup(ZZ, new_var)
             return M(raw_element=ZZ(1))
         log = self.parent().locals(locals)['log']
@@ -3141,6 +3218,7 @@ class MonomialGrowthElement(GenericGrowthElement):
             return self.parent()._var_._substitute_(rules) ** self.exponent
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
     def _singularity_analysis_(self, var, zeta, precision):
@@ -3193,24 +3271,40 @@ class MonomialGrowthElement(GenericGrowthElement):
         from sage.rings.integer_ring import ZZ
 
         if self.parent()._var_.is_monomial():
-            from sage.rings.asymptotic.asymptotic_expansion_generators import \
-                asymptotic_expansions
+            from sage.rings.asymptotic.asymptotic_expansion_generators import (
+                asymptotic_expansions,
+            )
+
             return asymptotic_expansions.SingularityAnalysis(
-                var=var, zeta=zeta, alpha=self.exponent, beta=0, delta=0,
-                precision=precision)
+                var=var,
+                zeta=zeta,
+                alpha=self.exponent,
+                beta=0,
+                delta=0,
+                precision=precision,
+            )
         if self.parent().gens_logarithmic():
             if self.exponent not in ZZ:
                 raise NotImplementedError(
                     'singularity analysis of {} not implemented '
-                    'since exponent {} is not an integer'.format(
-                        self, self.exponent))
-            from sage.rings.asymptotic.asymptotic_expansion_generators import \
-                asymptotic_expansions
+                    'since exponent {} is not an integer'.format(self, self.exponent)
+                )
+            from sage.rings.asymptotic.asymptotic_expansion_generators import (
+                asymptotic_expansions,
+            )
+
             return asymptotic_expansions.SingularityAnalysis(
-                var=var, zeta=zeta, alpha=0, beta=ZZ(self.exponent), delta=0,
-                precision=precision, normalized=False)
+                var=var,
+                zeta=zeta,
+                alpha=0,
+                beta=ZZ(self.exponent),
+                delta=0,
+                precision=precision,
+                normalized=False,
+            )
         raise NotImplementedError(
-            'singularity analysis of {} not implemented'.format(self))
+            'singularity analysis of {} not implemented'.format(self)
+        )
 
     def _find_minimum_(self, valid_from):
         r"""
@@ -3256,7 +3350,9 @@ class MonomialGrowthElement(GenericGrowthElement):
         if not self.parent().gens_monomial():
             raise NotImplementedError(f'Minimum of {self} is not implemented')
         if self.is_lt_one():
-            raise DecreasingGrowthElementError(self, f'the growth of {self} is less than one')
+            raise DecreasingGrowthElementError(
+                self, f'the growth of {self} is less than one'
+            )
         elif self.is_one():
             return 1
         assert self.variable_names(), f'{self.variable_names()} is empty'
@@ -3321,13 +3417,15 @@ class MonomialGrowthGroup(GenericGrowthGroup):
     _determine_category_subcategory_mapping_ = [
         (Sets(), Sets(), True),
         (Posets(), Posets(), False),
-        (AdditiveMagmas(), Magmas(), False)]
+        (AdditiveMagmas(), Magmas(), False),
+    ]
 
     _determine_category_axiom_mapping_ = [
         ('AdditiveAssociative', 'Associative', False),
         ('AdditiveUnital', 'Unital', False),
         ('AdditiveInverse', 'Inverse', False),
-        ('AdditiveCommutative', 'Commutative', False)]
+        ('AdditiveCommutative', 'Commutative', False),
+    ]
 
     def _repr_short_(self):
         r"""
@@ -3352,6 +3450,7 @@ class MonomialGrowthGroup(GenericGrowthGroup):
             'a^QQ[x]'
         """
         from .misc import parent_to_repr_short, repr_op
+
         return repr_op(self._var_, '^', parent_to_repr_short(self.base()))
 
     def _convert_(self, data):
@@ -3460,13 +3559,16 @@ class MonomialGrowthGroup(GenericGrowthGroup):
             if var not in str(data):
                 return  # this has to end here
             from sage.symbolic.ring import SR
+
             return self._convert_(SR(data))
 
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-        from sage.rings.polynomial.multi_polynomial_ring_base import \
-            MPolynomialRing_base
+        from sage.rings.polynomial.multi_polynomial_ring_base import (
+            MPolynomialRing_base,
+        )
         from sage.rings.power_series_ring import PowerSeriesRing_generic
         import operator
+
         if isinstance(P, SymbolicRing):
             if data.operator() == operator.pow:
                 base, exponent = data.operands()
@@ -3479,12 +3581,13 @@ class MonomialGrowthGroup(GenericGrowthGroup):
         elif isinstance(P, PowerSeriesRing_generic):
             if hasattr(data, 'variables') and len(data.variables()) == 1:
                 from sage.rings.integer_ring import ZZ
+
                 if data.is_monomial() and data.precision_absolute() not in ZZ:
                     if var == str(data.variables()[0]):
                         return data.degree()
-            elif len(P.variable_names()) == 1 and \
-                            var == str(data.variable()[0]):
+            elif len(P.variable_names()) == 1 and var == str(data.variable()[0]):
                 from sage.rings.integer_ring import ZZ
+
                 if data.is_monomial() and data.precision_absolute() not in ZZ:
                     return data.degree()
 
@@ -3516,6 +3619,7 @@ class MonomialGrowthGroup(GenericGrowthGroup):
             (3, 4)
         """
         from sage.functions.other import real, imag
+
         return real(raw_element), imag(raw_element)
 
     def gens_monomial(self) -> tuple:
@@ -3592,11 +3696,9 @@ class MonomialGrowthGroup(GenericGrowthGroup):
         return MonomialGrowthGroupFunctor(self._var_), self.base()
 
     @classmethod
-    def factory(cls,
-                base, var,
-                extend_by_non_growth_group=False,
-                return_factors=False,
-                **kwds):
+    def factory(
+        cls, base, var, extend_by_non_growth_group=False, return_factors=False, **kwds
+    ):
         r"""
         Create a monomial growth group.
 
@@ -3665,6 +3767,7 @@ class MonomialGrowthGroup(GenericGrowthGroup):
             Growth Group n^(ZZ*I)
         """
         from sage.groups.misc_gps.imaginary_groups import ImaginaryGroup
+
         J = ImaginaryGroup(self.base())
         return self._non_growth_group_class_(J, self._var_)
 
@@ -3715,7 +3818,10 @@ class MonomialGrowthGroupFunctor(AbstractGrowthGroupFunctor):
             sage: MonomialGrowthGroupFunctor('x')
             MonomialGrowthGroup[x]
         """
-        from sage.categories.commutative_additive_monoids import CommutativeAdditiveMonoids
+        from sage.categories.commutative_additive_monoids import (
+            CommutativeAdditiveMonoids,
+        )
+
         super().__init__(var, CommutativeAdditiveMonoids())
 
     def _apply_functor(self, base):
@@ -3791,9 +3897,11 @@ class ExponentialGrowthElement(GenericGrowthElement):
         """
         if not self.base > 0:
             from sage.structure.element import parent
+
             raise PartialConversionValueError(
                 PartialConversionElement(self.parent(), self.base),
-                'base {} ({}) must be positive'.format(self.base, parent(self.base)))
+                'base {} ({}) must be positive'.format(self.base, parent(self.base)),
+            )
 
     @property
     def base(self):
@@ -3851,6 +3959,7 @@ class ExponentialGrowthElement(GenericGrowthElement):
         """
         if latex:
             from sage.misc.latex import latex as latex_repr
+
             f = latex_repr
         else:
             f = repr
@@ -3861,8 +3970,12 @@ class ExponentialGrowthElement(GenericGrowthElement):
         if self.base.is_one():
             return '1'
         if latex:
-            return repr_op(latex_repr(self.base)._latex_(), '^', latex=True) + \
-                '{' + latex_repr(var)._latex_() + '}'
+            return (
+                repr_op(latex_repr(self.base)._latex_(), '^', latex=True)
+                + '{'
+                + latex_repr(var)._latex_()
+                + '}'
+            )
         return repr_op(str(self.base), '^', var)
 
     def _latex_(self):
@@ -4004,8 +4117,10 @@ class ExponentialGrowthElement(GenericGrowthElement):
              Growth Group QQ^x * x^ZZ * Signs^x
         """
         from .misc import strip_symbolic
+
         return self.parent()._create_element_in_extension_(
-            self.base ** strip_symbolic(exponent))
+            self.base ** strip_symbolic(exponent)
+        )
 
     def _log_factor_(self, base=None, locals=None):
         r"""
@@ -4052,8 +4167,12 @@ class ExponentialGrowthElement(GenericGrowthElement):
         if self.is_one():
             return tuple()
         b = self.base
-        if base is None and hasattr(b, 'is_monomial') and b.is_monomial() and \
-                        b.variable_name() == 'e':
+        if (
+            base is None
+            and hasattr(b, 'is_monomial')
+            and b.is_monomial()
+            and b.variable_name() == 'e'
+        ):
             coefficient = b.valuation()
         elif base is None and str(b) == 'e':
             coefficient = self.parent().base().one()
@@ -4129,6 +4248,7 @@ class ExponentialGrowthElement(GenericGrowthElement):
             return self.base ** self.parent()._var_._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
             from .misc import substitute_raise_exception
+
             substitute_raise_exception(self, e)
 
 
@@ -4184,13 +4304,15 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
         (Sets(), Sets(), True),
         (Posets(), Posets(), False),
         (Magmas(), Magmas(), False),
-        (DivisionRings(), Groups(), False)]
+        (DivisionRings(), Groups(), False),
+    ]
 
     _determine_category_axiom_mapping_ = [
         ('Associative', 'Associative', False),
         ('Unital', 'Unital', False),
         ('Inverse', 'Inverse', False),
-        ('Commutative', 'Commutative', False)]
+        ('Commutative', 'Commutative', False),
+    ]
 
     def __init__(self, base, *args, **kwds):
         r"""
@@ -4218,12 +4340,15 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
 
         super().__init__(base, *args, **kwds)
         if isinstance(base, SymbolicRing) and not self._an_element_base_() > 0:
-            warn("When using the Exponential {}, make "
-                 "assumptions on the used symbolic elements.\n"
-                 "In particular, use something like "
-                 "'assume(SR.an_element() > 0)' to make "
-                 "coercions work properly.".format(self),
-                 RuntimeWarning, 2)
+            warn(
+                "When using the Exponential {}, make "
+                "assumptions on the used symbolic elements.\n"
+                "In particular, use something like "
+                "'assume(SR.an_element() > 0)' to make "
+                "coercions work properly.".format(self),
+                RuntimeWarning,
+                2,
+            )
 
     def _repr_short_(self):
         r"""
@@ -4246,6 +4371,7 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
             'QQ[x]^a'
         """
         from .misc import parent_to_repr_short, repr_op
+
         return repr_op(parent_to_repr_short(self.base()), '^', self._var_)
 
     def _convert_(self, data):
@@ -4333,8 +4459,9 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
                 return  # this has to end here
 
             if s.endswith('^' + var):
-                return self.base()(s.replace('^' + var, '')
-                                   .replace('(', '').replace(')', ''))
+                return self.base()(
+                    s.replace('^' + var, '').replace('(', '').replace(')', '')
+                )
             return  # end of parsing
 
         import operator
@@ -4351,6 +4478,7 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
                     return base ** (exponent / P(var))
             elif isinstance(op, Function_exp):
                 from sage.functions.log import exp
+
                 base = exp(1)
                 exponent = data.operands()[0]
                 if str(exponent) == var:
@@ -4453,23 +4581,34 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
             else:
                 P = base.parent()
 
-        if P in (ZZ, QQ, AA) or isinstance(P, (SymbolicRing,
-                                               sage.rings.abc.RealField,
-                                               sage.rings.abc.RealIntervalField,
-                                               sage.rings.abc.RealBallField)):
+        if P in (ZZ, QQ, AA) or isinstance(
+            P,
+            (
+                SymbolicRing,
+                sage.rings.abc.RealField,
+                sage.rings.abc.RealIntervalField,
+                sage.rings.abc.RealBallField,
+            ),
+        ):
             if base > 0:
                 return base, None
             if base < 0:
                 return -base, -1
-        elif isinstance(P, (sage.rings.abc.ComplexField,
-                            sage.rings.abc.ComplexIntervalField,
-                            sage.rings.abc.ComplexBallField)):
+        elif isinstance(
+            P,
+            (
+                sage.rings.abc.ComplexField,
+                sage.rings.abc.ComplexIntervalField,
+                sage.rings.abc.ComplexBallField,
+            ),
+        ):
             size = abs(base)
             direction = base / size
             return size, direction
 
-        raise ValueError('cannot split {} ({}) into '
-                         'abs and arg'.format(base, parent(base)))
+        raise ValueError(
+            'cannot split {} ({}) into abs and arg'.format(base, parent(base))
+        )
 
     def _an_element_(self):
         r"""
@@ -4521,8 +4660,9 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
             sage: tuple(GrowthGroup('(QQ_+)^z').some_elements())
             ((1/2)^z, 2^z, 1, 42^z, (2/3)^z, (3/2)^z, ...)
         """
-        return iter(self.element_class(self, e)
-                    for e in self.base().some_elements() if e > 0)
+        return iter(
+            self.element_class(self, e) for e in self.base().some_elements() if e > 0
+        )
 
     def gens(self) -> tuple:
         r"""
@@ -4559,11 +4699,9 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
         return ExponentialGrowthGroupFunctor(self._var_), self.base()
 
     @classmethod
-    def factory(cls,
-                base, var,
-                extend_by_non_growth_group=True,
-                return_factors=False,
-                **kwds):
+    def factory(
+        cls, base, var, extend_by_non_growth_group=True, return_factors=False, **kwds
+    ):
         r"""
         Create an exponential growth group.
 
@@ -4619,15 +4757,20 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
         elif extend_by_non_growth_group:
             if base == QQbar or isinstance(base, NumberField_cyclotomic):
                 EE = cls(AA, var, **kwds)
-                UU = cls._non_growth_group_class_(
-                    ArgumentGroup(domain=base), var)
+                UU = cls._non_growth_group_class_(ArgumentGroup(domain=base), var)
                 groups = (EE, UU)
-            elif isinstance(base, (sage.rings.abc.ComplexField,
-                                   sage.rings.abc.ComplexIntervalField,
-                                   sage.rings.abc.ComplexBallField)):
+            elif isinstance(
+                base,
+                (
+                    sage.rings.abc.ComplexField,
+                    sage.rings.abc.ComplexIntervalField,
+                    sage.rings.abc.ComplexBallField,
+                ),
+            ):
                 EE = cls(base._real_field(), var, **kwds)
                 UU = cls._non_growth_group_class_(
-                    ArgumentGroup(exponents=base._real_field()), var)
+                    ArgumentGroup(exponents=base._real_field()), var
+                )
                 groups = (EE, UU)
             else:
                 EE = cls(base, var, **kwds)
@@ -4666,6 +4809,7 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
             Growth Group UU_RBF^x
         """
         from sage.groups.misc_gps.argument_groups import ArgumentGroup
+
         UU = ArgumentGroup(domain=self.base())
         return self._non_growth_group_class_(UU, self._var_)
 
@@ -4717,6 +4861,7 @@ class ExponentialGrowthGroupFunctor(AbstractGrowthGroupFunctor):
             ExponentialGrowthGroup[x]
         """
         from sage.categories.monoids import Monoids
+
         super().__init__(var, Monoids())
 
     def _apply_functor(self, base):
@@ -4799,11 +4944,11 @@ class GenericNonGrowthGroup(GenericGrowthGroup):
             Category of posets
         """
         from sage.categories.posets import Posets
+
         return Posets()
 
 
-class ExponentialNonGrowthElement(GenericNonGrowthElement,
-                                  ExponentialGrowthElement):
+class ExponentialNonGrowthElement(GenericNonGrowthElement, ExponentialGrowthElement):
     r"""
     An element of :class:`ExponentialNonGrowthGroup`.
     """
@@ -4826,8 +4971,7 @@ class ExponentialNonGrowthElement(GenericNonGrowthElement,
         pass
 
 
-class ExponentialNonGrowthGroup(GenericNonGrowthGroup,
-                                ExponentialGrowthGroup):
+class ExponentialNonGrowthGroup(GenericNonGrowthGroup, ExponentialGrowthGroup):
     r"""
     A growth group whose base is an
     :mod:`argument group <sage.groups.misc_gps.argument_groups>`.
@@ -4916,16 +5060,15 @@ class ExponentialNonGrowthGroupFunctor(ExponentialGrowthGroupFunctor):
         return ExponentialNonGrowthGroup(base, self.var)
 
 
-class MonomialNonGrowthElement(GenericNonGrowthElement,
-                               MonomialGrowthElement):
+class MonomialNonGrowthElement(GenericNonGrowthElement, MonomialGrowthElement):
     r"""
     An element of :class:`MonomialNonGrowthGroup`.
     """
+
     pass
 
 
-class MonomialNonGrowthGroup(GenericNonGrowthGroup,
-                             MonomialGrowthGroup):
+class MonomialNonGrowthGroup(GenericNonGrowthGroup, MonomialGrowthGroup):
     r"""
     A growth group whose base is an
     :mod:`imaginary group <sage.groups.misc_gps.imaginary_groups>`.
@@ -4996,9 +5139,9 @@ class MonomialNonGrowthGroupFunctor(MonomialGrowthGroupFunctor):
         return MonomialNonGrowthGroup(base, self.var)
 
 
-GrowthGroupFactor = namedtuple('GrowthGroupFactor',
-                               ['cls', 'base', 'var',
-                                'extend_by_non_growth_group'])
+GrowthGroupFactor = namedtuple(
+    'GrowthGroupFactor', ['cls', 'base', 'var', 'extend_by_non_growth_group']
+)
 
 
 class GrowthGroupFactory(UniqueFactory):
@@ -5238,7 +5381,8 @@ class GrowthGroupFactory(UniqueFactory):
         kwds.setdefault('ignore_variables', ('e',))
 
         sfactors = split_str_by_op(
-            ' '.join(specification.split()).replace('**', '^'), '*')
+            ' '.join(specification.split()).replace('**', '^'), '*'
+        )
 
         def remove_parentheses(s: str) -> str:
             while s.startswith('(') and s.endswith(')'):
@@ -5248,42 +5392,50 @@ class GrowthGroupFactory(UniqueFactory):
         def has_l_property(s, properties, invert=False) -> tuple[str, bool]:
             for p in properties:
                 if s.startswith(p):
-                    return s[len(p):].strip(), not invert
+                    return s[len(p) :].strip(), not invert
             return s, invert
 
         def has_r_property(s, properties, invert=False) -> tuple[str, bool]:
             for p in properties:
                 if s.endswith(p):
-                    return s[:-len(p)].strip(), not invert
+                    return s[: -len(p)].strip(), not invert
             return s, invert
 
         factors = []
 
         for factor in sfactors:
             if '^' not in factor:
-                raise ValueError("'{}' is not a valid substring of '{}' describing "
-                                 "a growth group.".format(factor, specification))
+                raise ValueError(
+                    "'{}' is not a valid substring of '{}' describing "
+                    "a growth group.".format(factor, specification)
+                )
 
             split = split_str_by_op(factor, '^')
             if len(split) != 2:
-                raise ValueError("'{}' is an ambiguous substring of a growth group "
-                                 "description of '{}'. Use parentheses to make it "
-                                 "unique.".format(factor, ' * '.join(sfactors)))
+                raise ValueError(
+                    "'{}' is an ambiguous substring of a growth group "
+                    "description of '{}'. Use parentheses to make it "
+                    "unique.".format(factor, ' * '.join(sfactors))
+                )
 
             b, e = split
             b = remove_parentheses(b)
             e = remove_parentheses(e)
 
-            b, extend_B_by_non_growth_group = has_r_property(
-                b, ['_+'], invert=True)
+            b, extend_B_by_non_growth_group = has_r_property(b, ['_+'], invert=True)
             e, extend_E_by_non_growth_group = has_r_property(
-                e, ['[I]', '[i]'], invert=False)
+                e, ['[I]', '[i]'], invert=False
+            )
             e, l_E_only_imaginary_group = has_l_property(e, ['I*', 'I *'])
             e, r_E_only_imaginary_group = has_r_property(e, ['*I', '* I'])
-            E_only_imaginary_group = l_E_only_imaginary_group or r_E_only_imaginary_group
+            E_only_imaginary_group = (
+                l_E_only_imaginary_group or r_E_only_imaginary_group
+            )
             if E_only_imaginary_group and extend_E_by_non_growth_group:
-                raise ValueError("'{}' is not a valid substring of '{}' describing "
-                                 "a growth group.".format(factor, specification))
+                raise ValueError(
+                    "'{}' is not a valid substring of '{}' describing "
+                    "a growth group.".format(factor, specification)
+                )
 
             try:
                 B = repr_short_to_parent(b)
@@ -5300,27 +5452,40 @@ class GrowthGroupFactory(UniqueFactory):
 
             if B is None and E is None:
                 from .misc import combine_exceptions
+
                 raise combine_exceptions(
-                    ValueError("'{}' is not a valid substring of {} describing "
-                               "a growth group.".format(factor, ' * '.join(sfactors))),
-                    exc_b, exc_e)
+                    ValueError(
+                        "'{}' is not a valid substring of {} describing "
+                        "a growth group.".format(factor, ' * '.join(sfactors))
+                    ),
+                    exc_b,
+                    exc_e,
+                )
             elif B is None and E is not None:
                 if E_only_imaginary_group:
                     E = ImaginaryGroup(E)
-                factors.append(GrowthGroupFactor(
-                    cls=MonomialGrowthGroup,
-                    base=E,
-                    var=b,
-                    extend_by_non_growth_group=extend_E_by_non_growth_group))
+                factors.append(
+                    GrowthGroupFactor(
+                        cls=MonomialGrowthGroup,
+                        base=E,
+                        var=b,
+                        extend_by_non_growth_group=extend_E_by_non_growth_group,
+                    )
+                )
             elif B is not None and E is None:
-                factors.append(GrowthGroupFactor(
-                    cls=ExponentialGrowthGroup,
-                    base=B,
-                    var=e,
-                    extend_by_non_growth_group=extend_B_by_non_growth_group))
+                factors.append(
+                    GrowthGroupFactor(
+                        cls=ExponentialGrowthGroup,
+                        base=B,
+                        var=e,
+                        extend_by_non_growth_group=extend_B_by_non_growth_group,
+                    )
+                )
             else:
-                raise ValueError("'{}' is an ambiguous substring of a growth group "
-                                 "description of '{}'.".format(factor, ' * '.join(factors)))
+                raise ValueError(
+                    "'{}' is an ambiguous substring of a growth group "
+                    "description of '{}'.".format(factor, ' * '.join(factors))
+                )
 
         return tuple(factors), kwds
 
@@ -5342,7 +5507,8 @@ class GrowthGroupFactory(UniqueFactory):
                 factor.var,
                 extend_by_non_growth_group=factor.extend_by_non_growth_group,
                 return_factors=True,
-                **kwds)
+                **kwds,
+            )
             for grp in grps:
                 if isinstance(grp, GenericNonGrowthGroup):
                     non_growth_groups.append(grp)
@@ -5354,6 +5520,7 @@ class GrowthGroupFactory(UniqueFactory):
             return groups[0]
 
         from sage.categories.cartesian_product import cartesian_product
+
         return cartesian_product(groups)
 
 

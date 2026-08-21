@@ -14,6 +14,7 @@ AUTHORS:
 - Eric Gourgoulhon (2019-05-24): initial version, refactoring the class
   ``GraphicsArray`` that was defined in the module :mod:`~sage.plot.graphics`.
 """
+
 import os
 from sage.misc.fast_methods import WithEqualityById
 from sage.structure.sage_object import SageObject
@@ -124,6 +125,7 @@ class MultiGraphics(WithEqualityById, SageObject):
         sage: len(G)
         3
     """
+
     def __init__(self, graphics_list):
         r"""
         Initialize the attributes common to all MultiGraphics objects.
@@ -147,8 +149,9 @@ class MultiGraphics(WithEqualityById, SageObject):
                 self.append(ins)  # default position
             else:
                 if not isinstance(ins, (list, tuple)) or len(ins) != 2:
-                    raise TypeError("a pair (Graphics, position) is "
-                                    f"expected, not {ins}")
+                    raise TypeError(
+                        f"a pair (Graphics, position) is expected, not {ins}"
+                    )
                 self.append(ins[0], pos=ins[1])
 
     def _repr_(self):
@@ -207,7 +210,8 @@ class MultiGraphics(WithEqualityById, SageObject):
         for file_ext, output_container in preferred:
             if output_container in display_manager.supported_output():
                 return display_manager.graphics_from_save(
-                    self.save, kwds, file_ext, output_container)
+                    self.save, kwds, file_ext, output_container
+                )
 
     def __getitem__(self, i):
         r"""
@@ -351,8 +355,9 @@ class MultiGraphics(WithEqualityById, SageObject):
             <Figure size 640x480 with 3 Axes>
         """
         from matplotlib.figure import Figure
+
         glist = self._glist
-        if len(glist) == 0:       # for an empty MultiGraphics, we create
+        if len(glist) == 0:  # for an empty MultiGraphics, we create
             glist = [Graphics()]  # a 1-element list with an empty graphics
         # If no Matplotlib figure is provided, it is created here:
         if figure is None:
@@ -375,8 +380,7 @@ class MultiGraphics(WithEqualityById, SageObject):
             # Creating the Matplotlib Axes object "subplot" on the figure:
             subplot = self._add_subplot(figure, i)
             # and drawing g on it:
-            g.matplotlib(figure=figure, sub=subplot, verify=do_verify,
-                         **options)
+            g.matplotlib(figure=figure, sub=subplot, verify=do_verify, **options)
             if transparent:
                 subplot.set_facecolor('none')
         return figure
@@ -424,26 +428,32 @@ class MultiGraphics(WithEqualityById, SageObject):
             sage: graphics_array([[]]).save(F)
         """
         from matplotlib import rcParams
+
         ext = os.path.splitext(filename)[1].lower()
         if ext in ['', '.sobj']:
             SageObject.save(self, filename)
         elif ext not in ALLOWED_EXTENSIONS:
-            raise ValueError("allowed file extensions for images are '" +
-                             "', '".join(ALLOWED_EXTENSIONS) + "'!")
+            raise ValueError(
+                "allowed file extensions for images are '"
+                + "', '".join(ALLOWED_EXTENSIONS)
+                + "'!"
+            )
         else:
-            rc_backup = (rcParams['ps.useafm'], rcParams['pdf.use14corefonts'],
-                         rcParams['text.usetex'])  # save the rcParams
+            rc_backup = (
+                rcParams['ps.useafm'],
+                rcParams['pdf.use14corefonts'],
+                rcParams['text.usetex'],
+            )  # save the rcParams
             figure = self.matplotlib(figsize=figsize, **kwds)
-            transparent = kwds.get('transparent',
-                                   Graphics.SHOW_OPTIONS['transparent'])
-            fig_tight = kwds.get('fig_tight',
-                                 Graphics.SHOW_OPTIONS['fig_tight'])
+            transparent = kwds.get('transparent', Graphics.SHOW_OPTIONS['transparent'])
+            fig_tight = kwds.get('fig_tight', Graphics.SHOW_OPTIONS['fig_tight'])
             dpi = kwds.get('dpi', Graphics.SHOW_OPTIONS['dpi'])
             # One can output in PNG, PS, EPS, PDF, PGF, or SVG format,
             # depending on the file extension.
             # PGF is handled by a different backend
             if ext == '.pgf':
-                from sage.features.latex import xelatex,pdflatex,lualatex
+                from sage.features.latex import xelatex, pdflatex, lualatex
+
                 latex_implementations = []
                 if xelatex().is_present():
                     latex_implementations.append('xelatex')
@@ -452,21 +462,25 @@ class MultiGraphics(WithEqualityById, SageObject):
                 if lualatex().is_present():
                     latex_implementations.append('lualatex')
                 if not latex_implementations:
-                    raise ValueError("Matplotlib requires either xelatex, "
-                                     "lualatex, or pdflatex.")
+                    raise ValueError(
+                        "Matplotlib requires either xelatex, lualatex, or pdflatex."
+                    )
                 if latex_implementations[0] == "pdflatex":
                     # use pdflatex and set font encoding as per
                     # Matplotlib documentation:
                     # https://matplotlib.org/users/pgf.html#pgf-tutorial
-                    pgf_options = {"pgf.texsystem": "pdflatex",
-                                   "pgf.preamble": [
-                                      r"\usepackage[utf8x]{inputenc}",
-                                      r"\usepackage[T1]{fontenc}"
-                                      ]}
+                    pgf_options = {
+                        "pgf.texsystem": "pdflatex",
+                        "pgf.preamble": [
+                            r"\usepackage[utf8x]{inputenc}",
+                            r"\usepackage[T1]{fontenc}",
+                        ],
+                    }
                 else:
                     pgf_options = {"pgf.texsystem": latex_implementations[0]}
                 rcParams.update(pgf_options)
                 from matplotlib.backends.backend_pgf import FigureCanvasPgf
+
                 figure.set_canvas(FigureCanvasPgf(figure))
             # Matplotlib looks at the file extension to see what the renderer
             # should be. The default is FigureCanvasAgg for PNG's because this
@@ -475,6 +489,7 @@ class MultiGraphics(WithEqualityById, SageObject):
             # Matplotlib will handle it.
             else:
                 from matplotlib.backends.backend_agg import FigureCanvasAgg
+
                 figure.set_canvas(FigureCanvasAgg(figure))
             if isinstance(self, GraphicsArray):
                 # tight_layout adjusts the *subplot* parameters so ticks aren't
@@ -485,8 +500,11 @@ class MultiGraphics(WithEqualityById, SageObject):
                 opts['bbox_inches'] = 'tight'
             figure.savefig(filename, **opts)
             # Restore the rcParams to the original, possibly user-set values
-            (rcParams['ps.useafm'], rcParams['pdf.use14corefonts'],
-             rcParams['text.usetex']) = rc_backup
+            (
+                rcParams['ps.useafm'],
+                rcParams['pdf.use14corefonts'],
+                rcParams['text.usetex'],
+            ) = rc_backup
 
     def save_image(self, filename=None, *args, **kwds):
         r"""
@@ -607,6 +625,7 @@ class MultiGraphics(WithEqualityById, SageObject):
                         gridlines='major')
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self, **kwds)
 
@@ -773,8 +792,7 @@ class MultiGraphics(WithEqualityById, SageObject):
         # Note: using label=str(index) ensures that a new Axes is generated
         # for each element of ``self``, even if some elements share the same
         # positions
-        return figure.add_axes(self._positions[index], label=str(index),
-                               **options)
+        return figure.add_axes(self._positions[index], label=str(index), **options)
 
     def position(self, index):
         r"""
@@ -886,9 +904,9 @@ class MultiGraphics(WithEqualityById, SageObject):
             :meth:`inset`
         """
         from matplotlib import rcParams
+
         if not isinstance(graphics, Graphics):
-            raise TypeError("a Graphics object is expected, "
-                            f"not {graphics}")
+            raise TypeError(f"a Graphics object is expected, not {graphics}")
         if pos is None:
             # Default position:
             left = rcParams['figure.subplot.left']
@@ -1062,6 +1080,7 @@ class GraphicsArray(MultiGraphics):
         G[0] = g4
         sphinx_plot(G)
     """
+
     def __init__(self, array):
         r"""
         Construct a ``GraphicsArray``.
@@ -1117,8 +1136,9 @@ class GraphicsArray(MultiGraphics):
         """
         MultiGraphics.__init__(self, [])
         if not isinstance(array, (list, tuple)):
-            raise TypeError("array must be a list of lists of Graphics "
-                            f"objects, not {array}")
+            raise TypeError(
+                f"array must be a list of lists of Graphics objects, not {array}"
+            )
         array = list(array)
         self._rows = len(array)
         if self._rows > 0:
@@ -1130,12 +1150,13 @@ class GraphicsArray(MultiGraphics):
             self._cols = 0
         for row in array:  # basically flatten the list
             if not isinstance(row, (list, tuple)) or len(row) != self._cols:
-                raise TypeError("array must be a list of equal-size lists of "
-                                f"Graphics objects, not {array}")
+                raise TypeError(
+                    "array must be a list of equal-size lists of "
+                    f"Graphics objects, not {array}"
+                )
             for g in row:
                 if not isinstance(g, Graphics):
-                    raise TypeError("every element of array must be a "
-                                    "Graphics object")
+                    raise TypeError("every element of array must be a Graphics object")
                 self._glist.append(g)
         # self._positions is not initialized since most of the time, it is not
         # not used. It is required only by the method inset(); it is then
@@ -1244,8 +1265,9 @@ class GraphicsArray(MultiGraphics):
              implemented
         """
         # Not clear if there is a way to do this
-        raise NotImplementedError('Appending to a graphics array is not '
-                                  'yet implemented')
+        raise NotImplementedError(
+            'Appending to a graphics array is not yet implemented'
+        )
 
     def position(self, index):
         r"""
@@ -1285,6 +1307,7 @@ class GraphicsArray(MultiGraphics):
             # self._positions must be generated, by invoking get_position() on
             # each of the Axes of the Matplotlib figure corresponding to self:
             from matplotlib.backends.backend_agg import FigureCanvasAgg
+
             figure = self.matplotlib()
             figure.set_canvas(FigureCanvasAgg(figure))
             figure.tight_layout()

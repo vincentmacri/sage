@@ -339,8 +339,10 @@ class CycleIndexSeries(LazySymmetricFunction):
         """
         R = self.base_ring()
         OGS = OrdinaryGeneratingSeriesRing(R)
-        return OGS(lambda n: self._ogs_gen(n, self._coeff_stream._approximate_order),
-                   self._coeff_stream._approximate_order)
+        return OGS(
+            lambda n: self._ogs_gen(n, self._coeff_stream._approximate_order),
+            self._coeff_stream._approximate_order,
+        )
 
     def _ogs_gen(self, n, ao):
         """
@@ -372,8 +374,10 @@ class CycleIndexSeries(LazySymmetricFunction):
         """
         R = self.base_ring()
         EGS = ExponentialGeneratingSeriesRing(R)
-        return EGS(lambda n: self._egs_gen(n, self._coeff_stream._approximate_order),
-                   self._coeff_stream._approximate_order)
+        return EGS(
+            lambda n: self._egs_gen(n, self._coeff_stream._approximate_order),
+            self._coeff_stream._approximate_order,
+        )
 
     def _egs_gen(self, n, ao):
         """
@@ -389,7 +393,7 @@ class CycleIndexSeries(LazySymmetricFunction):
         """
         if n < ao:
             return 0
-        return self.coefficient(n).coefficient([1]*n)
+        return self.coefficient(n).coefficient([1] * n)
 
     def derivative(self, n=1):
         r"""
@@ -547,6 +551,7 @@ class CycleIndexSeriesRing(LazySymmetricFunctions):
         sage: R is CycleIndexSeriesRing(QQ)                                             # needs sage.modules
         True
     """
+
     Element = CycleIndexSeries
 
     def __init__(self, base_ring, sparse=True):
@@ -639,7 +644,16 @@ def _cl_term(n, R=QQ):
     if n == 1:
         res = p([1])
     elif n > 1:
-        res = 1/n * ((-1)**(n-1) * p([1])**n - sum(d * p([n // d]).plethysm(_cl_term(d, R)) for d in divisors(n)[:-1]))
+        res = (
+            1
+            / n
+            * (
+                (-1) ** (n - 1) * p([1]) ** n
+                - sum(
+                    d * p([n // d]).plethysm(_cl_term(d, R)) for d in divisors(n)[:-1]
+                )
+            )
+        )
 
     return res
 

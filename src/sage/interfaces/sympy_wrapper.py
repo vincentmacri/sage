@@ -121,6 +121,7 @@ class SageSet(Set):
             True
         """
         from sage.categories.enumerated_sets import EnumeratedSets
+
         return self._sage_() in EnumeratedSets()
 
     def __iter__(self):

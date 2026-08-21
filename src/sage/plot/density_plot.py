@@ -3,7 +3,7 @@
 Density plots
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
 #                     2008 Mike Hansen <mhansen@gmail.com>,
@@ -19,7 +19,7 @@ Density plots
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.plot.primitive import GraphicPrimitive
 from sage.misc.decorators import options
 from sage.plot.colors import get_cmap
@@ -63,6 +63,7 @@ class DensityPlot(GraphicPrimitive):
         sage: density_plot(x^2 - y^3 + 10*sin(x*y), (x,-4,4), (y,-4,4), plot_points=121, cmap='hsv')
         Graphics object consisting of 1 graphics primitive
     """
+
     def __init__(self, xy_data_array, xrange, yrange, options):
         """
         Initialize base class ``DensityPlot``.
@@ -98,6 +99,7 @@ class DensityPlot(GraphicPrimitive):
             3.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data(self.xrange, self.yrange, dict=True)
 
     def _allowed_options(self):
@@ -109,12 +111,14 @@ class DensityPlot(GraphicPrimitive):
             sage: isinstance(density_plot(x, (-2,3), (1,10))[0]._allowed_options(), dict)
             True
         """
-        return {'plot_points': 'How many points to use for plotting precision',
-                'cmap': """the name of a predefined colormap,
+        return {
+            'plot_points': 'How many points to use for plotting precision',
+            'cmap': """the name of a predefined colormap,
                        a list of colors or an instance of a
                        matplotlib Colormap. Type: import matplotlib.cm; matplotlib.cm.datad.keys()
                        for available colormap names.""",
-                'interpolation': 'What interpolation method to use'}
+            'interpolation': 'What interpolation method to use',
+        }
 
     def _repr_(self):
         """
@@ -127,7 +131,9 @@ class DensityPlot(GraphicPrimitive):
             sage: d = D[0]; d
             DensityPlot defined by a 25 x 25 data grid
         """
-        return "DensityPlot defined by a {} x {} data grid".format(self.xy_array_row, self.xy_array_col)
+        return "DensityPlot defined by a {} x {} data grid".format(
+            self.xy_array_row, self.xy_array_col
+        )
 
     def _render_on_subplot(self, subplot):
         """
@@ -145,9 +151,13 @@ class DensityPlot(GraphicPrimitive):
         x0, x1 = float(self.xrange[0]), float(self.xrange[1])
         y0, y1 = float(self.yrange[0]), float(self.yrange[1])
 
-        subplot.imshow(self.xy_data_array, origin='lower',
-                       cmap=cmap, extent=(x0,x1,y0,y1),
-                       interpolation=options['interpolation'])
+        subplot.imshow(
+            self.xy_data_array,
+            origin='lower',
+            cmap=cmap,
+            extent=(x0, x1, y0, y1),
+            interpolation=options['interpolation'],
+        )
 
 
 @options(plot_points=25, cmap='gray', interpolation='catrom')
@@ -304,14 +314,17 @@ def density_plot(f, xrange, yrange, **options):
     from sage.plot.graphics import Graphics
     from sage.plot.misc import setup_for_eval_on_grid
     from sage.rings.real_double import RDF
+
     g, ranges = setup_for_eval_on_grid([f], [xrange, yrange], options['plot_points'])
     g = g[0]
     xrange, yrange = (r[:2] for r in ranges)
 
-    xy_data_array = [[RDF(g(x,y)) for x in xsrange(*ranges[0], include_endpoint=True)]
-                            for y in xsrange(*ranges[1], include_endpoint=True)]
+    xy_data_array = [
+        [RDF(g(x, y)) for x in xsrange(*ranges[0], include_endpoint=True)]
+        for y in xsrange(*ranges[1], include_endpoint=True)
+    ]
 
     g = Graphics()
-    g._set_extra_kwds(Graphics._extract_kwds_for_show(options, ignore=['xmin','xmax']))
+    g._set_extra_kwds(Graphics._extract_kwds_for_show(options, ignore=['xmin', 'xmax']))
     g.add_primitive(DensityPlot(xy_data_array, xrange, yrange, options))
     return g

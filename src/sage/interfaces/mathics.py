@@ -388,7 +388,12 @@ as Sage's `e` (:issue:`29833`)::
 import os
 
 from sage.misc.cachefunc import cached_method
-from sage.interfaces.interface import Interface, InterfaceElement, InterfaceFunction, InterfaceFunctionElement
+from sage.interfaces.interface import (
+    Interface,
+    InterfaceElement,
+    InterfaceFunction,
+    InterfaceFunctionElement,
+)
 from sage.interfaces.tab_completion import ExtraTabCompletion
 from sage.misc.instancedoc import instancedoc
 from sage.structure.richcmp import rich_to_bool
@@ -419,6 +424,7 @@ def _mathics_sympysage_symbol(self):
         <class 'sage.symbolic.expression.Expression'>
     """
     from sage.symbolic.ring import SR
+
     try:
         name = self.name
         if name.startswith('_Mathics_User_'):
@@ -464,11 +470,8 @@ class Mathics(Interface):
 
     More examples can be found in the module header.
     """
-    def __init__(self,
-                 maxread=None,
-                 logfile=None,
-                 init_list_length=1024,
-                 seed=None):
+
+    def __init__(self, maxread=None, logfile=None, init_list_length=1024, seed=None):
         r"""
         Python constructor.
 
@@ -513,11 +516,14 @@ class Mathics(Interface):
         if not self._session:
             from mathics.session import MathicsSession
             from mathics.core.load_builtin import import_and_load_builtins
+
             import_and_load_builtins()
             self._session = MathicsSession()
             from sage.interfaces.sympy import sympy_init
+
             sympy_init()
             from sympy import Symbol
+
             Symbol._sage_ = _mathics_sympysage_symbol
 
     def _read_in_file_command(self, filename):
@@ -563,6 +569,7 @@ optional Sage package Mathics installed.
         S = self._session
         expr = S.evaluate(code)
         from mathics.core.evaluation import Evaluation
+
         ev = Evaluation(S.definitions)
         return ev.evaluate(expr)
 
@@ -946,7 +953,7 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
             sage: loads(dumps(mpol)) == mpol    # optional - mathics
             True
         """
-        return reduce_load, (self._reduce(), )
+        return reduce_load, (self._reduce(),)
 
     def _latex_(self):
         r"""
@@ -958,7 +965,7 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
         """
         z = str(self.parent()('TeXForm[%s]' % self.name()))
         i = z.find('=')
-        return z[i + 1:]
+        return z[i + 1 :]
 
     def _repr_(self):
         r"""
@@ -1050,6 +1057,7 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
             # if locals are given we use `_sage_repr`
             # surely this only covers simple cases
             from sage.misc.sage_eval import sage_eval
+
             return sage_eval(self._sage_repr(), locals=locals)
 
         self._check_valid()
@@ -1057,6 +1065,7 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
             m = self.to_mpmath()
             if self is not m and m is not None:
                 from sage.libs.mpmath.utils import mpmath_to_sage
+
                 return mpmath_to_sage(m, self.get_precision())
         s = self.to_sympy()
         if self is not s and s is not None:
@@ -1067,8 +1076,10 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
                     pass
         p = self.to_python()
         if self is not p and p is not None:
+
             def conv(i):
                 return self.parent()(i).sage()
+
             if isinstance(p, list):
                 return [conv(i) for i in p]
             if isinstance(p, tuple):
@@ -1152,7 +1163,8 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
                 return
             if OutputImageSvg in display_manager.supported_output():
                 return display_manager.graphics_from_save(
-                    self.save_image, kwds, '.svg', OutputImageSvg)
+                    self.save_image, kwds, '.svg', OutputImageSvg
+                )
         else:
             OutputLatex = display_manager.types.OutputLatex
             dmp = display_manager.preferences.text
@@ -1192,6 +1204,7 @@ class MathicsElement(ExtraTabCompletion, InterfaceElement):
             sage: P.show(ImageSize=800)                      # optional - mathics
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self, ImageSize=ImageSize)
 
@@ -1304,7 +1317,11 @@ def mathics_console():
         Goodbye!
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%mathics magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%mathics magics instead.'
+        )
     from mathics import main
+
     main.main()

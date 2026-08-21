@@ -11,7 +11,7 @@ AUTHORS:
 - Matthias Köppe (2017-03): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2017 Matthias Köppe <mkoeppe at math.ucdavis.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 import itertools
 
@@ -232,7 +232,9 @@ class Polyhedron_polymake(Polyhedron_base):
         """
         if polymake_polytope is not None:
             if Hrep is not None or Vrep is not None:
-                raise ValueError("only one of Vrep, Hrep, or polymake_polytope can be different from None")
+                raise ValueError(
+                    "only one of Vrep, Hrep, or polymake_polytope can be different from None"
+                )
             Element.__init__(self, parent=parent)
             self._init_from_polymake_polytope(polymake_polytope)
         else:
@@ -252,7 +254,9 @@ class Polyhedron_polymake(Polyhedron_base):
         self._init_Vrepresentation_from_polymake()
         self._init_Hrepresentation_from_polymake()
 
-    def _init_from_Vrepresentation(self, vertices, rays, lines, minimize=True, verbose=False):
+    def _init_from_Vrepresentation(
+        self, vertices, rays, lines, minimize=True, verbose=False
+    ):
         r"""
         Construct polyhedron from V-representation data.
 
@@ -280,6 +284,7 @@ class Polyhedron_polymake(Polyhedron_base):
             sage: Polyhedron_polymake._init_from_Vrepresentation(p, [], [], [])   # optional - jupymake
         """
         from sage.interfaces.polymake import polymake
+
         data = self._polymake_Vrepresentation_data(vertices, rays, lines)
         polymake_field = polymake(self.base_ring().fraction_field())
         p = polymake.new_object("Polytope<{}>".format(polymake_field), **data)
@@ -311,14 +316,20 @@ class Polyhedron_polymake(Polyhedron_base):
             It is not checked.
         """
         if not minimal:
-            return dict(CONE_AMBIENT_DIM=1+self.parent().ambient_dim(),
-                        POINTS=(  [ [1] + list(v) for v in vertices ]
-                                + [ [0] + list(r) for r in rays ]),
-                        INPUT_LINEALITY=[ [0] + list(l) for l in lines ])
-        return dict(CONE_AMBIENT_DIM=1+self.parent().ambient_dim(),
-                    VERTICES=(  [ [1] + list(v) for v in vertices ]
-                              + [ [0] + list(r) for r in rays ]),
-                    LINEALITY_SPACE=[ [0] + list(l) for l in lines ])
+            return dict(
+                CONE_AMBIENT_DIM=1 + self.parent().ambient_dim(),
+                POINTS=(
+                    [[1] + list(v) for v in vertices] + [[0] + list(r) for r in rays]
+                ),
+                INPUT_LINEALITY=[[0] + list(l) for l in lines],
+            )
+        return dict(
+            CONE_AMBIENT_DIM=1 + self.parent().ambient_dim(),
+            VERTICES=(
+                [[1] + list(v) for v in vertices] + [[0] + list(r) for r in rays]
+            ),
+            LINEALITY_SPACE=[[0] + list(l) for l in lines],
+        )
 
     def _init_from_Hrepresentation(self, ieqs, eqns, minimize=True, verbose=False):
         r"""
@@ -346,6 +357,7 @@ class Polyhedron_polymake(Polyhedron_base):
             sage: Polyhedron_polymake._init_from_Hrepresentation(p, [], [])   # optional - jupymake
         """
         from sage.interfaces.polymake import polymake
+
         data = self._polymake_Hrepresentation_data(ieqs, eqns)
         polymake_field = polymake(self.base_ring().fraction_field())
         p = polymake.new_object("Polytope<{}>".format(polymake_field), **data)
@@ -380,20 +392,18 @@ class Polyhedron_polymake(Polyhedron_base):
         # using QuadraticExtension, when some all-zero inequalities are input.
         # https://forum.polymake.org/viewtopic.php?f=8&t=547
         # Filter them out.
-        ieqs = [ list(v) for v in ieqs if not all(self._is_zero(x) for x in v) ]
+        ieqs = [list(v) for v in ieqs if not all(self._is_zero(x) for x in v)]
         # We do a similar filtering for equations.
         # Since Polymake 3.2, we can not give all zero vectors in equations
-        eqns = [ list(v) for v in eqns if not all(self._is_zero(x) for x in v) ]
+        eqns = [list(v) for v in eqns if not all(self._is_zero(x) for x in v)]
         if not ieqs:
             # Put in one trivial (all-zero) inequality.  This is so that
             # the ambient dimension is set correctly.
             # Since Polymake 3.2, the constant should not be zero.
-            ieqs.append([1] + [0]*self.ambient_dim())
+            ieqs.append([1] + [0] * self.ambient_dim())
         if not minimal:
-            return dict(EQUATIONS=eqns,
-                        INEQUALITIES=ieqs)
-        return dict(AFFINE_HULL=eqns,
-                    FACETS=ieqs)
+            return dict(EQUATIONS=eqns, INEQUALITIES=ieqs)
+        return dict(AFFINE_HULL=eqns, FACETS=ieqs)
 
     def _init_from_Vrepresentation_and_Hrepresentation(self, Vrep, Hrep):
         """
@@ -453,17 +463,19 @@ class Polyhedron_polymake(Polyhedron_base):
             return
 
         from sage.interfaces.polymake import polymake
+
         data = self._polymake_Vrepresentation_data(*Vrep, minimal=True)
 
         if any(Vrep[1:]):
             from sage.matrix.constructor import Matrix
+
             polymake_rays = [r for r in data['VERTICES'] if r[0] == 0]
             if Matrix(data['VERTICES']).rank() == Matrix(polymake_rays).rank() + 1:
                 # The recession cone is full-dimensional.
                 # In this case the homogenized inequalities
                 # do not ensure nonnegativy in the last coordinate.
                 # In the homogeneous cone the far face is a facet.
-                Hrep[0] += [[1] + [0]*self.ambient_dim()]
+                Hrep[0] += [[1] + [0] * self.ambient_dim()]
         data.update(self._polymake_Hrepresentation_data(*Hrep, minimal=True))
 
         polymake_field = polymake(self.base_ring().fraction_field())
@@ -494,13 +506,17 @@ class Polyhedron_polymake(Polyhedron_base):
             elif d == 1:
                 parent._make_Vertex(self, g[1:])
             else:
-                raise NotImplementedError("Non-normalized vertex encountered: {}".format(g))
+                raise NotImplementedError(
+                    "Non-normalized vertex encountered: {}".format(g)
+                )
         for g in p.LINEALITY_SPACE.sage():
             d = g[0]
             if d == 0:
                 parent._make_Line(self, g[1:])
             else:
-                raise NotImplementedError("Non-homogeneous line encountered: {}".format(g))
+                raise NotImplementedError(
+                    "Non-homogeneous line encountered: {}".format(g)
+                )
         self._Vrepresentation = tuple(self._Vrepresentation)
 
     def _init_Hrepresentation_from_polymake(self):
@@ -551,21 +567,32 @@ class Polyhedron_polymake(Polyhedron_base):
         if parent is None:
             from .parent import Polyhedra
             from sage.rings.rational_field import QQ
-            if polymake_polytope.typeof()[0] == 'Polymake::polytope::Polytope__Rational':
+
+            if (
+                polymake_polytope.typeof()[0]
+                == 'Polymake::polytope::Polytope__Rational'
+            ):
                 base_ring = QQ
             else:
                 from sage.structure.element import coercion_model
-                data = [g.sage()
-                        for g in itertools.chain(polymake_polytope.VERTICES,
-                                                 polymake_polytope.LINEALITY_SPACE,
-                                                 polymake_polytope.FACETS,
-                                                 polymake_polytope.AFFINE_HULL)]
+
+                data = [
+                    g.sage()
+                    for g in itertools.chain(
+                        polymake_polytope.VERTICES,
+                        polymake_polytope.LINEALITY_SPACE,
+                        polymake_polytope.FACETS,
+                        polymake_polytope.AFFINE_HULL,
+                    )
+                ]
                 if data:
                     base_ring = coercion_model.common_parent(*data).base_ring()
                 else:
                     base_ring = QQ
             ambient_dim = polymake_polytope.AMBIENT_DIM().sage()
-            parent = Polyhedra(base_ring=base_ring, ambient_dim=ambient_dim, backend='polymake')
+            parent = Polyhedra(
+                base_ring=base_ring, ambient_dim=ambient_dim, backend='polymake'
+            )
         return cls(parent, None, None, polymake_polytope=polymake_polytope)
 
     def _polymake_(self, polymake):
@@ -682,7 +709,9 @@ class Polyhedron_polymake(Polyhedron_base):
             inequalities = self.inequalities()
             equations = self.equations()
 
-        p = self._polymake_polytope_from_Vrepresentation_and_Hrepresentation([vertices, rays, lines], [inequalities, equations])
+        p = self._polymake_polytope_from_Vrepresentation_and_Hrepresentation(
+            [vertices, rays, lines], [inequalities, equations]
+        )
         if p is not None:
             self._polymake_polytope = p
 
@@ -703,6 +732,7 @@ class Polyhedron_polymake(Polyhedron_base):
 
         if other is None:
             from sage.misc.persist import loads, dumps
+
             other = loads(dumps(self))
 
         tester.assertEqual(self, other)
@@ -719,6 +749,7 @@ class Polyhedron_polymake(Polyhedron_base):
         tester.assertEqual(P.LINEALITY_SPACE, P1.LINEALITY_SPACE)
         tester.assertEqual(P.FACETS, P1.FACETS)
         tester.assertEqual(P.AFFINE_HULL, P1.AFFINE_HULL)
+
 
 #########################################################################
 
@@ -739,6 +770,7 @@ class Polyhedron_QQ_polymake(Polyhedron_polymake, Polyhedron_QQ):
         ....:                backend='polymake', base_ring=QQ)
         sage: TestSuite(p).run()                                           # optional - jupymake
     """
+
     pass
 
 
@@ -759,4 +791,5 @@ class Polyhedron_ZZ_polymake(Polyhedron_polymake, Polyhedron_ZZ):
         ....:                backend='polymake', base_ring=ZZ)
         sage: TestSuite(p).run()                                           # optional - jupymake
     """
+
     pass

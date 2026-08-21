@@ -53,6 +53,7 @@ class IntegerMatrices(UniqueRepresentation, Parent):
         sage: IM.cardinality()
         6
     """
+
     @staticmethod
     def __classcall__(cls, row_sums, column_sums):
         r"""
@@ -106,8 +107,10 @@ class IntegerMatrices(UniqueRepresentation, Parent):
             sage: IntegerMatrices([3,2,2], [2,5])._repr_()
             'Non-negative integer matrices with row sums [3, 2, 2] and column sums [2, 5]'
         """
-        return "Non-negative integer matrices with row sums %s and column sums %s" % \
-                        (self._row_sums, self._col_sums)
+        return "Non-negative integer matrices with row sums %s and column sums %s" % (
+            self._row_sums,
+            self._col_sums,
+        )
 
     def __iter__(self):
         r"""
@@ -165,6 +168,7 @@ class IntegerMatrices(UniqueRepresentation, Parent):
             False
         """
         from sage.structure.element import Matrix
+
         if not isinstance(x, Matrix):
             return False
         row_sums = [ZZ.zero()] * x.nrows()
@@ -216,6 +220,7 @@ class IntegerMatrices(UniqueRepresentation, Parent):
         """
         from sage.combinat.sf.sf import SymmetricFunctions
         from sage.combinat.partition import Partition
+
         h = SymmetricFunctions(ZZ).homogeneous()
         row_partition = Partition(sorted(self._row_sums, reverse=True))
         col_partition = Partition(sorted(self._col_sums, reverse=True))
@@ -283,6 +288,7 @@ class IntegerMatrices(UniqueRepresentation, Parent):
             [3, 2, 2]
         """
         from sage.combinat.composition import Composition
+
         return Composition([entry for row in x for entry in row if entry != 0])
 
 

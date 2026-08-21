@@ -72,6 +72,7 @@ class DrinfeldModuleMorphismAction(Action):
           To:   Drinfeld module defined by T |--> (2*z^2 + 4*z + 4)*τ^2 + (z^2 + 4*z + 3)*τ + z
           Defn: τ + 2
     """
+
     def __init__(self, A, H, is_left, op) -> None:
         r"""
         Initialize this action.
@@ -239,6 +240,7 @@ class DrinfeldModuleHomset(Homset):
         sage: frobenius_endomorphism in H
         False
     """
+
     Element = DrinfeldModuleMorphism
 
     def __init__(self, X, Y, category=None, check=True) -> None:
@@ -273,8 +275,9 @@ class DrinfeldModuleHomset(Homset):
         if category is None:
             category = X.category()
         if check:
-            if X.category() != Y.category() \
-                    or not isinstance(X.category(), DrinfeldModules):
+            if X.category() != Y.category() or not isinstance(
+                X.category(), DrinfeldModules
+            ):
                 raise ValueError('Drinfeld modules must be in the same category')
             if category != X.category():
                 raise ValueError('category should be DrinfeldModules')
@@ -304,10 +307,12 @@ class DrinfeldModuleHomset(Homset):
             sage: latex(H)
             \text{Set{ }of{ }Drinfeld{ }module{ }morphisms{ }from{ }(gen){ }}2 τ^{2} + z_{6} τ + z_{6}\text{{ }to{ }(gen){ }}2 τ^{2} + \left(2 z_{6}^{5} + 2 z_{6}^{4} + 2 z_{6} + 1\right) τ + z_{6}
         """
-        return f'\\text{{Set{{ }}of{{ }}Drinfeld{{ }}module{{ }}morphisms' \
-               f'{{ }}from{{ }}(gen){{ }}}}{latex(self.domain().gen())}' \
-               f'\\text{{{{ }}to{{ }}(gen){{ }}}}'\
-               f'{latex(self.codomain().gen())}'
+        return (
+            f'\\text{{Set{{ }}of{{ }}Drinfeld{{ }}module{{ }}morphisms'
+            f'{{ }}from{{ }}(gen){{ }}}}{latex(self.domain().gen())}'
+            f'\\text{{{{ }}to{{ }}(gen){{ }}}}'
+            f'{latex(self.codomain().gen())}'
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -324,8 +329,10 @@ class DrinfeldModuleHomset(Homset):
             sage: H
             Set of Drinfeld module morphisms from (gen) 2*τ^2 + z6*τ + z6 to (gen) 2*τ^2 + (2*z6^5 + 2*z6^4 + 2*z6 + 1)*τ + z6
         """
-        return f'Set of Drinfeld module morphisms from (gen) '\
-               f'{self.domain().gen()} to (gen) {self.codomain().gen()}'
+        return (
+            f'Set of Drinfeld module morphisms from (gen) '
+            f'{self.domain().gen()} to (gen) {self.codomain().gen()}'
+        )
 
     def __contains__(self, x) -> bool:
         r"""
@@ -492,7 +499,9 @@ class DrinfeldModuleHomset(Homset):
         if self.base() not in FiniteFields():
             if degree is None:
                 return self.zero()
-            raise NotImplementedError("computing isogenies are currently only implemented over finite fields")
+            raise NotImplementedError(
+                "computing isogenies are currently only implemented over finite fields"
+            )
         if degree is None:
             basis = self._A_basis()
             if len(basis) == 0:
@@ -605,7 +614,7 @@ class DrinfeldModuleHomset(Homset):
             for i in range(d):
                 zs.append(x)
                 x *= zq
-            zq = zq ** q
+            zq = zq**q
 
         # We compute the linear system to solve
         rows = []
@@ -641,7 +650,11 @@ class DrinfeldModuleHomset(Homset):
             for i in range(d):
                 for j in range(r):
                     a = ker[row, i * r + j]
-                    u += zs[i] * t**j * sum(a[k] * phiT**k for k in range(a.degree() + 1))
+                    u += (
+                        zs[i]
+                        * t**j
+                        * sum(a[k] * phiT**k for k in range(a.degree() + 1))
+                    )
             isogenies.append(self(u))
 
         return isogenies
@@ -710,7 +723,7 @@ class DrinfeldModuleHomset(Homset):
         frob_matrices = [identity_matrix(Fq, n)] + [Matrix(Fq, n) for _ in range(d + r)]
         for i, elem in enumerate(K_basis):
             for k in range(1, d + r + 1):
-                elem = elem ** q
+                elem = elem**q
                 v = elem.vector()
                 for j in range(n):
                     frob_matrices[k][i, j] = v[j]
@@ -722,8 +735,10 @@ class DrinfeldModuleHomset(Homset):
                 # We represent multiplication and Frobenius
                 # as operators acting on K as a vector space
                 # over Fq
-                oper = K(phiT[k - i] ** (q**i)).matrix() \
-                     - frob_matrices[k - i] * K(psiT[k - i]).matrix()
+                oper = (
+                    K(phiT[k - i] ** (q**i)).matrix()
+                    - frob_matrices[k - i] * K(psiT[k - i]).matrix()
+                )
                 for j in range(n):
                     for l in range(n):
                         sys[k * n + j, i * n + l] = oper[l, j]
@@ -733,9 +748,15 @@ class DrinfeldModuleHomset(Homset):
         basis = []
         tau = domain.ore_polring().gen()
         for basis_elem in sol:
-            ore_poly = sum([sum([K_basis[j].backend() * basis_elem[i * n + j]
-                               for j in range(n)]) * (tau**i)
-                               for i in range(d + 1)])
+            ore_poly = sum(
+                [
+                    sum(
+                        [K_basis[j].backend() * basis_elem[i * n + j] for j in range(n)]
+                    )
+                    * (tau**i)
+                    for i in range(d + 1)
+                ]
+            )
             basis.append(self(ore_poly))
 
         return basis
@@ -835,7 +856,9 @@ class DrinfeldModuleHomset(Homset):
             NotImplementedError: computing basis of homsets are currently only implemented over finite fields
         """
         if self.base() not in FiniteFields():
-            raise NotImplementedError("computing basis of homsets are currently only implemented over finite fields")
+            raise NotImplementedError(
+                "computing basis of homsets are currently only implemented over finite fields"
+            )
         if degree is None:
             return self._A_basis()
         return self._Fq_basis(degree)
@@ -911,7 +934,9 @@ class DrinfeldModuleHomset(Homset):
             ValueError: basis over Frobenius only makes sense for Drinfeld module defined over finite fields
         """
         if self.base() not in FiniteFields():
-            raise ValueError("basis over Frobenius only makes sense for Drinfeld module defined over finite fields")
+            raise ValueError(
+                "basis over Frobenius only makes sense for Drinfeld module defined over finite fields"
+            )
         Fq = self.domain()._Fq
         K = self.domain().base_over_constants_field()
         r = self.domain().rank()
@@ -937,8 +962,9 @@ class DrinfeldModuleHomset(Homset):
                     # relation defining morphisms of Drinfeld modules
                     # These are elements of K, expanded in terms of
                     # K_basis.
-                    poly = K(phiT[i]**(q**k) * K_basis[j]
-                           - psiT[i] * K_basis[j]**(q**i)).polynomial()
+                    poly = K(
+                        phiT[i] ** (q**k) * K_basis[j] - psiT[i] * K_basis[j] ** (q**i)
+                    ).polynomial()
                     deg = (i + k) // n
                     row = n * (i + k - n * deg)
                     col = k * n + j
@@ -954,7 +980,11 @@ class DrinfeldModuleHomset(Homset):
             basis_poly = 0
             for i in range(n):
                 for j in range(n):
-                    basis_poly += basis_vector[n * i + j].subs(tau**n) * K_basis[j].backend() * tau**i
+                    basis_poly += (
+                        basis_vector[n * i + j].subs(tau**n)
+                        * K_basis[j].backend()
+                        * tau**i
+                    )
             basis.append(self(basis_poly))
 
         return basis
@@ -1009,7 +1039,9 @@ class DrinfeldModuleHomset(Homset):
             NotImplementedError: computing isogenies are currently only implemented over finite fields
         """
         if self.base() not in FiniteFields():
-            raise NotImplementedError("computing isogenies are currently only implemented over finite fields")
+            raise NotImplementedError(
+                "computing isogenies are currently only implemented over finite fields"
+            )
         domain = self.domain()
         if degree is None:
             scalars = domain._function_ring

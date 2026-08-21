@@ -81,6 +81,7 @@ class QuotientRingElement(RingElement):
         sage: (a^3 + b^2).lift()
         -x*y^2 + y^2
     """
+
     def __init__(self, parent, rep, reduce=True):
         """
         An element of a quotient ring `R/I`.  See
@@ -180,6 +181,7 @@ class QuotientRingElement(RingElement):
         if self.__rep.is_unit():
             return True
         from sage.categories.fields import Fields
+
         if self.parent() in Fields():
             return not self.is_zero()
         try:
@@ -210,6 +212,7 @@ class QuotientRingElement(RingElement):
             Sq(1)
         """
         from sage.structure.parent_gens import localvars
+
         P = self.parent()
         R = P.cover_ring()
         # We print by temporarily (and safely!) changing the variable
@@ -240,6 +243,7 @@ class QuotientRingElement(RingElement):
             a
         """
         from sage.structure.parent_gens import localvars
+
         P = self.parent()
         R = P.cover_ring()
         # see _repr_ above for the idea
@@ -446,8 +450,9 @@ class QuotientRingElement(RingElement):
         try:
             XY = L.lift((R,) + tuple(B))
         except ValueError:
-            raise ArithmeticError("Division failed. The numerator is not "
-                                  "a multiple of the denominator.")
+            raise ArithmeticError(
+                "Division failed. The numerator is not a multiple of the denominator."
+            )
         return P(XY[0])
 
     def _im_gens_(self, codomain, im_gens, base_map=None):
@@ -539,6 +544,7 @@ class QuotientRingElement(RingElement):
             <class 'sage.rings.rational.Rational'>
         """
         from sage.rings.rational_field import QQ
+
         return QQ(self.lift())
 
     def __neg__(self):
@@ -591,7 +597,7 @@ class QuotientRingElement(RingElement):
         try:
             inv = self.__rep.inverse_mod(self.parent().defining_ideal())
         except NotImplementedError:
-            return self.parent().one()/self
+            return self.parent().one() / self
         return self.__class__(self.parent(), inv)
 
     def __float__(self):
@@ -907,6 +913,7 @@ class QuotientRingElement(RingElement):
         """
         if macaulay2 is None:
             from sage.interfaces.macaulay2 import macaulay2 as m2_default
+
             macaulay2 = m2_default
         m2_parent = self.parent()._macaulay2_(macaulay2)
         macaulay2.use(m2_parent)

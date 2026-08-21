@@ -182,20 +182,25 @@ def parse_optional_tags(
         first_line, rest = split[0], None
 
     sharp_index = first_line.find('#')
-    if sharp_index < 0:                  # no comment
+    if sharp_index < 0:  # no comment
         if return_string_sans_tags:
             return {}, string, False
         return {}
 
-    first_line_sans_comments, comment = first_line[:sharp_index] % literals, first_line[sharp_index:] % literals
-    if not first_line_sans_comments.endswith("  ") and not first_line_sans_comments.rstrip().endswith("sage:"):
+    first_line_sans_comments, comment = (
+        first_line[:sharp_index] % literals,
+        first_line[sharp_index:] % literals,
+    )
+    if not first_line_sans_comments.endswith(
+        "  "
+    ) and not first_line_sans_comments.rstrip().endswith("sage:"):
         # Enforce two spaces before comment
         first_line_sans_comments = first_line_sans_comments.rstrip() + "  "
 
     if return_string_sans_tags:
         # skip non-tag comments that precede the first tag comment
         if m := optional_regex.search(comment):
-            sharp_index = comment[:m.start(0) + 1].rfind('#')
+            sharp_index = comment[: m.start(0) + 1].rfind('#')
             if sharp_index >= 0:
                 first_line = first_line_sans_comments + comment[:sharp_index]
                 comment = comment[sharp_index:]
@@ -230,9 +235,14 @@ def parse_optional_tags(
             tags.update(tags_with_value)
 
     if return_string_sans_tags:
-        is_persistent = tags and first_line_sans_comments.strip() == 'sage:' and not rest  # persistent (block-scoped) tag
-        return tags, (first_line + '\n' + rest % literals if rest is not None
-                      else first_line), is_persistent
+        is_persistent = (
+            tags and first_line_sans_comments.strip() == 'sage:' and not rest
+        )  # persistent (block-scoped) tag
+        return (
+            tags,
+            (first_line + '\n' + rest % literals if rest is not None else first_line),
+            is_persistent,
+        )
     return tags
 
 
@@ -290,8 +300,10 @@ def _standard_tags() -> frozenset[str]:
         [..., 'numpy', ..., 'sage.rings.finite_rings', ...]
     """
     from sage.features.all import all_features
-    return frozenset(feature.name for feature in all_features()
-                     if feature._spkg_type() == 'standard')
+
+    return frozenset(
+        feature.name for feature in all_features() if feature._spkg_type() == 'standard'
+    )
 
 
 def _tag_group(tag):
@@ -367,8 +379,12 @@ def unparse_optional_tags(tags, prefix='# ') -> str:
     if 'optional' in group:
         tags.append('optional - ' + " ".join(sorted(group.pop('optional'))))
     if 'standard' in group or 'sage' in group:
-        tags.append('needs ' + " ".join(sorted(group.pop('standard', []))
-                                        + sorted(group.pop('sage', []))))
+        tags.append(
+            'needs '
+            + " ".join(
+                sorted(group.pop('standard', [])) + sorted(group.pop('sage', []))
+            )
+        )
     assert not group
     if tags:
         return prefix + ', '.join(tags)
@@ -379,7 +395,9 @@ optional_tag_columns = [48, 56, 64, 72, 80, 84]
 standard_tag_columns = [88, 100, 120, 160]
 
 
-def update_optional_tags(line, tags=None, *, add_tags=None, remove_tags=None, force_rewrite=False):
+def update_optional_tags(
+    line, tags=None, *, add_tags=None, remove_tags=None, force_rewrite=False
+):
     r"""
     Return the doctest ``line`` with tags changed.
 
@@ -467,7 +485,9 @@ def update_optional_tags(line, tags=None, *, add_tags=None, remove_tags=None, fo
     if not re.match('( *sage: *)(.*)', line):
         raise ValueError(f'line must start with a sage: prompt, got: {line}')
 
-    current_tags, line_sans_tags, is_persistent = parse_optional_tags(line.rstrip(), return_string_sans_tags=True)
+    current_tags, line_sans_tags, is_persistent = parse_optional_tags(
+        line.rstrip(), return_string_sans_tags=True
+    )
 
     if isinstance(tags, collections.abc.Mapping):
         new_tags = dict(tags)
@@ -492,10 +512,11 @@ def update_optional_tags(line, tags=None, *, add_tags=None, remove_tags=None, fo
     if not new_tags:
         return line_sans_tags.rstrip()
 
-    if (force_rewrite == 'standard'
-            and new_tags == current_tags
-            and not any(_tag_group(tag) in ['standard', 'sage']
-                        for tag in new_tags)):
+    if (
+        force_rewrite == 'standard'
+        and new_tags == current_tags
+        and not any(_tag_group(tag) in ['standard', 'sage'] for tag in new_tags)
+    ):
         return line
 
     if is_persistent:
@@ -504,8 +525,11 @@ def update_optional_tags(line, tags=None, *, add_tags=None, remove_tags=None, fo
         group = defaultdict(set)
         for tag in new_tags:
             group[_tag_group(tag)].add(tag)
-        tag_columns = (optional_tag_columns if group['optional'] or group['special']
-                       else standard_tag_columns)
+        tag_columns = (
+            optional_tag_columns
+            if group['optional'] or group['special']
+            else standard_tag_columns
+        )
 
         if len(line_sans_tags) in tag_columns and line_sans_tags[-2:] == '  ':
             # keep alignment
@@ -520,20 +544,28 @@ def update_optional_tags(line, tags=None, *, add_tags=None, remove_tags=None, fo
                     break
             line += '  '
 
-        if (group['optional'] or group['special']) and (group['standard'] or group['sage']):
+        if (group['optional'] or group['special']) and (
+            group['standard'] or group['sage']
+        ):
             # Try if two-column mode works better
-            first_part = unparse_optional_tags({tag: explanation
-                                                for tag, explanation in new_tags.items()
-                                                if (tag in group['optional']
-                                                    or tag in group['special'])})
+            first_part = unparse_optional_tags(
+                {
+                    tag: explanation
+                    for tag, explanation in new_tags.items()
+                    if (tag in group['optional'] or tag in group['special'])
+                }
+            )
             column = standard_tag_columns[0]
             if len(line + first_part) + 8 <= column:
                 line += first_part
                 line += ' ' * (column - len(line))
-                line += unparse_optional_tags({tag: explanation
-                                               for tag, explanation in new_tags.items()
-                                               if not (tag in group['optional']
-                                                       or tag in group['special'])})
+                line += unparse_optional_tags(
+                    {
+                        tag: explanation
+                        for tag, explanation in new_tags.items()
+                        if not (tag in group['optional'] or tag in group['special'])
+                    }
+                )
                 return line.rstrip()
 
     line += unparse_optional_tags(new_tags)
@@ -569,14 +601,16 @@ def parse_tolerance(source, want):
     """
     # regular expressions
     random_marker = re.compile('.*random', re.I)
-    tolerance_pattern = re.compile(r'\b((?:abs(?:olute)?)|(?:rel(?:ative)?))? *?tol(?:erance)?\b( +[0-9.e+-]+)?')
+    tolerance_pattern = re.compile(
+        r'\b((?:abs(?:olute)?)|(?:rel(?:ative)?))? *?tol(?:erance)?\b( +[0-9.e+-]+)?'
+    )
 
     safe, literals, state = strip_string_literals(source)
     first_line = safe.split('\n', 1)[0]
     if '#' not in first_line:
         return want
-    comment = first_line[first_line.find('#') + 1:]
-    comment = comment[comment.index('(') + 1: comment.rindex(')')]
+    comment = first_line[first_line.find('#') + 1 :]
+    comment = comment[comment.index('(') + 1 : comment.rindex(')')]
     # strip_string_literals replaces comments
     comment = literals[comment]
     if random_marker.search(comment):
@@ -650,6 +684,7 @@ def reduce_hex(fingerprints):
         '0000000000000000000000012399a463'
     """
     from operator import xor
+
     res = reduce(xor, (int(x, 16) for x in fingerprints), 0)
     if res < 0:
         res += 1 << 128
@@ -678,6 +713,7 @@ class OriginalSource:
         ....:     ex.source
         'doctest_var = 42; doctest_var^2\n'
     """
+
     def __init__(self, example):
         """
         Swaps out the source for the sage_source of a doctest example.
@@ -716,7 +752,10 @@ class OriginalSource:
             'doctest_var = 42; doctest_var^2\n'
         """
         if hasattr(self.example, 'sage_source'):
-            self.old_source, self.example.source = self.example.source, self.example.sage_source
+            self.old_source, self.example.source = (
+                self.example.source,
+                self.example.sage_source,
+            )
 
     def __exit__(self, *args):
         r"""
@@ -752,7 +791,9 @@ class SageDocTestParser(doctest.DocTestParser):
     optionals: dict[str, int]
     probed_tags: Union[bool, set[str]]
 
-    def __init__(self, optional_tags=(), long=False, *, probed_tags=(), file_optional_tags=()):
+    def __init__(
+        self, optional_tags=(), long=False, *, probed_tags=(), file_optional_tags=()
+    ):
         r"""
         INPUT:
 
@@ -1011,7 +1052,9 @@ class SageDocTestParser(doctest.DocTestParser):
             string = find_python_continuation.sub(r"\1" + ellipsis_tag + r"\2", string)
         string = find_sage_prompt.sub(r"\1>>> sage: ", string)
         string = find_sage_continuation.sub(r"\1...", string)
-        res: list[doctest.Example | str] = doctest.DocTestParser.parse(self, string, *args)
+        res: list[doctest.Example | str] = doctest.DocTestParser.parse(
+            self, string, *args
+        )
         filtered: list[doctest.Example | str] = []
         persistent_optional_tags = self.file_optional_tags
         persistent_optional_tag_setter = None
@@ -1028,8 +1071,11 @@ class SageDocTestParser(doctest.DocTestParser):
 
         def check_and_clear_tag_counts():
             if (num_examples := tag_count_within_block['']) >= 4:
-                if overused_tags := {tag for tag, count in tag_count_within_block.items()
-                                     if tag and count >= num_examples}:
+                if overused_tags := {
+                    tag
+                    for tag, count in tag_count_within_block.items()
+                    if tag and count >= num_examples
+                }:
                     overused_tags.update(persistent_optional_tags)
                     overused_tags.difference_update(self.file_optional_tags)
                     suggested = unparse_optional_tags(overused_tags, prefix='sage: # ')
@@ -1037,16 +1083,22 @@ class SageDocTestParser(doctest.DocTestParser):
                     if persistent_optional_tag_setter:
                         warning_example = persistent_optional_tag_setter
                         index = persistent_optional_tag_setter_index
-                        warning = (f"Consider updating this block-scoped tag to '{suggested}' "
-                                   f"to avoid repeating the tag {num_examples} times")
+                        warning = (
+                            f"Consider updating this block-scoped tag to '{suggested}' "
+                            f"to avoid repeating the tag {num_examples} times"
+                        )
                     else:
                         warning_example = first_example_in_block
                         index = first_example_in_block_index
-                        warning = (f"Consider using a block-scoped tag by "
-                                   f"inserting the line '{suggested}' just before this line "
-                                   f"to avoid repeating the tag {num_examples} times")
+                        warning = (
+                            f"Consider using a block-scoped tag by "
+                            f"inserting the line '{suggested}' just before this line "
+                            f"to avoid repeating the tag {num_examples} times"
+                        )
 
-                    if not (index < len(filtered) and filtered[index] == warning_example):
+                    if not (
+                        index < len(filtered) and filtered[index] == warning_example
+                    ):
                         # The example to which we want to attach our warning is
                         # not in ``filtered``. It is either the persistent tag line,
                         # or the first example of the block and not run because of unmet tags,
@@ -1066,7 +1118,9 @@ class SageDocTestParser(doctest.DocTestParser):
 
         for item in res:
             if isinstance(item, doctest.Example):
-                optional_tags_with_values, _, is_persistent = parse_optional_tags(item.source, return_string_sans_tags=True)
+                optional_tags_with_values, _, is_persistent = parse_optional_tags(
+                    item.source, return_string_sans_tags=True
+                )
                 optional_tags = set(optional_tags_with_values)
                 if is_persistent:
                     check_and_clear_tag_counts()
@@ -1087,8 +1141,9 @@ class SageDocTestParser(doctest.DocTestParser):
                 if optional_tags:
                     for tag in optional_tags:
                         self.optionals[tag] += 1
-                    if (('not implemented' in optional_tags) or
-                            ('not tested' in optional_tags)):
+                    if ('not implemented' in optional_tags) or (
+                        'not tested' in optional_tags
+                    ):
                         continue
 
                     if 'long time' in optional_tags:
@@ -1122,7 +1177,9 @@ class SageDocTestParser(doctest.DocTestParser):
                             if any(tag in ['webbrowser'] for tag in extra):
                                 # never probe
                                 continue
-                            if any(tag in ['got', 'expected', 'nameerror'] for tag in extra):
+                            if any(
+                                tag in ['got', 'expected', 'nameerror'] for tag in extra
+                            ):
                                 # never probe special tags added by sage-fixdoctests
                                 continue
                             if all(tag in persistent_optional_tags for tag in extra):
@@ -1154,7 +1211,9 @@ class SageDocTestParser(doctest.DocTestParser):
                     check_and_clear_tag_counts()
                     persistent_optional_tags = self.file_optional_tags
                     persistent_optional_tag_setter = first_example_in_block = None
-                    persistent_optional_tag_setter_index = first_example_in_block_index = None
+                    persistent_optional_tag_setter_index = (
+                        first_example_in_block_index
+                    ) = None
             filtered.append(item)
 
         check_and_clear_tag_counts()
@@ -1193,6 +1252,7 @@ class SageOutputChecker(doctest.OutputChecker):
         sage: OC.check_output(ex.want, 'x + 0.8935153492877', optflag)
         False
     """
+
     def human_readable_escape_sequences(self, string):
         r"""
         Make ANSI escape sequences human readable.
@@ -1213,12 +1273,14 @@ class SageOutputChecker(doctest.OutputChecker):
             sage: OC.human_readable_escape_sequences(teststr)
             'bold<CSI-1m>-red<CSI-31m>-oscmd<ESC-a>'
         """
+
         def human_readable(match):
             ansi_escape = match.group(1)
             assert len(ansi_escape) >= 2
             if len(ansi_escape) == 2:
                 return '<ESC-' + ansi_escape[1] + '>'
             return '<CSI-' + ansi_escape.lstrip('\x1b[\x9b') + '>'
+
         return ansi_escape_sequence.subn(human_readable, string)[0]
 
     def check_output(self, want, got, optionflags):
@@ -1440,38 +1502,50 @@ class SageOutputChecker(doctest.OutputChecker):
             # simplex will be used" frequently. When Sage uses a system
             # installation of glpk which has not been patched, we need to
             # ignore that message. See :issue:`29317`.
-            glpk_simplex_warning_regex = re.compile(r'(Long-step dual simplex will be used)')
+            glpk_simplex_warning_regex = re.compile(
+                r'(Long-step dual simplex will be used)'
+            )
             got = glpk_simplex_warning_regex.sub('', got)
             did_fixup = True
 
         if "chained fixups" in got:
             # :issue:`34533` -- suppress warning on OS X 12.6 about chained fixups
-            chained_fixup_warning_regex = re.compile(r'ld: warning: -undefined dynamic_lookup may not work with chained fixups')
+            chained_fixup_warning_regex = re.compile(
+                r'ld: warning: -undefined dynamic_lookup may not work with chained fixups'
+            )
             got = chained_fixup_warning_regex.sub('', got)
             did_fixup = True
 
         if "newer macOS version" in got:
             # :issue:`34741` -- suppress warning arising after
             # upgrading from macOS 12.X to 13.X.
-            newer_macOS_version_regex = re.compile(r'.*dylib \(.*\) was built for newer macOS version \(.*\) than being linked \(.*\)')
+            newer_macOS_version_regex = re.compile(
+                r'.*dylib \(.*\) was built for newer macOS version \(.*\) than being linked \(.*\)'
+            )
             got = newer_macOS_version_regex.sub('', got)
             did_fixup = True
 
         if "insufficient permissions" in got:
-            sympow_cache_warning_regex = re.compile(r'\*\*WARNING\*\* /var/cache/sympow/datafiles/le64 yields insufficient permissions')
+            sympow_cache_warning_regex = re.compile(
+                r'\*\*WARNING\*\* /var/cache/sympow/datafiles/le64 yields insufficient permissions'
+            )
             got = sympow_cache_warning_regex.sub('', got)
             did_fixup = True
 
         if "dylib" in got:
             # :issue:`31204` -- suppress warning about ld and OS version for
             # dylib files.
-            ld_warning_regex = re.compile(r'^.*dylib.*was built for newer macOS version.*than being linked.*')
+            ld_warning_regex = re.compile(
+                r'^.*dylib.*was built for newer macOS version.*than being linked.*'
+            )
             got = ld_warning_regex.sub('', got)
             did_fixup = True
 
         if "pie being ignored" in got:
             # :issue:`30845` -- suppress warning on conda about ld
-            ld_pie_warning_regex = re.compile(r'ld: warning: -pie being ignored. It is only used when linking a main executable')
+            ld_pie_warning_regex = re.compile(
+                r'ld: warning: -pie being ignored. It is only used when linking a main executable'
+            )
             got = ld_pie_warning_regex.sub('', got)
             did_fixup = True
 
@@ -1489,13 +1563,17 @@ class SageOutputChecker(doctest.OutputChecker):
             # be reverted -- but only in v0.14.0 of pythran. Ignoring
             # This warning allows us to support older pythran with e.g.
             # numpy-1.25.2.
-            pythran_numpy_warning_regex = re.compile(r'WARNING: Overriding pythran description with argspec information for: numpy\.random\.[a-z_]+')
+            pythran_numpy_warning_regex = re.compile(
+                r'WARNING: Overriding pythran description with argspec information for: numpy\.random\.[a-z_]+'
+            )
             got = pythran_numpy_warning_regex.sub('', got)
             did_fixup = True
 
         if "ld_classic is deprecated" in got:
             # New warnings as of Oct '24, Xcode 16.
-            ld_warn_regex = re.compile("ld: warning: -ld_classic is deprecated and will be removed in a future release")
+            ld_warn_regex = re.compile(
+                "ld: warning: -ld_classic is deprecated and will be removed in a future release"
+            )
             got = ld_warn_regex.sub('', got)
             did_fixup = True
 
@@ -1654,7 +1732,9 @@ class SageOutputChecker(doctest.OutputChecker):
         got = self.human_readable_escape_sequences(got)
         want = example.want
         diff = doctest.OutputChecker.output_difference(self, example, got, optionflags)
-        if isinstance(want, MarkedOutput) and (want.tol or want.abs_tol or want.rel_tol):
+        if isinstance(want, MarkedOutput) and (
+            want.tol or want.abs_tol or want.rel_tol
+        ):
             if diff[-1] != "\n":
                 diff += "\n"
             want_str = [g[0] for g in float_regex.findall(want)]
@@ -1663,9 +1743,13 @@ class SageOutputChecker(doctest.OutputChecker):
                 failures = []
 
                 def fail(x, y, actual, desired):
-                    failstr = "    {} vs {}, tolerance {} > {}".format(x, y,
+                    failstr = "    {} vs {}, tolerance {} > {}".format(
+                        x,
+                        y,
                         RIFtol(actual).upper().str(digits=1, no_sci=False),
-                        RIFtol(desired).center().str(digits=15, skip_zeroes=True, no_sci=False)
+                        RIFtol(desired)
+                        .center()
+                        .str(digits=15, skip_zeroes=True, no_sci=False),
                     )
                     failures.append(failstr)
 
@@ -1687,7 +1771,10 @@ class SageOutputChecker(doctest.OutputChecker):
                     if len(want_str) == 1:
                         diff += "Tolerance exceeded:\n"
                     else:
-                        diff += "Tolerance exceeded in %s of %s:\n" % (len(failures), len(want_str))
+                        diff += "Tolerance exceeded in %s of %s:\n" % (
+                            len(failures),
+                            len(want_str),
+                        )
                     diff += "\n".join(failures) + "\n"
             elif "..." in want:
                 diff += "Note: combining tolerance (# tol) with ellipsis (...) is not supported\n"

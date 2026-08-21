@@ -1,6 +1,7 @@
 """
 Examples of CW complexes
 """
+
 # ****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -33,6 +34,7 @@ class Surface(UniqueRepresentation, Parent):
 
         sage: TestSuite(X).run()
     """
+
     def __init__(self, bdy=(1, 2, 1, 2)):
         r"""
         EXAMPLES::
@@ -57,7 +59,9 @@ class Surface(UniqueRepresentation, Parent):
             sage: CWComplexes().example()
             An example of a CW complex: the surface given by the boundary map (1, 2, 1, 2)
         """
-        return "An example of a CW complex: the surface given by the boundary map {}".format(self._bdy)
+        return "An example of a CW complex: the surface given by the boundary map {}".format(
+            self._bdy
+        )
 
     def cells(self):
         """
@@ -74,7 +78,7 @@ class Surface(UniqueRepresentation, Parent):
              (2, (2-cell f,))]
         """
         d = {0: (self.element_class(self, 0, 'v'),)}
-        d[1] = tuple([self.element_class(self, 0, 'e'+str(e)) for e in self._edges])
+        d[1] = tuple([self.element_class(self, 0, 'e' + str(e)) for e in self._edges])
         d[2] = (self.an_element(),)
         return Family(d)
 
@@ -96,6 +100,7 @@ class Surface(UniqueRepresentation, Parent):
         """
         A cell in a CW complex.
         """
+
         def __init__(self, parent, dim, name):
             """
             Initialize ``self``.
@@ -139,10 +144,12 @@ class Surface(UniqueRepresentation, Parent):
                 sage: e1 == f
                 False
             """
-            return (isinstance(other, Surface.Element)
-                    and self.parent() is other.parent()
-                    and self._dim == other._dim
-                    and self._name == other._name)
+            return (
+                isinstance(other, Surface.Element)
+                and self.parent() is other.parent()
+                and self._dim == other._dim
+                and self._name == other._name
+            )
 
         def dimension(self):
             """

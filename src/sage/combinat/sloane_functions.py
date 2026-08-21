@@ -131,6 +131,7 @@ from sage.arith.srange import srange
 from sage.rings.integer_ring import ZZ
 from sage.misc.lazy_import import lazy_import
 from sage.rings.integer import Integer as Integer_class
+
 # You may have to import more here when defining new sequences
 import sage.arith.all as arith
 from sage.rings.rational_field import QQ
@@ -206,6 +207,7 @@ class SloaneSequence(SageObject):
             'class A000045(...'
         """
         from sage.misc.sageinspect import sage_getsource
+
         return sage_getsource(self.__class__)
 
     def __call__(self, n):
@@ -234,7 +236,9 @@ class SloaneSequence(SageObject):
             if self.offset == 1:
                 raise ValueError("input n (=%s) must be a positive integer" % (n))
             else:
-                raise ValueError("input n (=%s) must be an integer >= %s" % (n, self.offset))
+                raise ValueError(
+                    "input n (=%s) must be an integer >= %s" % (n, self.offset)
+                )
         return self._eval(m)
 
     def _eval(self, n):
@@ -262,7 +266,7 @@ class SloaneSequence(SageObject):
             sage: sloane.A000012.list(4)
             [1, 1, 1, 1]
         """
-        return [self._eval(i) for i in srange(self.offset, n+self.offset)]
+        return [self._eval(i) for i in srange(self.offset, n + self.offset)]
 
     # The Python default tries repeated __getitem__ calls, which will succeed,
     # but is probably not what is wanted.
@@ -362,7 +366,58 @@ class A000001(SloaneSequence):
 
         - Jaap Spies (2007-02-04)
         """
-        self._small = [1, 1, 1, 2, 1, 2, 1, 5, 2, 2, 1, 5, 1, 2, 1, 14, 1, 5, 1, 5, 2, 2, 1, 15, 2, 2, 5, 4, 1, 4, 1, 51, 1, 2, 1, 14, 1, 2, 2, 14, 1, 6, 1, 4, 2, 2, 1, 52, 2, 5]
+        self._small = [
+            1,
+            1,
+            1,
+            2,
+            1,
+            2,
+            1,
+            5,
+            2,
+            2,
+            1,
+            5,
+            1,
+            2,
+            1,
+            14,
+            1,
+            5,
+            1,
+            5,
+            2,
+            2,
+            1,
+            15,
+            2,
+            2,
+            5,
+            4,
+            1,
+            4,
+            1,
+            51,
+            1,
+            2,
+            1,
+            14,
+            1,
+            2,
+            2,
+            14,
+            1,
+            6,
+            1,
+            4,
+            2,
+            2,
+            1,
+            52,
+            2,
+            5,
+        ]
         SloaneSequence.__init__(self, offset=1)
 
     def _repr_(self):
@@ -390,6 +445,7 @@ class A000001(SloaneSequence):
         if n <= 50:
             return self._small[n - 1]
         from sage.libs.gap.libgap import libgap
+
         return ZZ(libgap.NumberSmallGroups(n))
 
 
@@ -427,7 +483,7 @@ class A000027(SloaneSequence):
         """
         SloaneSequence.__init__(self, offset=1)
 
-# is this a good idea to have a link for all sequences? Jaap
+    # is this a good idea to have a link for all sequences? Jaap
     link = "http://oeis.org/classic/A000027"
 
     def _repr_(self):
@@ -601,6 +657,7 @@ class A000008(SloaneSequence):
             [1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 11, 12, 15, 16]
         """
         from sage.combinat.partition import Partitions
+
         return Partitions(n, parts_in=[1, 2, 5, 10]).cardinality()
 
 
@@ -659,7 +716,7 @@ class A000009(SloaneSequence):
         p = 1
         while True:
             k += 1
-            p *= (1+x**k)
+            p *= 1 + x**k
             yield ZZ(p.coefficients(sparse=False)[k])
 
     def _precompute(self, how_many=50):
@@ -696,7 +753,7 @@ class A000009(SloaneSequence):
             sage: sloane.A000009.list(14)
             [1, 1, 1, 2, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -757,13 +814,13 @@ class A000796(SloaneSequence):
         """
         k, a, b, a1, b1 = ZZ(2), ZZ(4), ZZ.one(), ZZ(12), ZZ(4)
         while True:
-            p, q, k = k*k, 2*k+1, k+1
-            a, b, a1, b1 = a1, b1, p*a+q*a1, p*b+q*b1
-            d, d1 = a//b, a1//b1
+            p, q, k = k * k, 2 * k + 1, k + 1
+            a, b, a1, b1 = a1, b1, p * a + q * a1, p * b + q * b1
+            d, d1 = a // b, a1 // b1
             while d == d1:
                 yield d
-                a, a1 = 10*(a % b), 10*(a1 % b1)
-                d, d1 = a//b, a1//b1
+                a, a1 = 10 * (a % b), 10 * (a1 % b1)
+                d, d1 = a // b, a1 // b1
 
     def _precompute(self, how_many=1000):
         """
@@ -790,7 +847,7 @@ class A000796(SloaneSequence):
         """
         while len(self._b) <= n:
             self._precompute()
-        return self._b[n-1]
+        return self._b[n - 1]
 
     def list(self, n):
         """
@@ -799,7 +856,7 @@ class A000796(SloaneSequence):
             sage: sloane.A000796.list(10)
             [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -908,10 +965,10 @@ class A007318(SloaneSequence):
             [1, 1, 1, 1, 2, 1, 1, 3, 3, 1]
         """
         m = 0
-        while m*(m+1)//2 <= n:
+        while m * (m + 1) // 2 <= n:
             m += 1
         m -= 1
-        k = n - m*(m+1)//2
+        k = n - m * (m + 1) // 2
         return arith.binomial(m, k)
 
 
@@ -979,7 +1036,7 @@ class A008275(SloaneSequence):
             sage: sloane.A008275.s(5,3)
             35
         """
-        return (-1)**(n-k) * combinat.stirling_number1(n, k)
+        return (-1) ** (n - k) * combinat.stirling_number1(n, k)
 
     def _eval(self, n):
         """
@@ -989,9 +1046,9 @@ class A008275(SloaneSequence):
             [1, -1, 1, 2, -3, 1, -6, 11, -6, 1]
         """
         m = 0
-        while m*(m+1)//2 < n:
+        while m * (m + 1) // 2 < n:
             m += 1
-        k = n - m*(m-1)//2
+        k = n - m * (m - 1) // 2
         return self.s(m, k)  # (-1)**(m-k) * combinat.stirling_number1(m,k)
 
 
@@ -1064,9 +1121,9 @@ class A008277(SloaneSequence):
             [1, 1, 1, 1, 3, 1, 1, 7, 6, 1]
         """
         m = 0
-        while m*(m+1)//2 < n:
+        while m * (m + 1) // 2 < n:
             m += 1
-        k = n - m*(m-1)//2
+        k = n - m * (m - 1) // 2
         return self.s2(m, k)  # combinat.stirling_number2(m,k)
 
 
@@ -1125,14 +1182,14 @@ class A049310(SloaneSequence):
             [1, 0, 1, -1, 0, 1, 0, -2, 0, 1]
         """
         m = 0
-        while m*(m+1)//2 <= n:
+        while m * (m + 1) // 2 <= n:
             m += 1
         m -= 1
-        k = n - m*(m+1)//2
-        if (m+k) % 2:
+        k = n - m * (m + 1) // 2
+        if (m + k) % 2:
             return ZZ(0)
-        sign = (-1)**((m+k)//2 + k)
-        return sign * arith.binomial((m+k)//2, k)
+        sign = (-1) ** ((m + k) // 2 + k)
+        return sign * arith.binomial((m + k) // 2, k)
 
 
 class A000010(SloaneSequence):
@@ -1195,6 +1252,7 @@ class A000010(SloaneSequence):
             [1, 1, 2, 2, 4, 2, 6, 4, 6, 4]
         """
         return arith.euler_phi(n)
+
 
 # Theme: simple functions
 
@@ -1298,7 +1356,7 @@ class A005843(SloaneSequence):
             sage: [sloane.A005843._eval(n) for n in range(10)]
             [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
         """
-        return ZZ(2*n)
+        return ZZ(2 * n)
 
 
 class A000035(SloaneSequence):
@@ -1405,7 +1463,7 @@ class A000169(SloaneSequence):
             sage: [sloane.A000169._eval(n) for n in range(1,11)]
             [1, 2, 9, 64, 625, 7776, 117649, 2097152, 43046721, 1000000000]
         """
-        return ZZ(n**(n-1))
+        return ZZ(n ** (n - 1))
 
 
 class A000272(SloaneSequence):
@@ -1673,7 +1731,7 @@ class A000326(SloaneSequence):
             sage: [sloane.A000326._eval(n) for n in range(10)]
             [0, 1, 5, 12, 22, 35, 51, 70, 92, 117]
         """
-        return ZZ(n * (3*n-1) // 2)
+        return ZZ(n * (3 * n - 1) // 2)
 
 
 class A002378(SloaneSequence):
@@ -1726,7 +1784,7 @@ class A002378(SloaneSequence):
             sage: [sloane.A002378._eval(n) for n in range(10)]
             [0, 2, 6, 12, 20, 30, 42, 56, 72, 90]
         """
-        return ZZ(n * (n+1))
+        return ZZ(n * (n + 1))
 
 
 class A002620(SloaneSequence):
@@ -1831,7 +1889,7 @@ class A005408(SloaneSequence):
             sage: [sloane.A005408._eval(n) for n in range(10)]
             [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
         """
-        return ZZ(2*n + 1)
+        return ZZ(2 * n + 1)
 
 
 class A000012(SloaneSequence):
@@ -2041,7 +2099,7 @@ class A000069(SloaneSequence):
             sage: [sloane.A000069._eval(n) for n in range(10)]
             [1, 2, 4, 7, 8, 11, 13, 14, 16, 19]
         """
-        return ZZ(2*n + 1) - sloane.A010060(n)
+        return ZZ(2 * n + 1) - sloane.A010060(n)
 
 
 class A001969(SloaneSequence):
@@ -2092,7 +2150,7 @@ class A001969(SloaneSequence):
             sage: [sloane.A001969._eval(n) for n in range(10)]
             [0, 3, 5, 6, 9, 10, 12, 15, 17, 18]
         """
-        return ZZ(2*n) + sloane.A010060(n)
+        return ZZ(2 * n) + sloane.A010060(n)
 
 
 class A000290(SloaneSequence):
@@ -2143,7 +2201,7 @@ class A000290(SloaneSequence):
             sage: [sloane.A000290._eval(n) for n in range(10)]
             [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
         """
-        return ZZ(n ** 2)
+        return ZZ(n**2)
 
 
 class A000225(SloaneSequence):
@@ -2311,8 +2369,12 @@ class A000016(SloaneSequence):
         """
         if n == 0:
             return ZZ.one()
-        return ZZ(sum((i % 2) * arith.euler_phi(i) * 2**(n//i) / (2*n)
-                      for i in arith.divisors(n)))
+        return ZZ(
+            sum(
+                (i % 2) * arith.euler_phi(i) * 2 ** (n // i) / (2 * n)
+                for i in arith.divisors(n)
+            )
+        )
 
 
 class A000032(SloaneSequence):
@@ -2371,7 +2433,7 @@ class A000032(SloaneSequence):
             return ZZ(2)
         if n == 1:
             return ZZ.one()
-        return sloane.A000045(n+1) + sloane.A000045(n-1)
+        return sloane.A000045(n + 1) + sloane.A000045(n - 1)
 
 
 # Theme numbers as strings of digits
@@ -2488,8 +2550,9 @@ class A002113(SloaneSequence):
         except AttributeError:
             self._b = []
             self._n = self.offset
-        self._b += [i for i in range(self._n, self._n + how_many)
-                    if sloane.A004086(i) == i]
+        self._b += [
+            i for i in range(self._n, self._n + how_many) if sloane.A004086(i) == i
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -2578,7 +2641,7 @@ class A000030(SloaneSequence):
         """
         if n < 10:
             return n
-        return self(n//10)
+        return self(n // 10)
 
 
 # Theme: primes and factoring
@@ -2688,7 +2751,9 @@ class A002808(SloaneSequence):
             sage: len(sloane.A002808._b) - initial > 0
             True
         """
-        self._b += [i for i in range(self._n, self._n+how_many) if not arith.is_prime(i)]
+        self._b += [
+            i for i in range(self._n, self._n + how_many) if not arith.is_prime(i)
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -2699,7 +2764,7 @@ class A002808(SloaneSequence):
             [4, 6, 8, 9, 10, 12, 14, 15, 16, 18]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -2830,12 +2895,50 @@ class A000043(SloaneSequence):
             [2, 3, 5, 7, 13, 17, 19, 31, 61, 89]
         """
         try:
-            return ZZ(self._b[n-1])
+            return ZZ(self._b[n - 1])
         except (AttributeError, IndexError):
-            self._b = [2,3,5,7,13,17,19,31,61,89,107,127,521,607,1279,2203,2281,3217,4253,
-                       4423,9689,9941,11213,19937,21701,23209,44497,86243,110503,132049,
-                       216091,756839,859433,1257787,1398269,2976221,3021377,6972593,13466917]
-            return ZZ(self._b[n-1])
+            self._b = [
+                2,
+                3,
+                5,
+                7,
+                13,
+                17,
+                19,
+                31,
+                61,
+                89,
+                107,
+                127,
+                521,
+                607,
+                1279,
+                2203,
+                2281,
+                3217,
+                4253,
+                4423,
+                9689,
+                9941,
+                11213,
+                19937,
+                21701,
+                23209,
+                44497,
+                86243,
+                110503,
+                132049,
+                216091,
+                756839,
+                859433,
+                1257787,
+                1398269,
+                2976221,
+                3021377,
+                6972593,
+                13466917,
+            ]
+            return ZZ(self._b[n - 1])
 
 
 class A000668(SloaneSequence):
@@ -2907,7 +3010,7 @@ class A000668(SloaneSequence):
              2305843009213693951,
              618970019642690137449562111]
         """
-        return ZZ(2**sloane.A000043(n) - 1)
+        return ZZ(2 ** sloane.A000043(n) - 1)
 
 
 class A000396(SloaneSequence):
@@ -2961,7 +3064,7 @@ class A000396(SloaneSequence):
             [6, 28, 496, 8128, 33550336]
         """
         p = sloane.A000043(n)
-        return ZZ(2**(p-1) * (2**p - 1))
+        return ZZ(2 ** (p - 1) * (2**p - 1))
 
 
 class A005100(SloaneSequence):
@@ -3018,7 +3121,9 @@ class A005100(SloaneSequence):
             sage: len(sloane.A005100._b) - initial > 0
             True
         """
-        self._b += [i for i in range(self._n, self._n+how_many) if arith.sigma(i) < 2*i]
+        self._b += [
+            i for i in range(self._n, self._n + how_many) if arith.sigma(i) < 2 * i
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -3029,7 +3134,7 @@ class A005100(SloaneSequence):
             [1, 2, 3, 4, 5, 7, 8, 9, 10]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -3108,7 +3213,9 @@ class A005101(SloaneSequence):
             sage: len(sloane.A005101._b) - initial > 0
             True
         """
-        self._b += [i for i in range(self._n, self._n+how_many) if arith.sigma(i) > 2*i]
+        self._b += [
+            i for i in range(self._n, self._n + how_many) if arith.sigma(i) > 2 * i
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -3119,7 +3226,7 @@ class A005101(SloaneSequence):
             [12, 18, 20, 24, 30, 36, 40, 42, 48, 54]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -3192,7 +3299,9 @@ class A002110(SloaneSequence):
             sage: [sloane.A002110._eval(n) for n in range(10)]
             [1, 2, 6, 30, 210, 2310, 30030, 510510, 9699690, 223092870]
         """
-        return prod([sloane.A000040(i) for i in range(1, n + 1)])  # n-th prime = A000040(n)
+        return prod(
+            [sloane.A000040(i) for i in range(1, n + 1)]
+        )  # n-th prime = A000040(n)
 
 
 class A000720(SloaneSequence):
@@ -3292,7 +3401,9 @@ class A064553(SloaneSequence):
             sage: sloane.A064553._repr_()
             'a(1) = 1, a(prime(i)) = i+1 for i > 0 and a(u*v) = a(u)*a(v) for u,v > 0'
         """
-        return "a(1) = 1, a(prime(i)) = i+1 for i > 0 and a(u*v) = a(u)*a(v) for u,v > 0"
+        return (
+            "a(1) = 1, a(prime(i)) = i+1 for i > 0 and a(u*v) = a(u)*a(v) for u,v > 0"
+        )
 
     def _eval(self, n):
         """
@@ -3301,7 +3412,7 @@ class A064553(SloaneSequence):
             sage: [sloane.A064553._eval(n) for n in range(1,11)]
             [1, 2, 3, 4, 4, 6, 5, 8, 9, 8]
         """
-        return prod([(prime_pi(p)+1)**e for p, e in arith.factor(n)])
+        return prod([(prime_pi(p) + 1) ** e for p, e in arith.factor(n)])
 
 
 class A001055(SloaneSequence):
@@ -3438,7 +3549,7 @@ class A006530(SloaneSequence):
         """
         if n == 1:
             return ZZ.one()
-        return max(p for p,_ in arith.factor(n))
+        return max(p for p, _ in arith.factor(n))
 
 
 class A000961(SloaneSequence):
@@ -3493,7 +3604,11 @@ class A000961(SloaneSequence):
             sage: len(sloane.A000961._b) - initial > 0
             True
         """
-        self._b += [i for i in range(self._n, self._n+how_many) if len([p for p,_ in arith.factor(i)]) == 1]
+        self._b += [
+            i
+            for i in range(self._n, self._n + how_many)
+            if len([p for p, _ in arith.factor(i)]) == 1
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -3504,7 +3619,7 @@ class A000961(SloaneSequence):
             [1, 2, 3, 4, 5, 7, 8, 9, 11, 13]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -3580,8 +3695,11 @@ class A005117(SloaneSequence):
             sage: len(sloane.A005117._b) - initial > 0
             True
         """
-        self._b += [i for i in range(self._n, self._n+how_many)
-                    if max(e for _, e in arith.factor(i)) <= 1]
+        self._b += [
+            i
+            for i in range(self._n, self._n + how_many)
+            if max(e for _, e in arith.factor(i)) <= 1
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -3592,7 +3710,7 @@ class A005117(SloaneSequence):
             [1, 2, 3, 5, 6, 7, 10, 11, 13, 14]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -3668,7 +3786,10 @@ class A020639(SloaneSequence):
             sage: len(sloane.A020639._b) - initial == 10
             True
         """
-        self._b += [min(p for p,_ in arith.factor(i)) for i in range(self._n, self._n+how_many)]
+        self._b += [
+            min(p for p, _ in arith.factor(i))
+            for i in range(self._n, self._n + how_many)
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -3679,7 +3800,7 @@ class A020639(SloaneSequence):
             [1, 2, 3, 2, 5, 2, 7, 2, 3, 2]
         """
         try:
-            return self._b[n-self.offset]
+            return self._b[n - self.offset]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -3753,6 +3874,7 @@ class A000041(SloaneSequence):
             [1, 2, 3, 5, 7, 11, 15, 22, 30, 42]
         """
         from sage.combinat.partition import Partitions
+
         return Partitions(n).cardinality()
 
 
@@ -3836,7 +3958,7 @@ class A000045(SloaneSequence):
         x, y = ZZ.zero(), ZZ.one()
         yield x
         while True:
-            x, y = y, x+y
+            x, y = y, x + y
             yield x
 
     def _eval(self, n):
@@ -3857,7 +3979,7 @@ class A000045(SloaneSequence):
             sage: sloane.A000045.list(10)
             [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -3964,7 +4086,10 @@ class A001006(SloaneSequence):
             sage: [sloane.A001006._eval(n) for n in range(10)]
             [1, 1, 2, 4, 9, 21, 51, 127, 323, 835]
         """
-        return sum((-1)**(n-k)*arith.binomial(n, k)*sloane.A000108(k+1) for k in range(n+1))
+        return sum(
+            (-1) ** (n - k) * arith.binomial(n, k) * sloane.A000108(k + 1)
+            for k in range(n + 1)
+        )
 
 
 class A000079(SloaneSequence):
@@ -4015,7 +4140,7 @@ class A000079(SloaneSequence):
             sage: [sloane.A000079._eval(n) for n in range(10)]
             [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
         """
-        return ZZ(2 ** n)
+        return ZZ(2**n)
 
 
 class A000578(SloaneSequence):
@@ -4068,7 +4193,7 @@ class A000578(SloaneSequence):
             sage: [sloane.A000578._eval(n) for n in range(10)]
             [0, 1, 8, 27, 64, 125, 216, 343, 512, 729]
         """
-        return ZZ(n ** 3)
+        return ZZ(n**3)
 
 
 class A000244(SloaneSequence):
@@ -4172,7 +4297,7 @@ class A000302(SloaneSequence):
             sage: [sloane.A000302._eval(n) for n in range(10)]
             [1, 4, 16, 64, 256, 1024, 4096, 16384, 65536, 262144]
         """
-        return ZZ(4 ** n)
+        return ZZ(4**n)
 
 
 class A000583(SloaneSequence):
@@ -4225,7 +4350,7 @@ class A000583(SloaneSequence):
             sage: [sloane.A000583._eval(n) for n in range(10)]
             [0, 1, 16, 81, 256, 625, 1296, 2401, 4096, 6561]
         """
-        return ZZ(n ** 4)
+        return ZZ(n**4)
 
 
 class A000142(SloaneSequence):
@@ -4330,8 +4455,11 @@ class A000085(SloaneSequence):
             sage: [sloane.A000085._eval(n) for n in range(10)]
             [1, 1, 2, 4, 10, 26, 76, 232, 764, 2620]
         """
-        return sum(arith.factorial(n) // (arith.factorial(n-2*k) * (2**k) * arith.factorial(k))
-                   for k in range(n//2+1))
+        return sum(
+            arith.factorial(n)
+            // (arith.factorial(n - 2 * k) * (2**k) * arith.factorial(k))
+            for k in range(n // 2 + 1)
+        )
 
 
 class A001189(SloaneSequence):
@@ -4440,8 +4568,10 @@ class A000670(SloaneSequence):
         # a(n) = Sum from k=1 to n of k! StirlingS2(n, k)
         if n == 0:
             return ZZ.one()
-        return sum(arith.factorial(k) * combinat.stirling_number2(n, k)
-                   for k in range(1, n+1))
+        return sum(
+            arith.factorial(k) * combinat.stirling_number2(n, k)
+            for k in range(1, n + 1)
+        )
 
 
 class A006318(SloaneSequence):
@@ -4494,8 +4624,14 @@ class A006318(SloaneSequence):
         """
         if n == 0:
             return ZZ.one()
-#  (PARI) a(n)=if(n<1, 1, sum(k=0, n, 2^k*binomial(n, k)*binomial(n, k-1))/n)
-        return ZZ(sum(2**k * arith.binomial(n, k) * arith.binomial(n, k-1) for k in range(n+1)) // n)
+        #  (PARI) a(n)=if(n<1, 1, sum(k=0, n, 2^k*binomial(n, k)*binomial(n, k-1))/n)
+        return ZZ(
+            sum(
+                2**k * arith.binomial(n, k) * arith.binomial(n, k - 1)
+                for k in range(n + 1)
+            )
+            // n
+        )
 
 
 class A000165(SloaneSequence):
@@ -4598,7 +4734,7 @@ class A001147(SloaneSequence):
             sage: [sloane.A001147._eval(n) for n in range(10)]
             [1, 1, 3, 15, 105, 945, 10395, 135135, 2027025, 34459425]
         """
-        return arith.factorial(2*n) / (arith.factorial(n)*2**n)
+        return arith.factorial(2 * n) / (arith.factorial(n) * 2**n)
 
 
 class A006882(SloaneSequence):
@@ -4633,7 +4769,9 @@ class A006882(SloaneSequence):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._precompute(2)  # force precomputation, e.g. a(0) will fail when asked first
+        self._precompute(
+            2
+        )  # force precomputation, e.g. a(0) will fail when asked first
 
     def _repr_(self):
         """
@@ -4675,8 +4813,8 @@ class A006882(SloaneSequence):
         y = x
         yield x
         while True:
-            k = k+1
-            x, y = y, k*x
+            k = k + 1
+            x, y = y, k * x
             yield x
 
     def _eval(self, n):
@@ -4697,7 +4835,7 @@ class A006882(SloaneSequence):
             sage: sloane.A006882.list(10)
             [1, 1, 2, 3, 8, 15, 48, 105, 384, 945]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -4798,7 +4936,7 @@ class A001405(SloaneSequence):
             sage: [sloane.A001405._eval(n) for n in range(10)]
             [1, 1, 2, 3, 6, 10, 20, 35, 70, 126]
         """
-        return arith.binomial(n, n//2)
+        return arith.binomial(n, n // 2)
 
 
 class A000292(SloaneSequence):
@@ -4848,7 +4986,7 @@ class A000292(SloaneSequence):
             sage: [sloane.A000292._eval(n) for n in range(10)]
             [0, 1, 4, 10, 20, 35, 56, 84, 120, 165]
         """
-        return ZZ(n * (n+1) * (n+2) // 6)  # or arith.binomial(n+2,3))
+        return ZZ(n * (n + 1) * (n + 2) // 6)  # or arith.binomial(n+2,3))
 
 
 class A000330(SloaneSequence):
@@ -4902,11 +5040,12 @@ class A000330(SloaneSequence):
             sage: [sloane.A000330._eval(n) for n in range(10)]
             [0, 1, 5, 14, 30, 55, 91, 140, 204, 285]
         """
-        return ZZ(n * (n+1) * (2*n+1) // 6)
+        return ZZ(n * (n + 1) * (2 * n + 1) // 6)
 
 
 # Theme:  maximal permanent of an m x n (0,1)- matrix:
 # Seok-Zun Song et al.  Extremes of permanents of (0,1)-matrices, p. 201-202.
+
 
 class ExtremesOfPermanentsSequence(SloaneSequence):
     def _precompute(self, how_many=20):
@@ -4938,8 +5077,8 @@ class ExtremesOfPermanentsSequence(SloaneSequence):
         k = self._k
         yield x
         while True:
-            k = k+1
-            x, y = y, (k)*y+(k-d)*x
+            k = k + 1
+            x, y = y, (k) * y + (k - d) * x
             yield x
 
     def _eval(self, n):
@@ -4960,8 +5099,9 @@ class ExtremesOfPermanentsSequence(SloaneSequence):
             sage: sloane.A000153.list(8)
             [0, 1, 2, 7, 32, 181, 1214, 9403]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
+
     _k = 1
 
 
@@ -5004,7 +5144,9 @@ class A000153(ExtremesOfPermanentsSequence):
         SloaneSequence.__init__(self, offset=0)
         self._b = []
         self._a0a1d = (0, 1, 2)
-        self._precompute(2)  # force precomputation, e.g. a(0) will fail when asked first
+        self._precompute(
+            2
+        )  # force precomputation, e.g. a(0) will fail when asked first
 
     def _repr_(self):
         """
@@ -5057,7 +5199,9 @@ class A000255(ExtremesOfPermanentsSequence):
         SloaneSequence.__init__(self, offset=0)
         self._b = []
         self._a0a1d = (1, 1, 1)
-        self._precompute(2)  # force precomputation, e.g. a(0) will fail when asked first
+        self._precompute(
+            2
+        )  # force precomputation, e.g. a(0) will fail when asked first
 
     def _repr_(self):
         """
@@ -5258,9 +5402,10 @@ class ExtremesOfPermanentsSequence2(ExtremesOfPermanentsSequence):
         k = self._k
         yield x
         while True:
-            k = k+1
-            x, y = y, (k-self._k1)*x+(k+d-self._k2)*y
+            k = k + 1
+            x, y = y, (k - self._k1) * x + (k + d - self._k2) * y
             yield x
+
     _k1 = 1
     _k2 = 1
 
@@ -5458,7 +5603,7 @@ class A090012(SloaneSequence):
         """
         if n == 1:
             return ZZ(3)
-        return sloane.A000153(n+1) + sloane.A000153(n)
+        return sloane.A000153(n + 1) + sloane.A000153(n)
 
 
 class A090013(SloaneSequence):
@@ -5529,7 +5674,7 @@ class A090013(SloaneSequence):
         """
         if n == 1:
             return ZZ(4)
-        return sloane.A000261(n+2) + sloane.A000261(n+1)
+        return sloane.A000261(n + 2) + sloane.A000261(n + 1)
 
 
 class A090014(SloaneSequence):
@@ -5600,7 +5745,7 @@ class A090014(SloaneSequence):
         """
         if n == 1:
             return ZZ(5)
-        return sloane.A001909(n+3) + sloane.A001909(n+2)
+        return sloane.A001909(n + 3) + sloane.A001909(n + 2)
 
 
 class A090015(SloaneSequence):
@@ -5671,7 +5816,7 @@ class A090015(SloaneSequence):
         """
         if n == 1:
             return ZZ(6)
-        return sloane.A001910(n+4) + sloane.A001910(n+3)
+        return sloane.A001910(n + 4) + sloane.A001910(n + 3)
 
 
 class A090016(SloaneSequence):
@@ -5744,7 +5889,7 @@ class A090016(SloaneSequence):
         """
         if n == 1:
             return ZZ(7)
-        return sloane.A090010(n-1) + sloane.A090010(n)
+        return sloane.A090010(n - 1) + sloane.A090010(n)
 
 
 class A000166(SloaneSequence):
@@ -6030,7 +6175,7 @@ class A000204(SloaneSequence):
             return ZZ.one()
         if n == 2:
             return 3
-        return sloane.A000045(n+1) + sloane.A000045(n-1)
+        return sloane.A000045(n + 1) + sloane.A000045(n - 1)
 
 
 class A000217(SloaneSequence):
@@ -6081,7 +6226,7 @@ class A000217(SloaneSequence):
             sage: [sloane.A000217._eval(n) for n in range(10)]
             [0, 1, 3, 6, 10, 15, 21, 28, 36, 45]
         """
-        return ZZ(n*(n+1)//2)
+        return ZZ(n * (n + 1) // 2)
 
 
 class A000124(SloaneSequence):
@@ -6136,7 +6281,7 @@ class A000124(SloaneSequence):
             sage: [sloane.A000124._eval(n) for n in range(10)]
             [1, 2, 4, 7, 11, 16, 22, 29, 37, 46]
         """
-        return ZZ(n*(n+1)//2 + 1)
+        return ZZ(n * (n + 1) // 2 + 1)
 
 
 class A002275(SloaneSequence):
@@ -6188,7 +6333,7 @@ class A002275(SloaneSequence):
             sage: [sloane.A002275._eval(n) for n in range(10)]
             [0, 1, 11, 111, 1111, 11111, 111111, 1111111, 11111111, 111111111]
         """
-        return ZZ(10**n-1)//9
+        return ZZ(10**n - 1) // 9
 
 
 # inhomogeneous second order recurrences
@@ -6211,8 +6356,8 @@ def recur_gen2b(a0, a1, a2, a3, b):
     n = 1
     yield x
     while True:
-        n = n+1
-        x, y = y, a3*x+a2*y + b(n)
+        n = n + 1
+        x, y = y, a3 * x + a2 * y + b(n)
         yield x
 
 
@@ -6251,7 +6396,7 @@ class RecurrenceSequence(SloaneSequence):
             sage: sloane.A001110.list(8)
             [0, 1, 36, 1225, 41616, 1413721, 48024900, 1631432881]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -6300,7 +6445,9 @@ class A001110(RecurrenceSequence):
             sage: sloane.A001110._repr_()
             'Numbers that are both triangular and square: a(n) = 34a(n-1) - a(n-2) + 2.'
         """
-        return "Numbers that are both triangular and square: a(n) = 34a(n-1) - a(n-2) + 2."
+        return (
+            "Numbers that are both triangular and square: a(n) = 34a(n-1) - a(n-2) + 2."
+        )
 
     def g(self, k):
         """
@@ -6347,7 +6494,7 @@ class A051959(RecurrenceSequence):
         - Jaap Spies (2007-01-19)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (1,10,2,1,self.g)
+        self._params = (1, 10, 2, 1, self.g)
         self._b = []
         self._precompute(2)
 
@@ -6370,7 +6517,7 @@ class A051959(RecurrenceSequence):
             0
         """
         if k > 1:
-            return 7*k+1
+            return 7 * k + 1
         return ZZ.zero()
 
 
@@ -6490,7 +6637,7 @@ class A001222(SloaneSequence):
             sage: [sloane.A001222._eval(n) for n in range(1,10)]
             [0, 1, 1, 2, 1, 2, 1, 3, 2]
         """
-        return sum(e for i,e in arith.factor(n))
+        return sum(e for i, e in arith.factor(n))
 
 
 # A046660() = A001222(n) - A001221(n)
@@ -6538,7 +6685,9 @@ class A046660(SloaneSequence):
             sage: sloane.A046660._repr_()
             'Excess of n = Bigomega (with multiplicity) - omega (without multiplicity).'
         """
-        return "Excess of n = Bigomega (with multiplicity) - omega (without multiplicity)."
+        return (
+            "Excess of n = Bigomega (with multiplicity) - omega (without multiplicity)."
+        )
 
     def _eval(self, n):
         """
@@ -6672,8 +6821,11 @@ class A001358(SloaneSequence):
         except AttributeError:
             self._b = []
             self._n = 1
-        self._b += [i for i in range(self._n, self._n + how_many)
-                    if sum(e for _, e in arith.factor(i)) == 2]
+        self._b += [
+            i
+            for i in range(self._n, self._n + how_many)
+            if sum(e for _, e in arith.factor(i)) == 2
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -6684,7 +6836,7 @@ class A001358(SloaneSequence):
             [4, 6, 9, 10, 14, 15, 21, 22, 25]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -6757,7 +6909,9 @@ class A001694(SloaneSequence):
             sage: sloane.A001694._repr_()
             'Powerful Numbers (also called squarefull, square-full or 2-full numbers).'
         """
-        return "Powerful Numbers (also called squarefull, square-full or 2-full numbers)."
+        return (
+            "Powerful Numbers (also called squarefull, square-full or 2-full numbers)."
+        )
 
     def _precompute(self, how_many=10000):
         """
@@ -6790,7 +6944,11 @@ class A001694(SloaneSequence):
         n = max(n, 4)
         # Use PARI directly -- much faster.
         from sage.libs.pari import pari
-        L = pari('v=listcreate(); for(i=%s,%s,if(vecmin(factor(i)[,2])>1,listput(v,i))); v' % (n, m))
+
+        L = pari(
+            'v=listcreate(); for(i=%s,%s,if(vecmin(factor(i)[,2])>1,listput(v,i))); v'
+            % (n, m)
+        )
         return [ZZ(x) for x in L]  # not very many, so not much overhead
 
     def _eval(self, n):
@@ -6801,7 +6959,7 @@ class A001694(SloaneSequence):
             [1, 4, 8, 9, 16, 25, 27, 32, 36]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except AttributeError:
             self._b = [1]
         except IndexError:
@@ -6931,8 +7089,11 @@ class A001836(SloaneSequence):
         except AttributeError:
             self._b = []
             self._n = self.offset
-        self._b += [i for i in range(self._n, self._n + how_many)
-                    if arith.euler_phi(2 * i - 1) < arith.euler_phi(2 * i)]
+        self._b += [
+            i
+            for i in range(self._n, self._n + how_many)
+            if arith.euler_phi(2 * i - 1) < arith.euler_phi(2 * i)
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -6943,7 +7104,7 @@ class A001836(SloaneSequence):
             [53, 83, 158, 263, 293, 368, 578, 683, 743]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -6986,8 +7147,8 @@ def recur_gen2(a0, a1, a2, a3):
     n = 0
     yield x
     while True:
-        n = n+1
-        x, y = y, a3*x+a2*y
+        n = n + 1
+        x, y = y, a3 * x + a2 * y
         yield x
 
 
@@ -7029,7 +7190,7 @@ class RecurrenceSequence2(SloaneSequence):
             sage: sloane.A001906.list(10)
             [0, 1, 3, 8, 21, 55, 144, 377, 987, 2584]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -7065,7 +7226,7 @@ class A001906(RecurrenceSequence2):
         - Jaap Spies (2007-01-19)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,3,-1)
+        self._params = (0, 1, 3, -1)
         self._b = []
         self._precompute(2)  # force precomputation
 
@@ -7115,7 +7276,7 @@ class A001333(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (1,1,2,1)
+        self._params = (1, 1, 2, 1)
         self._precompute(2)  # force precomputation
 
     def _repr_(self):
@@ -7160,7 +7321,7 @@ class A001045(RecurrenceSequence2):
         - Jaap Spies (2007-01-26)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,1,2)
+        self._params = (0, 1, 1, 2)
         self._b = []
         self._precompute(2)  # force precomputation
 
@@ -7210,7 +7371,7 @@ class A000129(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (0,1,2,1)
+        self._params = (0, 1, 2, 1)
         self._precompute(2)  # force precomputation
 
     def _repr_(self):
@@ -7260,7 +7421,7 @@ class A001109(RecurrenceSequence2):
         - Jaap Spies (2007-01-24)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,6,-1)
+        self._params = (0, 1, 6, -1)
         self._b = []
         self._precompute(2)  # force precomputation
 
@@ -7306,7 +7467,7 @@ class A015521(RecurrenceSequence2):
         - Jaap Spies (2007-01-19)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,3,4)
+        self._params = (0, 1, 3, 4)
         self._b = []
         self._precompute(2)
 
@@ -7352,7 +7513,7 @@ class A015523(RecurrenceSequence2):
         - Jaap Spies (2007-01-19)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,3,5)
+        self._params = (0, 1, 3, 5)
         self._b = []
         self._precompute(2)
 
@@ -7401,7 +7562,7 @@ class A015530(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (0,1,4,3)
+        self._params = (0, 1, 4, 3)
         self._precompute(2)
 
     def _repr_(self):
@@ -7450,7 +7611,7 @@ class A015531(RecurrenceSequence2):
         - Jaap Spies (2007-01-19)
         """
         SloaneSequence.__init__(self, offset=0)
-        self._params = (0,1,4,5)
+        self._params = (0, 1, 4, 5)
         self._b = []
         self._precompute(2)
 
@@ -7501,7 +7662,7 @@ class A015551(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (0,1,6,5)
+        self._params = (0, 1, 6, 5)
         self._precompute(2)
 
     def _repr_(self):
@@ -7577,7 +7738,7 @@ class A082411(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (407389224418,76343678551,1,1)
+        self._params = (407389224418, 76343678551, 1, 1)
         self._precompute(2)
 
     def _repr_(self):
@@ -7634,7 +7795,12 @@ class A083103(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (1786772701928802632268715130455793,1059683225053915111058165141686995,1,1)
+        self._params = (
+            1786772701928802632268715130455793,
+            1059683225053915111058165141686995,
+            1,
+            1,
+        )
         self._precompute(2)
 
     def _repr_(self):
@@ -7683,7 +7849,12 @@ class A083104(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (331635635998274737472200656430763,1510028911088401971189590305498785,1,1)
+        self._params = (
+            331635635998274737472200656430763,
+            1510028911088401971189590305498785,
+            1,
+            1,
+        )
         self._precompute(2)
 
     def _repr_(self):
@@ -7738,7 +7909,7 @@ class A083105(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (62638280004239857,49463435743205655,1,1)
+        self._params = (62638280004239857, 49463435743205655, 1, 1)
         self._precompute(2)
 
     def _repr_(self):
@@ -7790,7 +7961,7 @@ class A083216(RecurrenceSequence2):
         """
         SloaneSequence.__init__(self, offset=0)
         self._b = []
-        self._params = (20615674205555510, 3794765361567513,1,1)
+        self._params = (20615674205555510, 3794765361567513, 1, 1)
         self._precompute(2)
 
     def _repr_(self):
@@ -7838,7 +8009,7 @@ class A061084(SloaneSequence):
         """
         SloaneSequence.__init__(self, offset=0)
 
-    keyword = ["sign", "easy","nice"]
+    keyword = ["sign", "easy", "nice"]
 
     def _repr_(self):
         """
@@ -7860,7 +8031,7 @@ class A061084(SloaneSequence):
             return ZZ.one()
         if n == 1:
             return 2
-        return (-1)**(n-1)*sloane.A000204(n-1)
+        return (-1) ** (n - 1) * sloane.A000204(n - 1)
 
 
 # a group of sequences uses this function:
@@ -7882,7 +8053,7 @@ def recur_gen3(a0, a1, a2, a3, a4, a5):
     x, y, z = ZZ(a0), ZZ(a1), ZZ(a2)
     yield x
     while True:
-        x, y, z = y, z, a5*x+a4*y+a3*z
+        x, y, z = y, z, a5 * x + a4 * y + a3 * z
         yield x
 
 
@@ -7942,7 +8113,7 @@ class A000213(SloaneSequence):
         try:
             f = self._f
         except AttributeError:
-            self._f = recur_gen3(1,1,1,1,1,1)
+            self._f = recur_gen3(1, 1, 1, 1, 1, 1)
             f = self._f
         self._b += [next(f) for i in range(how_many)]
 
@@ -7964,7 +8135,7 @@ class A000213(SloaneSequence):
             sage: sloane.A000213.list(10)
             [1, 1, 1, 3, 5, 9, 17, 31, 57, 105]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -8024,7 +8195,7 @@ class A000073(SloaneSequence):
         try:
             f = self._f
         except AttributeError:
-            self._f = recur_gen3(0,0,1,1,1,1)
+            self._f = recur_gen3(0, 0, 1, 1, 1, 1)
             f = self._f
         self._b += [next(f) for i in range(how_many)]
 
@@ -8046,7 +8217,7 @@ class A000073(SloaneSequence):
             sage: sloane.A000073.list(10)
             [0, 0, 1, 1, 2, 4, 7, 13, 24, 44]
         """
-        self._eval(n)   # force computation
+        self._eval(n)  # force computation
         return self._b[:n]
 
 
@@ -8382,8 +8553,11 @@ class A111774(SloaneSequence):
         except AttributeError:
             self._b = []
             self._n = 1
-        self._b += [i for i in range(self._n, self._n + how_many)
-                    if self.is_number_of_the_third_kind(i)]
+        self._b += [
+            i
+            for i in range(self._n, self._n + how_many)
+            if self.is_number_of_the_third_kind(i)
+        ]
         self._n += how_many
 
     def _eval(self, n):
@@ -8394,7 +8568,7 @@ class A111774(SloaneSequence):
             [6, 9, 10, 12, 14, 15, 18, 20, 21, 22]
         """
         try:
-            return self._b[n-1]
+            return self._b[n - 1]
         except (AttributeError, IndexError):
             self._precompute()
             # try again
@@ -8615,7 +8789,7 @@ class A111787(SloaneSequence):
 
         for d in srange(3, n, 2):
             if n % d == 0:
-                return min(d, 2*n//d)
+                return min(d, 2 * n // d)
 
 
 class ExponentialNumbers(SloaneSequence):
@@ -8653,6 +8827,7 @@ class ExponentialNumbers(SloaneSequence):
             if n < self.__n:
                 return self.__data[n]
         from sage.combinat.expnums import expnums
+
         self.__data = expnums(n + 1, self.a)
         self.__n = n + 1
         return self.__data[n]
@@ -8816,14 +8991,16 @@ class A000100(SloaneSequence):
         """
         if n <= 2:
             return ZZ.zero()
-        return sum(sloane.A000045(i + 1) * sloane.A000073(n - i - 1)
-                   for i in range(n - 2))
+        return sum(
+            sloane.A000045(i + 1) * sloane.A000073(n - i - 1) for i in range(n - 2)
+        )
 
 
 #############################################################
 # III. Create the Sloane object, off which all the sequence
 #      objects are members.
 #############################################################
+
 
 class Sloane(SageObject):
     r"""
@@ -8881,8 +9058,9 @@ class Sloane(SageObject):
             return self.__stored_dir
         except AttributeError:
             xs = inspect.getmembers(sys.modules[__name__], inspect.isclass)
-            self.__stored_dir = [n for n, c in xs
-                                 if n.startswith('A') and issubclass(c, SloaneSequence)]
+            self.__stored_dir = [
+                n for n, c in xs if n.startswith('A') and issubclass(c, SloaneSequence)
+            ]
             return self.__stored_dir
 
     def __getattribute__(self, name):

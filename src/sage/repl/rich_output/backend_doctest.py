@@ -28,7 +28,6 @@ from sage.repl.rich_output.output_catalog import *
 
 
 class BackendDoctest(BackendBase):
-
     def _repr_(self):
         """
         Return a string representation.
@@ -68,6 +67,7 @@ class BackendDoctest(BackendBase):
             * text is not specified
         """
         from sage.repl.rich_output.preferences import DisplayPreferences
+
         return DisplayPreferences(supplemental_plot='never')
 
     def install(self, **kwds):
@@ -130,15 +130,30 @@ class BackendDoctest(BackendBase):
             sage: OutputSceneJmol in backend.supported_output()
             True
         """
-        return set([
-            OutputPlainText, OutputAsciiArt, OutputUnicodeArt,
-            OutputImagePng, OutputImageGif, OutputImageJpg,
-            OutputImageSvg, OutputImagePdf, OutputImageDvi,
-            OutputSceneJmol, OutputSceneCanvas3d, OutputSceneWavefront,
-            OutputVideoOgg, OutputVideoWebM, OutputVideoMp4,
-            OutputVideoFlash, OutputVideoMatroska, OutputVideoAvi,
-            OutputVideoWmv, OutputVideoQuicktime,
-        ])
+        return set(
+            [
+                OutputPlainText,
+                OutputAsciiArt,
+                OutputUnicodeArt,
+                OutputImagePng,
+                OutputImageGif,
+                OutputImageJpg,
+                OutputImageSvg,
+                OutputImagePdf,
+                OutputImageDvi,
+                OutputSceneJmol,
+                OutputSceneCanvas3d,
+                OutputSceneWavefront,
+                OutputVideoOgg,
+                OutputVideoWebM,
+                OutputVideoMp4,
+                OutputVideoFlash,
+                OutputVideoMatroska,
+                OutputVideoAvi,
+                OutputVideoWmv,
+                OutputVideoQuicktime,
+            ]
+        )
 
     def displayhook(self, plain_text, rich_output):
         """
@@ -172,8 +187,10 @@ class BackendDoctest(BackendBase):
             Graphics object consisting of 1 graphics primitive
         """
         self.validate(rich_output)
-        if any(isinstance(rich_output, cls)
-               for cls in [OutputPlainText, OutputAsciiArt, OutputLatex, OutputHtml]):
+        if any(
+            isinstance(rich_output, cls)
+            for cls in [OutputPlainText, OutputAsciiArt, OutputLatex, OutputHtml]
+        ):
             rich_output.print_to_stdout()
         else:
             plain_text.print_to_stdout()
@@ -293,7 +310,7 @@ class BackendDoctest(BackendBase):
             assert data[4:8] == b'ftyp'
             assert data.startswith(b'\0\0\0')
             # See http://www.ftyps.com/
-            ftyps = [data[i:i+4] for i in range(8, data[3], 4)]
+            ftyps = [data[i : i + 4] for i in range(8, data[3], 4)]
             del ftyps[1]  # version number, not an ftyp
             expected = [b'avc1', b'iso2', b'mp41', b'mp42']
             assert any(i in ftyps for i in expected)

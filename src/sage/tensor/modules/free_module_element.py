@@ -220,8 +220,9 @@ class FiniteRankFreeModuleElement(AlternatingContrTensor):
             sage: v1[e,:] = (-2, 1, 3)
             sage: TestSuite(v1).run()
         """
-        AlternatingContrTensor.__init__(self, fmodule, 1, name=name,
-                                        latex_name=latex_name)
+        AlternatingContrTensor.__init__(
+            self, fmodule, 1, name=name, latex_name=latex_name
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -265,8 +266,13 @@ class FiniteRankFreeModuleElement(AlternatingContrTensor):
             <class 'sage.tensor.modules.comp.Components'>
         """
         fmodule = self._fmodule  # the base free module
-        return Components(fmodule._ring, basis, 1, start_index=fmodule._sindex,
-                          output_formatter=fmodule._output_formatter)
+        return Components(
+            fmodule._ring,
+            basis,
+            1,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+        )
 
     def _new_instance(self):
         r"""

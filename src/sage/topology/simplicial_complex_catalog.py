@@ -67,25 +67,40 @@ EXAMPLES::
     {0: 0, 1: Z^16, 2: 0}
 """
 
-from sage.topology.simplicial_complex_examples import (Sphere, Simplex, Torus,
-                                                       ProjectivePlane,
-                                                       RealProjectivePlane, KleinBottle,
-                                                       FareyMap, GenusSix,
-                                                       SurfaceOfGenus,
-                                                       MooreSpace,
-                                                       ComplexProjectivePlane,
-                                                       QuaternionicProjectivePlane,
-                                                       PoincareHomologyThreeSphere,
-                                                       RealProjectiveSpace, K3Surface,
-                                                       BarnetteSphere,
-                                                       BrucknerGrunbaumSphere,
-                                                       NotIConnectedGraphs,
-                                                       MatchingComplex,
-                                                       ChessboardComplex, RandomComplex,
-                                                       SumComplex,
-                                                       RandomTwoSphere, ShiftedComplex,
-                                                       RudinBall, ZieglerBall, DunceHat)
+from sage.topology.simplicial_complex_examples import (
+    Sphere,
+    Simplex,
+    Torus,
+    ProjectivePlane,
+    RealProjectivePlane,
+    KleinBottle,
+    FareyMap,
+    GenusSix,
+    SurfaceOfGenus,
+    MooreSpace,
+    ComplexProjectivePlane,
+    QuaternionicProjectivePlane,
+    PoincareHomologyThreeSphere,
+    RealProjectiveSpace,
+    K3Surface,
+    BarnetteSphere,
+    BrucknerGrunbaumSphere,
+    NotIConnectedGraphs,
+    MatchingComplex,
+    ChessboardComplex,
+    RandomComplex,
+    SumComplex,
+    RandomTwoSphere,
+    ShiftedComplex,
+    RudinBall,
+    ZieglerBall,
+    DunceHat,
+)
 
-from sage.combinat.posets.hochschild_lattice import hochschild_simplicial_complex as HochschildSphere
+from sage.combinat.posets.hochschild_lattice import (
+    hochschild_simplicial_complex as HochschildSphere,
+)
 
-from sage.combinat.posets.bubble_shuffle import noncrossing_bipartite_complex as NoncrossingBipartiteComplex
+from sage.combinat.posets.bubble_shuffle import (
+    noncrossing_bipartite_complex as NoncrossingBipartiteComplex,
+)

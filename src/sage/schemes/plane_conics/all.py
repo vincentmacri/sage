@@ -1,6 +1,7 @@
 """
 Plane conics
 """
+
 # ****************************************************************************
 #
 #   Sage: Open Source Mathematical Software

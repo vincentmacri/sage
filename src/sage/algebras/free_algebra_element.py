@@ -54,6 +54,7 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
         sage: y * x < x * y
         False
     """
+
     def __init__(self, A, x) -> None:
         """
         Create the element ``x`` of the FreeAlgebra ``A``.
@@ -101,6 +102,7 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
         P = self.parent()
         M = P.monoid()
         from sage.structure.parent_gens import localvars
+
         with localvars(M, P.variable_names(), normalize=False):
             return repr_lincomb(v, strip_one=True)
 
@@ -155,8 +157,10 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
                         pass
                 return None
 
-            x = [extract_from(kwds, (p.gen(i), p.variable_name(i)))
-                 for i in range(p.ngens())]
+            x = [
+                extract_from(kwds, (p.gen(i), p.variable_name(i)))
+                for i in range(p.ngens())
+            ]
         elif isinstance(x[0], tuple):
             x = x[0]
 
@@ -266,6 +270,7 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
             x^2 * y^3 * x
         """
         from sage.structure.factorization import Factorization
+
         # FIXME: Make factorization work properly in the coercion framework
         # Keep factorization since we want to "coerce" into a factorization
         if isinstance(scalar, Factorization):
@@ -297,8 +302,9 @@ class FreeAlgebraElement(IndexedFreeModuleElement, AlgebraElement):
         if base_map is None:
             base_map = codomain
 
-        return codomain.sum(base_map(c) * m(*im_gens)
-                            for m, c in self._monomial_coefficients.items())
+        return codomain.sum(
+            base_map(c) * m(*im_gens) for m, c in self._monomial_coefficients.items()
+        )
 
     def variables(self) -> list:
         """

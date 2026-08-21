@@ -27,8 +27,7 @@ class IntegerFactorization(Factorization):
     - Sebastian Pancratz (2010-01-10)
     """
 
-    def __init__(self, x, unit=None, cr=False, sort=True, simplify=True,
-                 unsafe=False):
+    def __init__(self, x, unit=None, cr=False, sort=True, simplify=True, unsafe=False):
         """
         Set ``self`` to the factorization object with list ``x``,
         which must be a sorted list of pairs, where each pair contains
@@ -79,9 +78,7 @@ class IntegerFactorization(Factorization):
                 self.simplify()
 
         else:
-            super().__init__(x, unit=unit, cr=cr,
-                             sort=sort,
-                             simplify=simplify)
+            super().__init__(x, unit=unit, cr=cr, sort=sort, simplify=simplify)
 
     def __sort__(self, key=None):
         """
@@ -137,7 +134,9 @@ class IntegerFactorization(Factorization):
 
                 if possible:
                     new_unit = self.unit() // other.unit()
-                    return IntegerFactorization(sorted(new_factors.items()), unit=new_unit)
+                    return IntegerFactorization(
+                        sorted(new_factors.items()), unit=new_unit
+                    )
 
         try:
             numer = self.value()

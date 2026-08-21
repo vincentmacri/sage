@@ -165,6 +165,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
         ...
         ArithmeticError: cannot negate any non-infinite element
     """
+
     def roots(self):
         r"""
         Return the list of all tropical roots of ``self``, counted with
@@ -208,6 +209,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             [+infinity, +infinity, +infinity]
         """
         from itertools import combinations
+
         tropical_roots = []
         data = self.monomial_coefficients()
         R = self.parent().base()
@@ -220,12 +222,12 @@ class TropicalPolynomial(Polynomial_generic_sparse):
         dict_coeff = {i: c.lift() for i, c in data.items()}
         for comb in combinations(dict_coeff, 2):
             index1, index2 = comb[0], comb[1]
-            root = (dict_coeff[index1]-dict_coeff[index2]) / (index2-index1)
-            val_root = dict_coeff[index1] + index1*root
+            root = (dict_coeff[index1] - dict_coeff[index2]) / (index2 - index1)
+            val_root = dict_coeff[index1] + index1 * root
             check_maks = True
             for key in dict_coeff:
                 if key not in comb:
-                    val = dict_coeff[key] + key*root
+                    val = dict_coeff[key] + key * root
                     if R._use_min:
                         if val < val_root:
                             check_maks = False
@@ -234,7 +236,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
                         check_maks = False
                         break
             if check_maks:
-                order = abs(index1-index2)
+                order = abs(index1 - index2)
                 if root not in dict_root:
                     dict_root[root] = order
                 elif order > dict_root[root]:
@@ -323,6 +325,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             (3) * 0
         """
         from sage.structure.factorization import Factorization
+
         unit = self.monomial_coefficients()[self.degree()]
         if self != self.split_form() or not self.roots():
             factor = [(self * self.parent(-unit.lift()), 1)]
@@ -335,8 +338,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
                 roots_order[root] += 1
             else:
                 roots_order[root] = 1
-        factors = [(R([root, 0]), roots_order[root])
-                   for root in roots_order]
+        factors = [(R([root, 0]), roots_order[root]) for root in roots_order]
         return Factorization(factors, unit=unit)
 
     def piecewise_function(self):
@@ -385,7 +387,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
         if len(data) == 1:
             gradient = list(data)[0]
             intercept = data[gradient].lift()
-            f = intercept + gradient*x
+            f = intercept + gradient * x
             return f
 
         unique_root = sorted(set(self.roots()))
@@ -395,9 +397,9 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             if i == 0:
                 test_number = R(unique_root[i] - 1)
             elif i == len(unique_root):
-                test_number = R(unique_root[i-1] + 1)
+                test_number = R(unique_root[i - 1] + 1)
             else:
-                test_number = R((unique_root[i]+unique_root[i-1]) / 2)
+                test_number = R((unique_root[i] + unique_root[i - 1]) / 2)
             terms = {i: c * test_number**i for i, c in data.items()}
             if R._use_min:
                 critical = min(terms.values())
@@ -414,21 +416,21 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             # To make sure all roots is included in the domain
             if i == 0:
                 interval = RealSet.unbounded_below_closed(unique_root[i])
-                piecewise_linear = (interval, intercept + gradient*x)
+                piecewise_linear = (interval, intercept + gradient * x)
                 domain.append(interval)
             elif i == len(unique_root):
-                if domain[i-1][0].upper_closed():
-                    interval = RealSet.unbounded_above_open(unique_root[i-1])
+                if domain[i - 1][0].upper_closed():
+                    interval = RealSet.unbounded_above_open(unique_root[i - 1])
                 else:
-                    interval = RealSet.unbounded_above_closed(unique_root[i-1])
-                piecewise_linear = (interval, intercept + gradient*x)
+                    interval = RealSet.unbounded_above_closed(unique_root[i - 1])
+                piecewise_linear = (interval, intercept + gradient * x)
                 domain.append(interval)
             else:
-                if domain[i-1][0].upper_closed():
-                    interval = RealSet((unique_root[i-1], unique_root[i]))
+                if domain[i - 1][0].upper_closed():
+                    interval = RealSet((unique_root[i - 1], unique_root[i]))
                 else:
-                    interval = RealSet([unique_root[i-1], unique_root[i]])
-                piecewise_linear = (interval, intercept + gradient*x)
+                    interval = RealSet([unique_root[i - 1], unique_root[i]])
+                piecewise_linear = (interval, intercept + gradient * x)
                 domain.append(interval)
             pieces.append(piecewise_linear)
 
@@ -514,12 +516,13 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             ValueError: xmin = 5 should be less than xmax = 3
         """
         from sage.plot.plot import plot
+
         f = self.piecewise_function()
         if (xmin is None) and (xmax is None):
             roots = sorted(self.roots())
             if (not roots) or (self.parent().base().zero() in roots):
                 return plot(f, xmin=-1, xmax=1)
-            return plot(f, xmin=roots[0]-1, xmax=roots[-1]+1)
+            return plot(f, xmin=roots[0] - 1, xmax=roots[-1] + 1)
         if xmin is None or xmax is None:
             raise ValueError("expected 2 inputs for xmin and xmax, but got 1")
         elif xmin >= xmax:
@@ -538,6 +541,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             (-1)*x^3 + 2*x^2 + (-1)*x + (-3)
         """
         import re
+
         if not self.monomial_coefficients():
             return str(self.parent().base().zero())
 
@@ -550,8 +554,8 @@ class TropicalPolynomial(Polynomial_generic_sparse):
         if s[0] == v:
             s = "1*" + s
         s = s.replace(" - ", " + -")
-        s = s.replace(" + "+v, " + 1*"+v)
-        s = s.replace("-"+v, "-1*"+v)
+        s = s.replace(" + " + v, " + 1*" + v)
+        s = s.replace("-" + v, "-1*" + v)
         s = replace_negatives(s)
         return s
 
@@ -575,7 +579,7 @@ class TropicalPolynomial(Polynomial_generic_sparse):
             x = coeffs[n]
             x = x._latex_()
             if x != self.parent().base().zero()._latex_():
-                if n != m-1:
+                if n != m - 1:
                     s += " + "
                 if x.find("-") == 0:
                     x = "\\left(" + x + "\\right)"
@@ -619,6 +623,7 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
         sage: f * R.one() == f
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, base_semiring, names):
         """
@@ -656,6 +661,7 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
         """
         from sage.categories.semirings import Semirings
         from sage.rings.semirings.tropical_semiring import TropicalSemiring
+
         if not isinstance(base_semiring, TropicalSemiring):
             raise ValueError(f"{base_semiring} is not a tropical semiring")
         Parent.__init__(self, base=base_semiring, names=names, category=Semirings())
@@ -742,8 +748,10 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
             sage: R.<abc> = PolynomialRing(T); R
             Univariate Tropical Polynomial Semiring in abc over Integer Ring
         """
-        return (f"Univariate Tropical Polynomial Semiring in {self.variable_name()}"
-                f" over {self.base_ring().base_ring()}")
+        return (
+            f"Univariate Tropical Polynomial Semiring in {self.variable_name()}"
+            f" over {self.base_ring().base_ring()}"
+        )
 
     def gen(self, n=0):
         """
@@ -795,6 +803,7 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
             1
         """
         from sage.rings.integer_ring import ZZ
+
         return ZZ.one()
 
     def random_element(self, degree=(-1, 2), monic=False, *args, **kwds):
@@ -843,6 +852,7 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
             True
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(self.base().base_ring(), self.variable_names())
         f = R.random_element(degree=degree, monic=monic, *args, **kwds)
         new_dict = f.monomial_coefficients()
@@ -947,14 +957,18 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
         roots = {}
         R = self.base()
         if R._use_min:
-            point_order = range(len(points)-1, 0, -1)
+            point_order = range(len(points) - 1, 0, -1)
         else:
-            point_order = range(len(points)-1)
+            point_order = range(len(points) - 1)
         for i in point_order:
             if R._use_min:
-                slope = (points[i-1][1]-points[i][1]) / (points[i-1][0]-points[i][0])
+                slope = (points[i - 1][1] - points[i][1]) / (
+                    points[i - 1][0] - points[i][0]
+                )
             else:
-                slope = (points[i+1][1]-points[i][1]) / (points[i+1][0]-points[i][0])
+                slope = (points[i + 1][1] - points[i][1]) / (
+                    points[i + 1][0] - points[i][0]
+                )
             if not slope.is_integer():
                 raise ValueError("the slope is not an integer")
             if slope < all_slope[-1]:
@@ -969,7 +983,7 @@ class TropicalPolynomialSemiring(UniqueRepresentation, Parent):
 
         result = self.one()
         for root, order in roots.items():
-            result *= self([root, 0])**order
+            result *= self([root, 0]) ** order
         test_value = result(R(points[0][0]))
         unit = R(points[0][1] - test_value.lift())
         result *= unit

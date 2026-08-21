@@ -2,6 +2,7 @@
 """
 Hecke operators
 """
+
 # ****************************************************************************
 #       Copyright (C) 2004 William Stein <wstein@gmail.com>
 #
@@ -30,6 +31,7 @@ class HeckeAlgebraElement(AlgebraElement):
     r"""
     Base class for elements of Hecke algebras.
     """
+
     def __init__(self, parent) -> None:
         r"""
         Create an element of a Hecke algebra.
@@ -114,7 +116,9 @@ class HeckeAlgebraElement(AlgebraElement):
                 name = "T_%s" % self.index()
             else:
                 name = ""
-            self.__hecke_module_morphism = morphism.HeckeModuleMorphism_matrix(H, T, name)
+            self.__hecke_module_morphism = morphism.HeckeModuleMorphism_matrix(
+                H, T, name
+            )
             return self.__hecke_module_morphism
 
     def _add_(self, other):
@@ -266,8 +270,10 @@ class HeckeAlgebraElement(AlgebraElement):
             return self.__decomposition
         except AttributeError:
             pass
-        if isinstance(self, HeckeOperator) and \
-           arith.gcd(self.index(), self.domain().level()) == 1:
+        if (
+            isinstance(self, HeckeOperator)
+            and arith.gcd(self.index(), self.domain().level()) == 1
+        ):
             D = self.hecke_module_morphism().decomposition(is_diagonalizable=True)
         else:
             # TODO: There are other weaker hypotheses that imply diagonalizability.
@@ -371,6 +377,7 @@ class HeckeAlgebraElement_matrix(HeckeAlgebraElement):
     r"""
     An element of the Hecke algebra represented by a matrix.
     """
+
     def __init__(self, parent, A):
         r"""
         Initialise an element from a matrix. This *must* be over the base ring
@@ -402,12 +409,18 @@ class HeckeAlgebraElement_matrix(HeckeAlgebraElement):
         """
         HeckeAlgebraElement.__init__(self, parent)
         from sage.structure.element import Matrix
+
         if not isinstance(A, Matrix):
             raise TypeError("A must be a matrix")
         if not A.base_ring() == self.parent().base_ring():
-            raise TypeError("base ring of matrix (%s) does not match base ring of space (%s)" % (A.base_ring(), self.parent().base_ring()))
+            raise TypeError(
+                "base ring of matrix (%s) does not match base ring of space (%s)"
+                % (A.base_ring(), self.parent().base_ring())
+            )
         if not A.nrows() == A.ncols() == self.parent().module().rank():
-            raise TypeError("A must be a square matrix of rank %s" % self.parent().module().rank())
+            raise TypeError(
+                "A must be a square matrix of rank %s" % self.parent().module().rank()
+            )
         self.__matrix = A
 
     def _richcmp_(self, other, op):
@@ -445,7 +458,10 @@ class HeckeAlgebraElement_matrix(HeckeAlgebraElement):
             sage: ModularForms(Gamma0(100)).hecke_operator(4).matrix_form()._repr_()
             'Hecke operator on Modular Forms space of dimension 24 for Congruence Subgroup Gamma0(100) of weight 2 over Rational Field defined by:\n24 x 24 dense matrix over Rational Field'
         """
-        return "Hecke operator on %s defined by:\n%r" % (self.parent().module(), self.__matrix)
+        return "Hecke operator on %s defined by:\n%r" % (
+            self.parent().module(),
+            self.__matrix,
+        )
 
     def _latex_(self):
         r"""
@@ -498,6 +514,7 @@ class DiamondBracketOperator(HeckeAlgebraElement_matrix):
     N\ZZ` (which need not be a unit, although if it is not, the operator will
     be zero).
     """
+
     def __init__(self, parent, d):
         r"""
         Standard init function.
@@ -551,6 +568,7 @@ class HeckeOperator(HeckeAlgebraElement):
     The Hecke operator `T_n` for some `n` (which need not be coprime to the
     level). The matrix is not computed until it is needed.
     """
+
     def __init__(self, parent, n):
         """
         EXAMPLES::
@@ -674,8 +692,9 @@ class HeckeOperator(HeckeAlgebraElement):
                 n = self.__n * other.__n
             else:
                 P = set(arith.prime_divisors(self.domain().level()))
-                if P.issubset(set(arith.prime_divisors(self.__n))) and \
-                   P.issubset(set(arith.prime_divisors(other.__n))):
+                if P.issubset(set(arith.prime_divisors(self.__n))) and P.issubset(
+                    set(arith.prime_divisors(other.__n))
+                ):
                     n = self.__n * other.__n
             if n:
                 return HeckeOperator(self.parent(), n)

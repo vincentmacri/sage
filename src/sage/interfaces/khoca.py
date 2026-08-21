@@ -54,6 +54,7 @@ class KnownKeywords(Enum):
         <KnownKeywords.reduced: 'reduced'>,
         <KnownKeywords.code: 'code'>]
     """
+
     frobenius_algebra = 'frobenius_algebra'
     root = 'root'
     equivariant = 'equivariant'
@@ -110,6 +111,7 @@ def khoca_interface(ring, **kwds):
         NotImplementedError: keyword equivariant is not implemented yet
     """
     from sage.features.khoca import Khoca
+
     Khoca().require()
     keys = check_kwds(**kwds)
     ch = ring.characteristic()
@@ -117,6 +119,7 @@ def khoca_interface(ring, **kwds):
     if rg == 0 and ring.is_field():
         rg = 1
     from khoca import InteractiveCalculator
+
     frobenius_algebra = (0, 0)
     if KnownKeywords.frobenius_algebra in keys:
         frobenius_algebra = kwds[KnownKeywords.frobenius_algebra.value]
@@ -125,11 +128,15 @@ def khoca_interface(ring, **kwds):
         root = kwds[KnownKeywords.root.value]
     equivariant = None
     if KnownKeywords.equivariant in keys:
-        raise NotImplementedError('keyword %s is not implemented yet' % KnownKeywords.equivariant.value)
-    return InteractiveCalculator(coefficient_ring=rg,
-                                 frobenius_algebra=frobenius_algebra,
-                                 root=root,
-                                 equivariant=equivariant)
+        raise NotImplementedError(
+            'keyword %s is not implemented yet' % KnownKeywords.equivariant.value
+        )
+    return InteractiveCalculator(
+        coefficient_ring=rg,
+        frobenius_algebra=frobenius_algebra,
+        root=root,
+        equivariant=equivariant,
+    )
 
 
 @cached_function
@@ -173,6 +180,7 @@ def khoca_raw_data(link, ring, red_typ=True, **kwds):
         ...
         ValueError: unknown code gauss, must be one of (pd, braid)
     """
+
     def prepare_data(data):
         r"""
         compress and adapt data to Sage

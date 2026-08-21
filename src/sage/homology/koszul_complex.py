@@ -79,6 +79,7 @@ class KoszulComplex(ChainComplex_class, UniqueRepresentation):
 
     - :wikipedia:`Koszul_complex`
     """
+
     @staticmethod
     def __classcall_private__(cls, R=None, elements=None):
         """
@@ -134,19 +135,19 @@ class KoszulComplex(ChainComplex_class, UniqueRepresentation):
         diff = {}
         zero = R.zero()
         for i in I:
-            M = matrix(R, binomial(n, i), binomial(n, i+1), zero)
+            M = matrix(R, binomial(n, i), binomial(n, i + 1), zero)
             j = 0
-            for comb in itertools.combinations(I, i+1):
+            for comb in itertools.combinations(I, i + 1):
                 for k, val in enumerate(comb):
-                    r = rank(comb[:k] + comb[k+1:], n, False)
-                    M[r, j] = (-1)**k * elements[val]
+                    r = rank(comb[:k] + comb[k + 1 :], n, False)
+                    M[r, j] = (-1) ** k * elements[val]
                 j += 1
             M.set_immutable()
-            diff[i+1] = M
+            diff[i + 1] = M
         diff[0] = matrix(R, 0, 1, zero)
         diff[0].set_immutable()
-        diff[n+1] = matrix(R, 1, 0, zero)
-        diff[n+1].set_immutable()
+        diff[n + 1] = matrix(R, 1, 0, zero)
+        diff[n + 1].set_immutable()
         ChainComplex_class.__init__(self, ZZ, ZZ(-1), R, diff)
 
     def _repr_(self) -> str:
@@ -165,4 +166,6 @@ class KoszulComplex(ChainComplex_class, UniqueRepresentation):
         """
         if not self._elements:
             return "Trivial Koszul complex over {}".format(self.base_ring())
-        return "Koszul complex defined by {} over {}".format(self._elements, self.base_ring())
+        return "Koszul complex defined by {} over {}".format(
+            self._elements, self.base_ring()
+        )

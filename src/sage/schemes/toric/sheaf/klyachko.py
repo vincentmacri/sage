@@ -103,7 +103,8 @@ def Bundle(toric_variety, multi_filtration, check=True):
     if not hasattr(multi_filtration, 'get_filtration'):
         # try to construct a MultiFilteredVectorSpace
         multi_filtration = MultiFilteredVectorSpace(
-            multi_filtration, base_ring=base_ring, check=check)
+            multi_filtration, base_ring=base_ring, check=check
+        )
     if multi_filtration.base_ring() != base_ring:
         multi_filtration = multi_filtration.change_ring(base_ring)
     return KlyachkoBundle_class(toric_variety, multi_filtration, check=check)
@@ -111,7 +112,6 @@ def Bundle(toric_variety, multi_filtration, check=True):
 
 @richcmp_method
 class KlyachkoBundle_class(SageObject):
-
     def __init__(self, toric_variety, multi_filtration, check=True):
         r"""
         A toric bundle using Klyachko's representation.
@@ -151,9 +151,11 @@ class KlyachkoBundle_class(SageObject):
         if not check:
             return
         from sage.sets.set import Set
+
         if multi_filtration.index_set() != Set(list(toric_variety.fan().rays())):
-            raise ValueError('the index set of the multi-filtration must be'
-                             ' all rays of the fan.')
+            raise ValueError(
+                'the index set of the multi-filtration must be all rays of the fan.'
+            )
         if not multi_filtration.is_exhaustive():
             raise ValueError('multi-filtration must be exhaustive')
         if not multi_filtration.is_separating():
@@ -202,6 +204,7 @@ class KlyachkoBundle_class(SageObject):
             Vector space of dimension 2 over Rational Field
         """
         from sage.modules.free_module import VectorSpace
+
         return VectorSpace(self.base_ring(), self.rank())
 
     def rank(self):
@@ -229,7 +232,7 @@ class KlyachkoBundle_class(SageObject):
             sage: toric_varieties.P2().sheaves.tangent_bundle()
             Rank 2 bundle on 2-d CPR-Fano toric variety covered by 3 affine patches.
         """
-        s = 'Rank '+str(self.rank())+' bundle on '+str(self._variety)+'.'
+        s = 'Rank ' + str(self.rank()) + ' bundle on ' + str(self._variety) + '.'
         return s
 
     def get_filtration(self, ray=None):
@@ -389,7 +392,7 @@ class KlyachkoBundle_class(SageObject):
             if cone.dim() != 1:
                 raise ValueError('does not determine one-dimensional cone')
             ray = cone.ray(0)
-        return self.get_degree(ray, ray*m)
+        return self.get_degree(ray, ray * m)
 
     @cached_method
     def E_intersection(self, sigma, m):
@@ -581,7 +584,7 @@ class KlyachkoBundle_class(SageObject):
         C = fan.complex()
         CV = []
         F = self.base_ring()
-        for dim in range(1, fan.dim()+1):
+        for dim in range(1, fan.dim() + 1):
             codim = fan.dim() - dim
             d_C = C.differential(codim)
             d_V = []
@@ -589,7 +592,7 @@ class KlyachkoBundle_class(SageObject):
                 tau = fan(dim)[j]
                 d_V_row = []
                 for i in range(d_C.nrows()):
-                    sigma = fan(dim-1)[i]
+                    sigma = fan(dim - 1)[i]
                     if sigma.is_face_of(tau):
                         pr = self.E_quotient_projection(sigma, tau, m)
                         d = d_C[i, j] * pr.matrix().transpose()
@@ -602,6 +605,7 @@ class KlyachkoBundle_class(SageObject):
             d_V = block_matrix(d_V, ring=F)
             CV.append(d_V)
         from sage.homology.chain_complex import ChainComplex
+
         return ChainComplex(CV, base_ring=self.base_ring())
 
     def cohomology(self, degree=None, weight=None, dim=False):
@@ -654,6 +658,7 @@ class KlyachkoBundle_class(SageObject):
             H^*i(P^2, TP^2)_M(1, 0) = (1, 0, 0)
         """
         from sage.modules.free_module import FreeModule
+
         if weight is None:
             raise NotImplementedError('sum over weights is not implemented')
         else:
@@ -665,13 +670,13 @@ class KlyachkoBundle_class(SageObject):
         space_dim = self._variety.dimension()
         C_homology = C.homology()
         HH = {}
-        for d in range(space_dim+1):
+        for d in range(space_dim + 1):
             try:
                 HH[d] = C_homology[d]
             except KeyError:
                 HH[d] = FreeModule(self.base_ring(), 0)
         if dim:
-            HH = vector(ZZ, [HH[i].rank() for i in range(space_dim+1)])
+            HH = vector(ZZ, [HH[i].rank() for i in range(space_dim + 1)])
         return HH
 
     def __richcmp__(self, other, op):

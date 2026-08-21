@@ -78,7 +78,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.richcmp import richcmp_method, rich_to_bool
 
@@ -95,6 +94,7 @@ class UnknownError(TypeError):
         ...
         UnknownError: Unknown does not evaluate in boolean context
     """
+
     pass
 
 
@@ -119,6 +119,7 @@ class UnknownClass(UniqueRepresentation):
 
         sage: TestSuite(Unknown).run()
     """
+
     def __repr__(self):
         """
         TESTS::

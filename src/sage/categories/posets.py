@@ -2,6 +2,7 @@
 r"""
 Posets
 """
+
 # ****************************************************************************
 #  Copyright (C) 2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
@@ -91,6 +92,7 @@ class Posets(Category):
         sage: C = Posets()
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         r"""
@@ -119,7 +121,11 @@ class Posets(Category):
             An example of a facade poset:
              the positive integers ordered by divisibility
         """
-        from sage.categories.examples.posets import FiniteSetsOrderedByInclusion, PositiveIntegersOrderedByDivisibilityFacade
+        from sage.categories.examples.posets import (
+            FiniteSetsOrderedByInclusion,
+            PositiveIntegersOrderedByDivisibilityFacade,
+        )
+
         if choice == "facade":
             return PositiveIntegersOrderedByDivisibilityFacade()
         return FiniteSetsOrderedByInclusion()
@@ -149,6 +155,7 @@ class Posets(Category):
             Finite poset containing 4 elements
         """
         from sage.combinat.posets.posets import FinitePosets_n
+
         n = 0
         while True:
             yield from FinitePosets_n(n)
@@ -157,7 +164,6 @@ class Posets(Category):
     Finite = LazyImport('sage.categories.finite_posets', 'FinitePosets')
 
     class ParentMethods:
-
         @abstract_method
         def le(self, x, y):
             r"""
@@ -198,7 +204,7 @@ class Posets(Category):
                 sage: D.lt( 3, 5 )
                 False
             """
-            return self.le(x,y) and x != y
+            return self.le(x, y) and x != y
 
         def ge(self, x, y):
             r"""
@@ -220,7 +226,7 @@ class Posets(Category):
                 sage: D.ge( 3, 5 )
                 False
             """
-            return self.le(y,x)
+            return self.le(y, x)
 
         def gt(self, x, y):
             r"""
@@ -242,7 +248,7 @@ class Posets(Category):
                 sage: D.gt( 3, 5 )
                 False
             """
-            return self.lt(y,x)
+            return self.lt(y, x)
 
         @abstract_method(optional=True)
         def upper_covers(self, x):
@@ -421,10 +427,12 @@ class Posets(Category):
             if v not in I:
                 if all(u in I for u in self.lower_covers(v)):
                     from sage.sets.set import Set
+
                     return I.union(Set({v}))
             else:
                 if all(u not in I for u in self.upper_covers(v)):
                     from sage.sets.set import Set
+
                     return I.difference(Set({v}))
             return I
 
@@ -473,7 +481,9 @@ class Posets(Category):
                 sage: P.is_order_ideal([1, 3, 4])
                 False
             """
-            return all((u in self and all(x in o for x in self.lower_covers(u))) for u in o)
+            return all(
+                (u in self and all(x in o for x in self.lower_covers(u))) for u in o
+            )
 
         def is_order_filter(self, o):
             """
@@ -499,7 +509,9 @@ class Posets(Category):
                 sage: P.is_order_filter({3, 6, 12})
                 True
             """
-            return all((u in self and all(x in o for x in self.upper_covers(u))) for u in o)
+            return all(
+                (u in self and all(x in o for x in self.upper_covers(u))) for u in o
+            )
 
         def is_chain_of_poset(self, o, ordered=False):
             """
@@ -616,7 +628,7 @@ class Posets(Category):
             list_o = list(o)
             if ordered:
                 return all(self.lt(a, b) for a, b in zip(list_o, list_o[1:]))
-            for (i, x) in enumerate(list_o):
+            for i, x in enumerate(list_o):
                 for y in list_o[:i]:
                     if (not self.le(x, y)) and (not self.gt(x, y)):
                         return False
@@ -697,10 +709,11 @@ class Posets(Category):
                 ....:                          R(set([1, 4])), R(set([4, 5]))])
                 False
             """
-            return all(not self.lt(x,y) for x in o for y in o)
+            return all(not self.lt(x, y) for x in o for y in o)
 
         CartesianProduct = LazyImport(
-            'sage.combinat.posets.cartesian_product', 'CartesianProductPoset')
+            'sage.combinat.posets.cartesian_product', 'CartesianProductPoset'
+        )
 
     class ElementMethods:
         pass
@@ -747,6 +760,7 @@ class Posets(Category):
             sage: cat.super_categories()
             [Category of posets]
         """
+
         class ParentMethods:
             def is_bounded(self):
                 """

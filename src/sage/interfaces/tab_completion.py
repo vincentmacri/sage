@@ -24,11 +24,11 @@ EXAMPLES::
     sage: sorted(dir(f))
     [..., '_tab_completion', 'a', 'b', 'c', 'd']
 """
+
 import builtins
 
 
 class ExtraTabCompletion:
-
     def __dir__(self):
         """
         Add to the ``dir()`` output.
@@ -48,7 +48,8 @@ class ExtraTabCompletion:
             tab_fn = self._tab_completion
         except AttributeError:
             raise NotImplementedError(
-                '{0} must implement _tab_completion() method'.format(self.__class__))
+                '{0} must implement _tab_completion() method'.format(self.__class__)
+            )
         return dir(self.__class__) + list(self.__dict__) + tab_fn()
 
 
@@ -85,7 +86,7 @@ def completions(s, globs):
         v += [x for x in builtins.__dict__ if x[:n] == s]
     else:
         i = s.rfind('.')
-        method = s[i + 1:]
+        method = s[i + 1 :]
         obj = s[:i]
         n = len(method)
         try:

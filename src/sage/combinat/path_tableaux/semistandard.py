@@ -73,7 +73,7 @@ AUTHORS:
 - Bruce Westbury (2020): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2020 Bruce Westbury <bruce.westbury@gmail.com>,
 #
 # This program is free software: you can redistribute it and/or modify
@@ -174,11 +174,11 @@ class SemistandardPathTableau(PathTableau):
             w.reverse()
             w = [(), *w]
 
-        elif isinstance(st, (Tableau,SkewTableau)):
+        elif isinstance(st, (Tableau, SkewTableau)):
             w = st.to_chain()
 
-        elif isinstance(st, (list,tuple)):
-            if any(not isinstance(a,(list,tuple)) for a in st):
+        elif isinstance(st, (list, tuple)):
+            if any(not isinstance(a, (list, tuple)) for a in st):
                 raise ValueError(f"{st} is not a sequence of lists")
             w = st
 
@@ -186,8 +186,8 @@ class SemistandardPathTableau(PathTableau):
             raise ValueError(f"invalid input {st} is of type {type(st)}")
 
         # Pad with zeroes, if necessary
-        m = max(len(a)-i for i,a in enumerate(w))
-        w = [list(a)+[0]*(m+i-len(a)) for i,a in enumerate(w)]
+        m = max(len(a) - i for i, a in enumerate(w))
+        w = [list(a) + [0] * (m + i - len(a)) for i, a in enumerate(w)]
         # Convert to immutable
         w = tuple([tuple(a) for a in w])
 
@@ -222,11 +222,15 @@ class SemistandardPathTableau(PathTableau):
             sage: path_tableaux.SemistandardPathTableau([[], [2], [1,2]], check=False)
             [(), (2,), (1, 2)]
         """
-        for i in range(1,len(self)-1):
-            if not all(r >= s for r,s in zip(self[i+1],self[i])):
-                raise ValueError(f"{self} does not satisfy the required inequalities in row {i}")
-            if not all(r >= s for r,s in zip(self[i],self[i+1][1:])):
-                raise ValueError(f"{self} does not satisfy the required inequalities in row {i}")
+        for i in range(1, len(self) - 1):
+            if not all(r >= s for r, s in zip(self[i + 1], self[i])):
+                raise ValueError(
+                    f"{self} does not satisfy the required inequalities in row {i}"
+                )
+            if not all(r >= s for r, s in zip(self[i], self[i + 1][1:])):
+                raise ValueError(
+                    f"{self} does not satisfy the required inequalities in row {i}"
+                )
 
     def size(self):
         r"""
@@ -299,27 +303,28 @@ class SemistandardPathTableau(PathTableau):
             ...
             ValueError: 4 is not defined on [(), (3,), (3, 2), (3, 3, 1), (3, 3, 2, 1)]
         """
+
         def toggle(i, j):
             """
             Return the toggle of entry 'self[i][j]'.
             """
 
             if j == 0:
-                left = self[i+1][0]
+                left = self[i + 1][0]
             else:
-                left = min(self[i+1][j], self[i-1][j-1])
-            if j == len(self[i])-1:
-                right = self[i+1][j+1]
+                left = min(self[i + 1][j], self[i - 1][j - 1])
+            if j == len(self[i]) - 1:
+                right = self[i + 1][j + 1]
             else:
-                right = max(self[i+1][j+1], self[i-1][j])
+                right = max(self[i + 1][j + 1], self[i - 1][j])
 
             return left + right - self[i][j]
 
-        if not 0 < i < self.size()-1:
+        if not 0 < i < self.size() - 1:
             raise ValueError(f"{i} is not defined on {self}")
 
         with self.clone() as result:
-            result[i] = tuple([toggle(i,k) for k in range(len(self[i]))])
+            result[i] = tuple([toggle(i, k) for k in range(len(self[i]))])
 
         return result
 
@@ -374,7 +379,9 @@ class SemistandardPathTableau(PathTableau):
         elif _Partitions(inner[-1]) == _Partitions(pp):
             initial = list(inner)[:-1]
         else:
-            raise ValueError(f"the final shape{inner[-1]} must agree with the initial shape {pp}")
+            raise ValueError(
+                f"the final shape{inner[-1]} must agree with the initial shape {pp}"
+            )
 
         r = len(initial)
         path = P.element_class(P, initial + list(self))
@@ -382,10 +389,10 @@ class SemistandardPathTableau(PathTableau):
             rect = [self]
 
         for i in range(r):
-            for j in range(n-1):
-                path = path.local_rule(r+j-i)
+            for j in range(n - 1):
+                path = path.local_rule(r + j - i)
             if verbose:
-                rect.append(P.element_class(P, list(path)[r-i-1:r+n-i-1]))
+                rect.append(P.element_class(P, list(path)[r - i - 1 : r + n - i - 1]))
 
         if verbose:
             return rect
@@ -487,8 +494,8 @@ class SemistandardPathTableau(PathTableau):
 
         tester = self._tester(**options)
         LHS = self.promotion().to_tableau()
-        RHS = self.to_tableau().promotion_inverse(len(self)-2)
-        tester.assertEqual(LHS,RHS)
+        RHS = self.to_tableau().promotion_inverse(len(self) - 2)
+        tester.assertEqual(LHS, RHS)
 
 
 class SemistandardPathTableaux(PathTableaux):
@@ -505,6 +512,6 @@ class SemistandardPathTableaux(PathTableaux):
             sage: path_tableaux.SemistandardPathTableaux()._an_element_()
             [(), (2,), (2, 1)]
         """
-        return SemistandardPathTableau([[], [2], [2,1]])
+        return SemistandardPathTableau([[], [2], [2, 1]])
 
     Element = SemistandardPathTableau

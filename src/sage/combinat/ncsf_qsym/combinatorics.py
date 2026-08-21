@@ -16,6 +16,7 @@ REFERENCES:
    Cauchy Identity, and Hall Scalar Product*,
    :arxiv:`0712.2201v1`.
 """
+
 from sage.misc.misc_c import prod
 from sage.arith.misc import factorial
 from sage.misc.cachefunc import cached_function
@@ -28,6 +29,7 @@ from sage.rings.integer_ring import ZZ
 # coefficients'' / matrix using something like:
 # Complete.module_morphism( coeff = coeff_pi, codomain=Psi, triangularity="finer" )
 # the difficulty is how to best describe the support of the output.
+
 
 def coeff_pi(J, I):
     r"""
@@ -114,7 +116,7 @@ def coeff_sp(J, I):
         sage: coeff_sp(Composition([2,1]), Composition([3]))
         4
     """
-    return prod(factorial(len(K))*prod(K) for K in J.refinement_splitting(I))
+    return prod(factorial(len(K)) * prod(K) for K in J.refinement_splitting(I))
 
 
 def coeff_dab(I, J):
@@ -168,8 +170,10 @@ def compositions_order(n):
         sage: compositions_order(4)
         [[4], [3, 1], [1, 3], [2, 2], [2, 1, 1], [1, 2, 1], [1, 1, 2], [1, 1, 1, 1]]
     """
+
     def _keyfunction(I):
         return sorted(I, reverse=True), list(I)
+
     return sorted(Compositions(n), key=_keyfunction, reverse=True)
 
 
@@ -206,8 +210,8 @@ def m_to_s_stat(R, I, K):
     for J in Compositions(I.size()):
         if I.is_finer(J) and K.is_finer(J):
             pvec = [0] + Composition(I).refinement_splitting_lengths(J).partial_sums()
-            pp = prod( R( len(I) - pvec[i] ) for i in range( len(pvec)-1 ) )
-            stat += R((-1)**(len(I)-len(K)) / pp * coeff_lp(K, J))
+            pp = prod(R(len(I) - pvec[i]) for i in range(len(pvec) - 1))
+            stat += R((-1) ** (len(I) - len(K)) / pp * coeff_lp(K, J))
     return stat
 
 
@@ -240,11 +244,11 @@ def number_of_fCT(content_comp, shape_comp):
         if shape_comp.to_partition().length() == 1:
             return 1
         return 0
-    C = Compositions(content_comp.size()-content_comp[-1], outer=list(shape_comp))
+    C = Compositions(content_comp.size() - content_comp[-1], outer=list(shape_comp))
     s = 0
     for x in C:
-        if len(x) >= len(shape_comp)-1:
-            s += number_of_fCT(Composition(content_comp[:-1]),x)
+        if len(x) >= len(shape_comp) - 1:
+            s += number_of_fCT(Composition(content_comp[:-1]), x)
     return s
 
 
@@ -291,24 +295,27 @@ def number_of_SSRCT(content_comp, shape_comp):
             return ZZ.one()
         return ZZ.zero()
     s = ZZ.zero()
-    cond = lambda al, be: all(al[j] <= be_val
-                              and not any(al[i] <= k <= be[i]
-                                          for k in range(al[j], be_val)
-                                          for i in range(j))
-                              for j, be_val in enumerate(be))
-    C = Compositions(content_comp.size()-content_comp[0],
-                     inner=[1]*len(shape_comp),
-                     outer=list(shape_comp))
+    cond = lambda al, be: all(
+        al[j] <= be_val
+        and not any(al[i] <= k <= be[i] for k in range(al[j], be_val) for i in range(j))
+        for j, be_val in enumerate(be)
+    )
+    C = Compositions(
+        content_comp.size() - content_comp[0],
+        inner=[1] * len(shape_comp),
+        outer=list(shape_comp),
+    )
     for x in C:
         if cond(x, shape_comp):
             s += number_of_SSRCT(Composition(content_comp[1:]), x)
     if shape_comp[0] <= content_comp[0]:
-        C = Compositions(content_comp.size()-content_comp[0],
-                         inner=[min(val, shape_comp[0]+1)
-                                for val in shape_comp[1:]],
-                         outer=shape_comp[1:])
+        C = Compositions(
+            content_comp.size() - content_comp[0],
+            inner=[min(val, shape_comp[0] + 1) for val in shape_comp[1:]],
+            outer=shape_comp[1:],
+        )
         Comps = Compositions()
         for x in C:
-            if cond([shape_comp[0]]+list(x), shape_comp):
+            if cond([shape_comp[0]] + list(x), shape_comp):
                 s += number_of_SSRCT(Comps(content_comp[1:]), x)
     return s

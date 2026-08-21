@@ -65,6 +65,7 @@ class AffineCrystalFromClassical(UniqueRepresentation, Parent):
         sage: [x.s(1) for x in A.list()]
         [[[2]], [[1]], [[3]]]
     """
+
     @staticmethod
     def __classcall__(cls, cartan_type, *args, **options):
         """
@@ -117,8 +118,9 @@ class AffineCrystalFromClassical(UniqueRepresentation, Parent):
         self._cartan_type = cartan_type
         Parent.__init__(self, category=category)
         self.classical_crystal = classical_crystal
-        self.module_generators = [self.retract(gen)
-                                  for gen in self.classical_crystal.module_generators]
+        self.module_generators = [
+            self.retract(gen) for gen in self.classical_crystal.module_generators
+        ]
         self.element_class._latex_ = lambda x: x.lift()._latex_()
 
     def _repr_(self):
@@ -227,7 +229,11 @@ class AffineCrystalFromClassical(UniqueRepresentation, Parent):
             sage: A(b) is b
             True
         """
-        if len(value) == 1 and isinstance(value[0], self.element_class) and value[0].parent() == self:
+        if (
+            len(value) == 1
+            and isinstance(value[0], self.element_class)
+            and value[0].parent() == self
+        ):
             return value[0]
         # Should do sanity checks!  (Including check for inconsistent parent.)
         return self.retract(self.classical_crystal(*value, **options))
@@ -354,7 +360,7 @@ class AffineCrystalFromClassicalElement(ElementWrapper):
         if i == self.parent()._cartan_type.special_node():
             return self.e0()
         x = self.lift().e(i)
-        if (x is None):
+        if x is None:
             return None
         return self.parent().retract(x)
 
@@ -377,7 +383,7 @@ class AffineCrystalFromClassicalElement(ElementWrapper):
         if i == self.parent()._cartan_type.special_node():
             return self.f0()
         x = self.lift().f(i)
-        if (x is None):
+        if x is None:
             return None
         return self.parent().retract(x)
 
@@ -559,7 +565,15 @@ class AffineCrystalFromClassicalAndPromotion(AffineCrystalFromClassical):
         [[[2]], [[1]], [[3]]]
     """
 
-    def __init__(self, cartan_type, classical_crystal, p_automorphism, p_inverse_automorphism, dynkin_node, category=None):
+    def __init__(
+        self,
+        cartan_type,
+        classical_crystal,
+        p_automorphism,
+        p_inverse_automorphism,
+        dynkin_node,
+        category=None,
+    ):
         """
         Input is an affine Cartan type ``cartan_type``, a classical crystal
         ``classical_crystal``, and promotion automorphism and its inverse
@@ -584,7 +598,9 @@ class AffineCrystalFromClassicalAndPromotion(AffineCrystalFromClassical):
 
             sage: TestSuite(A).run()
         """
-        AffineCrystalFromClassical.__init__(self, cartan_type, classical_crystal, category)
+        AffineCrystalFromClassical.__init__(
+            self, cartan_type, classical_crystal, category
+        )
         self.p_automorphism = p_automorphism
         self.p_inverse_automorphism = p_inverse_automorphism
         self.dynkin_node = dynkin_node
@@ -671,7 +687,7 @@ class AffineCrystalFromClassicalAndPromotionElement(AffineCrystalFromClassicalEl
             [[3]]
         """
         x = self.parent().automorphism(self).e(self.parent().dynkin_node)
-        if (x is None):
+        if x is None:
             return None
         return self.parent().inverse_automorphism(x)
 
@@ -692,7 +708,7 @@ class AffineCrystalFromClassicalAndPromotionElement(AffineCrystalFromClassicalEl
             [[1]]
         """
         x = self.parent().automorphism(self).f(self.parent().dynkin_node)
-        if (x is None):
+        if x is None:
             return None
         return self.parent().inverse_automorphism(x)
 
@@ -731,4 +747,6 @@ class AffineCrystalFromClassicalAndPromotionElement(AffineCrystalFromClassicalEl
         return x.lift().phi(self.parent().dynkin_node)
 
 
-AffineCrystalFromClassicalAndPromotion.Element = AffineCrystalFromClassicalAndPromotionElement
+AffineCrystalFromClassicalAndPromotion.Element = (
+    AffineCrystalFromClassicalAndPromotionElement
+)

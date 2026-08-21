@@ -212,6 +212,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         ...
         ValueError: the components of an immutable element cannot be changed
     """
+
     def __init__(self, parent, name=None, latex_name=None):
         r"""
         Construct a mixed form.
@@ -284,8 +285,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             if self._latex_name is not None:
                 comp_latex_name = '{' + self._latex_name + '}_{' + str(i) + '}'
             diff_form = self._domain.diff_form
-            self._comp.append(diff_form(i, name=comp_name,
-                                        latex_name=comp_latex_name))
+            self._comp.append(diff_form(i, name=comp_name, latex_name=comp_latex_name))
 
     def _repr_(self):
         r"""
@@ -319,7 +319,9 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         if self._dest_map is self._domain.identity_map():
             desc += f"on the {self._domain}"
         else:
-            desc += f"along the {self._domain} with values on the {self._ambient_domain} "
+            desc += (
+                f"along the {self._domain} with values on the {self._ambient_domain} "
+            )
             if self._dest_map._name is None:
                 dm_name = "unnamed map"
             else:
@@ -414,6 +416,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         from sage.misc.latex import latex
         from sage.tensor.modules.format_utilities import FormattedExpansion, is_atomic
         from sage.typeset.unicode_characters import unicode_wedge
+
         # In case, no frame is given:
         if frame is None:
             frame = self._domain._def_frame
@@ -439,8 +442,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         # Differential form terms:
         for j in self.irange(1):
             rst = self[j].restrict(frame._domain, dest_map=frame._dest_map)
-            basis, format_spec = rst._preparse_display(basis=frame,
-                                                       format_spec=chart)
+            basis, format_spec = rst._preparse_display(basis=frame, format_spec=chart)
             cobasis = basis.dual_basis()
             comp = rst.comp(basis)
             for ind in comp.non_redundant_index_generator():
@@ -472,13 +474,13 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
                         if is_atomic(coef_txt):
                             terms_txt.append(coef_txt + " " + basis_term_txt)
                         else:
-                            terms_txt.append("(" + coef_txt + ") " +
-                                             basis_term_txt)
+                            terms_txt.append("(" + coef_txt + ") " + basis_term_txt)
                         if is_atomic(coef_latex):
                             terms_latex.append(coef_latex + basis_term_latex)
                         else:
-                            terms_latex.append(r"\left(" + coef_latex +
-                                               r"\right)" + basis_term_latex)
+                            terms_latex.append(
+                                r"\left(" + coef_latex + r"\right)" + basis_term_latex
+                            )
         if not terms_txt:
             resu_txt += "0"
         else:
@@ -523,6 +525,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         """
         from sage.misc.latex import latex
         from sage.tensor.modules.format_utilities import FormattedExpansion
+
         # Mixed form name:
         if self._name is not None:
             resu_txt = self._name + " = "
@@ -606,8 +609,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             eta = g + F_1 + F_2 + F_3 + F_4
         """
         if self.is_immutable():
-            raise ValueError("the name of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the name of an immutable element cannot be changed")
         if name is not None:
             self._name = name
             if latex_name is None:
@@ -711,6 +713,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             True
         """
         from sage.structure.richcmp import op_EQ, op_NE
+
         if op == op_NE:
             return not self == other
         if op == op_EQ:
@@ -975,17 +978,21 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             return self
         # Generic case:
         resu = self._new_instance()
-        resu._comp = [sum(self[k].wedge(other[j - k]) for k in range(j + 1))
-                      for j in self.irange()]
+        resu._comp = [
+            sum(self[k].wedge(other[j - k]) for k in range(j + 1))
+            for j in self.irange()
+        ]
         # Compose name:
         from sage.tensor.modules.format_utilities import (
             format_mul_latex,
             format_mul_txt,
         )
         from sage.typeset.unicode_characters import unicode_wedge
+
         resu._name = format_mul_txt(self._name, unicode_wedge, other._name)
-        resu._latex_name = format_mul_latex(self._latex_name, r'\wedge ',
-                                            other._latex_name)
+        resu._latex_name = format_mul_latex(
+            self._latex_name, r'\wedge ', other._latex_name
+        )
         return resu
 
     _mul_ = wedge
@@ -1038,9 +1045,9 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             format_mul_txt,
         )
         from sage.typeset.unicode_characters import unicode_wedge
+
         resu._name = format_mul_txt(repr(other), unicode_wedge, self._name)
-        resu._latex_name = format_mul_latex(latex(other), r'\wedge ',
-                                            self._latex_name)
+        resu._latex_name = format_mul_latex(latex(other), r'\wedge ', self._latex_name)
         return resu
 
     @cached_method
@@ -1100,13 +1107,13 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         """
         resu = self._new_instance()
         resu[0] = self._domain.zero_scalar_field()
-        resu[1:] = [self[j].exterior_derivative()
-                    for j in range(self._max_deg)]
+        resu[1:] = [self[j].exterior_derivative() for j in range(self._max_deg)]
         # Compose name:
         from sage.tensor.modules.format_utilities import (
             format_unop_latex,
             format_unop_txt,
         )
+
         resu._name = format_unop_txt('d', self._name)
         resu._latex_name = format_unop_latex(r'\mathrm{d}', self._latex_name)
         return resu
@@ -1201,8 +1208,7 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             A = x + y dx + x*y dx∧dy
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if isinstance(index, (int, Integer)):
             start, stop, step = index, index + 1, 1
         elif isinstance(index, slice):
@@ -1308,8 +1314,10 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
         if not isinstance(rst, MixedForm):
             raise TypeError("the argument must be a mixed form")
         if not rst._domain.is_subset(self._domain):
-            raise ValueError("the specified domain is not a subset of "
-                             "the domain of definition of the mixed form")
+            raise ValueError(
+                "the specified domain is not a subset of "
+                "the domain of definition of the mixed form"
+            )
         for j in self.irange():
             self[j].set_restriction(rst[j])
         self._is_zero = False  # a priori
@@ -1377,11 +1385,13 @@ class MixedForm(AlgebraElement, ModuleElementWithMutability):
             sage: FV.display_expansion(e_uv)
             F = u^2/(u^4 + 2*u^2*v^2 + v^4) - (u^2*v^2 - v^4)/(u^8 + 4*u^6*v^2 + 6*u^4*v^4 + 4*u^2*v^6 + v^8) du - 2*u*v^3/(u^8 + 4*u^6*v^2 + 6*u^4*v^4 + 4*u^2*v^6 + v^8) dv - u^2*v^2/(u^12 + 6*u^10*v^2 + 15*u^8*v^4 + 20*u^6*v^6 + 15*u^4*v^8 + 6*u^2*v^10 + v^12) du∧dv
         """
-        resu = type(self)(subdomain.mixed_form_algebra(dest_map=dest_map),
-                          name=self._name, latex_name=self._latex_name)
+        resu = type(self)(
+            subdomain.mixed_form_algebra(dest_map=dest_map),
+            name=self._name,
+            latex_name=self._latex_name,
+        )
         resu[0] = self[0].restrict(subdomain)
-        resu[1:] = [self[j].restrict(subdomain, dest_map)
-                    for j in self.irange(1)]
+        resu[1:] = [self[j].restrict(subdomain, dest_map) for j in self.irange(1)]
         return resu
 
     def add_comp_by_continuation(self, frame, subdomain, chart=None):

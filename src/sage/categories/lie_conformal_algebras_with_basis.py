@@ -6,7 +6,7 @@ AUTHORS:
 - Reimundo Heluani (2019-10-05): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,10 +14,12 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from sage.categories.graded_lie_conformal_algebras import GradedLieConformalAlgebrasCategory
+from sage.categories.graded_lie_conformal_algebras import (
+    GradedLieConformalAlgebrasCategory,
+)
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.super_modules import SuperModulesCategory
 
@@ -31,6 +33,7 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         sage: LieConformalAlgebras(QQbar).WithBasis()                                   # needs sage.rings.number_field
         Category of Lie conformal algebras with basis over Algebraic Field
     """
+
     class Super(SuperModulesCategory):
         """
         The category of super Lie conformal algebras with basis.
@@ -41,8 +44,8 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             Category of super Lie conformal algebras with basis
              over Algebraic Real Field
         """
-        class ParentMethods:
 
+        class ParentMethods:
             def _even_odd_on_basis(self, m):
                 """
                 Return the parity of the basis element indexed by ``m``.
@@ -59,7 +62,7 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     sage: V._even_odd_on_basis(B(('G', 1)))                             # needs sage.combinat sage.modules
                     1
                 """
-                return self._parity[self.monomial((m[0],0))]
+                return self._parity[self.monomial((m[0], 0))]
 
         class Graded(GradedLieConformalAlgebrasCategory):
             """
@@ -96,6 +99,7 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             sage: CWF is C.FinitelyGenerated().WithBasis()                              # needs sage.rings.number_field
             True
         """
+
         class Super(SuperModulesCategory):
             """
             The category of super finitely generated Lie conformal
@@ -107,6 +111,7 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 Category of super finitely generated Lie conformal algebras with basis
                  over Algebraic Real Field
             """
+
             class Graded(GradedModulesCategory):
                 """
                 The category of H-graded super finitely generated Lie
@@ -121,6 +126,7 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     sage: C.Graded().Super() is C.Super().Graded()                                  # needs sage.rings.number_field
                     True
                 """
+
                 def _repr_object_names(self):
                     """
                     The names of the objects of ``self``.
@@ -131,7 +137,9 @@ class LieConformalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         sage: C.Super().Graded()                                                    # needs sage.rings.number_field
                         Category of H-graded super finitely generated Lie conformal algebras with basis over Algebraic Field
                     """
-                    return "H-graded {}".format(self.base_category()._repr_object_names())
+                    return "H-graded {}".format(
+                        self.base_category()._repr_object_names()
+                    )
 
         class Graded(GradedLieConformalAlgebrasCategory):
             """

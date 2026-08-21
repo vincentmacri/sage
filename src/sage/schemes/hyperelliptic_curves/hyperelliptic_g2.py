@@ -48,9 +48,7 @@ invariants. I think we should fix this by putting the methods themseleves into t
 """
 
 
-class HyperellipticCurve_g2(
-    hyperelliptic_generic.HyperellipticCurve_generic
-):
+class HyperellipticCurve_g2(hyperelliptic_generic.HyperellipticCurve_generic):
     def is_odd_degree(self):
         r"""
         Return ``True`` if the curve is an odd degree model.

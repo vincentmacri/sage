@@ -45,7 +45,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from sage.algebras.lie_conformal_algebras.lie_conformal_algebra_with_structure_coefs import (
     LieConformalAlgebraWithStructureCoefficients,
 )
@@ -101,9 +100,21 @@ class GradedLieConformalAlgebra(LieConformalAlgebraWithStructureCoefficients):
         sage: R.category()
         Category of H-graded finitely generated Lie conformal algebras with basis over Rational Field
     """
-    def __init__(self, R, s_coeff, index_set=None, central_elements=None,
-                 category=None, prefix=None, names=None, latex_names=None,
-                 parity=None, weights=None, **kwds):
+
+    def __init__(
+        self,
+        R,
+        s_coeff,
+        index_set=None,
+        central_elements=None,
+        category=None,
+        prefix=None,
+        names=None,
+        latex_names=None,
+        parity=None,
+        weights=None,
+        **kwds,
+    ):
         """
         Initialize ``self``.
 
@@ -113,23 +124,32 @@ class GradedLieConformalAlgebra(LieConformalAlgebraWithStructureCoefficients):
             sage: TestSuite(V).run()
         """
         is_super = kwds.get('super', None)
-        default_category = LieConformalAlgebras(R).WithBasis().FinitelyGenerated().Graded()
+        default_category = (
+            LieConformalAlgebras(R).WithBasis().FinitelyGenerated().Graded()
+        )
         if is_super or parity:
             category = default_category.Super().or_subcategory(category)
         else:
             category = default_category.or_subcategory(category)
 
         LieConformalAlgebraWithStructureCoefficients.__init__(
-            self, R,
-            s_coeff, index_set=index_set, central_elements=central_elements,
-            category=category, prefix=prefix,
-            names=names, latex_names=latex_names, parity=parity, **kwds)
+            self,
+            R,
+            s_coeff,
+            index_set=index_set,
+            central_elements=central_elements,
+            category=category,
+            prefix=prefix,
+            names=names,
+            latex_names=latex_names,
+            parity=parity,
+            **kwds,
+        )
 
         if weights is None:
-            weights = (1,) * (len(self._generators) -
-                              len(self.central_elements()))
-        if len(weights) != (len(self._generators) -
-                            len(self.central_elements())):
-            raise ValueError("weights and (non-central) generator lists "
-                             "must be of same length")
+            weights = (1,) * (len(self._generators) - len(self.central_elements()))
+        if len(weights) != (len(self._generators) - len(self.central_elements())):
+            raise ValueError(
+                "weights and (non-central) generator lists must be of same length"
+            )
         self._weights = weights

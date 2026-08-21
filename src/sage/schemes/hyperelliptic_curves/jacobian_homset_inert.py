@@ -77,7 +77,9 @@ class HyperellipticJacobianHomsetInert(HyperellipticJacobianHomset):
         """
         g = self.curve().genus()
         if g % 2:
-            raise NotImplementedError('unable to perform arithmetic for inert models of odd genus; '
-                                      'consider extending the base field to adjoin the points at infinity')
+            raise NotImplementedError(
+                'unable to perform arithmetic for inert models of odd genus; '
+                'consider extending the base field to adjoin the points at infinity'
+            )
         R = self.curve().polynomial_ring()
         return self._morphism_element(self, R.one(), R.zero(), check=check)

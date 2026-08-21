@@ -19,4 +19,5 @@ class CoercionException(TypeError):
     implemented/appropriate, but if there are other things to try not
     to immediately abort to the user.
     """
+
     pass

@@ -106,8 +106,7 @@ def IntervalGraph(intervals, points_ordered=False, immutable=False):
                     break
                 yield (u, v)
 
-    g = Graph([range(n), edges()], format="vertices_and_edges",
-              immutable=immutable)
+    g = Graph([range(n), edges()], format="vertices_and_edges", immutable=immutable)
 
     rep = dict(enumerate(intervals))
     g.set_vertices(rep)
@@ -115,8 +114,7 @@ def IntervalGraph(intervals, points_ordered=False, immutable=False):
     return g
 
 
-def PermutationGraph(second_permutation, first_permutation=None,
-                     immutable=False):
+def PermutationGraph(second_permutation, first_permutation=None, immutable=False):
     r"""
     Build a permutation graph from one permutation or from two lists.
 
@@ -261,24 +259,31 @@ def PermutationGraph(second_permutation, first_permutation=None,
         first_permutation = sorted(second_permutation)
     else:
         if set(second_permutation) != set(first_permutation):
-            raise ValueError("The two permutations do not contain the same "
-                             "set of elements ! It is going to be pretty "
-                             "hard to define a permutation graph from that !")
+            raise ValueError(
+                "The two permutations do not contain the same "
+                "set of elements ! It is going to be pretty "
+                "hard to define a permutation graph from that !"
+            )
 
     vertex_to_index = {}
     for i, v in enumerate(first_permutation):
         vertex_to_index[v] = i + 1
 
     from sage.combinat.permutation import Permutation
+
     p2 = Permutation([vertex_to_index[x] for x in second_permutation])
     p2 = p2.inverse()
 
-    edges = ((first_permutation[u - 1], first_permutation[v - 1])
-             for u, v in p2.inversions())
+    edges = (
+        (first_permutation[u - 1], first_permutation[v - 1]) for u, v in p2.inversions()
+    )
 
-    return Graph([second_permutation, edges], format="vertices_and_edges",
-                 name=f"Permutation graph for {second_permutation}",
-                 immutable=immutable)
+    return Graph(
+        [second_permutation, edges],
+        format="vertices_and_edges",
+        name=f"Permutation graph for {second_permutation}",
+        immutable=immutable,
+    )
 
 
 def ToleranceGraph(tolrep, immutable=False, name=None):
@@ -362,8 +367,10 @@ def ToleranceGraph(tolrep, immutable=False, name=None):
 
     for i in range(n):
         if tolrep[i][2] <= 0:
-            raise ValueError("Invalid tolerance representation at position "
-                             "{}; third value must be > 0".format(i))
+            raise ValueError(
+                "Invalid tolerance representation at position "
+                "{}; third value must be > 0".format(i)
+            )
 
     def edges():
         for i in range(n):
@@ -374,8 +381,9 @@ def ToleranceGraph(tolrep, immutable=False, name=None):
                     yield (i, j)
 
     name = "Tolerance Graph" if name is None else name
-    g = Graph([range(n), edges()], format="vertices_and_edges",
-              name=name, immutable=immutable)
+    g = Graph(
+        [range(n), edges()], format="vertices_and_edges", name=name, immutable=immutable
+    )
 
     rep = dict(zip(range(n), tolrep))
     g.set_vertices(rep)
@@ -500,10 +508,15 @@ def OrthogonalArrayBlockGraph(k, n, OA=None, immutable=False):
         ValueError: There is no OA(8,2). Beware, Brouwer's website uses OA(n,k) instead of OA(k,n) !
     """
     if n > 1 and k >= n + 2:
-        raise ValueError("There is no OA({},{}). Beware, Brouwer's website uses OA(n,k) instead of OA(k,n) !".format(k, n))
+        raise ValueError(
+            "There is no OA({},{}). Beware, Brouwer's website uses OA(n,k) instead of OA(k,n) !".format(
+                k, n
+            )
+        )
 
     if OA is None:
         from sage.combinat.designs.orthogonal_arrays import orthogonal_array
+
         OA = orthogonal_array(k, n)
     else:
         assert len(OA) == n**2
@@ -517,10 +530,12 @@ def OrthogonalArrayBlockGraph(k, n, OA=None, immutable=False):
             d[i][x].append(R)
 
     from itertools import chain, combinations
+
     edges = chain(*(combinations(ll, 2) for L in d for ll in L))
 
-    return Graph(edges, format="list_of_edges", immutable=immutable,
-                 name=f"OA({k},{n})")
+    return Graph(
+        edges, format="list_of_edges", immutable=immutable, name=f"OA({k},{n})"
+    )
 
 
 def IntersectionGraph(S, immutable=False):
@@ -559,7 +574,9 @@ def IntersectionGraph(S, immutable=False):
         try:
             hash(s)
         except TypeError:
-            raise TypeError("The elements of S must be hashable, and this one is not: {}".format(s))
+            raise TypeError(
+                "The elements of S must be hashable, and this one is not: {}".format(s)
+            )
 
     ground_set_to_sets = {}
     for s in S:
@@ -569,8 +586,14 @@ def IntersectionGraph(S, immutable=False):
             ground_set_to_sets[x].append(s)
 
     from itertools import chain, combinations
-    edges = chain(*(combinations(set(clique), 2)
-                    for clique in ground_set_to_sets.values()))
 
-    return Graph([S, edges], format="vertices_and_edges",
-                 name="Intersection Graph", immutable=immutable)
+    edges = chain(
+        *(combinations(set(clique), 2) for clique in ground_set_to_sets.values())
+    )
+
+    return Graph(
+        [S, edges],
+        format="vertices_and_edges",
+        name="Intersection Graph",
+        immutable=immutable,
+    )

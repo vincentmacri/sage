@@ -42,6 +42,7 @@ class LatticePosets(Category):
         sage: C = LatticePosets()
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self) -> list:
         r"""
@@ -56,7 +57,6 @@ class LatticePosets(Category):
         return [Posets()]
 
     class ParentMethods:
-
         @abstract_method
         def meet(self, x, y):
             """
@@ -208,8 +208,7 @@ class LatticePosets(Category):
             """
             return self._with_axiom("Extremal")
 
-    Finite = LazyImport('sage.categories.finite_lattice_posets',
-                        'FiniteLatticePosets')
+    Finite = LazyImport('sage.categories.finite_lattice_posets', 'FiniteLatticePosets')
 
     class Extremal(CategoryWithAxiom):
         """
@@ -224,6 +223,7 @@ class LatticePosets(Category):
             [Category of finite lattice posets,
              Category of extremal lattice posets]
         """
+
         class ParentMethods:
             def is_extremal(self) -> bool:
                 """
@@ -248,6 +248,7 @@ class LatticePosets(Category):
             [Category of finite lattice posets,
              Category of trim lattice posets]
         """
+
         @cached_method
         def extra_super_categories(self) -> list:
             r"""
@@ -288,6 +289,7 @@ class LatticePosets(Category):
             [Category of finite lattice posets,
              Category of semidistributive lattice posets]
         """
+
         class ParentMethods:
             def is_semidistributive(self) -> bool:
                 """
@@ -444,15 +446,18 @@ class LatticePosets(Category):
                     Category of facade finite enumerated distributive lattices
                 """
                 from sage.combinat.posets.lattices import LatticePoset
+
                 subset_H, _ = self._hasse_diagram.spine()
                 subset = [self._vertex_to_element(v) for v in subset_H]
 
                 H = self.hasse_diagram()
-                covers = [(x, y) for x in subset for y in H.neighbors_in(x)
-                          if y in subset]
+                covers = [
+                    (x, y) for x in subset for y in H.neighbors_in(x) if y in subset
+                ]
                 cat = LatticePosets().Finite().Distributive()
-                return LatticePoset([subset, covers],
-                                    cover_relations=True, category=cat)
+                return LatticePoset(
+                    [subset, covers], cover_relations=True, category=cat
+                )
 
     class CongruenceUniform(CategoryWithAxiom):
         """
@@ -466,6 +471,7 @@ class LatticePosets(Category):
             [Category of finite lattice posets,
              Category of congruence uniform lattice posets]
         """
+
         @cached_method
         def extra_super_categories(self) -> list:
             r"""
@@ -506,6 +512,7 @@ class LatticePosets(Category):
             [Category of finite distributive lattices,
              Category of stone lattice posets]
         """
+
         @cached_method
         def extra_super_categories(self) -> list:
             r"""
@@ -546,6 +553,7 @@ class LatticePosets(Category):
             [Category of finite lattice posets,
              Category of chain graded lattice posets]
         """
+
         class ParentMethods:
             def is_graded(self) -> bool:
                 """
@@ -560,6 +568,7 @@ class LatticePosets(Category):
 
 
 # the following was moved out of the main class
+
 
 class DistributiveLattices(CategoryWithAxiom):
     """
@@ -580,8 +589,8 @@ class DistributiveLattices(CategoryWithAxiom):
         sage: LatticePosets().Distributive() is DistributiveLattices()
         True
     """
-    _base_category_class_and_axiom = (LatticePosets.Trim,
-                                      "ChainGraded")
+
+    _base_category_class_and_axiom = (LatticePosets.Trim, "ChainGraded")
 
     @cached_method
     def extra_super_categories(self) -> list:

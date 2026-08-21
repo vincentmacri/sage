@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2024-01-07): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2024 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from typing import Self
 
@@ -100,6 +100,7 @@ class BGGDualModule(CombinatorialFreeModule):
 
     - [Humphreys08]_
     """
+
     def __init__(self, module) -> None:
         r"""
         Initialize ``self``.
@@ -122,8 +123,9 @@ class BGGDualModule(CombinatorialFreeModule):
         base_ring = module.base_ring()
         indices = module.indices()
         category = module.category()
-        CombinatorialFreeModule.__init__(self, base_ring, indices, category=category,
-                                         **module.print_options())
+        CombinatorialFreeModule.__init__(
+            self, base_ring, indices, category=category, **module.print_options()
+        )
 
     def _repr_(self):
         r"""
@@ -154,6 +156,7 @@ class BGGDualModule(CombinatorialFreeModule):
             { M_{2 \Lambda_{1}} }^{\vee}
         """
         from sage.misc.latex import latex
+
         return "{" + latex(self._module) + "}^{\\vee}"
 
     def _repr_generator(self, m):
@@ -362,8 +365,10 @@ class BGGDualModule(CombinatorialFreeModule):
         ret = self.monomial(m)
         for b, exp in reversed(p._sorted_items()):
             for _ in range(exp):
-                ret = self.linear_combination((self._lie_algebra_on_basis(b, m), mc)
-                                              for m, mc in ret._monomial_coefficients.items())
+                ret = self.linear_combination(
+                    (self._lie_algebra_on_basis(b, m), mc)
+                    for m, mc in ret._monomial_coefficients.items()
+                )
         return ret
 
     class Element(CombinatorialFreeModule.Element):
@@ -391,7 +396,9 @@ class BGGDualModule(CombinatorialFreeModule):
             # Check for scalars first
             if scalar in P.base_ring():
                 # Don't have this be a super call
-                return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+                return CombinatorialFreeModule.Element._acted_upon_(
+                    self, scalar, self_on_left
+                )
 
             # Check for Lie algebra elements
             try:
@@ -402,26 +409,31 @@ class BGGDualModule(CombinatorialFreeModule):
                 if self_on_left:  # only implemented as a left module
                     return None
                 mc = scalar.monomial_coefficients(copy=False)
-                return P.linear_combination((P._lie_algebra_on_basis(b, m), bc * mc)
-                                            for b, bc in mc.items()
-                                            for m, mc in self._monomial_coefficients.items())
+                return P.linear_combination(
+                    (P._lie_algebra_on_basis(b, m), bc * mc)
+                    for b, bc in mc.items()
+                    for m, mc in self._monomial_coefficients.items()
+                )
 
             # Check for PBW elements
             try:
                 scalar = P._pbw(scalar)
             except (ValueError, TypeError):
                 # Cannot be made into a PBW element, so propagate it up
-                return CombinatorialFreeModule.Element._acted_upon_(self,
-                        scalar, self_on_left)
+                return CombinatorialFreeModule.Element._acted_upon_(
+                    self, scalar, self_on_left
+                )
 
             # We only implement x * self, i.e., as a left module
             if self_on_left:
                 return None
 
             mc = scalar.monomial_coefficients(copy=False)
-            return P.linear_combination((P._pbw_monomial_on_basis(p, m), pc * mc)
-                                        for p, pc in mc.items()
-                                        for m, mc in self._monomial_coefficients.items())
+            return P.linear_combination(
+                (P._pbw_monomial_on_basis(p, m), pc * mc)
+                for p, pc in mc.items()
+                for m, mc in self._monomial_coefficients.items()
+            )
 
 
 #####################################################################
@@ -441,6 +453,7 @@ class SimpleModuleIndices(IndexedFreeAbelianMonoid):
         The current implementation assumes the Lie algebra `\mathfrak{g}`
         is finite dimensional.
     """
+
     # This is only necessary because of the IndexedMonoid.__classcall__.
     @staticmethod
     def __classcall__(cls, simple, prefix='f', **kwds):
@@ -456,7 +469,9 @@ class SimpleModuleIndices(IndexedFreeAbelianMonoid):
             sage: SimpleModuleIndices(L) is L._indices
             True
         """
-        return super(IndexedMonoid, cls).__classcall__(cls, simple, prefix=prefix, **kwds)
+        return super(IndexedMonoid, cls).__classcall__(
+            cls, simple, prefix=prefix, **kwds
+        )
 
     def __init__(self, simple, prefix, category=None, **kwds) -> None:
         r"""
@@ -489,12 +504,19 @@ class SimpleModuleIndices(IndexedFreeAbelianMonoid):
         # ignore the optional 'key' since it only affects CachedRepresentation
         kwds.pop('key', None)
         sorting_key = kwds.pop('sorting_key', self._simple._pbw._monoid_key)
-        IndexedGenerators.__init__(self, self._indices, prefix, sorting_key=sorting_key, **kwds)
+        IndexedGenerators.__init__(
+            self, self._indices, prefix, sorting_key=sorting_key, **kwds
+        )
 
-        self._sorted_supp = sorted(self._g._negative_half_index_set(), key=self._simple._pbw._basis_key,
-                                   reverse=self.print_options()['sorting_reverse'])
+        self._sorted_supp = sorted(
+            self._g._negative_half_index_set(),
+            key=self._simple._pbw._basis_key,
+            reverse=self.print_options()['sorting_reverse'],
+        )
         self._basis = {self.one(): self._simple._ambient.highest_weight_vector()}
-        self._lead_supp_to_index = {self._simple._ambient.highest_weight_vector().leading_support(): self.one()}
+        self._lead_supp_to_index = {
+            self._simple._ambient.highest_weight_vector().leading_support(): self.one()
+        }
         # This is used for iteration and keeps track of the current depth
         self._basis_by_depth = [dict(self._basis)]
         # The basis is given as a list of indices corresponding to basis vectors in self._basis
@@ -784,8 +806,10 @@ class SimpleModuleIndices(IndexedFreeAbelianMonoid):
             from sage.combinat.crystals.monomial_crystals import (
                 CrystalOfNakajimaMonomials,
             )
+
             return CrystalOfNakajimaMonomials(la).cardinality()
         from sage.rings.infinity import infinity
+
         return infinity
 
 
@@ -794,6 +818,7 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
     Return the simple module `L_{\lambda}` as the image of the natural
     morphism `\phi: M_{\lambda} \to M_{\lambda}^{\vee}`.
     """
+
     @staticmethod
     def __classcall_private__(cls, g, weight, *args, **kwds):
         r"""
@@ -843,8 +868,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
         if self._dom_int:
             category = category.FiniteDimensional()
         ModulePrinting.__init__(self, 'u')
-        CombinatorialFreeModule.__init__(self, base_ring, indices, category=category,
-                                         **self._ambient.print_options())
+        CombinatorialFreeModule.__init__(
+            self, base_ring, indices, category=category, **self._ambient.print_options()
+        )
 
     def _repr_(self):
         r"""
@@ -858,7 +884,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
             Simple module with highest weight 2*Lambda[1] of
              Lie algebra of ['A', 1] in the Chevalley basis
         """
-        return "Simple module with highest weight {} of {}".format(self._weight, self._g)
+        return "Simple module with highest weight {} of {}".format(
+            self._weight, self._g
+        )
 
     def _latex_(self):
         r"""
@@ -873,6 +901,7 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
             L_{2 \Lambda_{1}}
         """
         from sage.misc.latex import latex
+
         return "L_{{{}}}".format(latex(self._weight))
 
     def ambient(self):
@@ -919,7 +948,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
               - 1/2*f[-alpha[1] - alpha[2]]*f[-3*alpha[1] - alpha[2]]*v[Lambda[1]]^*
               + f[-2*alpha[1] - alpha[2]]^2*v[Lambda[1]]^*]
         """
-        return self.module_morphism(self._lift_on_basis, codomain=self._ambient, unitriangular="upper")
+        return self.module_morphism(
+            self._lift_on_basis, codomain=self._ambient, unitriangular="upper"
+        )
 
     def retract(self, x):
         r"""
@@ -952,7 +983,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
                 # this will guarantee the computation is correct
                 self._indices.weight_space_basis(mu)
             if ls not in self._indices._lead_supp_to_index:
-                raise ValueError(f"not an element of the simple module of weight {self._weight}")
+                raise ValueError(
+                    f"not an element of the simple module of weight {self._weight}"
+                )
             key = self._indices._lead_supp_to_index[ls]
             vec = self._indices._basis[key]
             coeff = R(data[ls] / vec[ls])
@@ -1026,8 +1059,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
             u[Lambda[1] + Lambda[2]]
         """
         one = self.base_ring().one()
-        return self._from_dict({self._indices.one(): one},
-                               remove_zeros=False, coerce=False)
+        return self._from_dict(
+            {self._indices.one(): one}, remove_zeros=False, coerce=False
+        )
 
     def lie_algebra(self):
         r"""
@@ -1144,7 +1178,9 @@ class SimpleModule(ModulePrinting, CombinatorialFreeModule):
                 2*f[-alpha[1] - alpha[2]]^2*u[Lambda[1] + Lambda[2]]
             """
             # check for scalars first
-            ret = CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+            ret = CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
             if ret is not None:
                 return ret
 
@@ -1162,6 +1198,7 @@ class FiniteDimensionalSimpleModule(SimpleModule):
     """
     A finite dimensional simple module.
     """
+
     def bgg_resolution(self):
         """
         Return the BGG resolution of ``self``.
@@ -1176,4 +1213,5 @@ class FiniteDimensionalSimpleModule(SimpleModule):
              of Lie algebra of ['A', 2] in the Chevalley basis
         """
         from sage.algebras.lie_algebras.bgg_resolution import BGGResolution
+
         return BGGResolution(self)

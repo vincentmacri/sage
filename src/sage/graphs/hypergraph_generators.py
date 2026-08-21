@@ -37,14 +37,22 @@ class HypergraphGenerators:
     A class consisting of constructors for common hypergraphs.
     """
 
-    def nauty(self, number_of_sets, number_of_vertices,
-              multiple_sets=False,
-              vertex_min_degree=None, vertex_max_degree=None,
-              set_max_size=None, set_min_size=None,
-              regular=False, uniform=False,
-              max_intersection=None,
-              connected=False,
-              debug=False, options=''):
+    def nauty(
+        self,
+        number_of_sets,
+        number_of_vertices,
+        multiple_sets=False,
+        vertex_min_degree=None,
+        vertex_max_degree=None,
+        set_max_size=None,
+        set_min_size=None,
+        regular=False,
+        uniform=False,
+        max_intersection=None,
+        connected=False,
+        debug=False,
+        options='',
+    ):
         r"""
         Enumerate hypergraphs up to isomorphism using Nauty.
 
@@ -149,6 +157,7 @@ class HypergraphGenerators:
         import subprocess
         import shlex
         from sage.features.nauty import NautyExecutable
+
         genbgL_path = NautyExecutable("genbgL").absolute_filename()
 
         nauty_input = options
@@ -182,16 +191,21 @@ class HypergraphGenerators:
 
         nauty_input += " " + str(number_of_vertices) + " " + str(number_of_sets) + " "
 
-        with subprocess.Popen(shlex.quote(genbgL_path) + " {0}".format(nauty_input), shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True) as sp:
-
+        with subprocess.Popen(
+            shlex.quote(genbgL_path) + " {0}".format(nauty_input),
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        ) as sp:
             if debug:
                 yield sp.stderr.readline()
 
             gen = sp.stdout
             total = number_of_sets + number_of_vertices
             from sage.graphs.graph import Graph
+
             while True:
                 try:
                     s = next(gen)
@@ -201,7 +215,10 @@ class HypergraphGenerators:
 
                 G = Graph(s[:-1], format='graph6')
 
-                yield tuple(tuple(G.neighbor_iterator(v)) for v in range(number_of_vertices, total))
+                yield tuple(
+                    tuple(G.neighbor_iterator(v))
+                    for v in range(number_of_vertices, total)
+                )
 
     def CompleteUniform(self, n, k):
         r"""
@@ -220,6 +237,7 @@ class HypergraphGenerators:
         """
         from sage.combinat.designs.incidence_structures import IncidenceStructure
         from itertools import combinations
+
         return IncidenceStructure(points=n, blocks=list(combinations(range(n), k)))
 
     def UniformRandomUniform(self, n, k, m):
@@ -286,9 +304,12 @@ class HypergraphGenerators:
         except OverflowError:
             raise OverflowError("binomial({}, {}) too large to be treated".format(n, k))
         except ValueError:
-            raise ValueError("number of edges m must be between 0 and binomial({}, {})".format(n, k))
+            raise ValueError(
+                "number of edges m must be between 0 and binomial({}, {})".format(n, k)
+            )
 
         from sage.combinat.designs.incidence_structures import IncidenceStructure
+
         return IncidenceStructure(points=vertices, blocks=edges)
 
     def BinomialRandomUniform(self, n, k, p):
@@ -338,6 +359,7 @@ class HypergraphGenerators:
             ValueError: the uniformity should be an integer
         """
         from sage.rings.integer import Integer
+
         if n < 0:
             raise ValueError("number of vertices should be nonnegative")
         try:
@@ -355,6 +377,7 @@ class HypergraphGenerators:
 
         import numpy.random as nrn
         from sage.arith.misc import binomial
+
         m = nrn.binomial(binomial(nverts, uniformity), p)
         return hypergraphs.UniformRandomUniform(n, k, m)
 

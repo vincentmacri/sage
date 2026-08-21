@@ -8,7 +8,7 @@ AUTHORS:
 - Travis Scrimshaw: initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2016 Ben Salisbury <ben DOT salisbury AT cmich DOT edu>
 #                          Travis Scrimshaw <tscrimsh AT umn DOT edu>
 #
@@ -17,7 +17,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -102,11 +102,15 @@ class StarCrystal(UniqueRepresentation, Parent):
         Parent.__init__(self, category=HighestWeightCrystals().Infinite())
         self.module_generators = (self(self._Binf.module_generators[0]),)
         t0 = Binf.highest_weight_vector()
-        B = {i: ElementaryCrystal(Binf.cartan_type(),i) for i in self.index_set()}
+        B = {i: ElementaryCrystal(Binf.cartan_type(), i) for i in self.index_set()}
         self._tens = {i: B[i].tensor(Binf) for i in self.index_set()}
         gens = {i: self._tens[i](B[i](0), t0) for i in self.index_set()}
-        self._embedding = {i: Binf.crystal_morphism({t0: gens[i]}) for i in self.index_set()}
-        self._pullback = {i: self._tens[i].crystal_morphism({gens[i]: t0}) for i in self.index_set()}
+        self._embedding = {
+            i: Binf.crystal_morphism({t0: gens[i]}) for i in self.index_set()
+        }
+        self._pullback = {
+            i: self._tens[i].crystal_morphism({gens[i]: t0}) for i in self.index_set()
+        }
 
     def _repr_(self):
         r"""
@@ -122,7 +126,6 @@ class StarCrystal(UniqueRepresentation, Parent):
         return "Star-crystal version of %s" % self._Binf
 
     class Element(ElementWrapper):
-
         def e(self, i):
             r"""
             Return the action of `e_i^*` on ``self``.
@@ -149,7 +152,7 @@ class StarCrystal(UniqueRepresentation, Parent):
             image = P._embedding[i](self.value)
             if image[0].e(i)._m > 0:
                 return None
-            return P(P._pullback[i]( P._tens[i](image[0].e(i),image[1]) ))
+            return P(P._pullback[i](P._tens[i](image[0].e(i), image[1])))
 
         def f(self, i):
             r"""
@@ -175,7 +178,7 @@ class StarCrystal(UniqueRepresentation, Parent):
             """
             P = self.parent()
             image = P._embedding[i](self.value)
-            return P(P._pullback[i]( P._tens[i](image[0].f(i),image[1]) ))
+            return P(P._pullback[i](P._tens[i](image[0].f(i), image[1])))
 
         def weight(self):
             r"""
@@ -286,4 +289,8 @@ class StarCrystal(UniqueRepresentation, Parent):
             """
             P = self.parent().weight_lattice_realization()
             ac = P.simple_coroot(i)
-            return P(self.value.weight()).scalar(ac) + self.epsilon(i) + self.value.epsilon(i)
+            return (
+                P(self.value.weight()).scalar(ac)
+                + self.epsilon(i)
+                + self.value.epsilon(i)
+            )

@@ -91,6 +91,7 @@ class FunctionFieldValuationRing(UniqueRepresentation, Parent):
         sage: p.valuation_ring()
         Valuation ring at Place (x, x*y)
     """
+
     def __init__(self, field, place, category=None) -> None:
         """
         Initialize.
@@ -103,7 +104,9 @@ class FunctionFieldValuationRing(UniqueRepresentation, Parent):
             sage: R = p.valuation_ring()
             sage: TestSuite(R).run()
         """
-        Parent.__init__(self, category=Rings().or_subcategory(category).Infinite(), facade=field)
+        Parent.__init__(
+            self, category=Rings().or_subcategory(category).Infinite(), facade=field
+        )
 
         self._field = field
         self._place = place

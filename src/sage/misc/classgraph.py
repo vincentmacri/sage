@@ -103,8 +103,11 @@ def class_graph(top, depth=5, name_filter=None, classes=None, as_graph=True):
             return classes
         if name_filter is None:
             name_filter = top.__name__
-        children = [item for item in top.__dict__.values()
-                    if inspect.ismodule(item) or inspect.isclass(item)]
+        children = [
+            item
+            for item in top.__dict__.values()
+            if inspect.ismodule(item) or inspect.isclass(item)
+        ]
         depth -= 1
     elif inspect.isclass(top):
         if name_filter is None:
@@ -118,11 +121,13 @@ def class_graph(top, depth=5, name_filter=None, classes=None, as_graph=True):
 
     # Recurse
     for child in children:
-        class_graph(child, depth=depth, name_filter=name_filter,
-                    classes=classes, as_graph=False)
+        class_graph(
+            child, depth=depth, name_filter=name_filter, classes=classes, as_graph=False
+        )
 
     # (first recursive call): construct the graph
     if as_graph:
         from sage.graphs.digraph import DiGraph
+
         return DiGraph(classes)
     return classes

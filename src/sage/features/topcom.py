@@ -25,6 +25,7 @@ class TOPCOMExecutable(Executable):
         sage: TOPCOMExecutable('points2allfinetriangs').is_present()    # optional - topcom
         FeatureTestResult('topcom_points2allfinetriangs', True)
     """
+
     def __init__(self, name):
         r"""
         TESTS::
@@ -33,9 +34,7 @@ class TOPCOMExecutable(Executable):
             sage: isinstance(TOPCOMExecutable('points2finetriangs'), TOPCOMExecutable)
             True
         """
-        Executable.__init__(self, name=f"topcom_{name}",
-                            executable=name,
-                            spkg="topcom")
+        Executable.__init__(self, name=f"topcom_{name}", executable=name, spkg="topcom")
 
 
 class TOPCOM(JoinFeature):
@@ -49,6 +48,7 @@ class TOPCOM(JoinFeature):
         sage: TOPCOM().is_present()                             # optional - topcom
         FeatureTestResult('topcom', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -57,9 +57,11 @@ class TOPCOM(JoinFeature):
             sage: isinstance(TOPCOM(), TOPCOM)
             True
         """
-        JoinFeature.__init__(self, "topcom",
-                             [TOPCOMExecutable(name)
-                              for name in ('points2allfinetriangs',)])
+        JoinFeature.__init__(
+            self,
+            "topcom",
+            [TOPCOMExecutable(name) for name in ('points2allfinetriangs',)],
+        )
 
 
 def all_features():

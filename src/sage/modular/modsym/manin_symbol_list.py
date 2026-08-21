@@ -77,7 +77,7 @@ class ManinSymbolList(Parent):
         """
         self._weight = weight
         self._symbol_list = lst
-        self._index = {x: i for i,x in enumerate(lst)}
+        self._index = {x: i for i, x in enumerate(lst)}
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def _element_constructor_(self, x):
@@ -116,8 +116,9 @@ class ManinSymbolList(Parent):
         """
         if not isinstance(other, ManinSymbolList):
             return NotImplemented
-        return richcmp((self._weight, self._symbol_list),
-                       (other._weight, other._symbol_list), op)
+        return richcmp(
+            (self._weight, self._symbol_list), (other._weight, other._symbol_list), op
+        )
 
     def symbol_list(self):
         """
@@ -392,6 +393,7 @@ class ManinSymbolList_group(ManinSymbolList):
         sage: ManinSymbolList_group(11, 2, P1List(11))
         <sage.modular.modsym.manin_symbol_list.ManinSymbolList_group_with_category object at ...>
     """
+
     def __init__(self, level, weight, syms):
         """
         Constructor for class ManinSymbolList_group.
@@ -417,8 +419,7 @@ class ManinSymbolList_group(ManinSymbolList):
         # The list returned from P1List is guaranteed to be sorted.
         # Thus each list constructed below is also sorted.  This is
         # important since the index function assumes the list is sorted.
-        L = [(i, u, v) for i in range(weight - 2 + 1)
-             for u, v in syms.list()]
+        L = [(i, u, v) for i in range(weight - 2 + 1) for u, v in syms.list()]
         ManinSymbolList.__init__(self, weight, L)
 
     def level(self):
@@ -568,14 +569,14 @@ class ManinSymbolList_group(ManinSymbolList):
         """
         k = self._weight
         i, u, v = self._symbol_list[j]
-        u, v = self.__syms.normalize(v,-u-v)
-        if (k-2) % 2 == 0:
+        u, v = self.__syms.normalize(v, -u - v)
+        if (k - 2) % 2 == 0:
             s = 1
         else:
             s = -1
         z = []
-        a = Integer(k-2-i)
-        for j in range(k-2-i+1):
+        a = Integer(k - 2 - i)
+        for j in range(k - 2 - i + 1):
             m = self.index((j, u, v))
             z.append((m, s * a.binomial(j)))
             s *= -1
@@ -611,15 +612,15 @@ class ManinSymbolList_group(ManinSymbolList):
         """
         k = self._weight
         i, u, v = self._symbol_list[j]
-        u, v = self.__syms.normalize(-u-v,u)
-        if (k-2-i) % 2 == 0:
+        u, v = self.__syms.normalize(-u - v, u)
+        if (k - 2 - i) % 2 == 0:
             s = 1
         else:
             s = -1
         z = []
         a = Integer(i)
-        for j in range(i+1):
-            m = self.index((k-2-i+j, u, v))
+        for j in range(i + 1):
+            m = self.index((k - 2 - i + j, u, v))
             z.append((m, s * a.binomial(j)))
             s *= -1
         return z
@@ -653,13 +654,12 @@ class ManinSymbolList_group(ManinSymbolList):
         """
         a, b, c, d = m[0], m[1], m[2], m[3]
         i, u, v = self._symbol_list[j]
-        P = apply_to_monomial(i, self._weight-2, a, b, c, d)
-        m = self.index((0, u*a+v*c, u*b+v*d))
+        P = apply_to_monomial(i, self._weight - 2, a, b, c, d)
+        m = self.index((0, u * a + v * c, u * b + v * d))
         if m == -1:
             return []
         r = len(self.__syms)
-        return [(m + r*k, P[k]) for k in range(self._weight-2+1)
-                if P[k] != 0]
+        return [(m + r * k, P[k]) for k in range(self._weight - 2 + 1) if P[k] != 0]
 
     def normalize(self, x):
         """
@@ -691,8 +691,8 @@ class ManinSymbolList_group(ManinSymbolList):
              (1, 1, 1),
              (1, 1, 2)]
         """
-        u,v = self.__syms.normalize(x[1],x[2])
-        return (x[0],u,v)
+        u, v = self.__syms.normalize(x[1], x[2])
+        return (x[0], u, v)
 
 
 class ManinSymbolList_gamma0(ManinSymbolList_group):
@@ -717,6 +717,7 @@ class ManinSymbolList_gamma0(ManinSymbolList_group):
         sage: len(m)
         36
     """
+
     def __init__(self, level, weight):
         """
         Constructor for a ModularSymbolList for Gamma_0(N).
@@ -744,7 +745,9 @@ class ManinSymbolList_gamma0(ManinSymbolList_group):
             'Manin Symbol List of weight 2 for Gamma0(11)'
         """
         return "Manin Symbol List of weight %s for Gamma0(%s)" % (
-            self.weight(), self.level())
+            self.weight(),
+            self.level(),
+        )
 
 
 class ManinSymbolList_gamma1(ManinSymbolList_group):
@@ -776,6 +779,7 @@ class ManinSymbolList_gamma1(ManinSymbolList_group):
         sage: m == loads(dumps(m))
         True
     """
+
     def __init__(self, level, weight):
         r"""
         Constructor for a ModularSymbolList for `\Gamma_0(N)`.
@@ -801,7 +805,9 @@ class ManinSymbolList_gamma1(ManinSymbolList_group):
             'Manin Symbol List of weight 4 for Gamma1(11)'
         """
         return "Manin Symbol List of weight %s for Gamma1(%s)" % (
-            self.weight(), self.level())
+            self.weight(),
+            self.level(),
+        )
 
 
 class ManinSymbolList_gamma_h(ManinSymbolList_group):
@@ -836,6 +842,7 @@ class ManinSymbolList_gamma_h(ManinSymbolList_group):
         sage: m == loads(dumps(m))
         True
     """
+
     def __init__(self, group, weight):
         r"""
         Constructor for Manin symbols for `\Gamma_H(N)`.
@@ -848,7 +855,9 @@ class ManinSymbolList_gamma_h(ManinSymbolList_group):
             Manin Symbol List of weight 2 for Congruence Subgroup Gamma_H(117) with H generated by [4]
         """
         self.__group = group
-        ManinSymbolList_group.__init__(self, group.level(), weight, ghlist.GHlist(group))
+        ManinSymbolList_group.__init__(
+            self, group.level(), weight, ghlist.GHlist(group)
+        )
 
     def group(self):
         """
@@ -870,8 +879,7 @@ class ManinSymbolList_gamma_h(ManinSymbolList_group):
             sage: ModularSymbols(GammaH(12, [5]), 2).manin_symbols().__repr__()
             'Manin Symbol List of weight 2 for Congruence Subgroup Gamma_H(12) with H generated by [5]'
         """
-        return "Manin Symbol List of weight %s for %s" % (
-            self.weight(), self.group())
+        return "Manin Symbol List of weight %s for %s" % (self.weight(), self.group())
 
 
 class ManinSymbolList_character(ManinSymbolList):
@@ -896,6 +904,7 @@ class ManinSymbolList_character(ManinSymbolList):
         sage: m == loads(dumps(m))
         True
     """
+
     def __init__(self, character, weight):
         """
         Constructor for :class:`ManinSymbolList_character` objects.
@@ -931,8 +940,7 @@ class ManinSymbolList_character(ManinSymbolList):
         # The list returned from P1List is guaranteed to be sorted.
         # Thus each list constructed below is also sorted.  This is
         # important since the index function assumes the list is sorted.
-        L = [(i, u, v) for i in range(weight - 2 + 1)
-             for u, v in self.__P1.list()]
+        L = [(i, u, v) for i in range(weight - 2 + 1) for u, v in self.__P1.list()]
         self.__list = L
         ManinSymbolList.__init__(self, weight, L)
 
@@ -951,7 +959,10 @@ class ManinSymbolList_character(ManinSymbolList):
             'Manin Symbol List of weight 2 for Gamma1(4) with character [-1]'
         """
         return "Manin Symbol List of weight %s for Gamma1(%s) with character %s" % (
-            self.weight(), self.level(), self.character()._repr_short_())
+            self.weight(),
+            self.level(),
+            self.character()._repr_short_(),
+        )
 
     def level(self):
         """
@@ -1004,13 +1015,12 @@ class ManinSymbolList_character(ManinSymbolList):
         """
         a, b, c, d = m[0], m[1], m[2], m[3]
         i, u, v = self._symbol_list[j]
-        P = apply_to_monomial(i, self._weight-2, a, b, c, d)
-        m, s = self.index((0, u*a+v*c, u*b+v*d))
+        P = apply_to_monomial(i, self._weight - 2, a, b, c, d)
+        m, s = self.index((0, u * a + v * c, u * b + v * d))
         if m == -1 or s == 0:
             return []
         r = len(self.__P1)
-        return [(m + r*k, s*P[k]) for k in range(self._weight-2+1)
-                if P[k] != 0]
+        return [(m + r * k, s * P[k]) for k in range(self._weight - 2 + 1) if P[k] != 0]
 
     def apply_S(self, j):
         """
@@ -1123,15 +1133,15 @@ class ManinSymbolList_character(ManinSymbolList):
         """
         k = self._weight
         i, u, v = self._symbol_list[j]
-        u, v, r = self.__P1.normalize_with_scalar(v,-u-v)
+        u, v, r = self.__P1.normalize_with_scalar(v, -u - v)
         r = self.__character(r)
-        if (k-2) % 2 == 0:
+        if (k - 2) % 2 == 0:
             s = r
         else:
             s = -r
         z = []
-        a = Integer(k-2-i)
-        for j in range(k-2-i+1):
+        a = Integer(k - 2 - i)
+        for j in range(k - 2 - i + 1):
             m, r = self.index((j, u, v))
             z.append((m, s * r * a.binomial(j)))
             s *= -1
@@ -1166,16 +1176,16 @@ class ManinSymbolList_character(ManinSymbolList):
         """
         k = self._weight
         i, u, v = self._symbol_list[j]
-        u, v, r = self.__P1.normalize_with_scalar(-u-v,u)
+        u, v, r = self.__P1.normalize_with_scalar(-u - v, u)
         r = self.__character(r)
-        if (k-2-i) % 2 == 0:
+        if (k - 2 - i) % 2 == 0:
             s = r
         else:
             s = -r
         z = []
         a = Integer(i)
-        for j in range(i+1):
-            m, r = self.index((k-2-i+j, u, v))
+        for j in range(i + 1):
+            m, r = self.index((k - 2 - i + j, u, v))
             z.append((m, s * r * a.binomial(j)))
             s *= -1
         return z
@@ -1269,19 +1279,33 @@ class ManinSymbolList_character(ManinSymbolList):
              ((2, 1, 3), 1),
              ((2, 2, 1), 1)]
         """
-        u,v,s = self.__P1.normalize_with_scalar(x[1],x[2])
-        return (x[0],u,v), self.__character(s)
+        u, v, s = self.__P1.normalize_with_scalar(x[1], x[2])
+        return (x[0], u, v), self.__character(s)
 
 
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList', ManinSymbolList)
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList_group', ManinSymbolList_group)
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList_gamma0', ManinSymbolList_gamma0)
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList_gamma1', ManinSymbolList_gamma1)
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList_gamma_h', ManinSymbolList_gamma_h)
-register_unpickle_override('sage.modular.modsym.manin_symbols',
-                           'ManinSymbolList_character', ManinSymbolList_character)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols', 'ManinSymbolList', ManinSymbolList
+)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols', 'ManinSymbolList_group', ManinSymbolList_group
+)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols',
+    'ManinSymbolList_gamma0',
+    ManinSymbolList_gamma0,
+)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols',
+    'ManinSymbolList_gamma1',
+    ManinSymbolList_gamma1,
+)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols',
+    'ManinSymbolList_gamma_h',
+    ManinSymbolList_gamma_h,
+)
+register_unpickle_override(
+    'sage.modular.modsym.manin_symbols',
+    'ManinSymbolList_character',
+    ManinSymbolList_character,
+)

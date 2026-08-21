@@ -317,10 +317,9 @@ class LiE(ExtraTabCompletion, Expect):
     using LiE (and get the result back as a string).
     """
 
-    def __init__(self,
-                 maxread=None, script_subdirectory=None,
-                 logfile=None,
-                 server=None):
+    def __init__(
+        self, maxread=None, script_subdirectory=None, logfile=None, server=None
+    ):
         """
         EXAMPLES::
 
@@ -328,36 +327,30 @@ class LiE(ExtraTabCompletion, Expect):
             sage: lie == loads(dumps(lie))
             True
         """
-        Expect.__init__(self,
-
-                        # The capitalized version of this is used for printing.
-                        name='LiE',
-
-                        # This is regexp of the input prompt.  If you can change
-                        # it to be very obfuscated that would be better.   Even
-                        # better is to use sequence numbers.
-                        prompt='> ',
-
-                        # This is the command that starts up your program
-                        command="bash lie",
-
-                        server=server,
-                        script_subdirectory=script_subdirectory,
-
-                        # If this is true, then whenever the user presses Control-C to
-                        # interrupt a calculation, the whole interface is restarted.
-                        restart_on_ctrlc=False,
-
-                        # If true, print out a message when starting
-                        # up the command when you first send a command
-                        # to this interface.
-                        verbose_start=False,
-
-                        logfile=logfile,
-
-                        # If an input is longer than this number of characters, then
-                        # try to switch to outputting to a file.
-                        eval_using_file_cutoff=1024)
+        Expect.__init__(
+            self,
+            # The capitalized version of this is used for printing.
+            name='LiE',
+            # This is regexp of the input prompt.  If you can change
+            # it to be very obfuscated that would be better.   Even
+            # better is to use sequence numbers.
+            prompt='> ',
+            # This is the command that starts up your program
+            command="bash lie",
+            server=server,
+            script_subdirectory=script_subdirectory,
+            # If this is true, then whenever the user presses Control-C to
+            # interrupt a calculation, the whole interface is restarted.
+            restart_on_ctrlc=False,
+            # If true, print out a message when starting
+            # up the command when you first send a command
+            # to this interface.
+            verbose_start=False,
+            logfile=logfile,
+            # If an input is longer than this number of characters, then
+            # try to switch to outputting to a file.
+            eval_using_file_cutoff=1024,
+        )
 
         self._seq = 0
 
@@ -386,6 +379,7 @@ class LiE(ExtraTabCompletion, Expect):
              'write']
         """
         import sage.misc.persist
+
         if use_disk_cache:
             try:
                 trait_dict = sage.misc.persist.load(COMMANDS_CACHE)
@@ -421,7 +415,9 @@ class LiE(ExtraTabCompletion, Expect):
 
                 # Do not add not completions that do not start with an
                 # alphabetical character or that contain 'silence'
-                if len(line) > 1 and (not line[1].isalpha() or line.find('silence') != -1):
+                if len(line) > 1 and (
+                    not line[1].isalpha() or line.find('silence') != -1
+                ):
                     help[prev_command] = help.get(prev_command, "") + help_text
                     help_text = ""
                     prev_command = ""
@@ -435,7 +431,7 @@ class LiE(ExtraTabCompletion, Expect):
                 if line[i + 1] == ")":
                     t = 'vid'
                 else:
-                    t = line[i + 1:i + 4]
+                    t = line[i + 1 : i + 4]
 
                 # Save the help text for the command
                 help[prev_command] = help.get(prev_command, "") + help_text
@@ -635,7 +631,9 @@ class LiE(ExtraTabCompletion, Expect):
         except KeyError:
             return "Could not find help for " + command
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False):
+    def _eval_line(
+        self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False
+    ):
         """
         EXAMPLES::
 
@@ -648,11 +646,18 @@ class LiE(ExtraTabCompletion, Expect):
             Argument types do not match in call. Types are: diagram(bin).
             Valid argument types are for instance: diagram(grp).
         """
-        out = Expect._eval_line(self, line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt)
+        out = Expect._eval_line(
+            self, line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt
+        )
         # Check to see if an error has occurred
-        err = max(out.find("\n(in"), out.find('not defined'), out.find('Argument types'))
+        err = max(
+            out.find("\n(in"), out.find('not defined'), out.find('Argument types')
+        )
         if err != -1:
-            raise RuntimeError("An error occurred running a LiE command:\n%s" % (out.replace('\r\n', '\n')))
+            raise RuntimeError(
+                "An error occurred running a LiE command:\n%s"
+                % (out.replace('\r\n', '\n'))
+            )
         return out
 
     def eval(self, code, strip=True, **kwds):
@@ -719,7 +724,15 @@ class LiE(ExtraTabCompletion, Expect):
         # If function just prints something on the screen rather than
         # returning an object, then we return an AsciiArtString rather
         # than a LiEElement
-        if function in ['diagram', 'setdefault', 'print_tab', 'type', 'factor', 'void', 'gcol']:
+        if function in [
+            'diagram',
+            'setdefault',
+            'print_tab',
+            'type',
+            'factor',
+            'void',
+            'gcol',
+        ]:
             args, kwds = self._convert_args_kwds(args, kwds)
             cmd = "%s(%s)" % (function, ",".join(s.name() for s in args))
             return AsciiArtString(self.eval(cmd))
@@ -768,7 +781,7 @@ class LiEElement(ExtraTabCompletion, ExpectElement):
         """
         t = self.parent().eval('type(%s)' % self._name)
         i = t.find(':')
-        return t[i + 1:].strip()
+        return t[i + 1 :].strip()
 
     def _matrix_(self, R=None):
         """
@@ -812,6 +825,7 @@ class LiEElement(ExtraTabCompletion, ExpectElement):
             raise ValueError("cannot convert Lie groups to native Sage objects")
         if t == 'mat':
             import sage.matrix.constructor
+
             data = sage_eval(str(self).replace('\n', '').strip())
             return sage.matrix.constructor.matrix(data)
         if t == 'pol':
@@ -844,8 +858,8 @@ class LiEElement(ExtraTabCompletion, ExpectElement):
             for term in terms:
                 xpos = term.find('X')
                 coef = eval(term[:xpos].strip())
-                exps = eval(term[xpos + 1:].strip())
-                monomial = prod([x[i]**exps[i] for i in range(nvars)])
+                exps = eval(term[xpos + 1 :].strip())
+                monomial = prod([x[i] ** exps[i] for i in range(nvars)])
                 pol += coef * monomial
 
             return pol
@@ -914,8 +928,11 @@ def lie_console():
         ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%lie magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%lie magics instead.'
+        )
     os.system('bash `which lie`')
 
 

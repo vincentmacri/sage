@@ -128,10 +128,12 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 from .partition_tuple import PartitionTuple
-from .tableau_tuple import (StandardTableaux_residue,
-                            StandardTableaux_residue_shape,
-                            RowStandardTableauTuples_residue,
-                            RowStandardTableauTuples_residue_shape)
+from .tableau_tuple import (
+    StandardTableaux_residue,
+    StandardTableaux_residue_shape,
+    RowStandardTableauTuples_residue,
+    RowStandardTableauTuples_residue_shape,
+)
 
 # -------------------------------------------------
 # Residue sequences
@@ -139,8 +141,7 @@ from .tableau_tuple import (StandardTableaux_residue,
 
 
 # needed for __classcall_private__
-class ResidueSequence(ClonableArray,
-        metaclass=InheritComparisonClasscallMetaclass):
+class ResidueSequence(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     A residue sequence.
 
@@ -211,6 +212,7 @@ class ResidueSequence(ClonableArray,
         sage: from sage.combinat.tableau_residues import ResidueSequence
         sage: TestSuite( ResidueSequence(3,(0,0,1), [0,1,2])).run(skip='_test_pickling')
     """
+
     @staticmethod
     def __classcall_private__(cls, e, multicharge, residues=None, check=True):
         r"""
@@ -235,7 +237,9 @@ class ResidueSequence(ClonableArray,
             residues = multicharge
             multicharge = (0,)
         multicharge = tuple(multicharge)
-        return ResidueSequences(e, multicharge).element_class(ResidueSequences(e, multicharge), tuple(residues), check)
+        return ResidueSequences(e, multicharge).element_class(
+            ResidueSequences(e, multicharge), tuple(residues), check
+        )
 
     def __init__(self, parent, residues, check):
         r"""
@@ -303,9 +307,12 @@ class ResidueSequence(ClonableArray,
             '3-residue sequence (0,0,1,1,2,2,0,0) and multicharge (0,0,1)'
         """
         string = '{e}-residue sequence ({res}) {join} multicharge ({charge})'
-        return string.format(e=self.quantum_characteristic(),
-                             res=','.join('%s' % r for r in self), join=join,
-                             charge=','.join('%s' % r for r in self.multicharge()))
+        return string.format(
+            e=self.quantum_characteristic(),
+            res=','.join('%s' % r for r in self),
+            join=join,
+            charge=','.join('%s' % r for r in self.multicharge()),
+        )
 
     def __getitem__(self, k):
         r"""
@@ -370,8 +377,9 @@ class ResidueSequence(ClonableArray,
             sage: ResidueSequence(3,(0,0,1),[0,0,1,1,2,2,3,3]).restrict(4)
             3-residue sequence (0,0,1,1) with multicharge (0,0,1)
         """
-        return ResidueSequence(self.quantum_characteristic(),
-                               self.multicharge(), self.residues()[:m])
+        return ResidueSequence(
+            self.quantum_characteristic(), self.multicharge(), self.residues()[:m]
+        )
 
     def restrict_row(self, cell, row):
         r"""
@@ -392,7 +400,7 @@ class ResidueSequence(ClonableArray,
             3-residue sequence (2,0,1,0,1) with multicharge (1,0)
         """
         residues = self.residues()  # residue sequence
-        residues.reverse()          # reversed residue sequence
+        residues.reverse()  # reversed residue sequence
 
         if residues[0] + row == residues[0]:
             # if the residues in the two rows are the same we do not
@@ -402,20 +410,17 @@ class ResidueSequence(ClonableArray,
         # determine the sets of residues, one_res and two_res, that need to be
         # interchanged in order to swap the corresponding rows
         row_len = cell[-1]  # length of the row being swapped
-        one_res = [0]       # last row of tableau will move
-        two_res = [0]       # will prune this entry later
+        one_res = [0]  # last row of tableau will move
+        two_res = [0]  # will prune this entry later
         try:
             for c in range(1, row_len + 1):
                 # residues decrease by 1 from right to left in each row
-                one_res.append(residues.index(residues[0] - c,
-                                              one_res[c - 1] + 1))
+                one_res.append(residues.index(residues[0] - c, one_res[c - 1] + 1))
             for c in range(row_len + 1):
-                two_res.append(residues.index(residues[0] - c + row,
-                                              two_res[c] + 1))
+                two_res.append(residues.index(residues[0] - c + row, two_res[c] + 1))
                 while two_res[-1] in one_res:
                     # entries in one_res and two_res must be disjoint
-                    two_res[-1] = residues.index(residues[0] - c + row,
-                                                 two_res[-1] + 1)
+                    two_res[-1] = residues.index(residues[0] - c + row, two_res[-1] + 1)
         except ValueError:
             return None
 
@@ -426,9 +431,9 @@ class ResidueSequence(ClonableArray,
             residues[two_res[c + 1]] -= row  # jump over two_res[0]
 
         # remove the first residue, reverse the order and return
-        return ResidueSequence(self.quantum_characteristic(),
-                               self.multicharge(),
-                               residues[1:][::-1])
+        return ResidueSequence(
+            self.quantum_characteristic(), self.multicharge(), residues[1:][::-1]
+        )
 
     def swap_residues(self, i, j):
         r"""
@@ -468,7 +473,9 @@ class ResidueSequence(ClonableArray,
                 # __setitem__ is still 0-based so we need to renormalise the LHS
                 swap[i - 1], swap[j - 1] = self[j], self[i]
             except IndexError:
-                raise IndexError('%s and %s must be between 1 and %s' % (i, j, self.size()))
+                raise IndexError(
+                    '%s and %s must be between 1 and %s' % (i, j, self.size())
+                )
         return swap
 
     def standard_tableaux(self, shape=None):
@@ -500,8 +507,7 @@ class ResidueSequence(ClonableArray,
         """
         if shape is None:
             return StandardTableaux_residue(residue=self)
-        return StandardTableaux_residue_shape(residue=self,
-                                              shape=PartitionTuple(shape))
+        return StandardTableaux_residue_shape(residue=self, shape=PartitionTuple(shape))
 
     def row_standard_tableaux(self, shape=None):
         r"""
@@ -532,7 +538,9 @@ class ResidueSequence(ClonableArray,
         """
         if shape is None:
             return RowStandardTableauTuples_residue(residue=self)
-        return RowStandardTableauTuples_residue_shape(residue=self, shape=PartitionTuple(shape))
+        return RowStandardTableauTuples_residue_shape(
+            residue=self, shape=PartitionTuple(shape)
+        )
 
     def negative(self):
         r"""
@@ -549,8 +557,11 @@ class ResidueSequence(ClonableArray,
             sage: ResidueSequence(3,[0,0,1],[0,0,1,1,2,2,3,3]).negative()
             3-residue sequence (0,0,2,2,1,1,0,0) with multicharge (0,0,1)
         """
-        return ResidueSequence(self.quantum_characteristic(), self.multicharge(),
-                               (self.base_ring()(-i) for i in self))
+        return ResidueSequence(
+            self.quantum_characteristic(),
+            self.multicharge(),
+            (self.base_ring()(-i) for i in self),
+        )
 
     def block(self):
         r"""
@@ -741,8 +752,9 @@ class ResidueSequences(UniqueRepresentation, Parent):
             sage: ResidueSequences(2, (0,1,2,3))
             2-residue sequences with multicharge (0, 1, 0, 1)
         """
-        return '{}-residue sequences with multicharge {}'.format(self._quantum_characteristic,
-                                                                 self._multicharge)
+        return '{}-residue sequences with multicharge {}'.format(
+            self._quantum_characteristic, self._multicharge
+        )
 
     def _an_element_(self):
         r"""
@@ -853,4 +865,6 @@ class ResidueSequences(UniqueRepresentation, Parent):
             3-residue sequence (2,0,1,1,2,2,0,0) with multicharge (0,0,1)
         """
         if any(r not in self._base_ring for r in element):
-            raise ValueError('not a {}-residue sequence'.format(self._quantum_characteristic))
+            raise ValueError(
+                'not a {}-residue sequence'.format(self._quantum_characteristic)
+            )

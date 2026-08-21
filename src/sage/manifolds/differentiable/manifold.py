@@ -635,9 +635,20 @@ class DifferentiableManifold(TopologicalManifold):
 
         sage: TestSuite(M).run()
     """
-    def __init__(self, n, name, field, structure, base_manifold=None,
-                 diff_degree=infinity, latex_name=None, start_index=0,
-                 category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        field,
+        structure,
+        base_manifold=None,
+        diff_degree=infinity,
+        latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a differentiable manifold.
 
@@ -677,21 +688,29 @@ class DifferentiableManifold(TopologicalManifold):
                 else:
                     category = Manifolds(field_c).Differentiable()
         elif not isinstance(base_manifold, DifferentiableManifold):
-            raise TypeError("the argument 'base_manifold' must be a " +
-                            "differentiable manifold")
-        TopologicalManifold.__init__(self, n, name, field, structure,
-                                     base_manifold=base_manifold,
-                                     latex_name=latex_name,
-                                     start_index=start_index,
-                                     category=category)
+            raise TypeError(
+                "the argument 'base_manifold' must be a " + "differentiable manifold"
+            )
+        TopologicalManifold.__init__(
+            self,
+            n,
+            name,
+            field,
+            structure,
+            base_manifold=base_manifold,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
         # The degree of differentiability:
         if diff_degree == infinity:
             self._diff_degree = infinity
         elif not isinstance(diff_degree, (int, Integer)):
             raise TypeError("the argument 'diff_degree' must be an integer")
         elif diff_degree < 1:
-            raise ValueError("the argument 'diff_degree' must be a positive " +
-                             "integer")
+            raise ValueError(
+                "the argument 'diff_degree' must be a positive " + "integer"
+            )
         else:
             self._diff_degree = diff_degree
         # Vector frames:
@@ -704,14 +723,14 @@ class DifferentiableManifold(TopologicalManifold):
         # List of vector frames that individually cover self, i.e. whose
         # domains are self (if non-empty, self is parallelizable):
         self._covering_frames = []
-        self._parallelizable_parts = set() # parallelizable subsets contained in self
-        self._frame_changes = {} # dictionary of changes of frames
+        self._parallelizable_parts = set()  # parallelizable subsets contained in self
+        self._frame_changes = {}  # dictionary of changes of frames
         # Dictionary of vector field modules along self
         # (keys = diff. map from self to an open set (possibly the identity map))
-        self._vector_field_modules = {} # dict of all established vector field
-                                        # modules
-        self._tensor_bundles = {} # dict of dict of all established tensor
-                                  # bundles
+        self._vector_field_modules = {}  # dict of all established vector field
+        # modules
+        self._tensor_bundles = {}  # dict of dict of all established tensor
+        # bundles
 
     def diff_degree(self):
         r"""
@@ -828,11 +847,16 @@ class DifferentiableManifold(TopologicalManifold):
             sage: M((-1/2,1/3)) in U
             True
         """
-        resu = DifferentiableManifold(self._dim, name, self._field,
-                                      self._structure, base_manifold=self._manifold,
-                                      diff_degree=self._diff_degree,
-                                      latex_name=latex_name,
-                                      start_index=self._sindex)
+        resu = DifferentiableManifold(
+            self._dim,
+            name,
+            self._field,
+            self._structure,
+            base_manifold=self._manifold,
+            diff_degree=self._diff_degree,
+            latex_name=latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:
@@ -866,8 +890,15 @@ class DifferentiableManifold(TopologicalManifold):
         super()._init_open_subset(resu, coord_def=coord_def)
         # update vector frames and change of frames
 
-    def diff_map(self, codomain, coord_functions=None, chart1=None,
-                       chart2=None, name=None, latex_name=None):
+    def diff_map(
+        self,
+        codomain,
+        coord_functions=None,
+        chart1=None,
+        chart2=None,
+        name=None,
+        latex_name=None,
+    ):
         r"""
         Define a differentiable map between the current differentiable manifold
         and a differentiable manifold over the same topological field.
@@ -962,18 +993,29 @@ class DifferentiableManifold(TopologicalManifold):
             if chart1 is None:
                 chart1 = self._def_chart
             elif chart1 not in self._atlas:
-                raise ValueError("{} is not a chart ".format(chart1) +
-                                 "defined on the {}".format(self))
+                raise ValueError(
+                    "{} is not a chart ".format(chart1)
+                    + "defined on the {}".format(self)
+                )
             if chart2 is None:
                 chart2 = codomain._def_chart
             elif chart2 not in codomain._atlas:
-                raise ValueError("{} is not a chart ".format(chart2) +
-                                 " defined on the {}".format(codomain))
+                raise ValueError(
+                    "{} is not a chart ".format(chart2)
+                    + " defined on the {}".format(codomain)
+                )
             coord_functions = {(chart1, chart2): coord_functions}
         return homset(coord_functions, name=name, latex_name=latex_name)
 
-    def diffeomorphism(self, codomain=None, coord_functions=None, chart1=None,
-                       chart2=None, name=None, latex_name=None):
+    def diffeomorphism(
+        self,
+        codomain=None,
+        coord_functions=None,
+        chart1=None,
+        chart2=None,
+        name=None,
+        latex_name=None,
+    ):
         r"""
         Define a diffeomorphism between the current manifold and another one.
 
@@ -1060,16 +1102,21 @@ class DifferentiableManifold(TopologicalManifold):
             if chart1 is None:
                 chart1 = self._def_chart
             elif chart1 not in self._atlas:
-                raise ValueError("{} is not a chart ".format(chart1) +
-                                 "defined on the {}".format(self))
+                raise ValueError(
+                    "{} is not a chart ".format(chart1)
+                    + "defined on the {}".format(self)
+                )
             if chart2 is None:
                 chart2 = codomain._def_chart
             elif chart2 not in codomain._atlas:
-                raise ValueError("{} is not a chart ".format(chart2) +
-                                 " defined on the {}".format(codomain))
+                raise ValueError(
+                    "{} is not a chart ".format(chart2)
+                    + " defined on the {}".format(codomain)
+                )
             coord_functions = {(chart1, chart2): coord_functions}
-        return homset(coord_functions, name=name, latex_name=latex_name,
-                      is_isomorphism=True)
+        return homset(
+            coord_functions, name=name, latex_name=latex_name, is_isomorphism=True
+        )
 
     def vector_bundle(self, rank, name, field='real', latex_name=None):
         r"""
@@ -1100,8 +1147,10 @@ class DifferentiableManifold(TopologicalManifold):
         from sage.manifolds.differentiable.vector_bundle import (
             DifferentiableVectorBundle,
         )
-        return DifferentiableVectorBundle(rank, name, self, field=field,
-                                          latex_name=latex_name)
+
+        return DifferentiableVectorBundle(
+            rank, name, self, field=field, latex_name=latex_name
+        )
 
     def tangent_bundle(self, dest_map=None):
         r"""
@@ -1210,14 +1259,17 @@ class DifferentiableManifold(TopologicalManifold):
             dest_map = self.identity_map()
         if dest_map not in self._tensor_bundles:
             from sage.manifolds.differentiable.vector_bundle import TensorBundle
-            self._tensor_bundles[dest_map] = {(k, l):
-                                              TensorBundle(self, k, l,
-                                                           dest_map=dest_map)}
+
+            self._tensor_bundles[dest_map] = {
+                (k, l): TensorBundle(self, k, l, dest_map=dest_map)
+            }
         else:
             if (k, l) not in self._tensor_bundles[dest_map]:
                 from sage.manifolds.differentiable.vector_bundle import TensorBundle
-                self._tensor_bundles[dest_map][(k, l)] = TensorBundle(self, k,
-                                                           l, dest_map=dest_map)
+
+                self._tensor_bundles[dest_map][(k, l)] = TensorBundle(
+                    self, k, l, dest_map=dest_map
+                )
         return self._tensor_bundles[dest_map][(k, l)]
 
     def vector_field_module(
@@ -1371,16 +1423,19 @@ class DifferentiableManifold(TopologicalManifold):
             VectorFieldFreeModule,
             VectorFieldModule,
         )
+
         if dest_map is None:
             dest_map = self.identity_map()
         codomain = dest_map._codomain
         if dest_map not in self._vector_field_modules:
             if codomain.is_manifestly_parallelizable() or force_free:
-                self._vector_field_modules[dest_map] = \
-                                 VectorFieldFreeModule(self, dest_map=dest_map)
+                self._vector_field_modules[dest_map] = VectorFieldFreeModule(
+                    self, dest_map=dest_map
+                )
             else:
-                self._vector_field_modules[dest_map] = \
-                                     VectorFieldModule(self, dest_map=dest_map)
+                self._vector_field_modules[dest_map] = VectorFieldModule(
+                    self, dest_map=dest_map
+                )
         return self._vector_field_modules[dest_map]
 
     def tensor_field_module(self, tensor_type, dest_map=None):
@@ -1884,8 +1939,9 @@ class DifferentiableManifold(TopologicalManifold):
         antisym = kwargs.pop('antisym', None)
         dest_map = kwargs.pop('dest_map', None)
         vmodule = self.vector_field_module(dest_map)
-        resu = vmodule.tensor((k, l), name=name, latex_name=latex_name,
-                              sym=sym, antisym=antisym)
+        resu = vmodule.tensor(
+            (k, l), name=name, latex_name=latex_name, sym=sym, antisym=antisym
+        )
         if len(args) > 2:
             # Some components are to be initialized
             resu._init_components(args[2], **kwargs)
@@ -2046,8 +2102,7 @@ class DifferentiableManifold(TopologicalManifold):
         latex_name = kwargs.pop('latex_name', None)
         dest_map = kwargs.pop('dest_map', None)
         vmodule = self.vector_field_module(dest_map)
-        resu = vmodule.tensor((0, 2), name=name, latex_name=latex_name,
-                              sym=(0,1))
+        resu = vmodule.tensor((0, 2), name=name, latex_name=latex_name, sym=(0, 1))
         if comp:
             # Some components are to be initialized
             resu._init_components(*comp, **kwargs)
@@ -2151,8 +2206,9 @@ class DifferentiableManifold(TopologicalManifold):
         latex_name = kwargs.pop('latex_name', None)
         dest_map = kwargs.pop('dest_map', None)
         vmodule = self.vector_field_module(dest_map)
-        resu = vmodule.alternating_contravariant_tensor(degree, name=name,
-                                                        latex_name=latex_name)
+        resu = vmodule.alternating_contravariant_tensor(
+            degree, name=name, latex_name=latex_name
+        )
         if len(args) > 1:
             # Some components are to be initialized
             resu._init_components(args[1], **kwargs)
@@ -2254,8 +2310,7 @@ class DifferentiableManifold(TopologicalManifold):
         latex_name = kwargs.pop('latex_name', None)
         dest_map = kwargs.pop('dest_map', None)
         vmodule = self.vector_field_module(dest_map)
-        resu = vmodule.alternating_form(degree, name=name,
-                                        latex_name=latex_name)
+        resu = vmodule.alternating_form(degree, name=name, latex_name=latex_name)
         if len(args) > 1:
             # Some components are to be initialized
             resu._init_components(args[1], **kwargs)
@@ -2699,6 +2754,7 @@ class DifferentiableManifold(TopologicalManifold):
              Coordinate frame (V, (∂/∂u,∂/∂v))]
         """
         from sage.manifolds.differentiable.vectorframe import VectorFrame
+
         chart_type = self._structure.chart
         if isinstance(orientation, chart_type):
             orientation = [orientation.frame()]
@@ -2710,16 +2766,19 @@ class DifferentiableManifold(TopologicalManifold):
             else:
                 orientation = list(orientation)
         else:
-            raise TypeError("orientation must be a chart/frame or a "
-                            "list/tuple of charts/frames")
+            raise TypeError(
+                "orientation must be a chart/frame or a list/tuple of charts/frames"
+            )
         dom_union = None
         for frame in orientation:
             if not isinstance(frame, VectorFrame):
                 raise ValueError("orientation must consist of vector frames")
             dom = frame._domain
             if not dom.is_subset(self):
-                raise ValueError("{} must be defined ".format(frame) +
-                                 "on a subset of {}".format(self))
+                raise ValueError(
+                    "{} must be defined ".format(frame)
+                    + "on a subset of {}".format(self)
+                )
             if dom_union is not None:
                 dom_union = dom.union(dom_union)
             else:
@@ -2873,6 +2932,7 @@ class DifferentiableManifold(TopologicalManifold):
             Vector frame (M, (e_0,e_1))
         """
         from sage.manifolds.differentiable.vectorframe import VectorFrame
+
         if not isinstance(frame, VectorFrame):
             raise TypeError("{} is not a vector frame".format(frame))
         if not frame._domain.is_subset(self):
@@ -2942,12 +3002,15 @@ class DifferentiableManifold(TopologicalManifold):
             True
         """
         if (frame1, frame2) not in self._frame_changes:
-            raise ValueError("the change of frame from {} to {}".format(frame1, frame2) +
-                             " has not been defined on the {}".format(self))
+            raise ValueError(
+                "the change of frame from {} to {}".format(frame1, frame2)
+                + " has not been defined on the {}".format(self)
+            )
         return self._frame_changes[(frame1, frame2)]
 
-    def set_change_of_frame(self, frame1, frame2, change_of_frame,
-                         compute_inverse=True):
+    def set_change_of_frame(
+        self, frame1, frame2, change_of_frame, compute_inverse=True
+    ):
         r"""
         Relate two vector frames by an automorphism.
 
@@ -2991,15 +3054,20 @@ class DifferentiableManifold(TopologicalManifold):
         from sage.manifolds.differentiable.automorphismfield import (
             AutomorphismFieldParal,
         )
+
         fmodule = frame1._fmodule
         if frame2._fmodule != fmodule:
-            raise ValueError("the two frames are not defined on the same " +
-                             "vector field module")
+            raise ValueError(
+                "the two frames are not defined on the same " + "vector field module"
+            )
         if not isinstance(change_of_frame, AutomorphismFieldParal):
-            raise TypeError("the argument change_of_frame must be some " +
-                            "instance of AutomorphismFieldParal")
-        fmodule.set_change_of_basis(frame1, frame2, change_of_frame,
-                                    compute_inverse=compute_inverse)
+            raise TypeError(
+                "the argument change_of_frame must be some "
+                + "instance of AutomorphismFieldParal"
+            )
+        fmodule.set_change_of_basis(
+            frame1, frame2, change_of_frame, compute_inverse=compute_inverse
+        )
         for sdom in self.open_supersets():
             sdom._frame_changes[(frame1, frame2)] = change_of_frame
         if compute_inverse:
@@ -3145,6 +3213,7 @@ class DifferentiableManifold(TopologicalManifold):
             :class:`~sage.manifolds.differentiable.vectorframe.VectorFrame`.
         """
         from sage.manifolds.differentiable.vectorframe import VectorFrame
+
         # Input processing
         symbol = None
         vector_fields = None
@@ -3154,8 +3223,7 @@ class DifferentiableManifold(TopologicalManifold):
         if n_args == 2:
             vector_fields = args[1]
         elif n_args > 2:
-            raise TypeError("vector_frame() takes at most two positional "
-                            "arguments")
+            raise TypeError("vector_frame() takes at most two positional arguments")
         latex_symbol = kwargs.pop('latex_symbol', None)
         dest_map = kwargs.pop('dest_map', None)
         from_frame = kwargs.pop('from_frame', None)
@@ -3169,22 +3237,29 @@ class DifferentiableManifold(TopologicalManifold):
             if dest_map and dest_map is not dest_map0:
                 raise ValueError("incompatible values of destination maps")
             dest_map = dest_map0
-        resu = VectorFrame(self.vector_field_module(dest_map=dest_map,
-                                                    force_free=True),
-                           symbol=symbol, latex_symbol=latex_symbol,
-                           from_frame=from_frame, indices=indices,
-                           latex_indices=latex_indices, symbol_dual=symbol_dual,
-                           latex_symbol_dual=latex_symbol_dual)
+        resu = VectorFrame(
+            self.vector_field_module(dest_map=dest_map, force_free=True),
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            from_frame=from_frame,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         if vector_fields:
             linked = False
             try:
                 resu._init_from_family(vector_fields)
             except ArithmeticError as err:
-                linked = str(err) in ["non-invertible matrix",
-                                      "input matrix must be nonsingular"]
+                linked = str(err) in [
+                    "non-invertible matrix",
+                    "input matrix must be nonsingular",
+                ]
             if linked:
-                raise ValueError("the provided vector fields are not "
-                                 "linearly independent")
+                raise ValueError(
+                    "the provided vector fields are not linearly independent"
+                )
             # Adding the newly generated changes of frame to the
             # dictionary _frame_changes of self and its supersets:
             for frame_pair, chge in resu._fmodule._basis_changes.items():
@@ -3401,14 +3476,14 @@ class DifferentiableManifold(TopologicalManifold):
         """
         from sage.manifolds.differentiable.tangent_space import TangentSpace
         from sage.manifolds.point import ManifoldPoint
+
         if not isinstance(point, ManifoldPoint):
             raise TypeError("{} is not a manifold point".format(point))
         if point not in self:
             raise ValueError("{} is not a point on the {}".format(point, self))
         return TangentSpace(point, base_ring=base_ring)
 
-    def curve(self, coord_expression, param, chart=None,
-              name=None, latex_name=None):
+    def curve(self, coord_expression, param, chart=None, name=None, latex_name=None):
         r"""
         Define a differentiable curve in the manifold.
 
@@ -3480,11 +3555,13 @@ class DifferentiableManifold(TopologicalManifold):
             for more examples, including plots.
         """
         from sage.manifolds.differentiable.examples.real_line import RealLine
+
         if not isinstance(param, (tuple, list)):
             param = (param, minus_infinity, infinity)
         elif len(param) != 3:
-            raise ValueError("the argument 'param' must be of the form " +
-                             "(t, t_min, t_max)")
+            raise ValueError(
+                "the argument 'param' must be of the form " + "(t, t_min, t_max)"
+            )
         t = param[0]
         t_min = param[1]
         t_max = param[2]
@@ -3496,8 +3573,10 @@ class DifferentiableManifold(TopologicalManifold):
             if chart is None:
                 chart = self._def_chart
             elif chart not in self._atlas:
-                raise ValueError("the {} has not been ".format(chart) +
-                                 "defined on the {}".format(self))
+                raise ValueError(
+                    "the {} has not been ".format(chart)
+                    + "defined on the {}".format(self)
+                )
             if isinstance(coord_expression, (tuple, list)):
                 coord_expression = {chart: coord_expression}
             else:
@@ -3505,9 +3584,18 @@ class DifferentiableManifold(TopologicalManifold):
                 coord_expression = {chart: (coord_expression,)}
         return curve_set(coord_expression, name=name, latex_name=latex_name)
 
-    def integrated_curve(self, equations_rhs, velocities, curve_param,
-                         initial_tangent_vector, chart=None, name=None,
-                         latex_name=None, verbose=False, across_charts=False):
+    def integrated_curve(
+        self,
+        equations_rhs,
+        velocities,
+        curve_param,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct a curve defined by a system of second order
         differential equations in the coordinate functions.
@@ -3601,24 +3689,39 @@ class DifferentiableManifold(TopologicalManifold):
         from sage.manifolds.differentiable.manifold_homset import IntegratedCurveSet
 
         if len(curve_param) != 3:
-            raise ValueError("the argument 'curve_param' must be of the form " +
-                             "(t, t_min, t_max)")
+            raise ValueError(
+                "the argument 'curve_param' must be of the form " + "(t, t_min, t_max)"
+            )
         t = curve_param[0]
         t_min = curve_param[1]
         t_max = curve_param[2]
         real_field = RealLine(names=(repr(t),))
         interval = real_field.open_interval(t_min, t_max)
-        integrated_curve_set = IntegratedCurveSet(interval, self) # not
+        integrated_curve_set = IntegratedCurveSet(interval, self)  # not
         # possible to use Hom(interval, self)
-        return integrated_curve_set(equations_rhs, velocities, t,
-                                    initial_tangent_vector, chart=chart,
-                                    name=name, latex_name=latex_name,
-                                    verbose=verbose, across_charts=across_charts)
+        return integrated_curve_set(
+            equations_rhs,
+            velocities,
+            t,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
-    def integrated_autoparallel_curve(self, affine_connection,
-                        curve_param, initial_tangent_vector, chart=None,
-                        name=None, latex_name=None, verbose=False,
-                        across_charts=False):
+    def integrated_autoparallel_curve(
+        self,
+        affine_connection,
+        curve_param,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct an autoparallel curve on the manifold with respect to
         a given affine connection.
@@ -3735,27 +3838,38 @@ class DifferentiableManifold(TopologicalManifold):
         )
 
         if len(curve_param) != 3:
-            raise ValueError("the argument 'curve_param' must be " +
-                             "of the form (t, t_min, t_max)")
+            raise ValueError(
+                "the argument 'curve_param' must be " + "of the form (t, t_min, t_max)"
+            )
         t = curve_param[0]
         t_min = curve_param[1]
         t_max = curve_param[2]
         real_field = RealLine(names=(repr(t),))
         interval = real_field.open_interval(t_min, t_max)
-        autoparallel_curve_set = IntegratedAutoparallelCurveSet(interval,
-                                                                self)
+        autoparallel_curve_set = IntegratedAutoparallelCurveSet(interval, self)
         # not possible to use Hom(interval, self)
-        return autoparallel_curve_set(affine_connection, t,
-                                      initial_tangent_vector,
-                                      chart=chart, name=name,
-                                      latex_name=latex_name,
-                                      verbose=verbose,
-                                      across_charts=across_charts)
+        return autoparallel_curve_set(
+            affine_connection,
+            t,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
-    def integrated_geodesic(self, metric, curve_param,
-                            initial_tangent_vector, chart=None,
-                            name=None, latex_name=None, verbose=False,
-                            across_charts=False):
+    def integrated_geodesic(
+        self,
+        metric,
+        curve_param,
+        initial_tangent_vector,
+        chart=None,
+        name=None,
+        latex_name=None,
+        verbose=False,
+        across_charts=False,
+    ):
         r"""
         Construct a geodesic on the manifold with respect to a given metric.
 
@@ -3853,19 +3967,25 @@ class DifferentiableManifold(TopologicalManifold):
         from sage.manifolds.differentiable.manifold_homset import IntegratedGeodesicSet
 
         if len(curve_param) != 3:
-            raise ValueError("the argument 'curve_param' must be of " +
-                             "the form (t, t_min, t_max)")
+            raise ValueError(
+                "the argument 'curve_param' must be of " + "the form (t, t_min, t_max)"
+            )
         t = curve_param[0]
         t_min = curve_param[1]
         t_max = curve_param[2]
         real_field = RealLine(names=(repr(t),))
         interval = real_field.open_interval(t_min, t_max)
         integrated_geodesic_set = IntegratedGeodesicSet(interval, self)
-        return integrated_geodesic_set(metric, t, initial_tangent_vector,
-                                       chart=chart, name=name,
-                                       latex_name=latex_name,
-                                       verbose=verbose,
-                                       across_charts=across_charts)
+        return integrated_geodesic_set(
+            metric,
+            t,
+            initial_tangent_vector,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            verbose=verbose,
+            across_charts=across_charts,
+        )
 
     def affine_connection(self, name, latex_name=None):
         r"""
@@ -3901,11 +4021,16 @@ class DifferentiableManifold(TopologicalManifold):
             for more examples.
         """
         from sage.manifolds.differentiable.affine_connection import AffineConnection
+
         return AffineConnection(self, name, latex_name)
 
-    def metric(self, name: str, signature: Optional[int] = None,
-               latex_name: Optional[str] = None,
-               dest_map: Optional[DiffMap] = None) -> PseudoRiemannianMetric:
+    def metric(
+        self,
+        name: str,
+        signature: Optional[int] = None,
+        latex_name: Optional[str] = None,
+        dest_map: Optional[DiffMap] = None,
+    ) -> PseudoRiemannianMetric:
         r"""
         Define a pseudo-Riemannian metric on the manifold.
 
@@ -4012,7 +4137,7 @@ class DifferentiableManifold(TopologicalManifold):
         """
         vmodule = self.vector_field_module(dest_map)
         dim = vmodule.ambient_domain().dimension()
-        return vmodule.metric(name, signature=(0,dim-1,1), latex_name=latex_name)
+        return vmodule.metric(name, signature=(0, dim - 1, 1), latex_name=latex_name)
 
     def riemannian_metric(self, name, latex_name=None, dest_map=None):
         r"""
@@ -4066,8 +4191,9 @@ class DifferentiableManifold(TopologicalManifold):
         dim = vmodule.ambient_domain().dimension()
         return vmodule.metric(name, signature=dim, latex_name=latex_name)
 
-    def lorentzian_metric(self, name, signature='positive', latex_name=None,
-                          dest_map=None):
+    def lorentzian_metric(
+        self, name, signature='positive', latex_name=None, dest_map=None
+    ):
         r"""
         Define a Lorentzian metric on the manifold.
 
@@ -4232,7 +4358,7 @@ class DifferentiableManifold(TopologicalManifold):
         if len(args) < 2:
             raise TypeError("a point and a set of components must be provided")
         point = args[0]
-        tspace = self.tangent_space(point) # checks on point are performed here
+        tspace = self.tangent_space(point)  # checks on point are performed here
         comp0 = args[1]
         if hasattr(comp0, '__len__') and hasattr(comp0, '__getitem__'):
             # comp0 is a list/vector of components
@@ -4242,8 +4368,9 @@ class DifferentiableManifold(TopologicalManifold):
             dim = self._dim
             if len(args) != dim + 1:
                 raise ValueError(f"{dim} components must be provided")
-            comp = args[1:dim + 1]
-        return tspace._element_constructor_(comp=comp, basis=basis, name=name,
-                                            latex_name=latex_name)
+            comp = args[1 : dim + 1]
+        return tspace._element_constructor_(
+            comp=comp, basis=basis, name=name, latex_name=latex_name
+        )
 
     vector = tangent_vector

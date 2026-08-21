@@ -124,8 +124,9 @@ class FreeGradedModuleElement(IndexedFreeModuleElement):
             raise ValueError("the zero element does not have a well-defined degree")
         degrees = []
         try:
-            for g, c in zip(self.parent().generator_degrees(),
-                            self.dense_coefficient_list()):
+            for g, c in zip(
+                self.parent().generator_degrees(), self.dense_coefficient_list()
+            ):
                 if c:
                     degrees.append(g + c.degree())
         except ValueError:

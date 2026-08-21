@@ -52,10 +52,14 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
 
             sage: TestSuite(algebras.FQSym(QQ).F()).run()  # long time
         """
-        CombinatorialFreeModule.__init__(self, alg.base_ring(),
-                                         Permutations(),
-                                         category=FQSymBases(alg),
-                                         bracket='', prefix=self._prefix)
+        CombinatorialFreeModule.__init__(
+            self,
+            alg.base_ring(),
+            Permutations(),
+            category=FQSymBases(alg),
+            bracket='',
+            prefix=self._prefix,
+        )
 
     def _coerce_map_from_(self, R):
         r"""
@@ -139,8 +143,10 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             if not self.base_ring().has_coerce_map_from(R.base_ring()):
                 return False
             if self._basis_name == R._basis_name:  # The same basis
+
                 def coerce_base_ring(self, x):
                     return self._from_dict(x.monomial_coefficients())
+
                 return coerce_base_ring
             # Otherwise lift that basis up and then coerce over
             target = getattr(self.realization_of(), R._basis_name)()
@@ -148,6 +154,7 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
 
         # FSym coerces in:
         from sage.combinat.chas.fsym import FreeSymmetricFunctions
+
         if isinstance(R, FreeSymmetricFunctions.Fundamental):
             if not self.base_ring().has_coerce_map_from(R.base_ring()):
                 return False
@@ -155,8 +162,12 @@ class FQSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             P = G._indices
 
             def G_to_G_on_basis(t):
-                return G.sum_of_monomials(P(sigma) for sigma in Permutations(t.size())
-                                          if sigma.right_tableau() == t)
+                return G.sum_of_monomials(
+                    P(sigma)
+                    for sigma in Permutations(t.size())
+                    if sigma.right_tableau() == t
+                )
+
             phi = R.module_morphism(G_to_G_on_basis, codomain=G)
             if self is G:
                 return phi
@@ -376,10 +387,12 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
         F = self.F()
         G = self.G()
 
-        F.module_morphism(G._F_to_G_on_basis,
-                          codomain=G, category=category).register_as_coercion()
-        G.module_morphism(G._G_to_F_on_basis,
-                          codomain=F, category=category).register_as_coercion()
+        F.module_morphism(
+            G._F_to_G_on_basis, codomain=G, category=category
+        ).register_as_coercion()
+        G.module_morphism(
+            G._G_to_F_on_basis, codomain=F, category=category
+        ).register_as_coercion()
 
     def _repr_(self):
         """
@@ -421,6 +434,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             sage: FQSym.F()
             Free Quasi-symmetric functions over Rational Field in the F basis
         """
+
         _prefix = "F"
         _basis_name = "F"
 
@@ -570,8 +584,9 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             n = len(x)
             shy = Word([a + n for a in y])
             shy0 = shy[0]
-            return self.sum_of_monomials(K([shy0] + list(u))
-                                         for u in Word(x).shuffle(Word(shy[1:])))
+            return self.sum_of_monomials(
+                K([shy0] + list(u)) for u in Word(x).shuffle(Word(shy[1:]))
+            )
 
         def prec_product_on_basis(self, x, y):
             r"""
@@ -621,8 +636,9 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             n = len(x)
             shy = Word([a + n for a in y])
             x0 = x[0]
-            return self.sum_of_monomials(K([x0] + list(u))
-                                         for u in Word(x[1:]).shuffle(shy))
+            return self.sum_of_monomials(
+                K([x0] + list(u)) for u in Word(x[1:]).shuffle(shy)
+            )
 
         def coproduct_on_basis(self, x):
             r"""
@@ -648,9 +664,12 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             """
             if not x:
                 return self.one().tensor(self.one())
-            return sum(self(Word(x[:i]).standard_permutation()).tensor(
-                self(Word(x[i:]).standard_permutation()))
-                for i in range(len(x) + 1))
+            return sum(
+                self(Word(x[:i]).standard_permutation()).tensor(
+                    self(Word(x[i:]).standard_permutation())
+                )
+                for i in range(len(x) + 1)
+            )
 
         class Element(FQSymBasis_abstract.Element):
             def to_symmetric_group_algebra(self, n=None):
@@ -719,6 +738,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
              + G[5, 1, 4, 3, 2] + G[5, 2, 3, 4, 1] + G[5, 2, 4, 3, 1]
              + G[5, 3, 4, 2, 1]
         """
+
         _prefix = "G"
         _basis_name = "G"
 
@@ -896,6 +916,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             sage: M([1, 2]) * M([1])
             M[1, 2, 3] + 2*M[1, 3, 2] + M[2, 3, 1] + M[3, 1, 2]
         """
+
         _prefix = "M"
         _basis_name = "Monomial"
 
@@ -911,11 +932,13 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             FQSymBasis_abstract.__init__(self, alg)
 
             F = self.realization_of().F()
-            phi = F.module_morphism(self._F_to_M_on_basis, codomain=self,
-                                    unitriangular='lower')
+            phi = F.module_morphism(
+                self._F_to_M_on_basis, codomain=self, unitriangular='lower'
+            )
             phi.register_as_coercion()
-            phi_i = self.module_morphism(self._M_to_F_on_basis, codomain=F,
-                                         unitriangular='lower')
+            phi_i = self.module_morphism(
+                self._M_to_F_on_basis, codomain=F, unitriangular='lower'
+            )
             phi_i.register_as_coercion()
 
         def _element_constructor_(self, x):
@@ -1108,8 +1131,7 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             w_i = w.inverse()
             w_i = w_i[:]
             n = len(w_i)
-            des = tuple([0] + [g for g in range(1, n)
-                               if w_i[g - 1] > w_i[g]] + [n])
+            des = tuple([0] + [g for g in range(1, n) if w_i[g - 1] > w_i[g]] + [n])
             non_des = [g for g in range(1, n) if w_i[g - 1] < w_i[g]]
             # Now, des is a list of all descents of w_i and also 0 and n,
             # whereas non_des is a list of all non-descents of w_i.
@@ -1122,14 +1144,19 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
 
             dc = {w: one}
             from itertools import combinations
+
             for k in range(len(non_des)):
                 kk = k + len(des)
                 for extra_des in combinations(non_des, k):
                     breakpoints = sorted(des + extra_des)
                     # so that kk == len(breakpoints)
-                    p = sum([w_i[breakpoints[g]: breakpoints[g + 1]][::-1]
-                             for g in range(kk - 1)],
-                            [])
+                    p = sum(
+                        [
+                            w_i[breakpoints[g] : breakpoints[g + 1]][::-1]
+                            for g in range(kk - 1)
+                        ],
+                        [],
+                    )
                     u = Perms(p).inverse()
                     dc[u] = one if n % 2 != kk % 2 else mine
 
@@ -1186,10 +1213,13 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
             n = len(x)
             if not n:
                 return self.one().tensor(self.one())
-            return sum(self(Word(x[:i]).standard_permutation()).tensor(
-                self(Word(x[i:]).standard_permutation()))
+            return sum(
+                self(Word(x[:i]).standard_permutation()).tensor(
+                    self(Word(x[i:]).standard_permutation())
+                )
                 for i in range(n + 1)
-                if (i == 0 or i == n or min(x[:i]) > max(x[i:])))
+                if (i == 0 or i == n or min(x[:i]) > max(x[i:]))
+            )
 
         class Element(FQSymBasis_abstract.Element):
             def star_involution(self):
@@ -1225,8 +1255,9 @@ class FreeQuasisymmetricFunctions(UniqueRepresentation, Parent):
                 # See the FQSymBases.ElementMethods.star_involution doc
                 # for the formula we're using here.
                 M = self.parent()
-                return M._from_dict({w.complement().reverse(): c for w, c in self},
-                                    remove_zeros=False)
+                return M._from_dict(
+                    {w.complement().reverse(): c for w, c in self}, remove_zeros=False
+                )
 
 
 class FQSymBases(Category_realization_of_parent):
@@ -1282,10 +1313,11 @@ class FQSymBases(Category_realization_of_parent):
              Category of graded connected Hopf algebras with basis over Integer Ring]
         """
         R = self.base().base_ring()
-        return [self.base().Realizations(),
-                HopfAlgebras(R).Graded().Realizations(),
-                HopfAlgebras(R).Graded().WithBasis().Graded().Connected(),
-                ]
+        return [
+            self.base().Realizations(),
+            HopfAlgebras(R).Graded().Realizations(),
+            HopfAlgebras(R).Graded().WithBasis().Graded().Connected(),
+        ]
 
     class ParentMethods:
         def _repr_(self):
@@ -1340,6 +1372,7 @@ class FQSymBases(Category_realization_of_parent):
                 [G[1, 2, 3], G[1, 3, 2], G[2, 1, 3], G[2, 3, 1], G[3, 1, 2], G[3, 2, 1]]
             """
             from sage.sets.family import Family
+
             if degree is None:
                 return Family(self._indices, self.monomial)
             return Family(Permutations(degree), self.monomial)
@@ -1426,9 +1459,9 @@ class FQSymBases(Category_realization_of_parent):
                 suc = self.succ_product_on_basis
             except AttributeError:
                 return self.succ_by_coercion
-            return self._module_morphism(self._module_morphism(suc, position=0,
-                                                               codomain=self),
-                                         position=1)
+            return self._module_morphism(
+                self._module_morphism(suc, position=0, codomain=self), position=1
+            )
 
         def succ_by_coercion(self, x, y):
             r"""
@@ -1480,9 +1513,9 @@ class FQSymBases(Category_realization_of_parent):
                 pre = self.prec_product_on_basis
             except AttributeError:
                 return self.prec_by_coercion
-            return self._module_morphism(self._module_morphism(pre, position=0,
-                                                               codomain=self),
-                                         position=1)
+            return self._module_morphism(
+                self._module_morphism(pre, position=0, codomain=self), position=1
+            )
 
         def prec_by_coercion(self, x, y):
             r"""
@@ -1910,6 +1943,7 @@ class FQSymBases(Category_realization_of_parent):
             FQSym = parent.realization_of()
             G = FQSym.G()
             from sage.combinat.chas.wqsym import WordQuasiSymmetricFunctions
+
             M = WordQuasiSymmetricFunctions(parent.base_ring()).M()
             OSP = M.basis().keys()
             from sage.combinat.words.finite_word import word_to_ordered_set_partition
@@ -1923,8 +1957,10 @@ class FQSymBases(Category_realization_of_parent):
                     v = w.destandardize(comp)
                     res += M[OSP(word_to_ordered_set_partition(v))]
                 return res
-            return M.linear_combination((to_wqsym_on_G_basis(w), coeff)
-                                        for w, coeff in G(self))
+
+            return M.linear_combination(
+                (to_wqsym_on_G_basis(w), coeff) for w, coeff in G(self)
+            )
 
         def to_qsym(self):
             r"""
@@ -1968,6 +2004,8 @@ class FQSymBases(Category_realization_of_parent):
             FQSym = parent.realization_of()
             F = FQSym.F()
             from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
+
             QF = QuasiSymmetricFunctions(parent.base_ring()).F()
-            return QF.sum_of_terms((w.descents_composition(), coeff)
-                                   for w, coeff in F(self))
+            return QF.sum_of_terms(
+                (w.descents_composition(), coeff) for w, coeff in F(self)
+            )

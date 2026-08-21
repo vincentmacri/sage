@@ -1,14 +1,14 @@
 """
 Root system data for type G
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from . import ambient_space
 from sage.sets.family import Family
@@ -75,7 +75,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: CartanType(['G',2]).root_system().ambient_space().simple_roots()
             Finite family {1: (0, 1, -1), 2: (1, -2, 1)}
         """
-        return self.monomial(1)-self.monomial(2) if i == 1 else self.monomial(0)-2*self.monomial(1)+self.monomial(2)
+        return (
+            self.monomial(1) - self.monomial(2)
+            if i == 1
+            else self.monomial(0) - 2 * self.monomial(1) + self.monomial(2)
+        )
 
     def positive_roots(self):
         """
@@ -84,8 +88,17 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: CartanType(['G',2]).root_system().ambient_space().positive_roots()
             [(0, 1, -1), (1, -2, 1), (1, -1, 0), (1, 0, -1), (1, 1, -2), (2, -1, -1)]
         """
-        return [ self(v) for v in
-                 [[0,1,-1],[1,-2,1],[1,-1,0],[1,0,-1],[1,1,-2],[2,-1,-1]]]
+        return [
+            self(v)
+            for v in [
+                [0, 1, -1],
+                [1, -2, 1],
+                [1, -1, 0],
+                [1, 0, -1],
+                [1, 1, -2],
+                [2, -1, -1],
+            ]
+        ]
 
     def negative_roots(self):
         """
@@ -94,8 +107,17 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: CartanType(['G',2]).root_system().ambient_space().negative_roots()
             [(0, -1, 1), (-1, 2, -1), (-1, 1, 0), (-1, 0, 1), (-1, -1, 2), (-2, 1, 1)]
         """
-        return [ self(v) for v in
-                 [[0,-1,1],[-1,2,-1],[-1,1,0],[-1,0,1],[-1,-1,2],[-2,1,1]]]
+        return [
+            self(v)
+            for v in [
+                [0, -1, 1],
+                [-1, 2, -1],
+                [-1, 1, 0],
+                [-1, 0, 1],
+                [-1, -1, 2],
+                [-2, 1, 1],
+            ]
+        ]
 
     def fundamental_weights(self):
         """
@@ -104,16 +126,23 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: CartanType(['G',2]).root_system().ambient_space().fundamental_weights()
             Finite family {1: (1, 0, -1), 2: (2, -1, -1)}
         """
-        return Family({ 1: self([1,0,-1]),
-                        2: self([2,-1,-1])})
+        return Family({1: self([1, 0, -1]), 2: self([2, -1, -1])})
 
-    _plot_projection = RootLatticeRealizations.ParentMethods.__dict__['_plot_projection_barycentric']
-
-
-from .cartan_type import CartanType_standard_finite, CartanType_simple, CartanType_crystallographic
+    _plot_projection = RootLatticeRealizations.ParentMethods.__dict__[
+        '_plot_projection_barycentric'
+    ]
 
 
-class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_crystallographic):
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simple,
+    CartanType_crystallographic,
+)
+
+
+class CartanType(
+    CartanType_standard_finite, CartanType_simple, CartanType_crystallographic
+):
     def __init__(self):
         """
         EXAMPLES::
@@ -195,9 +224,10 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             [(1, 2, 1), (2, 1, 3)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
-        g.add_edge(1,2)
-        g.set_edge_label(2,1,3)
+        g.add_edge(1, 2)
+        g.set_edge_label(2, 1, 3)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2, dual=False):
@@ -223,9 +253,9 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
         ret += "\\draw (0, 0.15 cm) -- +(%s cm,0);\n" % node_dist
         ret += "\\draw (0, -0.15 cm) -- +(%s cm,0);\n" % node_dist
         if dual:
-            ret += self._latex_draw_arrow_tip(0.5*node_dist+0.2, 0, 0)
+            ret += self._latex_draw_arrow_tip(0.5 * node_dist + 0.2, 0, 0)
         else:
-            ret += self._latex_draw_arrow_tip(0.5*node_dist-0.2, 0, 180)
+            ret += self._latex_draw_arrow_tip(0.5 * node_dist - 0.2, 0, 180)
         ret += node(0, 0, label(1))
         ret += node(node_dist, 0, label(2))
         return ret
@@ -283,10 +313,13 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             ['G', 2] as a folding of ['D', 4]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         return CartanTypeFolded(self, ['D', 4], [[1, 3, 4], [2]])
 
 
 # For unpickling backward compatibility (Sage <= 4.1)
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.type_G',
-                           'ambient_space', AmbientSpace)
+
+register_unpickle_override(
+    'sage.combinat.root_system.type_G', 'ambient_space', AmbientSpace
+)

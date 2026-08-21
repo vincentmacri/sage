@@ -38,7 +38,7 @@ The implementation works over any exact field that is embedded in
      (0.5822623322995881?, -0.4177376677004119?, 0.4177376677004119?)]
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2014 Volker Braun <vbraun.name@gmail.com>
 #                     2015 Vincent Delecroix <20100.delecroix@gmail.com>
 #
@@ -47,10 +47,10 @@ The implementation works over any exact field that is embedded in
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 
-#*****************************************************************************
+# *****************************************************************************
 # TODO
 #
 # The adjacency check should use caching and the "combinatorial
@@ -98,6 +98,7 @@ def random_inequalities(d, n):
         sage: P.run().verify()
     """
     from sage.matrix.constructor import random_matrix
+
     while True:
         A = random_matrix(QQ, n, d)
         if A.rank() == min(n, d) and not any(a == 0 for a in A.rows()):
@@ -106,7 +107,6 @@ def random_inequalities(d, n):
 
 
 class DoubleDescriptionPair:
-
     def __init__(self, problem, A_rows, R_cols):
         r"""
         Base class for a double description pair `(A, R)`.
@@ -206,13 +206,14 @@ class DoubleDescriptionPair:
         """
         from sage.typeset.ascii_art import ascii_art
         from sage.matrix.constructor import matrix
+
         s = ascii_art('Double description pair (A, R) defined by')
         A = ascii_art(matrix(self.A))
-        A._baseline = (len(self.A) // 2)
+        A._baseline = len(self.A) // 2
         A = ascii_art('A = ') + A
         R = ascii_art(matrix(self.R).transpose())
         if len(self.R) > 0:
-            R._baseline = (len(self.R[0]) // 2)
+            R._baseline = len(self.R[0]) // 2
         else:
             R._baseline = 0
         R = ascii_art('R = ') + R
@@ -240,7 +241,11 @@ class DoubleDescriptionPair:
             [0 0 1]
         """
         from sage.matrix.constructor import matrix
-        return matrix(self.problem.base_ring(), [[a.inner_product(r) for r in self.R] for a in self.A])
+
+        return matrix(
+            self.problem.base_ring(),
+            [[a.inner_product(r) for r in self.R] for a in self.A],
+        )
 
     def cone(self):
         r"""
@@ -266,7 +271,8 @@ class DoubleDescriptionPair:
              An inequality (1, 0, 1) x + 0 >= 0)
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
-        assert self.problem.base_ring() == QQ    # required for PPL backend
+
+        assert self.problem.base_ring() == QQ  # required for PPL backend
 
         if not self.A:
             return Polyhedron(vertices=[[0] * self.problem.dim()], backend='ppl')
@@ -297,11 +303,16 @@ class DoubleDescriptionPair:
             AssertionError
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         if self.problem.base_ring() is not QQ:
             return
         A_cone = self.cone()
-        R_cone = Polyhedron(vertices=[[self.zero] * self.problem.dim()], rays=self.R,
-                            base_ring=self.problem.base_ring(), backend='ppl')
+        R_cone = Polyhedron(
+            vertices=[[self.zero] * self.problem.dim()],
+            rays=self.R,
+            base_ring=self.problem.base_ring(),
+            backend='ppl',
+        )
         assert A_cone == R_cone
         assert A_cone.n_inequalities() <= len(self.A)
         assert R_cone.n_rays() == len(self.R)
@@ -366,7 +377,11 @@ class DoubleDescriptionPair:
             self.zero_set_cache[ray] = (0, set())
         n, t = self.zero_set_cache[ray]
         if n != len(self.A):
-            t.update(self.A[i] for i in range(n,len(self.A)) if self.A[i].inner_product(ray) == self.zero)
+            t.update(
+                self.A[i]
+                for i in range(n, len(self.A))
+                if self.A[i].inner_product(ray) == self.zero
+            )
             self.zero_set_cache[ray] = (len(self.A), t)
         return t
 
@@ -383,6 +398,7 @@ class DoubleDescriptionPair:
             True
         """
         from sage.matrix.constructor import matrix
+
         A_Zray = matrix(self.problem.base_ring(), list(self.zero_set(ray)))
         return A_Zray.rank() == self.problem.dim() - 1
 
@@ -511,7 +527,6 @@ class DoubleDescriptionPair:
 
 
 class Problem:
-
     pair_class = DoubleDescriptionPair
 
     def __init__(self, A):
@@ -535,7 +550,7 @@ class Problem:
             (1, 1)
             (-1, 1)
         """
-        assert A.rank() == A.ncols()    # implementation assumes maximal rank
+        assert A.rank() == A.ncols()  # implementation assumes maximal rank
         if A.is_mutable():
             A = A.__copy__()
             A.set_immutable()
@@ -653,6 +668,7 @@ class Problem:
         A0 = [self.A()[pivot] for pivot in pivot_rows]
         Ac = [self.A()[i] for i in range(len(self.A())) if i not in pivot_rows]
         from sage.matrix.constructor import identity_matrix, matrix
+
         I = identity_matrix(self.base_ring(), self.dim())
         R = matrix(self.base_ring(), A0).solve_right(I)
         return self.pair_class(self, A0, R.columns()), list(Ac)
@@ -721,6 +737,7 @@ class StandardAlgorithm(Problem):
         sage: DD.R    # the extremal rays
         [(1/2, 1/2), (-1/2, 1/2)]
     """
+
     pair_class = StandardDoubleDescriptionPair
 
     def run(self):

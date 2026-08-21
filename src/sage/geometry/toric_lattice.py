@@ -147,17 +147,24 @@ Or you can create a homomorphism from one lattice to any other::
 
 from sage.geometry.toric_lattice_element import ToricLatticeElement
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.geometry.toric_plotter', 'ToricPlotter')
 from sage.misc.latex import latex
 from sage.structure.element import parent
-from sage.structure.richcmp import (richcmp_method, richcmp, rich_to_bool,
-                                    richcmp_not_equal)
+from sage.structure.richcmp import (
+    richcmp_method,
+    richcmp,
+    rich_to_bool,
+    richcmp_not_equal,
+)
 from sage.modules.fg_pid.fgp_element import FGP_Element
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
-from sage.modules.free_module import (FreeModule_ambient_pid,
-                                      FreeModule_generic_pid,
-                                      FreeModule_submodule_pid,
-                                      FreeModule_submodule_with_basis_pid)
+from sage.modules.free_module import (
+    FreeModule_ambient_pid,
+    FreeModule_generic_pid,
+    FreeModule_submodule_pid,
+    FreeModule_submodule_with_basis_pid,
+)
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.factory import UniqueFactory
@@ -247,8 +254,9 @@ class ToricLatticeFactory(UniqueFactory):
     for dual lattices or for LaTeX typesetting.
     """
 
-    def create_key(self, rank, name=None, dual_name=None,
-                   latex_name=None, latex_dual_name=None):
+    def create_key(
+        self, rank, name=None, dual_name=None, latex_name=None, latex_dual_name=None
+    ):
         """
         Create a key that uniquely identifies this toric lattice.
 
@@ -271,8 +279,10 @@ class ToricLatticeFactory(UniqueFactory):
         # Should we use standard M and N lattices?
         if name is None:
             if dual_name is not None:
-                raise ValueError("you can name the dual lattice only if you "
-                                 "also name the original one!")
+                raise ValueError(
+                    "you can name the dual lattice only if you "
+                    "also name the original one!"
+                )
             name = "N"
             dual_name = "M"
         if latex_name is None:
@@ -281,8 +291,7 @@ class ToricLatticeFactory(UniqueFactory):
         # The default for latex_dual_name depends on whether dual_name was
         # given or constructed, so we determine it before dual_name
         if latex_dual_name is None:
-            latex_dual_name = (dual_name if dual_name is not None
-                                         else latex_name + "^*")
+            latex_dual_name = dual_name if dual_name is not None else latex_name + "^*"
         if dual_name is None:
             dual_name = name + "*"
         return (rank, name, dual_name, latex_name, latex_dual_name)
@@ -368,12 +377,14 @@ class ToricLattice_generic(FreeModule_generic_pid):
             N2(1, 0)
         """
         supercall = super().__call__
-        if args == (0, ):
+        if args == (0,):
             # Special treatment for N(0) to return (0,...,0)
             return supercall(*args, **kwds)
 
-        if (isinstance(args[0], ToricLattice_quotient_element)
-            and args[0].parent().is_torsion_free()):
+        if (
+            isinstance(args[0], ToricLattice_quotient_element)
+            and args[0].parent().is_torsion_free()
+        ):
             # convert a torsion free quotient lattice
             return supercall(list(args[0]), **kwds)
 
@@ -381,11 +392,11 @@ class ToricLattice_generic(FreeModule_generic_pid):
             coordinates = [ZZ(_) for _ in args]
         except TypeError:
             # Prohibit conversion of elements of other lattices
-            if (isinstance(args[0], ToricLatticeElement)
-                and args[0].parent().ambient_module()
-                is not self.ambient_module()):
-                raise TypeError("%s cannot be converted to %s!"
-                                % (args[0], self))
+            if (
+                isinstance(args[0], ToricLatticeElement)
+                and args[0].parent().ambient_module() is not self.ambient_module()
+            ):
+                raise TypeError("%s cannot be converted to %s!" % (args[0], self))
             # "Standard call"
             return supercall(*args, **kwds)
         # Coordinates were given without packing them into a list or a tuple
@@ -406,8 +417,10 @@ class ToricLattice_generic(FreeModule_generic_pid):
             ...
             TypeError: N(1, 2, 3) cannot be converted to 3-d lattice M!
         """
-        if (isinstance(other, ToricLattice_generic) and
-            other.ambient_module() is not self.ambient_module()):
+        if (
+            isinstance(other, ToricLattice_generic)
+            and other.ambient_module() is not self.ambient_module()
+        ):
             return None
         return super()._convert_map_from_(other)
 
@@ -559,16 +572,18 @@ class ToricLattice_generic(FreeModule_generic_pid):
         if not isinstance(other, ToricLattice_generic):
             raise TypeError("%s is not a toric lattice!" % other)
         if self.ambient_module() != other.ambient_module():
-            raise ValueError("%s and %s have different ambient lattices!" %
-                             (self, other))
+            raise ValueError(
+                "%s and %s have different ambient lattices!" % (self, other)
+            )
         # Construct a generic intersection, but make sure to return a lattice.
         I = super().intersection(other)
         if not isinstance(I, ToricLattice_generic):
             I = self.ambient_module().submodule(I.basis())
         return I
 
-    def quotient(self, sub, check=True,
-                 positive_point=None, positive_dual_point=None, **kwds):
+    def quotient(
+        self, sub, check=True, positive_point=None, positive_dual_point=None, **kwds
+    ):
         """
         Return the quotient of ``self`` by the given sublattice ``sub``.
 
@@ -664,8 +679,9 @@ class ToricLattice_generic(FreeModule_generic_pid):
             0-d lattice, quotient of 3-d lattice N by Sublattice
             <N(1, 0, 0), N(0, 1, 0), N(0, 0, 1)>
         """
-        return ToricLattice_quotient(self, sub, check,
-                                     positive_point, positive_dual_point, **kwds)
+        return ToricLattice_quotient(
+            self, sub, check, positive_point, positive_dual_point, **kwds
+        )
 
     def saturation(self):
         r"""
@@ -686,7 +702,11 @@ class ToricLattice_generic(FreeModule_generic_pid):
             True
         """
         S = super().saturation()
-        return S if isinstance(S, ToricLattice_generic) else self.ambient_module().submodule(S)
+        return (
+            S
+            if isinstance(S, ToricLattice_generic)
+            else self.ambient_module().submodule(S)
+        )
 
     def span(self, gens, base_ring=ZZ, *args, **kwds):
         r"""
@@ -728,8 +748,7 @@ class ToricLattice_generic(FreeModule_generic_pid):
             return ToricLattice_sublattice(A, gens)
         for g in gens:
             if isinstance(g, ToricLatticeElement) and g not in A:
-                raise ValueError("%s cannot generate a sublattice of %s"
-                                 % (g, A))
+                raise ValueError("%s cannot generate a sublattice of %s" % (g, A))
         return super().span(gens, base_ring, *args, **kwds)
 
     def span_of_basis(self, basis, base_ring=ZZ, *args, **kwds):
@@ -780,8 +799,7 @@ class ToricLattice_generic(FreeModule_generic_pid):
             return ToricLattice_sublattice_with_basis(A, basis)
         for g in basis:
             if isinstance(g, ToricLatticeElement) and g not in A:
-                raise ValueError("%s cannot generate a sublattice of %s"
-                                 % (g, A))
+                raise ValueError("%s cannot generate a sublattice of %s" % (g, A))
         return super().span_of_basis(basis, base_ring, *args, **kwds)
 
 
@@ -883,10 +901,11 @@ class ToricLattice_ambient(ToricLattice_generic, FreeModule_ambient_pid):
         if lx != rx:
             return richcmp_not_equal(lx, rx, op)
         # If lattices are the same as ZZ-modules, compare associated names
-        return richcmp([self._name, self._dual_name,
-                        self._latex_name, self._latex_dual_name],
-                       [other._name, other._dual_name,
-                        other._latex_name, other._latex_dual_name], op)
+        return richcmp(
+            [self._name, self._dual_name, self._latex_name, self._latex_dual_name],
+            [other._name, other._dual_name, other._latex_name, other._latex_dual_name],
+            op,
+        )
 
     def _latex_(self):
         r"""
@@ -964,8 +983,13 @@ class ToricLattice_ambient(ToricLattice_generic, FreeModule_ambient_pid):
             32
         """
         if "_dual" not in self.__dict__:
-            self._dual = ToricLattice(self.rank(), self._dual_name,
-                          self._name, self._latex_dual_name, self._latex_name)
+            self._dual = ToricLattice(
+                self.rank(),
+                self._dual_name,
+                self._name,
+                self._latex_dual_name,
+                self._latex_name,
+            )
         return self._dual
 
     def plot(self, **options):
@@ -994,8 +1018,9 @@ class ToricLattice_ambient(ToricLattice_generic, FreeModule_ambient_pid):
         return tp.plot_lattice()
 
 
-class ToricLattice_sublattice_with_basis(ToricLattice_generic,
-                                         FreeModule_submodule_with_basis_pid):
+class ToricLattice_sublattice_with_basis(
+    ToricLattice_generic, FreeModule_submodule_with_basis_pid
+):
     r"""
     Construct the sublattice of ``ambient`` toric lattice with given ``basis``.
 
@@ -1092,10 +1117,14 @@ class ToricLattice_sublattice_with_basis(ToricLattice_generic,
         """
         if "_dual" not in self.__dict__:
             if self is not self.saturation():
-                raise ValueError("only dual lattices of saturated sublattices "
-                                 "can be constructed! Got %s." % self)
-            self._dual = (self.ambient_module().dual() /
-                          self.basis_matrix().transpose().integer_kernel())
+                raise ValueError(
+                    "only dual lattices of saturated sublattices "
+                    "can be constructed! Got %s." % self
+                )
+            self._dual = (
+                self.ambient_module().dual()
+                / self.basis_matrix().transpose().integer_kernel()
+            )
             self._dual._dual = self
         return self._dual
 
@@ -1136,8 +1165,9 @@ class ToricLattice_sublattice_with_basis(ToricLattice_generic,
         return tp.plot_lattice()
 
 
-class ToricLattice_sublattice(ToricLattice_sublattice_with_basis,
-                              FreeModule_submodule_pid):
+class ToricLattice_sublattice(
+    ToricLattice_sublattice_with_basis, FreeModule_submodule_pid
+):
     r"""
     Construct the sublattice of ``ambient`` toric lattice generated by ``gens``.
 
@@ -1176,6 +1206,7 @@ class ToricLattice_sublattice(ToricLattice_sublattice_with_basis,
         sage: sublattice.echelonized_basis()
         [N(1, 0, 1), N(0, 1, -1)]
     """
+
     pass
 
 
@@ -1337,7 +1368,9 @@ class ToricLattice_quotient(FGP_Module_class):
         True
     """
 
-    def __init__(self, V, W, check=True, positive_point=None, positive_dual_point=None, **kwds):
+    def __init__(
+        self, V, W, check=True, positive_point=None, positive_dual_point=None, **kwds
+    ):
         r"""
         The constructor.
 
@@ -1375,8 +1408,9 @@ class ToricLattice_quotient(FGP_Module_class):
             return
 
         self._flip_sign_of_generator = False
-        assert self.is_torsion_free() and self.ngens() == 1, \
+        assert self.is_torsion_free() and self.ngens() == 1, (
             'You may only specify a positive direction in the codimension one case.'
+        )
         quotient_generator = self.gen(0)
         lattice = self.V().ambient_module()
         if (positive_point is not None) and (positive_dual_point is None):
@@ -1384,15 +1418,22 @@ class ToricLattice_quotient(FGP_Module_class):
             point_quotient = self(positive_point)
             scalar_product = quotient_generator.vector()[0] * point_quotient.vector()[0]
             if scalar_product == 0:
-                raise ValueError(str(positive_point)+' is zero in the quotient.')
+                raise ValueError(str(positive_point) + ' is zero in the quotient.')
         elif (positive_point is None) and (positive_dual_point is not None):
-            assert positive_dual_point in lattice.dual(), 'positive_dual_point must be a dual lattice point.'
+            assert positive_dual_point in lattice.dual(), (
+                'positive_dual_point must be a dual lattice point.'
+            )
             scalar_product = quotient_generator.lift() * positive_dual_point
             if scalar_product == 0:
-                raise ValueError(str(positive_dual_point)+' is zero on the lift of the quotient generator.')
+                raise ValueError(
+                    str(positive_dual_point)
+                    + ' is zero on the lift of the quotient generator.'
+                )
         else:
-            raise ValueError('You may not specify both positive_point and positive_dual_point.')
-        self._flip_sign_of_generator = (scalar_product < 0)
+            raise ValueError(
+                'You may not specify both positive_point and positive_dual_point.'
+            )
+        self._flip_sign_of_generator = scalar_product < 0
 
     def gens(self) -> tuple:
         """
@@ -1510,8 +1551,11 @@ class ToricLattice_quotient(FGP_Module_class):
             by Sublattice <N(1, 4, 0)>
         """
         if self.is_torsion_free():
-            return "%d-d lattice, quotient of %s by %s" % (self.rank(),
-                                                           self.V(), self.W())
+            return "%d-d lattice, quotient of %s by %s" % (
+                self.rank(),
+                self.V(),
+                self.W(),
+            )
         return "Quotient with torsion of %s by %s" % (self.V(), self.W())
 
     def _module_constructor(self, V, W, check=True):
@@ -1536,7 +1580,7 @@ class ToricLattice_quotient(FGP_Module_class):
             sage: Q._module_constructor(N,Ns)
             Quotient with torsion of 3-d lattice N by Sublattice <N(1, 8, 0), N(0, 12, 0)>
         """
-        return ToricLattice_quotient(V,W,check)
+        return ToricLattice_quotient(V, W, check)
 
     def base_extend(self, R):
         r"""
@@ -1568,8 +1612,9 @@ class ToricLattice_quotient(FGP_Module_class):
             return self
         if R is QQ:
             return self.V().base_extend(R) / self.W().base_extend(R)
-        raise NotImplementedError("quotients of toric lattices can only be "
-                                  "extended to ZZ or QQ, not %s!" % R)
+        raise NotImplementedError(
+            "quotients of toric lattices can only be extended to ZZ or QQ, not %s!" % R
+        )
 
     def is_torsion_free(self):
         r"""
@@ -1606,8 +1651,11 @@ class ToricLattice_quotient(FGP_Module_class):
             Sublattice <M(1, 0, 1), M(0, 1, -1)>
         """
         if "_dual" not in self.__dict__:
-            self._dual = self.V().dual().submodule(
-                    self.W().basis_matrix().transpose().integer_kernel().gens())
+            self._dual = (
+                self.V()
+                .dual()
+                .submodule(self.W().basis_matrix().transpose().integer_kernel().gens())
+            )
             self._dual._dual = self
         return self._dual
 
@@ -1664,6 +1712,8 @@ class ToricLattice_quotient(FGP_Module_class):
         """
         coordinates = super().coordinate_vector(x, reduce)
         if self._flip_sign_of_generator:
-            assert len(coordinates) == 1, "Sign flipped for a multi-dimensional quotient!"
+            assert len(coordinates) == 1, (
+                "Sign flipped for a multi-dimensional quotient!"
+            )
             return -coordinates
         return coordinates

@@ -27,8 +27,10 @@ from sage.categories.rings import Rings
 from sage.categories.morphism import SetMorphism
 from sage.categories.homset import Hom
 
-from sage.algebras.lie_algebras.lie_algebra_element import (LieAlgebraElementWrapper,
-                                                            LieAlgebraMatrixWrapper)
+from sage.algebras.lie_algebras.lie_algebra_element import (
+    LieAlgebraElementWrapper,
+    LieAlgebraMatrixWrapper,
+)
 from sage.rings.integer_ring import ZZ
 from sage.matrix.matrix_space import MatrixSpace
 from sage.sets.family import Family, AbstractFamily
@@ -360,12 +362,22 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
     - [Ka1990]_ Victor Kac, *Infinite dimensional Lie algebras*.
     - :wikipedia:`Lie_algebra`
     """
+
     # This works because it is an abstract base class and this
     #    __classcall_private__ will only be called when calling LieAlgebra
     @staticmethod
-    def __classcall_private__(cls, R=None, arg0=None, arg1=None, names=None,
-                              index_set=None, abelian=False, nilpotent=False,
-                              category=None, **kwds):
+    def __classcall_private__(
+        cls,
+        R=None,
+        arg0=None,
+        arg1=None,
+        names=None,
+        index_set=None,
+        abelian=False,
+        nilpotent=False,
+        category=None,
+        **kwds,
+    ):
         """
         Select the correct parent based upon input.
 
@@ -382,8 +394,9 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
 
         assoc = kwds.get("associative", None)
         if assoc is not None:
-            return LieAlgebraFromAssociative(assoc, names=names, index_set=index_set,
-                                             category=category)
+            return LieAlgebraFromAssociative(
+                assoc, names=names, index_set=index_set, category=category
+            )
 
         # Parse input as a Cartan type
         # -----
@@ -391,22 +404,38 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
         ct = kwds.pop("cartan_type", None)
         if ct is not None:
             from sage.combinat.root_system.cartan_type import CartanType
+
             ct = CartanType(ct)
             if ct.is_affine():
-                from sage.algebras.lie_algebras.affine_lie_algebra import AffineLieAlgebra
-                return AffineLieAlgebra(R, cartan_type=ct,
-                                        kac_moody=kwds.get("kac_moody", True))
+                from sage.algebras.lie_algebras.affine_lie_algebra import (
+                    AffineLieAlgebra,
+                )
+
+                return AffineLieAlgebra(
+                    R, cartan_type=ct, kac_moody=kwds.get("kac_moody", True)
+                )
             if not ct.is_finite():
-                raise NotImplementedError("non-finite types are not implemented yet, see trac #14901 for details")
+                raise NotImplementedError(
+                    "non-finite types are not implemented yet, see trac #14901 for details"
+                )
             rep = kwds.pop("representation", "bracket")
             if rep == 'bracket':
-                from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
+                from sage.algebras.lie_algebras.classical_lie_algebra import (
+                    LieAlgebraChevalleyBasis,
+                )
+
                 return LieAlgebraChevalleyBasis(R, ct, **kwds)
             if rep == 'matrix':
-                from sage.algebras.lie_algebras.classical_lie_algebra import ClassicalMatrixLieAlgebra
+                from sage.algebras.lie_algebras.classical_lie_algebra import (
+                    ClassicalMatrixLieAlgebra,
+                )
+
                 return ClassicalMatrixLieAlgebra(R, ct, **kwds)
             if rep == 'compact real':
-                from sage.algebras.lie_algebras.classical_lie_algebra import MatrixCompactRealForm
+                from sage.algebras.lie_algebras.classical_lie_algebra import (
+                    MatrixCompactRealForm,
+                )
+
                 return MatrixCompactRealForm(R, ct, **kwds)
             raise ValueError("invalid representation")
 
@@ -417,9 +446,12 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
             raise ValueError("invalid arguments")
 
         def check_assoc(A):
-            return (isinstance(A, MatrixSpace)
-                    or A in Rings()
-                    or A in Algebras(R).Associative())
+            return (
+                isinstance(A, MatrixSpace)
+                or A in Rings()
+                or A in Algebras(R).Associative()
+            )
+
         if arg0 in ZZ or check_assoc(arg1):
             # Check if we need to swap the arguments
             arg0, arg1 = arg1, arg0
@@ -430,6 +462,7 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
         if isinstance(arg0, dict):
             if not arg0:
                 from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
                 return AbelianLieAlgebra(R, names, index_set)
             if isinstance(next(iter(arg0.keys())), (list, tuple)):
                 # We assume it is some structure coefficients
@@ -449,14 +482,25 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
 
         if isinstance(arg1, dict):
             # Assume it is some structure coefficients
-            if nilpotent or (category is not None and category.is_subcategory(LieAlgebras(R).Nilpotent())):
-                from sage.algebras.lie_algebras.nilpotent_lie_algebra import NilpotentLieAlgebra_dense
-                return NilpotentLieAlgebra_dense(R, arg1, names, index_set,
-                                                 category=category, **kwds)
+            if nilpotent or (
+                category is not None
+                and category.is_subcategory(LieAlgebras(R).Nilpotent())
+            ):
+                from sage.algebras.lie_algebras.nilpotent_lie_algebra import (
+                    NilpotentLieAlgebra_dense,
+                )
 
-            from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
-            return LieAlgebraWithStructureCoefficients(R, arg1, names, index_set,
-                                                       category=category, **kwds)
+                return NilpotentLieAlgebra_dense(
+                    R, arg1, names, index_set, category=category, **kwds
+                )
+
+            from sage.algebras.lie_algebras.structure_coefficients import (
+                LieAlgebraWithStructureCoefficients,
+            )
+
+            return LieAlgebraWithStructureCoefficients(
+                R, arg1, names, index_set, category=category, **kwds
+            )
 
         # Otherwise it must be either a free (nilpotent) or abelian Lie algebra
 
@@ -464,12 +508,16 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
             step = kwds.get("step", None)
             if step:
                 # Parse input as a free nilpotent Lie algebra
-                from sage.algebras.lie_algebras.nilpotent_lie_algebra import FreeNilpotentLieAlgebra
+                from sage.algebras.lie_algebras.nilpotent_lie_algebra import (
+                    FreeNilpotentLieAlgebra,
+                )
+
                 del kwds["step"]
                 return FreeNilpotentLieAlgebra(R, arg1, step, names=names, **kwds)
             if nilpotent:
-                raise ValueError("free nilpotent Lie algebras must have a"
-                                 " 'step' parameter given")
+                raise ValueError(
+                    "free nilpotent Lie algebras must have a 'step' parameter given"
+                )
 
             if isinstance(arg0, str):
                 names = arg0
@@ -479,19 +527,22 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
                 if isinstance(names, str):
                     names = tuple(names.split(','))
                     if arg1 != 1 and len(names) == 1:
-                        names = tuple('{}{}'.format(names[0], i)
-                                      for i in range(arg1))
+                        names = tuple('{}{}'.format(names[0], i) for i in range(arg1))
                 if arg1 != len(names):
-                    raise ValueError("the number of names must equal the"
-                                     " number of generators")
+                    raise ValueError(
+                        "the number of names must equal the number of generators"
+                    )
 
         if "step" in kwds or nilpotent:
-            raise ValueError("free nilpotent Lie algebras must have both"
-                             " a number of generators and step parameters"
-                             " specified")
+            raise ValueError(
+                "free nilpotent Lie algebras must have both"
+                " a number of generators and step parameters"
+                " specified"
+            )
 
         if abelian:
             from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
             return AbelianLieAlgebra(R, names, index_set)
 
         # Otherwise it is the free Lie algebra
@@ -501,14 +552,18 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
             #   free (associative unital) algebra
             # TODO: Change this to accept an index set once FreeAlgebra accepts one
             from sage.algebras.free_algebra import FreeAlgebra
+
             F = FreeAlgebra(R, names)
             if index_set is None:
                 index_set = F.variable_names()
             # TODO: As part of #16823, this should instead construct a
             #   subclass with specialized methods for the free Lie algebra
-            return LieAlgebraFromAssociative(F, F.gens(), names=names, index_set=index_set)
+            return LieAlgebraFromAssociative(
+                F, F.gens(), names=names, index_set=index_set
+            )
 
         from sage.algebras.lie_algebras.free_lie_algebra import FreeLieAlgebra
+
         return FreeLieAlgebra(R, names, index_set)
 
     def __init__(self, R, names=None, category=None):
@@ -700,6 +755,7 @@ class LieAlgebra(Parent, UniqueRepresentation):  # IndexedGenerators):
         if Y not in cat:
             raise TypeError(f"{Y} is not a Lie algebra")
         from sage.algebras.lie_algebras.morphism import LieAlgebraHomset
+
         return LieAlgebraHomset(self, Y, category=category)
 
     @cached_method
@@ -804,7 +860,10 @@ class LieAlgebraWithGenerators(LieAlgebra):
     """
     A Lie algebra with distinguished generators.
     """
-    def __init__(self, R, names=None, index_set=None, category=None, prefix='L', **kwds):
+
+    def __init__(
+        self, R, names=None, index_set=None, category=None, prefix='L', **kwds
+    ):
         """
         The Lie algebra.
 
@@ -890,6 +949,7 @@ class FinitelyGeneratedLieAlgebra(LieAlgebraWithGenerators):
     r"""
     A finitely generated Lie algebra.
     """
+
     def __init__(self, R, names=None, index_set=None, category=None):
         """
         Initialize ``self``.
@@ -925,9 +985,11 @@ class FinitelyGeneratedLieAlgebra(LieAlgebraWithGenerators):
         """
         if self.__ngens == 1:
             return "Lie algebra on the generator {} over {}".format(
-                self.gen(0), self.base_ring())
+                self.gen(0), self.base_ring()
+            )
         return "Lie algebra on {} generators {} over {}".format(
-            self.__ngens, self.gens(), self.base_ring())
+            self.__ngens, self.gens(), self.base_ring()
+        )
 
     @lazy_attribute
     def _ordered_indices(self):
@@ -959,6 +1021,7 @@ class InfinitelyGeneratedLieAlgebra(LieAlgebraWithGenerators):
     r"""
     An infinitely generated Lie algebra.
     """
+
     def _an_element_(self):
         """
         Return an element of ``self``.
@@ -970,6 +1033,7 @@ class InfinitelyGeneratedLieAlgebra(LieAlgebraWithGenerators):
             p2 + q2 - 1/2*q3 + z
         """
         return self.lie_algebra_generators()[self._indices.an_element()]
+
 
 # Do we want this to return lie_algebra_generators()? Perhaps in the category?
 #    def gens(self) -> tuple:
@@ -1074,9 +1138,17 @@ class LieAlgebraFromAssociative(LieAlgebraWithGenerators):
         [-6 14]
         [14  6]
     """
+
     @staticmethod
-    def __classcall_private__(cls, A, gens=None, names=None, index_set=None,
-                              free_lie_algebra=False, category=None):
+    def __classcall_private__(
+        cls,
+        A,
+        gens=None,
+        names=None,
+        index_set=None,
+        free_lie_algebra=False,
+        category=None,
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -1160,12 +1232,13 @@ class LieAlgebraFromAssociative(LieAlgebraWithGenerators):
             if gens is not None:
                 for g in gens:
                     g.set_immutable()
-            return MatrixLieAlgebraFromAssociative(A, gens, names=names,
-                                                   index_set=index_set,
-                                                   category=category)
+            return MatrixLieAlgebraFromAssociative(
+                A, gens, names=names, index_set=index_set, category=category
+            )
 
-        return super().__classcall__(cls, A, gens, names=names,
-                                     index_set=index_set, category=category)
+        return super().__classcall__(
+            cls, A, gens, names=names, index_set=index_set, category=category
+        )
 
     def __init__(self, A, gens=None, names=None, index_set=None, category=None):
         """
@@ -1191,13 +1264,17 @@ class LieAlgebraFromAssociative(LieAlgebraWithGenerators):
 
         if isinstance(gens, tuple):
             # This guarantees that the generators have a specified ordering
-            d = {self._indices[i]: self.element_class(self, v)
-                 for i, v in enumerate(gens)}
+            d = {
+                self._indices[i]: self.element_class(self, v)
+                for i, v in enumerate(gens)
+            }
             gens = Family(self._indices, lambda i: d[i])
         elif gens is not None:  # It is a family
-            gens = Family(self._indices,
-                          lambda i: self.element_class(self, gens[i]),
-                          name="generator map")
+            gens = Family(
+                self._indices,
+                lambda i: self.element_class(self, gens[i]),
+                name="generator map",
+            )
         self._gens = gens
 
         # We don't need to store the original generators because we can
@@ -1237,7 +1314,9 @@ class LieAlgebraFromAssociative(LieAlgebraWithGenerators):
             in Symmetric group algebra of order 3 over Rational Field
         """
         if self._gens is not None:
-            return "Lie algebra generated by {} in {}".format(tuple(self._gens), self._assoc)
+            return "Lie algebra generated by {} in {}".format(
+                tuple(self._gens), self._assoc
+            )
         return "Lie algebra of {}".format(self._assoc)
 
     def _element_constructor_(self, x):
@@ -1482,6 +1561,7 @@ class LiftMorphismToAssociative(LiftMorphism):
     The natural lifting morphism from a Lie algebra constructed from
     an associative algebra `A` to `A`.
     """
+
     def preimage(self, x):
         """
         Return the preimage of ``x`` under ``self``.
@@ -1529,8 +1609,7 @@ class LiftMorphismToAssociative(LiftMorphism):
               From: Free Algebra on 3 generators (x, y, z) over Rational Field
               To:   Lie algebra generated by (x, y, z) in Free Algebra on 3 generators (x, y, z) over Rational Field
         """
-        return SetMorphism(Hom(self.codomain(), self.domain()),
-                           self.preimage)
+        return SetMorphism(Hom(self.codomain(), self.domain()), self.preimage)
 
 
 class MatrixLieAlgebraFromAssociative(LieAlgebraFromAssociative):
@@ -1540,6 +1619,7 @@ class MatrixLieAlgebraFromAssociative(LieAlgebraFromAssociative):
     This means a Lie algebra consisting of matrices,
     with commutator as Lie bracket.
     """
+
     class Element(LieAlgebraMatrixWrapper, LieAlgebraFromAssociative.Element):
         def matrix(self):
             r"""

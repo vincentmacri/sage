@@ -61,6 +61,7 @@ def gap_workspace_file(system='gap', name='workspace', dir=None):
         dir = os.path.join(DOT_SAGE, 'gap')
 
     from sage.libs.gap.util import kernel_info
+
     data = ";".join(kernel_info())
     h = hashlib.sha1(data.encode('utf-8')).hexdigest()
     return os.path.join(dir, f'{system}-{name}-{HOSTNAME}-{h}')
@@ -102,7 +103,9 @@ def prepare_workspace_dir(dir=None):
     else:
         # Directory was created, add a README file
         with open(os.path.join(dir, 'README.txt'), 'w') as f:
-            f.write("It is OK to delete all these cache files.  They will be recreated as needed.\n")
+            f.write(
+                "It is OK to delete all these cache files.  They will be recreated as needed.\n"
+            )
 
     # Delete all gap workspaces that haven't been used in the last
     # week, to avoid needless cruft.  I had an install on sage.math
@@ -117,7 +120,7 @@ def prepare_workspace_dir(dir=None):
             W = os.path.join(dir, F)
             try:
                 age = now - os.path.getatime(W)
-                if age >= 604800:    # 1 week in seconds
+                if age >= 604800:  # 1 week in seconds
                     os.unlink(W)
             except OSError:
                 # It's not a problem if W doesn't exist, everything

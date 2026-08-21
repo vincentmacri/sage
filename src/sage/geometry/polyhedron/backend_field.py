@@ -20,7 +20,7 @@ EXAMPLES::
      An inequality (1, -0.5773502691896258?) x + 0 >= 0,
      An inequality (0, 1.154700538379252?) x + 0 >= 0)
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2014 Volker Braun <vbraun.name@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,8 +28,7 @@ EXAMPLES::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from .base import Polyhedron_base
 
@@ -71,6 +70,7 @@ class Polyhedron_field(Polyhedron_base):
         sage: Polyhedron(lines=[[1]], backend='field')
         A 1-dimensional polyhedron in QQ^1 defined as the convex hull of 1 vertex and 1 line
     """
+
     def _is_zero(self, x):
         """
         Test whether ``x`` is zero.
@@ -157,9 +157,15 @@ class Polyhedron_field(Polyhedron_base):
         self._init_Vrepresentation(*Vrep)
         self._init_Hrepresentation(*Hrep)
 
-    def _init_from_Vrepresentation(self, vertices, rays, lines,
-                                   minimize=True, verbose=False,
-                                   internal_base_ring=None):
+    def _init_from_Vrepresentation(
+        self,
+        vertices,
+        rays,
+        lines,
+        minimize=True,
+        verbose=False,
+        internal_base_ring=None,
+    ):
         """
         Construct polyhedron from V-representation data.
 
@@ -189,16 +195,21 @@ class Polyhedron_field(Polyhedron_base):
         """
         if internal_base_ring is None:
             internal_base_ring = self.base_ring()
-        from sage.geometry.polyhedron.double_description_inhomogeneous import Hrep2Vrep, Vrep2Hrep
+        from sage.geometry.polyhedron.double_description_inhomogeneous import (
+            Hrep2Vrep,
+            Vrep2Hrep,
+        )
+
         H = Vrep2Hrep(internal_base_ring, self.ambient_dim(), vertices, rays, lines)
-        V = Hrep2Vrep(internal_base_ring, self.ambient_dim(),
-                      H.inequalities, H.equations)
+        V = Hrep2Vrep(
+            internal_base_ring, self.ambient_dim(), H.inequalities, H.equations
+        )
         self._init_Vrepresentation_backend(V)
         self._init_Hrepresentation_backend(H)
 
-    def _init_from_Hrepresentation(self, ieqs, eqns,
-                                   minimize=True, verbose=False,
-                                   internal_base_ring=None):
+    def _init_from_Hrepresentation(
+        self, ieqs, eqns, minimize=True, verbose=False, internal_base_ring=None
+    ):
         """
         Construct polyhedron from H-representation data.
 
@@ -225,10 +236,15 @@ class Polyhedron_field(Polyhedron_base):
         """
         if internal_base_ring is None:
             internal_base_ring = self.base_ring()
-        from sage.geometry.polyhedron.double_description_inhomogeneous import Hrep2Vrep, Vrep2Hrep
+        from sage.geometry.polyhedron.double_description_inhomogeneous import (
+            Hrep2Vrep,
+            Vrep2Hrep,
+        )
+
         V = Hrep2Vrep(internal_base_ring, self.ambient_dim(), ieqs, eqns)
-        H = Vrep2Hrep(internal_base_ring, self.ambient_dim(),
-                      V.vertices, V.rays, V.lines)
+        H = Vrep2Hrep(
+            internal_base_ring, self.ambient_dim(), V.vertices, V.rays, V.lines
+        )
         self._init_Vrepresentation_backend(V)
         self._init_Hrepresentation_backend(H)
 

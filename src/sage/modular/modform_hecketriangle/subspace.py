@@ -44,7 +44,9 @@ def canonical_parameters(ambient_space, basis, check=True):
           1 + 26208*q^3 + 530712*q^4 + O(q^5)))
     """
     if check:
-        coord_matrix = matrix([ambient_space(v).ambient_coordinate_vector() for v in basis])
+        coord_matrix = matrix(
+            [ambient_space(v).ambient_coordinate_vector() for v in basis]
+        )
         pivots = coord_matrix.transpose().pivots()
         new_basis = [ambient_space(basis[l]) for l in pivots]
         basis = tuple(new_basis)
@@ -134,7 +136,9 @@ class SubSpaceForms(FormsSpace_abstract, Module, UniqueRepresentation):
         (ambient_space, basis) = canonical_parameters(ambient_space, basis, check)
 
         # we return check=True to ensure only one cached instance
-        return super().__classcall__(cls, ambient_space=ambient_space, basis=basis, check=True)
+        return super().__classcall__(
+            cls, ambient_space=ambient_space, basis=basis, check=True
+        )
 
     def __init__(self, ambient_space, basis, check):
         r"""
@@ -204,14 +208,23 @@ class SubSpaceForms(FormsSpace_abstract, Module, UniqueRepresentation):
             sage: subspace.gens()
             (q + 24*q^2 + O(q^3), q - 24*q^2 + O(q^3), q - 8*q^2 + O(q^3))
         """
-        FormsSpace_abstract.__init__(self, group=ambient_space.group(), base_ring=ambient_space.base_ring(), k=ambient_space.weight(), ep=ambient_space.ep(), n=ambient_space.hecke_n())
+        FormsSpace_abstract.__init__(
+            self,
+            group=ambient_space.group(),
+            base_ring=ambient_space.base_ring(),
+            k=ambient_space.weight(),
+            ep=ambient_space.ep(),
+            n=ambient_space.hecke_n(),
+        )
         Module.__init__(self, base=ambient_space.base_ring())
 
         self._ambient_space = ambient_space
         self._basis = list(basis)
         # self(v) instead would somehow mess up the coercion model
         self._gens = tuple(self._element_constructor_(v) for v in basis)
-        self._module = ambient_space._module.submodule([ambient_space.coordinate_vector(v) for v in basis])
+        self._module = ambient_space._module.submodule(
+            [ambient_space.coordinate_vector(v) for v in basis]
+        )
         # TODO: get the analytic type from the basis
         # self._analytic_type=self.AT(["quasi", "mero"])
         self._analytic_type = ambient_space._analytic_type
@@ -250,7 +263,9 @@ class SubSpaceForms(FormsSpace_abstract, Module, UniqueRepresentation):
             NotImplementedError
         """
 
-        return self.__class__.__base__(self._ambient_space.change_ring(new_base_ring), self._basis, check=False)
+        return self.__class__.__base__(
+            self._ambient_space.change_ring(new_base_ring), self._basis, check=False
+        )
 
     def change_ambient_space(self, new_ambient_space):
         r"""
@@ -288,7 +303,7 @@ class SubSpaceForms(FormsSpace_abstract, Module, UniqueRepresentation):
             sage: subspace.contains_coeff_ring()
             False
         """
-        return (super().contains_coeff_ring() and self.dimension() == 1)
+        return super().contains_coeff_ring() and self.dimension() == 1
 
     @cached_method
     def basis(self):

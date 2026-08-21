@@ -63,6 +63,7 @@ class QuotientModuleWithBasis(CombinatorialFreeModule):
         - :class:`SubmoduleWithBasis`
         - :func:`~sage.rings.quotient_ring.QuotientRing`
     """
+
     @staticmethod
     def __classcall_private__(cls, submodule, category=None):
         r"""
@@ -78,7 +79,9 @@ class QuotientModuleWithBasis(CombinatorialFreeModule):
             sage: J1 is J2
             True
         """
-        default_category = ModulesWithBasis(submodule.category().base_ring()).Quotients()
+        default_category = ModulesWithBasis(
+            submodule.category().base_ring()
+        ).Quotients()
         category = default_category.or_subcategory(category, join=True)
         return super().__classcall__(cls, submodule, category)
 
@@ -105,9 +108,9 @@ class QuotientModuleWithBasis(CombinatorialFreeModule):
         self._ambient = submodule.ambient()
         embedding = submodule.lift
         indices = embedding.cokernel_basis_indices()
-        CombinatorialFreeModule.__init__(self,
-                                         submodule.base_ring(), indices,
-                                         category=category, *args, **opts)
+        CombinatorialFreeModule.__init__(
+            self, submodule.base_ring(), indices, category=category, *args, **opts
+        )
 
     def ambient(self):
         r"""
@@ -194,9 +197,18 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
         - :meth:`ModulesWithBasis.ParentMethods.submodule <sage.categories.modules_with_basis.ModulesWithBasis.ParentMethods.submodule>`
         - :class:`QuotientModuleWithBasis`
     """
+
     @staticmethod
-    def __classcall_private__(cls, basis, support_order, ambient=None,
-                              unitriangular=False, category=None, *args, **opts):
+    def __classcall_private__(
+        cls,
+        basis,
+        support_order,
+        ambient=None,
+        unitriangular=False,
+        category=None,
+        *args,
+        **opts,
+    ):
         r"""
         Normalize the input.
 
@@ -219,12 +231,20 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
         if category is None and ambient.category().is_subcategory(Mod.Filtered()):
             default_category = default_category.Filtered()
         category = default_category.or_subcategory(category, join=True)
-        return super().__classcall__(cls, basis, tuple(support_order),
-                                     ambient, unitriangular, category,
-                                     *args, **opts)
+        return super().__classcall__(
+            cls,
+            basis,
+            tuple(support_order),
+            ambient,
+            unitriangular,
+            category,
+            *args,
+            **opts,
+        )
 
-    def __init__(self, basis, support_order, ambient, unitriangular, category,
-                 *args, **opts):
+    def __init__(
+        self, basis, support_order, ambient, unitriangular, category, *args, **opts
+    ):
         r"""
         Initialization.
 
@@ -242,9 +262,9 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
             sage: TestSuite(Y).run()
         """
         ring = ambient.base_ring()
-        CombinatorialFreeModule.__init__(self, ring, basis.keys(),
-                                         category=category.Subobjects(),
-                                         *args, **opts)
+        CombinatorialFreeModule.__init__(
+            self, ring, basis.keys(), category=category.Subobjects(), *args, **opts
+        )
         self._ambient = ambient
         self._basis = basis
         self._unitriangular = unitriangular
@@ -298,12 +318,14 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
             sage: (y[0] + y[1]).lift()
             x[0] - x[2]
         """
-        return self.module_morphism(self.lift_on_basis,
-                                    codomain=self._ambient,
-                                    triangular='lower',
-                                    unitriangular=self._unitriangular,
-                                    key=self._support_key,
-                                    inverse_on_support='compute')
+        return self.module_morphism(
+            self.lift_on_basis,
+            codomain=self._ambient,
+            triangular='lower',
+            unitriangular=self._unitriangular,
+            key=self._support_key,
+            inverse_on_support='compute',
+        )
 
     @lazy_attribute
     def reduce(self):
@@ -405,13 +427,19 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
         """
         if other is self._ambient:
             return True
-        if not (isinstance(self, SubmoduleWithBasis) and self.ambient() is other.ambient()):
+        if not (
+            isinstance(self, SubmoduleWithBasis) and self.ambient() is other.ambient()
+        ):
             return False  # different ambient spaces
         if self not in ModulesWithBasis.FiniteDimensional:
-            raise NotImplementedError("only implemented for finite dimensional submodules")
+            raise NotImplementedError(
+                "only implemented for finite dimensional submodules"
+            )
         if self.dimension() > other.dimension():  # quick dimension check
             return False
-        if not set(self._support_order) <= set(other._support_order):  # quick support check
+        if not set(self._support_order) <= set(
+            other._support_order
+        ):  # quick support check
             return False
         for b in self.basis():
             try:
@@ -477,10 +505,15 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
              [   0    0    1   -1])
         """
         from sage.modules.free_module import FreeModule
+
         supp_order = self._support_order
         A = FreeModule(self.base_ring(), len(supp_order))
-        U = A.submodule([A([vec[supp] for supp in supp_order]) for vec in self._basis], check=False)
-        V = A.submodule([A([vec[supp] for supp in supp_order]) for vec in other._basis], check=False)
+        U = A.submodule(
+            [A([vec[supp] for supp in supp_order]) for vec in self._basis], check=False
+        )
+        V = A.submodule(
+            [A([vec[supp] for supp in supp_order]) for vec in other._basis], check=False
+        )
         return (U, V)
 
     def is_equal_subspace(self, other) -> bool:
@@ -538,12 +571,19 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
         """
         if self is other:  # trivial case
             return True
-        if not isinstance(self, SubmoduleWithBasis) and self.ambient() is other.ambient():
-            raise ArithmeticError("other (=%s) should be a submodule of the same ambient space" % other)
+        if (
+            not isinstance(self, SubmoduleWithBasis)
+            and self.ambient() is other.ambient()
+        ):
+            raise ArithmeticError(
+                "other (=%s) should be a submodule of the same ambient space" % other
+            )
         if self.dimension() != other.dimension():  # quick dimension check
             return False
         if self not in ModulesWithBasis.FiniteDimensional:
-            raise NotImplementedError("only implemented for finite dimensional submodules")
+            raise NotImplementedError(
+                "only implemented for finite dimensional submodules"
+            )
         if set(self._basis) == set(other._basis):
             return True
         if set(self._support_order) != set(other._support_order):  # different supports
@@ -593,7 +633,9 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
             raise TypeError("both objects must be submodules")
         if other.ambient() != self.ambient():
             raise ArithmeticError("both subspaces must have the same ambient space")
-        return self.ambient().submodule(set(list(self._basis) + list(other._basis)), check=False)
+        return self.ambient().submodule(
+            set(list(self._basis) + list(other._basis)), check=False
+        )
 
     subspace_sum = __add__
 
@@ -648,8 +690,12 @@ class SubmoduleWithBasis(CombinatorialFreeModule):
         UV = U & V  # the intersection
         A = self._ambient
         supp = self._support_order
-        return A.submodule([A.element_class(A, {supp[i]: c for i, c in vec.items()})
-                            for vec in UV.basis()])
+        return A.submodule(
+            [
+                A.element_class(A, {supp[i]: c for i, c in vec.items()})
+                for vec in UV.basis()
+            ]
+        )
 
     intersection = __and__
     __rand__ = __and__

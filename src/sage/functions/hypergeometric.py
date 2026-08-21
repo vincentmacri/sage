@@ -247,6 +247,7 @@ class Hypergeometric(BuiltinFunction):
 
     where `(x)_n` is the rising factorial.
     """
+
     def __init__(self):
         """
         Initialize class.
@@ -264,13 +265,18 @@ class Hypergeometric(BuiltinFunction):
             sage: G.simplify()                      # optional - maple
             0
         """
-        BuiltinFunction.__init__(self, 'hypergeometric', nargs=3,
-                                 conversions={'mathematica':
-                                              'HypergeometricPFQ',
-                                              'maxima': 'hypergeometric',
-                                              'maple': 'hypergeom',
-                                              'sympy': 'hyper',
-                                              'fricas': 'hypergeometricF'})
+        BuiltinFunction.__init__(
+            self,
+            'hypergeometric',
+            nargs=3,
+            conversions={
+                'mathematica': 'HypergeometricPFQ',
+                'maxima': 'hypergeometric',
+                'maple': 'hypergeom',
+                'sympy': 'hyper',
+                'fricas': 'hypergeometricF',
+            },
+        )
 
     def __call__(self, a, b, z, **kwargs):
         """
@@ -328,17 +334,26 @@ class Hypergeometric(BuiltinFunction):
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
         from sage.rings.power_series_ring import PowerSeriesRing_generic
         from sage.rings.lazy_series_ring import LazySeriesRing
+
         if hasattr(z, 'parent'):
             S = z.parent()
-            if isinstance(S, (PolynomialRing_generic, PowerSeriesRing_generic, LazySeriesRing)):
+            if isinstance(
+                S, (PolynomialRing_generic, PowerSeriesRing_generic, LazySeriesRing)
+            ):
                 if z != S.gen():
-                    raise NotImplementedError("the argument must be the generator of the polynomial ring")
-                from sage.functions.hypergeometric_algebraic import HypergeometricFunctions
-                return HypergeometricFunctions(S.base_ring(), S.variable_name(), **kwargs)(a, b)
-        return BuiltinFunction.__call__(self,
-                                        SR._force_pyobject(a),
-                                        SR._force_pyobject(b),
-                                        z, **kwargs)
+                    raise NotImplementedError(
+                        "the argument must be the generator of the polynomial ring"
+                    )
+                from sage.functions.hypergeometric_algebraic import (
+                    HypergeometricFunctions,
+                )
+
+                return HypergeometricFunctions(
+                    S.base_ring(), S.variable_name(), **kwargs
+                )(a, b)
+        return BuiltinFunction.__call__(
+            self, SR._force_pyobject(a), SR._force_pyobject(b), z, **kwargs
+        )
 
     def _print_latex_(self, a, b, z):
         r"""
@@ -350,8 +365,10 @@ class Hypergeometric(BuiltinFunction):
         aa = ",".join(latex(c) for c in a)
         bb = ",".join(latex(c) for c in b)
         z = latex(z)
-        return (r"\,_{}F_{}\left(\begin{{matrix}} {} \\ {} \end{{matrix}} ; "
-                r"{} \right)").format(len(a), len(b), aa, bb, z)
+        return (
+            r"\,_{}F_{}\left(\begin{{matrix}} {} \\ {} \end{{matrix}} ; "
+            r"{} \right)"
+        ).format(len(a), len(b), aa, bb, z)
 
     def _eval_(self, a, b, z, **kwargs):
         """
@@ -364,7 +381,7 @@ class Hypergeometric(BuiltinFunction):
             raise TypeError("The first two parameters must be of type list")
 
         if not isinstance(z, Expression) and z == 0:  # Expression is excluded
-            return Integer(1)                         # to avoid call to Maxima
+            return Integer(1)  # to avoid call to Maxima
 
     def _evalf_try_(self, a, b, z):
         """
@@ -432,16 +449,19 @@ class Hypergeometric(BuiltinFunction):
         """
         diff_param = kwargs['diff_param']
         if diff_param in hypergeometric(a, b, 1).variables():  # ignore z
-            raise NotImplementedError("derivative of hypergeometric function "
-                                      "with respect to parameters. Try calling"
-                                      " .simplify_hypergeometric() first.")
-        t = (reduce(lambda x, y: x * y, a, 1) *
-             reduce(lambda x, y: x / y, b, Integer(1)))
-        return (t * derivative(z, diff_param) *
-                hypergeometric([c + 1 for c in a], [c + 1 for c in b], z))
+            raise NotImplementedError(
+                "derivative of hypergeometric function "
+                "with respect to parameters. Try calling"
+                " .simplify_hypergeometric() first."
+            )
+        t = reduce(lambda x, y: x * y, a, 1) * reduce(lambda x, y: x / y, b, Integer(1))
+        return (
+            t
+            * derivative(z, diff_param)
+            * hypergeometric([c + 1 for c in a], [c + 1 for c in b], z)
+        )
 
     class EvaluationMethods:
-
         def _fast_callable_(self, a, b, z, etb):
             """
             Override the ``fast_callable`` method.
@@ -691,9 +711,9 @@ class Hypergeometric(BuiltinFunction):
             while k <= n:
                 yield t
                 for aa in a:
-                    t *= (aa + k - 1)
+                    t *= aa + k - 1
                 for bb in b:
-                    t /= (bb + k - 1)
+                    t /= bb + k - 1
                 t *= z
                 if t == 0:
                     break
@@ -756,8 +776,8 @@ class Hypergeometric(BuiltinFunction):
                 for j, bbb in enumerate(bb):
                     m = aaa - bbb
                     if m in ZZ and m > 0:
-                        aaaa = aa[:i] + aa[i + 1:]
-                        bbbb = bb[:j] + bb[j + 1:]
+                        aaaa = aa[:i] + aa[i + 1 :]
+                        bbbb = bb[:j] + bb[j + 1 :]
                         terms = []
                         for k in range(m + 1):
                             # TODO: could rewrite prefactors as recurrence
@@ -766,10 +786,11 @@ class Hypergeometric(BuiltinFunction):
                                 term *= rising_factorial(c, k)
                             for c in bbbb:
                                 term /= rising_factorial(c, k)
-                            term *= z ** k
+                            term *= z**k
                             term /= rising_factorial(aaa - m, k)
-                            F = hypergeometric([c + k for c in aaaa],
-                                               [c + k for c in bbbb], z)
+                            F = hypergeometric(
+                                [c + k for c in aaaa], [c + k for c in bbbb], z
+                            )
                             unique = []
                             counts = []
                             for c, f in F._deflated():
@@ -779,8 +800,7 @@ class Hypergeometric(BuiltinFunction):
                                     unique.append(f)
                                     counts.append(c)
                             Fterms = zip(counts, unique)
-                            terms += [(term * termG, G) for (termG, G) in
-                                      Fterms]
+                            terms += [(term * termG, G) for (termG, G) in Fterms]
                         return terms
             return ((1, new),)
 
@@ -872,12 +892,11 @@ def closed_form(hyp):
                 if 2 * b == 3:
                     return F32
                 if 2 * b > 3:
-                    return ((b - 2) * (b - 1) / z * (_0f1(b - 2, z) -
-                            _0f1(b - 1, z)))
+                    return (b - 2) * (b - 1) / z * (_0f1(b - 2, z) - _0f1(b - 1, z))
                 if 2 * b < 1:
-                    return (_0f1(b + 1, z) + z / (b * (b + 1)) *
-                            _0f1(b + 2, z))
+                    return _0f1(b + 1, z) + z / (b * (b + 1)) * _0f1(b + 2, z)
                 raise ValueError
+
             # Can evaluate 0F1 in terms of elementary functions when
             # the parameter is a half-integer
             if 2 * b[0] in ZZ and b[0] not in ZZ:
@@ -895,18 +914,25 @@ def closed_form(hyp):
             if n in ZZ and m in ZZ and m > 0 and n > 0:
                 rf = rising_factorial
                 if m <= n:
-                    return (exp(z) * sum(rf(m - n, k) * (-z) ** k /
-                            factorial(k) / rf(m, k) for k in
-                            range(n - m + 1)))
-                T = sum(rf(n - m + 1, k) * z ** k /
-                        (factorial(k) * rf(2 - m, k)) for k in
-                        range(m - n))
-                U = sum(rf(1 - n, k) * (-z) ** k /
-                        (factorial(k) * rf(2 - m, k)) for k in
-                        range(n))
-                return (factorial(m - 2) * rf(1 - m, n) *
-                        z ** (1 - m) / factorial(n - 1) *
-                        (T - exp(z) * U))
+                    return exp(z) * sum(
+                        rf(m - n, k) * (-z) ** k / factorial(k) / rf(m, k)
+                        for k in range(n - m + 1)
+                    )
+                T = sum(
+                    rf(n - m + 1, k) * z**k / (factorial(k) * rf(2 - m, k))
+                    for k in range(m - n)
+                )
+                U = sum(
+                    rf(1 - n, k) * (-z) ** k / (factorial(k) * rf(2 - m, k))
+                    for k in range(n)
+                )
+                return (
+                    factorial(m - 2)
+                    * rf(1 - m, n)
+                    * z ** (1 - m)
+                    / factorial(n - 1)
+                    * (T - exp(z) * U)
+                )
 
         if p == 2 and q == 1:
             R12 = QQ((1, 2))
@@ -929,8 +955,9 @@ def closed_form(hyp):
                     F1 = _2f1(a, b - 1, c, z)
                     F2 = _2f1(a, b - 2, c, z)
                     q = (b - 1) * (z - 1)
-                    return (((c - 2 * b + 2 + (b - a - 1) * z) * F1 +
-                            (b - c - 1) * F2) / q)
+                    return (
+                        (c - 2 * b + 2 + (b - a - 1) * z) * F1 + (b - c - 1) * F2
+                    ) / q
                 if c > 2:
                     # how to handle this case?
                     if a - c + 1 == 0 or b - c + 1 == 0:
@@ -957,17 +984,18 @@ def closed_form(hyp):
                 if (a, b, c) == (2, 2, 1):
                     return (1 + z) / (1 - z) ** 3
                 raise NotImplementedError
+
             aa, bb = a
-            cc, = b
+            (cc,) = b
             if z == 1:
-                return (gamma(cc) * gamma(cc - aa - bb) / gamma(cc - aa) /
-                        gamma(cc - bb))
+                return gamma(cc) * gamma(cc - aa - bb) / gamma(cc - aa) / gamma(cc - bb)
             if all((cf * 2) in ZZ and cf > 0 for cf in (aa, bb, cc)):
                 try:
                     return _2f1(aa, bb, cc, z)
                 except NotImplementedError:
                     pass
         return hyp
+
     return sum([coeff * _closed_form(pfq) for coeff, pfq in new._deflated()])
 
 
@@ -1007,6 +1035,7 @@ class Hypergeometric_M(BuiltinFunction):
         sage: hypergeometric_M(1, 1/2, x).simplify_hypergeometric()
         (-I*sqrt(pi)*x*erf(I*sqrt(-x))*e^x + sqrt(-x))/sqrt(-x)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1016,13 +1045,18 @@ class Hypergeometric_M(BuiltinFunction):
             sage: latex(hypergeometric_M(1,1,x))                                        # needs sage.symbolic
             M\left(1, 1, x\right)
         """
-        BuiltinFunction.__init__(self, 'hypergeometric_M', nargs=3,
-                                 conversions={'mathematica':
-                                              'Hypergeometric1F1',
-                                              'maple': 'KummerM',
-                                              'maxima': 'kummer_m',
-                                              'fricas': 'kummerM'},
-                                 latex_name='M')
+        BuiltinFunction.__init__(
+            self,
+            'hypergeometric_M',
+            nargs=3,
+            conversions={
+                'mathematica': 'Hypergeometric1F1',
+                'maple': 'KummerM',
+                'maxima': 'kummer_m',
+                'fricas': 'kummerM',
+            },
+            latex_name='M',
+        )
 
     def _eval_(self, a, b, z, **kwargs):
         """
@@ -1058,8 +1092,9 @@ class Hypergeometric_M(BuiltinFunction):
         """
         if diff_param == 2:
             return (a / b) * hypergeometric_M(a + 1, b + 1, z)
-        raise NotImplementedError('derivative of hypergeometric function '
-                                  'with respect to parameters')
+        raise NotImplementedError(
+            'derivative of hypergeometric function with respect to parameters'
+        )
 
     class EvaluationMethods:
         def generalized(self, a, b, z):
@@ -1122,6 +1157,7 @@ class Hypergeometric_U(BuiltinFunction):
         sage: hypergeometric_U(1, 3, x).simplify_hypergeometric()                       # needs sage.symbolic
         (x + 1)/x^2
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1131,13 +1167,18 @@ class Hypergeometric_U(BuiltinFunction):
             sage: latex(hypergeometric_U(1, 1, x))                                      # needs sage.symbolic
             U\left(1, 1, x\right)
         """
-        BuiltinFunction.__init__(self, 'hypergeometric_U', nargs=3,
-                                 conversions={'mathematica':
-                                              'HypergeometricU',
-                                              'maple': 'KummerU',
-                                              'maxima': 'kummer_u',
-                                              'fricas': 'kummerU'},
-                                 latex_name='U')
+        BuiltinFunction.__init__(
+            self,
+            'hypergeometric_U',
+            nargs=3,
+            conversions={
+                'mathematica': 'HypergeometricU',
+                'maple': 'KummerU',
+                'maxima': 'kummer_u',
+                'fricas': 'kummerU',
+            },
+            latex_name='U',
+        )
 
     def _eval_(self, a, b, z, **kwargs):
         return
@@ -1164,8 +1205,9 @@ class Hypergeometric_U(BuiltinFunction):
         """
         if diff_param == 2:
             return -a * hypergeometric_U(a + 1, b + 1, z)
-        raise NotImplementedError('derivative of hypergeometric function '
-                                  'with respect to parameters')
+        raise NotImplementedError(
+            'derivative of hypergeometric function with respect to parameters'
+        )
 
     class EvaluationMethods:
         def generalized(self, a, b, z):
@@ -1184,7 +1226,7 @@ class Hypergeometric_U(BuiltinFunction):
                 sage: hypergeometric_U(3, I, 2).generalized()
                 1/8*hypergeometric((3, -I + 4), (), -1/2)
             """
-            return z ** (-a) * hypergeometric([a, a - b + 1], [], -z ** (-1))
+            return z ** (-a) * hypergeometric([a, a - b + 1], [], -(z ** (-1)))
 
 
 hypergeometric_U = Hypergeometric_U()

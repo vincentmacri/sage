@@ -258,20 +258,29 @@ def extcode_dir(iface=None) -> str:
     if not EXTCODE_DIR:
         if iface is None or iface._server is None:
             import shutil
+
             tmp = sage.misc.temporary_file.tmp_dir()
             shutil.copytree('%s/magma/' % SAGE_EXTCODE, tmp + '/data')
             EXTCODE_DIR = "%s/data/" % tmp
         else:
             tmp = iface._remote_tmpdir()
-            command = 'scp -q -r "%s/magma/" "%s:%s/data" 1>&2 2>/dev/null' % (SAGE_EXTCODE, iface._server, tmp)
+            command = 'scp -q -r "%s/magma/" "%s:%s/data" 1>&2 2>/dev/null' % (
+                SAGE_EXTCODE,
+                iface._server,
+                tmp,
+            )
             try:
                 ans = os.system(command)
                 EXTCODE_DIR = "%s/data/" % tmp
                 if ans != 0:
                     raise OSError
             except OSError:
-                out_str = 'Tried to copy the file structure in "%s/magma/" to "%s:%s/data" and failed (possibly because scp is not installed in the system).\nFor the remote Magma to work you should populate the remote directory by some other method, or install scp in the system and retry.' % (SAGE_EXTCODE, iface._server, tmp)
+                out_str = (
+                    'Tried to copy the file structure in "%s/magma/" to "%s:%s/data" and failed (possibly because scp is not installed in the system).\nFor the remote Magma to work you should populate the remote directory by some other method, or install scp in the system and retry.'
+                    % (SAGE_EXTCODE, iface._server, tmp)
+                )
                 from warnings import warn
+
                 warn(out_str)
     return EXTCODE_DIR
 
@@ -309,9 +318,17 @@ class Magma(ExtraTabCompletion, Expect):
         '1.1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
         sage: magma.SetDefaultRealFieldPrecision(30, nvals=0)  # optional - magma
     """
-    def __init__(self, script_subdirectory=None,
-                 logfile=None, server=None, server_tmpdir=None,
-                 user_config=False, seed=None, command=None):
+
+    def __init__(
+        self,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        user_config=False,
+        seed=None,
+        command=None,
+    ):
         """
         INPUT:
 
@@ -349,16 +366,18 @@ class Magma(ExtraTabCompletion, Expect):
         if seed is None:
             seed = os.getenv('SAGE_MAGMA_SEED')
 
-        Expect.__init__(self,
-                        name='magma',
-                        prompt='>>SAGE>>',
-                        command=command,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=100)
+        Expect.__init__(
+            self,
+            name='magma',
+            prompt='>>SAGE>>',
+            command=command,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            logfile=logfile,
+            eval_using_file_cutoff=100,
+        )
         # We use "-n" above in the Magma startup command so
         # local user startup configuration is not read.
 
@@ -466,7 +485,7 @@ class Magma(ExtraTabCompletion, Expect):
         i = s.find('\n')
         if i == -1:  # special case -- command produced no output, so no \n
             return ''
-        return s[i + 1:]
+        return s[i + 1 :]
 
     def __getattr__(self, attrname):
         """
@@ -678,9 +697,7 @@ class Magma(ExtraTabCompletion, Expect):
         """
         var = self._next_var_name()
         value = self(value)
-        out = self.eval("_zsage_<%s> := %s; %s := _zsage_" % (gens,
-                                                              value.name(),
-                                                              var))
+        out = self.eval("_zsage_<%s> := %s; %s := _zsage_" % (gens, value.name(), var))
         if out.lower().find("error") != -1:
             raise TypeError("Error executing Magma code:\n%s" % out)
         return self(var)
@@ -824,8 +841,8 @@ class Magma(ExtraTabCompletion, Expect):
             z = SAGE_REF_RE.search(s)
             if not z:
                 break
-            self.eval('delete %s;' % s[z.start():z.end()])
-            s = s[z.end()+1:]
+            self.eval('delete %s;' % s[z.start() : z.end()])
+            s = s[z.end() + 1 :]
         return a
 
     def _with_names(self, s, names):
@@ -846,8 +863,7 @@ class Magma(ExtraTabCompletion, Expect):
             sage: magma._with_names('PolynomialRing(RationalField())', ['y'])     # optional - magma
             'SageCreateWithNames(PolynomialRing(RationalField()),["y"])'
         """
-        return 'SageCreateWithNames(%s,[%s])' % (s, ','.join('"%s"' % x
-                                                             for x in names))
+        return 'SageCreateWithNames(%s,[%s])' % (s, ','.join('"%s"' % x for x in names))
 
     def clear(self, var):
         """
@@ -1131,8 +1147,7 @@ class Magma(ExtraTabCompletion, Expect):
         if len(params) == 0:
             par = ''
         else:
-            par = ' : ' + ','.join('%s:=%s' % (a, b.name())
-                                   for a, b in params.items())
+            par = ' : ' + ','.join('%s:=%s' % (a, b.name()) for a, b in params.items())
 
         fun = "%s(%s%s)" % (function, ",".join(s.name() for s in args), par)
 
@@ -1452,6 +1467,7 @@ class Magma(ExtraTabCompletion, Expect):
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(INTRINSIC_CACHE)
@@ -1459,10 +1475,14 @@ class Magma(ExtraTabCompletion, Expect):
                 except OSError:
                     pass
             if verbose:
-                print("\nCreating list of all Magma intrinsics for use in tab completion.")
+                print(
+                    "\nCreating list of all Magma intrinsics for use in tab completion."
+                )
                 print("This takes a few minutes the first time, but is saved to the")
                 print("file '%s' for future instant use." % INTRINSIC_CACHE)
-                print("Magma may produce errors during this process, which are safe to ignore.")
+                print(
+                    "Magma may produce errors during this process, which are safe to ignore."
+                )
                 print("Delete that file to force recreation of this cache.")
                 print("Scanning Magma types ...")
                 tm = sage.misc.misc.cputime()
@@ -1477,7 +1497,9 @@ class Magma(ExtraTabCompletion, Expect):
                     for x in s.split('\n'):
                         i = x.find('(')
                         N.append(x[:i])
-                except RuntimeError as msg:  # weird internal problems in Magma type system
+                except (
+                    RuntimeError
+                ) as msg:  # weird internal problems in Magma type system
                     print('Error -- %s' % msg)
             if verbose:
                 print("Done! (%s seconds)" % sage.misc.misc.cputime(tm))
@@ -1641,10 +1663,9 @@ class MagmaFunctionElement(FunctionElement):
                 nvals = kwds['nvals']
                 del kwds['nvals']
         M = self._obj.parent()
-        return M.function_call(self._name,
-                               [self._obj.name()] + list(args),
-                               params=kwds,
-                               nvals=nvals)
+        return M.function_call(
+            self._name, [self._obj.name()] + list(args), params=kwds, nvals=nvals
+        )
 
     def _instancedoc_(self):
         """
@@ -1719,7 +1740,10 @@ class MagmaFunctionElement(FunctionElement):
         try:
             return M.eval('%s`%s' % (self._obj.name(), self._name))
         except RuntimeError:
-            return "Partially evaluated Magma function or intrinsic '%s'\n\nSignature:\n\n%s" % (self._name, self._instancedoc_())
+            return (
+                "Partially evaluated Magma function or intrinsic '%s'\n\nSignature:\n\n%s"
+                % (self._name, self._instancedoc_())
+            )
 
 
 @instancedoc
@@ -1754,10 +1778,7 @@ class MagmaFunction(ExpectFunction):
                 nvals = kwds['nvals']
                 del kwds['nvals']
         M = self._parent
-        return M.function_call(self._name,
-                               list(args),
-                               params=kwds,
-                               nvals=nvals)
+        return M.function_call(self._name, list(args), params=kwds, nvals=nvals)
 
     def _instancedoc_(self):
         """
@@ -1781,8 +1802,7 @@ class MagmaFunction(ExpectFunction):
 
 
 @instancedoc
-class MagmaElement(ExtraTabCompletion, ExpectElement,
-                   sage.interfaces.abc.MagmaElement):
+class MagmaElement(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.MagmaElement):
     def _ref(self):
         """
         Return a variable name that is a new reference to this particular
@@ -2043,8 +2063,10 @@ class MagmaElement(ExtraTabCompletion, ExpectElement,
             a^2 + b
         """
         P = self._check_valid()
-        cmd = 'AssignNames(~%s, [%s])' % (self.name(),
-                                          ','.join('"%s"' % x for x in names))
+        cmd = 'AssignNames(~%s, [%s])' % (
+            self.name(),
+            ','.join('"%s"' % x for x in names),
+        )
         P.eval(cmd)
 
     assign_names = AssignNames
@@ -2400,7 +2422,7 @@ class MagmaElement(ExtraTabCompletion, ExpectElement,
         P = self._check_valid()
         s = str(P.eval('Latex(%s)' % self.name()))
         v = '\\mathrm{'
-        if s[:len(v)] == v:
+        if s[: len(v)] == v:
             raise AttributeError
         return s
 
@@ -2421,7 +2443,7 @@ class MagmaElement(ExtraTabCompletion, ExpectElement,
             sage: V.M
             10
         """
-        P = self.parent()   # instance of Magma that contains this element.
+        P = self.parent()  # instance of Magma that contains this element.
         if not (isinstance(value, MagmaElement) and value.parent() is P):
             value = P(value)
         P.eval('%s`%s := %s' % (self.name(), attrname, value.name()))
@@ -2731,8 +2753,11 @@ def magma_console():
         Total time: 2.820 seconds, Total memory usage: 3.95MB
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%magma magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%magma magics instead.'
+        )
     os.system('magma')
 
 
@@ -2740,13 +2765,16 @@ class MagmaGBLogPrettyPrinter:
     """
     A device which filters Magma Groebner basis computation logs.
     """
+
     cmd_inpt = re.compile("^>>>$")
     app_inpt = re.compile("^Append\\(~_sage_, 0\\);$")
 
     deg_curr = re.compile(
         "^Basis length\\: (\\d+), queue length\\: (\\d+), step degree\\: (\\d+), num pairs\\: (\\d+)$"
     )
-    pol_curr = re.compile("^Number of pair polynomials\\: (\\d+), at (\\d+) column\\(s\\), .*")
+    pol_curr = re.compile(
+        "^Number of pair polynomials\\: (\\d+), at (\\d+) column\\(s\\), .*"
+    )
 
     def __init__(self, verbosity=1, style='magma'):
         """
@@ -2821,12 +2849,12 @@ class MagmaGBLogPrettyPrinter:
             raise ValueError('style must be sage or magma')
         self.style = style
 
-        self.curr_deg = 0    # current degree
+        self.curr_deg = 0  # current degree
         self.curr_npairs = 0  # current number of pairs to be considered
-        self.max_deg = 0    # maximal degree in total
+        self.max_deg = 0  # maximal degree in total
 
-        self.storage = ""   # stores incomplete strings
-        self.sync = None   # should we expect a sync integer?
+        self.storage = ""  # stores incomplete strings
+        self.sync = None  # should we expect a sync integer?
 
     def write(self, s):
         """
@@ -2891,11 +2919,15 @@ class MagmaGBLogPrettyPrinter:
                     self.max_deg = max(self.max_deg, self.curr_deg)
 
                     if style == "sage" and verbosity >= 1:
-                        print("Leading term degree: %2d. Critical pairs: %d." %
-                              (self.curr_deg, self.curr_npairs))
+                        print(
+                            "Leading term degree: %2d. Critical pairs: %d."
+                            % (self.curr_deg, self.curr_npairs)
+                        )
                 elif style == "sage" and verbosity >= 1:
-                    print("Leading term degree: %2d. Critical pairs: %d (all pairs of current degree eliminated by criteria)." %
-                          (self.curr_deg, self.curr_npairs))
+                    print(
+                        "Leading term degree: %2d. Critical pairs: %d (all pairs of current degree eliminated by criteria)."
+                        % (self.curr_deg, self.curr_npairs)
+                    )
 
             if style == "magma" and verbosity >= 1:
                 print(line)
@@ -2909,6 +2941,7 @@ class MagmaGBLogPrettyPrinter:
             sage: logs.flush()
         """
         import sys
+
         sys.stdout.flush()
 
 
@@ -2917,6 +2950,7 @@ class MagmaGBDefaultContext:
     Context to force preservation of verbosity options for Magma's
     Groebner basis computation.
     """
+
     def __init__(self, magma=None):
         """
         INPUT:
@@ -2932,6 +2966,7 @@ class MagmaGBDefaultContext:
         """
         if magma is None:
             from sage.interfaces.magma import magma as magma_default
+
             magma = magma_default
 
         self.magma = magma
@@ -2983,4 +3018,5 @@ def magma_gb_standard_options(func):
         """
         with MagmaGBDefaultContext():
             return func(*args, **kwds)
+
     return wrapper

@@ -26,6 +26,7 @@ AUTHORS:
 Methods
 -------
 """
+
 # **************************************************************************
 #                              Copyright (C) 2007                          #
 #                                                                          #
@@ -142,8 +143,16 @@ class IncidenceStructure(SageObject):
         sage: I._blocks is blocks
         True
     """
-    def __init__(self, points=None, blocks=None, incidence_matrix=None,
-                 name=None, check=True, copy=True) -> None:
+
+    def __init__(
+        self,
+        points=None,
+        blocks=None,
+        incidence_matrix=None,
+        name=None,
+        check=True,
+        copy=True,
+    ) -> None:
         r"""
         TESTS::
 
@@ -182,23 +191,32 @@ class IncidenceStructure(SageObject):
 
         # Reformatting input
         if isinstance(points, Matrix):
-            assert incidence_matrix is None, "'incidence_matrix' cannot be defined when 'points' is a matrix"
-            assert blocks is None, "'blocks' cannot be defined when 'points' is a matrix"
+            assert incidence_matrix is None, (
+                "'incidence_matrix' cannot be defined when 'points' is a matrix"
+            )
+            assert blocks is None, (
+                "'blocks' cannot be defined when 'points' is a matrix"
+            )
             incidence_matrix = points
             points = blocks = None
         elif points is not None and blocks is None:
             blocks = points
             points = set().union(*blocks)
         if points:
-            assert incidence_matrix is None, "'incidence_matrix' cannot be defined when 'points' is defined"
+            assert incidence_matrix is None, (
+                "'incidence_matrix' cannot be defined when 'points' is defined"
+            )
 
         if incidence_matrix:
             from sage.matrix.constructor import matrix
+
             M = matrix(incidence_matrix)
             v = M.nrows()
             self._points = list(range(v))
             self._point_to_index = None
-            self._blocks = sorted(M.nonzero_positions_in_column(i) for i in range(M.ncols()))
+            self._blocks = sorted(
+                M.nonzero_positions_in_column(i) for i in range(M.ncols())
+            )
 
         else:
             if isinstance(points, (int, Integer)):
@@ -206,7 +224,9 @@ class IncidenceStructure(SageObject):
                 self._point_to_index = None
             else:
                 self._points = list(points)
-                if self._points == list(range(len(points))) and all(isinstance(x, (int, Integer)) for x in self._points):
+                if self._points == list(range(len(points))) and all(
+                    isinstance(x, (int, Integer)) for x in self._points
+                ):
                     self._point_to_index = None
                 else:
                     self._point_to_index = {e: i for i, e in enumerate(self._points)}
@@ -214,13 +234,17 @@ class IncidenceStructure(SageObject):
             if check:
                 for block in blocks:
                     if any(x not in self._points for x in block):
-                        raise ValueError("Block {} is not contained in the point set".format(block))
+                        raise ValueError(
+                            "Block {} is not contained in the point set".format(block)
+                        )
                     if len(block) != len(set(block)):
                         raise ValueError("Repeated element in block {}".format(block))
 
             if self._point_to_index:
                 # translate everything to integers between 0 and v-1
-                blocks = [sorted(self._point_to_index[e] for e in block) for block in blocks]
+                blocks = [
+                    sorted(self._point_to_index[e] for e in block) for block in blocks
+                ]
             elif copy:
                 # create a new list made of sorted blocks
                 blocks = [sorted(block) for block in blocks]
@@ -272,7 +296,8 @@ class IncidenceStructure(SageObject):
             Incidence structure with 7 points and 7 blocks
         """
         return 'Incidence structure with {} points and {} blocks'.format(
-            self.n_points(), self.n_blocks())
+            self.n_points(), self.n_blocks()
+        )
 
     __str__ = __repr__
 
@@ -309,11 +334,14 @@ class IncidenceStructure(SageObject):
         if self._points == other._points:
             return self._blocks == other._blocks
 
-        if (self.n_points() != other.n_points() or
-                self.n_blocks() != other.n_blocks()):
+        if self.n_points() != other.n_points() or self.n_blocks() != other.n_blocks():
             return False
 
-        p_to_i = self._point_to_index if self._point_to_index else list(range(self.n_points()))
+        p_to_i = (
+            self._point_to_index
+            if self._point_to_index
+            else list(range(self.n_points()))
+        )
 
         if any(p not in p_to_i for p in other.ground_set()):
             return False
@@ -408,10 +436,13 @@ class IncidenceStructure(SageObject):
         """
         if self._canonical_label is None:
             from sage.graphs.graph import Graph
+
             g = Graph()
             n = self.n_points()
-            g.add_edges((i+n, x) for i, b in enumerate(self._blocks) for x in b)
-            canonical_label = g.canonical_label([list(range(n)), list(range(n, n+self.n_blocks()))], certificate=True)[1]
+            g.add_edges((i + n, x) for i, b in enumerate(self._blocks) for x in b)
+            canonical_label = g.canonical_label(
+                [list(range(n)), list(range(n, n + self.n_blocks()))], certificate=True
+            )[1]
             canonical_label = [canonical_label[x] for x in range(n)]
             self._canonical_label = canonical_label
 
@@ -474,9 +505,11 @@ class IncidenceStructure(SageObject):
             sage: IS1._canonical_label is None or IS2._canonical_label is None
             False
         """
-        if (self.n_points() != other.n_points() or
-            self.n_blocks() != other.n_blocks() or
-                sorted(self.block_sizes()) != sorted(other.block_sizes())):
+        if (
+            self.n_points() != other.n_points()
+            or self.n_blocks() != other.n_blocks()
+            or sorted(self.block_sizes()) != sorted(other.block_sizes())
+        ):
             return {} if certificate else False
 
         A_canon = self.canonical_label()
@@ -559,6 +592,7 @@ class IncidenceStructure(SageObject):
             5616
         """
         from sage.combinat.designs.subhypergraph_search import SubHypergraphSearch
+
         return SubHypergraphSearch(self, H2, induced=induced)
 
     def copy(self):
@@ -577,11 +611,11 @@ class IncidenceStructure(SageObject):
             sage: copy(IS)._name
             'Test'
         """
-        IS = IncidenceStructure(self._blocks,
-                                name=self._name,
-                                check=False)
+        IS = IncidenceStructure(self._blocks, name=self._name, check=False)
         IS.relabel(dict(zip(range(self.n_points()), self._points)))
-        IS._canonical_label = None if self._canonical_label is None else self._canonical_label[:]
+        IS._canonical_label = (
+            None if self._canonical_label is None else self._canonical_label[:]
+        )
 
         return IS
 
@@ -634,19 +668,27 @@ class IncidenceStructure(SageObject):
             for x in points:
                 x = int(x)
                 if x < 0 or x >= n:
-                    raise ValueError("{} is not a point of the incidence structure".format(x))
+                    raise ValueError(
+                        "{} is not a point of the incidence structure".format(x)
+                    )
             int_points = points
         else:
             try:
                 int_points = [self._point_to_index[x] for x in points]
             except KeyError as bad_pt:
-                raise ValueError("{} is not a point of the incidence structure".format(bad_pt))
+                raise ValueError(
+                    "{} is not a point of the incidence structure".format(bad_pt)
+                )
 
         int_points = set(int_points)
-        return IncidenceStructure(points,
-                                  [[self._points[x] for x in S]
-                                   for S in self._blocks
-                                   if int_points.issuperset(S)])
+        return IncidenceStructure(
+            points,
+            [
+                [self._points[x] for x in S]
+                for S in self._blocks
+                if int_points.issuperset(S)
+            ],
+        )
 
     def trace(self, points, min_size=1, multiset=True):
         r"""
@@ -709,12 +751,16 @@ class IncidenceStructure(SageObject):
             int_points = frozenset(int(x) for x in points)
             for x in int_points:
                 if x < 0 or x >= n:
-                    raise ValueError("{} is not a point of the incidence structure".format(x))
+                    raise ValueError(
+                        "{} is not a point of the incidence structure".format(x)
+                    )
         else:
             try:
                 int_points = frozenset(self._point_to_index[x] for x in points)
             except KeyError as bad_pt:
-                raise ValueError("{} is not a point of the incidence structure".format(bad_pt))
+                raise ValueError(
+                    "{} is not a point of the incidence structure".format(bad_pt)
+                )
 
         blocks = [int_points.intersection(S) for S in self._blocks]
         if min_size:
@@ -855,7 +901,11 @@ class IncidenceStructure(SageObject):
         if self._point_to_index:
             p = set(self._point_to_index.get(x, -1) for x in p)
         else:
-            p = set(p) if all(x >= 0 and x < len(self._points) for x in p) else set([-1])
+            p = (
+                set(p)
+                if all(x >= 0 and x < len(self._points) for x in p)
+                else set([-1])
+            )
 
         return sum(p.issubset(b) for b in self._blocks) if -1 not in p else 0
 
@@ -896,12 +946,13 @@ class IncidenceStructure(SageObject):
             True
         """
         if size is None:
-            d = [0]*self.n_points()
+            d = [0] * self.n_points()
             for b in self._blocks:
                 for x in b:
                     d[x] += 1
             return {p: d[i] for i, p in enumerate(self._points)}
         from itertools import combinations
+
         d = {t: 0 for t in combinations(range(self.n_points()), size)}
         for b in self._blocks:
             for s in combinations(b, size):
@@ -1032,6 +1083,7 @@ class IncidenceStructure(SageObject):
             False
         """
         from sage.sets.disjoint_set import DisjointSet
+
         D = DisjointSet(self.n_points())
         for B in self._blocks:
             x = B[0]
@@ -1135,13 +1187,18 @@ class IncidenceStructure(SageObject):
         from sage.sets.positive_integers import PositiveIntegers
         from sage.graphs.graph import Graph
         from sage.sets.set import Set
+
         if sizes is None:
             sizes = PositiveIntegers()
         elif sizes in PositiveIntegers():
             sizes = (sizes,)
         V = [Set(v) for v in self]
-        return Graph([V, lambda x, y: len(x & y) in sizes], format="rule",
-                     loops=False, immutable=immutable)
+        return Graph(
+            [V, lambda x, y: len(x & y) in sizes],
+            format="rule",
+            loops=False,
+            immutable=immutable,
+        )
 
     def incidence_matrix(self):
         r"""
@@ -1172,6 +1229,7 @@ class IncidenceStructure(SageObject):
         """
         from sage.matrix.constructor import matrix
         from sage.rings.integer_ring import ZZ
+
         A = matrix(ZZ, self.n_points(), self.n_blocks(), sparse=True)
         for j, b in enumerate(self._blocks):
             for i in b:
@@ -1228,6 +1286,7 @@ class IncidenceStructure(SageObject):
         if labels:
             from sage.graphs.graph import Graph
             from sage.sets.set import Set
+
             G = Graph()
             G.add_vertices(self.ground_set())
             for b in self.blocks():
@@ -1237,6 +1296,7 @@ class IncidenceStructure(SageObject):
             return G
 
         from sage.graphs.bipartite_graph import BipartiteGraph
+
         A = self.incidence_matrix()
         return BipartiteGraph(A)
 
@@ -1334,6 +1394,7 @@ class IncidenceStructure(SageObject):
             n_blocks = self.n_blocks()
             i = 0
             from itertools import combinations
+
             for B in combinations(range(self.n_points()), k):
                 B = list(B)
                 while i < n_blocks and self._blocks[i] < B:
@@ -1414,6 +1475,7 @@ class IncidenceStructure(SageObject):
         """
         if not inplace:
             from copy import copy
+
             G = copy(self)
             G.relabel(perm=perm, inplace=True)
             return G
@@ -1507,8 +1569,9 @@ class IncidenceStructure(SageObject):
         p.solve(log=verbose)
 
         values = p.get_values(b, convert=bool, tolerance=integrality_tolerance)
-        return [[self._points[x] for x in self._blocks[i]]
-                for i, v in values.items() if v]
+        return [
+            [self._points[x] for x in self._blocks[i]] for i, v in values.items() if v
+        ]
 
     def is_t_design(self, t=None, v=None, k=None, l=None, return_parameters=False):
         r"""
@@ -1658,19 +1721,21 @@ class IncidenceStructure(SageObject):
         b = self.n_blocks()
 
         # Trivial wrong answers
-        if (any(len(block) != k for block in self._blocks) or  # non k-uniform
-                v != self.n_points()):
+        if (
+            any(len(block) != k for block in self._blocks)  # non k-uniform
+            or v != self.n_points()
+        ):
             return (False, (0, 0, 0, 0)) if return_parameters else False
 
         # Trivial case t>k
-        if (t is not None and t > k):
-            if (l is None or l == 0):
+        if t is not None and t > k:
+            if l is None or l == 0:
                 return (True, (t, v, k, 0)) if return_parameters else True
             return (False, (0, 0, 0, 0)) if return_parameters else False
 
         # Trivial case k=0
         if k == 0:
-            if (l is None or l == 0):
+            if l is None or l == 0:
                 return (True, (0, v, k, b)) if return_parameters else True
             return (False, (0, 0, 0, 0)) if return_parameters else False
 
@@ -1689,7 +1754,8 @@ class IncidenceStructure(SageObject):
         #
         # We look for the largest t such that self is a t-design
         from itertools import combinations
-        for tt in (range(1, k + 1) if t is None else [t]):
+
+        for tt in range(1, k + 1) if t is None else [t]:
             # is lambda an integer?
             if (b * binomial(k, tt)) % binomial(v, tt):
                 tt -= 1
@@ -1706,8 +1772,7 @@ class IncidenceStructure(SageObject):
 
             ll = (b * binomial(k, tt)) // binomial(v, tt)
 
-        if ((t is not None and t != tt) or
-                (l is not None and l != ll)):
+        if (t is not None and t != tt) or (l is not None and l != ll):
             return (False, (0, 0, 0, 0)) if return_parameters else False
         if tt == 0:
             ll = b
@@ -1859,8 +1924,8 @@ class IncidenceStructure(SageObject):
             return IncidenceStructure(list(range(v)), gB, name=None, check=False)
 
         return IncidenceStructure(
-            incidence_matrix=self.incidence_matrix().transpose(),
-            check=False)
+            incidence_matrix=self.incidence_matrix().transpose(), check=False
+        )
 
     def automorphism_group(self):
         r"""
@@ -1899,24 +1964,45 @@ class IncidenceStructure(SageObject):
         """
         from sage.graphs.graph import Graph
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         g = Graph()
         n = self.n_points()
         g.add_edges((i + n, x) for i, b in enumerate(self._blocks) for x in b)
-        ag = g.automorphism_group(partition=[list(range(n)),
-                                             list(range(n, n + self.n_blocks()))])
+        ag = g.automorphism_group(
+            partition=[list(range(n)), list(range(n, n + self.n_blocks()))]
+        )
 
         if self._point_to_index:
-            gens = [[tuple([self._points[i] for i in cycle if (not cycle or cycle[0] < n)])
-                     for cycle in g.cycle_tuples()]
-                    for g in ag.gens()]
+            gens = [
+                [
+                    tuple(
+                        [self._points[i] for i in cycle if (not cycle or cycle[0] < n)]
+                    )
+                    for cycle in g.cycle_tuples()
+                ]
+                for g in ag.gens()
+            ]
         else:
-            gens = [[tuple(cycle) for cycle in g.cycle_tuples() if (not cycle or cycle[0] < n)]
-                    for g in ag.gens()]
+            gens = [
+                [
+                    tuple(cycle)
+                    for cycle in g.cycle_tuples()
+                    if (not cycle or cycle[0] < n)
+                ]
+                for g in ag.gens()
+            ]
 
         return PermutationGroup(gens, domain=self._points)
 
-    def is_resolvable(self, certificate=False, solver=None, verbose=0, check=True,
-                      *, integrality_tolerance=1e-3):
+    def is_resolvable(
+        self,
+        certificate=False,
+        solver=None,
+        verbose=0,
+        check=True,
+        *,
+        integrality_tolerance=1e-3,
+    ):
         r"""
         Test whether the hypergraph is resolvable.
 
@@ -2009,6 +2095,7 @@ class IncidenceStructure(SageObject):
             else:
                 from sage.numerical.mip import MixedIntegerLinearProgram
                 from sage.numerical.mip import MIPSolverException
+
                 n_classes = degrees.pop()
                 p = MixedIntegerLinearProgram(solver=solver)
                 b = p.new_variable(binary=True)
@@ -2036,15 +2123,21 @@ class IncidenceStructure(SageObject):
                 else:
                     # each class is stored as the list of indices of its blocks
                     self._classes = [[] for _ in range(n_classes)]
-                    for (t, i), v in p.get_values(b, convert=bool, tolerance=integrality_tolerance).items():
+                    for (t, i), v in p.get_values(
+                        b, convert=bool, tolerance=integrality_tolerance
+                    ).items():
                         if v:
                             self._classes[t].append(self._blocks[i])
 
         if check and self._classes is not False:
-            assert sorted(id(c) for cls in self._classes for c in cls) == sorted(id(b) for b in self._blocks), "some set does not appear exactly once"
+            assert sorted(id(c) for cls in self._classes for c in cls) == sorted(
+                id(b) for b in self._blocks
+            ), "some set does not appear exactly once"
             domain = list(range(self.n_points()))
             for i, c in enumerate(self._classes):
-                assert sorted(sum(c, [])) == domain, "class {} is not a partition".format(i)
+                assert sorted(sum(c, [])) == domain, (
+                    "class {} is not a partition".format(i)
+                )
 
         if self._classes is False:
             return (False, []) if certificate else False
@@ -2053,14 +2146,18 @@ class IncidenceStructure(SageObject):
             if self._point_to_index is None:
                 classes = [[block[:] for block in classs] for classs in self._classes]
             else:
-                classes = [[[self._points[i] for i in block] for block in classs] for classs in self._classes]
+                classes = [
+                    [[self._points[i] for i in block] for block in classs]
+                    for classs in self._classes
+                ]
 
             return (True, classes)
 
         return True
 
-    def coloring(self, k=None, solver=None, verbose=0,
-                 *, integrality_tolerance=1e-3) -> list:
+    def coloring(
+        self, k=None, solver=None, verbose=0, *, integrality_tolerance=1e-3
+    ) -> list:
         r"""
         Compute a (weak) `k`-coloring of the hypergraph.
 
@@ -2124,15 +2221,18 @@ class IncidenceStructure(SageObject):
                 raise ValueError("Only empty hypergraphs are 0-chromatic")
             return []
         if any(len(x) == 1 for x in self._blocks):
-            raise RuntimeError("No coloring can be defined "
-                               "when there is a set of size 1")
+            raise RuntimeError(
+                "No coloring can be defined when there is a set of size 1"
+            )
         elif k == 1:
             if any(self._blocks):
-                raise ValueError("This hypergraph contains a set. "
-                                 "It is not 1-chromatic")
+                raise ValueError(
+                    "This hypergraph contains a set. It is not 1-chromatic"
+                )
             return [self.ground_set()]
 
         from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
         p = MixedIntegerLinearProgram(solver=solver)
         b = p.new_variable(binary=True)
 
@@ -2150,7 +2250,9 @@ class IncidenceStructure(SageObject):
 
         col = [[] for _ in range(k)]
 
-        for (x, i), v in p.get_values(b, convert=bool, tolerance=integrality_tolerance).items():
+        for (x, i), v in p.get_values(
+            b, convert=bool, tolerance=integrality_tolerance
+        ).items():
             if v:
                 col[i].append(self._points[x])
 
@@ -2178,11 +2280,16 @@ class IncidenceStructure(SageObject):
             True
         """
         from sage.graphs.graph import Graph
+
         blocks = self.blocks()
         blocks_sets = [frozenset(b) for b in blocks]
-        g = Graph([list(range(self.n_blocks())),
-                   lambda x, y: len(blocks_sets[x] & blocks_sets[y])],
-                  loops=False)
+        g = Graph(
+            [
+                list(range(self.n_blocks())),
+                lambda x, y: len(blocks_sets[x] & blocks_sets[y]),
+            ],
+            loops=False,
+        )
         return [[blocks[i] for i in C] for C in g.coloring(algorithm='MILP')]
 
     def _spring_layout(self) -> dict:
@@ -2232,8 +2339,7 @@ class IncidenceStructure(SageObject):
         _ = g.plot(iterations=50000, save_pos=True)
 
         # The values are rounded as TikZ does not like accuracy.
-        return {k[1]: (round(x, 3), round(y, 3))
-                for k, (x, y) in g.get_pos().items()}
+        return {k[1]: (round(x, 3), round(y, 3)) for k, (x, y) in g.get_pos().items()}
 
     def _latex_(self) -> str:
         r"""
@@ -2273,25 +2379,38 @@ class IncidenceStructure(SageObject):
         from sage.functions.trig import arctan2
 
         from warnings import warn
-        warn("\nThe hypergraph is drawn as a set of closed curves. The curve "
-             "representing a set S goes **THROUGH** the points contained "
-             "in S.\n A point which is encircled by a curve but is not located "
-             "on its boundary is **NOT** included in the corresponding set.\n"
-             "\n"
-             "The colors are picked for readability and have no other meaning.")
+
+        warn(
+            "\nThe hypergraph is drawn as a set of closed curves. The curve "
+            "representing a set S goes **THROUGH** the points contained "
+            "in S.\n A point which is encircled by a curve but is not located "
+            "on its boundary is **NOT** included in the corresponding set.\n"
+            "\n"
+            "The colors are picked for readability and have no other meaning."
+        )
 
         latex.add_package_to_preamble_if_available("tikz")
 
         if not latex.has_file("tikz.sty"):
-            raise RuntimeError("You must have TikZ installed in order "
-                               "to draw a hypergraph.")
+            raise RuntimeError(
+                "You must have TikZ installed in order to draw a hypergraph."
+            )
 
         domain = self.ground_set()
         pos = self._spring_layout()
         tex = "\\begin{tikzpicture}[scale=3]\n"
 
-        colors = ["black", "red", "green", "blue", "cyan",
-                  "magenta", "yellow", "pink", "brown"]
+        colors = [
+            "black",
+            "red",
+            "green",
+            "blue",
+            "cyan",
+            "magenta",
+            "yellow",
+            "pink",
+            "brown",
+        ]
         colored_sets = [(s, i) for i, S in enumerate(self.edge_coloring()) for s in S]
 
         # Prints each set with its color
@@ -2300,16 +2419,25 @@ class IncidenceStructure(SageObject):
 
             if len(s) == 2:
                 s = list(s)
-                tex += ("\\draw[color="+str(current_color)+"," +
-                        "line width=.1cm,opacity = .6] " +
-                        str(pos[s[0]])+" -- "+str(pos[s[1]])+";\n")
+                tex += (
+                    "\\draw[color="
+                    + str(current_color)
+                    + ","
+                    + "line width=.1cm,opacity = .6] "
+                    + str(pos[s[0]])
+                    + " -- "
+                    + str(pos[s[1]])
+                    + ";\n"
+                )
                 continue
 
-            tex += ("\\draw[color="+str(current_color)+","
-                    "line width=.1cm,opacity = .6,"
-                    "line cap=round,"
-                    "line join=round]"
-                    "plot [smooth cycle,tension=1] coordinates {")
+            tex += (
+                "\\draw[color=" + str(current_color) + ","
+                "line width=.1cm,opacity = .6,"
+                "line cap=round,"
+                "line join=round]"
+                "plot [smooth cycle,tension=1] coordinates {"
+            )
 
             # Reorders the vertices of s according to their angle with the
             # "center", i.e. the vertex representing the set s
@@ -2318,12 +2446,18 @@ class IncidenceStructure(SageObject):
             s = sorted(s, key=lambda x_y: arctan2(x_y[0] - cx, x_y[1] - cy))
 
             for x in s:
-                tex += str(x)+" "
+                tex += str(x) + " "
             tex += "};\n"
 
         # Prints each vertex
         for v in domain:
-            tex += "\\draw node[fill,circle,scale=.5,label={90:$"+latex(v)+"$}] at "+str(pos[v])+" {};\n"
+            tex += (
+                "\\draw node[fill,circle,scale=.5,label={90:$"
+                + latex(v)
+                + "$}] at "
+                + str(pos[v])
+                + " {};\n"
+            )
 
         tex += "\\end{tikzpicture}"
         return tex
@@ -2388,4 +2522,7 @@ class IncidenceStructure(SageObject):
 
 
 from sage.misc.rest_index_of_methods import gen_rest_table_index
-__doc__ = __doc__.format(METHODS_OF_IncidenceStructure=gen_rest_table_index(IncidenceStructure))
+
+__doc__ = __doc__.format(
+    METHODS_OF_IncidenceStructure=gen_rest_table_index(IncidenceStructure)
+)

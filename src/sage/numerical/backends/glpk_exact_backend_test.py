@@ -5,7 +5,6 @@ from sage.numerical.mip import MixedIntegerLinearProgram
 
 
 class TestGLPKExactBackend(GenericBackendTests):
-
     @pytest.fixture
     def backend(self) -> GenericBackend:
         return MixedIntegerLinearProgram(solver='GLPK/exact').get_backend()

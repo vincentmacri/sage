@@ -21,13 +21,26 @@ named cellular automata.
 """
 
 from sage.misc.lazy_import import lazy_import
-lazy_import('sage.dynamics.cellular_automata.elementary',
-            'ElementaryCellularAutomata', 'Elementary',)
-lazy_import('sage.dynamics.cellular_automata.glca',
-            'GraftalLaceCellularAutomata', 'GraftalLace',)
-lazy_import('sage.dynamics.cellular_automata.solitons',
-            'SolitonCellularAutomata', 'Soliton')
-lazy_import('sage.dynamics.cellular_automata.solitons',
-            'PeriodicSolitonCellularAutomata', 'PeriodicSoliton')
 
-del lazy_import # We remove the object from here so it doesn't appear under tab completion
+lazy_import(
+    'sage.dynamics.cellular_automata.elementary',
+    'ElementaryCellularAutomata',
+    'Elementary',
+)
+lazy_import(
+    'sage.dynamics.cellular_automata.glca',
+    'GraftalLaceCellularAutomata',
+    'GraftalLace',
+)
+lazy_import(
+    'sage.dynamics.cellular_automata.solitons', 'SolitonCellularAutomata', 'Soliton'
+)
+lazy_import(
+    'sage.dynamics.cellular_automata.solitons',
+    'PeriodicSolitonCellularAutomata',
+    'PeriodicSoliton',
+)
+
+del (
+    lazy_import
+)  # We remove the object from here so it doesn't appear under tab completion

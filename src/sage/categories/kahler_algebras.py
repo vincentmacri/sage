@@ -67,6 +67,7 @@ class KahlerAlgebras(Category_over_base_ring):
         sage: C = KahlerAlgebras(QQ)
         sage: TestSuite(C).run()
     """
+
     def super_categories(self):
         r"""
         Return the super categories of ``self``.
@@ -184,7 +185,7 @@ class KahlerAlgebras(Category_over_base_ring):
                 ValueError: k must be less than r/2 < 2
             """
             r = self.top_degree()
-            if k > (r/2):
+            if k > (r / 2):
                 raise ValueError("k must be less than r/2 < 2")
             basis_k = []
             lefschetz_el = self.lefschetz_element()
@@ -192,7 +193,9 @@ class KahlerAlgebras(Category_over_base_ring):
                 if b.homogeneous_degree() == k:
                     basis_k.append(b)
             coeff = []
-            for i,el in enumerate(basis_k):
+            for i, el in enumerate(basis_k):
                 for j in range(i, len(basis_k)):
-                    coeff.append((el * (lefschetz_el ** (r-(2*k)) * basis_k[j])).degree())
+                    coeff.append(
+                        (el * (lefschetz_el ** (r - (2 * k)) * basis_k[j])).degree()
+                    )
             return QuadraticForm(self.base_ring(), len(basis_k), coeff)

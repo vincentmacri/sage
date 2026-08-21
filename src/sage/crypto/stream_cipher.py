@@ -2,13 +2,13 @@
 """
 Stream Ciphers
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Kohel <kohel@maths.usyd.edu.au>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .lfsr import lfsr_sequence
 from .cipher import SymmetricKeyCipher
@@ -84,15 +84,17 @@ class LFSRCipher(SymmetricKeyCipher):
             sage: e(m)
             00111001110111101011111001001101110101011011101000011001100101101011001000000011100101101010111100000101110100111111101100000101110101111010111101000011
         """
-        B = self.domain() # = plaintext_space = ciphertext_space
+        B = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == B:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         (poly, IS) = self.key()
-        n = B.ngens() # two for binary strings
+        n = B.ngens()  # two for binary strings
         N = len(M)
         Melt = M._element_list
         Kelt = lfsr_sequence(poly.list(), IS, N)
-        return B([ (Melt[i]+int(Kelt[i])) % n for i in range(N) ])
+        return B([(Melt[i] + int(Kelt[i])) % n for i in range(N)])
 
     def _repr_(self):
         r"""
@@ -247,9 +249,11 @@ class ShrinkingGeneratorCipher(SymmetricKeyCipher):
             sage: m.decoding()
             'THECATINTHEHAT'
         """
-        B = self.domain() # = plaintext_space = ciphertext_space
+        B = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == B:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         (e1, e2) = self.key()
         MStream = M._element_list
         g1 = e1.connection_polynomial()
@@ -263,7 +267,7 @@ class ShrinkingGeneratorCipher(SymmetricKeyCipher):
         n = max(n1, n2)
         CStream = []
         while k < N:
-            r = max(N-k,2*n)
+            r = max(N - k, 2 * n)
             KStream = lfsr_sequence(g1.list(), IS_1, r)
             DStream = lfsr_sequence(g2.list(), IS_2, r)
             for i in range(r - n):
@@ -272,8 +276,8 @@ class ShrinkingGeneratorCipher(SymmetricKeyCipher):
                     k += 1
                 if k == N:
                     break
-            IS_1 = KStream[r-n-1:r-n+n1]
-            IS_2 = DStream[r-n-1:r-n+n2]
+            IS_1 = KStream[r - n - 1 : r - n + n1]
+            IS_2 = DStream[r - n - 1 : r - n + n2]
         return B(CStream)
 
     def _repr_(self):

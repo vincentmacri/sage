@@ -25,6 +25,7 @@ points since they cannot create any sort of crossing. ::
     sage: dcrossing([(1,5), (2,4), (4,9), (6,12), (7,10), (10,11)])
     3
 """
+
 # ****************************************************************************
 # Copyright (C) 2008 Dan Drake <ddrake@member.ams.org>
 #
@@ -110,7 +111,7 @@ def matchingsset(L):
         yield []
     else:
         for k in range(1, len(L)):
-            for m in matchingsset(L[1: k] + L[k + 1:]):
+            for m in matchingsset(L[1:k] + L[k + 1 :]):
                 yield m + [(L[0], L[k])]
 
 
@@ -173,11 +174,9 @@ def dcrossing(m_):
         e1_ = m.pop()
         for e2_ in m:
             e1, e2 = sorted(e1_), sorted(e2_)
-            if (e1[0] < e2[0] and e2[0] <= e1[1] and e1[1] < e2[1] and
-                    e1[1] - e2[0] > d):
+            if e1[0] < e2[0] and e2[0] <= e1[1] and e1[1] < e2[1] and e1[1] - e2[0] > d:
                 d = e1[1] - e2[0]
-            if (e2[0] < e1[0] and e1[0] <= e2[1] and e2[1] < e1[1] and
-                    e2[1] - e1[0] > d):
+            if e2[0] < e1[0] and e1[0] <= e2[1] and e2[1] < e1[1] and e2[1] - e1[0] > d:
                 d = e2[1] - e1[0]
     return d
 
@@ -204,7 +203,7 @@ def setp_to_edges(p):
         [[1, 5], [2, 4], [4, 9], [6, 12], [7, 10], [10, 11]]
     """
     q = (sorted(b) for b in p)
-    return [b[n: n + 2] for b in q for n in range(len(b) - 1)]
+    return [b[n : n + 2] for b in q for n in range(len(b) - 1)]
 
 
 def dcrossvec_setp(n):

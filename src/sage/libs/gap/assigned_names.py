@@ -63,6 +63,7 @@ def load_or_compute(name, function):
     else:
         value = function()
         from sage.misc.temporary_file import atomic_write
+
         with atomic_write(filename, binary=True) as f:
             pickle.dump(value, f)
         return value
@@ -99,10 +100,7 @@ def list_globals():
         sage: 'ZassenhausIntersection' in GLOBALS   # indirect doctest
         True
     """
-    gvars = set(
-        name.sage() for name in NamesGVars()
-        if IsBoundGlobal(name)
-    )
+    gvars = set(name.sage() for name in NamesGVars() if IsBoundGlobal(name))
     gvars.difference_update(KEYWORDS)
     return tuple(sorted(gvars))
 

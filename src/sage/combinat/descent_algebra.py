@@ -17,7 +17,9 @@ from sage.arith.misc import factorial
 from sage.categories.algebras import Algebras
 from sage.categories.commutative_rings import CommutativeRings
 from sage.categories.fields import Fields
-from sage.categories.finite_dimensional_algebras_with_basis import FiniteDimensionalAlgebrasWithBasis
+from sage.categories.finite_dimensional_algebras_with_basis import (
+    FiniteDimensionalAlgebrasWithBasis,
+)
 from sage.categories.realizations import Realizations, Category_realization_of_parent
 from sage.combinat.composition import Compositions
 from sage.combinat.free_module import CombinatorialFreeModule
@@ -229,20 +231,24 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             """
             self._prefix = prefix
             self._basis_name = "standard"
-            CombinatorialFreeModule.__init__(self, alg.base_ring(),
-                                             SubsetsSorted(range(1, alg._n)),
-                                             category=DescentAlgebraBases(alg),
-                                             bracket='', prefix=prefix)
+            CombinatorialFreeModule.__init__(
+                self,
+                alg.base_ring(),
+                SubsetsSorted(range(1, alg._n)),
+                category=DescentAlgebraBases(alg),
+                bracket='',
+                prefix=prefix,
+            )
 
             # Change of basis:
             B = alg.B()
-            self.module_morphism(self.to_B_basis,
-                                 codomain=B, category=self.category()
-                                 ).register_as_coercion()
+            self.module_morphism(
+                self.to_B_basis, codomain=B, category=self.category()
+            ).register_as_coercion()
 
-            B.module_morphism(B.to_D_basis,
-                              codomain=self, category=self.category()
-                              ).register_as_coercion()
+            B.module_morphism(
+                B.to_D_basis, codomain=self, category=self.category()
+            ).register_as_coercion()
 
         def _element_constructor_(self, x):
             """
@@ -332,8 +338,12 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             n = self.realization_of()._n
             C = Compositions(n)
             lenS = len(S)
-            return B.sum_of_terms([(C.from_subset(T, n), (-1)**(lenS - len(T)))
-                                   for T in SubsetsSorted(S)])
+            return B.sum_of_terms(
+                [
+                    (C.from_subset(T, n), (-1) ** (lenS - len(T)))
+                    for T in SubsetsSorted(S)
+                ]
+            )
 
         def to_symmetric_group_algebra_on_basis(self, S):
             """
@@ -389,13 +399,17 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             n = self.realization_of()._n
             if S in ZZ:
                 if S >= n or S <= 0:
-                    raise ValueError("({0},) is not a subset of {{1, ..., {1}}}".format(S, n - 1))
+                    raise ValueError(
+                        "({0},) is not a subset of {{1, ..., {1}}}".format(S, n - 1)
+                    )
                 return self.monomial((S,))
             if not S:
                 return self.one()
             S = sorted(S)
             if S[-1] >= n or S[0] <= 0:
-                raise ValueError("{0} is not a subset of {{1, ..., {1}}}".format(S, n - 1))
+                raise ValueError(
+                    "{0} is not a subset of {{1, ..., {1}}}".format(S, n - 1)
+                )
             return self.monomial(tuple(S))
 
     standard = D
@@ -448,15 +462,19 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             """
             self._prefix = prefix
             self._basis_name = "subset"
-            CombinatorialFreeModule.__init__(self, alg.base_ring(),
-                                             Compositions(alg._n),
-                                             category=DescentAlgebraBases(alg),
-                                             bracket='', prefix=prefix)
+            CombinatorialFreeModule.__init__(
+                self,
+                alg.base_ring(),
+                Compositions(alg._n),
+                category=DescentAlgebraBases(alg),
+                bracket='',
+                prefix=prefix,
+            )
 
             S = NonCommutativeSymmetricFunctions(alg.base_ring()).Complete()
-            self.module_morphism(self.to_nsym,
-                                 codomain=S, category=Algebras(alg.base_ring())
-                                 ).register_as_coercion()
+            self.module_morphism(
+                self.to_nsym, codomain=S, category=Algebras(alg.base_ring())
+            ).register_as_coercion()
 
         def product_on_basis(self, p, q):
             r"""
@@ -476,6 +494,7 @@ class DescentAlgebra(UniqueRepresentation, Parent):
 
             def to_composition(m):
                 return P([x for x in m.list() if x != 0])
+
             return self.sum_of_monomials([to_composition(mat) for mat in IM])
 
         @cached_method
@@ -589,7 +608,9 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             if not p:
                 return D.one()
 
-            return D.sum_of_terms([(tuple(sorted(s)), 1) for s in p.to_subset().subsets()])
+            return D.sum_of_terms(
+                [(tuple(sorted(s)), 1) for s in p.to_subset().subsets()]
+            )
 
         def to_nsym(self, p):
             """
@@ -681,20 +702,24 @@ class DescentAlgebra(UniqueRepresentation, Parent):
             """
             self._prefix = prefix
             self._basis_name = "idempotent"
-            CombinatorialFreeModule.__init__(self, alg.base_ring(),
-                                             Compositions(alg._n),
-                                             category=DescentAlgebraBases(alg),
-                                             bracket='', prefix=prefix)
+            CombinatorialFreeModule.__init__(
+                self,
+                alg.base_ring(),
+                Compositions(alg._n),
+                category=DescentAlgebraBases(alg),
+                bracket='',
+                prefix=prefix,
+            )
 
             # Change of basis:
             B = alg.B()
-            self.module_morphism(self.to_B_basis,
-                                 codomain=B, category=self.category()
-                                 ).register_as_coercion()
+            self.module_morphism(
+                self.to_B_basis, codomain=B, category=self.category()
+            ).register_as_coercion()
 
-            B.module_morphism(B.to_I_basis,
-                              codomain=self, category=self.category()
-                              ).register_as_coercion()
+            B.module_morphism(
+                B.to_I_basis, codomain=self, category=self.category()
+            ).register_as_coercion()
 
         def product_on_basis(self, p, q):
             r"""
@@ -830,10 +855,12 @@ class DescentAlgebra(UniqueRepresentation, Parent):
                 True
             """
             from sage.combinat.permutation import Permutations
+
             k = len(la)
             C = Compositions(self.realization_of()._n)
-            return self.sum_of_terms([(C(x), QQ((1, factorial(k))))
-                                      for x in Permutations(la)])
+            return self.sum_of_terms(
+                [(C(x), QQ((1, factorial(k)))) for x in Permutations(la)]
+            )
 
     idempotent = I
 
@@ -953,8 +980,9 @@ class DescentAlgebraBases(Category_realization_of_parent):
                  + [3, 2, 4, 1] + [4, 1, 2, 3] + [4, 1, 3, 2] + [4, 2, 3, 1]
             """
             SGA = SymmetricGroupAlgebra(self.base_ring(), self.realization_of()._n)
-            return self.module_morphism(self.to_symmetric_group_algebra_on_basis,
-                                        codomain=SGA)
+            return self.module_morphism(
+                self.to_symmetric_group_algebra_on_basis, codomain=SGA
+            )
 
         def to_symmetric_group_algebra_on_basis(self, S):
             """

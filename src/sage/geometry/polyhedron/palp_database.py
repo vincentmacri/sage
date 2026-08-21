@@ -110,13 +110,14 @@ class PALPreader(SageObject):
         else:
             db = DatabaseReflexivePolytopes()
             self._data_basename = os.path.join(
-                    os.path.dirname(db.absolute_filename()),
-                    f'Full{dim}d', 'zzdb')
+                os.path.dirname(db.absolute_filename()), f'Full{dim}d', 'zzdb'
+            )
             info = self._data_basename + '.info'
             if not os.path.exists(info):
                 raise ValueError('Cannot find PALP database: {}'.format(info))
 
         from sage.geometry.polyhedron.parent import Polyhedra
+
         self._polyhedron_parent = Polyhedra(ZZ, dim)
         self._output = output.lower()
 
@@ -134,8 +135,17 @@ class PALPreader(SageObject):
             <...Popen...>
         """
 
-        return Popen([PalpExecutable("class").absolute_filename(), "-b2a", "-di", self._data_basename],
-                     stdout=PIPE, encoding='utf-8', errors='surrogateescape')
+        return Popen(
+            [
+                PalpExecutable("class").absolute_filename(),
+                "-b2a",
+                "-di",
+                self._data_basename,
+            ],
+            stdout=PIPE,
+            encoding='utf-8',
+            errors='surrogateescape',
+        )
 
     def _read_vertices(self, stdout, rows, cols):
         r"""
@@ -213,7 +223,7 @@ class PALPreader(SageObject):
                     return  # EOF
                 l = l.split()
                 dim = ZZ(l[0])  # dimension
-                n = ZZ(l[1])    # number of vertices
+                n = ZZ(l[1])  # number of vertices
                 if i >= start and (i - start) % step == 0:
                     if dim == self._dim:
                         vertices = self._read_vertices(palp_out, dim, n)
@@ -398,6 +408,7 @@ class Reflexive4dHodge(PALPreader):
         (A vertex at (-1, -1, -1, -1), A vertex at (0, 0, 0, 1),
          A vertex at (0, 0, 1, 0), A vertex at (0, 1, 0, 0), A vertex at (1, 0, 0, 0))
     """
+
     def __init__(self, h11, h21, data_basename=None, **kwds):
         """
         The Python constructor.
@@ -418,7 +429,8 @@ class Reflexive4dHodge(PALPreader):
             if not os.path.exists(info):
                 raise ValueError(
                     'Cannot find PALP database: {}. Did you install the '
-                    'polytopes_db_4d optional spkg?'.format(info))
+                    'polytopes_db_4d optional spkg?'.format(info)
+                )
 
         PALPreader.__init__(self, dim, data_basename=data_basename, **kwds)
         self._h11 = h11
@@ -438,7 +450,15 @@ class Reflexive4dHodge(PALPreader):
             <...Popen...>
         """
 
-        return Popen([PalpExecutable('class-4d').absolute_filename(), '-He',
-                      'H{}:{}L100000000'.format(self._h21, self._h11),
-                      '-di', self._data_basename], stdout=PIPE,
-                     encoding='utf-8', errors='surrogateescape')
+        return Popen(
+            [
+                PalpExecutable('class-4d').absolute_filename(),
+                '-He',
+                'H{}:{}L100000000'.format(self._h21, self._h11),
+                '-di',
+                self._data_basename,
+            ],
+            stdout=PIPE,
+            encoding='utf-8',
+            errors='surrogateescape',
+        )

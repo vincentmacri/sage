@@ -45,8 +45,7 @@ class StringMonoidElement(FreeMonoidElement):
             if check:
                 for b in x:
                     if not isinstance(b, (int, Integer)):
-                        raise TypeError(
-                            "x (= %s) must be a list of integers." % x)
+                        raise TypeError("x (= %s) must be a list of integers." % x)
             self._element_list = list(x)  # make copy
         elif isinstance(x, str):
             alphabet = list(self.parent().alphabet())
@@ -55,8 +54,7 @@ class StringMonoidElement(FreeMonoidElement):
                 try:
                     b = alphabet.index(x[i])
                 except ValueError:
-                    raise TypeError(
-                        "Argument x (= %s) is not a valid string." % x)
+                    raise TypeError("Argument x (= %s) is not a valid string." % x)
                 self._element_list += [b]
         else:
             raise TypeError("Argument x (= %s) is of the wrong type." % x)
@@ -249,41 +247,50 @@ class StringMonoidElement(FreeMonoidElement):
             'A..Za..z'
         """
         S = self.parent()
-        from .string_monoid import (AlphabeticStringMonoid,
-                                    BinaryStringMonoid,
-                                    HexadecimalStringMonoid)
+        from .string_monoid import (
+            AlphabeticStringMonoid,
+            BinaryStringMonoid,
+            HexadecimalStringMonoid,
+        )
+
         if isinstance(S, AlphabeticStringMonoid):
             return ''.join(chr(65 + i) for i in self._element_list)
         n = len(self)
         if isinstance(S, HexadecimalStringMonoid):
             if n % 2:
-                "String %s must have even length to determine a byte character string." % str(self)
+                "String %s must have even length to determine a byte character string." % str(
+                    self
+                )
             s = []
             x = self._element_list
-            for k in range(n//2):
-                m = 2*k
+            for k in range(n // 2):
+                m = 2 * k
                 if padic:
-                    c = chr(x[m]+16*x[m+1])
+                    c = chr(x[m] + 16 * x[m + 1])
                 else:
-                    c = chr(16*x[m]+x[m+1])
+                    c = chr(16 * x[m] + x[m + 1])
                 s.append(c)
             return ''.join(s)
         if isinstance(S, BinaryStringMonoid):
             if not n % 8 == 0:
-                "String %s must have even length 0 mod 8 to determine a byte character string." % str(self)
+                "String %s must have even length 0 mod 8 to determine a byte character string." % str(
+                    self
+                )
             pows = [2**i for i in range(8)]
             s = []
             x = self._element_list
-            for k in range(n//8):
-                m = 8*k
+            for k in range(n // 8):
+                m = 8 * k
                 if padic:
-                    c = chr(sum([x[m+i] * pows[i] for i in range(8)]))
+                    c = chr(sum([x[m + i] * pows[i] for i in range(8)]))
                 else:
-                    c = chr(sum([x[m+7-i] * pows[i] for i in range(8)]))
+                    c = chr(sum([x[m + 7 - i] * pows[i] for i in range(8)]))
                 s.append(c)
             return ''.join(s)
         raise TypeError(
-            "Argument %s must be an alphabetic, binary, or hexadecimal string." % str(self))
+            "Argument %s must be an alphabetic, binary, or hexadecimal string."
+            % str(self)
+        )
 
     def coincidence_index(self, prec=0):
         """
@@ -457,6 +464,7 @@ class StringMonoidElement(FreeMonoidElement):
             [(AB, 0.333333333333333), (BC, 0.333333333333333), (CD, 0.333333333333333)]
         """
         from sage.probability.random_variable import DiscreteProbabilitySpace
+
         if length not in (1, 2):
             raise NotImplementedError("Not implemented")
         if prec == 0:
@@ -472,7 +480,7 @@ class StringMonoidElement(FreeMonoidElement):
         N = len(self) - length + 1
         eps = RR(Integer(1) / N)
         for i in range(N):
-            c = self[i:i+length]
+            c = self[i : i + length]
             if c in X:
                 X[c] += eps
             else:

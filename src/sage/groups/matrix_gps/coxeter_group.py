@@ -24,7 +24,9 @@ import sage.rings.abc
 
 from sage.categories.coxeter_groups import CoxeterGroups
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-from sage.groups.matrix_gps.finitely_generated import FinitelyGeneratedMatrixGroup_generic
+from sage.groups.matrix_gps.finitely_generated import (
+    FinitelyGeneratedMatrixGroup_generic,
+)
 from sage.groups.matrix_gps.group_element import MatrixGroupElement_generic
 from sage.matrix.args import SparseEntry
 from sage.matrix.matrix_space import MatrixSpace
@@ -191,6 +193,7 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
          [3 1 5]
          [2 5 1]
     """
+
     @staticmethod
     def __classcall_private__(cls, data, base_ring=None, index_set=None):
         """
@@ -218,6 +221,7 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
                 base_ring = ZZ
             elif data.is_finite():
                 from sage.rings.number_field.number_field import QuadraticField
+
                 letter = data.coxeter_type().cartan_type().type()
                 if letter in ['B', 'C', 'F']:
                     base_ring = QuadraticField(2)
@@ -226,10 +230,16 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
                 elif letter == 'H':
                     base_ring = QuadraticField(5)
                 else:
-                    from sage.rings.universal_cyclotomic_field import UniversalCyclotomicField
+                    from sage.rings.universal_cyclotomic_field import (
+                        UniversalCyclotomicField,
+                    )
+
                     base_ring = UniversalCyclotomicField()
             else:
-                from sage.rings.universal_cyclotomic_field import UniversalCyclotomicField
+                from sage.rings.universal_cyclotomic_field import (
+                    UniversalCyclotomicField,
+                )
+
                 base_ring = UniversalCyclotomicField()
         return super().__classcall__(cls, data, base_ring, data.index_set())
 
@@ -296,6 +306,7 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
                     return 2
                 return base_ring((E(2 * x) + ~E(2 * x)).to_cyclotomic_field())
         else:
+
             def val(x):
                 if x == -1:
                     return 2
@@ -307,10 +318,19 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
                     return 1
                 from sage.functions.trig import cos
                 from sage.symbolic.constants import pi
+
                 return base_ring(2 * cos(pi / x))
-        gens = [one + MS([SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
-                          for j in range(n)])
-                for i in range(n)]
+
+        gens = [
+            one
+            + MS(
+                [
+                    SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
+                    for j in range(n)
+                ]
+            )
+            for i in range(n)
+        ]
         # Make the generators dense matrices for consistency and speed
         gens = [g.dense_matrix() for g in gens]
         category = CoxeterGroups()
@@ -321,15 +341,16 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
             category = category.Finite()
         else:
             category = category.Infinite()
-        if all(self._matrix._matrix[i, j] == 2
-               for i in range(n) for j in range(i)):
+        if all(self._matrix._matrix[i, j] == 2 for i in range(n) for j in range(i)):
             category = category.Commutative()
         if self._matrix.is_irreducible():
             category = category.Irreducible()
-        self._index_set_inverse = {i: ii
-                                   for ii, i in enumerate(self._matrix.index_set())}
-        FinitelyGeneratedMatrixGroup_generic.__init__(self, ZZ(n), base_ring,
-                                                      gens, category=category)
+        self._index_set_inverse = {
+            i: ii for ii, i in enumerate(self._matrix.index_set())
+        }
+        FinitelyGeneratedMatrixGroup_generic.__init__(
+            self, ZZ(n), base_ring, gens, category=category
+        )
 
     def _repr_(self):
         """
@@ -344,7 +365,9 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
             [2 4 1]
         """
         rep = "Finite " if self.is_finite() else ""
-        rep += "Coxeter group over {} with Coxeter matrix:\n{}".format(self.base_ring(), self._matrix)
+        rep += "Coxeter group over {} with Coxeter matrix:\n{}".format(
+            self.base_ring(), self._matrix
+        )
         return rep
 
     def _coerce_map_from_(self, P):
@@ -563,6 +586,7 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
         N = len(word)
 
         from sage.modules.free_module import FreeModule
+
         simple_roots = FreeModule(self.base_ring(), self.ngens()).gens()
 
         refls = self.simple_reflections()
@@ -730,6 +754,7 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
         """
         A Coxeter group element.
         """
+
         def first_descent(self, side='right', index_set=None, positive=False):
             """
             Return the first left (resp. right) descent of ``self``, as
@@ -806,8 +831,14 @@ class CoxeterMatrixGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gene
                 I_inv = self.parent()._index_set_inverse
                 index_set = [I_inv[i] for i in index_set]
             if positive:
-                return [I[i] for i in index_set if not _matrix_test_right_descent(M, i, n, zero)]
-            return [I[i] for i in index_set if _matrix_test_right_descent(M, i, n, zero)]
+                return [
+                    I[i]
+                    for i in index_set
+                    if not _matrix_test_right_descent(M, i, n, zero)
+                ]
+            return [
+                I[i] for i in index_set if _matrix_test_right_descent(M, i, n, zero)
+            ]
 
         def has_right_descent(self, i) -> bool:
             r"""

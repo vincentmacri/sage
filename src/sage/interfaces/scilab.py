@@ -216,9 +216,16 @@ class Scilab(Expect):
           122.
           505.
     """
-    def __init__(self, maxread=None, script_subdirectory=None,
-                 logfile=None, server=None, server_tmpdir=None,
-                 seed=None):
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        seed=None,
+    ):
         """
         Initialize the Scilab class.
 
@@ -228,17 +235,19 @@ class Scilab(Expect):
             sage: sci_obj = Scilab()
             sage: del sci_obj
         """
-        Expect.__init__(self,
-                        name='scilab',
-                        prompt='-->',
-                        command="scilab -nw",
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=100)
+        Expect.__init__(
+            self,
+            name='scilab',
+            prompt='-->',
+            command="scilab -nw",
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=100,
+        )
         self._seed = seed
 
     def set_seed(self, seed=None):
@@ -362,7 +371,10 @@ class Scilab(Expect):
         cmd = '%s=%s;' % (var, value)
         out = self.eval(cmd)
         if out.find("error") != -1:
-            raise TypeError("Error executing code in Scilab\nCODE:\n\t%s\nScilab ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Scilab\nCODE:\n\t%s\nScilab ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -377,7 +389,7 @@ class Scilab(Expect):
         """
         s = self.eval(f'{var}')
         i = s.find('=')
-        return s[i+1:]
+        return s[i + 1 :]
 
     def console(self):
         """
@@ -499,6 +511,7 @@ class ScilabElement(ExpectElement):
             [3.00000000000000 4.50000000000000]
         """
         from sage.matrix.matrix_space import MatrixSpace
+
         s = str(self).strip()
         v = s.split('\n ')
         nrows = len(v)

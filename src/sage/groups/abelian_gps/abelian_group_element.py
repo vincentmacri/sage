@@ -71,6 +71,7 @@ class AbelianGroupElement(AbelianGroupElementBase):
         sage: a*b in F
         True
     """
+
     def as_permutation(self):
         r"""
         Return the element of the permutation group ``G`` (isomorphic to the
@@ -91,6 +92,7 @@ class AbelianGroupElement(AbelianGroupElementBase):
             True
         """
         from sage.libs.gap.libgap import libgap
+
         G = self.parent()
         A = libgap.AbelianGroup(G.gens_orders())
         phi = libgap.IsomorphismPermGroup(A)
@@ -134,4 +136,5 @@ class AbelianGroupElement(AbelianGroupElementBase):
             True
         """
         from sage.groups.abelian_gps.abelian_group import word_problem
+
         return word_problem(words, self)

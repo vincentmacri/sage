@@ -29,7 +29,11 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 lazy_import('sage.schemes.generic.morphism', 'SchemeMorphism')
-lazy_import('sage.schemes.elliptic_curves.ell_generic', 'EllipticCurve_generic', as_='EllipticCurve')
+lazy_import(
+    'sage.schemes.elliptic_curves.ell_generic',
+    'EllipticCurve_generic',
+    as_='EllipticCurve',
+)
 
 
 class Scheme(Parent):
@@ -93,10 +97,13 @@ class Scheme(Parent):
             # X is a morphism of Rings
             self._base_ring = X.codomain()
         else:
-            raise ValueError('The base must be defined by a scheme, '
-                             'scheme morphism, or commutative ring.')
+            raise ValueError(
+                'The base must be defined by a scheme, '
+                'scheme morphism, or commutative ring.'
+            )
 
         from sage.categories.schemes import Schemes
+
         if X is None:
             default_category = Schemes()
         else:
@@ -104,8 +111,9 @@ class Scheme(Parent):
         if category is None:
             category = default_category
         else:
-            assert category.is_subcategory(default_category), \
+            assert category.is_subcategory(default_category), (
                 "%s is not a subcategory of %s" % (category, default_category)
+            )
 
         Parent.__init__(self, self.base_ring(), category=category)
 
@@ -228,6 +236,7 @@ class Scheme(Parent):
         """
         if len(args) == 1:
             from sage.schemes.generic.morphism import SchemeMorphism_point
+
             S = args[0]
             if S in CommutativeRings():
                 return self.point_homset(S)
@@ -276,6 +285,7 @@ class Scheme(Parent):
             S = self.base_ring()
         SpecS = AffineScheme(S, self.base_ring())
         from sage.schemes.generic.homset import SchemeHomset
+
         return SchemeHomset(SpecS, self, as_point_homset=True)
 
     def point(self, v, check=True):
@@ -304,6 +314,7 @@ class Scheme(Parent):
         """
         # todo: update elliptic curve stuff to take point_homset as argument
         from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+
         if isinstance(self, EllipticCurve_generic):
             try:
                 return self._point(self.point_homset(), v, check=check)
@@ -415,6 +426,7 @@ class Scheme(Parent):
                 self._base_scheme = AffineScheme(self._base_ring)
             else:
                 from sage.schemes.generic.spec import SpecZ
+
                 self._base_scheme = SpecZ
             return self._base_scheme
 
@@ -446,11 +458,16 @@ class Scheme(Parent):
         except AttributeError:
             from sage.categories.schemes import Schemes
             from sage.schemes.generic.spec import SpecZ
+
             SCH = Schemes()
             if hasattr(self, '_base_scheme'):
-                self._base_morphism = self.Hom(self._base_scheme, category=SCH).natural_map()
+                self._base_morphism = self.Hom(
+                    self._base_scheme, category=SCH
+                ).natural_map()
             elif hasattr(self, '_base_ring'):
-                self._base_morphism = self.Hom(AffineScheme(self._base_ring), category=SCH).natural_map()
+                self._base_morphism = self.Hom(
+                    AffineScheme(self._base_ring), category=SCH
+                ).natural_map()
             else:
                 self._base_morphism = self.Hom(SpecZ, category=SCH).natural_map()
             return self._base_morphism
@@ -478,7 +495,9 @@ class Scheme(Parent):
         try:
             return self._coordinate_ring
         except AttributeError:
-            raise ValueError("This scheme has no associated coordinated ring (defined).")
+            raise ValueError(
+                "This scheme has no associated coordinated ring (defined)."
+            )
 
     def dimension_absolute(self):
         """
@@ -500,7 +519,7 @@ class Scheme(Parent):
             ...
             NotImplementedError
         """
-        raise NotImplementedError # override in derived class
+        raise NotImplementedError  # override in derived class
 
     dimension = dimension_absolute
 
@@ -520,7 +539,7 @@ class Scheme(Parent):
             ...
             NotImplementedError
         """
-        raise NotImplementedError # override in derived class
+        raise NotImplementedError  # override in derived class
 
     def identity_morphism(self):
         """
@@ -536,6 +555,7 @@ class Scheme(Parent):
               Defn: Identity map
         """
         from sage.schemes.generic.morphism import SchemeMorphism_id
+
         return SchemeMorphism_id(self)
 
     def hom(self, x, Y=None, check=True):
@@ -604,6 +624,7 @@ class Scheme(Parent):
             <class 'sage.schemes.generic.homset.SchemeHomset_generic_with_category_with_equality_by_id'>
         """
         from sage.schemes.generic.homset import SchemeHomset
+
         return SchemeHomset(self, Y, category=category, check=check)
 
     point_set = point_homset
@@ -640,9 +661,11 @@ class Scheme(Parent):
         """
         F = self.base_ring()
         if not F.is_finite():
-            raise TypeError("Point counting only defined for schemes over finite fields")
+            raise TypeError(
+                "Point counting only defined for schemes over finite fields"
+            )
         a = [len(self.rational_points())]
-        for i in range(2, n+1):
+        for i in range(2, n + 1):
             F1, psi = F.extension(i, map=True)
             S1 = self.change_ring(psi)
             a.append(len(S1.rational_points()))
@@ -724,7 +747,9 @@ class Scheme(Parent):
         """
         F = self.base_ring()
         if not F.is_finite():
-            raise TypeError('zeta functions only defined for schemes over finite fields')
+            raise TypeError(
+                'zeta functions only defined for schemes over finite fields'
+            )
         R = t.parent()
         u = t.O(n + 1)
         try:
@@ -764,6 +789,7 @@ class AffineScheme(UniqueRepresentation, Scheme):
         For affine spaces over a base ring and subschemes thereof, see
         :func:`~sage.schemes.affine.affine_space.AffineSpace`.
     """
+
     def __init__(self, R, S=None, category=None):
         """
         Construct the affine scheme with coordinate ring `R`.
@@ -808,7 +834,11 @@ class AffineScheme(UniqueRepresentation, Scheme):
             if S not in CommutativeRings():
                 raise TypeError("S (={}) must be a commutative ring".format(S))
             if not R.has_coerce_map_from(S):
-                raise ValueError("There must be a natural map S --> R, but S = {} and R = {}".format(S, R))
+                raise ValueError(
+                    "There must be a natural map S --> R, but S = {} and R = {}".format(
+                        S, R
+                    )
+                )
         Scheme.__init__(self, S, category=category)
 
     def __setstate__(self, state):
@@ -935,8 +965,10 @@ class AffineScheme(UniqueRepresentation, Scheme):
         """
         if len(args) == 1:
             x = args[0]
-            if ((isinstance(x, self.element_class) and (x.parent() is self or x.parent() == self))
-                or (isinstance(x, Ideal_generic) and x.ring() is self.coordinate_ring())):
+            if (
+                isinstance(x, self.element_class)
+                and (x.parent() is self or x.parent() == self)
+            ) or (isinstance(x, Ideal_generic) and x.ring() is self.coordinate_ring()):
                 # Construct a topological point from x.
                 return self._element_constructor_(x)
         try:
@@ -985,6 +1017,7 @@ class AffineScheme(UniqueRepresentation, Scheme):
         """
         if self.coordinate_ring() is ZZ:
             from sage.arith.misc import random_prime
+
             return self(ZZ.ideal(random_prime(1000)))
         return self(self.coordinate_ring().zero_ideal())
 
@@ -1067,9 +1100,12 @@ class AffineScheme(UniqueRepresentation, Scheme):
         if R in CommutativeRings():
             return AffineScheme(self.coordinate_ring().base_extend(R), self.base_ring())
         if not self.base_scheme() == R.base_scheme():
-            raise ValueError('the new base scheme must be a scheme over the old base scheme')
-        return AffineScheme(self.coordinate_ring().base_extend(R.coordinate_ring()),
-                            self.base_ring())
+            raise ValueError(
+                'the new base scheme must be a scheme over the old base scheme'
+            )
+        return AffineScheme(
+            self.coordinate_ring().base_extend(R.coordinate_ring()), self.base_ring()
+        )
 
     def _point_homset(self, *args, **kwds):
         """
@@ -1083,6 +1119,7 @@ class AffineScheme(UniqueRepresentation, Scheme):
             Set of rational points of Spectrum of Integer Ring
         """
         from sage.schemes.affine.affine_homset import SchemeHomset_points_spec
+
         return SchemeHomset_points_spec(*args, **kwds)
 
     def hom(self, x, Y=None):
@@ -1135,7 +1172,11 @@ class AffineScheme(UniqueRepresentation, Scheme):
 
         if isinstance(x, Scheme):
             return self.Hom(x).natural_map()
-        if Y is None and isinstance(x, Map) and x.category_for().is_subcategory(Rings()):
+        if (
+            Y is None
+            and isinstance(x, Map)
+            and x.category_for().is_subcategory(Rings())
+        ):
             # x is a morphism of Rings
             Y = AffineScheme(x.domain())
         return Scheme.hom(self, x, Y)

@@ -69,6 +69,7 @@ def apply_map(phi, name=None):
         sage: f(v)
         (2, 3, 4)
     """
+
     def apply(self, *args, **kwds):
         """
         Generic function used to implement common symbolic operations
@@ -99,6 +100,7 @@ def apply_map(phi, name=None):
             (sin(2*x), sin(3*x))
         """
         return self.apply_map(lambda x: phi(x, *args, **kwds))
+
     apply.__name__ = name or getattr(phi, "__name__", "apply")
     apply.__qualname__ = apply.__name__
     apply.__doc__ += "\nSee Expression." + phi.__name__ + "() for optional arguments."
@@ -110,8 +112,17 @@ class Vector_symbolic_dense(free_module_element.FreeModuleElement_generic_dense)
 
 
 # Add elementwise methods.
-for method in ['simplify', 'simplify_factorial',
-               'simplify_log', 'simplify_rational',
-               'simplify_trig', 'simplify_full', 'trig_expand',
-               'canonicalize_radical', 'trig_reduce']:
-    setattr(Vector_symbolic_dense, method, apply_map(getattr(Expression, method), method))
+for method in [
+    'simplify',
+    'simplify_factorial',
+    'simplify_log',
+    'simplify_rational',
+    'simplify_trig',
+    'simplify_full',
+    'trig_expand',
+    'canonicalize_radical',
+    'trig_reduce',
+]:
+    setattr(
+        Vector_symbolic_dense, method, apply_map(getattr(Expression, method), method)
+    )

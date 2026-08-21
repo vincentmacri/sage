@@ -13,6 +13,7 @@ AUTHORS:
 - Travis Scrimshaw (2018-02-05): Made compatible with
   :class:`~sage.groups.artin.ArtinGroup`
 """
+
 # ***************************************************************************
 #       Copyright (C) 2013,2018 Travis Scrimshaw <tcscrims at gmail.com>
 #
@@ -26,7 +27,10 @@ from sage.libs.gap.element import GapElement
 
 from sage.misc.cachefunc import cached_method
 from sage.structure.richcmp import richcmp
-from sage.groups.finitely_presented import FinitelyPresentedGroup, FinitelyPresentedGroupElement
+from sage.groups.finitely_presented import (
+    FinitelyPresentedGroup,
+    FinitelyPresentedGroupElement,
+)
 from sage.groups.free_group import FreeGroup
 from sage.groups.artin import ArtinGroup, ArtinGroupElement
 from sage.graphs.graph import Graph
@@ -136,6 +140,7 @@ class RightAngledArtinGroup(ArtinGroup):
 
     - :wikipedia:`Artin_group#Right-angled_Artin_groups`
     """
+
     @staticmethod
     def __classcall_private__(cls, G, names=None):
         """
@@ -173,8 +178,10 @@ class RightAngledArtinGroup(ArtinGroup):
                 names = [names + str(v) for v in G.vertices(sort=False)]
         names = tuple(names)
         if len(names) != G.n_vertices():
-            raise ValueError("the number of generators must match the"
-                             " number of vertices of the defining graph")
+            raise ValueError(
+                "the number of generators must match the"
+                " number of vertices of the defining graph"
+            )
         return super().__classcall__(cls, G, names)
 
     def __init__(self, G, names):
@@ -198,11 +205,13 @@ class RightAngledArtinGroup(ArtinGroup):
         for u, v in CG.edge_iterator(labels=False):
             cm[u][v] = 2
             cm[v][u] = 2
-        self._coxeter_group = CoxeterGroup(CoxeterMatrix(cm, index_set=G.vertices(sort=True)))
-        rels = tuple(F([i + 1, j + 1, -i - 1, -j - 1])
-                     for i, j in CG.edge_iterator(labels=False))  # +/- 1 for indexing
-        FinitelyPresentedGroup.__init__(self, F, rels,
-                                        category=Groups().Infinite())
+        self._coxeter_group = CoxeterGroup(
+            CoxeterMatrix(cm, index_set=G.vertices(sort=True))
+        )
+        rels = tuple(
+            F([i + 1, j + 1, -i - 1, -j - 1]) for i, j in CG.edge_iterator(labels=False)
+        )  # +/- 1 for indexing
+        FinitelyPresentedGroup.__init__(self, F, rels, category=Groups().Infinite())
 
     def _repr_(self) -> str:
         """
@@ -305,7 +314,9 @@ class RightAngledArtinGroup(ArtinGroup):
             1
         """
         if isinstance(x, RightAngledArtinGroup.Element):
-            raise ValueError("there is no coercion from {} into {}".format(x.parent(), self))
+            raise ValueError(
+                "there is no coercion from {} into {}".format(x.parent(), self)
+            )
         if x == 1:
             return self.one()
         verts = self._graph.vertices(sort=True)
@@ -348,8 +359,10 @@ class RightAngledArtinGroup(ArtinGroup):
                 # Check if this could fit in the commuting set
                 if letter in comm_set:
                     # Try to move it in
-                    if any(G.has_edge(v[w[j][0]], v[letter])
-                           for j in range(pos + len(comm_set), i)):
+                    if any(
+                        G.has_edge(v[w[j][0]], v[letter])
+                        for j in range(pos + len(comm_set), i)
+                    ):
                         # We can't, so go onto the next letter
                         i += 1
                         continue
@@ -366,8 +379,7 @@ class RightAngledArtinGroup(ArtinGroup):
                             pos = 0
                             # Start again since cancellation can be pronounced effects
                             break
-                elif all(not G.has_edge(v[w[j][0]], v[letter])
-                         for j in range(pos, i)):
+                elif all(not G.has_edge(v[w[j][0]], v[letter]) for j in range(pos, i)):
                     j = 0
                     for x in comm_set:
                         if x > letter:
@@ -394,6 +406,7 @@ class RightAngledArtinGroup(ArtinGroup):
         """
         if F is None:
             from sage.rings.rational_field import QQ
+
             F = QQ
         return CohomologyRAAG(F, self)
 
@@ -405,6 +418,7 @@ class RightAngledArtinGroup(ArtinGroup):
         ``i`` is the index of a vertex in the defining graph (with some
         fixed order of the vertices) and ``p`` is the power.
         """
+
         def __init__(self, parent, lst):
             """
             Initialize ``self``.
@@ -531,6 +545,7 @@ class RightAngledArtinGroup(ArtinGroup):
                 return '1'
 
             from sage.misc.latex import latex
+
             latexrepr = ''
             v = self.parent()._graph.vertices(sort=True)
             for i, p in self._data:
@@ -647,6 +662,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
 
     - [CQ2019]_
     """
+
     def __init__(self, R, A):
         """
         Initialize ``self``.
@@ -670,6 +686,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
         names = tuple(['e' + name[1:] for name in A.variable_names()])
         from sage.graphs.independent_sets import IndependentSets
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         indices = [tuple(ind_set) for ind_set in IndependentSets(A._graph)]
         indices = FiniteEnumeratedSet(indices)
         cat = AlgebrasWithBasis(R.category()).Super().Graded().FiniteDimensional()
@@ -688,7 +705,9 @@ class CohomologyRAAG(CombinatorialFreeModule):
             Cohomology ring of Right-angled Artin group of Cycle graph
              with coefficients in Rational Field
         """
-        return "Cohomology ring of {} with coefficients in {}".format(self._group, self.base_ring())
+        return "Cohomology ring of {} with coefficients in {}".format(
+            self._group, self.base_ring()
+        )
 
     def _repr_term(self, m) -> str:
         """
@@ -747,6 +766,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
         if not m:
             return unicode_art('1')
         import unicodedata
+
         wedge = unicodedata.lookup('LOGICAL AND')
         return unicode_art(*['e' + str(i) for i in m], sep=wedge)
 
@@ -765,6 +785,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
         if not m:
             return '1'
         from sage.misc.latex import latex
+
         return " \\wedge ".join('e_{{{}}}'.format(latex(i)) for i in m)
 
     def gen(self, i=0):
@@ -784,8 +805,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
             sage: H.gen(1)
             e1
         """
-        return self._from_dict({(i,): self.base_ring().one()},
-                               remove_zeros=False)
+        return self._from_dict({(i,): self.base_ring().one()}, remove_zeros=False)
 
     @cached_method
     def one_basis(self):
@@ -818,6 +838,7 @@ class CohomologyRAAG(CombinatorialFreeModule):
         V = self._group._graph.vertices(True)
         d = {x: self.gen(i) for i, x in enumerate(V)}
         from sage.sets.family import Family
+
         return Family(V, lambda x: d[x])
 
     def gens(self) -> tuple:

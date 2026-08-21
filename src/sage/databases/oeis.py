@@ -133,6 +133,7 @@ AUTHORS:
 import re
 from collections import defaultdict
 from urllib.parse import urlencode
+
 # ****************************************************************************
 #       Copyright (C) 2012 Thierry Monteil <sage!lma.metelu.net>
 #
@@ -214,6 +215,7 @@ def _urls(html_string) -> list[str]:
                 for attr in attrs:
                     if attr[0] == 'href':
                         urls.append(attr[1])
+
     MyHTMLParser().feed(html_string)
     return urls
 
@@ -356,6 +358,7 @@ class OEIS:
         sage: oeis('A000045')  # optional -- internet
         A000045: Fibonacci numbers: F(n) = F(n-1) + F(n-2) with F(0) = 0 and F(1) = 1.
     """
+
     def __call__(self, query, max_results=None, first_result=0):
         r"""
         See the documentation of :class:`OEIS`.
@@ -407,14 +410,19 @@ class OEIS:
             sage: oeis.options.max_results
             3
         """
+
         NAME = 'OEIS'
         module = 'sage.databases.oeis'
-        max_results = dict(default=3,
-                           description='the maximum number of results to return',
-                           checker=lambda x: x in ZZ and x > 0)
-        fetch_b_file = dict(default=False,
-                            description='whether to fetch terms from the b-file by default',
-                            checker=lambda x: isinstance(x, bool))
+        max_results = dict(
+            default=3,
+            description='the maximum number of results to return',
+            checker=lambda x: x in ZZ and x > 0,
+        )
+        fetch_b_file = dict(
+            default=False,
+            description='whether to fetch terms from the b-file by default',
+            checker=lambda x: isinstance(x, bool),
+        )
 
     def __repr__(self) -> str:
         r"""
@@ -529,10 +537,12 @@ class OEIS:
         """
         if max_results is None:
             max_results = self.options['max_results']
-        options = {'q': description,
-                   'n': str(max_results),
-                   'fmt': 'text',
-                   'start': str(first_result)}
+        options = {
+            'q': description,
+            'n': str(max_results),
+            'fmt': 'text',
+            'start': str(first_result),
+        }
         url = oeis_url + "search?" + urlencode(options)
         sequence_list = _fetch(url).split('\n\n')[2:-1]
         T = [self.find_by_entry(entry=s) for s in sequence_list]
@@ -581,6 +591,7 @@ class OEIS:
             sage: oeis.browse()                         # optional -- webbrowser
         """
         import webbrowser
+
         webbrowser.open(oeis_url)
 
     def _imaginary_entry(self, ident='A999999', keywords=''):
@@ -606,38 +617,58 @@ class OEIS:
             sage: ','.join(s.keywords()) == keywords
             True
         """
-        return ('%I ' + ident + ' M9999 N9999\n'
-                '%S ' + ident + ' 1,1,1,1,2,1,1,1,\n'
-                '%T ' + ident + ' 1,1,1,1,1,1,1,1,1,\n'
-                '%U ' + ident + ' 1,1,1,1,1,1,1,1,1\n'
-                '%N ' + ident + ' The characteristic sequence of 42 plus one, starting from 38.\n'
-                '%D ' + ident + ' Lewis Carroll, Alice\'s Adventures in Wonderland.\n'
-                '%D ' + ident + ' Lewis Carroll, The Hunting of the Snark.\n'
-                '%D ' + ident + ' Deep Thought, The Answer to the Ultimate Question of Life, The Universe, and Everything.\n'
-                '%H ' + ident + ' Wikipedia, <a href="https://en.wikipedia.org/wiki/42_(number)">42 (number)</a>\n'
-                '%H ' + ident + ' See. also <a href="https://github.com/sagemath/sage/issues/42">github issue #42</a>\n'
-                '%H ' + ident + ' Do not confuse with the sequence <a href="/A000042">A000042</a> or the sequence <a href="/A000024">A000024</a>\n'
-                '%H ' + ident + ' The string http://42.com is not a link.\n'
-                '%F ' + ident + ' For n big enough, s(n+1) - s(n) = 0.\n'
-                '%Y ' + ident + ' Related sequences are A000042 and its friend A000024.\n'
-                '%A ' + ident + ' Anonymous.\n'
-                '%O ' + ident + ' 38,4\n'
-                '%E ' + ident + ' This sequence does not contain errors.\n'
-                '%e ' + ident + ' s(42) + s(43) = 0.\n'
-                '%p ' + ident + ' Do not even try, Maple is not able to produce such a sequence.\n'
-                '%t ' + ident + ' Mathematica neither.\n'
-                '%o ' + ident + ' (Python)\n'
-                '%o ' + ident + ' def ' + ident + '(n):\n'
-                '%o ' + ident + '     assert(isinstance(n, (int, Integer))), "n must be an integer."\n'
-                '%o ' + ident + '     if n < 38:\n'
-                '%o ' + ident + '         raise ValueError("the value %s is not accepted" % str(n))\n'
-                '%o ' + ident + '     elif n == 42:\n'
-                '%o ' + ident + '         return 2\n'
-                '%o ' + ident + '     else:\n'
-                '%o ' + ident + '         return 1\n'
-                '%K ' + ident + ' ' + keywords + '\n'
-                '%C ' + ident + ' 42 is the product of the first 4 prime numbers, except 5 and perhaps 1.\n'
-                '%C ' + ident + ' Apart from that, i have no comment.')
+        return (
+            '%I ' + ident + ' M9999 N9999\n'
+            '%S ' + ident + ' 1,1,1,1,2,1,1,1,\n'
+            '%T ' + ident + ' 1,1,1,1,1,1,1,1,1,\n'
+            '%U ' + ident + ' 1,1,1,1,1,1,1,1,1\n'
+            '%N '
+            + ident
+            + ' The characteristic sequence of 42 plus one, starting from 38.\n'
+            '%D ' + ident + ' Lewis Carroll, Alice\'s Adventures in Wonderland.\n'
+            '%D ' + ident + ' Lewis Carroll, The Hunting of the Snark.\n'
+            '%D '
+            + ident
+            + ' Deep Thought, The Answer to the Ultimate Question of Life, The Universe, and Everything.\n'
+            '%H '
+            + ident
+            + ' Wikipedia, <a href="https://en.wikipedia.org/wiki/42_(number)">42 (number)</a>\n'
+            '%H '
+            + ident
+            + ' See. also <a href="https://github.com/sagemath/sage/issues/42">github issue #42</a>\n'
+            '%H '
+            + ident
+            + ' Do not confuse with the sequence <a href="/A000042">A000042</a> or the sequence <a href="/A000024">A000024</a>\n'
+            '%H ' + ident + ' The string http://42.com is not a link.\n'
+            '%F ' + ident + ' For n big enough, s(n+1) - s(n) = 0.\n'
+            '%Y ' + ident + ' Related sequences are A000042 and its friend A000024.\n'
+            '%A ' + ident + ' Anonymous.\n'
+            '%O ' + ident + ' 38,4\n'
+            '%E ' + ident + ' This sequence does not contain errors.\n'
+            '%e ' + ident + ' s(42) + s(43) = 0.\n'
+            '%p '
+            + ident
+            + ' Do not even try, Maple is not able to produce such a sequence.\n'
+            '%t ' + ident + ' Mathematica neither.\n'
+            '%o ' + ident + ' (Python)\n'
+            '%o ' + ident + ' def ' + ident + '(n):\n'
+            '%o '
+            + ident
+            + '     assert(isinstance(n, (int, Integer))), "n must be an integer."\n'
+            '%o ' + ident + '     if n < 38:\n'
+            '%o '
+            + ident
+            + '         raise ValueError("the value %s is not accepted" % str(n))\n'
+            '%o ' + ident + '     elif n == 42:\n'
+            '%o ' + ident + '         return 2\n'
+            '%o ' + ident + '     else:\n'
+            '%o ' + ident + '         return 1\n'
+            '%K ' + ident + ' ' + keywords + '\n'
+            '%C '
+            + ident
+            + ' 42 is the product of the first 4 prime numbers, except 5 and perhaps 1.\n'
+            '%C ' + ident + ' Apart from that, i have no comment.'
+        )
 
     def _imaginary_sequence(self, ident='A999999', keywords='sign,easy'):
         r"""
@@ -663,7 +694,9 @@ class OEIS:
             sage: s(42)
             2
         """
-        return self.find_by_entry(entry=self._imaginary_entry(ident=ident, keywords=keywords))
+        return self.find_by_entry(
+            entry=self._imaginary_entry(ident=ident, keywords=keywords)
+        )
 
 
 class OEISSequence(SageObject, UniqueRepresentation):
@@ -697,6 +730,7 @@ class OEISSequence(SageObject, UniqueRepresentation):
 
     .. automethod:: __call__
     """
+
     @staticmethod
     def __classcall__(cls, ident):
         r"""
@@ -709,7 +743,7 @@ class OEISSequence(SageObject, UniqueRepresentation):
         """
         if not isinstance(ident, str):
             ident = str(ident)
-            ident = 'A000000'[:-len(ident)] + ident
+            ident = 'A000000'[: -len(ident)] + ident
         return super().__classcall__(cls, ident)
 
     def __init__(self, ident):
@@ -1110,18 +1144,27 @@ class OEISSequence(SageObject, UniqueRepresentation):
         """
         if 'cofr' in self.keywords() and 'frac' not in self.keywords():
             from sage.rings.continued_fraction import continued_fraction
+
             return continued_fraction(self.first_terms())
         if 'cons' in self.keywords():
             offset = self.offsets()[0]
             terms = self.first_terms() + tuple([0] * abs(offset))
             from sage.rings.real_lazy import RealLazyField
-            return RealLazyField()('0' + ''.join(map(str, terms[:offset])) + '.' + ''.join(map(str, terms[offset:])))
+
+            return RealLazyField()(
+                '0'
+                + ''.join(map(str, terms[:offset]))
+                + '.'
+                + ''.join(map(str, terms[offset:]))
+            )
         if 'nonn' in self.keywords():
             from sage.rings.semirings.non_negative_integer_semiring import NN
             from sage.structure.sequence import Sequence
+
             return Sequence(self.first_terms(), NN)
         from sage.rings.integer_ring import ZZ
         from sage.structure.sequence import Sequence
+
         return Sequence(self.first_terms(), ZZ)
 
     def is_dead(self, warn_only=False) -> bool:
@@ -1295,6 +1338,7 @@ class OEISSequence(SageObject, UniqueRepresentation):
             2048
             sage: oeis.options._reset()
         """
+
         def fetch_b_file():
             url = oeis_url + f"b{self.id(format='int')}.txt"
             terms = _fetch(url)
@@ -1305,13 +1349,17 @@ class OEISSequence(SageObject, UniqueRepresentation):
                     continue
                 k, v = (Integer(e) for e in term.strip().split())
                 if check is not None and k != check + 1:
-                    raise ValueError(f"malformed b-file {url}: key {check} followed by {k}")
+                    raise ValueError(
+                        f"malformed b-file {url}: key {check} followed by {k}"
+                    )
                 check = k
                 first_terms += (v,)
             self._first_terms = True, first_terms
 
-        if ((number is infinity or oeis.options['fetch_b_file'])
-            and self is not oeis._imaginary_sequence()):  # all other sequences have a b-file
+        if (
+            (number is infinity or oeis.options['fetch_b_file'])
+            and self is not oeis._imaginary_sequence()
+        ):  # all other sequences have a b-file
             # self._first_terms is a pair (all?, first_terms)
             if not hasattr(self, "_first_terms") or not self._first_terms[0]:
                 fetch_b_file()
@@ -1403,10 +1451,12 @@ class OEISSequence(SageObject, UniqueRepresentation):
         """
         offset = self.offsets()[0]
         if 'cons' in self.keywords():
-            offset = - offset
+            offset = -offset
         n = k - offset
         if not 0 <= n < len(self.first_terms()):
-            raise ValueError("sequence %s is not defined (or known) for index %s" % (self.id(), k))
+            raise ValueError(
+                "sequence %s is not defined (or known) for index %s" % (self.id(), k)
+            )
         return self.first_terms()[n]
 
     def __getitem__(self, i):
@@ -1594,8 +1644,9 @@ class OEISSequence(SageObject, UniqueRepresentation):
             sage: type(HTML)
             <class 'sage.misc.html.HtmlFragment'>
         """
+
         def url_absolute(s):
-            return re.sub(r'\"\/', '\"' + oeis_url, s)
+            return re.sub(r'\"\/', '"' + oeis_url, s)
 
         if browse is None:
             if format == 'guess':
@@ -1603,13 +1654,20 @@ class OEISSequence(SageObject, UniqueRepresentation):
             if format == 'raw':
                 return FancyTuple(self._field('H'))
             if format == 'html':
-                return HtmlFragment(FancyTuple([url_absolute(f) for f in self._field('H')]))
+                return HtmlFragment(
+                    FancyTuple([url_absolute(f) for f in self._field('H')])
+                )
             if format == 'url':
-                url_list = flatten([_urls(url_absolute(string)) for string in self._field('H')])
+                url_list = flatten(
+                    [_urls(url_absolute(string)) for string in self._field('H')]
+                )
                 return FancyTuple(url_list)
         else:
             import webbrowser
-            url_list = flatten([_urls(url_absolute(string)) for string in self._field('H')])
+
+            url_list = flatten(
+                [_urls(url_absolute(string)) for string in self._field('H')]
+            )
             if isinstance(browse, (int, Integer)):
                 webbrowser.open(url_list[browse])
             elif isinstance(browse, (list, tuple)):
@@ -1813,6 +1871,7 @@ class OEISSequence(SageObject, UniqueRepresentation):
             sage: s.browse()                            # optional -- webbrowser
         """
         import webbrowser
+
         webbrowser.open(self.url())
 
     def show(self):
@@ -1863,10 +1922,24 @@ class OEISSequence(SageObject, UniqueRepresentation):
             1: Apart from that, i have no comment.
             ...
         """
-        for s in ['id', 'name', 'first_terms', 'comments', 'references',
-                  'links', 'formulas', 'examples', 'cross_references',
-                  'programs', 'keywords', 'offsets', 'url', 'old_IDs',
-                  'author', 'extensions_or_errors']:
+        for s in [
+            'id',
+            'name',
+            'first_terms',
+            'comments',
+            'references',
+            'links',
+            'formulas',
+            'examples',
+            'cross_references',
+            'programs',
+            'keywords',
+            'offsets',
+            'url',
+            'old_IDs',
+            'author',
+            'extensions_or_errors',
+        ]:
             result = getattr(self, s)()
             if result != '' and result != ('',) and result != ():
                 print(re.sub('_', ' ', s).upper())
@@ -1941,8 +2014,10 @@ class OEISSequence(SageObject, UniqueRepresentation):
         if language == 'sagemath':
             language = 'sage'
         if language == 'all':
-            table = (('maple', FancyTuple(self._field('p'))),
-                     ('mathematica', FancyTuple(self._field('t'))))
+            table = (
+                ('maple', FancyTuple(self._field('p'))),
+                ('mathematica', FancyTuple(self._field('t'))),
+            )
             table = [(lang, code) for lang, code in table if code]
         else:
             table = []
@@ -2008,7 +2083,7 @@ class OEISSequence(SageObject, UniqueRepresentation):
                 flush_to_table(old_language, code_lines)
                 # start new stock of code lines
                 old_language, end = new_language
-                rest = line[end + 1:].strip()
+                rest = line[end + 1 :].strip()
                 code_lines = [rest] if rest else []
             else:
                 code_lines.append(line)
@@ -2071,6 +2146,7 @@ class FancyTuple(tuple):
         sage: t[2]
         'two'
     """
+
     def __repr__(self):
         r"""
         Print the tuple with one value per line, where each line
@@ -2092,7 +2168,9 @@ class FancyTuple(tuple):
             2: 中文
         """
         length = len(str(len(self) - 1))
-        return '\n'.join('{0:>{1}}: {2}'.format(i, length, item) for i, item in enumerate(self))
+        return '\n'.join(
+            '{0:>{1}}: {2}'.format(i, length, item) for i, item in enumerate(self)
+        )
 
     def __getslice__(self, i, j):
         r"""

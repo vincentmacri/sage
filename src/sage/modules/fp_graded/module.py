@@ -136,6 +136,7 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         sage: FPModule(E.free_graded_module([0, 1]))
         Free graded left module on 2 generators over The exterior algebra of rank 2 over Rational Field
     """
+
     @staticmethod
     def __classcall__(cls, arg0, generator_degrees=None, relations=(), names=None):
         r"""
@@ -152,6 +153,7 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         """
         if names is not None:
             from sage.structure.category_object import normalize_names
+
             names = normalize_names(-1, names)
 
         # If given a morphism, then that defines a module
@@ -175,12 +177,10 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
 
         # Use the coefficients given for the relations and make module elements
         # from them.  Filter out the zero elements, as they are redundant.
-        rels = [v for r in relations
-                if not (v := generator_module(r)).is_zero()]
+        rels = [v for r in relations if not (v := generator_module(r)).is_zero()]
 
         # The free module for the relations of the module.
-        relations_module = arg0.free_graded_module(tuple([r.degree()
-                                                          for r in rels]))
+        relations_module = arg0.free_graded_module(tuple([r.degree() for r in rels]))
 
         # The module we want to model is the cokernel of the following morphism
         j = Hom(relations_module, generator_module)(rels)
@@ -222,6 +222,7 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         Module.__init__(self, algebra, category=cat, names=names)
 
         from sage.combinat.family import Family
+
         self._spanning_set = Family(self._indices, self.monomial)
 
     Element = FPElement
@@ -382,7 +383,10 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         """
         # Should use a real Map, as soon as combinatorial_classes are enumerated sets, and therefore parents
         from sage.categories.poor_man_map import PoorManMap
-        return PoorManMap(self._monomial, domain=self._indices, codomain=self, name="Term map")
+
+        return PoorManMap(
+            self._monomial, domain=self._indices, codomain=self, name="Term map"
+        )
 
     @cached_method
     def zero(self):
@@ -452,8 +456,9 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
                 coeffs = x.monomial_coefficients()
                 return sum(coeffs[idx] * B[idx] for idx in coeffs)
             raise ValueError("element is not in this module")
-        return self._from_dict({b: c for (c, b) in zip(x, self._indices) if c},
-                               remove_zeros=False)
+        return self._from_dict(
+            {b: c for (c, b) in zip(x, self._indices) if c}, remove_zeros=False
+        )
 
     def _repr_(self):
         r"""
@@ -473,11 +478,16 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
             Free graded left module on 1 generator over
              mod 2 Steenrod algebra, milnor basis
         """
-        return "Finitely presented left module on %s generator%s and %s relation%s over %s"\
-            % (len(self._free_module().generator_degrees()),
-               "" if len(self._free_module().generator_degrees()) == 1 else "s",
-               len(self._j.values()), "" if len(self._j.values()) == 1 else "s",
-               self.base_ring())
+        return (
+            "Finitely presented left module on %s generator%s and %s relation%s over %s"
+            % (
+                len(self._free_module().generator_degrees()),
+                "" if len(self._free_module().generator_degrees()) == 1 else "s",
+                len(self._j.values()),
+                "" if len(self._j.values()) == 1 else "s",
+                self.base_ring(),
+            )
+        )
 
     def _repr_term(self, m):
         """
@@ -727,8 +737,12 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
             sage: Z1.basis_elements(n=10)
             ()
         """
-        return tuple([self.element_from_coordinates(x, n) for
-                      x in self.vector_presentation(n, verbose).basis()])
+        return tuple(
+            [
+                self.element_from_coordinates(x, n)
+                for x in self.vector_presentation(n, verbose).basis()
+            ]
+        )
 
     @cached_method
     def element_from_coordinates(self, coordinates, n):
@@ -780,11 +794,14 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         M_n = self.vector_presentation(n)
 
         if len(coordinates) != M_n.dimension():
-            raise ValueError('the given coordinate vector has incorrect length (%d); '
-                             'it should have length %d' % (len(coordinates), M_n.dimension()))
+            raise ValueError(
+                'the given coordinate vector has incorrect length (%d); '
+                'it should have length %d' % (len(coordinates), M_n.dimension())
+            )
 
         free_element = self._free_module().element_from_coordinates(
-            M_n.lift(coordinates), n)
+            M_n.lift(coordinates), n
+        )
 
         return self(free_element.dense_coefficient_list())
 
@@ -838,7 +855,9 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
                 if relation.is_zero():
                     continue
 
-                num_total_iterations += len(self.base_ring().basis(n - relation.degree()))
+                num_total_iterations += len(
+                    self.base_ring().basis(n - relation.degree())
+                )
 
             progress = 0
             iteration_count = 0
@@ -888,8 +907,12 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
             Set of Morphisms from Free graded left module on 2 generators ...
         """
         from .homspace import FPModuleHomspace
+
         if not isinstance(Y, (FPModule, FreeGradedModule)):
-            raise ValueError('cannot create homspace between incompatible types:\n%s  ->\n%s' % (self.__class__, type(Y)))
+            raise ValueError(
+                'cannot create homspace between incompatible types:\n%s  ->\n%s'
+                % (self.__class__, type(Y))
+            )
         if Y.base_ring() != self.base_ring():
             raise ValueError('the modules are not defined over the same base ring')
 
@@ -1100,9 +1123,9 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
             (2, 3)
         """
         relations = tuple([r.dense_coefficient_list() for r in self._j._values])
-        return type(self).__base__(self.base_ring(),
-                                   tuple([g + t for g in self._generator_degrees]),
-                                   relations)
+        return type(self).__base__(
+            self.base_ring(), tuple([g + t for g in self._generator_degrees]), relations
+        )
 
     def submodule_inclusion(self, spanning_elements):
         r"""
@@ -1304,6 +1327,7 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
              <class '...SteenrodFreeModuleHomspace...'>,
              <class '...SteenrodFreeModuleHomspace...'>]
         """
+
         def _print_progress(i, k):
             if verbose:
                 print('Computing f_%d (%d/%d)' % (i, i, k))
@@ -1324,8 +1348,9 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
         # f_1: F_1 -> F_0
         _print_progress(1, k)
         F_1 = self._j.domain()
-        pres = Hom(F_1, F_0)(tuple([F_0(x.dense_coefficient_list())
-                                    for x in self._j.values()]))
+        pres = Hom(F_1, F_0)(
+            tuple([F_0(x.dense_coefficient_list()) for x in self._j.values()])
+        )
 
         ret_complex.append(pres)
 
@@ -1334,7 +1359,6 @@ class FPModule(UniqueRepresentation, IndexedGenerators, Module):
             _print_progress(i, k)
 
             f = ret_complex[i - 1]
-            ret_complex.append(f._resolve_kernel(top_dim=top_dim,
-                                                 verbose=verbose))
+            ret_complex.append(f._resolve_kernel(top_dim=top_dim, verbose=verbose))
 
         return ret_complex

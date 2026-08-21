@@ -49,8 +49,9 @@ except ImportError:
     from sage.matrix.matrix_generic_sparse import Matrix_generic_sparse as Base
 
 
-class CartanMatrix(Base, CartanType_abstract,
-                   metaclass=InheritComparisonClasscallMetaclass):
+class CartanMatrix(
+    Base, CartanType_abstract, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     A (generalized) Cartan matrix.
 
@@ -235,10 +236,16 @@ class CartanMatrix(Base, CartanType_abstract,
         :meth:`row_with_indices()` and :meth:`column_with_indices()`
         respectively.
     """
+
     @staticmethod
-    def __classcall_private__(cls, data=None, index_set=None,
-                              cartan_type=None, cartan_type_check=True,
-                              borcherds=None):
+    def __classcall_private__(
+        cls,
+        data=None,
+        index_set=None,
+        cartan_type=None,
+        cartan_type_check=True,
+        borcherds=None,
+    ):
         """
         Normalize input so we can inherit from sparse integer matrix.
 
@@ -281,7 +288,7 @@ class CartanMatrix(Base, CartanType_abstract,
             subdivisions = None
         elif isinstance(data, CartanMatrix):
             if index_set is not None:
-                d = {a: index_set[i] for i,a in enumerate(data.index_set())}
+                d = {a: index_set[i] for i, a in enumerate(data.index_set())}
                 return data.relabel(d)
             return data
         else:
@@ -302,28 +309,37 @@ class CartanMatrix(Base, CartanType_abstract,
                 n = dynkin_diagram.rank()
                 index_set = dynkin_diagram.index_set()
                 oir = dynkin_diagram.odd_isotropic_roots()
-                reverse = {a: i for i,a in enumerate(index_set)}
+                reverse = {a: i for i, a in enumerate(index_set)}
                 if isinstance(borcherds, (list, tuple)):
-                    if (len(borcherds) != len(index_set)
-                        and not all(val in ZZ
-                                    and (val == 2 or (val % 2 == 0 and val < 0))
-                                    for val in borcherds)):
-                        raise ValueError("the input data is not a Borcherds-Cartan matrix")
-                    data = {(i, i): val if index_set[i] not in oir else 0
-                            for i,val in enumerate(borcherds)}
+                    if len(borcherds) != len(index_set) and not all(
+                        val in ZZ and (val == 2 or (val % 2 == 0 and val < 0))
+                        for val in borcherds
+                    ):
+                        raise ValueError(
+                            "the input data is not a Borcherds-Cartan matrix"
+                        )
+                    data = {
+                        (i, i): val if index_set[i] not in oir else 0
+                        for i, val in enumerate(borcherds)
+                    }
                 else:
-                    data = {(i, i): 2 if index_set[i] not in oir else 0
-                            for i in range(n)}
-                for (i,j,l) in dynkin_diagram.edge_iterator():
+                    data = {
+                        (i, i): 2 if index_set[i] not in oir else 0 for i in range(n)
+                    }
+                for i, j, l in dynkin_diagram.edge_iterator():
                     data[(reverse[j], reverse[i])] = -l
             else:
                 M = matrix(data)
                 if borcherds:
                     if not is_borcherds_cartan_matrix(M):
-                        raise ValueError("the input matrix is not a Borcherds-Cartan matrix")
+                        raise ValueError(
+                            "the input matrix is not a Borcherds-Cartan matrix"
+                        )
                 else:
                     if not is_generalized_cartan_matrix(M):
-                        raise ValueError("the input matrix is not a generalized Cartan matrix")
+                        raise ValueError(
+                            "the input matrix is not a generalized Cartan matrix"
+                        )
                 n = M.ncols()
                 data = M.dict()
                 subdivisions = M._subdivisions
@@ -379,6 +395,7 @@ class CartanMatrix(Base, CartanType_abstract,
         if nrows == self.nrows() and ncols == self.ncols() and sparse:
             return self.parent()
         from sage.matrix.matrix_space import MatrixSpace
+
         return MatrixSpace(ZZ, nrows, ncols, sparse is None or bool(sparse))
 
     def _CM_init(self, cartan_type, index_set, cartan_type_check):
@@ -477,13 +494,16 @@ class CartanMatrix(Base, CartanType_abstract,
             Phi = RS.roots()
             gens = {}
             from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
             S = SymmetricGroup(len(Phi))
             for i in self.index_set():
-                pi = S([ Phi.index( beta.simple_reflection(i) ) + 1 for beta in Phi ])
+                pi = S([Phi.index(beta.simple_reflection(i)) + 1 for beta in Phi])
                 gens[i] = pi
-            return S.subgroup( gens[i] for i in gens )
+            return S.subgroup(gens[i] for i in gens)
 
-        raise ValueError("the reflection group is only available as a matrix group or as a permutation group")
+        raise ValueError(
+            "the reflection group is only available as a matrix group or as a permutation group"
+        )
 
     def symmetrizer(self):
         """
@@ -514,8 +534,9 @@ class CartanMatrix(Base, CartanType_abstract,
         # to integer coefficients
         from sage.arith.functions import lcm as LCM
         from sage.rings.rational_field import QQ
+
         scalar = LCM([QQ(x).denominator() for x in sym])
-        return Family( {iset[i]: ZZ(val*scalar) for i, val in enumerate(sym)} )
+        return Family({iset[i]: ZZ(val * scalar) for i, val in enumerate(sym)})
 
     @cached_method
     def symmetrized_matrix(self):
@@ -600,7 +621,9 @@ class CartanMatrix(Base, CartanType_abstract,
         """
         ind = self.index_set()
         I = [ind.index(i) for i in index_set]
-        return CartanMatrix(self.matrix_from_rows_and_columns(I, I), index_set=index_set)
+        return CartanMatrix(
+            self.matrix_from_rows_and_columns(I, I), index_set=index_set
+        )
 
     def rank(self):
         r"""
@@ -659,6 +682,7 @@ class CartanMatrix(Base, CartanType_abstract,
             Dynkin diagram of rank 2
         """
         from sage.combinat.root_system.dynkin_diagram import DynkinDiagram
+
         if self._cartan_type is not None:
             return DynkinDiagram(self._cartan_type)
         return DynkinDiagram(self)
@@ -731,7 +755,7 @@ class CartanMatrix(Base, CartanType_abstract,
             True
         """
         for i in range(self.nrows()):
-            for j in range(i+1, self.ncols()):
+            for j in range(i + 1, self.ncols()):
                 if self[i, j] < -1 or self[j, i] < -1:
                     return False
         return True
@@ -833,7 +857,8 @@ class CartanMatrix(Base, CartanType_abstract,
                 return False
             for b in self.indecomposable_blocks():
                 if b.det() < 0 or not all(
-                    a.det() > 0 for a in b.principal_submatrices(proper=True)):
+                    a.det() > 0 for a in b.principal_submatrices(proper=True)
+                ):
                     return False
             return True
         return self._cartan_type.is_affine()
@@ -874,7 +899,7 @@ class CartanMatrix(Base, CartanType_abstract,
         D = self.dynkin_diagram()
         verts = tuple(D.vertex_iterator())
         for v in verts:
-            l = set(verts)-set((v,))
+            l = set(verts) - set((v,))
             subg = D.subgraph(vertices=l)
             if compact and not subg.is_finite():
                 return False
@@ -969,15 +994,16 @@ class CartanMatrix(Base, CartanType_abstract,
         """
         scalarproducts_to_order = {0: 2, 1: 3, 2: 4, 3: 6}
         from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+
         I = self.index_set()
         n = len(I)
         M = matrix.identity(ZZ, n)
         for i in range(n):
-            for j in range(i+1,n):
-                val = self[i,j] * self[j,i]
+            for j in range(i + 1, n):
+                val = self[i, j] * self[j, i]
                 val = scalarproducts_to_order.get(val, -1)
-                M[i,j] = val
-                M[j,i] = val
+                M[i, j] = val
+                M[j, i] = val
         return CoxeterMatrix(M, index_set=self.index_set(), cartan_type=self)
 
     @cached_method
@@ -1026,7 +1052,7 @@ class CartanMatrix(Base, CartanType_abstract,
         ret = []
         for l in powerset(iset):
             if not proper or (proper and l != iset):
-                ret.append(self.matrix_from_rows_and_columns(l,l))
+                ret.append(self.matrix_from_rows_and_columns(l, l))
         return ret
 
     @cached_method
@@ -1083,16 +1109,16 @@ def is_borcherds_cartan_matrix(M):
         return False
     n = M.ncols()
     for i in range(n):
-        if M[i,i] == 0:
+        if M[i, i] == 0:
             return False
-        if M[i,i] % 2 == 1:
+        if M[i, i] % 2 == 1:
             return False
-        for j in range(i+1, n):
-            if M[i,j] > 0 or M[j,i] > 0:
+        for j in range(i + 1, n):
+            if M[i, j] > 0 or M[j, i] > 0:
                 return False
-            if M[i,j] == 0 and M[j,i] != 0:
+            if M[i, j] == 0 and M[j, i] != 0:
                 return False
-            if M[j,i] == 0 and M[i,j] != 0:
+            if M[j, i] == 0 and M[i, j] != 0:
                 return False
     return True
 
@@ -1124,7 +1150,7 @@ def is_generalized_cartan_matrix(M):
     if not is_borcherds_cartan_matrix(M):
         return False
     n = M.ncols()
-    return all(M[i,i] == 2 for i in range(n))
+    return all(M[i, i] == 2 for i in range(n))
 
 
 def find_cartan_type_from_matrix(CM):
@@ -1176,7 +1202,7 @@ def find_cartan_type_from_matrix(CM):
     types = []
     relabel = []
     for S in CM.dynkin_diagram().connected_components_subgraphs():
-        S = DiGraph(S) # We need a simple digraph here
+        S = DiGraph(S)  # We need a simple digraph here
         n = S.n_vertices()
         # Build the list to test based upon rank
         if n == 1:
@@ -1187,34 +1213,34 @@ def find_cartan_type_from_matrix(CM):
         test = [['A', n]]
         if n >= 2:
             if n == 2:
-                test += [['G',2], ['A',2,2]]
-            test += [['B',n], ['A',n-1,1]]
+                test += [['G', 2], ['A', 2, 2]]
+            test += [['B', n], ['A', n - 1, 1]]
         if n >= 3:
             if n == 3:
-                test.append(['G',2,1])
-            test += [['C',n], ['BC',n-1,2], ['C',n-1,1]]
+                test.append(['G', 2, 1])
+            test += [['C', n], ['BC', n - 1, 2], ['C', n - 1, 1]]
         if n >= 4:
             if n == 4:
-                test.append(['F',4])
-            test += [['D',n], ['B',n-1,1]]
+                test.append(['F', 4])
+            test += [['D', n], ['B', n - 1, 1]]
         if n >= 5:
             if n == 5:
-                test.append(['F',4,1])
-            test.append(['D',n-1,1])
+                test.append(['F', 4, 1])
+            test.append(['D', n - 1, 1])
         if n == 6:
-            test.append(['E',6])
+            test.append(['E', 6])
         elif n == 7:
-            test += [['E',7], ['E',6,1]]
+            test += [['E', 7], ['E', 6, 1]]
         elif n == 8:
-            test += [['E',8], ['E',7,1]]
+            test += [['E', 8], ['E', 7, 1]]
         elif n == 9:
-            test.append(['E',8,1])
+            test.append(['E', 8, 1])
 
         # Test every possible Cartan type and its dual
         found = False
         for x in test:
             ct = CartanType(x)
-            T = DiGraph(ct.dynkin_diagram()) # We need a simple digraph here
+            T = DiGraph(ct.dynkin_diagram())  # We need a simple digraph here
             iso, match = T.is_isomorphic(S, certificate=True, edge_labels=True)
             if iso:
                 types.append(ct)
@@ -1223,10 +1249,10 @@ def find_cartan_type_from_matrix(CM):
                 break
 
             if ct == ct.dual():
-                continue # self-dual, so nothing more to test
+                continue  # self-dual, so nothing more to test
 
             ct = ct.dual()
-            T = DiGraph(ct.dynkin_diagram()) # We need a simple digraph here
+            T = DiGraph(ct.dynkin_diagram())  # We need a simple digraph here
             iso, match = T.is_isomorphic(S, certificate=True, edge_labels=True)
             if iso:
                 types.append(ct)

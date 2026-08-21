@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2018): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -29,6 +28,7 @@ class QuantumGroupRepresentations(Category_module):
     """
     The category of quantum group representations.
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -57,7 +57,8 @@ class QuantumGroupRepresentations(Category_module):
         """
         from sage.algebras.quantum_groups.representations import AdjointRepresentation
         from sage.combinat.crystals.tensor_product import CrystalOfTableaux
-        T = CrystalOfTableaux(['A',2], shape=[2,1])
+
+        T = CrystalOfTableaux(['A', 2], shape=[2, 1])
         return AdjointRepresentation(self.base_ring(), T)
 
     class WithBasis(CategoryWithAxiom_over_base_ring):
@@ -65,12 +66,14 @@ class QuantumGroupRepresentations(Category_module):
         The category of quantum group representations with a
         distinguished basis.
         """
+
         class TensorProducts(TensorProductsCategory):
             """
             The category of quantum group representations with a
             distinguished basis constructed by tensor product of
             quantum group representations with a distinguished basis.
             """
+
             @cached_method
             def extra_super_categories(self):
                 """
@@ -128,12 +131,20 @@ class QuantumGroupRepresentations(Category_module):
                         sage: v.e(4)  # indirect doctest
                         0
                     """
-                    K_elt = [self._sets[k].K_on_basis(i, elt, -1) for k,elt in enumerate(b)]
-                    mon = [self._sets[k].monomial(elt) for k,elt in enumerate(b)]
+                    K_elt = [
+                        self._sets[k].K_on_basis(i, elt, -1) for k, elt in enumerate(b)
+                    ]
+                    mon = [self._sets[k].monomial(elt) for k, elt in enumerate(b)]
                     t = self.tensor_constructor(self._sets)
                     ret = self.zero()
-                    for k,elt in enumerate(b):
-                        ret += t(*(K_elt[:k] + [self._sets[k].e_on_basis(i, elt)] + mon[k+1:]))
+                    for k, elt in enumerate(b):
+                        ret += t(
+                            *(
+                                K_elt[:k]
+                                + [self._sets[k].e_on_basis(i, elt)]
+                                + mon[k + 1 :]
+                            )
+                        )
                     return ret
 
                 def f_on_basis(self, i, b):
@@ -191,12 +202,20 @@ class QuantumGroupRepresentations(Category_module):
                          + 6*B[[+--, []]] # B[[[1], [2]]]
                          + 9*q^2*B[[+--, []]] # B[[[1], [3]]]
                     """
-                    K_elt = [self._sets[k].K_on_basis(i, elt, 1) for k,elt in enumerate(b)]
-                    mon = [self._sets[k].monomial(elt) for k,elt in enumerate(b)]
+                    K_elt = [
+                        self._sets[k].K_on_basis(i, elt, 1) for k, elt in enumerate(b)
+                    ]
+                    mon = [self._sets[k].monomial(elt) for k, elt in enumerate(b)]
                     t = self.tensor_constructor(self._sets)
                     ret = self.zero()
-                    for k,elt in enumerate(b):
-                        ret += t(*(mon[:k] + [self._sets[k].f_on_basis(i, elt)] + K_elt[k+1:]))
+                    for k, elt in enumerate(b):
+                        ret += t(
+                            *(
+                                mon[:k]
+                                + [self._sets[k].f_on_basis(i, elt)]
+                                + K_elt[k + 1 :]
+                            )
+                        )
                     return ret
 
                 def K_on_basis(self, i, b, power=1):
@@ -234,8 +253,12 @@ class QuantumGroupRepresentations(Category_module):
                          + B[[[3]]] # B[[[1, 1], [2]]]
                     """
                     t = self.tensor_constructor(self._sets)
-                    return t(*[self._sets[k].K_on_basis(i, elt, power)
-                               for k,elt in enumerate(b)])
+                    return t(
+                        *[
+                            self._sets[k].K_on_basis(i, elt, power)
+                            for k, elt in enumerate(b)
+                        ]
+                    )
 
         class ParentMethods:
             def tensor(*factors):
@@ -271,7 +294,9 @@ class QuantumGroupRepresentations(Category_module):
                 cartan_type = factors[0].cartan_type()
                 if any(V.cartan_type() != cartan_type for V in factors):
                     raise ValueError("all factors must be of the same Cartan type")
-                return factors[0].__class__.Tensor(factors, category=tensor.category_from_parents(factors))
+                return factors[0].__class__.Tensor(
+                    factors, category=tensor.category_from_parents(factors)
+                )
 
         class ElementMethods:
             def e(self, i):
@@ -298,8 +323,9 @@ class QuantumGroupRepresentations(Category_module):
                 """
                 F = self.parent()
                 mc = self.monomial_coefficients(copy=False)
-                return F.linear_combination((F.e_on_basis(i, m), c)
-                                            for m, c in mc.items())
+                return F.linear_combination(
+                    (F.e_on_basis(i, m), c) for m, c in mc.items()
+                )
 
             def f(self, i):
                 r"""
@@ -331,8 +357,9 @@ class QuantumGroupRepresentations(Category_module):
                 """
                 F = self.parent()
                 mc = self.monomial_coefficients(copy=False)
-                return F.linear_combination((F.f_on_basis(i, m), c)
-                                            for m, c in mc.items())
+                return F.linear_combination(
+                    (F.f_on_basis(i, m), c) for m, c in mc.items()
+                )
 
             def K(self, i, power=1):
                 r"""
@@ -363,8 +390,9 @@ class QuantumGroupRepresentations(Category_module):
                 """
                 F = self.parent()
                 mc = self.monomial_coefficients(copy=False)
-                return F.linear_combination((F.K_on_basis(i, m, power), c)
-                                             for m, c in mc.items())
+                return F.linear_combination(
+                    (F.K_on_basis(i, m, power), c) for m, c in mc.items()
+                )
 
     class TensorProducts(TensorProductsCategory):
         """
@@ -376,6 +404,7 @@ class QuantumGroupRepresentations(Category_module):
             We use the reversed coproduct in order to match the
             tensor product rule on crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -457,37 +486,60 @@ class QuantumGroupRepresentations(Category_module):
             for x in self.basis():
                 for i in I:
                     for j in I:
-                        tester.assertEqual(x.K(j,-1).f(i).K(j,1),
-                                           q**-(al[i].scalar(ac[j]) * d[j]) * x.f(i),
-                                           "KfK^-1 -- i: {}, j: {}".format(i,j))
-                        tester.assertEqual(x.K(j,-1).e(i).K(j,1),
-                                           q**(al[i].scalar(ac[j]) * d[j]) * x.e(i),
-                                           "KeK^-1 -- i: {}, j: {}".format(i,j))
+                        tester.assertEqual(
+                            x.K(j, -1).f(i).K(j, 1),
+                            q ** -(al[i].scalar(ac[j]) * d[j]) * x.f(i),
+                            "KfK^-1 -- i: {}, j: {}".format(i, j),
+                        )
+                        tester.assertEqual(
+                            x.K(j, -1).e(i).K(j, 1),
+                            q ** (al[i].scalar(ac[j]) * d[j]) * x.e(i),
+                            "KeK^-1 -- i: {}, j: {}".format(i, j),
+                        )
                         if i == j:
-                            tester.assertEqual(x.f(i).e(i) - x.e(i).f(i),
-                                               (x.K(i,1) - x.K(i,-1)) / (q**d[i] - q**(-d[i])),
-                                               "[e,f] = (K-K^-1)/(q_i-q_i^-1) -- i: {} j: {}".format(i, j))
+                            tester.assertEqual(
+                                x.f(i).e(i) - x.e(i).f(i),
+                                (x.K(i, 1) - x.K(i, -1)) / (q ** d[i] - q ** (-d[i])),
+                                "[e,f] = (K-K^-1)/(q_i-q_i^-1) -- i: {} j: {}".format(
+                                    i, j
+                                ),
+                            )
                             continue
-                        tester.assertEqual(x.f(j).e(i) - x.e(i).f(j), 0,
-                                           "[e,f] = 0 -- i: {} j: {}".format(i, j))
+                        tester.assertEqual(
+                            x.f(j).e(i) - x.e(i).f(j),
+                            0,
+                            "[e,f] = 0 -- i: {} j: {}".format(i, j),
+                        )
                         # Check quantum Serre
-                        aij = A[I.index(i),I.index(j)]
-                        tester.assertEqual(0,
-                                           sum((-1)**n
-                                               * q_factorial(1-aij, q**d[i])
-                                               / (q_factorial(n, q**d[i])
-                                                  * q_factorial(1-aij-n, q**d[i]))
-                                               * apply_e([i]*(1-aij-n) + [j] + [i]*n, x)
-                                               for n in range(1-aij+1)),
-                                           "quantum Serre e -- i: {}, j: {}".format(i,j))
-                        tester.assertEqual(0,
-                                           sum((-1)**n
-                                               * q_factorial(1-aij, q**d[i])
-                                               / (q_factorial(n, q**d[i])
-                                                  * q_factorial(1-aij-n, q**d[i]))
-                                               * apply_f([i]*(1-aij-n) + [j] + [i]*n, x)
-                                               for n in range(1-aij+1)),
-                                           "quantum Serre f -- i: {}, j: {}".format(i,j))
+                        aij = A[I.index(i), I.index(j)]
+                        tester.assertEqual(
+                            0,
+                            sum(
+                                (-1) ** n
+                                * q_factorial(1 - aij, q ** d[i])
+                                / (
+                                    q_factorial(n, q ** d[i])
+                                    * q_factorial(1 - aij - n, q ** d[i])
+                                )
+                                * apply_e([i] * (1 - aij - n) + [j] + [i] * n, x)
+                                for n in range(1 - aij + 1)
+                            ),
+                            "quantum Serre e -- i: {}, j: {}".format(i, j),
+                        )
+                        tester.assertEqual(
+                            0,
+                            sum(
+                                (-1) ** n
+                                * q_factorial(1 - aij, q ** d[i])
+                                / (
+                                    q_factorial(n, q ** d[i])
+                                    * q_factorial(1 - aij - n, q ** d[i])
+                                )
+                                * apply_f([i] * (1 - aij - n) + [j] + [i] * n, x)
+                                for n in range(1 - aij + 1)
+                            ),
+                            "quantum Serre f -- i: {}, j: {}".format(i, j),
+                        )
                 count += 1
                 if count > tester._max_runs:
                     return

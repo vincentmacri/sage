@@ -103,8 +103,8 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
             multi-homogeneous of the same degrees (by component)
         """
         if check:
-            #check multi-homogeneous
-            #if self is a subscheme, we may need the lift of the polynomials
+            # check multi-homogeneous
+            # if self is a subscheme, we may need the lift of the polynomials
             try:
                 polys[0].exponents()
             except AttributeError:
@@ -112,15 +112,21 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
 
             target = parent.codomain().ambient_space()
             dom = parent.domain().ambient_space()
-            from sage.schemes.product_projective.space import ProductProjectiveSpaces_ring
+            from sage.schemes.product_projective.space import (
+                ProductProjectiveSpaces_ring,
+            )
+
             if isinstance(target, ProductProjectiveSpaces_ring):
                 splitpolys = target._factors(polys)
                 for m in range(len(splitpolys)):
                     d = dom._degree(splitpolys[m][0])
                     if not all(d == dom._degree(f) for f in splitpolys[m]):
-                        raise TypeError("polys (=%s) must be multi-homogeneous of the same degrees (by component)" % polys)
+                        raise TypeError(
+                            "polys (=%s) must be multi-homogeneous of the same degrees (by component)"
+                            % polys
+                        )
             else:
-                #we are mapping into some other kind of space
+                # we are mapping into some other kind of space
                 target._validate(polys)
 
         SchemeMorphism_polynomial.__init__(self, parent, polys, check)
@@ -222,15 +228,24 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
             sage: g([0, 0, 0, 0], check=False)
             (0 : 0 , 0 : 0)
         """
-        from sage.schemes.product_projective.point import ProductProjectiveSpaces_point_ring
+        from sage.schemes.product_projective.point import (
+            ProductProjectiveSpaces_point_ring,
+        )
+
         if check:
             if not isinstance(P, ProductProjectiveSpaces_point_ring):
                 try:
                     P = self.domain()(P)
                 except (TypeError, NotImplementedError):
-                    raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (P, self.domain()))
+                    raise TypeError(
+                        "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                        % (P, self.domain())
+                    )
             elif self.domain() != P.codomain():
-                raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (P, self.domain()))
+                raise TypeError(
+                    "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                    % (P, self.domain())
+                )
 
         A = self.codomain()
         Q = list(P)
@@ -286,19 +301,19 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
         PP = self.parent().codomain()
 
         n = PP.n_components()
-        dim = [ P.ngens() for P in PP ]
-        dim_prefix = [0,dim[0]]
+        dim = [P.ngens() for P in PP]
+        dim_prefix = [0, dim[0]]
 
-        for i in range(1,n):
+        for i in range(1, n):
             dim_prefix.append(dim_prefix[i] + dim[i])
 
         # compare ratio of coordinates for each projective component
         for m in range(n):
             l = dim_prefix[m]
             r = dim_prefix[m] + dim[m]
-            for i in range(l,r):
-                for j in range(i+1,r):
-                    if self[i]*right[j] != self[j]*right[i]:
+            for i in range(l, r):
+                for j in range(i + 1, r):
+                    if self[i] * right[j] != self[j] * right[i]:
                         return False
         return True
 
@@ -333,18 +348,18 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
         PP = self.parent().codomain()
 
         n = PP.n_components()
-        dim = [ P.ngens() for P in PP ]
-        dim_prefix = [0,dim[0]]
+        dim = [P.ngens() for P in PP]
+        dim_prefix = [0, dim[0]]
 
-        for i in range(1,n):
+        for i in range(1, n):
             dim_prefix.append(dim_prefix[i] + dim[i])
 
         for m in range(n):
             l = dim_prefix[m]
             r = dim_prefix[m] + dim[m]
-            for i in range(l,r):
-                for j in range(i+1,r):
-                    if self[i]*right[j] != self[j]*right[i]:
+            for i in range(l, r):
+                for j in range(i + 1, r):
+                    if self[i] * right[j] != self[j] * right[i]:
                         return True
         return False
 
@@ -418,7 +433,10 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
         """
         if not self.is_endomorphism():
             raise TypeError("must be an endomorphism")
-        from sage.dynamics.arithmetic_dynamics.product_projective_ds import DynamicalSystem_product_projective
+        from sage.dynamics.arithmetic_dynamics.product_projective_ds import (
+            DynamicalSystem_product_projective,
+        )
+
         return DynamicalSystem_product_projective(list(self), self.domain())
 
     def global_height(self, prec=None):
@@ -469,7 +487,9 @@ class ProductProjectiveSpaces_morphism_ring(SchemeMorphism_polynomial):
         if isinstance(K, sage.rings.abc.AlgebraicField):
             raise NotImplementedError("not implemented for QQbar")
         else:
-            raise TypeError("Must be over a Numberfield or a Numberfield Order or QQbar")
+            raise TypeError(
+                "Must be over a Numberfield or a Numberfield Order or QQbar"
+            )
 
     def local_height(self, v, prec=None):
         r"""

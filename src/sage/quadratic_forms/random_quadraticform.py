@@ -3,6 +3,7 @@ Random quadratic forms
 
 This file contains a set of routines to create a random quadratic form.
 """
+
 from sage.categories.rings import Rings
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.quadratic_forms.ternary_qf import TernaryQF
@@ -12,6 +13,7 @@ from sage.rings.integer_ring import ZZ
 ################################################
 # Routines to create a random quadratic form ##
 ################################################
+
 
 def random_quadraticform(R, n, rand_arg_list=None):
     r"""
@@ -60,8 +62,7 @@ def random_quadraticform(R, n, rand_arg_list=None):
     if rand_arg_list is None:
         rand_arg_list = []
     if len(rand_arg_list) > 3:
-        raise TypeError("the list of randomness arguments can have "
-                        "at most 3 elements")
+        raise TypeError("the list of randomness arguments can have at most 3 elements")
     if R not in Rings():
         raise TypeError("the first argument must be a ring")
     # Create a list of upper-triangular entries for the quadratic form
@@ -73,8 +74,7 @@ def random_quadraticform(R, n, rand_arg_list=None):
     return QuadraticForm(R, n, rand_list)
 
 
-def random_quadraticform_with_conditions(R, n, condition_list=[],
-                                         rand_arg_list=None):
+def random_quadraticform_with_conditions(R, n, condition_list=[], rand_arg_list=None):
     """
     Create a random quadratic form in `n` variables defined over the ring `R`
     satisfying a list of boolean (i.e. True/False) conditions.
@@ -107,7 +107,6 @@ def random_quadraticform_with_conditions(R, n, condition_list=[],
     while done_flag:
         done_flag = False
         for c in condition_list:
-
             # Check if condition c is satisfied
             try:
                 bool_ans = Q.c()

@@ -114,7 +114,15 @@ class Mupad(ExtraTabCompletion, Expect):
     """
     Interface to the MuPAD interpreter.
     """
-    def __init__(self, maxread=None, script_subdirectory=None, server=None, server_tmpdir=None, logfile=None):
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        server=None,
+        server_tmpdir=None,
+        logfile=None,
+    ):
         """
         Create an instance of the MuPAD interpreter.
 
@@ -123,17 +131,19 @@ class Mupad(ExtraTabCompletion, Expect):
             sage: mupad == loads(dumps(mupad))                      # optional - mupad
             True
         """
-        Expect.__init__(self,
-                        name='MuPAD',
-                        prompt=PROMPT,
-                        # the -U SAGE=TRUE allows for MuPAD programs to test whether they are run from Sage
-                        command="mupkern -P e -U SAGE=TRUE",
-                        script_subdirectory=script_subdirectory,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=None)
+        Expect.__init__(
+            self,
+            name='MuPAD',
+            prompt=PROMPT,
+            # the -U SAGE=TRUE allows for MuPAD programs to test whether they are run from Sage
+            command="mupkern -P e -U SAGE=TRUE",
+            script_subdirectory=script_subdirectory,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=None,
+        )
 
     def _function_class(self):
         """
@@ -244,8 +254,14 @@ command-line version of MuPAD.
         s = Expect.eval(self, code, **kwds)
         return AsciiArtString(s)
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True,
-                   need_output=True, restart_if_needed=False):
+    def _eval_line(
+        self,
+        line,
+        allow_use_file=True,
+        wait_for_prompt=True,
+        need_output=True,
+        restart_if_needed=False,
+    ):
         """
         EXAMPLES::
 
@@ -268,8 +284,8 @@ command-line version of MuPAD.
         START = '__start__(%s+1)' % seq
         END = '__end__(%s+1)' % seq
         line = '%s; %s; %s;' % (START, line, END)
-        START = '__start__(%s)' % (seq+1)
-        END = '__end__(%s)' % (seq+1)
+        START = '__start__(%s)' % (seq + 1)
+        END = '__end__(%s)' % (seq + 1)
 
         E = self._expect
         E.sendline(line)
@@ -278,11 +294,20 @@ command-line version of MuPAD.
         i = z.find(START)
         if i == -1:
             raise RuntimeError("%s\nError evaluating code in MuPAD" % z)
-        z = z[i+len(START)+2:]
-        z = z.rstrip().rstrip(END).rstrip('"').rstrip().strip('\n').strip('\r').strip('\n').replace('\\\r\n', '')
+        z = z[i + len(START) + 2 :]
+        z = (
+            z.rstrip()
+            .rstrip(END)
+            .rstrip('"')
+            .rstrip()
+            .strip('\n')
+            .strip('\r')
+            .strip('\n')
+            .replace('\\\r\n', '')
+        )
         i = z.find('Error: ')
         if i != -1:
-            raise RuntimeError(z[i + 7:])
+            raise RuntimeError(z[i + 7 :])
         return z
 
     def cputime(self, t=None):
@@ -293,8 +318,8 @@ command-line version of MuPAD.
             0.11600000000000001
         """
         if t is None:
-            return float(str(self('time()')))/1000
-        return float(str(self('time() - %s' % float(t))))/1000
+            return float(str(self('time()'))) / 1000
+        return float(str(self('time() - %s' % float(t)))) / 1000
 
     def set(self, var, value):
         """
@@ -310,7 +335,7 @@ command-line version of MuPAD.
         out = self.eval(cmd)
         i = out.find('Error: ')
         if i != -1:
-            raise RuntimeError(out[i + 7:])
+            raise RuntimeError(out[i + 7 :])
 
     def get(self, var):
         """
@@ -324,7 +349,7 @@ command-line version of MuPAD.
         """
         s = self.eval('%s' % var)
         i = s.find('=')
-        return s[i+1:]
+        return s[i + 1 :]
 
     def _object_class(self):
         """
@@ -375,8 +400,9 @@ command-line version of MuPAD.
             True
         """
         try:
-            v = sum([self.completions(chr(65+n)) for n in range(26)], []) + \
-                sum([self.completions(chr(97+n)) for n in range(26)], [])
+            v = sum([self.completions(chr(65 + n)) for n in range(26)], []) + sum(
+                [self.completions(chr(97 + n)) for n in range(26)], []
+            )
         except RuntimeError:
             print("\n" * 3)
             print("*" * 70)
@@ -400,6 +426,7 @@ command-line version of MuPAD.
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(COMMANDS_CACHE)
@@ -456,7 +483,7 @@ class MupadFunction(ExtraTabCompletion, ExpectFunction):
         """
         if attrname[:1] == "_":
             raise AttributeError
-        return MupadFunction(self._parent, self._name+"::"+attrname)
+        return MupadFunction(self._parent, self._name + "::" + attrname)
 
     def _tab_completion(self):
         """
@@ -468,7 +495,7 @@ class MupadFunction(ExtraTabCompletion, ExpectFunction):
              ...
              'wiedemann']
         """
-        res = self._parent.completions(self._name+"::", strip=True)
+        res = self._parent.completions(self._name + "::", strip=True)
         return res if res != [] else self._parent._tab_completion()
 
 
@@ -504,7 +531,7 @@ class MupadFunctionElement(ExtraTabCompletion, FunctionElement):
                 raise AttributeError
             else:
                 return self.__dict__[attrname]
-        name = self._name+"::"+attrname
+        name = self._name + "::" + attrname
         if P.eval('type(%s)' % name) == "DOM_DOMAIN":
             return MupadElement(P, name)
         return MupadFunctionElement(self._obj, name)
@@ -518,7 +545,7 @@ class MupadFunctionElement(ExtraTabCompletion, FunctionElement):
             True
         """
         P = self._obj.parent()
-        res = P.completions(self._name+"::", strip=True)
+        res = P.completions(self._name + "::", strip=True)
         return res if res != [] else P._tab_completion()
 
     def __call__(self, *args):
@@ -543,7 +570,6 @@ class MupadFunctionElement(ExtraTabCompletion, FunctionElement):
 
 @instancedoc
 class MupadElement(ExtraTabCompletion, ExpectElement):
-
     def __getattr__(self, attrname):
         """
         EXAMPLES::
@@ -586,7 +612,7 @@ class MupadElement(ExtraTabCompletion, ExpectElement):
             sage: 'HallLittlewood' in S._tab_completion()     # optional - mupad-Combinat
             True
         """
-        res = self.parent().completions(self.name()+"::", strip=True)
+        res = self.parent().completions(self.name() + "::", strip=True)
         return res if res != [] else self.parent()._tab_completion()
 
     def _latex_(self):
@@ -664,8 +690,11 @@ def mupad_console():
          *----*      Licensed to:   ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%mupad magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%mupad magics instead.'
+        )
     os.system('mupkern')
 
 
@@ -682,4 +711,5 @@ def __doctest_cleanup():
         False
     """
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()

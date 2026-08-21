@@ -245,14 +245,18 @@ class IntegerRange(UniqueRepresentation, Parent):
         # If begin and end are infinite, middle_point and step will defined the set.
         if begin == -Infinity and end == Infinity:
             if middle_point is None:
-                raise ValueError("Can't iterate over this set, please provide middle_point")
+                raise ValueError(
+                    "Can't iterate over this set, please provide middle_point"
+                )
 
         # If we have a middle point, we go on the special enumeration way...
         if middle_point is not None:
             return IntegerRangeFromMiddle(begin, end, step, middle_point)
 
         if begin == -Infinity or begin == Infinity:
-            raise ValueError("Can't iterate over this set: It is impossible to begin an enumeration with plus/minus Infinity")
+            raise ValueError(
+                "Can't iterate over this set: It is impossible to begin an enumeration with plus/minus Infinity"
+            )
 
         # Check for empty sets
         if step > 0 and begin >= end or step < 0 and begin <= end:
@@ -320,6 +324,7 @@ class IntegerRangeFinite(IntegerRange):
 
     See :class:`IntegerRange` for more details.
     """
+
     def __init__(self, begin, end, step=Integer(1)):
         r"""
         TESTS::
@@ -364,9 +369,10 @@ class IntegerRangeFinite(IntegerRange):
                 elt = x
             except (ValueError, TypeError):
                 return False
-        if abs(self._step).divides(Integer(elt)-self._begin):
-            return (self._begin <= elt < self._end and self._step > 0) or \
-                   (self._begin >= elt > self._end and self._step < 0)
+        if abs(self._step).divides(Integer(elt) - self._begin):
+            return (self._begin <= elt < self._end and self._step > 0) or (
+                self._begin >= elt > self._end and self._step < 0
+            )
         return False
 
     def cardinality(self):
@@ -382,7 +388,7 @@ class IntegerRangeFinite(IntegerRange):
             sage: IntegerRange(123,12,4).cardinality()
             0
         """
-        return (abs(self._end+self._step-self._begin)-1) // abs(self._step)
+        return (abs(self._end + self._step - self._begin) - 1) // abs(self._step)
 
     def _repr_(self):
         """
@@ -405,8 +411,11 @@ class IntegerRangeFinite(IntegerRange):
             return "{" + ", ".join(str(x) for x in self) + "}"
         if self._step == 1:
             return "{%s, ..., %s}" % (self._begin, self._end - self._step)
-        return "{%s, %s, ..., %s}" % (self._begin, self._begin + self._step,
-                                      self._end - self._step)
+        return "{%s, %s, ..., %s}" % (
+            self._begin,
+            self._begin + self._step,
+            self._end - self._step,
+        )
 
     def rank(self, x):
         r"""
@@ -428,7 +437,7 @@ class IntegerRangeFinite(IntegerRange):
         """
         if x not in self:
             raise IndexError("%s not in self" % x)
-        return Integer((x - self._begin)/self._step)
+        return Integer((x - self._begin) / self._step)
 
     def __getitem__(self, i):
         r"""
@@ -469,8 +478,8 @@ class IntegerRangeFinite(IntegerRange):
         if i < 0:
             if i < -self.cardinality():
                 raise IndexError("out of range")
-            n = (self._end - self._begin)//(self._step)
-            return self._begin + (n+i)*self._step
+            n = (self._end - self._begin) // (self._step)
+            return self._begin + (n + i) * self._step
         if i >= self.cardinality():
             raise IndexError("out of range")
         return self._begin + i * self._step
@@ -515,18 +524,19 @@ class IntegerRangeFinite(IntegerRange):
             sage: I.an_element()   #indirect doctest
             -41
         """
-        p = (self._begin + 2*self._step)
+        p = self._begin + 2 * self._step
         if p in self:
             return p
         return self._begin
 
 
 class IntegerRangeInfinite(IntegerRange):
-    r""" The class of infinite enumerated sets of integers defined by infinite
+    r"""The class of infinite enumerated sets of integers defined by infinite
     arithmetic progressions.
 
     See :class:`IntegerRange` for more details.
     """
+
     def __init__(self, begin, step=Integer(1)):
         r"""
         TESTS::
@@ -556,7 +566,7 @@ class IntegerRangeInfinite(IntegerRange):
             sage: IntegerRange(-112,-Infinity,-13)   #indirect doctest
             {-112, -125, ...}
         """
-        return "{%s, %s, ...}" % (self._begin, self._begin+self._step)
+        return "{%s, %s, ...}" % (self._begin, self._begin + self._step)
 
     def __contains__(self, elt):
         r"""
@@ -579,9 +589,10 @@ class IntegerRangeInfinite(IntegerRange):
                 elt = Integer(elt)
             except (TypeError, ValueError):
                 return False
-        if abs(self._step).divides(Integer(elt)-self._begin):
-            return (self._step > 0 and elt >= self._begin) or \
-                   (self._step < 0 and elt <= self._begin)
+        if abs(self._step).divides(Integer(elt) - self._begin):
+            return (self._step > 0 and elt >= self._begin) or (
+                self._step < 0 and elt <= self._begin
+            )
         return False
 
     def rank(self, x):
@@ -600,7 +611,7 @@ class IntegerRangeInfinite(IntegerRange):
         """
         if x not in self:
             raise IndexError("%s not in self" % x)
-        return Integer((x - self._begin)/self._step)
+        return Integer((x - self._begin) / self._step)
 
     def __getitem__(self, i):
         r"""
@@ -662,7 +673,7 @@ class IntegerRangeInfinite(IntegerRange):
             sage: I.an_element()     #indirect doctest
             -515
         """
-        return self._begin + 31*self._step
+        return self._begin + 31 * self._step
 
 
 class IntegerRangeFromMiddle(IntegerRange):
@@ -672,6 +683,7 @@ class IntegerRangeFromMiddle(IntegerRange):
 
     See :class:`IntegerRange` for more details.
     """
+
     def __init__(self, begin, end, step=Integer(1), middle_point=Integer(1)):
         r"""
         TESTS::
@@ -698,8 +710,12 @@ class IntegerRangeFromMiddle(IntegerRange):
         if middle_point not in self:
             raise ValueError("middle_point is not in the interval")
 
-        if (begin != Infinity and begin != -Infinity and
-                end != Infinity and end != -Infinity):
+        if (
+            begin != Infinity
+            and begin != -Infinity
+            and end != Infinity
+            and end != -Infinity
+        ):
             cat = FiniteEnumeratedSets()
         else:
             cat = InfiniteEnumeratedSets()
@@ -716,8 +732,10 @@ class IntegerRangeFromMiddle(IntegerRange):
             sage: IntegerRangeFromMiddle(-100,100,10,0)              #indirect doctest
             Integer progression containing 0 with increment 10 and bounded with -100 and 100
         """
-        return "Integer progression containing %s with increment %s and bounded with %s and %s" % (
-            self._middle_point, self._step, self._begin, self._end)
+        return (
+            "Integer progression containing %s with increment %s and bounded with %s and %s"
+            % (self._middle_point, self._step, self._begin, self._end)
+        )
 
     def __contains__(self, elt):
         r"""
@@ -743,9 +761,8 @@ class IntegerRangeFromMiddle(IntegerRange):
                 elt = Integer(elt)
             except (TypeError, ValueError):
                 return False
-        if abs(self._step).divides(Integer(elt)-self._middle_point):
-            return (self._begin <= elt < self._end) or \
-                   (self._begin >= elt > self._end)
+        if abs(self._step).divides(Integer(elt) - self._middle_point):
+            return (self._begin <= elt < self._end) or (self._begin >= elt > self._end)
         return False
 
     def next(self, elt):
@@ -770,17 +787,17 @@ class IntegerRangeFromMiddle(IntegerRange):
             raise LookupError('%r not in %r' % (elt, self))
         n = self._middle_point
         if (elt <= n and self._step > 0) or (elt >= n and self._step < 0):
-            right = 2*n-elt+self._step
+            right = 2 * n - elt + self._step
             if right in self:
                 return right
-            left = elt-self._step
+            left = elt - self._step
             if left in self:
                 return left
         else:
-            left = 2*n-elt
+            left = 2 * n - elt
             if left in self:
                 return left
-            right = elt+self._step
+            right = elt + self._step
             if right in self:
                 return right
 

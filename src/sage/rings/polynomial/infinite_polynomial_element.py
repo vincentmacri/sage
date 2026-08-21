@@ -113,8 +113,9 @@ from sage.structure.factorization import Factorization
 from sage.structure.richcmp import richcmp
 
 
-class InfinitePolynomial(CommutativePolynomial,
-                         metaclass=InheritComparisonClasscallMetaclass):
+class InfinitePolynomial(
+    CommutativePolynomial, metaclass=InheritComparisonClasscallMetaclass
+):
     """
     Create an element of a Polynomial Ring with a Countably Infinite Number of Variables.
 
@@ -205,6 +206,7 @@ class InfinitePolynomial(CommutativePolynomial,
             <class 'sage.rings.polynomial.infinite_polynomial_element.InfinitePolynomial_dense'>
         """
         from sage.structure.element import parent
+
         if hasattr(A, '_P'):
             if parent(p) is A._P or (A._P.base_ring().has_coerce_map_from(parent(p))):
                 return InfinitePolynomial_dense(A, p)
@@ -212,11 +214,13 @@ class InfinitePolynomial(CommutativePolynomial,
             from sage.rings.polynomial.multi_polynomial_ring import (
                 MPolynomialRing_polydict,
             )
+
             if isinstance(A._P, MPolynomialRing_polydict):
                 from sage.misc.sage_eval import sage_eval
                 from sage.rings.polynomial.infinite_polynomial_ring import (
                     GenDictWithBasering,
                 )
+
                 p = sage_eval(repr(p), GenDictWithBasering(A._P, A._P.gens_dict()))
                 return InfinitePolynomial_dense(A, p)
             # Now there remains to fight the oddities and bugs of libsingular.
@@ -232,9 +236,15 @@ class InfinitePolynomial(CommutativePolynomial,
                         from sage.rings.polynomial.infinite_polynomial_ring import (
                             GenDictWithBasering,
                         )
+
                         # the base ring may be a function field, therefore
                         # we need GenDictWithBasering
-                        return InfinitePolynomial_dense(A, sage_eval(repr(p), GenDictWithBasering(A._P, A._P.gens_dict())))
+                        return InfinitePolynomial_dense(
+                            A,
+                            sage_eval(
+                                repr(p), GenDictWithBasering(A._P, A._P.gens_dict())
+                            ),
+                        )
                 return InfinitePolynomial_dense(A, A._P(p))
             # there is no coercion, so, we set up a name-preserving map.
             SV = set(repr(x) for x in p.variables())
@@ -247,9 +257,12 @@ class InfinitePolynomial(CommutativePolynomial,
                 from sage.rings.polynomial.infinite_polynomial_ring import (
                     GenDictWithBasering,
                 )
+
                 # the base ring may be a function field, therefore
                 # we need GenDictWithBasering
-                return InfinitePolynomial_dense(A, sage_eval(repr(p), GenDictWithBasering(A._P, A._P.gens_dict())))
+                return InfinitePolynomial_dense(
+                    A, sage_eval(repr(p), GenDictWithBasering(A._P, A._P.gens_dict()))
+                )
         return InfinitePolynomial_sparse(A, p)
 
     # Construction and other basic methods
@@ -771,17 +784,23 @@ class InfinitePolynomial(CommutativePolynomial,
         p = self._p
         R_gens = p.parent().gens()
         if P.ngens() > 1:
+
             def gen_to_index(g):
                 j, i = P.varname_key(str(g))
                 return -j, i
         else:
+
             def gen_to_index(g):
                 return P.varname_key(str(g))[1]
 
-        return {B._from_dict({gen_to_index(g): e
-                              for e, g in zip(m, R_gens)},
-                             coerce=False, remove_zeros=True): c
-                for m, c in p.monomial_coefficients().items()}
+        return {
+            B._from_dict(
+                {gen_to_index(g): e for e, g in zip(m, R_gens)},
+                coerce=False,
+                remove_zeros=True,
+            ): c
+            for m, c in p.monomial_coefficients().items()
+        }
 
     def exponents(self):
         """
@@ -879,7 +898,7 @@ class InfinitePolynomial(CommutativePolynomial,
             sage: X(10).max_index()
             -1
         """
-        return max([Integer(str(X).split('_')[1]) for X in self.variables()]+[-1])
+        return max([Integer(str(X).split('_')[1]) for X in self.variables()] + [-1])
 
     def _rmul_(self, left):
         """
@@ -947,6 +966,7 @@ class InfinitePolynomial(CommutativePolynomial,
             OUTP = self.parent().tensor_with_ring(divisor.base_ring())
             return OUTP(self) * OUTP(divisor)
         from sage.rings.fraction_field_element import FractionFieldElement
+
         field = self.parent().fraction_field()
         # there remains a problem in reduction
         return FractionFieldElement(field, self, x, reduce=False)
@@ -975,11 +995,13 @@ class InfinitePolynomial(CommutativePolynomial,
         """
         P = self.parent()
         f = self._p.factor(proof=proof)
-        return Factorization([(InfinitePolynomial(P, p), e) for p, e in f],
-                             unit=f.unit(),
-                             cr=f._cr(),
-                             sort=False,
-                             simplify=False)
+        return Factorization(
+            [(InfinitePolynomial(P, p), e) for p, e in f],
+            unit=f.unit(),
+            cr=f._cr(),
+            sort=False,
+            simplify=False,
+        )
 
     @cached_method
     def lm(self):
@@ -998,8 +1020,9 @@ class InfinitePolynomial(CommutativePolynomial,
         if self._p == 0:
             return self
         if hasattr(self._p, 'variable_name'):  # if it is univariate
-            return InfinitePolynomial(self.parent(),
-                                      self._p.parent().gen() ** max(self._p.exponents()))
+            return InfinitePolynomial(
+                self.parent(), self._p.parent().gen() ** max(self._p.exponents())
+            )
         return self  # if it is scalar
 
     @cached_method
@@ -1038,7 +1061,11 @@ class InfinitePolynomial(CommutativePolynomial,
         if self._p == 0:
             return self
         if hasattr(self._p, 'variable_name'):  # if it is univariate
-            return InfinitePolynomial(self.parent(), self._p.leading_coefficient()*self._p.parent().gen()**max(self._p.exponents()))
+            return InfinitePolynomial(
+                self.parent(),
+                self._p.leading_coefficient()
+                * self._p.parent().gen() ** max(self._p.exponents()),
+            )
         return self  # if it is scalar
 
     def tail(self):
@@ -1052,7 +1079,7 @@ class InfinitePolynomial(CommutativePolynomial,
             sage: p.tail()
             2*x_10*y_30
         """
-        return self-self.lt()
+        return self - self.lt()
 
     def squeezed(self):
         """
@@ -1071,8 +1098,7 @@ class InfinitePolynomial(CommutativePolynomial,
             sage: p.squeezed()
             x_2*y_4 + x_1*y_3
         """
-        Indices = set([0] + [Integer(str(Y).split('_')[1])
-                             for Y in self.variables()])
+        Indices = set([0] + [Integer(str(Y).split('_')[1]) for Y in self.variables()])
         Indices = sorted(Indices)
 
         def P(n):
@@ -1119,8 +1145,13 @@ class InfinitePolynomial(CommutativePolynomial,
             # get the pairs (shift,exponent) of the leading monomial, indexed by the variable names
             Vars = self._p.parent().variable_names()
             from sage.rings.polynomial.multi_polynomial import MPolynomial_libsingular
+
             if isinstance(self._p, MPolynomial_libsingular):
-                L = [(Vars[i].split('_'), e) for i, e in enumerate(self._p.lm().exponents(as_ETuples=False)[0]) if e]
+                L = [
+                    (Vars[i].split('_'), e)
+                    for i, e in enumerate(self._p.lm().exponents(as_ETuples=False)[0])
+                    if e
+                ]
             elif hasattr(self._p, 'lm'):
                 # self._p  is multivariate, but not libsingular, hence,
                 # exponents is slow and does not accept the optional argument as_ETuples.
@@ -1130,11 +1161,11 @@ class InfinitePolynomial(CommutativePolynomial,
             else:  # it is a univariate polynomial -- this should never happen, but just in case...
                 L = [(Vars[0].split('_'), self._p.degree())]
             for t in L:
-                n = t[0][0]       # the variable *n*ame
+                n = t[0][0]  # the variable *n*ame
                 s = int(t[0][1])  # the variable *s*hift
                 if s not in self._footprint:
-                    self._footprint[s] = [0]*l
-                self._footprint[s][P._name_dict[n]] = t[1]   # the exponent
+                    self._footprint[s] = [0] * l
+                self._footprint[s][P._name_dict[n]] = t[1]  # the exponent
             self._has_footprint = True
         return self._footprint
 
@@ -1205,7 +1236,7 @@ class InfinitePolynomial(CommutativePolynomial,
             ltsmall = olt
         # Case 1: one of the Infinite Polynomials is scalar.
         if not Fsmall:
-            return (rawcmp, 1, ltbig/ltsmall)
+            return (rawcmp, 1, ltbig / ltsmall)
         # "not Fbig" is now impossible, because we only consider *global* monomial orderings.
         # These are the occurring shifts:
         Lsmall = sorted(Fsmall.keys())
@@ -1259,6 +1290,7 @@ class InfinitePolynomial(CommutativePolynomial,
                 if Expo[g]:
                     OUT *= PARENT.gen(g)[shift] ** Expo[g]
         from sage.combinat.permutation import Permutation
+
         return (rawcmp, Permutation(P[1:]), OUT)
 
     # Essentials for Buchberger
@@ -1332,9 +1364,10 @@ class InfinitePolynomial(CommutativePolynomial,
         polynomial).
         """
         from sage.rings.polynomial.symmetric_reduction import SymmetricReductionStrategy
+
         if hasattr(I, 'gens'):
             I = I.gens()
-        if (not I):
+        if not I:
             return self
         I = list(I)
         S = SymmetricReductionStrategy(self.parent(), I, tailreduce)
@@ -1377,9 +1410,11 @@ class InfinitePolynomial(CommutativePolynomial,
             sage: a.stretch(2000)
             x_6000 + x_4000
         """
+
         def P(n):
-            return k*n
-        return self ** P
+            return k * n
+
+        return self**P
 
     def __iter__(self):
         """
@@ -1393,9 +1428,10 @@ class InfinitePolynomial(CommutativePolynomial,
             sage: list(a)
             [(2, x_1), (1, x_0), (1, y_1*y_0)]
         """
-        return iter((coefficient,
-                     self.__class__(self.parent(), monomial))
-                    for coefficient, monomial in self._p)
+        return iter(
+            (coefficient, self.__class__(self.parent(), monomial))
+            for coefficient, monomial in self._p
+        )
 
 
 class InfinitePolynomial_sparse(InfinitePolynomial):
@@ -1424,6 +1460,7 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
         Multivariate Polynomial Ring in b_100, b_0, c_4, c_0
          over Univariate Polynomial Ring in a over Rational Field
     """
+
     def __call__(self, *args, **kwargs):
         """
         EXAMPLES::
@@ -1497,11 +1534,13 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
                 values = list(args[0])
             else:
                 values = list(args)
-            appearing = sorted((str(v) for v in self._p.variables()),
-                               key=P.varname_key, reverse=True)
+            appearing = sorted(
+                (str(v) for v in self._p.variables()), key=P.varname_key, reverse=True
+            )
             if len(values) != len(appearing):
                 raise TypeError(
-                    "number of arguments does not match number of variables in parent")
+                    "number of arguments does not match number of variables in parent"
+                )
             for name, value in zip(appearing, values):
                 if name in kwargs:
                     raise TypeError(f"got multiple values for variable {name!r}")
@@ -1523,10 +1562,12 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
         var_names = sorted(var_names, key=P.varname_key, reverse=True)
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(self._p.base_ring(), var_names, order=P._order)
         res = R(self._p).subs(**kwargs)
         try:
             from sage.misc.sage_eval import sage_eval
+
             return sage_eval(repr(res), P.gens_dict())
         except Exception:
             return res
@@ -1547,6 +1588,7 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
         VarList = sorted(VarList, key=self.parent().varname_key, reverse=True)
         if VarList:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             R = PolynomialRing(self._p.base_ring(), VarList, order=self.parent()._order)
         else:
             # TODO: this is currently dead code
@@ -1677,11 +1719,13 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
         """
         P = self.parent()
         if callable(n):
-            if (self._p.parent() == self._p.base_ring()):
+            if self._p.parent() == self._p.base_ring():
                 return self
             if not (hasattr(self._p, 'variables') and self._p.variables()):
                 return self
-            if hasattr(n, 'to_cycles') and hasattr(n, '__len__'):  # duck typing Permutation
+            if hasattr(n, 'to_cycles') and hasattr(
+                n, '__len__'
+            ):  # duck typing Permutation
                 # auxiliary function, necessary since n(m) raises an error if m>len(n)
                 l = len(n)
 
@@ -1697,7 +1741,7 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
             if not newVars:
                 return self
             copyVars = copy.copy(newVars)
-            newVars = list(set(list(self._p.parent().variable_names())+newVars))
+            newVars = list(set(list(self._p.parent().variable_names()) + newVars))
             newVars.sort(key=self.parent().varname_key, reverse=True)
             if newVars == list(self._p.parent().variable_names()):
                 newR = self._p.parent()
@@ -1705,6 +1749,7 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
                 from sage.rings.polynomial.polynomial_ring_constructor import (
                     PolynomialRing,
                 )
+
                 newR = PolynomialRing(self._p.base_ring(), newVars, order=P._order)
             mapR = self._p.parent().hom(copyVars, newR)
             return InfinitePolynomial_sparse(self.parent(), mapR(self._p))
@@ -1774,12 +1819,12 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
         # may be widely different, and the sage coercion
         # system can't guess what order we want.
         from sage.structure.element import parent
+
         R1 = parent(self._p)
         R2 = parent(other._p)
-        if ((hasattr(R1, 'has_coerce_map_from')
-             and R1.has_coerce_map_from(R2))
-            or (hasattr(R2, 'has_coerce_map_from')
-                and R2.has_coerce_map_from(R1))):
+        if (hasattr(R1, 'has_coerce_map_from') and R1.has_coerce_map_from(R2)) or (
+            hasattr(R2, 'has_coerce_map_from') and R2.has_coerce_map_from(R1)
+        ):
             return richcmp(self._p, other._p, op)
 
         R = self._common_polynomial_ring(other)
@@ -1840,8 +1885,10 @@ class InfinitePolynomial_sparse(InfinitePolynomial):
             R = self._common_polynomial_ring(x)
             result = R(self._p).quo_rem(R(x._p))
 
-        return (InfinitePolynomial_sparse(self.parent(), result[0]),
-                InfinitePolynomial_sparse(self.parent(), result[1]))
+        return (
+            InfinitePolynomial_sparse(self.parent(), result[0]),
+            InfinitePolynomial_sparse(self.parent(), result[1]),
+        )
 
     def monomial_coefficient(self, mon):
         """
@@ -2047,11 +2094,13 @@ class InfinitePolynomial_dense(InfinitePolynomial):
                 values = list(args[0])
             else:
                 values = list(args)
-            appearing = sorted((str(v) for v in self._p.variables()),
-                               key=P.varname_key, reverse=True)
+            appearing = sorted(
+                (str(v) for v in self._p.variables()), key=P.varname_key, reverse=True
+            )
             if len(values) != len(appearing):
                 raise TypeError(
-                    "number of arguments does not match number of variables in parent")
+                    "number of arguments does not match number of variables in parent"
+                )
             for name, value in zip(appearing, values):
                 if name in kwargs:
                     raise TypeError(f"got multiple values for variable {name!r}")
@@ -2206,11 +2255,13 @@ class InfinitePolynomial_dense(InfinitePolynomial):
         """
         P = self.parent()
         if callable(n):
-            if (self._p.parent() == self._p.base_ring()):
+            if self._p.parent() == self._p.base_ring():
                 return self
             if not (hasattr(self._p, 'variables') and self._p.variables()):
                 return self
-            if hasattr(n, 'to_cycles') and hasattr(n, '__len__'):  # duck typing Permutation
+            if hasattr(n, 'to_cycles') and hasattr(
+                n, '__len__'
+            ):  # duck typing Permutation
                 # auxiliary function, necessary since n(m) raises an error if m>len(n)
                 l = len(n)
 
@@ -2221,7 +2272,7 @@ class InfinitePolynomial_dense(InfinitePolynomial):
 
             # determine whether the maximal index must be raised
             oldMax = P._max
-            newMax = max([p(X) for X in range(oldMax+1)]+[oldMax])
+            newMax = max([p(X) for X in range(oldMax + 1)] + [oldMax])
             if newMax > P._max:
                 P.gen()[newMax]
             self._p = P._P(self._p)
@@ -2234,7 +2285,7 @@ class InfinitePolynomial_dense(InfinitePolynomial):
             blocklength = sh
             nM = sh + 1
             for i in range(P.ngens()):
-                newVars.extend([PPgens[sh-p(j)] for j in range(blocklength, -1, -1)])
+                newVars.extend([PPgens[sh - p(j)] for j in range(blocklength, -1, -1)])
                 sh += nM
             mapR = PP.hom(newVars, PP)
             return InfinitePolynomial_dense(P, mapR(self._p))
@@ -2285,8 +2336,10 @@ class InfinitePolynomial_dense(InfinitePolynomial):
         x._p = P._P(x._p)
         result = (self._p).quo_rem(x._p)
 
-        return (InfinitePolynomial_dense(P, result[0]),
-                InfinitePolynomial_dense(P, result[1]))
+        return (
+            InfinitePolynomial_dense(P, result[0]),
+            InfinitePolynomial_dense(P, result[1]),
+        )
 
     def monomial_coefficient(self, mon):
         """

@@ -1,14 +1,14 @@
 r"""
 Commutative ring ideals
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_ideal
 from sage.categories.commutative_rings import CommutativeRings
@@ -25,6 +25,7 @@ class CommutativeRingIdeals(Category_ideal):
         sage: C
         Category of commutative ring ideals in Integer Ring
     """
+
     def __init__(self, R):
         """
         EXAMPLES::

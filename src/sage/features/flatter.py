@@ -15,6 +15,7 @@ class flatter(Executable):
         sage: flatter().is_present()  # optional - flatter
         FeatureTestResult('flatter', True)
     """
+
     def __init__(self):
         r"""
         TESTS::

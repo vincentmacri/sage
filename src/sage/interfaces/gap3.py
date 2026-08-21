@@ -288,6 +288,7 @@ class Gap3(Gap_generic):
 
     - Franco Saliola (Feb 2010)
     """
+
     _identical_function = "IsIdentical"
 
     def __init__(self, command=gap3_cmd):
@@ -319,22 +320,24 @@ class Gap3(Gap_generic):
         #     -y -- sets the number of lines of the terminal; controls how many
         #     lines of text are output by GAP3 before the pager is invoked.
         #     This option is useful in dealing with the GAP3 help system.
-        Expect.__init__(self,
-                        name='gap3',
-                        prompt='gap> ',
-                        command=self.__gap3_command_string + " -p -b -y 500",
-                        server=None,
-                        ulimit=None,
-                        script_subdirectory=None,
-                        restart_on_ctrlc=True,
-                        verbose_start=False,
-                        init_code=[],
-                        max_startup_time=None,
-                        logfile=None,
-                        eval_using_file_cutoff=100,
-                        do_cleaner=True,
-                        remote_cleaner=False,
-                        path=None)
+        Expect.__init__(
+            self,
+            name='gap3',
+            prompt='gap> ',
+            command=self.__gap3_command_string + " -p -b -y 500",
+            server=None,
+            ulimit=None,
+            script_subdirectory=None,
+            restart_on_ctrlc=True,
+            verbose_start=False,
+            init_code=[],
+            max_startup_time=None,
+            logfile=None,
+            eval_using_file_cutoff=100,
+            do_cleaner=True,
+            remote_cleaner=False,
+            path=None,
+        )
 
     def _start(self):
         r"""
@@ -361,9 +364,26 @@ class Gap3(Gap_generic):
         # The -p command-line option to GAP3 produces the following
         # funny-looking patterns in the interface. We compile the patterns
         # now, and use them later for interpreting interface messages.
-        self._compiled_full_pattern = self._expect.compile_pattern_list([
-            r'@p\d+\.', '@@', '@[A-Z]', r'@[123456!"#$%&][^+]*\+', '@e', '@c',
-            '@f', '@h', '@i', '@m', '@n', '@r', r'@s\d', r'@w.*\+', '@x', '@z'])
+        self._compiled_full_pattern = self._expect.compile_pattern_list(
+            [
+                r'@p\d+\.',
+                '@@',
+                '@[A-Z]',
+                r'@[123456!"#$%&][^+]*\+',
+                '@e',
+                '@c',
+                '@f',
+                '@h',
+                '@i',
+                '@m',
+                '@n',
+                '@r',
+                r'@s\d',
+                r'@w.*\+',
+                '@x',
+                '@z',
+            ]
+        )
         self._compiled_small_pattern = self._expect.compile_pattern_list('@J')
         self._expect.expect("@i")
 
@@ -426,8 +446,9 @@ class Gap3(Gap_generic):
         # It seems that GAP3 does not classify syntax errors as regular error
         # messages, so the generic GAP interface processing code does not
         # detect it. So we test for a syntax error explicitly.
-        normal_output, error_output = \
-            super()._execute_line(line, wait_for_prompt=True, expect_eof=False)
+        normal_output, error_output = super()._execute_line(
+            line, wait_for_prompt=True, expect_eof=False
+        )
         normal = bytes_to_str(normal_output)
         if normal.startswith("Syntax error:"):
             normal_output, error_output = "", normal_output
@@ -474,6 +495,7 @@ class Gap3(Gap_generic):
         """
 
         import pexpect
+
         if self._expect is None:
             self._start()
         E = self._expect
@@ -510,6 +532,7 @@ class Gap3(Gap_generic):
         helptext = "".join(bytes_to_str(line) for line in helptext).strip()
         if pager is True:
             from sage.misc.pager import pager as pag
+
             pag()(helptext)
         else:
             print(helptext)
@@ -594,7 +617,8 @@ class Gap3(Gap_generic):
             <BLANKLINE>
                 - If you do not have GAP3 installed, then you must either...
         """
-        return r"""
+        return (
+            r"""
     Your attempt to start GAP3 failed, either because you do not have
     have GAP3 installed, or because it is not configured correctly.
 
@@ -618,7 +642,9 @@ class Gap3(Gap_generic):
       to point Sage to the correct command for your system.
 
           gap3 = Gap3(command='/usr/local/bin/gap3')
-        """ % self.__gap3_command_string
+        """
+            % self.__gap3_command_string
+        )
 
     @cached_method
     def _tab_completion(self):
@@ -688,6 +714,7 @@ class GAP3Element(GapElement_generic):
 
     - Franco Saliola (Feb 2010)
     """
+
     def __init__(self, parent, value, is_name=False, name=None):
         r"""
         See ``GAP3Element`` for full documentation.
@@ -712,7 +739,10 @@ class GAP3Element(GapElement_generic):
         # Warning: One should not redefine E, X or Z in gap3, because
         # things will break, but gap3 raises no errors if one does this!
         if name in ["E", "X", "Z"]:
-            raise ValueError("you are attempting to redefine %s; but you should never redefine E, X or Z in gap3 (because things will break!)" % name)
+            raise ValueError(
+                "you are attempting to redefine %s; but you should never redefine E, X or Z in gap3 (because things will break!)"
+                % name
+            )
 
         # initialize the superclass
         super().__init__(parent, value, is_name, name)
@@ -742,8 +772,7 @@ class GAP3Element(GapElement_generic):
         gap3_session = self._check_valid()
         if not isinstance(n, tuple):
             return gap3_session.new('%s[%s]' % (self.name(), n))
-        return gap3_session.new('%s%s' % (self.name(),
-                                          ''.join('[%s]' % x for x in n)))
+        return gap3_session.new('%s%s' % (self.name(), ''.join('[%s]' % x for x in n)))
 
     def _latex_(self):
         r"""
@@ -780,6 +809,7 @@ class GAP3Record(GAP3Element):
 
     - Franco Saliola (Feb 2010)
     """
+
     def recfields(self):
         r"""
         Return a list of the fields for the record. (Record fields are akin
@@ -911,8 +941,11 @@ def gap3_console():
         gap>
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%gap3 magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%gap3 magics instead.'
+        )
     os.system(gap3_cmd)
 
 

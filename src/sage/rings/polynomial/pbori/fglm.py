@@ -57,8 +57,9 @@ def vars_real_divisors(monomial, monomial_set):
         sage: vars_real_divisors(x(1)*x(2)*x(3),b)
         {{x(1),x(2)}}
     """
-    return BooleSet(Polynomial(monomial_set.divisors_of(monomial)).
-                    graded_part(monomial.deg() - 1))
+    return BooleSet(
+        Polynomial(monomial_set.divisors_of(monomial)).graded_part(monomial.deg() - 1)
+    )
 
 
 def m_k_plus_one(completed_elements, variables):
@@ -90,5 +91,6 @@ def m_k_plus_one(completed_elements, variables):
         sage: m_k_plus_one(r2(s).set(),r2(variables).set())
         x(1)*x(3)
     """
-    return sorted(completed_elements.cartesian_product(variables).diff(
-        completed_elements))[0]
+    return sorted(
+        completed_elements.cartesian_product(variables).diff(completed_elements)
+    )[0]

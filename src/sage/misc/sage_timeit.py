@@ -57,6 +57,7 @@ class SageTimeitResult:
         sage: SageTimeitResult( (1, 2, 3, 4, 's') )
         <repr(<sage.misc.sage_timeit.SageTimeitResult at 0x...>) failed: TypeError: * wants int>
     """
+
     def __init__(self, stats, series=None):
         r"""
         Construction of a timing result.
@@ -97,7 +98,15 @@ class SageTimeitResult:
         return s.encode("utf-8")
 
 
-def sage_timeit(stmt, globals_dict=None, preparse=None, number=0, repeat=3, precision=3, seconds=False):
+def sage_timeit(
+    stmt,
+    globals_dict=None,
+    preparse=None,
+    number=0,
+    repeat=3,
+    precision=3,
+    seconds=False,
+):
     """nodetex
     Accurately measure the wall time required to execute ``stmt``.
 
@@ -222,8 +231,7 @@ def sage_timeit(stmt, globals_dict=None, preparse=None, number=0, repeat=3, prec
     # but is there a better way to achieve that the code stmt has access
     # to the shell namespace?
 
-    src = timeit_.template.format(stmt=timeit_.reindent(stmt, 8),
-                                  setup='pass', init='')
+    src = timeit_.template.format(stmt=timeit_.reindent(stmt, 8), setup='pass', init='')
     code = compile(src, '<magic-timeit>', 'exec')
     ns = {}
     if not globals_dict:
@@ -233,6 +241,7 @@ def sage_timeit(stmt, globals_dict=None, preparse=None, number=0, repeat=3, prec
 
     try:
         import sys
+
         f = sys.stdout
         sys.stdout = open('/dev/null', 'w')
 
@@ -251,6 +260,7 @@ def sage_timeit(stmt, globals_dict=None, preparse=None, number=0, repeat=3, prec
         sys.stdout.close()
         sys.stdout = f
         import gc
+
         gc.enable()
 
     if seconds:

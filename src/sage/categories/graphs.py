@@ -1,12 +1,12 @@
 """
 Graphs
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -30,6 +30,7 @@ class Graphs(Category_singleton):
 
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -119,6 +120,7 @@ class Graphs(Category_singleton):
             sage: C = Graphs().Connected()
             sage: TestSuite(C).run()
         """
+
         def extra_super_categories(self):
             """
             Return the extra super categories of ``self``.

@@ -136,6 +136,7 @@ AUTHORS:
 - Eviatar Bach (2013): complete rewrite, new numerical evaluation, and
   addition of the Jacobi amplitude function
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 David Joyner <wdj@usna.edu>
 #       Copyright (C) 2013 Eviatar Bach <eviatarbach@gmail.com>
@@ -145,12 +146,35 @@ AUTHORS:
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from sage.functions.hyperbolic import (arctanh, arccosh, arcsinh, arcsech,
-                                       arccsch, arccoth, cosh, coth, sech,
-                                       csch, tanh, sinh)
+from sage.functions.hyperbolic import (
+    arctanh,
+    arccosh,
+    arcsinh,
+    arcsech,
+    arccsch,
+    arccoth,
+    cosh,
+    coth,
+    sech,
+    csch,
+    tanh,
+    sinh,
+)
 from sage.functions.special import elliptic_e, elliptic_kc
-from sage.functions.trig import (arctan, arcsin, arccos, arccot, arcsec,
-                                 arccsc, csc, sec, sin, cos, tan, cot)
+from sage.functions.trig import (
+    arctan,
+    arcsin,
+    arccos,
+    arccot,
+    arcsec,
+    arccsc,
+    csc,
+    sec,
+    sin,
+    cos,
+    tan,
+    cot,
+)
 from sage.misc.lazy_import import lazy_import
 from sage.rings.integer import Integer
 from sage.rings.rational_field import QQ
@@ -168,6 +192,7 @@ class Jacobi(BuiltinFunction):
     """
     Base class for the Jacobi elliptic functions.
     """
+
     def __init__(self, kind):
         r"""
         Initialize ``self``.
@@ -195,17 +220,37 @@ class Jacobi(BuiltinFunction):
             sage: fricas(jacobi('dn',x, 2))
             jacobiDn(x,2)
         """
-        if kind not in ['nd', 'ns', 'nc', 'dn', 'ds', 'dc', 'sn', 'sd',
-                        'sc', 'cn', 'cd', 'cs']:
-            raise ValueError("kind must be one of 'nd', 'ns', 'nc', 'dn', "
-                             "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'.")
+        if kind not in [
+            'nd',
+            'ns',
+            'nc',
+            'dn',
+            'ds',
+            'dc',
+            'sn',
+            'sd',
+            'sc',
+            'cn',
+            'cd',
+            'cs',
+        ]:
+            raise ValueError(
+                "kind must be one of 'nd', 'ns', 'nc', 'dn', "
+                "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'."
+            )
         self.kind = kind
-        BuiltinFunction.__init__(self,
-            name=f'jacobi_{kind}', nargs=2, evalf_params_first=False,
-            conversions=dict(maple=('Jacobi{}'.format(kind.upper())),
-                             mathematica=('Jacobi{}'.format(kind.upper())),
-                             fricas=('jacobi{}'.format(kind.capitalize())),
-                             maxima=('jacobi_{}'.format(kind))))
+        BuiltinFunction.__init__(
+            self,
+            name=f'jacobi_{kind}',
+            nargs=2,
+            evalf_params_first=False,
+            conversions=dict(
+                maple=('Jacobi{}'.format(kind.upper())),
+                mathematica=('Jacobi{}'.format(kind.upper())),
+                fricas=('jacobi{}'.format(kind.capitalize())),
+                maxima=('jacobi_{}'.format(kind)),
+            ),
+        )
 
     def _eval_(self, x, m):
         r"""
@@ -419,87 +464,162 @@ class Jacobi(BuiltinFunction):
         elif diff_param == 1:
             # From Maxima
             if self.kind == 'nd':
-                return (HALF*((x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                              (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) -
-                              jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1))) /
-                        jacobi_dn(x, m)**Integer(2))
+                return (
+                    HALF
+                    * (
+                        (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                        * jacobi_sn(x, m)
+                        * jacobi_cn(x, m)
+                        - jacobi_dn(x, m)
+                        * jacobi_sn(x, m) ** Integer(2)
+                        / (m - Integer(1))
+                    )
+                    / jacobi_dn(x, m) ** Integer(2)
+                )
             if self.kind == 'ns':
-                return (HALF*(jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) -
-                              (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_dn(x, m)*jacobi_cn(x, m)/m) /
-                        jacobi_sn(x, m)**Integer(2))
+                return (
+                    HALF
+                    * (
+                        jacobi_sn(x, m)
+                        * jacobi_cn(x, m) ** Integer(2)
+                        / (m - Integer(1))
+                        - (
+                            x
+                            + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1))
+                        )
+                        * jacobi_dn(x, m)
+                        * jacobi_cn(x, m)
+                        / m
+                    )
+                    / jacobi_sn(x, m) ** Integer(2)
+                )
             if self.kind == 'nc':
-                return (-HALF*(jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                               (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                                (m - Integer(1)))*jacobi_dn(x, m) *
-                               jacobi_sn(x, m)/m)/jacobi_cn(x, m)**Integer(2))
+                return (
+                    -HALF
+                    * (
+                        jacobi_sn(x, m) ** Integer(2)
+                        * jacobi_cn(x, m)
+                        / (m - Integer(1))
+                        - (
+                            x
+                            + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1))
+                        )
+                        * jacobi_dn(x, m)
+                        * jacobi_sn(x, m)
+                        / m
+                    )
+                    / jacobi_cn(x, m) ** Integer(2)
+                )
             if self.kind == 'dn':
-                return (-HALF*(x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) +
-                        HALF*jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1)))
+                return -HALF * (
+                    x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1))
+                ) * jacobi_sn(x, m) * jacobi_cn(x, m) + HALF * jacobi_dn(
+                    x, m
+                ) * jacobi_sn(x, m) ** Integer(2) / (m - Integer(1))
             if self.kind == 'ds':
-                return (HALF*(jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) -
-                        (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                         (m - Integer(1)))*jacobi_dn(x, m)*jacobi_cn(x, m)/m) *
-                        jacobi_dn(x, m)/jacobi_sn(x, m)**Integer(2) -
-                        HALF*((x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                              (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) -
-                              jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1))) /
-                        jacobi_sn(x, m))
+                return HALF * (
+                    jacobi_sn(x, m) * jacobi_cn(x, m) ** Integer(2) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_cn(x, m)
+                    / m
+                ) * jacobi_dn(x, m) / jacobi_sn(x, m) ** Integer(2) - HALF * (
+                    (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_sn(x, m)
+                    * jacobi_cn(x, m)
+                    - jacobi_dn(x, m) * jacobi_sn(x, m) ** Integer(2) / (m - Integer(1))
+                ) / jacobi_sn(x, m)
             if self.kind == 'dc':
-                return (-HALF*(jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                               (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                                (m - Integer(1)))*jacobi_dn(x, m) *
-                               jacobi_sn(x, m)/m)*jacobi_dn(x, m) /
-                        jacobi_cn(x, m)**Integer(2) -
-                        HALF*((x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) -
-                              jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1))) /
-                        jacobi_cn(x, m))
+                return -HALF * (
+                    jacobi_sn(x, m) ** Integer(2) * jacobi_cn(x, m) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_sn(x, m)
+                    / m
+                ) * jacobi_dn(x, m) / jacobi_cn(x, m) ** Integer(2) - HALF * (
+                    (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_sn(x, m)
+                    * jacobi_cn(x, m)
+                    - jacobi_dn(x, m) * jacobi_sn(x, m) ** Integer(2) / (m - Integer(1))
+                ) / jacobi_cn(x, m)
             if self.kind == 'sn':
-                return (-HALF*jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) +
-                        HALF*(x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                              (m - Integer(1)))*jacobi_dn(x, m)*jacobi_cn(x, m)/m)
+                return (
+                    -HALF
+                    * jacobi_sn(x, m)
+                    * jacobi_cn(x, m) ** Integer(2)
+                    / (m - Integer(1))
+                    + HALF
+                    * (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_cn(x, m)
+                    / m
+                )
             if self.kind == 'sd':
-                return (-HALF*(jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) -
-                        (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                         (m - Integer(1)))*jacobi_dn(x, m)*jacobi_cn(x, m)/m) /
-                        jacobi_dn(x, m) + HALF *
-                        ((x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                          (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) -
-                         jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1))) *
-                        jacobi_sn(x, m)/jacobi_dn(x, m)**Integer(2))
+                return -HALF * (
+                    jacobi_sn(x, m) * jacobi_cn(x, m) ** Integer(2) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_cn(x, m)
+                    / m
+                ) / jacobi_dn(x, m) + HALF * (
+                    (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_sn(x, m)
+                    * jacobi_cn(x, m)
+                    - jacobi_dn(x, m) * jacobi_sn(x, m) ** Integer(2) / (m - Integer(1))
+                ) * jacobi_sn(x, m) / jacobi_dn(x, m) ** Integer(2)
             if self.kind == 'sc':
-                return (-HALF*(jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) -
-                               (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                                (m - Integer(1)))*jacobi_dn(x, m) *
-                               jacobi_cn(x, m)/m)/jacobi_cn(x, m) -
-                        HALF*(jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                              (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_dn(x, m)*jacobi_sn(x, m)/m) *
-                        jacobi_sn(x, m)/jacobi_cn(x, m)**Integer(2))
+                return -HALF * (
+                    jacobi_sn(x, m) * jacobi_cn(x, m) ** Integer(2) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_cn(x, m)
+                    / m
+                ) / jacobi_cn(x, m) - HALF * (
+                    jacobi_sn(x, m) ** Integer(2) * jacobi_cn(x, m) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_sn(x, m)
+                    / m
+                ) * jacobi_sn(x, m) / jacobi_cn(x, m) ** Integer(2)
             if self.kind == 'cn':
-                return (HALF*jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                        HALF*(x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                              (m - Integer(1)))*jacobi_dn(x, m)*jacobi_sn(x, m)/m)
+                return (
+                    HALF
+                    * jacobi_sn(x, m) ** Integer(2)
+                    * jacobi_cn(x, m)
+                    / (m - Integer(1))
+                    - HALF
+                    * (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_sn(x, m)
+                    / m
+                )
             if self.kind == 'cd':
-                return (HALF*(jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                        (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                         (m - Integer(1)))*jacobi_dn(x, m)*jacobi_sn(x, m)/m) /
-                        jacobi_dn(x, m) +
-                        HALF*((x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_sn(x, m)*jacobi_cn(x, m) -
-                              jacobi_dn(x, m)*jacobi_sn(x, m)**Integer(2)/(m - Integer(1))) *
-                        jacobi_cn(x, m)/jacobi_dn(x, m)**Integer(2))
+                return HALF * (
+                    jacobi_sn(x, m) ** Integer(2) * jacobi_cn(x, m) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_sn(x, m)
+                    / m
+                ) / jacobi_dn(x, m) + HALF * (
+                    (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_sn(x, m)
+                    * jacobi_cn(x, m)
+                    - jacobi_dn(x, m) * jacobi_sn(x, m) ** Integer(2) / (m - Integer(1))
+                ) * jacobi_cn(x, m) / jacobi_dn(x, m) ** Integer(2)
             if self.kind == 'cs':
-                return (HALF*(jacobi_sn(x, m)*jacobi_cn(x, m)**Integer(2)/(m - Integer(1)) -
-                        (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                         (m - Integer(1)))*jacobi_dn(x, m)*jacobi_cn(x, m)/m) *
-                        jacobi_cn(x, m)/jacobi_sn(x, m)**Integer(2) +
-                        HALF*(jacobi_sn(x, m)**Integer(2)*jacobi_cn(x, m)/(m - Integer(1)) -
-                              (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) /
-                               (m - Integer(1)))*jacobi_dn(x, m)*jacobi_sn(x, m)/m) /
-                        jacobi_sn(x, m))
+                return HALF * (
+                    jacobi_sn(x, m) * jacobi_cn(x, m) ** Integer(2) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_cn(x, m)
+                    / m
+                ) * jacobi_cn(x, m) / jacobi_sn(x, m) ** Integer(2) + HALF * (
+                    jacobi_sn(x, m) ** Integer(2) * jacobi_cn(x, m) / (m - Integer(1))
+                    - (x + elliptic_e(arcsin(jacobi_sn(x, m)), m) / (m - Integer(1)))
+                    * jacobi_dn(x, m)
+                    * jacobi_sn(x, m)
+                    / m
+                ) / jacobi_sn(x, m)
 
     def _latex_(self):
         r"""
@@ -517,9 +637,9 @@ class Jacobi(BuiltinFunction):
             sage: latex(jacobi_sn(x, 3))                                                # needs sage.symbolic
             \operatorname{sn}\left(x\middle|3\right)
         """
-        return r"\operatorname{{{}}}\left({}\middle|{}\right)".format(self.kind,
-                                                                      latex(x),
-                                                                      latex(m))
+        return r"\operatorname{{{}}}\left({}\middle|{}\right)".format(
+            self.kind, latex(x), latex(m)
+        )
 
 
 jacobi_nd = Jacobi('nd')
@@ -540,6 +660,7 @@ class InverseJacobi(BuiltinFunction):
     r"""
     Base class for the inverse Jacobi elliptic functions.
     """
+
     def __init__(self, kind):
         r"""
         Initialize ``self``.
@@ -550,16 +671,36 @@ class InverseJacobi(BuiltinFunction):
             sage: InverseJacobi('sn')
             inverse_jacobi_sn
         """
-        if kind not in ['nd', 'ns', 'nc', 'dn', 'ds', 'dc', 'sn', 'sd',
-                        'sc', 'cn', 'cd', 'cs']:
-            raise ValueError("kind must be one of 'nd', 'ns', 'nc', 'dn', "
-                             "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'.")
+        if kind not in [
+            'nd',
+            'ns',
+            'nc',
+            'dn',
+            'ds',
+            'dc',
+            'sn',
+            'sd',
+            'sc',
+            'cn',
+            'cd',
+            'cs',
+        ]:
+            raise ValueError(
+                "kind must be one of 'nd', 'ns', 'nc', 'dn', "
+                "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'."
+            )
         self.kind = kind
-        BuiltinFunction.__init__(self,
-            name=f'inverse_jacobi_{kind}', nargs=2, evalf_params_first=False,
-            conversions=dict(maple=('InverseJacobi{}'.format(kind.upper())),
-                             mathematica=f'InverseJacobi{kind.upper()}',
-                             maxima=(f'inverse_jacobi_{kind}')))
+        BuiltinFunction.__init__(
+            self,
+            name=f'inverse_jacobi_{kind}',
+            nargs=2,
+            evalf_params_first=False,
+            conversions=dict(
+                maple=('InverseJacobi{}'.format(kind.upper())),
+                mathematica=f'InverseJacobi{kind.upper()}',
+                maxima=(f'inverse_jacobi_{kind}'),
+            ),
+        )
 
     def _eval_(self, x, m):
         r"""
@@ -791,108 +932,155 @@ class InverseJacobi(BuiltinFunction):
         # From Wolfram Functions Site
         if diff_param == 0:
             if self.kind == 'cd':
-                return (jacobi_sn(inverse_jacobi_cd(x, m), m) /
-                        (x ** Integer(2) - Integer(1)))
+                return jacobi_sn(inverse_jacobi_cd(x, m), m) / (
+                    x ** Integer(2) - Integer(1)
+                )
             if self.kind == 'cn':
-                return (jacobi_ds(inverse_jacobi_cn(x, m), m) /
-                        (m * x ** Integer(2) - m + Integer(1)))
+                return jacobi_ds(inverse_jacobi_cn(x, m), m) / (
+                    m * x ** Integer(2) - m + Integer(1)
+                )
             if self.kind == 'cs':
-                return (jacobi_nd(inverse_jacobi_cs(x, m), m) /
-                        (x ** Integer(2) + Integer(1)))
+                return jacobi_nd(inverse_jacobi_cs(x, m), m) / (
+                    x ** Integer(2) + Integer(1)
+                )
             if self.kind == 'dc':
-                return (jacobi_sn(inverse_jacobi_dc(x, m), m) /
-                        (x ** Integer(2) - Integer(1)))
+                return jacobi_sn(inverse_jacobi_dc(x, m), m) / (
+                    x ** Integer(2) - Integer(1)
+                )
             if self.kind == 'dn':
-                return -(jacobi_cs(inverse_jacobi_dn(x, m), m) /
-                         (x ** Integer(2) + m - Integer(1)))
+                return -(
+                    jacobi_cs(inverse_jacobi_dn(x, m), m)
+                    / (x ** Integer(2) + m - Integer(1))
+                )
             if self.kind == 'ds':
-                return (jacobi_nc(inverse_jacobi_ds(x, m), m) /
-                        (x ** Integer(2) + m))
+                return jacobi_nc(inverse_jacobi_ds(x, m), m) / (x ** Integer(2) + m)
             if self.kind == 'nc':
-                return (jacobi_ds(inverse_jacobi_nc(x, m), m) /
-                        (-m * x ** Integer(2) + x ** Integer(2) + m))
+                return jacobi_ds(inverse_jacobi_nc(x, m), m) / (
+                    -m * x ** Integer(2) + x ** Integer(2) + m
+                )
             if self.kind == 'nd':
-                return (jacobi_sc(inverse_jacobi_nd(x, m), m) /
-                        (x ** Integer(2) - Integer(1)))
+                return jacobi_sc(inverse_jacobi_nd(x, m), m) / (
+                    x ** Integer(2) - Integer(1)
+                )
             if self.kind == 'ns':
-                return Integer(1) / (jacobi_cs(inverse_jacobi_ns(x, m), m) *
-                                     jacobi_ds(inverse_jacobi_ns(x, m), m))
+                return Integer(1) / (
+                    jacobi_cs(inverse_jacobi_ns(x, m), m)
+                    * jacobi_ds(inverse_jacobi_ns(x, m), m)
+                )
             if self.kind == 'sc':
-                return (jacobi_nd(inverse_jacobi_sc(x, m), m) /
-                        (x ** Integer(2) + Integer(1)))
+                return jacobi_nd(inverse_jacobi_sc(x, m), m) / (
+                    x ** Integer(2) + Integer(1)
+                )
             if self.kind == 'sd':
-                return (jacobi_cn(inverse_jacobi_sd(x, m), m) /
-                        ((m - Integer(1)) * x ** Integer(2) + Integer(1)))
+                return jacobi_cn(inverse_jacobi_sd(x, m), m) / (
+                    (m - Integer(1)) * x ** Integer(2) + Integer(1)
+                )
             if self.kind == 'sn':
-                return (jacobi_cd(inverse_jacobi_sn(x, m), m) /
-                        (Integer(1) - x ** Integer(2)))
+                return jacobi_cd(inverse_jacobi_sn(x, m), m) / (
+                    Integer(1) - x ** Integer(2)
+                )
         elif diff_param == 1:
             if self.kind == 'cd':
-                return ((Integer(1) / (Integer(2) * (Integer(1) - m) * m)) *
-                        ((m - Integer(1)) * inverse_jacobi_cd(x, m) +
-                         elliptic_e(jacobi_am(inverse_jacobi_cd(x, m), m),
-                                    m)))
+                return (Integer(1) / (Integer(2) * (Integer(1) - m) * m)) * (
+                    (m - Integer(1)) * inverse_jacobi_cd(x, m)
+                    + elliptic_e(jacobi_am(inverse_jacobi_cd(x, m), m), m)
+                )
             if self.kind == 'cn':
-                return ((-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_cn(x, m), m),
-                                    m) + (-Integer(1) + m) *
-                         inverse_jacobi_cn(x, m) - m * x *
-                         jacobi_sd(inverse_jacobi_cn(x, m), m)))
+                return (-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) * (
+                    elliptic_e(jacobi_am(inverse_jacobi_cn(x, m), m), m)
+                    + (-Integer(1) + m) * inverse_jacobi_cn(x, m)
+                    - m * x * jacobi_sd(inverse_jacobi_cn(x, m), m)
+                )
             if self.kind == 'cs':
-                return ((-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m * (Integer(1) + x ** Integer(2))))) *
-                        ((Integer(1) + x ** Integer(2)) *
-                         elliptic_e(jacobi_am(inverse_jacobi_cs(x, m), m),
-                                    m) + (-Integer(1) + m) * (Integer(1) + x ** Integer(2)) *
-                         inverse_jacobi_cs(x, m) - m * x *
-                         jacobi_nd(inverse_jacobi_cs(x, m), m)))
+                return (
+                    -(
+                        Integer(1)
+                        / (
+                            Integer(2)
+                            * (-Integer(1) + m)
+                            * m
+                            * (Integer(1) + x ** Integer(2))
+                        )
+                    )
+                ) * (
+                    (Integer(1) + x ** Integer(2))
+                    * elliptic_e(jacobi_am(inverse_jacobi_cs(x, m), m), m)
+                    + (-Integer(1) + m)
+                    * (Integer(1) + x ** Integer(2))
+                    * inverse_jacobi_cs(x, m)
+                    - m * x * jacobi_nd(inverse_jacobi_cs(x, m), m)
+                )
             if self.kind == 'dc':
-                return ((Integer(1) / (Integer(2) * (Integer(1) - m) * m)) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_dc(x, m), m),
-                                    m) - (Integer(1) - m) *
-                         inverse_jacobi_dc(x, m)))
+                return (Integer(1) / (Integer(2) * (Integer(1) - m) * m)) * (
+                    elliptic_e(jacobi_am(inverse_jacobi_dc(x, m), m), m)
+                    - (Integer(1) - m) * inverse_jacobi_dc(x, m)
+                )
             if self.kind == 'dn':
-                return ((Integer(1) / (Integer(2) * (Integer(1) - m) * m)) * ((m - Integer(1)) *
-                        inverse_jacobi_dn(x, m) +
-                        elliptic_e(jacobi_am(inverse_jacobi_dn(x, m), m), m) -
-                        x * jacobi_sc(inverse_jacobi_dn(x, m), m)))
+                return (Integer(1) / (Integer(2) * (Integer(1) - m) * m)) * (
+                    (m - Integer(1)) * inverse_jacobi_dn(x, m)
+                    + elliptic_e(jacobi_am(inverse_jacobi_dn(x, m), m), m)
+                    - x * jacobi_sc(inverse_jacobi_dn(x, m), m)
+                )
             if self.kind == 'ds':
-                return ((-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_ds(x, m), m), m) +
-                         (-Integer(1) + m) * inverse_jacobi_ds(x, m) -
-                         (m * x * jacobi_nc(inverse_jacobi_ds(x, m), m)) /
-                         (m + x ** Integer(2))))
+                return (-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) * (
+                    elliptic_e(jacobi_am(inverse_jacobi_ds(x, m), m), m)
+                    + (-Integer(1) + m) * inverse_jacobi_ds(x, m)
+                    - (m * x * jacobi_nc(inverse_jacobi_ds(x, m), m))
+                    / (m + x ** Integer(2))
+                )
             if self.kind == 'nc':
-                return ((Integer(1) / (Integer(2) * (-Integer(1) + m) * m * x)) * ((-x) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_nc(x, m), m), m) +
-                         (-Integer(1) + m) * inverse_jacobi_nc(x, m)) + m *
-                        jacobi_sd(inverse_jacobi_nc(x, m), m)))
+                return (Integer(1) / (Integer(2) * (-Integer(1) + m) * m * x)) * (
+                    (-x)
+                    * (
+                        elliptic_e(jacobi_am(inverse_jacobi_nc(x, m), m), m)
+                        + (-Integer(1) + m) * inverse_jacobi_nc(x, m)
+                    )
+                    + m * jacobi_sd(inverse_jacobi_nc(x, m), m)
+                )
             if self.kind == 'nd':
-                return ((Integer(1) / (Integer(2) * (m - Integer(1)) * m)) *
-                        ((Integer(1) - m) * inverse_jacobi_nd(x, m) -
-                         elliptic_e(jacobi_am(inverse_jacobi_nd(x, m), m), m) +
-                         (Integer(1) / x) * jacobi_sc(inverse_jacobi_nd(x, m), m)))
+                return (Integer(1) / (Integer(2) * (m - Integer(1)) * m)) * (
+                    (Integer(1) - m) * inverse_jacobi_nd(x, m)
+                    - elliptic_e(jacobi_am(inverse_jacobi_nd(x, m), m), m)
+                    + (Integer(1) / x) * jacobi_sc(inverse_jacobi_nd(x, m), m)
+                )
             if self.kind == 'ns':
-                return ((Integer(1)/(Integer(2) * (m - Integer(1)) * m)) *
-                        ((Integer(1) - m) * inverse_jacobi_ns(x, m) -
-                         elliptic_e(jacobi_am(inverse_jacobi_ns(x, m), m), m) +
-                         (m / x) * jacobi_cd(inverse_jacobi_ns(x, m), m)))
+                return (Integer(1) / (Integer(2) * (m - Integer(1)) * m)) * (
+                    (Integer(1) - m) * inverse_jacobi_ns(x, m)
+                    - elliptic_e(jacobi_am(inverse_jacobi_ns(x, m), m), m)
+                    + (m / x) * jacobi_cd(inverse_jacobi_ns(x, m), m)
+                )
             if self.kind == 'sc':
-                return ((-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m * (Integer(1) + x ** Integer(2))))) *
-                        ((Integer(1) + x ** Integer(2)) *
-                         elliptic_e(jacobi_am(inverse_jacobi_sc(x, m), m), m) +
-                         (-Integer(1) + m) * (Integer(1) + x ** Integer(2)) * inverse_jacobi_sc(x, m) -
-                         m * x * jacobi_nd(inverse_jacobi_sc(x, m), m)))
+                return (
+                    -(
+                        Integer(1)
+                        / (
+                            Integer(2)
+                            * (-Integer(1) + m)
+                            * m
+                            * (Integer(1) + x ** Integer(2))
+                        )
+                    )
+                ) * (
+                    (Integer(1) + x ** Integer(2))
+                    * elliptic_e(jacobi_am(inverse_jacobi_sc(x, m), m), m)
+                    + (-Integer(1) + m)
+                    * (Integer(1) + x ** Integer(2))
+                    * inverse_jacobi_sc(x, m)
+                    - m * x * jacobi_nd(inverse_jacobi_sc(x, m), m)
+                )
             if self.kind == 'sd':
-                return ((-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_sd(x, m), m), m) +
-                         (-Integer(1) + m) * inverse_jacobi_sd(x, m) -
-                         (m * x * jacobi_nc(inverse_jacobi_sd(x, m), m)) /
-                         (Integer(1) + m * x ** Integer(2))))
+                return (-(Integer(1) / (Integer(2) * (-Integer(1) + m) * m))) * (
+                    elliptic_e(jacobi_am(inverse_jacobi_sd(x, m), m), m)
+                    + (-Integer(1) + m) * inverse_jacobi_sd(x, m)
+                    - (m * x * jacobi_nc(inverse_jacobi_sd(x, m), m))
+                    / (Integer(1) + m * x ** Integer(2))
+                )
             if self.kind == 'sn':
-                return ((Integer(1) / (Integer(2) * (Integer(1) - m) * m)) *
-                        (elliptic_e(jacobi_am(inverse_jacobi_sn(x, m), m), m) +
-                         (-Integer(1) + m) * inverse_jacobi_sn(x, m) - m * x *
-                         jacobi_cd(inverse_jacobi_sn(x, m), m)))
+                return (Integer(1) / (Integer(2) * (Integer(1) - m) * m)) * (
+                    elliptic_e(jacobi_am(inverse_jacobi_sn(x, m), m), m)
+                    + (-Integer(1) + m) * inverse_jacobi_sn(x, m)
+                    - m * x * jacobi_cd(inverse_jacobi_sn(x, m), m)
+                )
 
     def _latex_(self):
         r"""
@@ -910,9 +1098,9 @@ class InverseJacobi(BuiltinFunction):
             sage: latex(inverse_jacobi_dn(x, 3))                                        # needs sage.symbolic
             \operatorname{arcdn}\left(x\middle|3\right)
         """
-        return r"\operatorname{{arc{}}}\left({}\middle|{}\right)".format(self.kind,
-                                                                         latex(x),
-                                                                         latex(m))
+        return r"\operatorname{{arc{}}}\left({}\middle|{}\right)".format(
+            self.kind, latex(x), latex(m)
+        )
 
 
 inverse_jacobi_nd = InverseJacobi('nd')
@@ -981,8 +1169,10 @@ def jacobi(kind, z, m, **kwargs):
         return jacobi_cd(z, m, **kwargs)
     if kind == 'cs':
         return jacobi_cs(z, m, **kwargs)
-    raise ValueError("kind must be one of 'nd', 'ns', 'nc', 'dn', "
-                     "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'.")
+    raise ValueError(
+        "kind must be one of 'nd', 'ns', 'nc', 'dn', "
+        "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'."
+    )
 
 
 def inverse_jacobi(kind, x, m, **kwargs):
@@ -1061,8 +1251,10 @@ def inverse_jacobi(kind, x, m, **kwargs):
         return inverse_jacobi_cd(x, m, **kwargs)
     if kind == 'cs':
         return inverse_jacobi_cs(x, m, **kwargs)
-    raise ValueError("kind must be one of 'nd', 'ns', 'nc', 'dn', "
-                     "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'.")
+    raise ValueError(
+        "kind must be one of 'nd', 'ns', 'nc', 'dn', "
+        "'ds', 'dc', 'sn', 'sd', 'sc', 'cn', 'cd', 'cs'."
+    )
 
 
 class JacobiAmplitude(BuiltinFunction):
@@ -1071,6 +1263,7 @@ class JacobiAmplitude(BuiltinFunction):
     `\operatorname{am}(x|m) = \int_0^x \operatorname{dn}(t|m) dt` for
     `-K(m) \leq x \leq K(m)`, `F(\operatorname{am}(x|m)|m) = x`.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1079,10 +1272,13 @@ class JacobiAmplitude(BuiltinFunction):
             sage: JacobiAmplitude()
             jacobi_am
         """
-        BuiltinFunction.__init__(self, name='jacobi_am', nargs=2,
-            conversions=dict(maple='JacobiAM',
-                             mathematica='JacobiAmplitude'),
-            evalf_params_first=False)
+        BuiltinFunction.__init__(
+            self,
+            name='jacobi_am',
+            nargs=2,
+            conversions=dict(maple='JacobiAM', mathematica='JacobiAmplitude'),
+            evalf_params_first=False,
+        )
 
     def _eval_(self, x, m):
         r"""
@@ -1123,9 +1319,11 @@ class JacobiAmplitude(BuiltinFunction):
         if diff_param == 0:
             return jacobi_dn(x, m)
         if diff_param == 1:
-            return (((Integer(-1) + m) * x + elliptic_e(jacobi_am(x, m), m)) *
-                    jacobi('dn', x, m) - m * jacobi('cn', x, m) *
-                    jacobi('sn', x, m)) / (Integer(2) * (Integer(-1) + m) * m)
+            return (
+                ((Integer(-1) + m) * x + elliptic_e(jacobi_am(x, m), m))
+                * jacobi('dn', x, m)
+                - m * jacobi('cn', x, m) * jacobi('sn', x, m)
+            ) / (Integer(2) * (Integer(-1) + m) * m)
 
     def _latex_(self):
         r"""
@@ -1143,8 +1341,9 @@ class JacobiAmplitude(BuiltinFunction):
             sage: latex(jacobi_am(3,x))                                                 # needs sage.symbolic
             \operatorname{am}\left(3\middle|x\right)
         """
-        return r"\operatorname{{am}}\left({}\middle|{}\right)".format(latex(x),
-                                                                      latex(m))
+        return r"\operatorname{{am}}\left({}\middle|{}\right)".format(
+            latex(x), latex(m)
+        )
 
 
 jacobi_am = JacobiAmplitude()
@@ -1293,6 +1492,7 @@ def inverse_jacobi_f(kind, x, m):
         mpf('4.0')
     """
     from mpmath import mp as ctx
+
     prec = ctx.prec
     try:
         x = ctx.convert(x)
@@ -1307,7 +1507,7 @@ def inverse_jacobi_f(kind, x, m):
             if x == 0:
                 return ctx.zero
             sign = ctx.sign(x)  # sn is odd in x, so operate with abs(x) and
-            x = abs(x)          # include the sign at the end
+            x = abs(x)  # include the sign at the end
             if x <= 1:
                 ctx.prec += 10
                 phi = ctx.asin(x)
@@ -1362,7 +1562,7 @@ def inverse_jacobi_f(kind, x, m):
                 return ctx.zero
             if 0 <= x < 1:
                 ctx.prec += 10
-                x2 = x ** 2
+                x2 = x**2
                 ctx.prec += 10
                 osx2 = 1 - x2
                 ctx.prec += 10
@@ -1370,7 +1570,7 @@ def inverse_jacobi_f(kind, x, m):
             if -1 <= x < 0:
                 K = ctx.ellipk(m)
                 ctx.prec += 10
-                x2 = x ** 2
+                x2 = x**2
                 ctx.prec += 10
                 osx2 = 1 - x2
                 ctx.prec += 10
@@ -1429,7 +1629,7 @@ def inverse_jacobi_f(kind, x, m):
             sqrtm1 = ctx.sqrt(m1)
             if sqrtm1 <= x < 1:
                 ctx.prec += 10
-                x2 = x ** 2
+                x2 = x**2
                 ctx.prec += 10
                 osx2 = 1 - x2
                 ctx.prec += 10
@@ -1451,7 +1651,7 @@ def inverse_jacobi_f(kind, x, m):
             if 0 <= x < sqrtm1:
                 K = ctx.ellipk(m)
                 ctx.prec += 10
-                x2 = x ** 2
+                x2 = x**2
                 ctx.prec += 10
                 x2dm1 = x2 / m1
                 osx2 = 1 - x2
@@ -1470,7 +1670,7 @@ def inverse_jacobi_f(kind, x, m):
                 K_prime = ctx.ellipk(m1)
                 ctx.prec += 10
                 tK_prime = 2 * K_prime
-                x2 = x ** 2
+                x2 = x**2
                 ctx.prec += 10
                 x2dm1 = x2 / m1
                 osx2 = 1 - x2
@@ -1488,7 +1688,7 @@ def inverse_jacobi_f(kind, x, m):
                 K = ctx.ellipk(m)
                 K_prime = ctx.ellipk(m1)
                 ctx.prec += 10
-                x2 = x ** 2
+                x2 = x**2
                 tK = 2 * K
                 # Note that the factor of 2 is missing in the reference
                 # (formula (81)), probably mistakenly so
@@ -1641,6 +1841,7 @@ def jacobi_am_f(x, m):
         mpf('0.36067407399586108')
     """
     from mpmath import mp as ctx
+
     prec = ctx.prec
     try:
         x = ctx.convert(x)

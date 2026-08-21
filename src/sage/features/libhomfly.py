@@ -29,6 +29,7 @@ class Libhomfly(BuildModule):
         FeatureTestResult('libhomfly', True)
 
     """
+
     _enabled_in_build = libhomfly_enabled
 
     def __init__(self):
@@ -41,9 +42,7 @@ class Libhomfly(BuildModule):
 
         """
         module_name = "sage.libs.homfly"
-        super().__init__('libhomfly',
-                         module_name,
-                         type='standard')
+        super().__init__('libhomfly', module_name, type='standard')
 
 
 def all_features():

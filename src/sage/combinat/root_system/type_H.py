@@ -1,12 +1,12 @@
 """
 Root system data for type H
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_finite, CartanType_simple
 
@@ -81,11 +81,12 @@ class CartanType(CartanType_standard_finite, CartanType_simple):
              [2 2 5 1]
         """
         from sage.graphs.graph import Graph
+
         n = self.n
         g = Graph(multiedges=False)
         for i in range(1, n):
-            g.add_edge(i, i+1, 3)
-        g.set_edge_label(n-1, n, 5)
+            g.add_edge(i, i + 1, 3)
+        g.set_edge_label(n - 1, n, 5)
         return g
 
     def coxeter_number(self):

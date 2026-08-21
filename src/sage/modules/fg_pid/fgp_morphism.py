@@ -70,6 +70,7 @@ class FGP_Morphism(Morphism):
         sage: loads(dumps(phi)) == phi
         True
     """
+
     def __init__(self, parent, phi, check=True):
         """
         A morphism between finitely generated modules over a PID.
@@ -109,14 +110,20 @@ class FGP_Morphism(Morphism):
 
             MO, _ = M.optimized()
             if phi.domain() != MO.V():
-                raise ValueError("domain of phi must be the covering module for the optimized covering module of the domain")
+                raise ValueError(
+                    "domain of phi must be the covering module for the optimized covering module of the domain"
+                )
             if phi.codomain() != N.V():
-                raise ValueError("codomain of phi must be the covering module the codomain.")
+                raise ValueError(
+                    "codomain of phi must be the covering module the codomain."
+                )
             # check that MO.W() gets sent into N.W()
             # todo (optimize): this is slow:
             for x in MO.W().basis():
                 if phi(x) not in N.W():
-                    raise ValueError("phi must send optimized submodule of M.W() into N.W()")
+                    raise ValueError(
+                        "phi must send optimized submodule of M.W() into N.W()"
+                    )
         self._phi = phi
 
     def _repr_(self):
@@ -130,9 +137,15 @@ class FGP_Morphism(Morphism):
             sage: phi._repr_()
             'Morphism from module over Integer Ring with invariants (4, 12) to module with invariants (4, 12) that sends the generators to [(1, 3), (0, 11)]'
         """
-        return "Morphism from module over %s with invariants %s to module with invariants %s that sends the generators to %s" % (
-            self.domain().base_ring(), self.domain().invariants(), self.codomain().invariants(),
-            list(self.im_gens()))
+        return (
+            "Morphism from module over %s with invariants %s to module with invariants %s that sends the generators to %s"
+            % (
+                self.domain().base_ring(),
+                self.domain().invariants(),
+                self.codomain().invariants(),
+                list(self.im_gens()),
+            )
+        )
 
     @cached_method
     def im_gens(self):
@@ -182,7 +195,7 @@ class FGP_Morphism(Morphism):
         a = (self.domain(), self.codomain())
         b = (other.domain(), other.codomain())
         if a != b:
-            return (op == op_NE)
+            return op == op_NE
         return richcmp(self.im_gens(), other.im_gens(), op)
 
     def __add__(self, right):
@@ -278,6 +291,7 @@ class FGP_Morphism(Morphism):
             True
         """
         from .fgp_module import FGP_Module_class
+
         if isinstance(x, FGP_Module_class):
             if not x.is_submodule(self.domain()):
                 raise ValueError("x must be a submodule or element of the domain")
@@ -355,6 +369,7 @@ class FGP_Morphism(Morphism):
             ValueError: A must be a submodule of the codomain
         """
         from .fgp_module import FGP_Module_class
+
         if not isinstance(A, FGP_Module_class):
             raise TypeError("A must be a finitely generated quotient module")
         if not A.is_submodule(self.codomain()):
@@ -444,7 +459,7 @@ class FGP_Morphism(Morphism):
 
         # Write back in terms of rows of B, and delete rows not corresponding to A,
         # since those corresponding to relations
-        v = (z * U)[:A.nrows()]
+        v = (z * U)[: A.nrows()]
 
         # Take the linear combination that v defines.
         y = v * self.domain().optimized()[0].V().basis_matrix()
@@ -493,6 +508,7 @@ class FGP_Homset_class(Homset):
         sage: type(H)
         <class 'sage.modules.fg_pid.fgp_morphism.FGP_Homset_class_with_category'>
     """
+
     Element = FGP_Morphism
 
     def __init__(self, X, Y, category=None):
@@ -505,11 +521,14 @@ class FGP_Homset_class(Homset):
         """
         if category is None:
             from sage.modules.free_module import FreeModule_generic
+
             if isinstance(X, FreeModule_generic) and isinstance(Y, FreeModule_generic):
                 from sage.categories.modules_with_basis import ModulesWithBasis
+
                 category = ModulesWithBasis(X.base_ring())
             else:
                 from sage.categories.modules import Modules
+
                 category = Modules(X.base_ring())
         Homset.__init__(self, X, Y, category)
 

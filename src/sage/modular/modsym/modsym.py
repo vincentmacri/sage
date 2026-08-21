@@ -189,12 +189,9 @@ def ModularSymbols_clear_cache():
     _cache = {}
 
 
-def ModularSymbols(group=1,
-                   weight=2,
-                   sign=0,
-                   base_ring=None,
-                   use_cache=True,
-                   custom_init=None):
+def ModularSymbols(
+    group=1, weight=2, sign=0, base_ring=None, use_cache=True, custom_init=None
+):
     r"""
     Create an ambient space of modular symbols.
 
@@ -358,6 +355,7 @@ def ModularSymbols(group=1,
         False
     """
     from . import ambient
+
     key = canonical_parameters(group, weight, sign, base_ring)
 
     if use_cache and key in _cache:
@@ -371,28 +369,33 @@ def ModularSymbols(group=1,
     if isinstance(group, arithgroup.Gamma0_class):
         if weight == 2:
             M = ambient.ModularSymbolsAmbient_wt2_g0(
-                group.level(), sign, base_ring, custom_init=custom_init)
+                group.level(), sign, base_ring, custom_init=custom_init
+            )
         else:
             M = ambient.ModularSymbolsAmbient_wtk_g0(
-                group.level(), weight, sign, base_ring, custom_init=custom_init)
+                group.level(), weight, sign, base_ring, custom_init=custom_init
+            )
 
     elif isinstance(group, arithgroup.Gamma1_class):
-
-        M = ambient.ModularSymbolsAmbient_wtk_g1(group.level(),
-                            weight, sign, base_ring, custom_init=custom_init)
+        M = ambient.ModularSymbolsAmbient_wtk_g1(
+            group.level(), weight, sign, base_ring, custom_init=custom_init
+        )
 
     elif isinstance(group, arithgroup.GammaH_class):
-
-        M = ambient.ModularSymbolsAmbient_wtk_gamma_h(group,
-                            weight, sign, base_ring, custom_init=custom_init)
+        M = ambient.ModularSymbolsAmbient_wtk_gamma_h(
+            group, weight, sign, base_ring, custom_init=custom_init
+        )
 
     elif isinstance(group, tuple):
         eps = group[0]
-        M = ambient.ModularSymbolsAmbient_wtk_eps(eps,
-                            weight, sign, base_ring, custom_init=custom_init)
+        M = ambient.ModularSymbolsAmbient_wtk_eps(
+            eps, weight, sign, base_ring, custom_init=custom_init
+        )
 
     if M is None:
-        raise NotImplementedError("computation of requested space of modular symbols not defined or implemented")
+        raise NotImplementedError(
+            "computation of requested space of modular symbols not defined or implemented"
+        )
 
     if use_cache:
         _cache[key] = weakref.ref(M)

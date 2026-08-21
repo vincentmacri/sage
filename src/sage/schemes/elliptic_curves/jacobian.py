@@ -114,13 +114,16 @@ def Jacobian(X, **kwds):
 
     morphism = kwds.pop('morphism', False)
     from sage.rings.polynomial.multi_polynomial import MPolynomial
+
     if isinstance(X, MPolynomial):
         if morphism:
             from sage.schemes.curves.constructor import Curve
+
             return Jacobian_of_equation(X, curve=Curve(X), **kwds)
         return Jacobian_of_equation(X, **kwds)
 
     from sage.schemes.generic.scheme import Scheme
+
     if isinstance(X, Scheme) and X.dimension() == 1:
         return Jacobian_of_curve(X, morphism=morphism, **kwds)
 
@@ -229,6 +232,7 @@ def Jacobian_of_equation(polynomial, variables=None, curve=None):
         Elliptic Curve defined by y^2 = x^3 - 24300 over Rational Field
     """
     from sage.schemes.toric.weierstrass import WeierstrassForm
+
     f, g = WeierstrassForm(polynomial, variables=variables)
     try:
         K = polynomial.base_ring()
@@ -240,5 +244,8 @@ def Jacobian_of_equation(polynomial, variables=None, curve=None):
     if curve is None:
         return E
     X, Y, Z = WeierstrassForm(polynomial, variables=variables, transformation=True)
-    from sage.schemes.elliptic_curves.weierstrass_transform import WeierstrassTransformation
-    return WeierstrassTransformation(curve, E, [X*Z, Y, Z**3], 1)
+    from sage.schemes.elliptic_curves.weierstrass_transform import (
+        WeierstrassTransformation,
+    )
+
+    return WeierstrassTransformation(curve, E, [X * Z, Y, Z**3], 1)

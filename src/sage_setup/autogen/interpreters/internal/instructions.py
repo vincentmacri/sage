@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,10 +7,9 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 """Implements generic interpreter instructions and related utilities."""
-
 
 import re
 
@@ -95,7 +94,7 @@ def params_gen(**chunks):
                     ch = chunks[m.group(2)]
                     assert ch.storage_type is ty_int
                     addr = ch
-                s = s[m.end():].strip()
+                s = s[m.end() :].strip()
             if len(s) and s[0] == '@':
                 m = re.match(r'@(?:([0-9]+)|([a-zA-Z]))', s)
                 if m.group(1):
@@ -104,7 +103,7 @@ def params_gen(**chunks):
                     ch = chunks[m.group(2)]
                     assert ch.storage_type is ty_int
                     ch_len = ch
-                s = s[m.end():].strip()
+                s = s[m.end() :].strip()
             p.append((chunk, addr, ch_len))
         return p
 
@@ -192,8 +191,9 @@ class InstrSpec:
         add: SS->S = 'o0 = i0+i1;'
     """
 
-    def __init__(self, name, io, code=None, uses_error_handler=False,
-                 handles_own_decref=False):
+    def __init__(
+        self, name, io, code=None, uses_error_handler=False, handles_own_decref=False
+    ):
         r"""
         Initialize an InstrSpec.
 
@@ -247,7 +247,7 @@ class InstrSpec:
         in_effect = ''
         out_effect = ''
         p = []
-        for (ch, addr, len) in self.inputs:
+        for ch, addr, len in self.inputs:
             if ch.is_stack():
                 if len is None:
                     n_inputs += 1
@@ -260,7 +260,7 @@ class InstrSpec:
                     in_effect += '*'
             else:
                 p.append(ch.name)
-        for (ch, addr, len) in self.outputs:
+        for ch, addr, len in self.outputs:
             if ch.is_stack():
                 if len is None:
                     n_outputs += 1
@@ -296,12 +296,12 @@ class InstrSpec:
         rcode = repr(self.code)
         if len(rcode) > 40:
             rcode = rcode[:20] + '...' + rcode[-17:]
-        return '%s: %s->%s = %s' % \
-            (self.name, self.in_effect, self.out_effect, rcode)
+        return '%s: %s->%s = %s' % (self.name, self.in_effect, self.out_effect, rcode)
 
 
 # Now we have a series of helper functions that make it slightly easier
 # to create instructions.
+
 
 def instr_infix(name, io, op):
     r"""

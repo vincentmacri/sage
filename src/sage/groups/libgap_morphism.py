@@ -257,6 +257,7 @@ class GroupMorphism_libgap(Morphism):
          over Finite Field of size 2
          to General Linear Group of degree 3 over Integer Ring in Category of groups
     """
+
     def __init__(self, homset, gap_hom, check=True):
         r"""
         Constructor method.
@@ -418,6 +419,7 @@ class GroupMorphism_libgap(Morphism):
         if isinstance(J, dom.Element) and J in dom:
             return self._call_(dom(J))
         from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+
         if not isinstance(J, (ParentLibGAP, PermutationGroup_generic)):
             raise TypeError("J (={}) must be a libgap or permutation group".format(J))
         if dom.gap().IsSubgroup(J.gap()).sage():
@@ -550,6 +552,7 @@ class GroupMorphism_libgap(Morphism):
         """
         phi = self.gap()
         from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+
         if not isinstance(S, (ParentLibGAP, PermutationGroup_generic)):
             raise TypeError("%s must be a GAP or permutation group of %s" % (S, self))
         if not self.codomain().gap().IsSubgroup(S.gap()).sage():
@@ -580,6 +583,7 @@ class GroupMorphism_libgap(Morphism):
         """
         from sage.categories.homset import Hom
         from sage.categories.sets_cat import Sets
+
         H = Hom(self.codomain(), self.domain(), category=Sets())
         return H(self.lift)
 
@@ -608,6 +612,7 @@ class GroupHomset_libgap(HomsetWithBase):
          to Abelian group with gap, generator orders (2, 4)
          in Category of finite enumerated commutative groups
     """
+
     def __init__(self, G, H, category=None, check=True):
         r"""
         Return the homset of two libgap groups.
@@ -621,10 +626,15 @@ class GroupHomset_libgap(HomsetWithBase):
         """
         if check:
             from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+
             if not isinstance(G, (ParentLibGAP, PermutationGroup_generic)):
-                raise TypeError("G (={}) must be a ParentLibGAP or a permutation group".format(G))
+                raise TypeError(
+                    "G (={}) must be a ParentLibGAP or a permutation group".format(G)
+                )
             if not isinstance(H, (ParentLibGAP, PermutationGroup_generic)):
-                raise TypeError("H (={}) must be a ParentLibGAP or a permutation group".format(H))
+                raise TypeError(
+                    "H (={}) must be a ParentLibGAP or a permutation group".format(H)
+                )
         HomsetWithBase.__init__(self, G, H, category, check=check, base=ZZ)
 
     Element = GroupMorphism_libgap
@@ -677,6 +687,7 @@ class GroupHomset_libgap(HomsetWithBase):
         if isinstance(x, (tuple, list)):
             # there should be a better way
             from sage.libs.gap.libgap import libgap
+
             dom = self.domain()
             codom = self.codomain()
             gens = dom.gap().GeneratorsOfGroup()
@@ -684,10 +695,12 @@ class GroupHomset_libgap(HomsetWithBase):
             if check:
                 if not len(gens) == len(imgs):
                     raise ValueError("provide an image for each generator")
-                phi = libgap.GroupHomomorphismByImages(dom.gap(), codom.gap(), gens, imgs)
+                phi = libgap.GroupHomomorphismByImages(
+                    dom.gap(), codom.gap(), gens, imgs
+                )
                 # if it is not a group homomorphism, then
                 # self._phi is the gap boolean fail
-                if phi.is_bool():     # check we did not fail
+                if phi.is_bool():  # check we did not fail
                     raise ValueError("images do not define a group homomorphism")
             else:
                 ByImagesNC = libgap.function_factory("GroupHomomorphismByImagesNC")
@@ -748,11 +761,13 @@ class GroupHomset_libgap(HomsetWithBase):
             dom_gap = self.domain().gap()
             codom_gap = self.codomain().gap()
             from sage.libs.gap.libgap import libgap
-            phi = libgap.GroupHomomorphismByImages(dom_gap,
-                                                   codom_gap,
-                                                   dom_gap.GeneratorsOfGroup(),
-                                                   codom_gap.GeneratorsOfGroup()
-                                                   )
-            if not phi.is_bool():     # phi is indeed a group homomorphism
+
+            phi = libgap.GroupHomomorphismByImages(
+                dom_gap,
+                codom_gap,
+                dom_gap.GeneratorsOfGroup(),
+                codom_gap.GeneratorsOfGroup(),
+            )
+            if not phi.is_bool():  # phi is indeed a group homomorphism
                 return self.element_class(self, phi)
         return super().natural_map()

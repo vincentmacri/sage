@@ -83,6 +83,7 @@ class PathSemigroup(UniqueRepresentation, Parent):
         Category of infinite enumerated monoids
         sage: TestSuite(M).run()
     """
+
     Element = QuiverPath
 
     @staticmethod
@@ -205,7 +206,9 @@ class PathSemigroup(UniqueRepresentation, Parent):
             Monoid formed by the directed paths of Looped multi-digraph on 1 vertex
         """
         if self._quiver.n_vertices() != 1:
-            return "Partial semigroup formed by the directed paths of {}".format(self._quiver)
+            return "Partial semigroup formed by the directed paths of {}".format(
+                self._quiver
+            )
         return "Monoid formed by the directed paths of {}".format(self._quiver)
 
     def _coerce_map_from_(self, other):
@@ -264,7 +267,10 @@ class PathSemigroup(UniqueRepresentation, Parent):
             return False
         if any(not sQ.has_vertex(v) for v in oQ.iterator_verts(None)):
             return False
-        return all(sQ.has_edge(*e) for e in oQ.iterator_out_edges(oQ.iterator_verts(None), True))
+        return all(
+            sQ.has_edge(*e)
+            for e in oQ.iterator_out_edges(oQ.iterator_verts(None), True)
+        )
 
     def _element_constructor_(self, data, check=True):
         """
@@ -345,15 +351,23 @@ class PathSemigroup(UniqueRepresentation, Parent):
             start, end, _ = E[i]
             path = [i]
         elif not isinstance(data, (tuple, list)):
-            raise TypeError("data={} is not valid. A path must be initialized from either a tuple or a list".format(data))
+            raise TypeError(
+                "data={} is not valid. A path must be initialized from either a tuple or a list".format(
+                    data
+                )
+            )
         elif isinstance(data[0], str):  # a list of labels
             start = L.get(data[0])
             if start is None:
-                raise ValueError("data[0]={!r} is not the label of an edge".format(data[0]))
+                raise ValueError(
+                    "data[0]={!r} is not the label of an edge".format(data[0])
+                )
             start = E[start][0]
             end = L.get(data[-1])
             if end is None:
-                raise ValueError("data[-1]={!r} is not the label of an edge".format(data[-1]))
+                raise ValueError(
+                    "data[-1]={!r} is not the label of an edge".format(data[-1])
+                )
             end = E[end][1]
             path = [L.get(e) for e in data]
         elif len(data) == 1 and len(data[0]) == 2:  # an idempotent
@@ -372,12 +386,22 @@ class PathSemigroup(UniqueRepresentation, Parent):
         if check:
             Q = self._quiver
             if start is None or start not in Q:
-                raise ValueError("startpoint {} should belong to {}".format(start, Q.vertices(sort=False)))
+                raise ValueError(
+                    "startpoint {} should belong to {}".format(
+                        start, Q.vertices(sort=False)
+                    )
+                )
             if end is None or end not in Q:
-                raise ValueError("endpoint {} should belong to {}".format(end, Q.vertices(sort=False)))
+                raise ValueError(
+                    "endpoint {} should belong to {}".format(
+                        end, Q.vertices(sort=False)
+                    )
+                )
             if not path:
                 if start != end:
-                    raise ValueError("start and endpoint of a path of length 0 must coincide")
+                    raise ValueError(
+                        "start and endpoint of a path of length 0 must coincide"
+                    )
             else:
                 if any(x is None for x in path):
                     i = next((i for i, x in enumerate(path) if x is None))
@@ -386,10 +410,15 @@ class PathSemigroup(UniqueRepresentation, Parent):
                     e0 = E[path[n - 1]][1]
                     e1 = E[path[n]][0]
                     if e0 != e1:
-                        raise ValueError("edge {} ends at {}, but edge {} starts at {}".format(
-                            E[path[n - 1]][2], e0, E[path[n]][2], e1))
+                        raise ValueError(
+                            "edge {} ends at {}, but edge {} starts at {}".format(
+                                E[path[n - 1]][2], e0, E[path[n]][2], e1
+                            )
+                        )
                 if E[path[0]][0] != start:
-                    raise ValueError("first edge should start at vertex {}".format(start))
+                    raise ValueError(
+                        "first edge should start at vertex {}".format(start)
+                    )
                 if E[path[-1]][1] != end:
                     raise ValueError("last edge should end at vertex {}".format(end))
 
@@ -406,8 +435,10 @@ class PathSemigroup(UniqueRepresentation, Parent):
             sage: P.arrows()
             (a, b, c, d)
         """
-        return tuple(self.element_class(self, e[0], e[1], [i])
-                     for i, e in enumerate(self._sorted_edges))
+        return tuple(
+            self.element_class(self, e[0], e[1], [i])
+            for i, e in enumerate(self._sorted_edges)
+        )
 
     @cached_method
     def idempotents(self):
@@ -421,8 +452,9 @@ class PathSemigroup(UniqueRepresentation, Parent):
             sage: P.idempotents()
             (e_1, e_2, e_3)
         """
-        return tuple(self.element_class(self, v, v, [])
-                     for v in self._quiver.vertex_iterator())
+        return tuple(
+            self.element_class(self, v, v, []) for v in self._quiver.vertex_iterator()
+        )
 
     def ngens(self):
         """
@@ -543,9 +575,11 @@ class PathSemigroup(UniqueRepresentation, Parent):
             ValueError: the underlying quiver has cycles, thus, there may be an infinity of directed paths
         """
         from sage.rings.integer_ring import ZZ
+
         if self._quiver.is_directed_acyclic() and not self._quiver.has_loops():
             return ZZ(len(self))
         from sage.rings.infinity import Infinity
+
         return Infinity
 
     def __iter__(self):
@@ -660,12 +694,18 @@ class PathSemigroup(UniqueRepresentation, Parent):
         if not d >= 0:
             raise ValueError("path length must be a nonnegative integer")
         if v not in self._quiver:
-            raise ValueError("the starting point {} is not a vertex of the underlying quiver".format(v))
+            raise ValueError(
+                "the starting point {} is not a vertex of the underlying quiver".format(
+                    v
+                )
+            )
         if not d:
             yield self.element_class(self, v, v, [])
         else:
             for w in self.iter_paths_by_length_and_startpoint(d - 1, v):
-                for a in self._quiver._backend.iterator_out_edges([w.terminal_vertex()], True):
+                for a in self._quiver._backend.iterator_out_edges(
+                    [w.terminal_vertex()], True
+                ):
                     yield self(list(w) + [a], check=False)
 
     def iter_paths_by_length_and_endpoint(self, d, v):
@@ -694,12 +734,18 @@ class PathSemigroup(UniqueRepresentation, Parent):
         if not d >= 0:
             raise ValueError("path length must be a nonnegative integer")
         if v not in self._quiver:
-            raise ValueError("the starting point {} is not a vertex of the underlying quiver".format(v))
+            raise ValueError(
+                "the starting point {} is not a vertex of the underlying quiver".format(
+                    v
+                )
+            )
         if not d:
             yield self.element_class(self, v, v, [])
         else:
             for w in self.iter_paths_by_length_and_endpoint(d - 1, v):
-                for a in self._quiver._backend.iterator_in_edges([w.initial_vertex()], True):
+                for a in self._quiver._backend.iterator_in_edges(
+                    [w.initial_vertex()], True
+                ):
                     yield self([a] + list(w), check=False)
 
     def quiver(self):
@@ -779,6 +825,7 @@ class PathSemigroup(UniqueRepresentation, Parent):
             3*z*z*z + 4*z*z*x + 4*z*x*z + 2*z*x*x + 4*x*z*z + 2*x*z*x + 2*x*x*z + x*x*x + 2*z*z + z*x + x*z + 3*x*x + z + 3*x + e_1
         """
         from sage.quivers.algebra import PathAlgebra
+
         return PathAlgebra(k, self, order)
 
     ###########################################################################
@@ -1098,14 +1145,20 @@ class PathSemigroup(UniqueRepresentation, Parent):
         """
         # Check that given arguments are vertices
         if start is not None and start not in self._quiver:
-            raise ValueError("the start vertex {} is not a vertex of the quiver".format(start))
+            raise ValueError(
+                "the start vertex {} is not a vertex of the quiver".format(start)
+            )
         if end is not None and end not in self._quiver:
-            raise ValueError("the end vertex {} is not a vertex of the quiver".format(end))
+            raise ValueError(
+                "the end vertex {} is not a vertex of the quiver".format(end)
+            )
 
         # Handle quivers with cycles
         Q = self._quiver
         if not (Q.is_directed_acyclic()):
-            raise ValueError("the underlying quiver has cycles, thus, there may be an infinity of directed paths")
+            raise ValueError(
+                "the underlying quiver has cycles, thus, there may be an infinity of directed paths"
+            )
 
         # Handle start=None
         if start is None:
@@ -1134,13 +1187,13 @@ class PathSemigroup(UniqueRepresentation, Parent):
             ell = Q.edge_label(path[0], path[1])
             if isinstance(ell, str):
                 for b in _v_to_e(path[1:]):
-                    paths.append(self([(path[0], path[1], ell)]
-                                      + list(b), check=False))
+                    paths.append(self([(path[0], path[1], ell)] + list(b), check=False))
             else:
                 for a in ell:
                     for b in _v_to_e(path[1:]):
-                        paths.append(self([(path[0], path[1], a)]
-                                          + list(b), check=False))
+                        paths.append(
+                            self([(path[0], path[1], a)] + list(b), check=False)
+                        )
             return paths
 
         # For each vertex path we append the resulting edge paths

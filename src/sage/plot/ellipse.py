@@ -46,6 +46,7 @@ class Ellipse(GraphicPrimitive):
         sage: Ellipse(0, 0, 2, 1, pi/4, {})
         Ellipse centered at (0.0, 0.0) with radii (2.0, 1.0) and angle 0.78539816339...
     """
+
     def __init__(self, x, y, r1, r2, angle, options):
         """
         Initialize base class ``Ellipse``.
@@ -112,7 +113,7 @@ class Ellipse(GraphicPrimitive):
         epsilon = 0.000001
         cos_angle = cos(self.angle)
 
-        if abs(cos_angle) > 1-epsilon:
+        if abs(cos_angle) > 1 - epsilon:
             xmax = self.r1
             ymax = self.r2
         elif abs(cos_angle) < epsilon:
@@ -121,18 +122,18 @@ class Ellipse(GraphicPrimitive):
         else:
             sin_angle = sin(self.angle)
             tan_angle = sin_angle / cos_angle
-            sxmax = ((self.r2*tan_angle)/self.r1)**2
-            symax = (self.r2/(self.r1*tan_angle))**2
-            xmax = (
-                abs(self.r1 * cos_angle / sqrt(sxmax+1.)) +
-                abs(self.r2 * sin_angle / sqrt(1./sxmax+1.)))
-            ymax = (
-                abs(self.r1 * sin_angle / sqrt(symax+1.)) +
-                abs(self.r2 * cos_angle / sqrt(1./symax+1.)))
+            sxmax = ((self.r2 * tan_angle) / self.r1) ** 2
+            symax = (self.r2 / (self.r1 * tan_angle)) ** 2
+            xmax = abs(self.r1 * cos_angle / sqrt(sxmax + 1.0)) + abs(
+                self.r2 * sin_angle / sqrt(1.0 / sxmax + 1.0)
+            )
+            ymax = abs(self.r1 * sin_angle / sqrt(symax + 1.0)) + abs(
+                self.r2 * cos_angle / sqrt(1.0 / symax + 1.0)
+            )
 
-        return minmax_data([self.x - xmax, self.x + xmax],
-                           [self.y - ymax, self.y + ymax],
-                           dict=True)
+        return minmax_data(
+            [self.x - xmax, self.x + xmax], [self.y - ymax, self.y + ymax], dict=True
+        )
 
     def _allowed_options(self):
         """
@@ -146,19 +147,21 @@ class Ellipse(GraphicPrimitive):
             sage: p[0]._allowed_options()['facecolor']
             '2D only: The color of the face as an RGB tuple.'
         """
-        return {'alpha':'How transparent the figure is.',
-                'fill': 'Whether or not to fill the ellipse.',
-                'legend_label':'The label for this item in the legend.',
-                'legend_color':'The color of the legend text.',
-                'thickness':'How thick the border of the ellipse is.',
-                'edgecolor':'2D only: The color of the edge as an RGB tuple.',
-                'facecolor':'2D only: The color of the face as an RGB tuple.',
-                'rgbcolor':'The color (edge and face) as an RGB tuple.',
-                'hue':'The color given as a hue.',
-                'zorder':'2D only: The layer level in which to draw',
-                'linestyle':"2D only: The style of the line, which is one of "
-                "'dashed', 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.', "
-                "respectively."}
+        return {
+            'alpha': 'How transparent the figure is.',
+            'fill': 'Whether or not to fill the ellipse.',
+            'legend_label': 'The label for this item in the legend.',
+            'legend_color': 'The color of the legend text.',
+            'thickness': 'How thick the border of the ellipse is.',
+            'edgecolor': '2D only: The color of the edge as an RGB tuple.',
+            'facecolor': '2D only: The color of the face as an RGB tuple.',
+            'rgbcolor': 'The color (edge and face) as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'zorder': '2D only: The layer level in which to draw',
+            'linestyle': "2D only: The style of the line, which is one of "
+            "'dashed', 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.', "
+            "respectively.",
+        }
 
     def _repr_(self):
         """
@@ -170,7 +173,9 @@ class Ellipse(GraphicPrimitive):
             sage: Ellipse(0,0,2,1,0,{})._repr_()
             'Ellipse centered at (0.0, 0.0) with radii (2.0, 1.0) and angle 0.0'
         """
-        return "Ellipse centered at ({}, {}) with radii ({}, {}) and angle {}".format(self.x, self.y, self.r1, self.r2, self.angle)
+        return "Ellipse centered at ({}, {}) with radii ({}, {}) and angle {}".format(
+            self.x, self.y, self.r1, self.r2, self.angle
+        )
 
     def _render_on_subplot(self, subplot):
         """
@@ -194,9 +199,11 @@ class Ellipse(GraphicPrimitive):
 
         options = self.options()
         p = patches.Ellipse(
-                (self.x,self.y),
-                self.r1*2.,self.r2*2.,
-                angle=self.angle/pi*180.)
+            (self.x, self.y),
+            self.r1 * 2.0,
+            self.r2 * 2.0,
+            angle=self.angle / pi * 180.0,
+        )
         p.set_linewidth(float(options['thickness']))
         p.set_fill(options['fill'])
         a = float(options['alpha'])
@@ -207,7 +214,9 @@ class Ellipse(GraphicPrimitive):
             ec = fc = to_mpl_color(options['rgbcolor'])
         p.set_edgecolor(ec)
         p.set_facecolor(fc)
-        p.set_linestyle(get_matplotlib_linestyle(options['linestyle'],return_type='long'))
+        p.set_linestyle(
+            get_matplotlib_linestyle(options['linestyle'], return_type='long')
+        )
         p.set_label(options['legend_label'])
         z = int(options.pop('zorder', 0))
         p.set_zorder(z)
@@ -229,8 +238,18 @@ class Ellipse(GraphicPrimitive):
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, fill=False, thickness=1, edgecolor='blue', facecolor='blue', linestyle='solid', zorder=5,
-         aspect_ratio=1.0, legend_label=None, legend_color=None)
+@options(
+    alpha=1,
+    fill=False,
+    thickness=1,
+    edgecolor='blue',
+    facecolor='blue',
+    linestyle='solid',
+    zorder=5,
+    aspect_ratio=1.0,
+    legend_label=None,
+    legend_color=None,
+)
 def ellipse(center, r1, r2, angle=0, **options):
     """
     Return an ellipse centered at a point center = ``(x,y)`` with radii =
@@ -353,6 +372,7 @@ def ellipse(center, r1, r2, angle=0, **options):
         sage: E = ellipse((0,0), 2, 1, legend_label='test')
     """
     from sage.plot.graphics import Graphics
+
     g = Graphics()
 
     # Reset aspect_ratio to 'automatic' in case scale is 'semilog[xy]'.
@@ -364,7 +384,7 @@ def ellipse(center, r1, r2, angle=0, **options):
         options['aspect_ratio'] = 'automatic'
 
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
-    g.add_primitive(Ellipse(center[0],center[1],r1,r2,angle,options))
+    g.add_primitive(Ellipse(center[0], center[1], r1, r2, angle, options))
     if options['legend_label']:
         g.legend(True)
         g._legend_colors = [options['legend_color']]

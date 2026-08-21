@@ -23,6 +23,7 @@ class EisensteinSubmodule(submodule.ModularFormsSubmodule):
     """
     The Eisenstein submodule of an ambient space of modular forms.
     """
+
     def __init__(self, ambient_space):
         """
         Return the Eisenstein submodule of the given space.
@@ -37,13 +38,15 @@ class EisensteinSubmodule(submodule.ModularFormsSubmodule):
             True
         """
         from sage.misc.verbose import verbose
+
         verbose('creating eisenstein submodule of %s' % ambient_space)
         d = ambient_space._dim_eisenstein()
         V = ambient_space.module()
         n = V.dimension()
         self._start_position = int(n - d)
-        S = V.submodule([V.gen(i) for i in range(n-d,n)], check=False,
-                        already_echelonized=True)
+        S = V.submodule(
+            [V.gen(i) for i in range(n - d, n)], check=False, already_echelonized=True
+        )
         submodule.ModularFormsSubmodule.__init__(self, ambient_space, S)
 
     def _repr_(self):
@@ -56,7 +59,10 @@ class EisensteinSubmodule(submodule.ModularFormsSubmodule):
             sage: E._repr_()
             'Eisenstein subspace of dimension 2 of Modular Forms space of dimension 7 for Congruence Subgroup Gamma0(23) of weight 4 over Rational Field'
         """
-        return "Eisenstein subspace of dimension %s of %s" % (self.dimension(), self.ambient_module())
+        return "Eisenstein subspace of dimension %s of %s" % (
+            self.dimension(),
+            self.ambient_module(),
+        )
 
     def eisenstein_submodule(self):
         """
@@ -121,7 +127,6 @@ class EisensteinSubmodule(submodule.ModularFormsSubmodule):
 
 
 class EisensteinSubmodule_params(EisensteinSubmodule):
-
     @cached_method
     def parameters(self):
         r"""
@@ -182,7 +187,13 @@ class EisensteinSubmodule_params(EisensteinSubmodule):
 
         if p is not None:
             raise NotImplementedError
-        return self.submodule([self(x) for x in self._compute_q_expansion_basis(self.sturm_bound(), new=True)], check=False)
+        return self.submodule(
+            [
+                self(x)
+                for x in self._compute_q_expansion_basis(self.sturm_bound(), new=True)
+            ],
+            check=False,
+        )
 
     def _parameters_character(self):
         """
@@ -270,9 +281,17 @@ class EisensteinSubmodule_params(EisensteinSubmodule):
              q^3 + O(q^6)]
         """
         P = self.parameters()
-        E = Sequence([element.EisensteinSeries(self.change_ring(chi.base_ring()),
-              None, t, chi, psi) for chi, psi, t in P],
-              immutable=True, cr=True, universe=Objects())
+        E = Sequence(
+            [
+                element.EisensteinSeries(
+                    self.change_ring(chi.base_ring()), None, t, chi, psi
+                )
+                for chi, psi, t in P
+            ],
+            immutable=True,
+            cr=True,
+            universe=Objects(),
+        )
         assert len(E) == self.dimension(), "bug in enumeration of Eisenstein series."
         return E
 
@@ -328,7 +347,7 @@ class EisensteinSubmodule_params(EisensteinSubmodule):
                 G.append(V(w))
             else:
                 # restrict scalars from L to K
-                r,d = cyclotomic_restriction(L,K)
+                r, d = cyclotomic_restriction(L, K)
                 s = [r(x) for x in w]
                 for i in range(d):
                     G.append(V([x[i] for x in s]))
@@ -337,7 +356,7 @@ class EisensteinSubmodule_params(EisensteinSubmodule):
         R = self._q_expansion_ring()
         X = [R(f.list(), prec) for f in W.basis()]
         if not new:
-            return X + [R(0,prec)]*(self.dimension() - len(X))
+            return X + [R(0, prec)] * (self.dimension() - len(X))
         return X
 
     def _q_expansion(self, element, prec):
@@ -367,6 +386,7 @@ class EisensteinSubmodule_g0_Q(EisensteinSubmodule_params):
     r"""
     Space of Eisenstein forms for `\Gamma_0(N)`.
     """
+
     def _pari_init_(self):
         """
         Conversion to Pari.
@@ -380,6 +400,7 @@ class EisensteinSubmodule_g0_Q(EisensteinSubmodule_params):
             [17, 4, 1, 3, t - 1]
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight()], 3)
 
 
@@ -387,6 +408,7 @@ class EisensteinSubmodule_gH_Q(EisensteinSubmodule_params):
     r"""
     Space of Eisenstein forms for `\Gamma_H(N)`.
     """
+
     def _parameters_character(self):
         """
         Return the character defining ``self``. Since ``self`` is
@@ -422,10 +444,15 @@ class EisensteinSubmodule_gH_Q(EisensteinSubmodule_params):
             [ 0  1 -4 10]
         """
         from .cuspidal_submodule import _convert_matrix_from_modsyms
+
         symbs = self.modular_symbols(sign=0)
         d = self.rank()
         wrong_mat, pivs = _convert_matrix_from_modsyms(symbs, A)
-        c = Matrix(self.base_ring(), d, [self.basis()[i][j+1] for i in range(d) for j in pivs])
+        c = Matrix(
+            self.base_ring(),
+            d,
+            [self.basis()[i][j + 1] for i in range(d) for j in pivs],
+        )
         return c * wrong_mat * ~c
 
     def _compute_hecke_matrix(self, n, bound=None):
@@ -493,6 +520,7 @@ class EisensteinSubmodule_g1_Q(EisensteinSubmodule_gH_Q):
     r"""
     Space of Eisenstein forms for `\Gamma_1(N)`.
     """
+
     def _parameters_character(self):
         r"""
         Return the character defining ``self``.
@@ -540,6 +568,7 @@ class EisensteinSubmodule_eps(EisensteinSubmodule_params):
          q^4 - 2*zeta3*q^7 + O(q^10),
          q^5 + (zeta3 + 1)*q^8 + O(q^10)]
     """
+
     def _pari_init_(self):
         """
         Conversion to Pari.
@@ -554,6 +583,7 @@ class EisensteinSubmodule_eps(EisensteinSubmodule_params):
             [27, 2, Mod(10, 27), 3, t^2 + t + 1]
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight(), self.character()], 3)
 
     # TODO
@@ -595,7 +625,7 @@ def cyclotomic_restriction(L, K):
     """
     if not L.has_coerce_map_from(K):
         M = CyclotomicField(lcm(L.zeta_order(), K.zeta_order()))
-        f = cyclotomic_restriction_tower(M,K)
+        f = cyclotomic_restriction_tower(M, K)
 
         def g(x):
             r"""
@@ -610,9 +640,11 @@ def cyclotomic_restriction(L, K):
                 -zeta33^19*x
             """
             return f(M(x))
-        return g, euler_phi(M.zeta_order())//euler_phi(K.zeta_order())
-    return cyclotomic_restriction_tower(L,K), \
-           euler_phi(L.zeta_order())//euler_phi(K.zeta_order())
+
+        return g, euler_phi(M.zeta_order()) // euler_phi(K.zeta_order())
+    return cyclotomic_restriction_tower(L, K), euler_phi(L.zeta_order()) // euler_phi(
+        K.zeta_order()
+    )
 
 
 def cyclotomic_restriction_tower(L, K):
@@ -639,7 +671,10 @@ def cyclotomic_restriction_tower(L, K):
     g = R(f)
     h_ls = [t[0] for t in g.factor() if t[0](L.gen(0)) == 0]
     if not h_ls:
-        raise ValueError(r"K (= Q(\zeta_%s)) is not contained in L (= Q(\zeta_%s))" % (K._n(), L._n()))
+        raise ValueError(
+            r"K (= Q(\zeta_%s)) is not contained in L (= Q(\zeta_%s))"
+            % (K._n(), L._n())
+        )
     h = h_ls[0]
 
     def z(a):
@@ -656,4 +691,5 @@ def cyclotomic_restriction_tower(L, K):
             zeta11
         """
         return R(a.polynomial()) % h
+
     return z

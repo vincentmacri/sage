@@ -47,6 +47,7 @@ class FreeMonoidElement(MonoidElement):
         ...
         NotImplementedError
     """
+
     def __init__(self, F, x, check=True) -> None:
         """
         Create the element `x` of the FreeMonoid `F`.
@@ -65,16 +66,22 @@ class FreeMonoidElement(MonoidElement):
                 for v in x:
                     if not (isinstance(v, tuple) and len(v) == 2):
                         raise TypeError("x (= %s) must be a list of 2-tuples or 1" % x)
-                    if not (isinstance(v[0], (int, Integer)) and
-                            isinstance(v[1], (int, Integer))):
-                        raise TypeError("x (= %s) must be a list of 2-tuples of integers or 1" % x)
-                    if len(x2) > 0 and v[0] == x2[len(x2)-1][0]:
-                        x2[len(x2)-1] = (v[0], v[1]+x2[len(x2)-1][1])
+                    if not (
+                        isinstance(v[0], (int, Integer))
+                        and isinstance(v[1], (int, Integer))
+                    ):
+                        raise TypeError(
+                            "x (= %s) must be a list of 2-tuples of integers or 1" % x
+                        )
+                    if len(x2) > 0 and v[0] == x2[len(x2) - 1][0]:
+                        x2[len(x2) - 1] = (v[0], v[1] + x2[len(x2) - 1][1])
                     else:
                         x2.append(v)
                 self._element_list = x2
             else:
-                self._element_list = list(x)  # make copy, so user can't accidentally change monoid.
+                self._element_list = list(
+                    x
+                )  # make copy, so user can't accidentally change monoid.
 
         else:
             # TODO: should have some other checks here...
@@ -105,8 +112,7 @@ class FreeMonoidElement(MonoidElement):
             [(a0, 1), (a1, 1), (a4, 3), (a0, 1)]
         """
         gens = self.parent().gens()
-        return ((gens[index], exponent)
-                for (index, exponent) in self._element_list)
+        return ((gens[index], exponent) for (index, exponent) in self._element_list)
 
     def _repr_(self):
         s = ""
@@ -160,7 +166,9 @@ class FreeMonoidElement(MonoidElement):
                 s += f"{g} "
             else:
                 s += f"{g}^{{{e}}}"
-        s = s.rstrip(" ")  # strip the trailing whitespace caused by adding a space after each element name
+        s = s.rstrip(
+            " "
+        )  # strip the trailing whitespace caused by adding a space after each element name
         if len(s) == 0:
             s = "1"
         return s
@@ -243,7 +251,7 @@ class FreeMonoidElement(MonoidElement):
         for var_index, exponent in self._element_list:
             replacement = x[var_index]
             if exponent > 1:
-                result *= replacement ** exponent
+                result *= replacement**exponent
             elif exponent == 1:
                 result *= replacement
         return result
@@ -270,11 +278,11 @@ class FreeMonoidElement(MonoidElement):
         elif not y_elt:
             z._element_list = x_elt
         else:
-            k = len(x_elt)-1
+            k = len(x_elt) - 1
             if x_elt[k][0] != y_elt[0][0]:
                 z._element_list = x_elt + y_elt
             else:
-                m = (y_elt[0][0], x_elt[k][1]+y_elt[0][1])
+                m = (y_elt[0][0], x_elt[k][1] + y_elt[0][1])
                 z._element_list = x_elt[:k] + [m] + y_elt[1:]
         return z
 
@@ -379,6 +387,7 @@ class FreeMonoidElement(MonoidElement):
             :meth:`to_list`
         """
         from sage.combinat.words.finite_word import Words
+
         gens = self.parent().gens()
         if alph is None:
             alph = gens

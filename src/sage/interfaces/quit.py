@@ -36,6 +36,7 @@ def sage_spawned_process_file() -> str:
         True
     """
     from sage.misc.temporary_file import tmp_dir
+
     return os.path.join(tmp_dir(), "spawned_processes")
 
 

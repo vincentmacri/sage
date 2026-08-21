@@ -156,7 +156,8 @@ def Subsets(s, k=None, submultiset=False):
         if s < 0:
             raise ValueError("s must be nonnegative")
         from sage.sets.integer_range import IntegerRange
-        s = IntegerRange(1,s+1)
+
+        s = IntegerRange(1, s + 1)
 
     if k is None:
         if submultiset:
@@ -193,6 +194,7 @@ class Subsets_s(Parent):
          {{1, 2}, {0}},
          {{0, 1, 2}, {0, 1}, {0, 2}, {1, 2}}}
     """
+
     # TODO: Set_object_enumerated does not inherit from Element... so we set
     # directly element_class as Set_object_enumerated
     # (see also below the failed test in __init__)
@@ -220,6 +222,7 @@ class Subsets_s(Parent):
         Parent.__init__(self, category=EnumeratedSets().Finite())
         if s not in EnumeratedSets():
             from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
             L = list(uniq(s))
             s = FiniteEnumeratedSet(L)
         self._s = s
@@ -451,13 +454,12 @@ class Subsets_s(Parent):
 
         try:
             index_list = sorted(self._s.rank(x) for x in sub)
-        except (ValueError,IndexError):
-            raise ValueError("{} is not a subset of {}".format(
-                    Set(sub), self._s))
+        except (ValueError, IndexError):
+            raise ValueError("{} is not a subset of {}".format(Set(sub), self._s))
 
         n = self._s.cardinality()
-        r = sum(binomial(n,i) for i in range(len(index_list)))
-        return r + combination.rank(index_list,n)
+        r = sum(binomial(n, i) for i in range(len(index_list)))
+        return r + combination.rank(index_list, n)
 
     def unrank(self, r):
         """
@@ -484,8 +486,10 @@ class Subsets_s(Parent):
             while r >= bin:
                 r -= bin
                 k += 1
-                bin = binomial(n,k)
-            return self.element_class([self._s.unrank(i) for i in combination.from_rank(r, n, k)])
+                bin = binomial(n, k)
+            return self.element_class(
+                [self._s.unrank(i) for i in combination.from_rank(r, n, k)]
+            )
 
     def __call__(self, el):
         r"""
@@ -516,7 +520,7 @@ class Subsets_s(Parent):
         """
         e = self.element_class(X)
         if e not in self:
-            raise ValueError("{} not in {}".format(e,self))
+            raise ValueError("{} not in {}".format(e, self))
         return e
 
     def _an_element_(self):
@@ -624,7 +628,7 @@ class Subsets_sk(Subsets_s):
             sage: Set([]) in S
             False
         """
-        return len(value) == self._k and Subsets_s.__contains__(self,value)
+        return len(value) == self._k and Subsets_s.__contains__(self, value)
 
     def __eq__(self, other):
         r"""
@@ -714,8 +718,7 @@ class Subsets_sk(Subsets_s):
         if self._k < 0 or self._k > self._s.cardinality():
             raise EmptySetError
         else:
-            return self.element_class(list(itertools.islice(self._s,
-                                                            int(self._k))))
+            return self.element_class(list(itertools.islice(self._s, int(self._k))))
 
     def last(self):
         """
@@ -737,8 +740,9 @@ class Subsets_sk(Subsets_s):
         if self._k > self._s.cardinality():
             raise EmptySetError
 
-        return self.element_class(list(itertools.islice(reversed(self._s),
-                                                        int(self._k))))
+        return self.element_class(
+            list(itertools.islice(reversed(self._s), int(self._k)))
+        )
 
     def _fast_iterator(self):
         r"""
@@ -818,14 +822,16 @@ class Subsets_sk(Subsets_s):
         n = self._s.cardinality()
 
         if self._k != sub.cardinality() or self._k > n:
-            raise ValueError("{} is not a subset of length {} of {}".format(
-                    sub, self._k, self._s))
+            raise ValueError(
+                "{} is not a subset of length {} of {}".format(sub, self._k, self._s)
+            )
 
         try:
             index_list = sorted(self._s.rank(x) for x in sub)
         except ValueError:
-            raise ValueError("{} is not a subset of length {} of {}".format(
-                    sub, self._k, self._s))
+            raise ValueError(
+                "{} is not a subset of length {} of {}".format(sub, self._k, self._s)
+            )
 
         return combination.rank(index_list, n)
 
@@ -850,7 +856,9 @@ class Subsets_sk(Subsets_s):
         if self._k > n or r >= self.cardinality() or r < 0:
             raise IndexError("index out of range")
         else:
-            return self.element_class([lset[i] for i in combination.from_rank(r, n, self._k)])
+            return self.element_class(
+                [lset[i] for i in combination.from_rank(r, n, self._k)]
+            )
 
     def _an_element_(self):
         """
@@ -939,6 +947,7 @@ class SubMultiset_s(Parent):
         sage: S.last()
         [1, 2, 2, 3]
     """
+
     # TODO: list does not inherit from Element... so we set
     # directly element_class as list
     element_class = list
@@ -1059,6 +1068,7 @@ class SubMultiset_s(Parent):
             24
         """
         from sage.misc.misc_c import prod
+
         return Integer(prod(k + 1 for k in self._d.values()))
 
     def random_element(self):
@@ -1156,7 +1166,7 @@ class SubMultiset_s(Parent):
         """
         e = self.element_class(X)
         if e not in self:
-            raise ValueError("{} not in {}".format(e,self))
+            raise ValueError("{} not in {}".format(e, self))
         return e
 
 
@@ -1320,9 +1330,11 @@ class SubMultiset_sk(SubMultiset_s):
             [[], [3], [2], [3, 2], [2, 2], [3, 2, 2]]
         """
         from sage.combinat.integer_vector import IntegerVectors
+
         elts = self._keys
-        for iv in IntegerVectors(self._k, len(self._d),
-                                 outer=[self._d[k] for k in elts]):
+        for iv in IntegerVectors(
+            self._k, len(self._d), outer=[self._d[k] for k in elts]
+        ):
             yield sum([[elts[i]] * iv[i] for i in range(len(iv))], [])
 
 
@@ -1335,6 +1347,7 @@ class SubsetsSorted(Subsets_s):
     have to explicitly build all `2^n` subsets in memory).
     For example, :class:`CliffordAlgebra`.
     """
+
     element_class = tuple
 
     def __contains__(self, value):
@@ -1435,7 +1448,7 @@ class SubsetsSorted(Subsets_s):
         while r >= binom:
             r -= binom
             k += 1
-            binom = binomial(n,k)
+            binom = binomial(n, k)
         C = combination.from_rank(r, n, k)
         return self.element_class(sorted([self._s.unrank(i) for i in C]))
 

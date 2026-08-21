@@ -1,6 +1,7 @@
 """
 Interactive display of quivers
 """
+
 import ipywidgets as widgets
 from sage.misc.latex import latex
 from sage.repl.rich_output.pretty_print import pretty_print
@@ -38,25 +39,27 @@ def cluster_interact(self, fig_size=1, circular=True, kind='seed'):
     if kind not in ['seed', 'quiver']:
         raise ValueError('kind must be "seed" or "quiver"')
 
-    show_seq = widgets.Checkbox(value=True,
-                                description="Display mutation sequence")
+    show_seq = widgets.Checkbox(value=True, description="Display mutation sequence")
 
-    show_vars = widgets.Checkbox(value=True,
-                                 description="Display cluster variables")
+    show_vars = widgets.Checkbox(value=True, description="Display cluster variables")
 
-    show_matrix = widgets.Checkbox(value=True,
-                                   description="Display B-matrix")
+    show_matrix = widgets.Checkbox(value=True, description="Display B-matrix")
 
-    show_lastmutation = widgets.Checkbox(value=True,
-                                         description="Show last mutation vertex")
+    show_lastmutation = widgets.Checkbox(
+        value=True, description="Show last mutation vertex"
+    )
 
-    mut_buttons = widgets.ToggleButtons(options=list(range(self._n)),
-                                        style={'button_width': 'initial'},
-                                        description='Mutate at: ')
+    mut_buttons = widgets.ToggleButtons(
+        options=list(range(self._n)),
+        style={'button_width': 'initial'},
+        description='Mutate at: ',
+    )
 
-    which_plot = widgets.Dropdown(options=['circular', 'spring'],
-                                  value='circular' if circular else "spring",
-                                  description='Display style:')
+    which_plot = widgets.Dropdown(
+        options=['circular', 'spring'],
+        value='circular' if circular else "spring",
+        description='Display style:',
+    )
 
     out = widgets.Output()
 
@@ -70,7 +73,9 @@ def cluster_interact(self, fig_size=1, circular=True, kind='seed'):
             pretty_print("Cluster variables:")
             table = "\\begin{align*}\n"
             for i in range(self._n):
-                table += "\tv_{%s} &= " % i + latex(self.cluster_variable(i)) + "\\\\ \\\\\n"
+                table += (
+                    "\tv_{%s} &= " % i + latex(self.cluster_variable(i)) + "\\\\ \\\\\n"
+                )
             table += "\\end{align*}"
             pretty_print(table)
 
@@ -120,7 +125,12 @@ def cluster_interact(self, fig_size=1, circular=True, kind='seed'):
     else:
         top = widgets.HBox([show_seq])
 
-    return widgets.VBox([which_plot,
-                         top,
-                         widgets.HBox([show_matrix, show_lastmutation]),
-                         mut_buttons, out])
+    return widgets.VBox(
+        [
+            which_plot,
+            top,
+            widgets.HBox([show_matrix, show_lastmutation]),
+            mut_buttons,
+            out,
+        ]
+    )

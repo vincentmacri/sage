@@ -1,12 +1,12 @@
 """
 Root system data for relabelled Cartan types
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2013 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.combinat.root_system import ambient_space, cartan_type
 from sage.combinat.root_system.root_lattice_realizations import RootLatticeRealizations
@@ -20,6 +20,7 @@ class CartanType(cartan_type.CartanType_decorator):
     r"""
     A class for relabelled Cartan types.
     """
+
     @staticmethod
     def __classcall__(cls, type, relabelling):
         """
@@ -46,15 +47,18 @@ class CartanType(cartan_type.CartanType_decorator):
         else:
             relabelling = {i: relabelling(i) for i in type.index_set()}
 
-        if isinstance(type, CartanType): # type is already a relabelled type
-            relabelling = {i: relabelling[type._relabelling[i]]
-                           for i in type._type.index_set()}
+        if isinstance(type, CartanType):  # type is already a relabelled type
+            relabelling = {
+                i: relabelling[type._relabelling[i]] for i in type._type.index_set()
+            }
             type = type._type
 
-        if all( relabelling[i] == i for i in type.index_set() ):
+        if all(relabelling[i] == i for i in type.index_set()):
             return type
 
-        relabelling = FiniteFamily(relabelling) # Hack to emulate a frozendict which would be hashable!!!!
+        relabelling = FiniteFamily(
+            relabelling
+        )  # Hack to emulate a frozendict which would be hashable!!!!
         return super().__classcall__(cls, type, relabelling)
 
     def __init__(self, type, relabelling):
@@ -181,8 +185,10 @@ class CartanType(cartan_type.CartanType_decorator):
         # TODO: design an appropriate infrastructure to handle this
         # automatically? Maybe using categories and axioms?
         # See also type_dual.CartanType.__init__
-        if type.is_finite() and (isinstance(type, cartan_type.SuperCartanType_standard)
-                                 or type.is_crystallographic()):
+        if type.is_finite() and (
+            isinstance(type, cartan_type.SuperCartanType_standard)
+            or type.is_crystallographic()
+        ):
             # FIXME: Remove the is_crystallographic (and the short-circuiting
             #   super) check once the non-crystallographic finite types
             #   (i.e., H_3, H_4, I_2(p)) have an implementation of an
@@ -190,9 +196,9 @@ class CartanType(cartan_type.CartanType_decorator):
             self.__class__ = CartanType_finite
         elif type.is_affine():
             self.__class__ = CartanType_affine
-        abstract_classes = tuple(cls
-                                 for cls in self._stable_abstract_classes
-                                 if isinstance(type, cls))
+        abstract_classes = tuple(
+            cls for cls in self._stable_abstract_classes if isinstance(type, cls)
+        )
         if abstract_classes:
             self._add_abstract_superclass(abstract_classes)
 
@@ -204,7 +210,8 @@ class CartanType(cartan_type.CartanType_decorator):
         cartan_type.CartanType_affine,
         cartan_type.CartanType_simple,
         cartan_type.CartanType_simply_laced,
-        cartan_type.CartanType_crystallographic]
+        cartan_type.CartanType_crystallographic,
+    ]
 
     def _repr_(self, compact=False):
         """
@@ -222,9 +229,13 @@ class CartanType(cartan_type.CartanType_decorator):
             Coxeter type of ['I', 5] relabelled by {1: 0, 2: 1}
         """
         from pprint import pformat
+
         # Special case for type D_4^3
-        if (self._type.is_affine() and self._type.dual().type() == 'G'
-                and self.options("notation") == "Kac"):
+        if (
+            self._type.is_affine()
+            and self._type.dual().type() == 'G'
+            and self.options("notation") == "Kac"
+        ):
             if compact:
                 return 'D4^3'
             return "['D', 4, 3]"
@@ -262,8 +273,11 @@ class CartanType(cartan_type.CartanType_decorator):
             I_2(5) \text{ relabelled by } \left\{1 : 0, 2 : 1\right\}
         """
         # Special case for type D_4^{(3)}
-        if (self._type.is_affine() and self._type.dual().type() == 'G'
-                and self.options("notation") == "Kac"):
+        if (
+            self._type.is_affine()
+            and self._type.dual().type() == 'G'
+            and self.options("notation") == "Kac"
+        ):
             return 'D_4^{(3)}'
         ret = self._type._latex_()
         if self.options('latex_relabel'):
@@ -286,7 +300,9 @@ class CartanType(cartan_type.CartanType_decorator):
         """
         if label is None:
             label = lambda i: i
-        return self._type._latex_dynkin_diagram(lambda i: label(self._relabelling[i]), node, node_dist)
+        return self._type._latex_dynkin_diagram(
+            lambda i: label(self._relabelling[i]), node, node_dist
+        )
 
     def ascii_art(self, label=None, node=None):
         """
@@ -391,10 +407,14 @@ class CartanType(cartan_type.CartanType_decorator):
             Finite family {0: 1, 1: 2, 2: 2, 3: 1}
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         vct = self._type._default_folded_cartan_type()
         sigma = vct.folding_orbit()
-        return CartanTypeFolded(self, vct._folding,
-            {self._relabelling[i]: sigma[i] for i in self._type.index_set()})
+        return CartanTypeFolded(
+            self,
+            vct._folding,
+            {self._relabelling[i]: sigma[i] for i in self._type.index_set()},
+        )
 
     def type(self):
         """
@@ -421,7 +441,10 @@ class CartanType(cartan_type.CartanType_decorator):
             sage: G.edges(sort=True)                                                    # needs sage.graphs
             [(1, 2, 5), (2, 3, 3)]
         """
-        return self._type.coxeter_diagram().relabel(self._relabelling, inplace=False, immutable=True)
+        return self._type.coxeter_diagram().relabel(
+            self._relabelling, inplace=False, immutable=True
+        )
+
 
 ###########################################################################
 
@@ -471,7 +494,12 @@ class AmbientSpace(ambient_space.AmbientSpace):
             4
         """
         # Can't yet use _dual_space for the base ring (and cartan_type?) is not yet initialized
-        return self.root_system.cartan_type()._type.root_system().ambient_space().dimension()
+        return (
+            self.root_system.cartan_type()
+            ._type.root_system()
+            .ambient_space()
+            .dimension()
+        )
 
     @cached_method
     def simple_root(self, i):
@@ -622,6 +650,7 @@ class CartanType_finite(CartanType, cartan_type.CartanType_finite):
                 relabelling[affine.special_node()] = special_node
                 break
         return self._type.affine().relabel(relabelling)
+
 
 ###########################################################################
 

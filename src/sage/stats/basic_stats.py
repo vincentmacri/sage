@@ -84,7 +84,10 @@ def mean(v):
         sage: mean(v)                                                                   # needs numpy
         50.5
     """
-    deprecation(29662, 'sage.stats.basic_stats.mean is deprecated; use numpy.mean or numpy.nanmean instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.mean is deprecated; use numpy.mean or numpy.nanmean instead',
+    )
     if hasattr(v, 'mean'):
         return v.mean()
     if not v:
@@ -148,7 +151,10 @@ def mode(v):
         sage: stats.mode(MyClass())
         [1]
     """
-    deprecation(29662, 'sage.stats.basic_stats.mode is deprecated; use scipy.stats.mode or statistics.mode instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.mode is deprecated; use scipy.stats.mode or statistics.mode instead',
+    )
 
     if hasattr(v, 'mode'):
         return v.mode()
@@ -235,7 +241,10 @@ def std(v, bias=False):
         sage: std(data)  # random
         0.29487771726609185
     """
-    deprecation(29662, 'sage.stats.basic_stats.std is deprecated; use numpy.std or numpy.nanstd instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.std is deprecated; use numpy.std or numpy.nanstd instead',
+    )
 
     # NOTE: in R bias = False by default, and in Scipy bias=True by
     # default, and R is more popular.
@@ -333,7 +342,10 @@ def variance(v, bias=False):
         sage: variance([1] * 2^18)
         0
     """
-    deprecation(29662, 'sage.stats.basic_stats.variance is deprecated; use numpy.var or numpy.nanvar instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.variance is deprecated; use numpy.var or numpy.nanvar instead',
+    )
 
     if hasattr(v, 'variance'):
         return v.variance(bias=bias)
@@ -350,7 +362,7 @@ def variance(v, bias=False):
 
     mu = mean(v)
     for vi in v:
-        x += (vi - mu)**2
+        x += (vi - mu) ** 2
     if bias:
         # population variance
         if isinstance(x, int):
@@ -358,8 +370,8 @@ def variance(v, bias=False):
         return x / len(v)
     # sample variance
     if isinstance(x, int):
-        return x / ZZ(len(v)-1)
-    return x / (len(v)-1)
+        return x / ZZ(len(v) - 1)
+    return x / (len(v) - 1)
 
 
 def median(v):
@@ -400,7 +412,10 @@ def median(v):
         sage: stats.median(MyClass())
         1
     """
-    deprecation(29662, 'sage.stats.basic_stats.median is deprecated; use numpy.median or numpy.nanmedian instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.median is deprecated; use numpy.median or numpy.nanmedian instead',
+    )
 
     if hasattr(v, 'median'):
         return v.median()
@@ -410,9 +425,9 @@ def median(v):
         return NaN
     values = sorted(v)
     if len(values) % 2:
-        return values[((len(values))+1)//2-1]
-    lower = values[(len(values)+1)//2-1]
-    upper = values[len(values)//2]
+        return values[((len(values)) + 1) // 2 - 1]
+    lower = values[(len(values) + 1) // 2 - 1]
+    upper = values[len(values) // 2]
     return (lower + upper) / ZZ(2)
 
 
@@ -464,12 +479,15 @@ def moving_average(v, n):
         sage: stats.moving_average(list(a), 3)                                          # needs numpy
         [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
     """
-    deprecation(29662, 'sage.stats.basic_stats.moving_average is deprecated; use pandas.Series.rolling instead')
+    deprecation(
+        29662,
+        'sage.stats.basic_stats.moving_average is deprecated; use pandas.Series.rolling instead',
+    )
 
     if not v:
         return v
     if isinstance(v, TimeSeries):
-        return v.simple_moving_average(n)[n - 1:]
+        return v.simple_moving_average(n)[n - 1 :]
     n = int(n)
     if n <= 0:
         raise ValueError("n must be positive")

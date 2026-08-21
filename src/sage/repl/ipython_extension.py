@@ -83,7 +83,6 @@ def _running_in_notebook():
 
 @magics_class
 class SageMagics(Magics):
-
     @line_magic
     def crun(self, s):
         r"""
@@ -104,6 +103,7 @@ class SageMagics(Magics):
             sage: shell.quit()
         """
         import sage.misc.gperftools
+
         sage.misc.gperftools.crun(s, evaluator=self.shell.ex)
 
     @line_magic
@@ -301,6 +301,7 @@ class SageMagics(Magics):
             sage: shell.quit()
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         args = args.strip().split()
         if not args:
@@ -318,9 +319,9 @@ class SageMagics(Magics):
             except ValueError:
                 max_width = 0
             if max_width <= 0:
-                raise ValueError(
-                    "max width must be a positive integer")
+                raise ValueError("max width must be a positive integer")
             from sage.typeset import character_art
+
             character_art.MAX_WIDTH = max_width
             dm.preferences.text = arg0
         # Unset all
@@ -483,18 +484,28 @@ class SageMagics(Magics):
                 # we raise UsageError to make the interface similar to what happens when e.g.
                 # IPython's ``%run`` gets unrecognized arguments
                 from IPython.core.error import UsageError
+
                 raise UsageError(message)
 
         parser = ExitCatchingArgumentParser(prog="%%cython", add_help=False)
         parser.add_argument("--verbose", "-v", type=int)
         parser.add_argument("--compile-message", action=argparse.BooleanOptionalAction)
         parser.add_argument("--use-cache", action=argparse.BooleanOptionalAction)
-        parser.add_argument("--create-local-c-file", action=argparse.BooleanOptionalAction)
+        parser.add_argument(
+            "--create-local-c-file", action=argparse.BooleanOptionalAction
+        )
         parser.add_argument("--annotate", action=argparse.BooleanOptionalAction)
-        parser.add_argument("--view-annotate", choices=["none", "auto", "webbrowser", "displayhtml"],
-                            nargs="?", const="auto", default="none")
+        parser.add_argument(
+            "--view-annotate",
+            choices=["none", "auto", "webbrowser", "displayhtml"],
+            nargs="?",
+            const="auto",
+            default="none",
+        )
         parser.add_argument("--sage-namespace", action=argparse.BooleanOptionalAction)
-        parser.add_argument("--create-local-so-file", action=argparse.BooleanOptionalAction)
+        parser.add_argument(
+            "--create-local-so-file", action=argparse.BooleanOptionalAction
+        )
         args = parser.parse_args(shlex.split(line))
         view_annotate = args.view_annotate
         del args.view_annotate
@@ -508,7 +519,11 @@ class SageMagics(Magics):
             args_dict["view_annotate"] = True
             if view_annotate == "displayhtml":
                 path_to_annotate_html_container = []
-                cython_compile(cell, **args_dict, view_annotate_callback=path_to_annotate_html_container.append)
+                cython_compile(
+                    cell,
+                    **args_dict,
+                    view_annotate_callback=path_to_annotate_html_container.append,
+                )
                 return HTML(filename=path_to_annotate_html_container[0])
         return cython_compile(cell, **args_dict)
 
@@ -563,11 +578,11 @@ class SageMagics(Magics):
             array([  0.,   1.,   1.,   2.,   3.,   5.,   8.,  13.,  21.,  34.])
         """
         from sage.misc.inline_fortran import fortran
+
         return fortran(cell)
 
 
 class SageCustomizations:
-
     def __init__(self, shell=None):
         """
         Initialize the Sage plugin.
@@ -596,6 +611,7 @@ class SageCustomizations:
         Register magics for each of the Sage interfaces
         """
         from sage.repl.interface_magic import InterfaceMagic
+
         InterfaceMagic.register_all(self.shell)
 
     @staticmethod
@@ -611,6 +627,7 @@ class SageCustomizations:
             <module 'sage.all_cmdline' ...>
         """
         from sage import all_cmdline
+
         return all_cmdline
 
     def init_environment(self):
@@ -619,6 +636,7 @@ class SageCustomizations:
         """
         # import outside of cell so we don't get a traceback
         from sage.repl.user_globals import initialize_globals
+
         initialize_globals(self.all_globals(), self.shell.user_ns)
         self.run_init()
 
@@ -638,11 +656,22 @@ class SageCustomizations:
         # the global :class:`IPython.core.oinspect` module namespace.
         # Thus, we have to monkey-patch.
         import IPython.core.oinspect
-        IPython.core.oinspect.getdoc = LazyImport("sage.misc.sageinspect", "sage_getdoc")
-        IPython.core.oinspect.getsource = LazyImport("sage.misc.sagedoc", "my_getsource")
-        IPython.core.oinspect.find_file = LazyImport("sage.misc.sageinspect", "sage_getfile")
-        IPython.core.oinspect.getargspec = LazyImport("sage.misc.sageinspect", "sage_getargspec")
-        IPython.core.oinspect.signature = LazyImport("sage.misc.sageinspect", "sage_signature")  # pyright: ignore [reportPrivateImportUsage]
+
+        IPython.core.oinspect.getdoc = LazyImport(
+            "sage.misc.sageinspect", "sage_getdoc"
+        )
+        IPython.core.oinspect.getsource = LazyImport(
+            "sage.misc.sagedoc", "my_getsource"
+        )
+        IPython.core.oinspect.find_file = LazyImport(
+            "sage.misc.sageinspect", "sage_getfile"
+        )
+        IPython.core.oinspect.getargspec = LazyImport(
+            "sage.misc.sageinspect", "sage_getargspec"
+        )
+        IPython.core.oinspect.signature = LazyImport(
+            "sage.misc.sageinspect", "sage_signature"
+        )  # pyright: ignore [reportPrivateImportUsage]
 
     def init_line_transforms(self):
         """
@@ -697,7 +726,9 @@ class SageCustomizations:
 
         from sage.repl.interpreter import SagePreparseTransformer, SagePromptTransformer
 
-        self.shell.input_transformer_manager.cleanup_transforms.insert(1, SagePromptTransformer)
+        self.shell.input_transformer_manager.cleanup_transforms.insert(
+            1, SagePromptTransformer
+        )
         self.shell.input_transformers_post.append(SagePreparseTransformer)
 
         # Create an input transformer that does Sage's special syntax in the first step.
@@ -726,6 +757,7 @@ class SageJupyterCustomizations(SageCustomizations):
             <module 'sage.repl.ipython_kernel.all_jupyter' ...>
         """
         from .ipython_kernel import all_jupyter
+
         return all_jupyter
 
 

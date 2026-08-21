@@ -3,13 +3,13 @@
 Ciphers
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Kohel <kohel@maths.usyd.edu.au>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 # Ciphers should inherit from morphisms (of sets).
 # Specific cipher types will implement their functions in terms of the key
@@ -21,6 +21,7 @@ class Cipher(Element):
     """
     Cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a cipher.
@@ -29,7 +30,11 @@ class Cipher(Element):
         self._key = key
 
     def __eq__(self, right):
-        return type(self) is type(right) and self.parent() == right.parent() and self._key == right._key
+        return (
+            type(self) is type(right)
+            and self.parent() == right.parent()
+            and self._key == right._key
+        )
 
     def _repr_(self):
         r"""
@@ -45,7 +50,7 @@ class Cipher(Element):
         return "Cipher on %s" % self.parent().cipher_domain()
 
     def key(self):
-        return self._key # was str(self._key)
+        return self._key  # was str(self._key)
 
     def domain(self):
         return self.parent().cipher_domain()
@@ -58,6 +63,7 @@ class SymmetricKeyCipher(Cipher):
     """
     Symmetric key cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a symmetric cipher.
@@ -69,6 +75,7 @@ class PublicKeyCipher(Cipher):
     """
     Public key cipher class
     """
+
     def __init__(self, parent, key, public=True):
         """
         Create a public key cipher.

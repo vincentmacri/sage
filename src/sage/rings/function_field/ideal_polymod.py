@@ -53,6 +53,7 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
         sage: O.ideal(y)
         Ideal (y) of Maximal order of Function field in y defined by y^2 + x^3*y + x
     """
+
     def __init__(self, ring, hnf, denominator=1) -> None:
         """
         Initialize.
@@ -318,7 +319,9 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
             sage: I > I * I
             False
         """
-        return richcmp((self._denominator, self._hnf), (other._denominator, other._hnf), op)
+        return richcmp(
+            (self._denominator, self._hnf), (other._denominator, other._hnf), op
+        )
 
     def _add_(self, other):
         """
@@ -381,14 +384,14 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
             vecs = list(p * self._hnf) + [mul(q, v) for v in self._hnf]
         elif self._gens_two_vecs is not None:
             if len(self._gens_two_vecs) == 1:
-                g1, = self._gens_two_vecs
+                (g1,) = self._gens_two_vecs
                 vecs = list(g1 * other._hnf)
             else:
                 g1, g2 = self._gens_two_vecs
                 vecs = list(g1 * other._hnf) + [mul(g2, v) for v in other._hnf]
         elif other._gens_two_vecs is not None:
             if len(other._gens_two_vecs) == 1:
-                g1, = other._gens_two_vecs
+                (g1,) = other._gens_two_vecs
                 vecs = list(g1 * self._hnf)
             else:
                 g1, g2 = other._gens_two_vecs
@@ -396,7 +399,9 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
         else:
             vecs = [mul(r1, r2) for r1 in self._hnf for r2 in other._hnf]
 
-        return O._ideal_from_vectors_and_denominator(vecs, self._denominator * other._denominator)
+        return O._ideal_from_vectors_and_denominator(
+            vecs, self._denominator * other._denominator
+        )
 
     def _acted_upon_(self, other, on_left):
         """
@@ -598,8 +603,10 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
             sage: I._gens_over_base
             ([x, y], x)
         """
-        gens = [sum([c1 * c2 for c1, c2 in zip(row, self._ring.basis())])
-                for row in self._hnf]
+        gens = [
+            sum([c1 * c2 for c1, c2 in zip(row, self._ring.basis())])
+            for row in self._hnf
+        ]
         return gens, self._denominator
 
     def gens(self) -> tuple:
@@ -902,7 +909,7 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
         val = min([c.valuation(p) for c in h])
         i = self._ramification_index * val
         while True:
-            ppow = p ** val
+            ppow = p**val
             h = (matrix(n, [c // ppow for c in h]) * B).list()
             val = min([c.valuation(p) for c in h])
             if val.is_zero():
@@ -970,7 +977,10 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
         i = d * self
 
         factors = []
-        primes = set([o.ideal(p) for p, _ in d.factor()] + [p for p, _ in i.ideal_below().factor()])
+        primes = set(
+            [o.ideal(p) for p, _ in d.factor()]
+            + [p for p, _ in i.ideal_below().factor()]
+        )
         for prime in primes:
             qs = [q[0] for q in O.decomposition(prime)]
             for q in qs:
@@ -1003,6 +1013,7 @@ class FunctionFieldIdeal_global(FunctionFieldIdeal_polymod):
         sage: O.ideal(y)
         Ideal (y) of Maximal order of Function field in y defined by y^2 + x^3*y + x
     """
+
     def __init__(self, ring, hnf, denominator=1) -> None:
         """
         Initialize.
@@ -1049,7 +1060,7 @@ class FunctionFieldIdeal_global(FunctionFieldIdeal_polymod):
             I = matrix.identity(R, n)
 
             if len(self._gens_two_vecs) == 1:
-                p, = self._gens_two_vecs
+                (p,) = self._gens_two_vecs
                 ppow = p**mod
                 J = [ppow * v for v in I]
             else:
@@ -1197,8 +1208,7 @@ class FunctionFieldIdeal_global(FunctionFieldIdeal_polymod):
 
         R = hnf.base_ring()
 
-        basis = [sum(c1 * c2 for c1, c2 in zip(row, O.basis()))
-                 for row in hnf]
+        basis = [sum(c1 * c2 for c1, c2 in zip(row, O.basis())) for row in hnf]
 
         n = len(basis)
         alpha = None
@@ -1264,6 +1274,7 @@ class FunctionFieldIdealInfinite_polymod(FunctionFieldIdealInfinite):
         Ideal (1/x^4*y^2) of Maximal infinite order of Function field
         in y defined by y^3 + y^2 + 2*x^4
     """
+
     def __init__(self, ring, ideal) -> None:
         """
         Initialize this ideal.
@@ -1352,7 +1363,9 @@ class FunctionFieldIdealInfinite_polymod(FunctionFieldIdealInfinite):
             Ideal (1/x) of Maximal infinite order of Function field in y
             defined by y^2 + y + (x^2 + 1)/x
         """
-        return FunctionFieldIdealInfinite_polymod(self._ring, self._ideal + other._ideal)
+        return FunctionFieldIdealInfinite_polymod(
+            self._ring, self._ideal + other._ideal
+        )
 
     def _mul_(self, other):
         """
@@ -1382,7 +1395,9 @@ class FunctionFieldIdealInfinite_polymod(FunctionFieldIdealInfinite):
             Ideal (1/x^4*y) of Maximal infinite order of Function field in y
             defined by y^2 + y + (x^2 + 1)/x
         """
-        return FunctionFieldIdealInfinite_polymod(self._ring, self._ideal * other._ideal)
+        return FunctionFieldIdealInfinite_polymod(
+            self._ring, self._ideal * other._ideal
+        )
 
     def __pow__(self, n):
         """
@@ -1398,7 +1413,7 @@ class FunctionFieldIdealInfinite_polymod(FunctionFieldIdealInfinite):
             Ideal (1/x^3) of Maximal infinite order of Function field
             in y defined by y^3 + y^2 + 2*x^4
         """
-        return FunctionFieldIdealInfinite_polymod(self._ring, self._ideal ** n)
+        return FunctionFieldIdealInfinite_polymod(self._ring, self._ideal**n)
 
     def __invert__(self):
         """
@@ -1428,7 +1443,7 @@ class FunctionFieldIdealInfinite_polymod(FunctionFieldIdealInfinite):
             Ideal (1) of Maximal infinite order of Function field in y
             defined by y^2 + y + (x^2 + 1)/x
         """
-        return FunctionFieldIdealInfinite_polymod(self._ring, ~ self._ideal)
+        return FunctionFieldIdealInfinite_polymod(self._ring, ~self._ideal)
 
     def _richcmp_(self, other, op):
         """

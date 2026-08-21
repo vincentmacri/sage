@@ -28,7 +28,9 @@ lazy_import('sage.symbolic.constants', 'e', as_='const_e')
 lazy_import('sage.symbolic.constants', 'pi', as_='const_pi')
 lazy_import('sage.rings.complex_double', 'CDF')
 
-lazy_import('sage.libs.flint.arith_sage', 'harmonic_number', as_='_flint_harmonic_number')
+lazy_import(
+    'sage.libs.flint.arith_sage', 'harmonic_number', as_='_flint_harmonic_number'
+)
 
 lazy_import('sage.libs.mpmath.utils', 'call', as_='_mpmath_utils_call')
 lazy_import('mpmath', 'harmonic', as_='_mpmath_harmonic')
@@ -175,6 +177,7 @@ class Function_exp(GinacFunction):
         sage: exp(-x).subs(x=-oo)                                                       # needs sage.symbolic
         +Infinity
     """
+
     def __init__(self):
         """
         TESTS::
@@ -184,8 +187,12 @@ class Function_exp(GinacFunction):
             sage: maxima(exp(x))._sage_()                                               # needs sage.symbolic
             e^x
         """
-        GinacFunction.__init__(self, "exp", latex_name=r"\exp",
-                               conversions=dict(maxima='exp', fricas='exp'))
+        GinacFunction.__init__(
+            self,
+            "exp",
+            latex_name=r"\exp",
+            conversions=dict(maxima='exp', fricas='exp'),
+        )
 
 
 exp = Function_exp()
@@ -257,6 +264,7 @@ class Function_log1(GinacFunction):
         sage: polylog(QQbar(sqrt(2)),3)                                                 # needs sage.rings.number_field sage.symbolic
         polylog(1.414213562373095?, 3)
     """
+
     def __init__(self):
         """
         TESTS::
@@ -266,9 +274,12 @@ class Function_log1(GinacFunction):
             sage: maxima(ln(x))._sage_()                                                # needs sage.symbolic
             log(x)
         """
-        GinacFunction.__init__(self, 'log', latex_name=r'\log',
-                               conversions=dict(maxima='log', fricas='log',
-                                                mathematica='Log', giac='ln'))
+        GinacFunction.__init__(
+            self,
+            'log',
+            latex_name=r'\log',
+            conversions=dict(maxima='log', fricas='log', mathematica='Log', giac='ln'),
+        )
 
 
 ln = function_log = Function_log1()
@@ -306,6 +317,7 @@ class Function_log2(GinacFunction):
         sage: float(logb(int(21743271936), 2))                                          # needs sage.symbolic
         34.33985000288...
     """
+
     def __init__(self):
         """
         TESTS::
@@ -314,9 +326,14 @@ class Function_log2(GinacFunction):
             sage: loads(dumps(logb))
             log
         """
-        GinacFunction.__init__(self, 'log', ginac_name='logb', nargs=2,
-                               latex_name=r'\log',
-                               conversions=dict(maxima='log'))
+        GinacFunction.__init__(
+            self,
+            'log',
+            ginac_name='logb',
+            nargs=2,
+            latex_name=r'\log',
+            conversions=dict(maxima='log'),
+        )
 
 
 logb = Function_log2()
@@ -424,11 +441,17 @@ class Function_polylog(GinacFunction):
             sage: bool(x*polylog(x,x)==0)                                               # needs sage.symbolic
             False
         """
-        GinacFunction.__init__(self, "polylog", nargs=2,
-                conversions=dict(mathematica='PolyLog',
-                                 magma='Polylog',
-                                 matlab='polylog',
-                                 sympy='polylog'))
+        GinacFunction.__init__(
+            self,
+            "polylog",
+            nargs=2,
+            conversions=dict(
+                mathematica='PolyLog',
+                magma='Polylog',
+                matlab='polylog',
+                sympy='polylog',
+            ),
+        )
 
     def _maxima_init_evaled_(self, *args):
         """
@@ -560,10 +583,11 @@ class Function_dilog(GinacFunction):
             sage: parent(_)
             Complex Field with 13 bits of precision
         """
-        GinacFunction.__init__(self, 'dilog',
-                conversions=dict(maxima='li[2]',
-                                 magma='Dilog',
-                                 fricas='(x+->dilog(1-x))'))
+        GinacFunction.__init__(
+            self,
+            'dilog',
+            conversions=dict(maxima='li[2]', magma='Dilog', fricas='(x+->dilog(1-x))'),
+        )
 
     def _sympy_(self, z):
         r"""
@@ -697,13 +721,19 @@ class Function_lambert_w(BuiltinFunction):
             sage: lambert_w(n, x)._fricas_()                                    # optional - fricas, needs sage.symbolic
             generalizedLambertW(n,x)
         """
-        BuiltinFunction.__init__(self, "lambert_w", nargs=2,
-                                 conversions={'mathematica': 'ProductLog',
-                                              'maple': 'LambertW',
-                                              'matlab': 'lambertw',
-                                              'maxima': 'generalized_lambert_w',
-                                              'fricas': "((n,z)+->(if n=0 then lambertW(z) else operator('generalizedLambertW)(n,z)))",
-                                              'sympy': 'LambertW'})
+        BuiltinFunction.__init__(
+            self,
+            "lambert_w",
+            nargs=2,
+            conversions={
+                'mathematica': 'ProductLog',
+                'maple': 'LambertW',
+                'matlab': 'lambertw',
+                'maxima': 'generalized_lambert_w',
+                'fricas': "((n,z)+->(if n=0 then lambertW(z) else operator('generalizedLambertW)(n,z)))",
+                'sympy': 'LambertW',
+            },
+        )
 
     def __call__(self, *args, **kwds):
         r"""
@@ -980,9 +1010,12 @@ class Function_exp_polar(BuiltinFunction):
 
             :wikipedia:`Complex_number#Polar_form`
         """
-        BuiltinFunction.__init__(self, "exp_polar",
-                                latex_name=r"\operatorname{exp\_polar}",
-                                conversions=dict(sympy='exp_polar'))
+        BuiltinFunction.__init__(
+            self,
+            "exp_polar",
+            latex_name=r"\operatorname{exp\_polar}",
+            conversions=dict(sympy='exp_polar'),
+        )
 
     def _evalf_(self, z, parent=None, algorithm=None):
         r"""
@@ -1007,8 +1040,7 @@ class Function_exp_polar(BuiltinFunction):
             ...
             ValueError: invalid attempt to numerically evaluate exp_polar()
         """
-        if (not isinstance(z, Expression) and
-                bool(-const_pi < imag(z) <= const_pi)):
+        if not isinstance(z, Expression) and bool(-const_pi < imag(z) <= const_pi):
             return exp(z)
         raise ValueError("invalid attempt to numerically evaluate exp_polar()")
 
@@ -1124,8 +1156,9 @@ class Function_harmonic_number_generalized(BuiltinFunction):
             sage: harmonic_number(x, x)._sympy_()                                       # needs sympy sage.symbolic
             harmonic(x, x)
         """
-        BuiltinFunction.__init__(self, "harmonic_number", nargs=2,
-                conversions={'sympy': 'harmonic'})
+        BuiltinFunction.__init__(
+            self, "harmonic_number", nargs=2, conversions={'sympy': 'harmonic'}
+        )
 
     def __call__(self, z, m=1, **kwds):
         r"""
@@ -1249,7 +1282,9 @@ class Function_harmonic_number_generalized(BuiltinFunction):
             ValueError: cannot differentiate harmonic_number in the second parameter
         """
         if diff_param == 1:
-            raise ValueError("cannot differentiate harmonic_number in the second parameter")
+            raise ValueError(
+                "cannot differentiate harmonic_number in the second parameter"
+            )
         if m == 1:
             return harmonic_m1(n).diff()
         return m * (zeta(m + 1) - harmonic_number(n, m + 1))
@@ -1302,6 +1337,7 @@ class _Function_swap_harmonic(BuiltinFunction):
         sage: max_to_sr(c.ecl())
         harmonic_number(x, 2)
     """
+
     def __init__(self):
         BuiltinFunction.__init__(self, "_swap_harmonic", nargs=2)
 
@@ -1341,11 +1377,17 @@ class Function_harmonic_number(BuiltinFunction):
             sage: harmonic_number(x)._sympy_()                                          # needs sympy sage.symbolic
             harmonic(x)
         """
-        BuiltinFunction.__init__(self, "harmonic_number", nargs=1,
-                                 conversions={'mathematica': 'HarmonicNumber',
-                                              'maple': 'harmonic',
-                                              'maxima': 'harmonic_number',
-                                              'sympy': 'harmonic'})
+        BuiltinFunction.__init__(
+            self,
+            "harmonic_number",
+            nargs=1,
+            conversions={
+                'mathematica': 'HarmonicNumber',
+                'maple': 'harmonic',
+                'maxima': 'harmonic_number',
+                'sympy': 'harmonic',
+            },
+        )
 
     def _eval_(self, z, **kwds):
         """

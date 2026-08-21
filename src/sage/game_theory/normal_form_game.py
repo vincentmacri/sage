@@ -768,7 +768,9 @@ class NormalFormGame(SageObject, MutableMapping):
         matrices = []
         if generator is not None:
             if type(generator) is not list and type(generator) is not Game:
-                raise TypeError("Generator function must be a list, gambit game or nothing")
+                raise TypeError(
+                    "Generator function must be a list, gambit game or nothing"
+                )
 
         if type(generator) is list:
             if len(generator) == 1:
@@ -906,6 +908,7 @@ class NormalFormGame(SageObject, MutableMapping):
              (0, 1): [2, 3], (1, 0): [3, 1], (1, 1): [4, 4]}
         """
         from pprint import pformat
+
         base_str = "Normal Form Game with the following utilities: {}"
         return base_str.format(pformat(self.utilities))
 
@@ -964,8 +967,10 @@ class NormalFormGame(SageObject, MutableMapping):
         self.add_player(matrices[0].dimensions()[0])
         self.add_player(matrices[1].dimensions()[1])
         for strategy_profile in self.utilities:
-            self.utilities[strategy_profile] = [matrices[0][strategy_profile],
-                                                matrices[1][strategy_profile]]
+            self.utilities[strategy_profile] = [
+                matrices[0][strategy_profile],
+                matrices[1][strategy_profile],
+            ]
 
     def _gambit_game(self, game):
         r"""
@@ -997,7 +1002,9 @@ class NormalFormGame(SageObject, MutableMapping):
             num_strategies = len(player.strategies)
             self.add_player(num_strategies)
         for strategy_profile in self.utilities:
-            utility_vector = [float(game[strategy_profile][i]) for i in range(len(self.players))]
+            utility_vector = [
+                float(game[strategy_profile][i]) for i in range(len(self.players))
+            ]
             self.utilities[strategy_profile] = utility_vector
 
     def _gambit_(self, as_integer=False, maximization=True):
@@ -1144,6 +1151,7 @@ class NormalFormGame(SageObject, MutableMapping):
             <BLANKLINE>
         """
         from decimal import Decimal
+
         strategy_sizes = [p.num_strategies for p in self.players]
         g = Game.new_table(strategy_sizes)
 
@@ -1156,9 +1164,13 @@ class NormalFormGame(SageObject, MutableMapping):
         for strategy_profile in self.utilities:
             for i in range(players):
                 if as_integer:
-                    g[strategy_profile][i] = sgn * int(self.utilities[strategy_profile][i])
+                    g[strategy_profile][i] = sgn * int(
+                        self.utilities[strategy_profile][i]
+                    )
                 else:
-                    g[strategy_profile][i] = sgn * Decimal(float(self.utilities[strategy_profile][i]))
+                    g[strategy_profile][i] = sgn * Decimal(
+                        float(self.utilities[strategy_profile][i])
+                    )
         return g
 
     def is_constant_sum(self):
@@ -1190,6 +1202,7 @@ class NormalFormGame(SageObject, MutableMapping):
             False
         """
         import sys
+
         if len(self.players) > 2:
             return False
         m1, m2 = self.payoff_matrices()
@@ -1385,8 +1398,10 @@ class NormalFormGame(SageObject, MutableMapping):
             sage: example._is_complete()
             False
         """
-        results = (all(not isinstance(i, bool) for i in profile)
-                   for profile in self.utilities.values())
+        results = (
+            all(not isinstance(i, bool) for i in profile)
+            for profile in self.utilities.values()
+        )
         return all(results)
 
     def obtain_nash(self, algorithm=False, maximization=True, solver=None):
@@ -1673,16 +1688,19 @@ class NormalFormGame(SageObject, MutableMapping):
              (in which case the default one is used), or a callable.
         """
         if len(self.players) > 2:
-            raise NotImplementedError("Nash equilibrium for games with more "
-                                      "than 2 players have not been "
-                                      "implemented yet. Please see the gambit "
-                                      "website (http://gambit.sourceforge.net/) that has a variety of "
-                                      "available algorithms")
+            raise NotImplementedError(
+                "Nash equilibrium for games with more "
+                "than 2 players have not been "
+                "implemented yet. Please see the gambit "
+                "website (http://gambit.sourceforge.net/) that has a variety of "
+                "available algorithms"
+            )
 
         if not self._is_complete():
             raise ValueError("utilities have not been populated")
 
         from sage.features.lrs import LrsNash
+
         if not algorithm:
             if self.is_constant_sum():
                 algorithm = "lp"
@@ -1697,7 +1715,9 @@ class NormalFormGame(SageObject, MutableMapping):
 
         if algorithm == "LCP":
             if Game is None:
-                raise RuntimeError("gambit not found")  # should later become a FeatureNotFoundError
+                raise RuntimeError(
+                    "gambit not found"
+                )  # should later become a FeatureNotFoundError
             return self._solve_LCP(maximization)
 
         if algorithm.startswith('lp'):
@@ -1706,7 +1726,9 @@ class NormalFormGame(SageObject, MutableMapping):
         if algorithm == "enumeration":
             return self._solve_enumeration(maximization)
 
-        raise ValueError("'algorithm' should be set to 'enumeration', 'LCP', 'lp' or 'lrs'")
+        raise ValueError(
+            "'algorithm' should be set to 'enumeration', 'LCP', 'lp' or 'lrs'"
+        )
 
     def _solve_lrs(self, maximization=True):
         r"""
@@ -1752,10 +1774,11 @@ class NormalFormGame(SageObject, MutableMapping):
              [(1, 0, 0), (0, 0, 1)]]
         """
         from subprocess import PIPE, Popen
+
         m1, m2 = self.payoff_matrices()
         if maximization is False:
-            m1 = - m1
-            m2 = - m2
+            m1 = -m1
+            m2 = -m2
 
         game_str = self._lrs_nash_format(m1, m2)
         game_name = tmp_filename()
@@ -1763,9 +1786,11 @@ class NormalFormGame(SageObject, MutableMapping):
             game_file.write(game_str)
 
         from sage.features.lrs import LrsNash
+
         LrsNash().require()
-        process = Popen([LrsNash().absolute_filename(), game_name],
-                        stdout=PIPE, stderr=PIPE)
+        process = Popen(
+            [LrsNash().absolute_filename(), game_name], stdout=PIPE, stderr=PIPE
+        )
 
         lrs_output = [bytes_to_str(row) for row in process.stdout]
         process.terminate()
@@ -2017,18 +2042,25 @@ class NormalFormGame(SageObject, MutableMapping):
             M1 = -M1
             M2 = -M2
 
-        potential_supports = [[tuple(support) for support in
-                               powerset(range(player.num_strategies))]
-                              for player in self.players]
+        potential_supports = [
+            [tuple(support) for support in powerset(range(player.num_strategies))]
+            for player in self.players
+        ]
 
-        potential_support_pairs = (pair for pair in product(*potential_supports) if len(pair[0]) == len(pair[1]))
+        potential_support_pairs = (
+            pair
+            for pair in product(*potential_supports)
+            if len(pair[0]) == len(pair[1])
+        )
 
         equilibria = []
         for pair in potential_support_pairs:
             # Check if any supports are dominated for row player
-            if (self._row_cond_dominance(pair[0], pair[1], M1)
+            if (
+                self._row_cond_dominance(pair[0], pair[1], M1)
                 # Check if any supports are dominated for col player
-               and self._row_cond_dominance(pair[1], pair[0], M2.transpose())):
+                and self._row_cond_dominance(pair[1], pair[0], M2.transpose())
+            ):
                 a = self._solve_indifference(pair[0], pair[1], M2)
                 b = self._solve_indifference(pair[1], pair[0], M1.transpose())
                 if a and b and self._is_NE(a, b, pair[0], pair[1], M1, M2):
@@ -2140,16 +2172,16 @@ class NormalFormGame(SageObject, MutableMapping):
             # Checking particular case of supports of pure strategies
             if len(support2) == 1:
                 for strategy2 in range(M.ncols()):
-                    if M[strategy1][support2[0]] < \
-                            M[strategy1][strategy2]:
+                    if M[strategy1][support2[0]] < M[strategy1][strategy2]:
                         return False
             else:
                 for strategy_pair2 in range(len(support2)):
                     # Coefficients of linear system that ensure indifference
                     # between two consecutive strategies of the support
-                    linearsystem[strategy_pair2, strategy1] = \
-                        M[strategy1][support2[strategy_pair2]] -\
-                        M[strategy1][support2[strategy_pair2 - 1]]
+                    linearsystem[strategy_pair2, strategy1] = (
+                        M[strategy1][support2[strategy_pair2]]
+                        - M[strategy1][support2[strategy_pair2 - 1]]
+                    )
             # Coefficients of linear system that ensure the vector is
             # a probability vector. ie. sum to 1
             linearsystem[-1, strategy1] = 1
@@ -2215,27 +2247,27 @@ class NormalFormGame(SageObject, MutableMapping):
             False
         """
         # Check that supports are obeyed
-        if not (all(a[i] > 0 for i in p1_support) and
-                all(b[j] > 0 for j in p2_support) and
-                all(a[i] == 0 for i in range(len(a))
-                    if i not in p1_support) and
-                all(b[j] == 0 for j in range(len(b))
-                    if j not in p2_support)):
+        if not (
+            all(a[i] > 0 for i in p1_support)
+            and all(b[j] > 0 for j in p2_support)
+            and all(a[i] == 0 for i in range(len(a)) if i not in p1_support)
+            and all(b[j] == 0 for j in range(len(b)) if j not in p2_support)
+        ):
             return False
 
         # Check that have pair of best responses
 
-        p1_payoffs = [sum(v * row[i] for i, v in enumerate(b))
-                      for row in M1.rows()]
-        p2_payoffs = [sum(v * col[j] for j, v in enumerate(a))
-                      for col in M2.columns()]
+        p1_payoffs = [sum(v * row[i] for i, v in enumerate(b)) for row in M1.rows()]
+        p2_payoffs = [sum(v * col[j] for j, v in enumerate(a)) for col in M2.columns()]
 
         # if p1_payoffs.index(max(p1_payoffs)) not in p1_support:
-        if not any(i in p1_support for i, x in enumerate(p1_payoffs)
-                   if x == max(p1_payoffs)):
+        if not any(
+            i in p1_support for i, x in enumerate(p1_payoffs) if x == max(p1_payoffs)
+        ):
             return False
-        return any(i in p2_support for i, x in enumerate(p2_payoffs)
-                   if x == max(p2_payoffs))
+        return any(
+            i in p2_support for i, x in enumerate(p2_payoffs) if x == max(p2_payoffs)
+        )
 
     def _lrs_nash_format(self, m1, m2):
         r"""
@@ -2265,6 +2297,7 @@ class NormalFormGame(SageObject, MutableMapping):
             The former legacy format has been removed in :issue:`39464`.
         """
         from sage.geometry.polyhedron.misc import _to_space_separated_string
+
         m = self.players[0].num_strategies
         n = self.players[1].num_strategies
         s = f'{m} {n}\n\n'
@@ -2430,26 +2463,30 @@ class NormalFormGame(SageObject, MutableMapping):
              games with more than two players.
         """
         if len(self.players) > 2:
-            raise NotImplementedError("Tests for Degeneracy is not yet "
-                                      "implemented for games with more than "
-                                      "two players.")
+            raise NotImplementedError(
+                "Tests for Degeneracy is not yet "
+                "implemented for games with more than "
+                "two players."
+            )
 
         d = self._is_degenerate_pure(certificate)
         if d:
             return d
 
         M1, M2 = self.payoff_matrices()
-        potential_supports = [[tuple(support) for support in
-                               powerset(range(player.num_strategies))]
-                              for player in self.players]
+        potential_supports = [
+            [tuple(support) for support in powerset(range(player.num_strategies))]
+            for player in self.players
+        ]
 
         # filter out all supports that are pure or empty
-        potential_supports = [[i for i in k if len(i) > 1]
-                              for k in potential_supports]
+        potential_supports = [[i for i in k if len(i) > 1] for k in potential_supports]
 
-        potential_support_pairs = [pair for pair in
-                                   product(*potential_supports) if
-                                   len(pair[0]) != len(pair[1])]
+        potential_support_pairs = [
+            pair
+            for pair in product(*potential_supports)
+            if len(pair[0]) != len(pair[1])
+        ]
 
         # Sort so that solve small linear systems first
         potential_support_pairs.sort(key=lambda x: sum([len(k) for k in x]))
@@ -2582,7 +2619,9 @@ class NormalFormGame(SageObject, MutableMapping):
             raise ValueError('Only available for 2 player games')
 
         if player != 0 and player != 1:
-            raise ValueError('%s is not an index of the opponent, must be 0 or 1' % player)
+            raise ValueError(
+                '%s is not an index of the opponent, must be 0 or 1' % player
+            )
 
         strategy = vector(strategy)
 

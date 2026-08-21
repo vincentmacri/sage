@@ -85,7 +85,6 @@ class AffineWeylGroups(Category_singleton):
         return "affine Weyl groups"
 
     class ParentMethods:
-
         @cached_method
         def special_node(self):
             """
@@ -117,7 +116,9 @@ class AffineWeylGroups(Category_singleton):
 
                 :meth:`AffineWeylGroups.ElementMethods.is_affine_grassmannian`
             """
-            from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet_forest
+            from sage.sets.recursively_enumerated_set import (
+                RecursivelyEnumeratedSet_forest,
+            )
 
             def select_length(pair):
                 u, length = pair
@@ -128,13 +129,20 @@ class AffineWeylGroups(Category_singleton):
                 u, length = pair
                 for i in u.descents(positive=True, side='left'):
                     u1 = u.apply_simple_reflection(i, "left")
-                    if (length < k and i == u1.first_descent(side='left') and
-                            u1.is_affine_grassmannian()):
+                    if (
+                        length < k
+                        and i == u1.first_descent(side='left')
+                        and u1.is_affine_grassmannian()
+                    ):
                         yield (u1, length + 1)
 
-            return RecursivelyEnumeratedSet_forest(((self.one(), 0),), succ, algorithm='breadth',
-                                                   category=FiniteEnumeratedSets(),
-                                                   post_process=select_length)
+            return RecursivelyEnumeratedSet_forest(
+                ((self.one(), 0),),
+                succ,
+                algorithm='breadth',
+                category=FiniteEnumeratedSets(),
+                post_process=select_length,
+            )
 
     class ElementMethods:
         def is_affine_grassmannian(self) -> bool:
@@ -201,8 +209,14 @@ class AffineWeylGroups(Category_singleton):
             """
             from sage.combinat.partition import Partition
             from sage.combinat.core import Core
-            if not self.is_affine_grassmannian() or not self.parent().cartan_type().letter == 'A':
-                raise ValueError("this only works on type 'A' affine Grassmannian elements")
+
+            if (
+                not self.is_affine_grassmannian()
+                or not self.parent().cartan_type().letter == 'A'
+            ):
+                raise ValueError(
+                    "this only works on type 'A' affine Grassmannian elements"
+                )
             out = Partition([])
             rword = self.reduced_word()
             kp1 = self.parent().n

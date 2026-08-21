@@ -43,6 +43,7 @@ class pdftocairo(Executable):
         sage: pdftocairo().is_present()             # optional: pdftocairo
         FeatureTestResult('pdftocairo', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -51,8 +52,12 @@ class pdftocairo(Executable):
             sage: isinstance(pdftocairo(), pdftocairo)
             True
         """
-        Executable.__init__(self, "pdftocairo", executable='pdftocairo',
-                            url='https://poppler.freedesktop.org/')
+        Executable.__init__(
+            self,
+            "pdftocairo",
+            executable='pdftocairo',
+            url='https://poppler.freedesktop.org/',
+        )
 
 
 def all_features():

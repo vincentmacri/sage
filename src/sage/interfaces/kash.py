@@ -450,14 +450,17 @@ class Kash(Expect):
 
     - William Stein and David Joyner
     """
-    def __init__(self,
-                 max_workspace_size=None,
-                 maxread=None,
-                 script_subdirectory=None,
-                 restart_on_ctrlc=True,
-                 logfile=None,
-                 server=None,
-                 server_tmpdir=None):
+
+    def __init__(
+        self,
+        max_workspace_size=None,
+        maxread=None,
+        script_subdirectory=None,
+        restart_on_ctrlc=True,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+    ):
         """
         INPUT:
 
@@ -470,19 +473,20 @@ class Kash(Expect):
         cmd = "kash3 -b -c -d  "
         if max_workspace_size is not None:
             cmd += " -a %s" % int(max_workspace_size)
-        Expect.__init__(self,
-                        name='kash',
-                        prompt='kash% ',
-                        command=cmd,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=True,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=100,
-                        init_code=['X:=ZX.1;']
-                        )
+        Expect.__init__(
+            self,
+            name='kash',
+            prompt='kash% ',
+            command=cmd,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=True,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=100,
+            init_code=['X:=ZX.1;'],
+        )
         # The above init_code programs around a bug reported by Jack Schmidt
 
         self.__seq = 0
@@ -512,14 +516,18 @@ class Kash(Expect):
         if self.is_remote():
             self._send_tmpfile_to_server()
             tmp_to_use = self._remote_tmpfile()
-        return self._eval_line(self._read_in_file_command(tmp_to_use),
-                               allow_use_file=False)
+        return self._eval_line(
+            self._read_in_file_command(tmp_to_use), allow_use_file=False
+        )
 
     # Change the default for KASH, since eval using a file doesn't
     # work except for setting variables.
-    def _eval_line(self, line, allow_use_file=False, wait_for_prompt=True, restart_if_needed=False):
-        return Expect._eval_line(self, line, allow_use_file=allow_use_file,
-                                 wait_for_prompt=wait_for_prompt)
+    def _eval_line(
+        self, line, allow_use_file=False, wait_for_prompt=True, restart_if_needed=False
+    ):
+        return Expect._eval_line(
+            self, line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt
+        )
 
     def __reduce__(self):
         return reduce_load_Kash, tuple([])
@@ -556,7 +564,7 @@ class Kash(Expect):
         s = Expect.eval(self, x, **kwds)
         i = s.find('\r\n')
         if i != -1:
-            s = s[i + 2:]
+            s = s[i + 2 :]
         if newlines:
             return s
         return s.replace("\\\n", "")
@@ -608,7 +616,7 @@ class Kash(Expect):
             i = C.find('m')
             j = C.find(':')
             try:
-                n = int(C[i + 1:j])
+                n = int(C[i + 1 : j])
             except ValueError:
                 full = C
             else:
@@ -626,7 +634,10 @@ class Kash(Expect):
         cmd = '%s:=%s;;' % (var, value)
         out = self._eval_line(cmd, allow_use_file=True)
         if out.lower().find('error') != -1:
-            raise TypeError("Error executing code in Kash\nCODE:\n\t%s\nKash ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Kash\nCODE:\n\t%s\nKash ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -664,10 +675,11 @@ class Kash(Expect):
         """
         args, kwds = self._convert_args_kwds(args, kwds)
         self._check_valid_function_name(function)
-        s = self._function_call_string(function,
-                                       [s.name() for s in args],
-                                       ['%s:=%s' % (key, value.name())
-                                        for key, value in kwds.items()])
+        s = self._function_call_string(
+            function,
+            [s.name() for s in args],
+            ['%s:=%s' % (key, value.name()) for key, value in kwds.items()],
+        )
         return self.new(s)
 
     def _function_call_string(self, function, args, kwds):
@@ -729,8 +741,10 @@ class KashElement(ExpectElement):
         # our boolean conversion also has to test against 0.
 
         P = self.parent()
-        return (P.eval('%s = FALSE' % self.name()) == 'FALSE' and
-                P.eval('%s = 0' % self.name()) == 'FALSE')
+        return (
+            P.eval('%s = FALSE' % self.name()) == 'FALSE'
+            and P.eval('%s = 0' % self.name()) == 'FALSE'
+        )
 
     def _sage_(self, locals={}, *args):
         """
@@ -795,9 +809,11 @@ def reduce_load_Kash():
 
 def kash_console():
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. '
-                           'Try %%kash magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%kash magics instead.'
+        )
     os.system("kash3 ")
 
 
@@ -807,4 +823,5 @@ def kash_version():
 
 def __doctest_cleanup():
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()

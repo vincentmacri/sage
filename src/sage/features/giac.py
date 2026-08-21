@@ -15,6 +15,7 @@ class Giac(Executable):
         sage: Giac().is_present()  # needs giac
         FeatureTestResult('giac', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -23,8 +24,9 @@ class Giac(Executable):
             sage: isinstance(Giac(), Giac)
             True
         """
-        Executable.__init__(self, 'giac', executable='giac',
-                            spkg='giac', type='optional')
+        Executable.__init__(
+            self, 'giac', executable='giac', spkg='giac', type='optional'
+        )
 
 
 def all_features():

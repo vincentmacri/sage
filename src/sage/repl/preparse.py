@@ -477,8 +477,17 @@ class QuoteStackFrame(SimpleNamespace):
     Only F-strings have more than one level.
     """
 
-    def __init__(self, delim, raw=False, f_string=False, braces=0, parens=0, brackets=0,
-                 fmt_spec=False, nested_fmt_spec=False):
+    def __init__(
+        self,
+        delim,
+        raw=False,
+        f_string=False,
+        braces=0,
+        parens=0,
+        brackets=0,
+        fmt_spec=False,
+        nested_fmt_spec=False,
+    ):
         """
         Create a new QuoteStackFrame.
 
@@ -766,10 +775,10 @@ def strip_string_literals(code, state=None):
                     if not k % 2:
                         escaped = True
                 # Check for end of quote.
-                if not escaped and code[q:q + len(quote.delim)] == quote.delim:
+                if not escaped and code[q : q + len(quote.delim)] == quote.delim:
                     counter += 1
                     label = "L%s" % counter
-                    literals[label] = code[start:q + len(quote.delim)]
+                    literals[label] = code[start : q + len(quote.delim)]
                     new_code.append("%%(%s)s" % label)
                     q += len(quote.delim)
                     start = q
@@ -806,7 +815,7 @@ def strip_string_literals(code, state=None):
                     newline = len(code)
                 counter += 1
                 label = "L%s" % counter
-                literals[label] = code[q + 1:newline]
+                literals[label] = code[q + 1 : newline]
                 new_code.append(code[start:q].replace('%', '%%'))
                 new_code.append("#%%(%s)s" % label)
                 start = q = newline
@@ -825,7 +834,7 @@ def strip_string_literals(code, state=None):
                     handle_colon = True
                 if handle_colon:
                     # Treat the preceding substring and the colon itself as code.
-                    new_code.append(code[start:q + 1].replace('%', '%%'))
+                    new_code.append(code[start : q + 1].replace('%', '%%'))
                     start = q + 1
 
         elif ch == '{' or ch == '}':
@@ -1050,10 +1059,10 @@ def parse_ellipsis(code, preparse_step=True):
             raise SyntaxError("cannot start line with ellipsis")
         elif code[ix - 1] == '.':
             # '...' be valid Python in index slices
-            code = code[:ix - 1] + "Ellipsis" + code[ix + 2:]
+            code = code[: ix - 1] + "Ellipsis" + code[ix + 2 :]
         elif len(code) >= ix + 3 and code[ix + 2] == '.':
             # '...' be valid Python in index slices
-            code = code[:ix] + "Ellipsis" + code[ix + 3:]
+            code = code[:ix] + "Ellipsis" + code[ix + 3 :]
         else:
             start_list, end_list = containing_block(code, ix, ['()', '[]'])
 
@@ -1066,15 +1075,21 @@ def parse_ellipsis(code, preparse_step=True):
                     start_list, end_list = containing_block(code, ix, ['()', '[]'])
                 ix = code.find('..', ix + 2, end_list)
 
-            arguments = code[start_list + 1:end_list - 1].replace('...', ',Ellipsis,').replace('..', ',Ellipsis,')
+            arguments = (
+                code[start_list + 1 : end_list - 1]
+                .replace('...', ',Ellipsis,')
+                .replace('..', ',Ellipsis,')
+            )
             arguments = re.sub(r',\s*,', ',', arguments)
             if preparse_step:
                 arguments = arguments.replace(';', ', step=')
             range_or_iter = 'range' if code[start_list] == '[' else 'iter'
-            code = "%s(ellipsis_%s(%s))%s" % (code[:start_list],
-                                              range_or_iter,
-                                              arguments,
-                                              code[end_list:])
+            code = "%s(ellipsis_%s(%s))%s" % (
+                code[:start_list],
+                range_or_iter,
+                arguments,
+                code[end_list:],
+            )
         ix = code.find('..')
     return code
 
@@ -1281,8 +1296,15 @@ def preparse_numeric_literals(code, extract=False, quotes="'"):
         bin_num = r"\b0b[01]+(_[01]+)*"
         # This is slightly annoying as floating point numbers may start
         # with a decimal point, but if they do the \b will not match.
-        float_num = r"((\b\d+(_\d+)*([.](\d+(_\d+)*)?)?)|([.]\d+(_\d+)*))(e[-+]?\d+(_\d+)*)?"
-        all_num = r"((%s)|(%s)|(%s)|(%s))(rj|rL|jr|Lr|j|L|r|)\b" % (hex_num, oct_num, bin_num, float_num)
+        float_num = (
+            r"((\b\d+(_\d+)*([.](\d+(_\d+)*)?)?)|([.]\d+(_\d+)*))(e[-+]?\d+(_\d+)*)?"
+        )
+        all_num = r"((%s)|(%s)|(%s)|(%s))(rj|rL|jr|Lr|j|L|r|)\b" % (
+            hex_num,
+            oct_num,
+            bin_num,
+            float_num,
+        )
         all_num_regex = re.compile(all_num, re.I)
 
     for m in all_num_regex.finditer(code):
@@ -1296,7 +1318,6 @@ def preparse_numeric_literals(code, extract=False, quotes="'"):
         elif 'L' in postfix:
             num_name = num_make = num + postfix.replace('L', '')
         else:
-
             # The Sage preparser does extra things with numbers, which we need to handle here.
             if '.' in num:
                 if start > 0 and num[0] == '.':
@@ -1312,21 +1333,30 @@ def preparse_numeric_literals(code, extract=False, quotes="'"):
                         # handle 4.sqrt()
                         end -= 1
                         num = num[:-1]
-            elif end < len(code) and code[end] == '.' and not postfix and re.match(r'\d+(_\d+)*$', num):
+            elif (
+                end < len(code)
+                and code[end] == '.'
+                and not postfix
+                and re.match(r'\d+(_\d+)*$', num)
+            ):
                 # \b does not match after the . for floating point
                 # two dots in a row would be an ellipsis
                 if end + 1 == len(code) or code[end + 1] != '.':
                     end += 1
                     num += '.'
 
-            num_name = numeric_literal_prefix + num.replace('.', 'p').replace('-', 'n').replace('+', '')
+            num_name = numeric_literal_prefix + num.replace('.', 'p').replace(
+                '-', 'n'
+            ).replace('+', '')
 
             if 'J' in postfix:
                 if quotes:
                     num_make = "ComplexNumber(0, %s%s%s)" % (quotes, num, quotes)
                 else:
                     code_points = list(map(ord, list(num)))
-                    num_make = "ComplexNumber(0, str().join(map(chr, %s)))" % code_points
+                    num_make = (
+                        "ComplexNumber(0, str().join(map(chr, %s)))" % code_points
+                    )
                 num_name += 'j'
             elif len(num) < 2 or num[1] in 'oObBxX':
                 num_make = "Integer(%s)" % num
@@ -1502,15 +1532,17 @@ def preparse_calculus(code):
             raise ValueError("argument names should be valid python identifiers")
         vars = ','.join(stripped_vars)
 
-        new_code.append(code[last_end:m.start()])
-        new_code.append(';%s__tmp__=var("%s"); %s = symbolic_expression(%s).function(%s)' %
-                        (ident, vars, func, expr, vars))
+        new_code.append(code[last_end : m.start()])
+        new_code.append(
+            ';%s__tmp__=var("%s"); %s = symbolic_expression(%s).function(%s)'
+            % (ident, vars, func, expr, vars)
+        )
         last_end = m.end()
 
     if last_end == 0:
         return code
 
-    new_code.append(code[m.end():])
+    new_code.append(code[m.end() :])
     return ''.join(new_code)
 
 
@@ -1655,18 +1687,20 @@ def preparse_generators(code):
     new_code = []
     last_end = 0
     #                                obj       .< gens >      ,  other   =   constructor
-    for m in re.finditer(r";(\s*)([^\W\d]\w*)\.<([^>]+)> *((?:,[\w, ]+)?)= *([^;]+)", code):
+    for m in re.finditer(
+        r";(\s*)([^\W\d]\w*)\.<([^>]+)> *((?:,[\w, ]+)?)= *([^;]+)", code
+    ):
         ident, obj, gens, other_objs, constructor = m.groups()
         gens = [v.strip() for v in gens.split(',')]
         constructor = constructor.rstrip()
         if len(constructor) == 0:
-            pass   # SyntaxError will be raised by Python later
+            pass  # SyntaxError will be raised by Python later
         elif constructor[-1] == ')':
             if '(' not in constructor:
                 raise SyntaxError("mismatched ')'")
             opening = constructor.rindex('(')
             # Only use comma if there are already arguments to the constructor
-            comma = ', ' if constructor[opening + 1:-1].strip() else ''
+            comma = ', ' if constructor[opening + 1 : -1].strip() else ''
             names = "('%s',)" % "', '".join(gens)
             constructor = constructor[:-1] + comma + "names=%s)" % names
         elif constructor[-1] == ']':
@@ -1675,29 +1709,32 @@ def preparse_generators(code):
                 raise SyntaxError("mismatched ']'")
             opening = constructor.rindex('[')
             closing = constructor.index(']', opening)
-            if not constructor[opening + 1:closing].strip():
+            if not constructor[opening + 1 : closing].strip():
                 names = "'" + ', '.join(gens) + "'"
-                constructor = constructor[:opening + 1] + names + constructor[closing:]
+                constructor = constructor[: opening + 1] + names + constructor[closing:]
         else:
             pass
         gens_tuple = "(%s,)" % ', '.join(gens)
-        new_code.append(code[last_end:m.start()])
-        new_code.append(";%s%s%s = %s; %s = %s._first_ngens(%s)" %
-                        (ident, obj, other_objs, constructor, gens_tuple, obj, len(gens)))
+        new_code.append(code[last_end : m.start()])
+        new_code.append(
+            ";%s%s%s = %s; %s = %s._first_ngens(%s)"
+            % (ident, obj, other_objs, constructor, gens_tuple, obj, len(gens))
+        )
         last_end = m.end()
 
     if last_end == 0:
         return code
 
-    new_code.append(code[m.end():])
+    new_code.append(code[m.end() :])
     return ''.join(new_code)
 
 
 quote_state = None
 
 
-def preparse(line, reset=True, do_time=False, ignore_prompts=False,
-             numeric_literals=True):
+def preparse(
+    line, reset=True, do_time=False, ignore_prompts=False, numeric_literals=True
+):
     r"""
     Preparse a line of input.
 
@@ -1793,8 +1830,9 @@ def preparse(line, reset=True, do_time=False, ignore_prompts=False,
 
     if L.startswith('...'):
         i = line.find('...')
-        return line[:i + 3] + preparse(line[i + 3:], reset=reset,
-                                       do_time=do_time, ignore_prompts=ignore_prompts)
+        return line[: i + 3] + preparse(
+            line[i + 3 :], reset=reset, do_time=do_time, ignore_prompts=ignore_prompts
+        )
 
     if ignore_prompts:
         # Get rid of leading sage: and >>> so that pasting of examples from
@@ -1848,7 +1886,7 @@ def preparse(line, reset=True, do_time=False, ignore_prompts=False,
                 ends.append(i)
     while ends:
         i = ends.pop()
-        L = L[:i] + ';%s;' % L[i] + L[i + 1:]
+        L = L[:i] + ';%s;' % L[i] + L[i + 1 :]
     L = ';' + L + ';'
 
     if do_time:
@@ -1866,10 +1904,13 @@ def preparse(line, reset=True, do_time=False, ignore_prompts=False,
 
     if do_time:
         # Time keyword
-        L = re.sub(r';time;(\s*)(\S[^;\n]*)',
-                   r';\1__time__ = cputime(); __wall__ = walltime(); \2; print(' +
-                   r'"Time: CPU {:.2f} s, Wall: {:.2f} s".format(cputime(__time__), walltime(__wall__)))',
-                   L, flags=re.MULTILINE)
+        L = re.sub(
+            r';time;(\s*)(\S[^;\n]*)',
+            r';\1__time__ = cputime(); __wall__ = walltime(); \2; print('
+            + r'"Time: CPU {:.2f} s, Wall: {:.2f} s".format(cputime(__time__), walltime(__wall__)))',
+            L,
+            flags=re.MULTILINE,
+        )
 
     # Remove extra ;'s
     L = L.replace(';#;', '#')
@@ -1881,6 +1922,7 @@ def preparse(line, reset=True, do_time=False, ignore_prompts=False,
 ######################################################
 #  Apply the preparser to an entire file
 ######################################################
+
 
 def preparse_file(contents, globals=None, numeric_literals=True):
     """
@@ -1959,10 +2001,12 @@ def preparse_file(contents, globals=None, numeric_literals=True):
 
     start = 0
     lines_out = []
-    preparse_opts = dict(do_time=True, ignore_prompts=False, numeric_literals=not numeric_literals)
+    preparse_opts = dict(
+        do_time=True, ignore_prompts=False, numeric_literals=not numeric_literals
+    )
     for m in re.finditer(r'^(\s*)(load|attach) ([^(].*)$', contents, re.MULTILINE):
         # Preparse contents prior to the load/attach.
-        lines_out += preparse(contents[start:m.start()], **preparse_opts).splitlines()
+        lines_out += preparse(contents[start : m.start()], **preparse_opts).splitlines()
         # Wrap the load/attach itself.
         lines_out.append(m.group(1) + load_wrap(m.group(3), m.group(2) == 'attach'))
         # Further preparsing should start after this load/attach line.
@@ -2027,30 +2071,54 @@ def implicit_mul(code, level=5):
         '1e3 + 0.3e-3rj'
     """
     from keyword import iskeyword
+
     keywords_py2 = ['print', 'exec']
 
     def re_no_keyword(pattern, code):
         for _ in range(2):  # do it twice in because matches do not overlap
             for m in reversed(list(re.finditer(pattern, code))):
                 left, right = m.groups()
-                if not iskeyword(left) and not iskeyword(right) \
-                   and left not in keywords_py2:
-                    code = "%s%s*%s%s" % (code[:m.start()],
-                                          left,
-                                          right,
-                                          code[m.end():])
+                if (
+                    not iskeyword(left)
+                    and not iskeyword(right)
+                    and left not in keywords_py2
+                ):
+                    code = "%s%s*%s%s" % (
+                        code[: m.start()],
+                        left,
+                        right,
+                        code[m.end() :],
+                    )
         return code
 
     code, literals, state = strip_string_literals(code)
     if level >= 1:
         no_mul_token = " '''_no_mult_token_''' "
         code = re.sub(r'\b0x', r'0%sx' % no_mul_token, code)  # hex digits
-        code = re.sub(r'( *)time ', r'\1time %s' % no_mul_token, code)  # first word may be magic 'time'
-        code = re.sub(r'\b(\d+(?:\.\d+)?(?:e\d+)?)(rj?\b|j?r\b)', r'\1%s\2' % no_mul_token, code, flags=re.I)  # exclude such things as 10r, 10rj, 10jr
-        code = re.sub(r'\b(\d+(?:\.\d+)?)e([-\d])', r'\1%se%s\2' % (no_mul_token, no_mul_token), code, flags=re.I)  # exclude such things as 1e5
-        code = re_no_keyword(r'\b((?:\d+(?:\.\d+)?)|(?:%s[0-9eEpn]*\b)) *([^\W\d(]\w*)\b' % numeric_literal_prefix, code)
+        code = re.sub(
+            r'( *)time ', r'\1time %s' % no_mul_token, code
+        )  # first word may be magic 'time'
+        code = re.sub(
+            r'\b(\d+(?:\.\d+)?(?:e\d+)?)(rj?\b|j?r\b)',
+            r'\1%s\2' % no_mul_token,
+            code,
+            flags=re.I,
+        )  # exclude such things as 10r, 10rj, 10jr
+        code = re.sub(
+            r'\b(\d+(?:\.\d+)?)e([-\d])',
+            r'\1%se%s\2' % (no_mul_token, no_mul_token),
+            code,
+            flags=re.I,
+        )  # exclude such things as 1e5
+        code = re_no_keyword(
+            r'\b((?:\d+(?:\.\d+)?)|(?:%s[0-9eEpn]*\b)) *([^\W\d(]\w*)\b'
+            % numeric_literal_prefix,
+            code,
+        )
     if level >= 2:
-        code = re.sub(r'(\%\(L\d+\))s', r'\1%ss%s' % (no_mul_token, no_mul_token), code)  # literal strings
+        code = re.sub(
+            r'(\%\(L\d+\))s', r'\1%ss%s' % (no_mul_token, no_mul_token), code
+        )  # literal strings
         code = re_no_keyword(r'(\)) *(\w+)', code)
     if level >= 3:
         code = re_no_keyword(r'(\w+) +(\w+)', code)
@@ -2194,7 +2262,7 @@ def handle_encoding_declaration(contents, out):
     for num, line in enumerate(lines[:2]):
         if re.search(r"coding[:=]\s*([-\w.]+)", line):
             out.write(line + '\n')
-            return '\n'.join(lines[:num] + lines[(num + 1):])
+            return '\n'.join(lines[:num] + lines[(num + 1) :])
 
     # If we did not find any encoding hints, use explicit utf-8.
     # According to PEP 3120, this could be omitted.
@@ -2234,6 +2302,7 @@ def preparse_file_named(name) -> Path:
         PosixPath('...sage.py')
     """
     from sage.misc.temporary_file import tmp_filename
+
     name = Path(name)
     assert name.suffix == '.sage'
     tmpfilename = Path(tmp_filename(name.stem, ext='.sage.py'))

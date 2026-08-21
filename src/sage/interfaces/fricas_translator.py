@@ -12,16 +12,16 @@ To add handling of a FriCAS type constructor, proceed as follows:
   constructs the element given the parsed string produced by
   ``sexport``.
 """
+
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import lazy_import
 from sage.rings.integer import Integer
+
 lazy_import('sage.calculus.var', ['var', 'function'])
 lazy_import('sage.symbolic.expression', ['symbol_table', 'register_symbol'])
 lazy_import('sage.symbolic.constants', ['I', 'e', 'pi'])
 
-FRICAS_CONSTANTS = {'%i': I,
-                    '%e': e,
-                    '%pi': pi}
+FRICAS_CONSTANTS = {'%i': I, '%e': e, '%pi': pi}
 
 # the dispatch dictionary for SEXPorter and Evaluator
 # if the first element of the pair is a function, it is used by
@@ -49,12 +49,16 @@ FRICAS_DOMAIN_DISPATCH = {
     "Factored": ("_unary", "_eval_factorization"),
     "Vector": ("_unary", "_eval_list"),
     "DirectProduct": ("_aggregate", "_eval_list"),
-    "UnivariatePolynomial": (lambda x: ("Polynomial", x[2]),
-                             "_eval_polynomialring"),  # coerce to Polynomial
-    "DistributedMultivariatePolynomial": (lambda x: ("Polynomial", x[2]),
-                                          "_eval_polynomialring"),
-    "MultivariatePolynomial": (lambda x: ("Polynomial", x[2]),
-                               "_eval_polynomialring")}
+    "UnivariatePolynomial": (
+        lambda x: ("Polynomial", x[2]),
+        "_eval_polynomialring",
+    ),  # coerce to Polynomial
+    "DistributedMultivariatePolynomial": (
+        lambda x: ("Polynomial", x[2]),
+        "_eval_polynomialring",
+    ),
+    "MultivariatePolynomial": (lambda x: ("Polynomial", x[2]), "_eval_polynomialring"),
+}
 
 
 class SEXPorter:
@@ -62,6 +66,7 @@ class SEXPorter:
     A class constructing the FriCAS package call to export
     objects in the given (parsed) domain.
     """
+
     def __init__(self, domain):
         """
         INPUT:
@@ -75,9 +80,11 @@ class SEXPorter:
             sage: SEXPorter(("Integer",))._domain
             ('Integer',)
         """
-        if (isinstance(domain, tuple)
+        if (
+            isinstance(domain, tuple)
             and (head := domain[0]) in FRICAS_DOMAIN_DISPATCH
-            and callable(fun := FRICAS_DOMAIN_DISPATCH[head][0])):
+            and callable(fun := FRICAS_DOMAIN_DISPATCH[head][0])
+        ):
             self._domain = fun(domain)
         else:
             self._domain = domain
@@ -115,9 +122,12 @@ class SEXPorter:
             dom = SEXPorter(self._domain[2])._unparse()
             return f"{tag}: {dom}"
 
-        return (self._domain[0] + "("
-                + ",".join(SEXPorter(e)._unparse() for e in self._domain[1:])
-                + ")")
+        return (
+            self._domain[0]
+            + "("
+            + ",".join(SEXPorter(e)._unparse() for e in self._domain[1:])
+            + ")"
+        )
 
     def _inputform(self):
         """
@@ -258,10 +268,13 @@ class SEXPorter:
                 return f'obj case {tag_name} => {make_call(field_domain, tag_index)}'
 
             domain = SEXPorter(field_domain)
-            return f'obj case {domain._unparse()} => {make_call(field_domain, tag_index)}'
+            return (
+                f'obj case {domain._unparse()} => {make_call(field_domain, tag_index)}'
+            )
 
-        items = "; ".join(make_case(dom, tag)
-                          for tag, dom in enumerate(self._domain[1:]))
+        items = "; ".join(
+            make_case(dom, tag) for tag, dom in enumerate(self._domain[1:])
+        )
 
         name = "sexport" + "".join(map(str, flatten(self._domain)))
         pattern = compile(r'[\W_]+')
@@ -292,7 +305,9 @@ class SEXPorter:
 
         head = self._domain[0]
         if head not in FRICAS_DOMAIN_DISPATCH:
-            raise NotImplementedError(f"{head} cannot be translated from FriCAS to SageMath yet")
+            raise NotImplementedError(
+                f"{head} cannot be translated from FriCAS to SageMath yet"
+            )
 
         return getattr(self, FRICAS_DOMAIN_DISPATCH[head][0])()
 
@@ -511,8 +526,7 @@ class SEXEvaluator:
             [1.3000000000000000000]
         """
         base = self._dom.base()
-        m = [[SEXEvaluator(e, base).eval() for e in row]
-             for row in self._ast]
+        m = [[SEXEvaluator(e, base).eval() for e in row] for row in self._ast]
         P = self._dom.parent()
         return P(m)
 
@@ -539,13 +553,15 @@ class SEXEvaluator:
         P = self._dom.parent(names=names)
 
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+
         if isinstance(P, PolynomialRing_generic):
 
             def to_exponent(mon):
                 return mon[0][1] if mon else 0
 
-            return P._from_dict({to_exponent(mon): SEXEvaluator(c, base).eval()
-                                 for mon, c in self._ast})
+            return P._from_dict(
+                {to_exponent(mon): SEXEvaluator(c, base).eval() for mon, c in self._ast}
+            )
 
         def to_tuple(mon):
             t = [0] * len(P._names)
@@ -553,8 +569,9 @@ class SEXEvaluator:
                 t[P._names.index(v)] = e
             return tuple(t)
 
-        return P._from_dict({to_tuple(mon): SEXEvaluator(c, base).eval()
-                             for mon, c in self._ast})
+        return P._from_dict(
+            {to_tuple(mon): SEXEvaluator(c, base).eval() for mon, c in self._ast}
+        )
 
     def _eval_factorization(self):
         r"""
@@ -575,13 +592,15 @@ class SEXEvaluator:
             -1 * 2^4 * 3
         """
         from sage.structure.factorization import Factorization
+
         base = self._dom.base()
         unit, factors = self._ast
-        return Factorization([(SEXEvaluator(f, base).eval(), e)
-                              for f, e in factors],
-                             unit=SEXEvaluator(unit, base).eval(),
-                             sort=False,
-                             simplify=False)
+        return Factorization(
+            [(SEXEvaluator(f, base).eval(), e) for f, e in factors],
+            unit=SEXEvaluator(unit, base).eval(),
+            sort=False,
+            simplify=False,
+        )
 
     def _eval_sr_aux(self):
         r"""
@@ -687,13 +706,17 @@ class SEXEvaluator:
         # postprocessing of rootOf
         from sage.rings.qqbar import QQbar
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         while rootOf:
             for var, poly in rootOf.items():
                 pvars = poly.variables()
                 rvars = [v for v in pvars if v not in rootOf_ev]  # remaining variables
                 uvars = [v for v in rvars if v in rootOf]  # variables to evaluate
                 if len(uvars) == 1:
-                    assert uvars[0] == var, "the only variable in uvars should be %s but is %s" % (var, uvars[0])
+                    assert uvars[0] == var, (
+                        "the only variable in uvars should be %s but is %s"
+                        % (var, uvars[0])
+                    )
                     break
             else:
                 assert False, "circular dependency in rootOf expression"
@@ -714,9 +737,12 @@ class SEXEvaluator:
                 # we just need any root per FriCAS specification
                 rootOf_ev[var] = poly.any_root()
 
-        return ex.subs({var: (val.radical_expression()
-                              if val.parent() is QQbar else val)
-                        for var, val in rootOf_ev.items()})
+        return ex.subs(
+            {
+                var: (val.radical_expression() if val.parent() is QQbar else val)
+                for var, val in rootOf_ev.items()
+            }
+        )
 
 
 class LazyParent:
@@ -769,18 +795,15 @@ class LazyParent:
         """
         head = self.head()
         args = self.args()
-        if head in ["List",
-                    "Fraction",
-                    "Matrix",
-                    "Polynomial",
-                    "Factored",
-                    "Vector"]:
+        if head in ["List", "Fraction", "Matrix", "Polynomial", "Factored", "Vector"]:
             return LazyParent(args[0])
 
-        if head in ["UnivariatePolynomial",
-                    "MultivariatePolynomial",
-                    "DistributedMultivariatePolynomial",
-                    "DirectProduct"]:
+        if head in [
+            "UnivariatePolynomial",
+            "MultivariatePolynomial",
+            "DistributedMultivariatePolynomial",
+            "DirectProduct",
+        ]:
             return LazyParent(args[1])
 
         raise NotImplementedError(f"Cannot build base for {head}")
@@ -807,59 +830,73 @@ class LazyParent:
 
         if head in ["Vector", "DirectProduct"]:
             from sage.modules.free_module_element import vector
+
             return vector
 
         if head in ["Matrix", "RectangularMatrix", "SquareMatrix"]:
             from sage.matrix.constructor import matrix
+
             return matrix
 
         if head in ["FiniteField", "PrimeField"]:
             from sage.rings.finite_rings.finite_field_constructor import GF
+
             return GF(*args)
 
         if head == "IntegerMod":
             from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+
             return IntegerModRing(*args)
 
         if head in ["Integer", "PositiveInteger", "NonNegativeInteger"]:
             from sage.rings.integer_ring import ZZ
+
             return ZZ
 
         if head == "AlgebraicNumber":
             from sage.rings.qqbar import QQbar
+
             return QQbar
 
         if head == "Expression":
             from sage.symbolic.ring import SR
+
             return SR
 
         if head == "Float":
             from sage.rings.real_mpfr import RealField
+
             return RealField(kwargs["prec"])
 
         if head == "Fraction":
             from sage.rings.fraction_field import FractionField
+
             base = self.base().parent(**kwargs)
             return FractionField(base)
 
-        if head in ["UnivariatePolynomial",
-                    "MultivariatePolynomial",
-                    "DistributedMultivariatePolynomial"]:
+        if head in [
+            "UnivariatePolynomial",
+            "MultivariatePolynomial",
+            "DistributedMultivariatePolynomial",
+        ]:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             base = self.base().parent(**kwargs)
             return PolynomialRing(base, args[0])
 
         if head == "Polynomial":
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             base = self.base().parent(**kwargs)
             if not hasattr(self, "_polynomial_symbols"):
                 self._polynomial_symbols = []
-            self._polynomial_symbols = sorted(set(list(kwargs.get("names", []))
-                                                  + self._polynomial_symbols))
+            self._polynomial_symbols = sorted(
+                set(list(kwargs.get("names", [])) + self._polynomial_symbols)
+            )
             # we always want a multivariate polynomial ring here
-            return PolynomialRing(base,
-                                  len(self._polynomial_symbols),
-                                  names=self._polynomial_symbols)
+            return PolynomialRing(
+                base, len(self._polynomial_symbols), names=self._polynomial_symbols
+            )
 
         raise NotImplementedError(f"Cannot build parent for {head}")
 
@@ -969,12 +1006,14 @@ class SEXParser:
         a = self._start
         b = len(self._s)
 
-        while (a < b
-               and self._s[a] not in self._WHITESPACE
-               and self._s[a] != self._RIGHTBRACKET):
+        while (
+            a < b
+            and self._s[a] not in self._WHITESPACE
+            and self._s[a] != self._RIGHTBRACKET
+        ):
             a += 1
 
-        token = self._s[self._start:a]
+        token = self._s[self._start : a]
         self._start = a - 1
         try:
             return Integer(token)

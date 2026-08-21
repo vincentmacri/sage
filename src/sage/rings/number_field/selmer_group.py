@@ -43,7 +43,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.rings.rational_field import QQ
 from sage.misc.misc_c import prod
@@ -124,13 +123,15 @@ def _coords_in_C_p(I, C, p):
         ValueError: The 3rd power of Fractional ideal (2, a + 1) is not principal
     """
     cyclic_orders = C.gens_orders()
-    non_p_indices = [i for i,n in enumerate(cyclic_orders) if not p.divides(n)]
-    p_indices = [(i, n // p) for i,n in enumerate(cyclic_orders) if p.divides(n)]
+    non_p_indices = [i for i, n in enumerate(cyclic_orders) if not p.divides(n)]
+    p_indices = [(i, n // p) for i, n in enumerate(cyclic_orders) if p.divides(n)]
 
     coords = C(I).exponents()
-    if all(coords[i] == 0 for i in non_p_indices) and all(coords[i] % n == 0 for i, n in p_indices):
+    if all(coords[i] == 0 for i in non_p_indices) and all(
+        coords[i] % n == 0 for i, n in p_indices
+    ):
         return [(coords[i] // n) % p for i, n in p_indices]
-    raise ValueError("The {} power of {} is not principal".format(p.ordinal_str(),I))
+    raise ValueError("The {} power of {} is not principal".format(p.ordinal_str(), I))
 
 
 def _coords_in_C_mod_p(I, C, p):
@@ -228,11 +229,16 @@ def _root_ideal(I, C, p):
     # are dividing the coordinate vector by p in the appropriate sense
 
     if not all(p.divides(ci) for ci, n in zip(coords, cyclic_orders) if p.divides(n)):
-        raise ValueError("The ideal class of {} is not a {} power".format(I,p.ordinal_str()))
+        raise ValueError(
+            "The ideal class of {} is not a {} power".format(I, p.ordinal_str())
+        )
 
-    w = [ci // p if p.divides(n) else (ci / p) % n for ci, n in zip(coords, cyclic_orders)]
+    w = [
+        ci // p if p.divides(n) else (ci / p) % n
+        for ci, n in zip(coords, cyclic_orders)
+    ]
 
-    return prod([gen ** wi for wi, gen in zip(w, cyclic_gens)], C.number_field().ideal(1))
+    return prod([gen**wi for wi, gen in zip(w, cyclic_gens)], C.number_field().ideal(1))
 
 
 def coords_in_U_mod_p(u, U, p):
@@ -279,7 +285,7 @@ def coords_in_U_mod_p(u, U, p):
         [1, 2, 0]
     """
     coords = U.log(u)
-    start = 1 - int(p.divides(U.zeta_order())) # 0 or 1
+    start = 1 - int(p.divides(U.zeta_order()))  # 0 or 1
     return [c % p for c in coords[start:]]
 
 
@@ -340,11 +346,15 @@ def basis_for_p_cokernel(S, C, p):
         Fractional ideal (5, a + 3)]
     """
     from sage.matrix.constructor import Matrix
+
     M = Matrix(GF(p), [_coords_in_C_mod_p(P, C, p) for P in S])
     k = M.left_kernel()
-    bas = [prod([P ** bj.lift() for P, bj in zip(S, b.list())],
-                C.number_field().ideal(1)) for b in k.basis()]
+    bas = [
+        prod([P ** bj.lift() for P, bj in zip(S, b.list())], C.number_field().ideal(1))
+        for b in k.basis()
+    ]
     return bas, k.coordinate_vector
+
 
 # The main function
 
@@ -542,7 +552,7 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
     hK = 1 if K == QQ else K.class_number(proof=proof)
     C = K.class_group() if K == QQ else K.class_group(proof=proof)
 
-    hKp = (hK % p == 0) # flag whether the class number is divisible by p
+    hKp = hK % p == 0  # flag whether the class number is divisible by p
 
     if K == QQ:
         if p == 2:
@@ -556,21 +566,23 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
             ulist = ulist[1:]
 
     if debug:
-        print("{} generators in ulist = {}".format(len(ulist),ulist))
+        print("{} generators in ulist = {}".format(len(ulist), ulist))
 
     # Step 2. The class group contribution: generators of the p'th
     # powers of ideals generating the p-torsion in the class group.
     # These have valuation divisible by p everywhere.
 
     if hKp:
-        betalist = [_ideal_generator(c ** n)
-                    for c, n in zip(C.gens_ideals(), C.gens_orders())
-                    if n % p == 0]
+        betalist = [
+            _ideal_generator(c**n)
+            for c, n in zip(C.gens_ideals(), C.gens_orders())
+            if n % p == 0
+        ]
     else:
         betalist = []
 
     if debug:
-        print("{} generators in betalist = {}".format(len(betalist),betalist))
+        print("{} generators in betalist = {}".format(len(betalist), betalist))
 
     # Step 3. The part depending on S: one generator for each ideal A
     # in a basis of those ideals supported on S (modulo p'th powers of
@@ -585,7 +597,7 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
         T, f = basis_for_p_cokernel(S, C, p)
         alphalist = [_ideal_generator(I / _root_ideal(I, C, p) ** p) for I in T]
     else:
-        f = lambda x:x
+        f = lambda x: x
         alphalist = [_ideal_generator(P) for P in S]
 
     if debug:
@@ -598,14 +610,16 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
     KSp = VectorSpace(GF(p), len(KSp_gens))
 
     if debug:
-        print("Generators of K(S,p) = {} (dimension {})".format(KSp_gens, len(KSp_gens)))
+        print(
+            "Generators of K(S,p) = {} (dimension {})".format(KSp_gens, len(KSp_gens))
+        )
 
     # Now we define maps in each direction between the abstract space and K^*.
 
     # Define the easy map from KSp into K^*:
 
     def from_KSp(v):
-        return prod([g ** vi for g, vi in zip(KSp_gens, v)], K(1))
+        return prod([g**vi for g, vi in zip(KSp_gens, v)], K(1))
 
     # Define the hard map from (a subgroup of) K^* to KSp:
 
@@ -620,22 +634,34 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
             raise ValueError("argument {} should be in {}".format(a, K))
 
         if not all(P in S or a.valuation(P) % p == 0 for P in a.support()):
-            raise ValueError("argument {} should have valuations divisible by {} at all primes in {}".format(a, p, S))
+            raise ValueError(
+                "argument {} should have valuations divisible by {} at all primes in {}".format(
+                    a, p, S
+                )
+            )
 
         # 1. (a) is a p'th power mod ideals in S, say (a)=AB^p, where
         # A is supported on S and is a linear combination of the
         # ideals T above.  Find the exponents of the P_i in S in A:
 
         S_vals = [F(a.valuation(P)) for P in S]
-        avec = list(f(S_vals)) # coordinates of A w.r.t ideals in T (mod p'th powers)
-        a1 = prod((alpha ** e for alpha, e in zip(alphalist,avec)), K(1))
+        avec = list(f(S_vals))  # coordinates of A w.r.t ideals in T (mod p'th powers)
+        a1 = prod((alpha**e for alpha, e in zip(alphalist, avec)), K(1))
         a /= a1
         if debug:
-            print("alpha component is {} with coords {}".format(a1,avec))
+            print("alpha component is {} with coords {}".format(a1, avec))
             if K == QQ:
-                print("continuing with quotient {} whose ideal should be a {}'th power: {}".format(a,p,a.factor()))
+                print(
+                    "continuing with quotient {} whose ideal should be a {}'th power: {}".format(
+                        a, p, a.factor()
+                    )
+                )
             else:
-                print("continuing with quotient {} whose ideal should be a {}'th power: {}".format(a,p,K.ideal(a).factor()))
+                print(
+                    "continuing with quotient {} whose ideal should be a {}'th power: {}".format(
+                        a, p, K.ideal(a).factor()
+                    )
+                )
 
         # 2. Now (a) is a p'th power, say (a)=B^p.
         # Find B and the exponents of [B] w.r.t. basis of C[p]:
@@ -646,15 +672,15 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
             assert all(v % p == 0 for v in vals)
         one = K(1) if K == QQ else K.ideal(1)
         aa = a.abs() if K == QQ else K.ideal(a)
-        B = prod((P ** (v // p) for P, v in zip(supp,vals)), one)
+        B = prod((P ** (v // p) for P, v in zip(supp, vals)), one)
         if debug:
-            assert B ** p == aa
+            assert B**p == aa
             print("B={}".format(B))
             print("a={}".format(a))
 
         if hKp:
             bvec = _coords_in_C_p(B, C, p)
-            a2 = prod((beta ** e for beta, e in zip(betalist, bvec)), K(1))
+            a2 = prod((beta**e for beta, e in zip(betalist, bvec)), K(1))
             a /= a2
             supp = a.support()
             vals = [a.valuation(P) for P in supp]
@@ -662,14 +688,18 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
                 assert all(v % p == 0 for v in vals)
             B = prod((P ** (v // p) for P, v in zip(supp, vals)), one)
             if debug:
-                assert B ** p == aa
+                assert B**p == aa
         else:
             bvec = []
             a2 = 1
 
         if debug:
-            print("beta component is {} with coords {}".format(a2,bvec))
-            print("continuing with quotient {} which should be a p'th power times a unit".format(a))
+            print("beta component is {} with coords {}".format(a2, bvec))
+            print(
+                "continuing with quotient {} which should be a p'th power times a unit".format(
+                    a
+                )
+            )
 
         # 3. Now (a) = (c)^p for some c, so a/c^p is a unit
 
@@ -681,12 +711,12 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
         a3 = B if K == QQ else _ideal_generator(B)
         if debug:
             print("a3={}".format(a3))
-        a /= a3 ** p
+        a /= a3**p
         if debug:
-            print("dividing by {}th power of {}".format(p,a3))
+            print("dividing by {}th power of {}".format(p, a3))
             print("continuing with quotient {} which should be a unit".format(a))
 
-        #4. Now a is a unit
+        # 4. Now a is a unit
 
         # NB not a.is_unit which is true for all a in K^*.  One could
         # also test K.ring_of_integers()(a).is_unit().
@@ -703,7 +733,7 @@ def pSelmerGroup(K, S, p, proof=None, debug=False):
             else:
                 cvec = []
         else:
-            cvec = coords_in_U_mod_p(a,U,p)
+            cvec = coords_in_U_mod_p(a, U, p)
 
         if debug:
             print("gamma component has coords {}".format(cvec))

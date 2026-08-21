@@ -12,7 +12,6 @@ Loop Crystals
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
@@ -48,6 +47,7 @@ class LoopCrystals(Category_singleton):
         sage: B = FiniteCrystals().example()
         sage: TestSuite(B).run()
     """
+
     @cached_method
     def super_categories(self):
         r"""
@@ -70,7 +70,10 @@ class LoopCrystals(Category_singleton):
             sage: B = LoopCrystals().example(); B
             Kirillov-Reshetikhin crystal of type ['A', 3, 1] with (r,s)=(1,1)
         """
-        from sage.combinat.crystals.kirillov_reshetikhin import KirillovReshetikhinCrystal
+        from sage.combinat.crystals.kirillov_reshetikhin import (
+            KirillovReshetikhinCrystal,
+        )
+
         return KirillovReshetikhinCrystal(['A', n, 1], 1, 1)
 
     class ParentMethods:
@@ -121,10 +124,13 @@ class LoopCrystals(Category_singleton):
 
             G = Crystals().parent_class.digraph(self, subset, index_set)
             if have_dot2tex():
+
                 def eopt(u_v_label):
                     return {"backward": u_v_label[2] == 0}
+
                 G.set_latex_options(edge_options=eopt)
             return G
+
 
 # TODO: Should we make "regular" an axiom?
 
@@ -134,6 +140,7 @@ class RegularLoopCrystals(Category_singleton):
     The category of regular `U_q'(\mathfrak{g})`-crystals, where
     `\mathfrak{g}` is of affine type.
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -171,6 +178,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
     """
     Category of Kirillov-Reshetikhin crystals.
     """
+
     @cached_method
     def super_categories(self):
         r"""
@@ -248,8 +256,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
                 4736732
             """
             CWLR = self.cartan_type().classical().root_system().ambient_space()
-            return sum(CWLR.weyl_dimension(mg.classical_weight())
-                       for mg in self.classically_highest_weight_vectors())
+            return sum(
+                CWLR.weyl_dimension(mg.classical_weight())
+                for mg in self.classically_highest_weight_vectors()
+            )
 
         @cached_method
         def maximal_vector(self):
@@ -288,11 +298,14 @@ class KirillovReshetikhinCrystals(Category_singleton):
             s = self.s()
             if self.cartan_type().dual().type() == 'BC':
                 if self.cartan_type().rank() - 1 == r:
-                    weight = 2*s*Lambda[r] - s*Lambda[0]
+                    weight = 2 * s * Lambda[r] - s * Lambda[0]
                 else:
-                    weight = s*Lambda[r] - s*Lambda[0]
+                    weight = s * Lambda[r] - s * Lambda[0]
             else:
-                weight = s*Lambda[r] - s*Lambda[0] * Lambda[r].level() / Lambda[0].level()
+                weight = (
+                    s * Lambda[r]
+                    - s * Lambda[0] * Lambda[r].level() / Lambda[0].level()
+                )
 
             # First check the module generators as it is likely to be in here
             for b in self.module_generators:
@@ -336,6 +349,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
                 Affinization of Kirillov-Reshetikhin tableaux of type ['A', 2, 1] and shape (1, 1)
             """
             from sage.combinat.crystals.affinization import AffinizationOfCrystal
+
             return AffinizationOfCrystal(self)
 
         @cached_method
@@ -407,6 +421,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
                         [[[2]], [[2], [3]]]: [[[2], [3]], [[2]]]})
             """
             from sage.combinat.crystals.tensor_product import TensorProductOfCrystals
+
             T1 = TensorProductOfCrystals(self, K)
             T2 = TensorProductOfCrystals(K, self)
             gen1 = T1(self.maximal_vector(), K.maximal_vector())
@@ -544,9 +559,12 @@ class KirillovReshetikhinCrystals(Category_singleton):
                 Implement a version for tensor products of KR crystals.
             """
             from sage.rings.integer_ring import ZZ
+
             if ell is None:
-                if (self.cartan_type().dual().type() == 'BC'
-                        and self.cartan_type().rank() - 1 == self.r()):
+                if (
+                    self.cartan_type().dual().type() == 'BC'
+                    and self.cartan_type().rank() - 1 == self.r()
+                ):
                     return True
                 ell = self.s() / self.cartan_type().c()[self.r()]
                 if ell not in ZZ:
@@ -557,8 +575,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
 
             # [FOS2010]_ check
             if self.cartan_type().classical().type() not in ['E', 'F', 'G']:
-                if (self.cartan_type().dual().type() == 'BC'
-                        and self.cartan_type().rank() - 1 == self.r()):
+                if (
+                    self.cartan_type().dual().type() == 'BC'
+                    and self.cartan_type().rank() - 1 == self.r()
+                ):
                     return ell == self.s()
                 return ell == self.s() / self.cartan_type().c()[self.r()]
 
@@ -579,6 +599,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
             rank = len(I)
             La = self.weight_lattice_realization().basis()
             from sage.combinat.integer_vector import IntegerVectors
+
             for n in range(1, ell + 1):
                 for c in IntegerVectors(n, rank):
                     w = sum(c[i] * La[i] for i in I)
@@ -627,8 +648,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
             """
             if not self.is_perfect():
                 raise ValueError("this crystal is not perfect")
-            if (self.cartan_type().dual().type() == 'BC'
-                    and self.cartan_type().rank() - 1 == self.r()):
+            if (
+                self.cartan_type().dual().type() == 'BC'
+                and self.cartan_type().rank() - 1 == self.r()
+            ):
                 return self.s()
             return self.s() / self.cartan_type().c()[self.r()]
 
@@ -716,6 +739,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
         """
         The category of tensor products of Kirillov-Reshetikhin crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -811,8 +835,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
                     5130
                 """
                 CWLR = self.cartan_type().classical().root_system().ambient_space()
-                return sum(CWLR.weyl_dimension(mg.classical_weight())
-                           for mg in self.classically_highest_weight_vectors())
+                return sum(
+                    CWLR.weyl_dimension(mg.classical_weight())
+                    for mg in self.classically_highest_weight_vectors()
+                )
 
             def one_dimensional_configuration_sum(self, q=None, group_components=True):
                 r"""
@@ -867,16 +893,23 @@ class KirillovReshetikhinCrystals(Category_singleton):
                 """
                 if q is None:
                     from sage.rings.rational_field import QQ
+
                     q = QQ['q'].gens()[0]
                 P0 = self.weight_lattice_realization().classical()
                 B = P0.algebra(q.parent())
                 if group_components:
-                    G = self.digraph(index_set=self.cartan_type().classical().index_set())
+                    G = self.digraph(
+                        index_set=self.cartan_type().classical().index_set()
+                    )
                     C = G.connected_components(sort=False)
-                    return B.sum(q**(c[0].energy_function()) * B.sum(B(P0(b.weight()))
-                                                                     for b in c)
-                                 for c in C)
-                return B.sum(q**(b.energy_function()) * B(P0(b.weight())) for b in self)
+                    return B.sum(
+                        q ** (c[0].energy_function())
+                        * B.sum(B(P0(b.weight())) for b in c)
+                        for c in C
+                    )
+                return B.sum(
+                    q ** (b.energy_function()) * B(P0(b.weight())) for b in self
+                )
 
         class ElementMethods:
             def energy_function(self, algorithm=None):
@@ -977,8 +1010,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
 
                 C = self.parent().crystals[0]
                 ell = ceil(C.s() / C.cartan_type().c()[C.r()])
-                is_perfect = all(ell == K.s() / K.cartan_type().c()[K.r()]
-                                 for K in self.parent().crystals)
+                is_perfect = all(
+                    ell == K.s() / K.cartan_type().c()[K.r()]
+                    for K in self.parent().crystals
+                )
                 if algorithm is None:
                     if is_perfect:
                         algorithm = 'grading'
@@ -987,23 +1022,33 @@ class KirillovReshetikhinCrystals(Category_singleton):
 
                 if algorithm == 'grading':
                     if not is_perfect:
-                        raise NotImplementedError("all crystals in the tensor product need to be perfect of the same level")
+                        raise NotImplementedError(
+                            "all crystals in the tensor product need to be perfect of the same level"
+                        )
                     d = self.parent().maximal_vector().affine_grading()
                     return d - self.affine_grading()
 
                 if algorithm == 'definition':
                     # Setup
                     from sage.rings.integer_ring import ZZ
+
                     energy = ZZ.zero()
-                    R_mats = [[K.R_matrix(Kp) for Kp in self.parent().crystals[i+1:]]
-                              for i, K in enumerate(self.parent().crystals)]
-                    H_funcs = [[K.local_energy_function(Kp) for Kp in self.parent().crystals[i+1:]]
-                               for i, K in enumerate(self.parent().crystals)]
+                    R_mats = [
+                        [K.R_matrix(Kp) for Kp in self.parent().crystals[i + 1 :]]
+                        for i, K in enumerate(self.parent().crystals)
+                    ]
+                    H_funcs = [
+                        [
+                            K.local_energy_function(Kp)
+                            for Kp in self.parent().crystals[i + 1 :]
+                        ]
+                        for i, K in enumerate(self.parent().crystals)
+                    ]
 
                     for i, b in enumerate(self):
                         for j, R in enumerate(R_mats[i]):
                             H = H_funcs[i][j]
-                            bp = self[i+j+1]
+                            bp = self[i + j + 1]
                             T = R.domain()
                             t = T(b, bp)
                             energy += H(t)
@@ -1107,8 +1152,10 @@ class KirillovReshetikhinCrystals(Category_singleton):
                 """
                 from sage.arith.misc import integer_ceil as ceil
 
-                ell = max(ceil(K.s()/K.cartan_type().c()[K.r()])
-                          for K in self.parent().crystals)
+                ell = max(
+                    ceil(K.s() / K.cartan_type().c()[K.r()])
+                    for K in self.parent().crystals
+                )
                 if self.cartan_type().dual().type() == 'BC':
                     I = self.cartan_type().index_set()
                     for i in I[:-1]:
@@ -1129,6 +1176,7 @@ class KirillovReshetikhinCrystals(Category_singleton):
 
 #####################################################################
 # Local energy function
+
 
 class LocalEnergyFunction(Map):
     r"""
@@ -1174,6 +1222,7 @@ class LocalEnergyFunction(Map):
 
     [KKMMNN1992]_
     """
+
     def __init__(self, B, Bp, normalization=0):
         """
         Initialize ``self``.
@@ -1197,14 +1246,17 @@ class LocalEnergyFunction(Map):
             [0, 1, 2, 1]
         """
         from sage.rings.integer_ring import ZZ
+
         self._B = B
         self._Bp = Bp
         self._R_matrix = self._B.R_matrix(self._Bp)
         T = B.tensor(Bp)
-        self._known_values = {T(*[K.maximal_vector() for K in T.crystals]):
-                              ZZ(normalization)}
+        self._known_values = {
+            T(*[K.maximal_vector() for K in T.crystals]): ZZ(normalization)
+        }
         self._I0 = T.cartan_type().classical().index_set()
         from sage.categories.homset import Hom
+
         Map.__init__(self, Hom(T, ZZ))
 
     def _repr_(self):

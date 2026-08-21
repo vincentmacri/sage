@@ -99,6 +99,7 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
     """
     A space of modular forms with character.
     """
+
     def __init__(self, character, weight=2, base_ring=None, eis_only=False):
         """
         Create an ambient modular forms space with character.
@@ -135,7 +136,9 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
             raise ValueError("the base ring must have characteristic 0.")
         group = Gamma1_constructor(character.modulus())
         base_ring = character.base_ring()
-        ModularFormsAmbient.__init__(self, group, weight, base_ring, character, eis_only)
+        ModularFormsAmbient.__init__(
+            self, group, weight, base_ring, character, eis_only
+        )
 
     def _repr_(self):
         """
@@ -161,9 +164,19 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
         """
         if self._eis_only:
             return "Modular Forms space of character %s and weight %s over %s" % (
-                        self.character()._repr_short_(), self.weight(), self.base_ring())
-        return "Modular Forms space of dimension %s, character %s and weight %s over %s" % (
-        self.dimension(), self.character()._repr_short_(), self.weight(), self.base_ring())
+                self.character()._repr_short_(),
+                self.weight(),
+                self.base_ring(),
+            )
+        return (
+            "Modular Forms space of dimension %s, character %s and weight %s over %s"
+            % (
+                self.dimension(),
+                self.character()._repr_short_(),
+                self.weight(),
+                self.base_ring(),
+            )
+        )
 
     @cached_method
     def cuspidal_submodule(self):
@@ -210,7 +223,9 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
             return self
         return ambient_R.ModularFormsAmbient_R(self, base_ring=base_ring)
 
-    @cached_method(key=lambda self, sign: Integer(sign)) # convert sign to an Integer before looking this up in the cache
+    @cached_method(
+        key=lambda self, sign: Integer(sign)
+    )  # convert sign to an Integer before looking this up in the cache
     def modular_symbols(self, sign=0):
         """
         Return corresponding space of modular symbols with given sign.
@@ -234,10 +249,12 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
             ValueError: sign must be -1, 0, or 1
         """
         sign = Integer(sign)
-        return modsym.ModularSymbols(self.character(),
-                                     weight=self.weight(),
-                                     sign=sign,
-                                     base_ring=self.base_ring())
+        return modsym.ModularSymbols(
+            self.character(),
+            weight=self.weight(),
+            sign=sign,
+            base_ring=self.base_ring(),
+        )
 
     @cached_method
     def eisenstein_submodule(self):
@@ -280,11 +297,25 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
              over Rational Field
         """
         from . import constructor
+
         if N % self.level() == 0:
-            return constructor.ModularForms(self.character().extend(N), self.weight(), self.base_ring(), prec=self.prec())
+            return constructor.ModularForms(
+                self.character().extend(N),
+                self.weight(),
+                self.base_ring(),
+                prec=self.prec(),
+            )
         if self.level() % N == 0:
-            return constructor.ModularForms(self.character().restrict(N), self.weight(), self.base_ring(), prec=self.prec())
-        raise ValueError("N (=%s) must be a divisor or a multiple of the level of self (=%s)" % (N, self.level()))
+            return constructor.ModularForms(
+                self.character().restrict(N),
+                self.weight(),
+                self.base_ring(),
+                prec=self.prec(),
+            )
+        raise ValueError(
+            "N (=%s) must be a divisor or a multiple of the level of self (=%s)"
+            % (N, self.level())
+        )
 
     def _pari_init_(self):
         """
@@ -299,4 +330,5 @@ class ModularFormsAmbient_eps(ModularFormsAmbient):
             [17, 2, Mod(9, 17), 4, t^4 + 1]
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight(), self.character()], 4)

@@ -124,6 +124,7 @@ class ShuffleAlgebra(CombinatorialFreeModule):
         sage: A_d(x)
         -2*S[001] + S[010]
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names, prefix=None):
         """
@@ -139,8 +140,7 @@ class ShuffleAlgebra(CombinatorialFreeModule):
         """
         if prefix is None:
             prefix = 'B'
-        return super().__classcall__(cls, R,
-                                     Alphabet(names), prefix)
+        return super().__classcall__(cls, R, Alphabet(names), prefix)
 
     def __init__(self, R, names, prefix):
         r"""
@@ -169,9 +169,14 @@ class ShuffleAlgebra(CombinatorialFreeModule):
         self._alphabet = names
         self.__ngens = self._alphabet.cardinality()
         cat = GradedHopfAlgebrasWithBasis(R).Commutative().Connected()
-        CombinatorialFreeModule.__init__(self, R, Words(names, infinite=False),
-                                         latex_prefix='', prefix=prefix,
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            Words(names, infinite=False),
+            latex_prefix='',
+            prefix=prefix,
+            category=cat,
+        )
 
     def variable_names(self):
         r"""
@@ -214,8 +219,11 @@ class ShuffleAlgebra(CombinatorialFreeModule):
             gen = "one generator"
         else:
             gen = "%s generators" % self.__ngens
-        return "Shuffle Algebra on " + gen + " %s over %s" % (
-            self._alphabet.list(), self.base_ring())
+        return (
+            "Shuffle Algebra on "
+            + gen
+            + " %s over %s" % (self._alphabet.list(), self.base_ring())
+        )
 
     @cached_method
     def one_basis(self):
@@ -277,7 +285,7 @@ class ShuffleAlgebra(CombinatorialFreeModule):
             -B[bca]
         """
         mone = -self.base_ring().one()
-        return self.term(w.reversal(), mone**len(w))
+        return self.term(w.reversal(), mone ** len(w))
 
     def gen(self, i):
         r"""
@@ -446,6 +454,7 @@ class ShuffleAlgebra(CombinatorialFreeModule):
         # ok, not a shuffle algebra element (or should not be viewed as one).
         if isinstance(x, str):
             from sage.misc.sage_eval import sage_eval
+
             return sage_eval(x, locals=self.gens_dict())
         R = self.base_ring()
         # coercion via base ring
@@ -591,7 +600,7 @@ class ShuffleAlgebra(CombinatorialFreeModule):
             support = [W(i[0]) for i in list(w)]
             min_elt = W(support[0])
             if len(support) > 1:
-                for word in support[1:len(support) - 1]:
+                for word in support[1 : len(support) - 1]:
                     if min_elt.lex_less(word):
                         min_elt = W(word)
             coeff = list(w)[support.index(min_elt)][1]
@@ -656,6 +665,7 @@ class DualPBWBasis(CombinatorialFreeModule):
         sage: all(A(S(A(w))) == A(w) for w in W)
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names):
         """
@@ -683,8 +693,9 @@ class DualPBWBasis(CombinatorialFreeModule):
         self._alphabet = names
         self._alg = ShuffleAlgebra(R, names)
         cat = GradedHopfAlgebrasWithBasis(R).Commutative().Connected()
-        CombinatorialFreeModule.__init__(self, R, Words(names), prefix='S',
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, Words(names), prefix='S', category=cat
+        )
 
     def _repr_term(self, t) -> str:
         """
@@ -969,6 +980,7 @@ class DualPBWBasis(CombinatorialFreeModule):
             2*B[aabb] + B[abab]
         """
         from sage.arith.misc import factorial
+
         if not w:
             return self._alg.one()
         if len(w) == 1:
@@ -977,8 +989,7 @@ class DualPBWBasis(CombinatorialFreeModule):
             W = self.basis().keys()
             letter = W([w[0]])
             expansion = self.expansion_on_basis(W(w[1:]))
-            return self._alg.sum_of_terms((letter * i, c)
-                                          for i, c in expansion)
+            return self._alg.sum_of_terms((letter * i, c) for i, c in expansion)
 
         lf = w.lyndon_factorization()
         powers = {}
@@ -992,6 +1003,7 @@ class DualPBWBasis(CombinatorialFreeModule):
         """
         An element in the dual PBW basis.
         """
+
         def expand(self):
             """
             Expand ``self`` in words of the shuffle algebra.

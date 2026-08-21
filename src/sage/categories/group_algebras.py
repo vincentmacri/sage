@@ -18,14 +18,14 @@ AUTHOR:
   monoid algebras, and beyond -- see e.g. :issue:`18700`.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2017 Nicolas M. Thiéry <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.algebra_functor import AlgebrasCategory
@@ -83,6 +83,7 @@ class GroupAlgebras(AlgebrasCategory):
         sage: C = GroupAlgebras(ZZ)
         sage: TestSuite(C).run()
     """
+
     def extra_super_categories(self):
         """
         Implement the fact that the algebra of a group is a Hopf
@@ -98,6 +99,7 @@ class GroupAlgebras(AlgebrasCategory):
              Category of monoid algebras over Rational Field]
         """
         from sage.categories.hopf_algebras import HopfAlgebras
+
         return [HopfAlgebras(self.base_ring())]
 
     def example(self, G=None):
@@ -117,6 +119,7 @@ class GroupAlgebras(AlgebrasCategory):
              Alternating group of order 4!/2 as a permutation group over Rational Field
         """
         from sage.groups.perm_gps.permgroup_named import DihedralGroup
+
         if G is None:
             G = DihedralGroup(4)
         return G.algebra(self.base_ring())
@@ -148,7 +151,7 @@ class GroupAlgebras(AlgebrasCategory):
                 ## some matrix groups assume that coercion is only valid to
                 ## other matrix groups. This is a workaround
                 ## call _element_constructor_ to coerce group elements
-                #try:
+                # try:
                 self._populate_coercion_lists_(coerce_list=[self.group()])
 
         def _latex_(self):
@@ -162,6 +165,7 @@ class GroupAlgebras(AlgebrasCategory):
                 \Bold{Z}[\langle (3,4), (1,2) \rangle]
             """
             from sage.misc.latex import latex
+
             return "%s[%s]" % (latex(self.base_ring()), latex(self.group()))
 
         def group(self):
@@ -206,8 +210,12 @@ class GroupAlgebras(AlgebrasCategory):
                 - :meth:`sage.categories.group_algebras.GroupAlgebras.ElementMethods.central_form`
                 - :meth:`Monoids.Algebras.ElementMethods.is_central`
             """
-            return tuple([self.sum_of_monomials(conj) for conj in
-                          self.basis().keys().conjugacy_classes()])
+            return tuple(
+                [
+                    self.sum_of_monomials(conj)
+                    for conj in self.basis().keys().conjugacy_classes()
+                ]
+            )
 
         # Hopf algebra structure
 
@@ -234,6 +242,7 @@ class GroupAlgebras(AlgebrasCategory):
                 () # () + 3*(1,2,3,4,5,6) # (1,2,3,4,5,6) + 3*(1,3,5)(2,4,6) # (1,3,5)(2,4,6)
             """
             from sage.categories.tensor import tensor
+
             g = self.term(g)
             return tensor([g, g])
 
@@ -331,6 +340,7 @@ class GroupAlgebras(AlgebrasCategory):
                 False
             """
             from sage.sets.set import Set
+
             ans = False
             try:
                 if self.base_ring().is_integral_domain():
@@ -352,7 +362,9 @@ class GroupAlgebras(AlgebrasCategory):
                     ans = False
             except (AttributeError, NotImplementedError):
                 if proof:
-                    raise NotImplementedError("cannot determine whether self is an integral domain")
+                    raise NotImplementedError(
+                        "cannot determine whether self is an integral domain"
+                    )
 
             return ans
 
@@ -362,7 +374,6 @@ class GroupAlgebras(AlgebrasCategory):
         # or "is identical to a prime field".
 
     class ElementMethods:
-
         def central_form(self):
             r"""
             Return ``self`` expressed in the canonical basis of the center
@@ -424,6 +435,9 @@ class GroupAlgebras(AlgebrasCategory):
                 - :meth:`Monoids.Algebras.ElementMethods.is_central`
             """
             from sage.combinat.free_module import CombinatorialFreeModule
-            conj_classes_reps = self.parent().basis().keys().conjugacy_classes_representatives()
+
+            conj_classes_reps = (
+                self.parent().basis().keys().conjugacy_classes_representatives()
+            )
             Z = CombinatorialFreeModule(self.base_ring(), conj_classes_reps)
             return sum(self[i] * Z.basis()[i] for i in Z.basis().keys())

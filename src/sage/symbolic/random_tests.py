@@ -11,21 +11,30 @@ Randomized tests of GiNaC / PyNaC
 #                  https://www.gnu.org/licenses/
 ###############################################################################
 
-
 from sage.misc.prandom import randint, random
 import operator
 from sage.rings.rational_field import QQ
 from sage.symbolic.ring import SR
 from sage.symbolic.expression import symbol_table, mixed_order
-from sage.symbolic.constants import (pi, e, golden_ratio, log2, euler_gamma,
-                                     catalan, khinchin, twinprime, mertens)
+from sage.symbolic.constants import (
+    pi,
+    e,
+    golden_ratio,
+    log2,
+    euler_gamma,
+    catalan,
+    khinchin,
+    twinprime,
+    mertens,
+)
 from sage.functions.hypergeometric import hypergeometric
-from sage.functions.other import (cases, element_of)
+from sage.functions.other import cases, element_of
 
 
 ##############################################################
 #        Generate random expressions for doctests            #
 ##############################################################
+
 
 def _mk_full_functions():
     r"""
@@ -50,11 +59,13 @@ def _mk_full_functions():
     """
     excluded = [hypergeometric, cases, element_of]
     items = sorted(symbol_table['functions'].items())
-    return [(1.0, f, f.number_of_arguments())
-            for (name, f) in items
-            if hasattr(f, 'number_of_arguments') and
-            f.number_of_arguments() > 0 and
-            f not in excluded]
+    return [
+        (1.0, f, f.number_of_arguments())
+        for (name, f) in items
+        if hasattr(f, 'number_of_arguments')
+        and f.number_of_arguments() > 0
+        and f not in excluded
+    ]
 
 
 # For creating simple expressions
@@ -66,14 +77,20 @@ fast_nodes = [(0.9, fast_binary, 2), (0.1, fast_unary, 1)]
 # For creating expressions with the full power of Pynac's simple expression
 # subset (with no quantifiers/operators; that is, no derivatives, integrals,
 # etc.)
-full_binary = [(0.3, operator.add), (0.1, operator.sub), (0.3, operator.mul), (0.2, operator.truediv), (0.1, operator.pow)]
+full_binary = [
+    (0.3, operator.add),
+    (0.1, operator.sub),
+    (0.3, operator.mul),
+    (0.2, operator.truediv),
+    (0.1, operator.pow),
+]
 full_unary = [(0.8, operator.neg), (0.2, operator.inv)]
 full_functions = _mk_full_functions()
-full_nullary = [(1.0, c) for c in [pi, e]] + [(0.05, c) for c in
-        [golden_ratio, log2, euler_gamma, catalan, khinchin, twinprime,
-            mertens]]
-full_internal = [(0.6, full_binary, 2), (0.2, full_unary, 1),
-        (0.2, full_functions)]
+full_nullary = [(1.0, c) for c in [pi, e]] + [
+    (0.05, c)
+    for c in [golden_ratio, log2, euler_gamma, catalan, khinchin, twinprime, mertens]
+]
+full_internal = [(0.6, full_binary, 2), (0.2, full_unary, 1), (0.2, full_functions)]
 
 
 def normalize_prob_list(pl, extra=()):
@@ -120,8 +137,7 @@ def normalize_prob_list(pl, extra=()):
             p_extra = extra
         if isinstance(val, list):
             norm_val = normalize_prob_list(val, extra=p_extra)
-            result.extend(((prob / total) * np[0], np[1]) + np[2:]
-                          for np in norm_val)
+            result.extend(((prob / total) * np[0], np[1]) + np[2:] for np in norm_val)
         else:
             result.append(((prob / total), val) + p_extra)
     return result
@@ -258,17 +274,25 @@ def random_expr_helper(n_nodes, internal, leaves, verbose):
     n_spare_nodes = n_nodes - n_children
     n_spare_nodes = max(0, n_spare_nodes)
     nodes_per_child = random_integer_vector(n_spare_nodes, n_children)
-    children = [random_expr_helper(n + 1, internal, leaves, verbose)
-                for n in nodes_per_child]
+    children = [
+        random_expr_helper(n + 1, internal, leaves, verbose) for n in nodes_per_child
+    ]
     if verbose:
         print("About to apply %r to %r" % (r[1], children))
     return r[1](*children)
 
 
-def random_expr(size, nvars=1, ncoeffs=None, var_frac=0.5,
-                internal=full_internal,
-                nullary=full_nullary, nullary_frac=0.2,
-                coeff_generator=QQ.random_element, verbose=False):
+def random_expr(
+    size,
+    nvars=1,
+    ncoeffs=None,
+    var_frac=0.5,
+    internal=full_internal,
+    nullary=full_nullary,
+    nullary_frac=0.2,
+    coeff_generator=QQ.random_element,
+    verbose=False,
+):
     r"""
     Produce a random symbolic expression of the given size.  By
     default, the expression involves (at most) one variable, an arbitrary
@@ -312,7 +336,11 @@ def random_expr(size, nvars=1, ncoeffs=None, var_frac=0.5,
     if ncoeffs is None:
         ncoeffs = size
     coeffs = [(1.0, coeff_generator()) for _ in range(ncoeffs)]
-    leaves = [(var_frac, vars), (1.0 - var_frac - nullary_frac, coeffs), (nullary_frac, nullary)]
+    leaves = [
+        (var_frac, vars),
+        (1.0 - var_frac - nullary_frac, coeffs),
+        (nullary_frac, nullary),
+    ]
     leaves = normalize_prob_list(leaves)
 
     internal = normalize_prob_list(internal)
@@ -323,6 +351,7 @@ def random_expr(size, nvars=1, ncoeffs=None, var_frac=0.5,
 #####################################
 #   Test the ordering of operands   #
 #####################################
+
 
 def assert_strict_weak_order(a, b, c, cmp_func):
     r"""
@@ -381,12 +410,13 @@ def assert_strict_weak_order(a, b, c, cmp_func):
     """
     from sage.matrix.constructor import matrix
     from sage.combinat.permutation import Permutations
+
     x = (a, b, c)
 
     cmp_M = matrix(3, 3)
     for i in range(3):
         for j in range(3):
-            cmp_M[i, j] = (cmp_func(x[i], x[j]) == 1)   # or -1, doesn't matter
+            cmp_M[i, j] = cmp_func(x[i], x[j]) == 1  # or -1, doesn't matter
 
     msg = 'the binary relation failed to be a strict weak order on the elements \n'
     msg += ' a = {}\n b = {}\n c = {}\n'.format(a, b, c)
@@ -411,8 +441,7 @@ def assert_strict_weak_order(a, b, c, cmp_func):
             raise ValueError(msg)
 
         # transitivity of incomparability
-        if (incomparable(i, j) and incomparable(j, k) and
-                not incomparable(i, k)):
+        if incomparable(i, j) and incomparable(j, k) and not incomparable(i, k):
             raise ValueError(msg)
 
 
@@ -443,9 +472,14 @@ def check_symbolic_expression_order(repetitions=100):
         while True:
             try:
                 return random_expr(
-                    rnd_length, nvars=nvars, ncoeffs=ncoeffs, var_frac=var_frac,
-                    nullary_frac=nullary_frac, coeff_generator=coeff_generator,
-                    internal=fast_nodes)
+                    rnd_length,
+                    nvars=nvars,
+                    ncoeffs=ncoeffs,
+                    var_frac=var_frac,
+                    nullary_frac=nullary_frac,
+                    coeff_generator=coeff_generator,
+                    internal=fast_nodes,
+                )
             except (ZeroDivisionError, ValueError):
                 pass
 

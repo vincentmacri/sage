@@ -242,8 +242,7 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
     """
 
     @staticmethod
-    def __classcall_private__(cls, fam, facade=True,
-                              keepkey=False, category=None):
+    def __classcall_private__(cls, fam, facade=True, keepkey=False, category=None):
         """
         Normalization of arguments; see :class:`UniqueRepresentation`.
 
@@ -269,8 +268,8 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
         assert isinstance(facade, bool)
         assert isinstance(keepkey, bool)
         return super().__classcall__(
-            cls, Family(fam),
-            facade=facade, keepkey=keepkey, category=category)
+            cls, Family(fam), facade=facade, keepkey=keepkey, category=category
+        )
 
     def __init__(self, family, facade=True, keepkey=False, category=None):
         """
@@ -340,12 +339,18 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
             True
         """
         if self._keepkey:
-            return (isinstance(x, tuple) and
-                    x[0] in self._family.keys() and
-                    x[1] in self._family[x[0]])
+            return (
+                isinstance(x, tuple)
+                and x[0] in self._family.keys()
+                and x[1] in self._family[x[0]]
+            )
         from warnings import warn
+
         if self._family.cardinality() == Infinity:
-            warn("%s is an infinite union\nThe default implementation of __contains__ can loop forever. Please overload it." % (self))
+            warn(
+                "%s is an infinite union\nThe default implementation of __contains__ can loop forever. Please overload it."
+                % (self)
+            )
         return any(x in a for a in self._family)
 
     def __contains__(self, x):
@@ -470,6 +475,7 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
             ....:     (UnknowinglyFiniteSet(frozenset([1,2,3])), UnknowinglyFiniteSet(frozenset([4,5,6])))), 7))
             [1, 2, 4, 3, 5, 6]
         """
+
         def wrap_element(el, k):
             nonlocal self
             if self._keepkey:
@@ -502,7 +508,9 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
                         if self._keepkey:
                             seen_keys.append(k)
             any_stopped = False
-            for i, obj in enumerate(zip(seen_keys, el_iters) if self._keepkey else el_iters):
+            for i, obj in enumerate(
+                zip(seen_keys, el_iters) if self._keepkey else el_iters
+            ):
                 if self._keepkey:
                     k, el_iter = obj
                 else:
@@ -517,8 +525,15 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
                 yield wrap_element(el, k)
             if any_stopped:
                 if self._keepkey:
-                    filtered = list(zip(
-                        *[(k, el_iter) for k, el_iter in zip(seen_keys, el_iters) if el_iter is not None]))
+                    filtered = list(
+                        zip(
+                            *[
+                                (k, el_iter)
+                                for k, el_iter in zip(seen_keys, el_iters)
+                                if el_iter is not None
+                            ]
+                        )
+                    )
                     if filtered:
                         seen_keys = list(filtered[0])
                         el_iters = list(filtered[1])
@@ -697,8 +712,11 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
                 raise ValueError("cannot coerce `%s` in the parent `%s`" % (el[1], P))
 
         # Check first to see if the parent of el is in the family
-        if (isinstance(el, Element) and self._facade_for is not True
-                and el.parent() in self._facade_for):
+        if (
+            isinstance(el, Element)
+            and self._facade_for is not True
+            and el.parent() in self._facade_for
+        ):
             return el
 
         for P in self._family:
@@ -706,7 +724,9 @@ class DisjointUnionEnumeratedSets(UniqueRepresentation, Parent):
                 return P(el)
             except Exception:
                 pass
-        raise ValueError("cannot coerce `%s` in any parent in `%s`" % (el, self._family))
+        raise ValueError(
+            "cannot coerce `%s` in any parent in `%s`" % (el, self._family)
+        )
 
     @lazy_attribute
     def Element(self):

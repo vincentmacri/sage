@@ -78,6 +78,7 @@ def produce_latex_macro(name, *sample_args):
          '\\newcommand{\\FiniteField}[1]{\\Bold{F}_{#1}}'
     """
     from sage.misc.latex import LatexCall  # type: ignore
+
     # this import is used inside a string below
     names_split = name.rsplit('.', 1)
     if len(names_split) == 1:
@@ -95,7 +96,7 @@ def produce_latex_macro(name, *sample_args):
     for i, x in enumerate(sample_args):
         s = str(x)
         assert s in defn
-        defn = defn.replace(s, "#" + str(i+1))
+        defn = defn.replace(s, "#" + str(i + 1))
     return newcommand + defn
 
 
@@ -124,15 +125,15 @@ def convert_latex_macro_to_mathjax(macro):
     right_bracket = macro.find('[')
     if left_bracket >= 0:
         right_bracket = macro.find(']')
-        num_args = int(macro[left_bracket + 1: right_bracket])
+        num_args = int(macro[left_bracket + 1 : right_bracket])
     else:
         num_args = 0
     start_name = macro.find('{') + 1  # add one to go past the backslash
     end_name = macro.find('}')
-    name = macro[start_name + 1: end_name]
+    name = macro[start_name + 1 : end_name]
     start_defn = macro.find('{', end_name)
     end_defn = macro.rfind('}')
-    defn = macro[start_defn + 1: end_defn]
+    defn = macro[start_defn + 1 : end_defn]
     if num_args == 0:
         return name, defn
     return name, [defn, num_args]
@@ -148,29 +149,32 @@ def convert_latex_macro_to_mathjax(macro):
 # documentation), and look at the resulting tex file in
 # SAGE_DOC/latex/en/tutorial.  The preamble should contain
 # \newcommand's for each of the entries here.
-macros = [["ZZ"],
-          ["NN"],
-          ["RR"],
-          ["CC"],
-          ["QQ"],
-          ["QQbar"],
-          ["GF", 2],
-          ["Zp", 2],
-          ["Qp", 2],
-          ["Zmod", 2],
-          ["CDF"],
-          ["CIF"],
-          ["CLF"],
-          ["RDF"],
-          ["RIF"],
-          ["RLF"],
-          ]
+macros = [
+    ["ZZ"],
+    ["NN"],
+    ["RR"],
+    ["CC"],
+    ["QQ"],
+    ["QQbar"],
+    ["GF", 2],
+    ["Zp", 2],
+    ["Qp", 2],
+    ["Zmod", 2],
+    ["CDF"],
+    ["CIF"],
+    ["CLF"],
+    ["RDF"],
+    ["RIF"],
+    ["RLF"],
+]
 
 # Use this list to define additional latex macros for sage documentation
-latex_macros = [r"\newcommand{\SL}{\mathrm{SL}}",
-                r"\newcommand{\PSL}{\mathrm{PSL}}",
-                r"\newcommand{\lcm}{\mathop{\operatorname{lcm}}}",
-                r"\newcommand{\dist}{\mathrm{dist}}"]
+latex_macros = [
+    r"\newcommand{\SL}{\mathrm{SL}}",
+    r"\newcommand{\PSL}{\mathrm{PSL}}",
+    r"\newcommand{\lcm}{\mathop{\operatorname{lcm}}}",
+    r"\newcommand{\dist}{\mathrm{dist}}",
+]
 
 # The following is to allow customization of typesetting of rings:
 # mathbf vs mathbb.  See latex.py for more information.
@@ -190,7 +194,11 @@ def sage_latex_macros():
         sage: sage_latex_macros()
         ['\\newcommand{\\ZZ}{\\Bold{Z}}', '\\newcommand{\\NN}{\\Bold{N}}', ...
     """
-    return [produce_latex_macro(*x) for x in macros] + latex_macros + sage_configurable_latex_macros
+    return (
+        [produce_latex_macro(*x) for x in macros]
+        + latex_macros
+        + sage_configurable_latex_macros
+    )
 
 
 def sage_mathjax_macros():

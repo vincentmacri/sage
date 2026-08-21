@@ -43,7 +43,7 @@ AUTHORS:
 
 - John Cremona
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Robert Bradshaw <robertwb@math.washington.edu>
 #                          John Cremona <john.cremona@gmail.com>
 #                          William Stein <wstein@gmail.com>
@@ -53,7 +53,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.rings.integer_ring import ZZ
@@ -92,7 +92,7 @@ def reduce_mod_q(x, amodq):
     Fq = amodq.parent()
     try:
         return x.lift().change_ring(Fq)(amodq)
-    except AttributeError: # in case x is in QQ
+    except AttributeError:  # in case x is in QQ
         return Fq(x)
 
 
@@ -112,6 +112,7 @@ class EllipticCurveSaturator(SageObject):
         may access the data via methods of the EllipticCurve
         classes.
     """
+
     def __init__(self, E, verbose=False):
         r"""
         Initialize the saturator.
@@ -129,6 +130,7 @@ class EllipticCurveSaturator(SageObject):
         if K.absolute_degree() == 1:
             from sage.rings.rational_field import QQ
             from sage.rings.polynomial.polynomial_ring import polygen
+
             self._Kpol = polygen(QQ)
         else:
             self._Kpol = K.defining_polynomial()
@@ -207,6 +209,7 @@ class EllipticCurveSaturator(SageObject):
         if q.divides(self._N) or q.divides(self._D):
             return
         from sage.schemes.elliptic_curves.constructor import EllipticCurve
+
         for amodq in sorted(self._Kpol.roots(GF(q), multiplicities=False)):
             Eq = EllipticCurve([reduce_mod_q(ai, amodq) for ai in self._curve.ainvs()])
             nq = Eq.cardinality()
@@ -277,14 +280,18 @@ class EllipticCurveSaturator(SageObject):
 
         n = len(Plist)  # number of points supplied & to be returned
         Plist = Plist + [T for T in self._torsion_gens if p.divides(T.order())]
-        nx = len(Plist) # number of points including relevant torsion
-        extra_torsion = nx-n
+        nx = len(Plist)  # number of points including relevant torsion
+        extra_torsion = nx - n
         if extra_torsion:
             if verbose:
-                print("Adding {} torsion generators before {}-saturation".format(extra_torsion,p))
+                print(
+                    "Adding {} torsion generators before {}-saturation".format(
+                        extra_torsion, p
+                    )
+                )
 
         res = self.p_saturation(Plist, p)
-        while res: # res is either False or (i, newP)
+        while res:  # res is either False or (i, newP)
             exponent += 1
             Plist[res[0]] = res[1]
             res = self.p_saturation(Plist, p)
@@ -297,7 +304,7 @@ class EllipticCurveSaturator(SageObject):
 
         if verbose:
             if exponent:
-                print("Points were not %s-saturated, exponent was %s" % (p,exponent))
+                print("Points were not %s-saturated, exponent was %s" % (p, exponent))
             else:
                 print("Points were %s-saturated" % p)
 
@@ -441,16 +448,22 @@ class EllipticCurveSaturator(SageObject):
             from sage.groups.generic import multiples
             from sage.schemes.projective.projective_space import ProjectiveSpace
 
-            mults = [list(multiples(P, p)) for P in Plist[:-1]] + [list(multiples(Plist[-1],2))]
+            mults = [list(multiples(P, p)) for P in Plist[:-1]] + [
+                list(multiples(Plist[-1], 2))
+            ]
             E0 = E(0)
 
-            for v in ProjectiveSpace(GF(p),n-1): # an iterator
+            for v in ProjectiveSpace(GF(p), n - 1):  # an iterator
                 w = tuple(int(x) for x in v)
-                P = sum([m[c] for m,c in zip(mults,w)],E0)
+                P = sum([m[c] for m, c in zip(mults, w)], E0)
                 pts = P.division_points(p)
                 if pts:
                     if verbose:
-                        print("  points not saturated at {}, increasing index by {}".format(p,p))
+                        print(
+                            "  points not saturated at {}, increasing index by {}".format(
+                                p, p
+                            )
+                        )
                         # w will certainly have a coordinate equal to 1
                     return (w.index(1), pts[0])
             # we only get here if no linear combination is divisible by p,
@@ -500,15 +513,15 @@ class EllipticCurveSaturator(SageObject):
         for q in Primes():
             if any(q.divides(m) for m in avoid):
                 continue
-            if cm_test and not p.divides(q-1):
+            if cm_test and not p.divides(q - 1):
                 continue
-            self.add_reductions(q) # does nothing if key q is already there
+            self.add_reductions(q)  # does nothing if key q is already there
             for amodq in self._reductions[q]:
                 (nq, Eq) = self._reductions[q][amodq]
                 if not p.divides(nq):
                     continue
                 if verbose:
-                    print("E has %s-torsion over %s, projecting points" % (p,GF(q)))
+                    print("E has %s-torsion over %s, projecting points" % (p, GF(q)))
                 projPlist = [Eq([reduce_mod_q(c, amodq) for c in pt]) for pt in Plist]
                 if verbose:
                     print(" --> %s" % projPlist)
@@ -517,7 +530,7 @@ class EllipticCurveSaturator(SageObject):
                 except ValueError:
                     vecs = []
                 for v in vecs:
-                    A = matrix(A.rows()+[v])
+                    A = matrix(A.rows() + [v])
                     newrank = A.rank()
                     if verbose:
                         print(" --rank is now %s" % newrank)
@@ -535,8 +548,10 @@ class EllipticCurveSaturator(SageObject):
                             vecs = A.right_kernel().basis()
                             if verbose:
                                 print("kernel vectors: %s" % vecs)
-                            Rlist = [sum([int(vi)*Pi for vi,Pi in zip(v,Plist)],E(0))
-                                     for v in vecs]
+                            Rlist = [
+                                sum([int(vi) * Pi for vi, Pi in zip(v, Plist)], E(0))
+                                for v in vecs
+                            ]
                             if verbose:
                                 print("points generating kernel: %s" % Rlist)
 
@@ -558,8 +573,12 @@ class EllipticCurveSaturator(SageObject):
                                     # replace any for which the
                                     # coefficient of v is nonzero
                                     if verbose:
-                                        print("-- points were not {}-saturated, gaining index {}".format(p,p))
-                                    j = next(i for i,x in enumerate(v) if x)
+                                        print(
+                                            "-- points were not {}-saturated, gaining index {}".format(
+                                                p, p
+                                            )
+                                        )
+                                    j = next(i for i, x in enumerate(v) if x)
                                     return (j, pt)
                                 # R is not a p-multiple so the
                                 # points were p-saturated
@@ -580,14 +599,18 @@ class EllipticCurveSaturator(SageObject):
                                 # in Plist with R, where v[j] is
                                 # nonzero.
                                 if verbose:
-                                    print("-- points were not {}-saturated, gaining index {}".format(p,p))
-                                j = next(i for i,x in enumerate(v) if x)
+                                    print(
+                                        "-- points were not {}-saturated, gaining index {}".format(
+                                            p, p
+                                        )
+                                    )
+                                j = next(i for i, x in enumerate(v) if x)
                                 return (j, R)
                             # points really were saturated
                             if verbose:
                                 print("-- points were %s-saturated" % p)
                             return False
-                    else: # rank went up but is <n; carry on using more Qs
+                    else:  # rank went up but is <n; carry on using more Qs
                         rankA = newrank
                         count = 0
 
@@ -649,12 +672,16 @@ def p_projections(Eq, Plist, p, debug=False):
         [(2, 0), (3, 2), (5, 0), (7, 1)]
     """
     if debug:
-        print("In p_projections(Eq,Plist,p) with Eq = {}, Plist = {}, p = {}".format(Eq,Plist,p))
+        print(
+            "In p_projections(Eq,Plist,p) with Eq = {}, Plist = {}, p = {}".format(
+                Eq, Plist, p
+            )
+        )
     n = Eq.cardinality()
-    m = n.prime_to_m_part(p)      # prime-to-p part of order
+    m = n.prime_to_m_part(p)  # prime-to-p part of order
     if debug:
-        print("m={}, n={}".format(m,n))
-    if m == n: # p-primary part trivial, nothing to do
+        print("m={}, n={}".format(m, n))
+    if m == n:  # p-primary part trivial, nothing to do
         return []
     G = Eq.abelian_group()
     if debug:
@@ -662,14 +689,15 @@ def p_projections(Eq, Plist, p, debug=False):
 
     # project onto p-primary part
 
-    pts = [m*pt for pt in Plist]
-    gens = [m*g.element() for g in G.gens()]
+    pts = [m * pt for pt in Plist]
+    gens = [m * g.element() for g in G.gens()]
     gens = [g for g in gens if g]
     if debug:
         print("gens for {}-primary part of G: {}".format(p, gens))
-        print("{}*points: {}".format(m,pts))
+        print("{}*points: {}".format(m, pts))
     from sage.groups.generic import discrete_log as dlog
     from sage.modules.free_module_element import vector
+
     Fp = GF(p)
 
     # If the p-primary part is cyclic we use elliptic discrete logs directly:
@@ -678,7 +706,7 @@ def p_projections(Eq, Plist, p, debug=False):
         g = gens[0]
         pp = g.order()
         if debug:
-            print("Cyclic case, taking dlogs to base {} of order {}".format(g,pp))
+            print("Cyclic case, taking dlogs to base {} of order {}".format(g, pp))
         # logs are well-defined mod pp, hence mod p
         v = [dlog(pt, g, ord=pp, operation='+') for pt in pts]
         if debug:
@@ -692,7 +720,11 @@ def p_projections(Eq, Plist, p, debug=False):
     p1, p2 = min(orders), max(orders)
     g1, g2 = gens
     if debug:
-        print("Non-cyclic case, orders = {}, p1={}, p2={}, g1={}, g2={}".format(orders,p1,p2,g1,g2))
+        print(
+            "Non-cyclic case, orders = {}, p1={}, p2={}, g1={}, g2={}".format(
+                orders, p1, p2, g1, g2
+            )
+        )
 
     # Now the p-primary part of the reduction is non-cyclic of
     # exponent p2, and we use the Weil pairing, whose values are p1'th
@@ -702,11 +734,21 @@ def p_projections(Eq, Plist, p, debug=False):
     zeta = g1.weil_pairing(g2, p2)  # a primitive p1'th root of unity
     if debug:
         print("wp of gens = {} with order {}".format(zeta, zeta.multiplicative_order()))
-        assert zeta.multiplicative_order() == p1, "Weil pairing error during saturation: p={}, G={}, Plist={}".format(p, G, Plist)
+        assert zeta.multiplicative_order() == p1, (
+            "Weil pairing error during saturation: p={}, G={}, Plist={}".format(
+                p, G, Plist
+            )
+        )
 
     # logs are well-defined mod p1, hence mod p
 
-    return [vector(Fp, [dlog(pt.weil_pairing(g1, p2), zeta,
-                             ord=p1, operation='*') for pt in pts]),
-            vector(Fp, [dlog(pt.weil_pairing(g2, p2), zeta,
-                             ord=p1, operation='*') for pt in pts])]
+    return [
+        vector(
+            Fp,
+            [dlog(pt.weil_pairing(g1, p2), zeta, ord=p1, operation='*') for pt in pts],
+        ),
+        vector(
+            Fp,
+            [dlog(pt.weil_pairing(g2, p2), zeta, ord=p1, operation='*') for pt in pts],
+        ),
+    ]

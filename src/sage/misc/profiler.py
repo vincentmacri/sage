@@ -96,11 +96,11 @@ class Profiler:
         # _checkpoints is list of pairs (details, time), where time is a float
         # and details is a triple (line_number, context, message)
         self._checkpoints = []
-        self._active_details = None   # details from the last __call__() call
-        self._last_cputime = [None]*len(self._cputime_functions)
+        self._active_details = None  # details from the last __call__() call
+        self._last_cputime = [None] * len(self._cputime_functions)
 
     def __call__(self, message=None):
-        """ Adds a checkpoint. """
+        """Adds a checkpoint."""
         entry_times = [fn() for fn in self._cputime_functions]
 
         frame = inspect.currentframe().f_back
@@ -116,7 +116,12 @@ class Profiler:
             del frame
 
         if self._active_details is not None:
-            _time = sum([entry_times[i]-self._last_cputime[i] for i in range(len(entry_times))])
+            _time = sum(
+                [
+                    entry_times[i] - self._last_cputime[i]
+                    for i in range(len(entry_times))
+                ]
+            )
             self._checkpoints.append((self._active_details, _time))
 
         self._active_details = (line_number, context, message)
@@ -127,12 +132,12 @@ class Profiler:
             sys.stdout.flush()
 
     def __repr__(self):
-        """ Returns a nicely formatted table of stored checkpoints and timings. """
+        """Returns a nicely formatted table of stored checkpoints and timings."""
         if not self._checkpoints:
             return "no checkpoints defined"
 
         output = []
-        for ((line_number, context, message), time_used) in self._checkpoints:
+        for (line_number, context, message), time_used in self._checkpoints:
             if message is None:
                 # If the user hasn't given a message, we look for some
                 # source code to print instead
@@ -144,7 +149,7 @@ class Profiler:
                         break
 
                 if len(found) > 60:
-                    found = found[:60] + "..."   # in case the source line is really long
+                    found = found[:60] + "..."  # in case the source line is really long
                 message = "line %d: %s" % (line_number, found)
 
             output.append("%9.3fs -- %s" % (time_used, message))
@@ -170,9 +175,10 @@ class Profiler:
                     break
 
             if len(found) > 60:
-                found = found[:60] + "..."   # in case the source line is really long
+                found = found[:60] + "..."  # in case the source line is really long
             message = "line %d: %s" % (line_number, found)
 
         return "%9.3fs -- %s" % (time_used, message)
+
 
 # end of file

@@ -45,6 +45,7 @@ class PythonInternalInterface(ExtraTabCompletion, Interface):
 
     More examples can be found in the module header.
     """
+
     def __init__(self, name):
         r"""
         Python constructor.
@@ -283,6 +284,7 @@ class PythonInternalInterface(ExtraTabCompletion, Interface):
             {'C': <regina.Link: 8-crossing knot: ++++--++ ( ^0 ^1 _2 ^3 _1 ^4 _5 ^2 _3 _6 ^7 _0 _4 ^5 ^6 _7 )>,
              'D': (3, 7)})
         """
+
         def convert_arg(arg):
             coerce_name = '_%s_' % self.name()
             if isinstance(arg, InterfaceElement) and arg.parent() is self:
@@ -333,6 +335,7 @@ class PythonInternalInterface(ExtraTabCompletion, Interface):
         def read_back(arg):
             if isinstance(arg, self._object_class()):
                 self.set(arg._name, arg._inst)
+
         for arg in args:
             read_back(arg)
         for val in kwds.values():
@@ -340,8 +343,11 @@ class PythonInternalInterface(ExtraTabCompletion, Interface):
         if res is not None:
             if self._internal_namespace_object(res):
                 from sage.interfaces.regina import Regina
+
                 if isinstance(self, Regina):
-                    return self(res.__class__(res))  # this is the way to get a copy of a Regina object
+                    return self(
+                        res.__class__(res)
+                    )  # this is the way to get a copy of a Regina object
                 return self._object_class()(self, res)
             if type(res) in (list, tuple):
                 return self._object_class()(self, res)
@@ -619,6 +625,7 @@ class PythonInternalElement(ExtraTabCompletion, InterfaceElement):
             True
         """
         from sage.structure.richcmp import op_EQ, op_NE, rich_to_bool
+
         if self._inst == other._inst:
             return rich_to_bool(op, 0)
         if op == op_EQ:
@@ -677,6 +684,7 @@ class PythonInternalElement(ExtraTabCompletion, InterfaceElement):
 
         def is_native(inst):
             return type(inst) in (int, float, complex)
+
         if operation in ('+', '*'):
             if is_native(sinst) and is_native(oinst):
                 if operation == '*':
@@ -701,8 +709,8 @@ class PythonInternalElement(ExtraTabCompletion, InterfaceElement):
             if exp == 2:
                 return self * self
             if exp > 0:
-                return self**(exp - 1) * self
-            return (~self)**(-exp)
+                return self ** (exp - 1) * self
+            return (~self) ** (-exp)
         if operation == '1/':
             if is_native(sinst):
                 return P(1 / sinst)
@@ -727,6 +735,7 @@ class PythonInternalFunctionElement(InterfaceFunctionElement):
         sage: type(M.DT_code)
         <class 'sage.interfaces.python_internal.PythonInternalFunctionElement'>
     """
+
     def __call__(self, *args, **kwds):
         r"""
         Call this function with the given args and kwds.
@@ -761,6 +770,7 @@ class PythonInternalFunction(InterfaceFunction):
         sage: type(m)
         <class 'sage.interfaces.python_internal.PythonInternalFunction'>
     """
+
     def __call__(self, *args, **kwds):
         r"""
         Call this function with the given args and kwds.

@@ -267,8 +267,16 @@ class Maple(ExtraTabCompletion, Expect):
     object, and ``maple.eval(...)`` to run a string using
     Maple (and get the result back as a string).
     """
-    def __init__(self, maxread=None, script_subdirectory=None, server=None,
-                 server_tmpdir=None, logfile=None, ulimit=None) -> None:
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        server=None,
+        server_tmpdir=None,
+        logfile=None,
+        ulimit=None,
+    ) -> None:
         """
         Create an instance of the Maple interpreter.
 
@@ -278,11 +286,10 @@ class Maple(ExtraTabCompletion, Expect):
             sage: maple == loads(dumps(maple))
             True
         """
-        __maple_iface_opts = [
-            'screenwidth=infinity',
-            'errorcursor=false']
+        __maple_iface_opts = ['screenwidth=infinity', 'errorcursor=false']
         __maple_command = 'maple -t -c "interface({})"'.format(
-            ','.join(__maple_iface_opts))
+            ','.join(__maple_iface_opts)
+        )
         # errorcursor=false avoids maple command line interface to dump
         # into the editor when an error occurs. Thus pexpect interface
         # is not messed up if a maple error occurs.
@@ -290,18 +297,20 @@ class Maple(ExtraTabCompletion, Expect):
         # your input lines. By doing this, file interface also works in the
         # event that  sage_user_home + sage_tmp_file_stuff exceeds the
         # length of 79 characters.
-        Expect.__init__(self,
-                        name='maple',
-                        prompt='#-->',
-                        command=__maple_command,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        ulimit=ulimit,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=2048)  # 2048 is
+        Expect.__init__(
+            self,
+            name='maple',
+            prompt='#-->',
+            command=__maple_command,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            ulimit=ulimit,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=2048,
+        )  # 2048 is
         # a small enough value to avoid conflicts with the 4096 limit
         # hardcoded in Expect.
 
@@ -463,24 +472,24 @@ connection to a server running Maple; for hints, type
         """
         maple_console()
 
-#     def killall(self):
-#         """
-#         Kill all running instances of the maple interpreter
-#         on this system.
+    #     def killall(self):
+    #         """
+    #         Kill all running instances of the maple interpreter
+    #         on this system.
 
-#         TODO: When Sage exits it doesn't correctly by default kill
-#         all running Maple interpreters, for some strange reason.
-#         Calling this function uses the kill and pidof operating system
-#         programs to find all instances of cmaple and kill them.
-#         """
-#         import os
-#         self._expect = None
-#         while True:
-#             pid = os.popen("pidof cmaple").read()[:-1]
-#             if len(pid) > 0:
-#                 os.system('kill -9 %s'%pid)
-#             else:
-#                 break
+    #         TODO: When Sage exits it doesn't correctly by default kill
+    #         all running Maple interpreters, for some strange reason.
+    #         Calling this function uses the kill and pidof operating system
+    #         programs to find all instances of cmaple and kill them.
+    #         """
+    #         import os
+    #         self._expect = None
+    #         while True:
+    #             pid = os.popen("pidof cmaple").read()[:-1]
+    #             if len(pid) > 0:
+    #                 os.system('kill -9 %s'%pid)
+    #             else:
+    #                 break
 
     def completions(self, s) -> list:
         """
@@ -528,8 +537,9 @@ connection to a server running Maple; for hints, type
             True
         """
         try:
-            v = sum([self.completions(chr(65 + n)) for n in range(26)], []) + \
-                sum([self.completions(chr(97 + n)) for n in range(26)], [])
+            v = sum([self.completions(chr(65 + n)) for n in range(26)], []) + sum(
+                [self.completions(chr(97 + n)) for n in range(26)], []
+            )
         except RuntimeError:
             red_in = '\033[31m'
             red_out = '\033[0m'
@@ -560,6 +570,7 @@ connection to a server running Maple; for hints, type
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(COMMANDS_CACHE)
@@ -577,7 +588,9 @@ connection to a server running Maple; for hints, type
                 sage.misc.persist.save(v, COMMANDS_CACHE)
             return v
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False):
+    def _eval_line(
+        self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False
+    ):
         """
         EXAMPLES::
 
@@ -586,10 +599,21 @@ connection to a server running Maple; for hints, type
         """
         line += ';'
         with gc_disabled():
-            z = Expect._eval_line(self, line, allow_use_file=allow_use_file,
-                                  wait_for_prompt=wait_for_prompt).replace('\\\n', '').strip()
+            z = (
+                Expect._eval_line(
+                    self,
+                    line,
+                    allow_use_file=allow_use_file,
+                    wait_for_prompt=wait_for_prompt,
+                )
+                .replace('\\\n', '')
+                .strip()
+            )
             if z.lower().find("error") != -1:
-                raise RuntimeError("An error occurred running a Maple command:\nINPUT:\n%s\nOUTPUT:\n%s" % (line, z))
+                raise RuntimeError(
+                    "An error occurred running a Maple command:\nINPUT:\n%s\nOUTPUT:\n%s"
+                    % (line, z)
+                )
         return z
 
     def _eval_line_using_file(self, line, *args, **kwargs):
@@ -638,7 +662,10 @@ connection to a server running Maple; for hints, type
         cmd = '%s:=%s:' % (var, value)
         out = self.eval(cmd)
         if out.find("error") != -1:
-            raise TypeError("Error executing code in Maple\nCODE:\n\t%s\nMaple ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Maple\nCODE:\n\t%s\nMaple ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -926,7 +953,6 @@ class MapleFunctionElement(FunctionElement):
 
 @instancedoc
 class MapleElement(ExtraTabCompletion, ExpectElement):
-
     def __float__(self) -> float:
         """
         Return a floating point version of ``self``.
@@ -964,7 +990,9 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
             sage: hash(m)               # random
             -2187277978252104690
         """
-        return int(maple.eval('StringTools:-Hash(convert(%s, string))' % self.name())[1:-1], 16)
+        return int(
+            maple.eval('StringTools:-Hash(convert(%s, string))' % self.name())[1:-1], 16
+        )
 
     def _richcmp_(self, other, op) -> bool:
         """
@@ -1016,25 +1044,38 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
             'true'
         """
         P = self.parent()
-        if P.eval("evalb(%s %s %s)" % (self.name(), P._equality_symbol(),
-                                       other.name())) == P._true_symbol():
+        if (
+            P.eval(
+                "evalb(%s %s %s)" % (self.name(), P._equality_symbol(), other.name())
+            )
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 0)
         # Maple does not allow comparing objects of different types and
         # it raises an error in this case.
         # We catch the error, and return True for <
         try:
-            if P.eval("evalb(%s %s %s)" % (self.name(), P._lessthan_symbol(),
-                                           other.name())) == P._true_symbol():
+            if (
+                P.eval(
+                    "evalb(%s %s %s)"
+                    % (self.name(), P._lessthan_symbol(), other.name())
+                )
+                == P._true_symbol()
+            ):
                 return rich_to_bool(op, -1)
         except RuntimeError as e:
             msg = str(e)
             if 'is not valid' in msg and 'to < or <=' in msg:
-                if (hash(str(self)) < hash(str(other))):
+                if hash(str(self)) < hash(str(other)):
                     return rich_to_bool(op, -1)
                 return rich_to_bool(op, 1)
             raise RuntimeError(e)
-        if P.eval("evalb(%s %s %s)" % (self.name(), P._greaterthan_symbol(),
-                                       other.name())) == P._true_symbol():
+        if (
+            P.eval(
+                "evalb(%s %s %s)" % (self.name(), P._greaterthan_symbol(), other.name())
+            )
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 1)
         return NotImplemented
 
@@ -1242,30 +1283,30 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
         from sage.modules.free_module_element import vector
         from sage.rings.integer_ring import ZZ
         from sage.symbolic.expression import symbol_table
+
         symbol_maple = symbol_table["maple"]
         # The next few lines are a very crude excuse for a maple "parser"
         maple_type = repr(self.whattype())
         result = repr(self)
         result = result.replace("Pi", "pi")
-        if maple_type == 'symbol':       # pi
-            pass   # left to symbolic ring
-        elif maple_type == 'string':     # "banane"
+        if maple_type == 'symbol':  # pi
+            pass  # left to symbolic ring
+        elif maple_type == 'string':  # "banane"
             return result
-        elif maple_type == 'exprseq':   # 2, 2
+        elif maple_type == 'exprseq':  # 2, 2
             n = self.parent()(f"[{self._name}]").nops()._sage_()
             return tuple(self[i] for i in range(1, n + 1))
-        elif maple_type == 'set':        # {1, 2}
+        elif maple_type == 'set':  # {1, 2}
             n = self.nops()._sage_()
             return set(self.op(i)._sage_() for i in range(1, n + 1))
-        elif maple_type == 'list':        # [1, 2]
+        elif maple_type == 'list':  # [1, 2]
             n = self.nops()._sage_()
             return [self.op(i)._sage_() for i in range(1, n + 1)]
-        elif maple_type == "Matrix":     # Matrix(2, 2, [[1,2],[3,4]])
+        elif maple_type == "Matrix":  # Matrix(2, 2, [[1,2],[3,4]])
             mn = self.op(1)
             m = mn[1]._sage_()
             n = mn[2]._sage_()
-            coeffs = [self[i + 1, j + 1]._sage_()
-                      for i in range(m) for j in range(n)]
+            coeffs = [self[i + 1, j + 1]._sage_() for i in range(m) for j in range(n)]
             return matrix(m, n, coeffs)
         elif maple_type[:6] == "Vector":  # Vector[row](3, [4,5,6])
             n = self.op(1)._sage_()
@@ -1279,18 +1320,21 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
             fun = str(self.op(0))
             if fun in ['Sum', 'sum']:
                 from sage.misc.functional import symbolic_sum
+
                 term = self.op(1)._sage_()
                 variable = self.op(2).op(1)._sage_()
                 bounds = [b._sage_() for b in self.op(2).op(2).op()]
                 return symbolic_sum(term, variable, *bounds, hold=True)
             if fun in ['Int', 'int']:
                 from sage.misc.functional import integral
+
                 term = self.op(1)._sage_()
                 variable = self.op(2).op(1)._sage_()
                 bounds = [b._sage_() for b in self.op(2).op(2).op()]
                 return integral(term, variable, *bounds, hold=True)
             if fun in ['Product', 'product']:
                 from sage.misc.functional import symbolic_prod
+
                 term = self.op(1)._sage_()
                 variable = self.op(2).op(1)._sage_()
                 bounds = [b._sage_() for b in self.op(2).op(2).op()]
@@ -1306,6 +1350,7 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
                 pass
         elif maple_type == "float":
             from sage.rings.real_mpfr import RealField
+
             mantissa = len(repr(self.op(1)))
             prec = max(53, (mantissa * 13301) // 4004)
             R = RealField(prec)
@@ -1314,13 +1359,15 @@ class MapleElement(ExtraTabCompletion, ExpectElement):
             return sum(term._sage_() for term in self.op())
         elif maple_type == '`*`':
             from sage.misc.misc_c import prod
+
             return prod(term._sage_() for term in self.op())
         elif maple_type == '`^`':
-            return self.op(1)._sage_()**self.op(2)._sage_()
-        elif maple_type == '`=`':        # (1, 1) = 2
-            return (self.op(1)._sage_() == self.op(2)._sage_())
+            return self.op(1)._sage_() ** self.op(2)._sage_()
+        elif maple_type == '`=`':  # (1, 1) = 2
+            return self.op(1)._sage_() == self.op(2)._sage_()
         try:
             from sage.symbolic.ring import SR
+
             return SR(result)
         except Exception:
             raise NotImplementedError("Unable to parse Maple output: %s" % result)
@@ -1357,8 +1404,11 @@ def maple_console():
         >
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%maple magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%maple magics instead.'
+        )
     os.system('maple')
 
 
@@ -1375,6 +1425,7 @@ def __doctest_cleanup():
         False
     """
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()
 
 

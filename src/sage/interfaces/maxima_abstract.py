@@ -156,16 +156,15 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         env = os.environ.copy()
 
         if redirect:
-            res = bytes_to_str(subprocess.check_output(cmd, shell=True,
-                                                       env=env))
+            res = bytes_to_str(subprocess.check_output(cmd, shell=True, env=env))
             # We get a few lines of commented verbosity every time Maxima starts
             while res.startswith(';;;'):
                 newline = res.find('\n')
                 if newline == -1:
                     break
-                res = res[newline + 1:]
+                res = res[newline + 1 :]
             # The input is echoed, so we need to get rid of it
-            res = res[res.find('\n')+1:]
+            res = res[res.find('\n') + 1 :]
 
             return AsciiArtString(res)
         subprocess.check_call(cmd, shell=True, env=env)
@@ -280,8 +279,17 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         # name-impl to show up in $APROPOS.  We remove it.
         # https://sourceforge.net/p/maxima/bugs/3643/
         cmd_list = self._eval_line('apropos("%s")' % s, error_check=False)
-        cmd_list = cmd_list.replace(' ', '').replace('\n', '').replace('\\ - ', '-').replace('\\-', '-')
-        cmd_list = [x for x in cmd_list[1:-1].split(',') if x[0] != '?' and not x.endswith('-impl')]
+        cmd_list = (
+            cmd_list.replace(' ', '')
+            .replace('\n', '')
+            .replace('\\ - ', '-')
+            .replace('\\-', '-')
+        )
+        cmd_list = [
+            x
+            for x in cmd_list[1:-1].split(',')
+            if x[0] != '?' and not x.endswith('-impl')
+        ]
         return [x for x in cmd_list if x.find(s) == 0]
 
     @cached_method
@@ -309,14 +317,13 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
 
         """
         # Passing the empty string to apropos() gets ALL names.
-        all_names = self._eval_line('apropos("")',
-                                    error_check=False).split(",")
+        all_names = self._eval_line('apropos("")', error_check=False).split(",")
 
         # At the time of writing, searching a string for a specific
         # character was much much faster than searching a list/tuple.
-        a_to_Z = "".join(chr(i+j)
-                         for i in range(ord('A'),ord('Z')+1)
-                         for j in (0, 32))  # 'a' = 'A' + 32
+        a_to_Z = "".join(
+            chr(i + j) for i in range(ord('A'), ord('Z') + 1) for j in (0, 32)
+        )  # 'a' = 'A' + 32
 
         # Whack-a-mole to kill junk entries:
         #
@@ -336,11 +343,13 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         # with random leading spaces: ' tminverse', ' toeplitz', etc.
         #
         bad_chars = ("\\", "/", "?", "%")
-        return [c
-                for n in all_names
-                if (c := n.strip())
-                and c[0] in a_to_Z
-                and not any(bad in c for bad in bad_chars)]
+        return [
+            c
+            for n in all_names
+            if (c := n.strip())
+            and c[0] in a_to_Z
+            and not any(bad in c for bad in bad_chars)
+        ]
 
     def _tab_completion(self, verbose=True, use_disk_cache=True):
         r"""
@@ -367,6 +376,7 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(COMMANDS_CACHE)
@@ -666,29 +676,29 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         f = self._object_function_class()(self, name, rep, args, latex)
         return f
 
-#     def display2d(self, flag=True):
-#         """
-#         Set the flag that determines whether Maxima objects are
-#         printed using their 2-d ASCII art representation.  When the
-#         maxima interface starts the default is that objects are not
-#         represented in 2-d.
+    #     def display2d(self, flag=True):
+    #         """
+    #         Set the flag that determines whether Maxima objects are
+    #         printed using their 2-d ASCII art representation.  When the
+    #         maxima interface starts the default is that objects are not
+    #         represented in 2-d.
 
-#         INPUT:
+    #         INPUT:
 
-#         flag -- boolean (default: ``True``)
+    #         flag -- boolean (default: ``True``)
 
-#         EXAMPLES::
+    #         EXAMPLES::
 
-#             sage: maxima('1/2')
-#             1/2
-#             sage: maxima.display2d(True)
-#             sage: maxima('1/2')
-#                                            1
-#                                            -
-#                                            2
-#             sage: maxima.display2d(False)
-#         """
-#         self._display2d = bool(flag)
+    #             sage: maxima('1/2')
+    #             1/2
+    #             sage: maxima.display2d(True)
+    #             sage: maxima('1/2')
+    #                                            1
+    #                                            -
+    #                                            2
+    #             sage: maxima.display2d(False)
+    #         """
+    #         self._display2d = bool(flag)
 
     def plot2d(self, *args):
         r"""
@@ -754,7 +764,13 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         tmin = trange[0]
         tmax = trange[1]
         cmd = "plot2d([parametric, %s, %s, [%s, %s, %s], [nticks, %s]]" % (
-            r[0], r[1], var, tmin, tmax, nticks)
+            r[0],
+            r[1],
+            var,
+            tmin,
+            tmax,
+            nticks,
+        )
         if options is None:
             cmd += ")"
         else:
@@ -836,7 +852,16 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         vmin = vrange[0]
         vmax = vrange[1]
         cmd = 'plot3d([%s, %s, %s], [%s, %s, %s], [%s, %s, %s]' % (
-            r[0], r[1], r[2], vars[0], umin, umax, vars[1], vmin, vmax)
+            r[0],
+            r[1],
+            r[2],
+            vars[0],
+            umin,
+            umax,
+            vars[1],
+            vmin,
+            vmax,
+        )
         if options is None:
             cmd += ')'
         else:
@@ -879,11 +904,17 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         a = 'ode2(%s, %s)' % (m.name(), str_vars)
         if ics is not None:
             if len(ics) == 3:
-                cmd = "ic2("+a+",%s=%s,%s=%s,diff(%s,%s)=%s);" % (vars[0], ics[0], vars[1], ics[1], vars[1], vars[0], ics[2])
+                cmd = (
+                    "ic2("
+                    + a
+                    + ",%s=%s,%s=%s,diff(%s,%s)=%s);"
+                    % (vars[0], ics[0], vars[1], ics[1], vars[1], vars[0], ics[2])
+                )
                 return self(cmd)
             if len(ics) == 2:
-                return self("ic1("+a+",%s=%s,%s=%s);" % (vars[0], ics[0],
-                                                         vars[1], ics[1]))
+                return self(
+                    "ic1(" + a + ",%s=%s,%s=%s);" % (vars[0], ics[0], vars[1], ics[1])
+                )
         return self(a + ";")
 
     def de_solve_laplace(self, de, vars, ics=None):
@@ -934,7 +965,14 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
             d = len(ics)
             for i in range(d - 1):
                 ic = 'atvalue(diff(%s(%s), %s, %s), %s = %s, %s)' % (
-                    vars[1], vars[0], vars[0], i, vars[0], ics[0], ics[1+i])
+                    vars[1],
+                    vars[0],
+                    vars[0],
+                    i,
+                    vars[0],
+                    ics[0],
+                    ics[1 + i],
+                )
                 self.eval(ic)
         return self('desolve(%s, %s(%s))' % (de, vars[1], vars[0]))
 
@@ -996,6 +1034,7 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         """
         from sage.rings.integer import Integer
         from sage.rings.number_field.number_field import QuadraticField
+
         # Take square-free part so sqrt(n) doesn't get simplified
         # further by maxima
         # (The original version of this function would yield wrong answers if
@@ -1095,14 +1134,28 @@ class MaximaAbstract(ExtraTabCompletion, Interface):
         n = len(pts_list)
         cmd = '['
         for i in range(n):
-            if i < n-1:
-                cmd = cmd+'[discrete,'+str(pts_list[i][0])+','+str(pts_list[i][1])+'],'
-            if i == n-1:
-                cmd = cmd+'[discrete,'+str(pts_list[i][0])+','+str(pts_list[i][1])+']]'
+            if i < n - 1:
+                cmd = (
+                    cmd
+                    + '[discrete,'
+                    + str(pts_list[i][0])
+                    + ','
+                    + str(pts_list[i][1])
+                    + '],'
+                )
+            if i == n - 1:
+                cmd = (
+                    cmd
+                    + '[discrete,'
+                    + str(pts_list[i][0])
+                    + ','
+                    + str(pts_list[i][1])
+                    + ']]'
+                )
         if options is None:
-            self('plot2d('+cmd+')')
+            self('plot2d(' + cmd + ')')
         else:
-            self('plot2d('+cmd+','+options+')')
+            self('plot2d(' + cmd + ',' + options + ')')
 
 
 @instancedoc
@@ -1120,6 +1173,7 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
         sage: type(xp)
         <class 'sage.interfaces.maxima_lib.MaximaLibElement'>
     """
+
     _cached_repr = True
 
     def __str__(self):
@@ -1160,8 +1214,10 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             True
         """
         P = self._check_valid()
-        return (P.eval('is({0} = 0 or {0} = false);'.format(self.name()))
-                != P._true_symbol())
+        return (
+            P.eval('is({0} = 0 or {0} = false);'.format(self.name()))
+            != P._true_symbol()
+        )
         # but be careful, since for relations things like is(equal(a,b)) are
         # what Maxima needs
 
@@ -1270,8 +1326,10 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             (True, False)
         """
         from sage.calculus import calculus
-        return calculus.symbolic_expression_from_maxima_string(self.name(),
-                maxima=self.parent())
+
+        return calculus.symbolic_expression_from_maxima_string(
+            self.name(), maxima=self.parent()
+        )
 
     def _symbolic_(self, R):
         """
@@ -1491,9 +1549,14 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
 
     derivative = diff
 
-    def nintegral(self, var='x', a=0, b=1,
-                  desired_relative_error='1e-8',
-                  maximum_num_subintervals=200):
+    def nintegral(
+        self,
+        var='x',
+        a=0,
+        b=1,
+        desired_relative_error='1e-8',
+        maximum_num_subintervals=200,
+    ):
         r"""
         Return a numerical approximation to the integral of ``self`` from `a`
         to `b`.
@@ -1551,8 +1614,10 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             0.52848223531423071361790491935415653021675547587292866196865279321015401702040079
         """
         from sage.rings.integer import Integer
-        v = self.quad_qags(var, a, b, epsrel=desired_relative_error,
-                           limit=maximum_num_subintervals)
+
+        v = self.quad_qags(
+            var, a, b, epsrel=desired_relative_error, limit=maximum_num_subintervals
+        )
         return v[0], v[1], Integer(v[2]), Integer(v[3])
 
     def integral(self, var='x', min=None, max=None):
@@ -1709,9 +1774,11 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             return list(self)[i]
         i = operator.index(i)
         if i < 0 or i >= len(self):
-            raise IndexError("i = (%s) must be between %s and %s" % (i, 0, len(self)-1))
+            raise IndexError(
+                "i = (%s) must be between %s and %s" % (i, 0, len(self) - 1)
+            )
         # If you change the i+1 to i below, better change __iter__ as well.
-        return InterfaceElement.__getitem__(self, i+1)
+        return InterfaceElement.__getitem__(self, i + 1)
 
     def __iter__(self):
         """
@@ -1894,6 +1961,7 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             [  4   2 4/3   1]
         """
         from sage.matrix.matrix_space import MatrixSpace
+
         self._check_valid()
         P = self.parent()
         nrows = int(P.eval('length(%s)' % self.name()))
@@ -1901,8 +1969,14 @@ class MaximaAbstractElement(ExtraTabCompletion, InterfaceElement):
             return MatrixSpace(R, 0, 0)(0)
         ncols = int(P.eval('length(%s[1])' % self.name()))
         M = MatrixSpace(R, nrows, ncols)
-        s = self.str().replace('matrix', '').replace(',', "','").\
-            replace("]','[", "','").replace('([', "['").replace('])', "']")
+        s = (
+            self.str()
+            .replace('matrix', '')
+            .replace(',', "','")
+            .replace("]','[", "','")
+            .replace('([', "['")
+            .replace('])', "']")
+        )
         s = eval(s)
         return M([R(x) for x in s])
 
@@ -2050,8 +2124,12 @@ class MaximaAbstractElementFunction(MaximaAbstractElement):
             (<function reduce_load_MaximaAbstract_function at 0x...>,
              (Maxima, 'sin(x+y)', 'x,y', None))
         """
-        return reduce_load_MaximaAbstract_function, (self.parent(),
-                            self.__defn, self.__args, self.__latex)
+        return reduce_load_MaximaAbstract_function, (
+            self.parent(),
+            self.__defn,
+            self.__args,
+            self.__latex,
+        )
 
     def __call__(self, *args):
         """
@@ -2176,8 +2254,7 @@ class MaximaAbstractElementFunction(MaximaAbstractElement):
         """
         var = str(var)
         P = self._check_valid()
-        f = P('integrate(%s(%s), %s)' % (self.name(),
-                        self.arguments(split=False), var))
+        f = P('integrate(%s(%s), %s)' % (self.name(), self.arguments(split=False), var))
 
         args = self.arguments()
         if var not in args:
@@ -2274,6 +2351,9 @@ def maxima_console():
         ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%maxima magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%maxima magics instead.'
+        )
     os.system('{}'.format(MAXIMA))

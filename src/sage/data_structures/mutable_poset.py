@@ -191,6 +191,7 @@ class MutablePosetShell(SageObject):
 
         :class:`MutablePoset`
     """
+
     def __init__(self, poset, element) -> None:
         r"""
         See :class:`MutablePosetShell` for details.
@@ -683,8 +684,9 @@ class MutablePosetShell(SageObject):
         except KeyError:
             pass
 
-        new = self.__class__(poset, mapping(self.element)
-                             if self.element is not None else None)
+        new = self.__class__(
+            poset, mapping(self.element) if self.element is not None else None
+        )
         memo[id(self)] = new
 
         for reverse in (False, True):
@@ -766,9 +768,13 @@ class MutablePosetShell(SageObject):
         """
         if self == shell:
             return set()
-        covers = set().union(*(e.lower_covers(shell, reverse)
-                               for e in self.successors(reverse)
-                               if e.le(shell, reverse)))
+        covers = set().union(
+            *(
+                e.lower_covers(shell, reverse)
+                for e in self.successors(reverse)
+                if e.le(shell, reverse)
+            )
+        )
         return covers or set([self])
 
     def upper_covers(self, shell, reverse=False):
@@ -843,9 +849,7 @@ class MutablePosetShell(SageObject):
         """
         return self.lower_covers(shell, not reverse)
 
-    def _iter_depth_first_visit_(self, marked,
-                                 reverse=False, key=None,
-                                 condition=None):
+    def _iter_depth_first_visit_(self, marked, reverse=False, key=None, condition=None):
         r"""
         Return an iterator over all shells in depth first order.
 
@@ -891,8 +895,7 @@ class MutablePosetShell(SageObject):
             sage: list(P.oo._iter_depth_first_visit_(marked, reverse=True))
             [oo, 42, 5, null]
         """
-        if (condition is not None and
-                not self.is_special() and not condition(self)):
+        if condition is not None and not self.is_special() and not condition(self):
             return
         if self in marked:
             return
@@ -902,8 +905,7 @@ class MutablePosetShell(SageObject):
         if key is not None:
             S = sorted(S, key=key)
         for shell in S:
-            yield from shell._iter_depth_first_visit_(marked, reverse,
-                                                      key, condition)
+            yield from shell._iter_depth_first_visit_(marked, reverse, key, condition)
 
     def iter_depth_first(self, reverse=False, key=None, condition=None):
         r"""
@@ -959,9 +961,7 @@ class MutablePosetShell(SageObject):
         marked = set()
         return self._iter_depth_first_visit_(marked, reverse, key, condition)
 
-    def _iter_topological_visit_(self, marked,
-                                 reverse=False, key=None,
-                                 condition=None):
+    def _iter_topological_visit_(self, marked, reverse=False, key=None, condition=None):
         r"""
         Return an iterator over all shells in topological order.
 
@@ -1010,8 +1010,7 @@ class MutablePosetShell(SageObject):
             sage: list(P.null._iter_topological_visit_(marked, reverse=True, key=repr))
             [oo, 42, 5, null]
         """
-        if (condition is not None and
-                not self.is_special() and not condition(self)):
+        if condition is not None and not self.is_special() and not condition(self):
             return
         if self in marked:
             return
@@ -1020,8 +1019,7 @@ class MutablePosetShell(SageObject):
         if key is not None and len(S) > 1:
             S = sorted(S, key=key)
         for shell in S:
-            yield from shell._iter_topological_visit_(marked, reverse,
-                                                      key, condition)
+            yield from shell._iter_topological_visit_(marked, reverse, key, condition)
         yield self
 
     def iter_topological(self, reverse=False, key=None, condition=None):
@@ -1199,8 +1197,7 @@ class MutablePosetShell(SageObject):
         self_element = self.element
         if check:
             if not poset._can_merge_(self_element, element):
-                raise RuntimeError('Cannot merge %s with %s.' %
-                                   (self_element, element))
+                raise RuntimeError('Cannot merge %s with %s.' % (self_element, element))
         new = poset._merge_(self_element, element)
         if new is None:
             poset.discard(poset.get_key(self.element))
@@ -1297,6 +1294,7 @@ class MutablePoset(SageObject):
 
         :class:`MutablePosetShell`.
     """
+
     def __init__(self, data=None, key=None, merge=None, can_merge=None) -> None:
         r"""
         See :class:`MutablePoset` for details.
@@ -1349,8 +1347,9 @@ class MutablePoset(SageObject):
                 try:
                     it = iter(data)
                 except TypeError:
-                    raise TypeError('%s is not iterable; do not know what to '
-                                    'do with it.' % (data,))
+                    raise TypeError(
+                        '%s is not iterable; do not know what to do with it.' % (data,)
+                    )
                 self.union_update(it)
         super().__init__()
 
@@ -1582,14 +1581,16 @@ class MutablePoset(SageObject):
             True
         """
         from copy import copy
+
         self._key_ = copy(other._key_)
         self._merge_ = copy(other._merge_)
         self._can_merge_ = copy(other._can_merge_)
         memo = {}
         self._null_ = other._null_._copy_all_linked_(memo, self, mapping)
         self._oo_ = memo[id(other._oo_)]
-        self._shells_ = {f.key: f for f in iter(memo[id(e)] for e in
-                                                other._shells_.values())}
+        self._shells_ = {
+            f.key: f for f in iter(memo[id(e)] for e in other._shells_.values())
+        }
 
     def copy(self, mapping=None):
         r"""
@@ -1622,6 +1623,7 @@ class MutablePoset(SageObject):
 
             def mapping(element):
                 return element
+
         new = self.__class__()
         new._copy_shells_(self, mapping)
         return new
@@ -1670,8 +1672,7 @@ class MutablePoset(SageObject):
         if include_special:
             yield self.oo
 
-    def shells_topological(self, include_special=False,
-                           reverse=False, key=None):
+    def shells_topological(self, include_special=False, reverse=False, key=None):
         r"""
         Return an iterator over all shells in topological order.
 
@@ -1725,8 +1726,11 @@ class MutablePoset(SageObject):
             :meth:`MutablePosetShell.iter_topological`.
         """
         shell = self.oo if not reverse else self.null
-        return iter(e for e in shell.iter_topological(reverse, key)
-                    if include_special or not e.is_special())
+        return iter(
+            e
+            for e in shell.iter_topological(reverse, key)
+            if include_special or not e.is_special()
+        )
 
     def elements(self, **kwargs):
         r"""
@@ -1913,9 +1917,10 @@ class MutablePoset(SageObject):
             poset()
         """
         s = 'poset('
-        s += ', '.join(repr(shell) for shell in
-                       self.shells_topological(include_special, reverse,
-                                               key=repr))
+        s += ', '.join(
+            repr(shell)
+            for shell in self.shells_topological(include_special, reverse, key=repr)
+        )
         s += ')'
         return s
 
@@ -1947,9 +1952,8 @@ class MutablePoset(SageObject):
             |   +-- no predecessors
         """
         sortedshells = tuple(
-            self.shells_topological(include_special=True,
-                                    reverse=reverse,
-                                    key=repr))
+            self.shells_topological(include_special=True, reverse=reverse, key=repr)
+        )
         strings = [self.repr(include_special=False, reverse=reverse)]
         for shell in sortedshells:
             strings.append('+-- ' + repr(shell))
@@ -1957,8 +1961,9 @@ class MutablePoset(SageObject):
                 what = 'successors' if not rev else 'predecessors'
                 if shell.successors(rev):
                     s = '|   +-- ' + what + ':   '
-                    s += ', '.join(repr(e) for e in
-                                   sortedshells if e in shell.successors(rev))
+                    s += ', '.join(
+                        repr(e) for e in sortedshells if e in shell.successors(rev)
+                    )
                 else:
                     s = '|   +-- no ' + what
                 strings.append(s)
@@ -2335,8 +2340,11 @@ class MutablePoset(SageObject):
             for p in shell.predecessors(reverse):
                 S = p.successors(reverse)
                 S.remove(shell)
-                D = set(s for s in p.iter_depth_first(reverse)
-                        if s in shell.successors(reverse))
+                D = set(
+                    s
+                    for s in p.iter_depth_first(reverse)
+                    if s in shell.successors(reverse)
+                )
                 S.update(shell.successors(reverse))
                 S.difference_update(D)
         del self._shells_[key]
@@ -3113,14 +3121,16 @@ class MutablePoset(SageObject):
 
         def can_merge(other):
             return self._can_merge_(shell.element, other.element)
+
         for rev in (reverse, not reverse):
-            to_merge = shell.iter_depth_first(
-                reverse=rev, condition=can_merge)
+            to_merge = shell.iter_depth_first(reverse=rev, condition=can_merge)
             try:
                 next(to_merge)
             except StopIteration:
-                raise RuntimeError('Stopping merge before started; the '
-                                   'can_merge-function is not reflexive.')
+                raise RuntimeError(
+                    'Stopping merge before started; the '
+                    'can_merge-function is not reflexive.'
+                )
             for m in tuple(to_merge):
                 if m.is_special():
                     continue
@@ -3147,9 +3157,9 @@ class MutablePoset(SageObject):
 
             :meth:`minimal_elements`
         """
-        return iter(shell.element
-                    for shell in self.oo.predecessors()
-                    if not shell.is_special())
+        return iter(
+            shell.element for shell in self.oo.predecessors() if not shell.is_special()
+        )
 
     def minimal_elements(self):
         r"""
@@ -3172,9 +3182,9 @@ class MutablePoset(SageObject):
 
             :meth:`maximal_elements`
         """
-        return iter(shell.element
-                    for shell in self.null.successors()
-                    if not shell.is_special())
+        return iter(
+            shell.element for shell in self.null.successors() if not shell.is_special()
+        )
 
     def map(self, function, topological=False, reverse=False):
         r"""
@@ -3225,8 +3235,9 @@ class MutablePoset(SageObject):
             :meth:`copy`,
             :meth:`mapped`.
         """
-        shells = self.shells_topological(reverse=reverse) \
-            if topological else self.shells()
+        shells = (
+            self.shells_topological(reverse=reverse) if topological else self.shells()
+        )
         remove = []
         for shell in shells:
             image = function(shell._element_)

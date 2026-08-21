@@ -30,6 +30,7 @@ class Triangle:
     """
     A graphical triangle class.
     """
+
     def __init__(self, a, b, c, color=0):
         """
         a, b, c : triples (x,y,z) representing corners on a triangle in 3-space.
@@ -101,6 +102,7 @@ class SmoothTriangle(Triangle):
     """
     A class for smoothed triangles.
     """
+
     def __init__(self, a, b, c, da, db, dc, color=0):
         """
         a, b, c : triples (x,y,z) representing corners on a triangle in 3-space
@@ -137,7 +139,9 @@ class SmoothTriangle(Triangle):
             sage: print(t.str())
             [1, 2, 3] [2, 3, 4] [0, 0, 0] 0 [0, 0, 1] [0, 1, 0] [1, 0, 0]
         """
-        return "{} {} {} {} {} {} {}".format(self._a, self._b, self._c, self._color, self._da, self._db, self._dc)
+        return "{} {} {} {} {} {} {}".format(
+            self._a, self._b, self._c, self._color, self._da, self._db, self._dc
+        )
 
     def get_normals(self):
         """
@@ -171,8 +175,8 @@ class TriangleFactory:
             ([0, 0, 0], [0, 0, 1], [1, 1, 0])
         """
         if color is None:
-            return Triangle(a,b,c)
-        return Triangle(a,b,c,color)
+            return Triangle(a, b, c)
+        return Triangle(a, b, c, color)
 
     def smooth_triangle(self, a, b, c, da, db, dc, color=None):
         """
@@ -193,8 +197,8 @@ class TriangleFactory:
             ([0, 0, 1], [0, 2, 0], [1, 0, 0])
         """
         if color is None:
-            return SmoothTriangle(a,b,c,da,db,dc)
-        return SmoothTriangle(a,b,c,da,db,dc,color)
+            return SmoothTriangle(a, b, c, da, db, dc)
+        return SmoothTriangle(a, b, c, da, db, dc, color)
 
     def get_colors(self, list):
         """
@@ -238,8 +242,18 @@ class TrianglePlot:
         """
         return "".join(o.str() for o in self._objects)
 
-    def __init__(self, triangle_factory, f, min_x__max_x, min_y__max_y, g=None,
-                 min_depth=4, max_depth=8, num_colors=None, max_bend=.3):
+    def __init__(
+        self,
+        triangle_factory,
+        f,
+        min_x__max_x,
+        min_y__max_y,
+        g=None,
+        min_depth=4,
+        max_depth=8,
+        num_colors=None,
+        max_bend=0.3,
+    ):
         """
 
         TESTS::
@@ -260,31 +274,37 @@ class TrianglePlot:
         self._max_bend = max_bend
         self._objects = []
         if min(max_x - min_x, max_y - min_y) == 0:
-            raise ValueError('plot rectangle is really a line; make sure min_x != max_x and min_y != max_y')
+            raise ValueError(
+                'plot rectangle is really a line; make sure min_x != max_x and min_y != max_y'
+            )
         self._num_colors = num_colors
         if g is None:
+
             def fcn(x, y):
-                return [self._f(x,y)]
+                return [self._f(x, y)]
         else:
+
             def fcn(x, y):
-                return [self._f(x,y), self._g(x,y)]
+                return [self._f(x, y), self._g(x, y)]
 
         self._fcn = fcn
 
         # generate the necessary data to kick-start the recursion
-        mid_x = (min_x + max_x)/2
-        mid_y = (min_y + max_y)/2
-        sw_z = fcn(min_x,min_y)
-        nw_z = fcn(min_x,max_y)
-        se_z = fcn(max_x,min_y)
-        ne_z = fcn(max_x,max_y)
-        mid_z = fcn(mid_x,mid_y)
+        mid_x = (min_x + max_x) / 2
+        mid_y = (min_y + max_y) / 2
+        sw_z = fcn(min_x, min_y)
+        nw_z = fcn(min_x, max_y)
+        se_z = fcn(max_x, min_y)
+        ne_z = fcn(max_x, max_y)
+        mid_z = fcn(mid_x, mid_y)
 
         self._min = min(sw_z[0], nw_z[0], se_z[0], ne_z[0], mid_z[0])
         self._max = max(sw_z[0], nw_z[0], se_z[0], ne_z[0], mid_z[0])
 
         # jump in and start building blocks
-        outer = self.plot_block(min_x, mid_x, max_x, min_y, mid_y, max_y, sw_z, nw_z, se_z, ne_z, mid_z, 0)
+        outer = self.plot_block(
+            min_x, mid_x, max_x, min_y, mid_y, max_y, sw_z, nw_z, se_z, ne_z, mid_z, 0
+        )
 
         # build the boundary triangles
         self.triangulate(outer.left, outer.left_c)
@@ -294,14 +314,30 @@ class TrianglePlot:
 
         zrange = self._max - self._min
         if num_colors is not None and zrange != 0:
-            colors = triangle_factory.get_colors([hue(float(i/num_colors)) for i in range(num_colors)])
+            colors = triangle_factory.get_colors(
+                [hue(float(i / num_colors)) for i in range(num_colors)]
+            )
 
             for o in self._objects:
                 vertices = o.get_vertices()
-                avg_z = (vertices[0][2] + vertices[1][2] + vertices[2][2])/3
+                avg_z = (vertices[0][2] + vertices[1][2] + vertices[2][2]) / 3
                 o.set_color(colors[int(num_colors * (avg_z - self._min) / zrange)])
 
-    def plot_block(self, min_x, mid_x, max_x, min_y, mid_y, max_y, sw_z, nw_z, se_z, ne_z, mid_z, depth):
+    def plot_block(
+        self,
+        min_x,
+        mid_x,
+        max_x,
+        min_y,
+        mid_y,
+        max_y,
+        sw_z,
+        nw_z,
+        se_z,
+        ne_z,
+        mid_z,
+        depth,
+    ):
         """
         Recursive triangulation function for plotting.
 
@@ -330,13 +366,13 @@ class TrianglePlot:
             mid_e_z = self._fcn(max_x, mid_y)
             mid_s_z = self._fcn(mid_x, min_y)
 
-            next_depth = depth+1
+            next_depth = depth + 1
             if depth < self._min_depth:
                 # midpoints locations of sub_squares
-                qtr1_x = (min_x + mid_x)/2
-                qtr1_y = (min_y + mid_y)/2
-                qtr3_x = (mid_x + max_x)/2
-                qtr3_y = (mid_y + max_y)/2
+                qtr1_x = (min_x + mid_x) / 2
+                qtr1_y = (min_y + mid_y) / 2
+                qtr3_x = (mid_x + max_x) / 2
+                qtr3_y = (mid_y + max_y) / 2
 
                 sw_depth = next_depth
                 nw_depth = next_depth
@@ -365,46 +401,125 @@ class TrianglePlot:
                 norm_s = crossunit(se_v, sw_v)
 
                 # compute the dot products of the triangle unit norms
-                e_sw = norm_w[0]*norm_s[0] + norm_w[1]*norm_s[1] + norm_w[2]*norm_s[2]
-                e_nw = norm_w[0]*norm_n[0] + norm_w[1]*norm_n[1] + norm_w[2]*norm_n[2]
-                e_se = norm_e[0]*norm_s[0] + norm_e[1]*norm_s[1] + norm_e[2]*norm_s[2]
-                e_ne = norm_e[0]*norm_n[0] + norm_e[1]*norm_n[1] + norm_e[2]*norm_n[2]
+                e_sw = (
+                    norm_w[0] * norm_s[0]
+                    + norm_w[1] * norm_s[1]
+                    + norm_w[2] * norm_s[2]
+                )
+                e_nw = (
+                    norm_w[0] * norm_n[0]
+                    + norm_w[1] * norm_n[1]
+                    + norm_w[2] * norm_n[2]
+                )
+                e_se = (
+                    norm_e[0] * norm_s[0]
+                    + norm_e[1] * norm_s[1]
+                    + norm_e[2] * norm_s[2]
+                )
+                e_ne = (
+                    norm_e[0] * norm_n[0]
+                    + norm_e[1] * norm_n[1]
+                    + norm_e[2] * norm_n[2]
+                )
 
-                if e_sw < self._max_bend*norm_s[3]*norm_w[3]:
+                if e_sw < self._max_bend * norm_s[3] * norm_w[3]:
                     sw_depth = next_depth
                 else:
                     sw_depth = self._max_depth
-                if e_nw < self._max_bend*norm_n[3]*norm_w[3]:
+                if e_nw < self._max_bend * norm_n[3] * norm_w[3]:
                     nw_depth = next_depth
                 else:
                     nw_depth = self._max_depth
-                if e_se < self._max_bend*norm_s[3]*norm_e[3]:
+                if e_se < self._max_bend * norm_s[3] * norm_e[3]:
                     se_depth = next_depth
                 else:
                     se_depth = self._max_depth
-                if e_ne < self._max_bend*norm_n[3]*norm_e[3]:
+                if e_ne < self._max_bend * norm_n[3] * norm_e[3]:
                     ne_depth = next_depth
                 else:
                     ne_depth = self._max_depth
 
-                qtr1_x = min_x + (.325 + random.random()/4)*(mid_x-min_x)
-                qtr3_x = mid_x + (.325 + random.random()/4)*(max_x-mid_x)
-                qtr1_y = min_y + (.325 + random.random()/4)*(mid_y-min_y)
-                qtr3_y = mid_y + (.325 + random.random()/4)*(max_y-mid_y)
+                qtr1_x = min_x + (0.325 + random.random() / 4) * (mid_x - min_x)
+                qtr3_x = mid_x + (0.325 + random.random() / 4) * (max_x - mid_x)
+                qtr1_y = min_y + (0.325 + random.random() / 4) * (mid_y - min_y)
+                qtr3_y = mid_y + (0.325 + random.random() / 4) * (max_y - mid_y)
 
             # function evaluated at the midpoints (possibly random)
-            mid_sw_z = self._fcn(qtr1_x,qtr1_y)
-            mid_nw_z = self._fcn(qtr1_x,qtr3_y)
-            mid_se_z = self._fcn(qtr3_x,qtr1_y)
-            mid_ne_z = self._fcn(qtr3_x,qtr3_y)
+            mid_sw_z = self._fcn(qtr1_x, qtr1_y)
+            mid_nw_z = self._fcn(qtr1_x, qtr3_y)
+            mid_se_z = self._fcn(qtr3_x, qtr1_y)
+            mid_ne_z = self._fcn(qtr3_x, qtr3_y)
 
-            self.extrema([mid_w_z[0], mid_n_z[0], mid_e_z[0], mid_s_z[0], mid_sw_z[0], mid_se_z[0], mid_nw_z[0], mid_sw_z[0]])
+            self.extrema(
+                [
+                    mid_w_z[0],
+                    mid_n_z[0],
+                    mid_e_z[0],
+                    mid_s_z[0],
+                    mid_sw_z[0],
+                    mid_se_z[0],
+                    mid_nw_z[0],
+                    mid_sw_z[0],
+                ]
+            )
 
             # recurse into the sub-squares
-            sw = self.plot_block(min_x, qtr1_x, mid_x, min_y, qtr1_y, mid_y, sw_z, mid_w_z, mid_s_z, mid_z, mid_sw_z, sw_depth)
-            nw = self.plot_block(min_x, qtr1_x, mid_x, mid_y, qtr3_y, max_y, mid_w_z, nw_z, mid_z, mid_n_z, mid_nw_z, nw_depth)
-            se = self.plot_block(mid_x, qtr3_x, max_x, min_y, qtr1_y, mid_y, mid_s_z, mid_z, se_z, mid_e_z, mid_se_z, se_depth)
-            ne = self.plot_block(mid_x, qtr3_x, max_x, mid_y, qtr3_y, max_y, mid_z, mid_n_z, mid_e_z, ne_z, mid_ne_z, ne_depth)
+            sw = self.plot_block(
+                min_x,
+                qtr1_x,
+                mid_x,
+                min_y,
+                qtr1_y,
+                mid_y,
+                sw_z,
+                mid_w_z,
+                mid_s_z,
+                mid_z,
+                mid_sw_z,
+                sw_depth,
+            )
+            nw = self.plot_block(
+                min_x,
+                qtr1_x,
+                mid_x,
+                mid_y,
+                qtr3_y,
+                max_y,
+                mid_w_z,
+                nw_z,
+                mid_z,
+                mid_n_z,
+                mid_nw_z,
+                nw_depth,
+            )
+            se = self.plot_block(
+                mid_x,
+                qtr3_x,
+                max_x,
+                min_y,
+                qtr1_y,
+                mid_y,
+                mid_s_z,
+                mid_z,
+                se_z,
+                mid_e_z,
+                mid_se_z,
+                se_depth,
+            )
+            ne = self.plot_block(
+                mid_x,
+                qtr3_x,
+                max_x,
+                mid_y,
+                qtr3_y,
+                max_y,
+                mid_z,
+                mid_n_z,
+                mid_e_z,
+                ne_z,
+                mid_ne_z,
+                ne_depth,
+            )
 
             # join the sub-squares
             self.interface(1, sw.right, sw.right_c, se.left, se.left_c)
@@ -465,7 +580,7 @@ class TrianglePlot:
             sage: t._objects[-1].get_vertices()
             ((-1/4, 0, 1/16), (-1/4, 1/4, 1/8), (-3/8, 1/8, 3/16))
         """
-        m = [p[0]]      # a sorted union of p and q
+        m = [p[0]]  # a sorted union of p and q
         mpc = [p_c[0]]  # centers from p_c corresponding to m
         mqc = [q_c[0]]  # centers from q_c corresponding to m
 
@@ -512,11 +627,17 @@ class TrianglePlot:
         """
 
         if self._g is None:
-            for i in range(len(p)-1):
-                self._objects.append(self._triangle_factory.triangle(p[i][0], p[i+1][0], c[i][0]))
+            for i in range(len(p) - 1):
+                self._objects.append(
+                    self._triangle_factory.triangle(p[i][0], p[i + 1][0], c[i][0])
+                )
         else:
-            for i in range(len(p)-1):
-                self._objects.append(self._triangle_factory.smooth_triangle(p[i][0], p[i+1][0], c[i][0],p[i][1], p[i+1][1], c[i][1]))
+            for i in range(len(p) - 1):
+                self._objects.append(
+                    self._triangle_factory.smooth_triangle(
+                        p[i][0], p[i + 1][0], c[i][0], p[i][1], p[i + 1][1], c[i][1]
+                    )
+                )
 
     def extrema(self, list):
         """
@@ -535,8 +656,8 @@ class TrianglePlot:
             (-1, 4)
         """
         if self._num_colors is not None:
-            self._min = min(list+[self._min])
-            self._max = max(list+[self._max])
+            self._min = min(list + [self._min])
+            self._max = max(list + [self._max])
 
 
 def crossunit(u, v):
@@ -557,8 +678,12 @@ def crossunit(u, v):
         sage: crossunit([0,-1,0],[0,0,1])
         (-1, 0, 0, 1.0)
     """
-    p = (u[1]*v[2] - v[1]*u[2], u[0]*v[2] - v[0]*u[2], u[0]*v[1] - u[1]*v[0])
-    l = sqrt(p[0]**2 + p[1]**2 + p[2]**2)
+    p = (
+        u[1] * v[2] - v[1] * u[2],
+        u[0] * v[2] - v[0] * u[2],
+        u[0] * v[1] - u[1] * v[0],
+    )
+    l = sqrt(p[0] ** 2 + p[1] ** 2 + p[2] ** 2)
     return (p[0], p[1], p[2], l)
 
 
@@ -566,6 +691,7 @@ class PlotBlock:
     """
     A container class to hold information about spatial blocks.
     """
+
     def __init__(self, left, left_c, top, top_c, right, right_c, bottom, bottom_c):
         """
 

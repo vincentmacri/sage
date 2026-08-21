@@ -14,7 +14,6 @@ Feature for testing the presence of ``kenzo``
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from . import Feature, FeatureTestResult
 
 
@@ -28,6 +27,7 @@ class Kenzo(Feature):
         sage: Kenzo().is_present()  # optional - kenzo
         FeatureTestResult('kenzo', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -36,8 +36,12 @@ class Kenzo(Feature):
             sage: isinstance(Kenzo(), Kenzo)
             True
         """
-        Feature.__init__(self, name='kenzo', spkg='kenzo',
-                         url='https://github.com/miguelmarco/kenzo/')
+        Feature.__init__(
+            self,
+            name='kenzo',
+            spkg='kenzo',
+            url='https://github.com/miguelmarco/kenzo/',
+        )
 
     def _is_present(self):
         r"""
@@ -52,7 +56,9 @@ class Kenzo(Feature):
         try:
             from sage.libs.ecl import ecl_eval
         except ImportError:
-            return FeatureTestResult(self, False, reason="sage.libs.ecl is not available")
+            return FeatureTestResult(
+                self, False, reason="sage.libs.ecl is not available"
+            )
         # Redirection of ECL and Maxima stdout to /dev/null
         # This is also done in the Maxima library, but we
         # also do it here for redundancy.
@@ -63,13 +69,16 @@ class Kenzo(Feature):
 
         try:
             from sage.env import KENZO_FAS
+
             if KENZO_FAS:
                 ecl_eval("(require :kenzo \"{}\")".format(KENZO_FAS))
             else:
                 ecl_eval("(require :kenzo)")
 
         except RuntimeError:
-            return FeatureTestResult(self, False, reason="Unable to make ECL require kenzo")
+            return FeatureTestResult(
+                self, False, reason="Unable to make ECL require kenzo"
+            )
         return FeatureTestResult(self, True)
 
 

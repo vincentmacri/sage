@@ -16,6 +16,7 @@ class InteractiveShellCmd:
         # early feedback that Sage is starting.
         if not self.options.quiet:
             from sage.misc.banner import banner
+
             banner()
 
         from sage.repl.interpreter import SageTerminalApp

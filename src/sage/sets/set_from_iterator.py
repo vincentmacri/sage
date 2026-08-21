@@ -145,6 +145,7 @@ class EnumeratedSetFromIterator(Parent):
         In order to make the ``TestSuite`` works, the elements of the set
         should have parents.
     """
+
     def __init__(self, f, args=None, kwds=None, name=None, category=None, cache=False):
         """
         TESTS::
@@ -169,9 +170,13 @@ class EnumeratedSetFromIterator(Parent):
             self._kwds = kwds
 
         if cache:
-            self._cache = lazy_list(iter(self._func(
-                *getattr(self, '_args', ()),
-                **getattr(self, '_kwds', {}))))
+            self._cache = lazy_list(
+                iter(
+                    self._func(
+                        *getattr(self, '_args', ()), **getattr(self, '_kwds', {})
+                    )
+                )
+            )
 
     def __hash__(self):
         r"""
@@ -188,6 +193,7 @@ class EnumeratedSetFromIterator(Parent):
             return hash(self._cache[:13])
         except AttributeError:
             from itertools import islice
+
             return hash(tuple(islice(self, 13)))
 
     def __reduce__(self):
@@ -210,14 +216,17 @@ class EnumeratedSetFromIterator(Parent):
             sage: E == F
             True
         """
-        return (EnumeratedSetFromIterator,
-                (self._func,                    # func
-                 getattr(self, '_args', None),  # args
-                 getattr(self, '_kwds', None),  # kwds
-                 self.get_custom_name(),        # name
-                 self.category(),               # category
-                 hasattr(self, '_cache'))       # cache
-                )
+        return (
+            EnumeratedSetFromIterator,
+            (
+                self._func,  # func
+                getattr(self, '_args', None),  # args
+                getattr(self, '_kwds', None),  # kwds
+                self.get_custom_name(),  # name
+                self.category(),  # category
+                hasattr(self, '_cache'),
+            ),  # cache
+        )
 
     def _repr_(self):
         r"""
@@ -301,16 +310,24 @@ class EnumeratedSetFromIterator(Parent):
         if isinstance(other, EnumeratedSetFromIterator):
             # trick to allow equality between infinite sets
             # this assume that the function does not return randomized data!
-            if (self._func == other._func and
-                    getattr(self, '_args', None) == getattr(other, '_args', None) and
-                    getattr(self, '_kwds', None) == getattr(other, '_kwds', None)):
+            if (
+                self._func == other._func
+                and getattr(self, '_args', None) == getattr(other, '_args', None)
+                and getattr(self, '_kwds', None) == getattr(other, '_kwds', None)
+            ):
                 return True
 
         if other in EnumeratedSets():
             # TODO: think about what should be done at that point
-            if self not in FiniteEnumeratedSets() and other not in FiniteEnumeratedSets():
+            if (
+                self not in FiniteEnumeratedSets()
+                and other not in FiniteEnumeratedSets()
+            ):
                 import warnings
-                warnings.warn("Testing equality of infinite sets which will not end in case of equality")
+
+                warnings.warn(
+                    "Testing equality of infinite sets which will not end in case of equality"
+                )
 
             i1 = iter(self)
             i2 = iter(other)
@@ -378,7 +395,9 @@ class EnumeratedSetFromIterator(Parent):
         """
         if hasattr(self, '_cache'):
             return iter(self._cache)
-        return iter(self._func(*getattr(self, '_args', ()), **getattr(self, '_kwds', {})))
+        return iter(
+            self._func(*getattr(self, '_args', ()), **getattr(self, '_kwds', {}))
+        )
 
     def unrank(self, i):
         r"""
@@ -439,9 +458,14 @@ class EnumeratedSetFromIterator(Parent):
             False
         """
         if hasattr(self, '_cache'):
-            self._cache = lazy_list(iter(self._func(
-                *getattr(self, '_args', ()),
-                **getattr(self, '_kwds', {}))))
+            self._cache = lazy_list(
+                iter(
+                    self._func(
+                        *getattr(self, '_args', ()), **getattr(self, '_kwds', {})
+                    )
+                )
+            )
+
 
 #
 # Decorators
@@ -456,6 +480,7 @@ class Decorator:
 
     The method needs to be stored in the attribute ``self.f``
     """
+
     def _instancedoc_(self):
         """
         Provide documentation for the wrapped function.
@@ -472,14 +497,22 @@ class Decorator:
                Calls the PARI ...isprime...
         """
         # Duplicates sage.misc.cachefunc.CachedFunction._instancedoc_
-        from sage.misc.sageinspect import sage_getsourcelines, sage_getfile_relative, _extract_embedded_position
+        from sage.misc.sageinspect import (
+            sage_getsourcelines,
+            sage_getfile_relative,
+            _extract_embedded_position,
+        )
+
         f = self.f
         doc = f.__doc__ or ''
         if _extract_embedded_position(doc) is None:
             try:
                 sourcelines = sage_getsourcelines(f)
                 filename = sage_getfile_relative(f)
-                file_info = "File: %s (starting at line %d)\n" % (filename, sourcelines[1])
+                file_info = "File: %s (starting at line %d)\n" % (
+                    filename,
+                    sourcelines[1],
+                )
                 doc = file_info + doc
             except OSError:
                 pass
@@ -501,6 +534,7 @@ class Decorator:
                 return mpq_sgn(self.value) >= 0 and mpz_perfect_square_p(mpq_numref(self.value)) and mpz_perfect_square_p(mpq_denref(self.value))
         """
         from sage.misc.sageinspect import sage_getsource
+
         return sage_getsource(self.f)
 
     def _sage_src_lines_(self):
@@ -522,6 +556,7 @@ class Decorator:
             '        if not gens:\n'
         """
         from sage.misc.sageinspect import sage_getsourcelines
+
         return sage_getsourcelines(self.f)
 
     def _sage_argspec_(self):
@@ -541,6 +576,7 @@ class Decorator:
                         kwonlyargs=[], kwonlydefaults=None, annotations={})
         """
         from sage.misc.sageinspect import sage_getargspec
+
         return sage_getargspec(self.f)
 
     def __call__(self, *args, **kwds):
@@ -643,6 +679,7 @@ class EnumeratedSetFromIterator_function_decorator(Decorator):
         sage: Graphs(10) is Graphs(10)                                                  # needs sage.graphs
         False
     """
+
     def __init__(self, f=None, name=None, **options):
         r"""
         Initialize ``self``.
@@ -694,19 +731,20 @@ class EnumeratedSetFromIterator_function_decorator(Decorator):
                         name = self.name
                 else:
                     name = self.name(*args, **kwds)
-                return EnumeratedSetFromIterator(self.f, args, kwds, name=name, **self.options)
+                return EnumeratedSetFromIterator(
+                    self.f, args, kwds, name=name, **self.options
+                )
             return EnumeratedSetFromIterator(self.f, args, kwds, **self.options)
 
         # potential global options
         if args == ():
-            f, = kwds.values()
+            (f,) = kwds.values()
         else:
             assert len(args) == 1
             f = args[0]
         return EnumeratedSetFromIterator_function_decorator(
-            f,
-            name=getattr(self, 'name', None),
-            **self.options)
+            f, name=getattr(self, 'name', None), **self.options
+        )
 
 
 set_from_function = EnumeratedSetFromIterator_function_decorator
@@ -728,6 +766,7 @@ class EnumeratedSetFromIterator_method_caller(Decorator):
 
     - ``options`` -- any option accepted by :class:`EnumeratedSetFromIterator`
     """
+
     def __init__(self, inst, f, name=None, **options):
         r"""
         Initialize ``self``.
@@ -834,9 +873,8 @@ class EnumeratedSetFromIterator_method_caller(Decorator):
             {2, 3, 4, 5, 6, ...}
         """
         return EnumeratedSetFromIterator_method_caller(
-            inst, self.f,
-            self.name,
-            **self.options)
+            inst, self.f, self.name, **self.options
+        )
 
 
 class EnumeratedSetFromIterator_method_decorator:
@@ -908,6 +946,7 @@ class EnumeratedSetFromIterator_method_decorator:
         It is not yet possible to use ``set_from_method`` in conjunction with
         ``cached_method``.
     """
+
     def __init__(self, f=None, **options):
         r"""
         Initialize ``self``.
@@ -997,6 +1036,7 @@ class DummyExampleForPicklingTest:
         sage: DummyExampleForPicklingTest().f()
         {10, 11, 12, 13, 14, ...}
     """
+
     start = 10
     stop = 100
 
@@ -1017,4 +1057,5 @@ class DummyExampleForPicklingTest:
             {4, 5, 6, 7, 8, ...}
         """
         from sage.arith.srange import xsrange
+
         return xsrange(self.start, self.stop)

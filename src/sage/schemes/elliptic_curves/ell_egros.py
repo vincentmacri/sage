@@ -114,9 +114,15 @@ def is_possible_j(j, S=[]):
         True
     """
     j = QQ(j)
-    return (j.is_zero() and 3 in S) or (j == 1728) \
-        or (j.is_S_integral(S) and j.prime_to_S_part(S).is_nth_power(3)
-            and (j - 1728).prime_to_S_part(S).abs().is_square())
+    return (
+        (j.is_zero() and 3 in S)
+        or (j == 1728)
+        or (
+            j.is_S_integral(S)
+            and j.prime_to_S_part(S).is_nth_power(3)
+            and (j - 1728).prime_to_S_part(S).abs().is_square()
+        )
+    )
 
 
 def curve_key(E1):
@@ -141,6 +147,7 @@ def curve_key(E1):
     """
     try:
         from sage.databases.cremona import parse_cremona_label, class_to_int
+
         N, l, k = parse_cremona_label(E1.label())
         return (N, 0, class_to_int(l), k)
     except LookupError:
@@ -386,6 +393,7 @@ def egros_get_j(S=[], proof=None, verbose=False):
 
     if proof is None:
         from sage.structure.proof.proof import get_flag
+
         proof = get_flag(proof, "elliptic_curve")
     else:
         proof = bool(proof)
@@ -396,7 +404,7 @@ def egros_get_j(S=[], proof=None, verbose=False):
     SS = [-1] + S
 
     jlist = []
-    nw = 6**len(S) * 2
+    nw = 6 ** len(S) * 2
 
     if verbose:
         print("Finding possible j invariants for S = ", S)

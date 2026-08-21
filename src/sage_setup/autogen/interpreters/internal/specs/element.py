@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,7 +7,7 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 
 from ..storage import ty_python
@@ -100,9 +100,16 @@ class ElementInterpreter(PythonInterpreter):
         # Override with MemoryChunkElementArguments.
         self.mc_args = MemoryChunkElementArguments('args', ty_python)
         self.mc_domain_info = MemoryChunkPyConstant('domain')
-        self.chunks = [self.mc_args, self.mc_constants, self.mc_stack,
-                       self.mc_domain_info, self.mc_code]
-        self.c_header = ri(0, """
+        self.chunks = [
+            self.mc_args,
+            self.mc_constants,
+            self.mc_stack,
+            self.mc_domain_info,
+            self.mc_code,
+        ]
+        self.c_header = ri(
+            0,
+            """
             #define CHECK(x) do_check(&(x), domain)
 
             static inline int do_check(PyObject **x, PyObject *domain) {
@@ -113,9 +120,12 @@ class ElementInterpreter(PythonInterpreter):
               if (*x == NULL) return 0;
               return 1;
             }
-            """)
+            """,
+        )
 
-        self.pyx_header += ri(0, """
+        self.pyx_header += ri(
+            0,
+            """
             from sage.structure.element cimport Element
 
             cdef public object el_check_element(object v, parent):
@@ -127,4 +137,5 @@ class ElementInterpreter(PythonInterpreter):
                         return v_el
 
                 return parent(v)
-            """[1:])
+            """[1:],
+        )

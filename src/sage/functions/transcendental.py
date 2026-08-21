@@ -1,6 +1,7 @@
 """
 Number-theoretic functions
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -151,11 +152,16 @@ class Function_zeta(GinacFunction):
             sage: zeta(3)._maple_().sage()      # optional - maple                      # needs sage.symbolic
             zeta(3)
         """
-        GinacFunction.__init__(self, 'zeta',
-                               conversions={'giac': 'Zeta',
-                                            'maple': 'Zeta',
-                                            'sympy': 'zeta',
-                                            'mathematica': 'Zeta'})
+        GinacFunction.__init__(
+            self,
+            'zeta',
+            conversions={
+                'giac': 'Zeta',
+                'maple': 'Zeta',
+                'sympy': 'zeta',
+                'mathematica': 'Zeta',
+            },
+        )
 
 
 zeta = Function_zeta()
@@ -210,10 +216,13 @@ class Function_stieltjes(GinacFunction):
             sage: stieltjes(x).subs(x==0)                                               # needs sage.symbolic
             euler_gamma
         """
-        GinacFunction.__init__(self, "stieltjes", nargs=1,
-                            conversions=dict(mathematica='StieltjesGamma',
-                                sympy='stieltjes'),
-                            latex_name=r'\gamma')
+        GinacFunction.__init__(
+            self,
+            "stieltjes",
+            nargs=1,
+            conversions=dict(mathematica='StieltjesGamma', sympy='stieltjes'),
+            latex_name=r'\gamma',
+        )
 
 
 stieltjes = Function_stieltjes()
@@ -229,10 +238,13 @@ class Function_HurwitzZeta(BuiltinFunction):
             sage: hurwitz_zeta(x, 2)._sympy_()                                          # needs sympy sage.symbolic
             zeta(x, 2)
         """
-        BuiltinFunction.__init__(self, 'hurwitz_zeta', nargs=2,
-                                 conversions=dict(mathematica='HurwitzZeta',
-                                                  sympy='zeta'),
-                                 latex_name=r'\zeta')
+        BuiltinFunction.__init__(
+            self,
+            'hurwitz_zeta',
+            nargs=2,
+            conversions=dict(mathematica='HurwitzZeta', sympy='zeta'),
+            latex_name=r'\zeta',
+        )
 
     def _eval_(self, s, x):
         r"""
@@ -282,8 +294,7 @@ class Function_HurwitzZeta(BuiltinFunction):
         """
         if diff_param == 1:
             return -s * hurwitz_zeta(s + 1, x)
-        raise NotImplementedError('derivative with respect to first '
-                                  'argument')
+        raise NotImplementedError('derivative with respect to first argument')
 
 
 hurwitz_zeta_func = Function_HurwitzZeta()
@@ -374,8 +385,9 @@ class Function_zetaderiv(GinacFunction):
             sage: zetaderiv(b, 1)                                                       # needs sage.libs.flint sage.symbolic
             zetaderiv([1.500000000 +/- 1.01e-10], 1)
         """
-        GinacFunction.__init__(self, "zetaderiv", nargs=2,
-                               conversions=dict(maple='Zeta'))
+        GinacFunction.__init__(
+            self, "zetaderiv", nargs=2, conversions=dict(maple='Zeta')
+        )
 
     def _evalf_(self, n, x, parent=None, algorithm=None):
         r"""
@@ -453,7 +465,7 @@ def zeta_symmetric(s):
     if s == 1:  # deal with poles, hopefully
         return R(0.5)
 
-    return (s/2 + 1).gamma() * (s-1) * (R.pi()**(-s/2)) * s.zeta()
+    return (s / 2 + 1).gamma() * (s - 1) * (R.pi() ** (-s / 2)) * s.zeta()
 
 
 class DickmanRho(BuiltinFunction):
@@ -510,6 +522,7 @@ class DickmanRho(BuiltinFunction):
       Solutions to some Classical Differential-Difference Equations."
       Mathematics of Computation, Vol. 53, No. 187 (1989).
     """
+
     def __init__(self):
         """
         Construct an object to represent Dickman's rho function.
@@ -553,12 +566,14 @@ class DickmanRho(BuiltinFunction):
         if self._cur_prec < x.parent().prec() or n not in self._f:
             self._cur_prec = rel_prec = x.parent().prec()
             # Go a bit beyond so we're not constantly re-computing.
-            max = x.parent()(1.1)*x + 10
-            abs_prec = (-self.approximate(max).log2() + rel_prec + 2*max.log2()).ceil()
+            max = x.parent()(1.1) * x + 10
+            abs_prec = (
+                -self.approximate(max).log2() + rel_prec + 2 * max.log2()
+            ).ceil()
             self._f = {}
             with increase_recursion_limit(int(max)):
                 self._compute_power_series(max.floor(), abs_prec, cache_ring=x.parent())
-        return self._f[n](2*(x-n-x.parent()(0.5)))
+        return self._f[n](2 * (x - n - x.parent()(0.5)))
 
     def power_series(self, n, abs_prec):
         """
@@ -619,30 +634,40 @@ class DickmanRho(BuiltinFunction):
             if n == 0:
                 return PolynomialRealDense(RealField(abs_prec)['x'], [1])
             if n == 1:
-                nterms = (RDF(abs_prec) * RDF(2).log()/RDF(3).log()).ceil()
+                nterms = (RDF(abs_prec) * RDF(2).log() / RDF(3).log()).ceil()
                 R = RealField(abs_prec)
                 neg_three = ZZ(-3)
-                coeffs = [1 - R(1.5).log()] + [neg_three**-k/k for k in range(1, nterms)]
+                coeffs = [1 - R(1.5).log()] + [
+                    neg_three**-k / k for k in range(1, nterms)
+                ]
                 f = PolynomialRealDense(R['x'], coeffs)
                 if cache_ring is not None:
-                    self._f[n] = f.truncate_abs(f[0] >> (cache_ring.prec()+1)).change_ring(cache_ring)
+                    self._f[n] = f.truncate_abs(
+                        f[0] >> (cache_ring.prec() + 1)
+                    ).change_ring(cache_ring)
                 return f
         else:
-            f = self._compute_power_series(n-1, abs_prec, cache_ring)
+            f = self._compute_power_series(n - 1, abs_prec, cache_ring)
             # integrand = f / (2n+1 + x)
             # We calculate this way because the most significant term is the constant term,
             # and so we want to push the error accumulation and remainder out to the least
             # significant terms.
-            integrand = f.reverse().quo_rem(PolynomialRealDense(f.parent(), [1, 2*n+1]))[0].reverse()
-            integrand = integrand.truncate_abs(RR(2)**-abs_prec)
+            integrand = (
+                f.reverse()
+                .quo_rem(PolynomialRealDense(f.parent(), [1, 2 * n + 1]))[0]
+                .reverse()
+            )
+            integrand = integrand.truncate_abs(RR(2) ** -abs_prec)
             iintegrand = integrand.integral()
             ff = PolynomialRealDense(f.parent(), [f(1) + iintegrand(-1)]) - iintegrand
             i = 0
-            while abs(f[i]) < abs(f[i+1]):
+            while abs(f[i]) < abs(f[i + 1]):
                 i += 1
             rel_prec = int(abs_prec + abs(RR(f[i])).log2())
             if cache_ring is not None:
-                self._f[n] = ff.truncate_abs(ff[0] >> (cache_ring.prec()+1)).change_ring(cache_ring)
+                self._f[n] = ff.truncate_abs(
+                    ff[0] >> (cache_ring.prec() + 1)
+                ).change_ring(cache_ring)
             return ff.change_ring(RealField(rel_prec))
 
     def approximate(self, x, parent=None):
@@ -674,12 +699,12 @@ class DickmanRho(BuiltinFunction):
         log, exp, sqrt, pi = math.log, math.exp, math.sqrt, math.pi
         x = float(x)
         xi = log(x)
-        y = (exp(xi)-1.0)/xi - x
+        y = (exp(xi) - 1.0) / xi - x
         while abs(y) > 1e-12:
-            dydxi = (exp(xi)*(xi-1.0) + 1.0)/(xi*xi)
-            xi -= y/dydxi
-            y = (exp(xi)-1.0)/xi - x
-        return (-x*xi + RR(xi).eint()).exp() / (sqrt(2*pi*x)*xi)
+            dydxi = (exp(xi) * (xi - 1.0) + 1.0) / (xi * xi)
+            xi -= y / dydxi
+            y = (exp(xi) - 1.0) / xi - x
+        return (-x * xi + RR(xi).eint()).exp() / (sqrt(2 * pi * x) * xi)
 
 
 dickman_rho = DickmanRho()

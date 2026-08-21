@@ -173,7 +173,9 @@ from sage.structure.category_object import normalize_names
 from sage.structure.coerce_exceptions import CoercionException
 from sage.structure.factory import UniqueFactory
 
-lazy_import('sage.algebras.letterplace.free_algebra_letterplace', 'FreeAlgebra_letterplace')
+lazy_import(
+    'sage.algebras.letterplace.free_algebra_letterplace', 'FreeAlgebra_letterplace'
+)
 
 
 class FreeAlgebraFactory(UniqueFactory):
@@ -262,10 +264,19 @@ class FreeAlgebraFactory(UniqueFactory):
         sage: c^3 * a * b^2
         a*b^2*c^3
     """
-    def create_key(self, base_ring, arg1=None, arg2=None,
-                   sparse=None, order=None,
-                   names=None, name=None,
-                   implementation=None, degrees=None):
+
+    def create_key(
+        self,
+        base_ring,
+        arg1=None,
+        arg2=None,
+        sparse=None,
+        order=None,
+        names=None,
+        name=None,
+        implementation=None,
+        degrees=None,
+    ):
         """
         Create the key under which a free algebra is stored.
 
@@ -310,18 +321,18 @@ class FreeAlgebraFactory(UniqueFactory):
             if degrees is None:
                 return (PolRing,)
             from sage.rings.polynomial.term_order import TermOrder
+
             T = TermOrder(PolRing.term_order(), PolRing.ngens() + 1)
             varnames = list(PolRing.variable_names())
             newname = 'x'
             while newname in varnames:
                 newname += '_'
             varnames.append(newname)
-            R = PolynomialRing(
-                PolRing.base(), varnames,
-                sparse=sparse, order=T)
+            R = PolynomialRing(PolRing.base(), varnames, sparse=sparse, order=T)
             return tuple(degrees), R
         # normalise the generator names
         from sage.rings.integer import Integer
+
         if isinstance(arg1, (Integer, int)):
             arg1, arg2 = arg2, arg1
         if names is not None:
@@ -357,11 +368,13 @@ class FreeAlgebraFactory(UniqueFactory):
             from sage.algebras.letterplace.free_algebra_letterplace import (
                 FreeAlgebra_letterplace,
             )
+
             return FreeAlgebra_letterplace(key[0])
         if isinstance(key[0], tuple):
             from sage.algebras.letterplace.free_algebra_letterplace import (
                 FreeAlgebra_letterplace,
             )
+
             return FreeAlgebra_letterplace(key[1], degrees=key[0])
         if len(key) == 2:
             return FreeAlgebra_generic(key[0], len(key[1]), key[1])
@@ -435,6 +448,7 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
     algebras in different implementations are not equal, but there
     is a coercion.
     """
+
     Element = FreeAlgebraElement
 
     def __init__(self, R, n, names, degrees=None) -> None:
@@ -464,11 +478,12 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             cat = cat.Commutative()
         if degrees is not None:
             if len(degrees) != len(names) or not all(d in ZZ for d in degrees):
-                raise ValueError("argument degrees must specify an integer for each generator")
+                raise ValueError(
+                    "argument degrees must specify an integer for each generator"
+                )
             cat = cat.Graded()
 
-        CombinatorialFreeModule.__init__(self, R, indices, prefix='F',
-                                         category=cat)
+        CombinatorialFreeModule.__init__(self, R, indices, prefix='F', category=cat)
         self._assign_names(indices.variable_names())
         if degrees is None:
             self._degrees = None
@@ -484,7 +499,9 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             sage: F, R = algebras.Free(QQ,4,'x,y,z,t').construction(); F
             Associative[x,y,z,t]
         """
-        return AssociativeFunctor(self.variable_names(), self._degrees), self.base_ring()
+        return AssociativeFunctor(
+            self.variable_names(), self._degrees
+        ), self.base_ring()
 
     def one_basis(self):
         """
@@ -541,9 +558,15 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
         txt = "generator" if self.__ngens == 1 else "generators"
         if self._degrees is None:
             return "Free Algebra on {} {} {} over {}".format(
-                self.__ngens, txt, self.gens(), self.base_ring())
+                self.__ngens, txt, self.gens(), self.base_ring()
+            )
         return "Free Algebra on {} {} {} with degrees {} over {}".format(
-            self.__ngens, txt, self.gens(), tuple(self._degrees.values()), self.base_ring())
+            self.__ngens,
+            txt,
+            self.gens(),
+            tuple(self._degrees.values()),
+            self.base_ring(),
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -559,8 +582,10 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             \Bold{Z}[q]\langle a, b, c\rangle
         """
         from sage.misc.latex import latex
-        return "{}\\langle {}\\rangle".format(latex(self.base_ring()),
-                                              ', '.join(self.latex_variable_names()))
+
+        return "{}\\langle {}\\rangle".format(
+            latex(self.base_ring()), ', '.join(self.latex_variable_names())
+        )
 
     def _element_constructor_(self, x):
         """
@@ -627,8 +652,9 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
                 return x
             # from another FreeAlgebra:
             if x not in self.base_ring():
-                D = {self.monoid()(T): cf
-                     for T, cf in x.monomial_coefficients().items()}
+                D = {
+                    self.monoid()(T): cf for T, cf in x.monomial_coefficients().items()
+                }
                 return self.element_class(self, D)
         elif hasattr(x, 'letterplace_polynomial'):
             P = x.parent()
@@ -639,11 +665,19 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
                 def exp_to_monomial(T):
                     return M([(i % ngens, Ti) for i, Ti in enumerate(T) if Ti])
 
-                return self.element_class(self, {exp_to_monomial(T): c
-                                                 for T, c in x.letterplace_polynomial().monomial_coefficients().items()})
+                return self.element_class(
+                    self,
+                    {
+                        exp_to_monomial(T): c
+                        for T, c in x.letterplace_polynomial()
+                        .monomial_coefficients()
+                        .items()
+                    },
+                )
         # ok, not a free algebra element (or should not be viewed as one).
         if isinstance(x, str):
             from sage.misc.sage_eval import sage_eval
+
             G = self.gens()
             d = {str(v): G[i] for i, v in enumerate(self.variable_names())}
             return self(sage_eval(x, locals=d))
@@ -652,12 +686,14 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
         if isinstance(x, FreeMonoidElement) and x.parent() is self._indices:
             return self.element_class(self, {x: R.one()})
         # coercion from the PBW basis
-        if isinstance(x, PBWBasisOfFreeAlgebra.Element) \
-                and self.has_coerce_map_from(x.parent()._alg):
+        if isinstance(x, PBWBasisOfFreeAlgebra.Element) and self.has_coerce_map_from(
+            x.parent()._alg
+        ):
             return self(x.parent().expansion(x))
 
         # Check if it's a factorization
         from sage.structure.factorization import Factorization
+
         if isinstance(x, Factorization):
             return self.prod(f**i for f, i in x)
 
@@ -774,7 +810,9 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             x
         """
         if i < 0 or not i < self.__ngens:
-            raise IndexError("argument i (= {}) must be between 0 and {}".format(i, self.__ngens - 1))
+            raise IndexError(
+                "argument i (= {}) must be between 0 and {}".format(i, self.__ngens - 1)
+            )
         R = self.base_ring()
         F = self._indices
         return self.element_class(self, {F.gen(i): R.one()})
@@ -795,6 +833,7 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             x = self.gen(i)
             ret[str(x)] = x
         from sage.sets.family import Family
+
         return Family(self.variable_names(), lambda i: ret[i])
 
     @cached_method
@@ -872,6 +911,7 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
         if mats is None:
             return super().quotient(mons, names)
         from sage.algebras import free_algebra_quotient
+
         return free_algebra_quotient.FreeAlgebraQuotient(self, mons, mats, names)
 
     quo = quotient
@@ -982,6 +1022,7 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             ValueError: relation value z must contain the term x*y
         """
         from sage.matrix.constructor import Matrix
+
         commutative = not relations
 
         base_ring = self.base_ring()
@@ -1002,23 +1043,35 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             commuted = self(commuted)
             key_mc = to_commute._monomial_coefficients
             if len(key_mc) != 1:
-                raise ValueError(f"relation key {to_commute} must be a single "
-                                 "monomial v1*v2 of two distinct generators")
+                raise ValueError(
+                    f"relation key {to_commute} must be a single "
+                    "monomial v1*v2 of two distinct generators"
+                )
             key_mon, key_coef = next(iter(key_mc.items()))
             factors = list(key_mon)
-            if (key_coef != 1 or len(factors) != 2
-                    or factors[0][1] != 1 or factors[1][1] != 1):
-                raise ValueError(f"relation key {to_commute} must be a product "
-                                 "v1*v2 of two distinct generators")
+            if (
+                key_coef != 1
+                or len(factors) != 2
+                or factors[0][1] != 1
+                or factors[1][1] != 1
+            ):
+                raise ValueError(
+                    f"relation key {to_commute} must be a product "
+                    "v1*v2 of two distinct generators"
+                )
             v1, v2 = factors[0][0], factors[1][0]
             if not (v1 > v2):
-                raise ValueError(f"relation key {to_commute} must have "
-                                 f"v1 > v2; got v1 = {v1}, v2 = {v2}")
+                raise ValueError(
+                    f"relation key {to_commute} must have "
+                    f"v1 > v2; got v1 = {v1}, v2 = {v2}"
+                )
             reverse_monomial = v2 * v1
             val_mc = commuted._monomial_coefficients
             if reverse_monomial not in val_mc:
-                raise ValueError(f"relation value {commuted} must contain the "
-                                 f"term {reverse_monomial}")
+                raise ValueError(
+                    f"relation value {commuted} must contain the "
+                    f"term {reverse_monomial}"
+                )
             c_coef = val_mc[reverse_monomial]
             v2_ind = gens.index(v2)
             v1_ind = gens.index(v1)
@@ -1027,9 +1080,16 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             if d_dict:
                 dmat[v2_ind, v1_ind] = polynomial_ring(self._from_dict(d_dict))
         from sage.rings.polynomial.plural import g_Algebra
-        return g_Algebra(base_ring, cmat, dmat,
-                         names=names or self.variable_names(),
-                         order=order, check=check, commutative=commutative)
+
+        return g_Algebra(
+            base_ring,
+            cmat,
+            dmat,
+            names=names or self.variable_names(),
+            order=order,
+            check=check,
+            commutative=commutative,
+        )
 
     def poincare_birkhoff_witt_basis(self):
         """
@@ -1069,7 +1129,7 @@ class FreeAlgebra_generic(CombinatorialFreeModule):
             lst = list(elt)
             support = [i[0].to_word() for i in lst]
             min_elt = support[0]
-            for word in support[1:len(support) - 1]:
+            for word in support[1 : len(support) - 1]:
                 if min_elt.lex_less(word):
                     min_elt = word
             coeff = lst[support.index(min_elt)][1]
@@ -1214,6 +1274,7 @@ class PBWBasisOfFreeAlgebra(CombinatorialFreeModule):
         sage: all(F(PBW(F(m))) == F(m) for m in L)
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, R, n=None, names=None):
         """
@@ -1250,8 +1311,9 @@ class PBWBasisOfFreeAlgebra(CombinatorialFreeModule):
         R = alg.base_ring()
         self._alg = alg
         category = AlgebrasWithBasis(R)
-        CombinatorialFreeModule.__init__(self, R, alg.monoid(), prefix='PBW',
-                                         category=category)
+        CombinatorialFreeModule.__init__(
+            self, R, alg.monoid(), prefix='PBW', category=category
+        )
         self._assign_names(alg.variable_names())
 
     def _repr_(self) -> str:
@@ -1467,8 +1529,9 @@ class PBWBasisOfFreeAlgebra(CombinatorialFreeModule):
             sage: PBW.expansion(PBW.one()).parent() is F
             True
         """
-        return sum([i[1] * self._alg.lie_polynomial(i[0]) for i in list(t)],
-                   self._alg.zero())
+        return sum(
+            [i[1] * self._alg.lie_polynomial(i[0]) for i in list(t)], self._alg.zero()
+        )
 
     class Element(CombinatorialFreeModule.Element):
         def expand(self):
@@ -1511,6 +1574,7 @@ class AssociativeFunctor(ConstructionFunctor):
         sage: F(f)(a * F(A)(x))
         (a+b)*x
     """
+
     rank = 9
 
     def __init__(self, vars, degs=None):
@@ -1564,8 +1628,10 @@ class AssociativeFunctor(ConstructionFunctor):
         codom = self(f.codomain())
 
         def action(x):
-            return codom._from_dict({a: f(b)
-                                     for a, b in x.monomial_coefficients().items()})
+            return codom._from_dict(
+                {a: f(b) for a, b in x.monomial_coefficients().items()}
+            )
+
         return dom.module_morphism(function=action, codomain=codom)
 
     def __eq__(self, other):
@@ -1603,13 +1669,14 @@ class AssociativeFunctor(ConstructionFunctor):
             return self
         if isinstance(other, AssociativeFunctor):
             if set(self.vars).intersection(other.vars):
-                raise CoercionException("Overlapping variables (%s,%s)" %
-                                        (self.vars, other.vars))
+                raise CoercionException(
+                    "Overlapping variables (%s,%s)" % (self.vars, other.vars)
+                )
             return AssociativeFunctor(other.vars + self.vars)
-        if (isinstance(other, CompositeConstructionFunctor) and
-              isinstance(other.all[-1], AssociativeFunctor)):
-            return CompositeConstructionFunctor(other.all[:-1],
-                                                self * other.all[-1])
+        if isinstance(other, CompositeConstructionFunctor) and isinstance(
+            other.all[-1], AssociativeFunctor
+        ):
+            return CompositeConstructionFunctor(other.all[:-1], self * other.all[-1])
         return CompositeConstructionFunctor(other, self)
 
     def merge(self, other):

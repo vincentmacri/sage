@@ -56,10 +56,15 @@ class MemoryChunkRRRetval(MemoryChunk):
             sage: mc.declare_call_locals()
             '        cdef RealNumber retval = (self.domain)()\n'
         """
-        return je(ri(8,
-            """
+        return je(
+            ri(
+                8,
+                """
             cdef RealNumber {{ myself.name }} = (self.domain)()
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def declare_parameter(self):
         r"""
@@ -181,26 +186,41 @@ class RRInterpreter(StackInterpreter):
         self.err_return = '0'
         self.mc_py_constants = MemoryChunkConstants('py_constants', ty_python)
         self.mc_domain = MemoryChunkPyConstant('domain')
-        self.chunks = [self.mc_args, self.mc_retval, self.mc_constants,
-                       self.mc_py_constants,
-                       self.mc_stack, self.mc_code, self.mc_domain]
-        pg = params_gen(A=self.mc_args, C=self.mc_constants, D=self.mc_code,
-                        S=self.mc_stack,
-                        P=self.mc_py_constants)
+        self.chunks = [
+            self.mc_args,
+            self.mc_retval,
+            self.mc_constants,
+            self.mc_py_constants,
+            self.mc_stack,
+            self.mc_code,
+            self.mc_domain,
+        ]
+        pg = params_gen(
+            A=self.mc_args,
+            C=self.mc_constants,
+            D=self.mc_code,
+            S=self.mc_stack,
+            P=self.mc_py_constants,
+        )
         self.pg = pg
-        self.c_header = ri(0,
+        self.c_header = ri(
+            0,
             '''
             #include <mpfr.h>
-            ''')
+            ''',
+        )
 
-        self.pxd_header = ri(0,
+        self.pxd_header = ri(
+            0,
             """
             from sage.rings.real_mpfr cimport RealField_class, RealNumber
             from sage.libs.mpfr cimport *
 
-            """)
+            """,
+        )
 
-        self.pyx_header = ri(0,
+        self.pyx_header = ri(
+            0,
             """\
             cdef public bint rr_py_call_helper(object domain, object fn,
                                                int n_args,
@@ -215,53 +235,94 @@ class RRInterpreter(StackInterpreter):
                 cdef RealNumber result = domain(fn(*py_args))
                 mpfr_set(retval, result.value, MPFR_RNDN)
                 return 1
-            """)
+            """,
+        )
 
         instrs = [
-            InstrSpec('load_arg', pg('A[D]', 'S'),
-                       code='mpfr_set(o0, i0, MPFR_RNDN);'),
-            InstrSpec('load_const', pg('C[D]', 'S'),
-                       code='mpfr_set(o0, i0, MPFR_RNDN);'),
-            InstrSpec('return', pg('S', ''),
-                       code='mpfr_set(retval, i0, MPFR_RNDN);\nreturn 1;\n'),
-            InstrSpec('py_call', pg('P[D]S@D', 'S'),
-                       uses_error_handler=True,
-                       code=ri(0,
-                           """
+            InstrSpec('load_arg', pg('A[D]', 'S'), code='mpfr_set(o0, i0, MPFR_RNDN);'),
+            InstrSpec(
+                'load_const', pg('C[D]', 'S'), code='mpfr_set(o0, i0, MPFR_RNDN);'
+            ),
+            InstrSpec(
+                'return',
+                pg('S', ''),
+                code='mpfr_set(retval, i0, MPFR_RNDN);\nreturn 1;\n',
+            ),
+            InstrSpec(
+                'py_call',
+                pg('P[D]S@D', 'S'),
+                uses_error_handler=True,
+                code=ri(
+                    0,
+                    """
                            if (!rr_py_call_helper(domain, i0, n_i1, i1, o0)) {
                              goto error;
                            }
-                           """))
-            ]
-        for (name, op) in [('add', 'mpfr_add'), ('sub', 'mpfr_sub'),
-                           ('mul', 'mpfr_mul'), ('div', 'mpfr_div'),
-                           ('pow', 'mpfr_pow')]:
+                           """,
+                ),
+            ),
+        ]
+        for name, op in [
+            ('add', 'mpfr_add'),
+            ('sub', 'mpfr_sub'),
+            ('mul', 'mpfr_mul'),
+            ('div', 'mpfr_div'),
+            ('pow', 'mpfr_pow'),
+        ]:
             instrs.append(instr_funcall_2args_mpfr(name, pg('SS', 'S'), op))
         instrs.append(instr_funcall_2args_mpfr('ipow', pg('SD', 'S'), 'mpfr_pow_si'))
-        for name in ['neg', 'abs',
-                     'log', 'log2', 'log10',
-                     'exp', 'exp2', 'exp10',
-                     'cos', 'sin', 'tan',
-                     'sec', 'csc', 'cot',
-                     'acos', 'asin', 'atan',
-                     'cosh', 'sinh', 'tanh',
-                     'sech', 'csch', 'coth',
-                     'acosh', 'asinh', 'atanh',
-                     'log1p', 'expm1', 'eint',
-                     'gamma', 'lngamma',
-                     'zeta', 'erf', 'erfc',
-                     'j0', 'j1', 'y0', 'y1']:
+        for name in [
+            'neg',
+            'abs',
+            'log',
+            'log2',
+            'log10',
+            'exp',
+            'exp2',
+            'exp10',
+            'cos',
+            'sin',
+            'tan',
+            'sec',
+            'csc',
+            'cot',
+            'acos',
+            'asin',
+            'atan',
+            'cosh',
+            'sinh',
+            'tanh',
+            'sech',
+            'csch',
+            'coth',
+            'acosh',
+            'asinh',
+            'atanh',
+            'log1p',
+            'expm1',
+            'eint',
+            'gamma',
+            'lngamma',
+            'zeta',
+            'erf',
+            'erfc',
+            'j0',
+            'j1',
+            'y0',
+            'y1',
+        ]:
             instrs.append(instr_funcall_1arg_mpfr(name, pg('S', 'S'), 'mpfr_' + name))
         # mpfr_ui_div constructs a temporary mpfr_t and then calls mpfr_div;
         # it would probably be (slightly) faster to use a permanent copy
         # of "one" (on the other hand, the constructed temporary copy is
         # on the stack, so it's very likely to be in the cache).
-        instrs.append(InstrSpec('invert', pg('S', 'S'),
-                                 code='mpfr_ui_div(o0, 1, i0, MPFR_RNDN);'))
+        instrs.append(
+            InstrSpec('invert', pg('S', 'S'), code='mpfr_ui_div(o0, 1, i0, MPFR_RNDN);')
+        )
         self.instr_descs = instrs
         self._set_opcodes()
         # Supported for exponents that fit in a long, so we could use
         # a much wider range on a 64-bit machine.  On the other hand,
         # it's easier to write the code this way, and constant integer
         # exponents outside this range probably aren't very common anyway.
-        self.ipow_range = (int(-2**31), int(2**31-1))
+        self.ipow_range = (int(-(2**31)), int(2**31 - 1))

@@ -28,12 +28,14 @@ class JmolDataJar(StaticFile):
         jmol_search_path = JMOL_DIR or list(sage_data_paths('jmol'))
 
         StaticFile.__init__(
-            self, name='jmol',
+            self,
+            name='jmol',
             filename='JmolData.jar',
             search_path=jmol_search_path,
             spkg='jmol',
             type='optional',
-            description="Java viewer for chemical structures in 3D")
+            description="Java viewer for chemical structures in 3D",
+        )
 
 
 def all_features():

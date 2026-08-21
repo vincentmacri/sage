@@ -1,13 +1,13 @@
 r"""
 Coalgebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #  Copyright (C) 2008-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.lazy_attribute import lazy_attribute
@@ -36,8 +36,10 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
         sage: TestSuite(CoalgebrasWithBasis(ZZ)).run()
     """
-    Graded = LazyImport('sage.categories.graded_coalgebras_with_basis',
-                        'GradedCoalgebrasWithBasis')
+
+    Graded = LazyImport(
+        'sage.categories.graded_coalgebras_with_basis', 'GradedCoalgebrasWithBasis'
+    )
 
     class Filtered(FilteredModulesCategory):
         """
@@ -45,7 +47,6 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         """
 
     class ParentMethods:
-
         @abstract_method(optional=True)
         def coproduct_on_basis(self, i):
             """
@@ -96,7 +97,9 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 # TODO: if self is a Hopf algebra, then one would want
                 # to create a morphism of algebras with basis instead
                 # should there be a method self.coproduct_homset_category?
-                return Hom(self, tensor([self, self]), ModulesWithBasis(self.base_ring()))(on_basis=self.coproduct_on_basis)
+                return Hom(
+                    self, tensor([self, self]), ModulesWithBasis(self.base_ring())
+                )(on_basis=self.coproduct_on_basis)
             if hasattr(self, "coproduct_by_coercion"):
                 return self.coproduct_by_coercion
 
@@ -145,7 +148,9 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 (B[(1,3)], 1)
             """
             if self.counit_on_basis is not NotImplemented:
-                return self.module_morphism(self.counit_on_basis,codomain=self.base_ring())
+                return self.module_morphism(
+                    self.counit_on_basis, codomain=self.base_ring()
+                )
             if hasattr(self, "counit_by_coercion"):
                 return self.counit_by_coercion
 
@@ -203,7 +208,9 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 (m{} # m{} # m{} # m{}, m{{1, 3}, {2}})
             """
             if n < 0:
-                raise ValueError("cannot take fewer than 0 coproduct iterations: %s < 0" % str(n))
+                raise ValueError(
+                    "cannot take fewer than 0 coproduct iterations: %s < 0" % str(n)
+                )
             if n == 0:
                 return self
             if n == 1:
@@ -213,8 +220,9 @@ class CoalgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             # Use coassociativity of `\Delta` to perform many coproducts simultaneously.
             fn = Integer(n - 1) // 2
             cn = Integer(n - 1) // 2 if n % 2 else Integer(n) // 2
-            split = lambda a, b: tensor([a.coproduct_iterated(fn),
-                                         b.coproduct_iterated(cn)])
+            split = lambda a, b: tensor(
+                [a.coproduct_iterated(fn), b.coproduct_iterated(cn)]
+            )
             return self.coproduct().apply_multilinear_morphism(split)
 
     class Super(SuperModulesCategory):

@@ -75,6 +75,7 @@ ACKNOWLEDGEMENT:
 Classes and Methods
 ===================
 """
+
 # ****************************************************************************
 #       Copyright (C) 2016 Daniel Krenn <dev@danielkrenn.at>
 #                     2021 Gabriel F. Lipnik <dev@gabriellipnik.at>
@@ -168,6 +169,7 @@ class DegeneratedSequenceError(RuntimeError):
         You can use 'allow_degenerated_sequence=True' followed
         by a call of method .regenerated() for correcting this.
     """
+
     pass
 
 
@@ -254,11 +256,14 @@ class RegularSequence(RecognizableSeries):
             '2-regular sequence 0, 1, 3, 5, 9, 11, 15, 19, 27, 29, ...'
         """
         from sage.misc.lazy_list import lazy_list_formatter
+
         return lazy_list_formatter(
             self,
             name='{}-regular sequence'.format(self.parent().k),
-            opening_delimiter='', closing_delimiter='',
-            preview=10)
+            opening_delimiter='',
+            closing_delimiter='',
+            preview=10,
+        )
 
     @cached_method
     def coefficient_of_n(self, n, **kwds):
@@ -331,6 +336,7 @@ class RegularSequence(RecognizableSeries):
             True
         """
         from itertools import count
+
         return iter(self[n] for n in count())
 
     @cached_method
@@ -365,6 +371,7 @@ class RegularSequence(RecognizableSeries):
             False
         """
         from sage.rings.integer_ring import ZZ
+
         return (self.mu[ZZ.zero()] * self.right) != self.right
 
     def _error_if_degenerated_(self):
@@ -391,7 +398,8 @@ class RegularSequence(RecognizableSeries):
                 "Using such a sequence might lead to wrong results. "
                 "You can use 'allow_degenerated_sequence=True' followed by "
                 "a call of method .regenerated() "
-                "for correcting this.")
+                "for correcting this."
+            )
 
     @cached_method
     @minimize_result
@@ -480,13 +488,11 @@ class RegularSequence(RecognizableSeries):
         z = next(itA)
         W0 = Matrix(dim, 1, (I - self.mu[z]) * self.right)
         mu = {z: Matrix.block([[self.mu[z], W0], [Zr, 1]])}
-        mu.update((r, Matrix.block([[self.mu[r], Zc], [Zr, 0]]))
-                  for r in itA)
+        mu.update((r, Matrix.block([[self.mu[r], Zc], [Zr, 0]])) for r in itA)
 
         return P.element_class(
-            P, mu,
-            vector(tuple(self.left) + (0,)),
-            vector(tuple(self.right) + (1,)))
+            P, mu, vector(tuple(self.left) + (0,)), vector(tuple(self.right) + (1,))
+        )
 
     def transposed(self, allow_degenerated_sequence=False):
         r"""
@@ -568,7 +574,11 @@ class RegularSequence(RecognizableSeries):
             ....:          left=vector([1, 0]), right=vector([0, 1])).minimized()
             2-regular sequence 0, 1, 3, 5, 9, 11, 15, 19, 27, 29, ...
         """
-        return self.transposed(allow_degenerated_sequence=True)._minimized_left_().transposed(allow_degenerated_sequence=True)
+        return (
+            self.transposed(allow_degenerated_sequence=True)
+            ._minimized_left_()
+            .transposed(allow_degenerated_sequence=True)
+        )
 
     @minimize_result
     def subsequence(self, a, b):
@@ -780,8 +790,9 @@ class RegularSequence(RecognizableSeries):
             b = {ZZ(b): ZZ(1)}
 
         if a == 0:
-            return sum(c_j * self[b_j] * self.parent().one_hadamard()
-                       for b_j, c_j in b.items())
+            return sum(
+                c_j * self[b_j] * self.parent().one_hadamard() for b_j, c_j in b.items()
+            )
         if a == 1 and len(b) == 1 and zero in b:
             return b[zero] * self
         if a < 0:
@@ -789,6 +800,7 @@ class RegularSequence(RecognizableSeries):
 
         from sage.matrix.constructor import Matrix
         from sage.modules.free_module_element import vector
+
         P = self.parent()
         A = P.alphabet()
         k = P.k
@@ -847,14 +859,23 @@ class RegularSequence(RecognizableSeries):
         # problems with the zero sequence, see issue:`37282`.
         result = P.element_class(
             P,
-            {r: Matrix.block([matrix_row(r, c) for c in kernel])
-             for r in A},
-            vector(P.coefficient_ring(), chain.from_iterable(
-                b.get(c, 0) * self.left
-                for c in kernel)),
-            vector(P.coefficient_ring(), chain.from_iterable(
-                (self.coefficient_of_n(c, multiply_left=False) if c >= 0 else zero_R)
-                for c in kernel)))
+            {r: Matrix.block([matrix_row(r, c) for c in kernel]) for r in A},
+            vector(
+                P.coefficient_ring(),
+                chain.from_iterable(b.get(c, 0) * self.left for c in kernel),
+            ),
+            vector(
+                P.coefficient_ring(),
+                chain.from_iterable(
+                    (
+                        self.coefficient_of_n(c, multiply_left=False)
+                        if c >= 0
+                        else zero_R
+                    )
+                    for c in kernel
+                ),
+            ),
+        )
 
         return result
 
@@ -1094,12 +1115,19 @@ class RegularSequence(RecognizableSeries):
             T.subdivide()
             return T
 
-        matrices_0 = {r: sum(tensor_product(self.mu[s], other.mu[r-s])
-                             for s in srange(0, r+1))
-                      for r in P.alphabet()}
-        matrices_1 = {r: sum(tensor_product(self.mu[s], other.mu[k+r-s])
-                             for s in srange(r+1, k))
-                      for r in P.alphabet()}
+        matrices_0 = {
+            r: sum(
+                tensor_product(self.mu[s], other.mu[r - s]) for s in srange(0, r + 1)
+            )
+            for r in P.alphabet()
+        }
+        matrices_1 = {
+            r: sum(
+                tensor_product(self.mu[s], other.mu[k + r - s])
+                for s in srange(r + 1, k)
+            )
+            for r in P.alphabet()
+        }
         left = vector(tensor_product(Matrix(self.left), Matrix(other.left)))
         right = vector(tensor_product(Matrix(self.right), Matrix(other.right)))
 
@@ -1112,20 +1140,22 @@ class RegularSequence(RecognizableSeries):
             Z = zero_matrix(C[0].dimensions()[0])
 
             def blocks(r):
-                upper = [[C[s], D[s], Z]
-                         for s in reversed(srange(max(0, r-2), r+1))]
-                lower = [[Z, C[s], D[s]]
-                         for s in reversed(srange(k-3+len(upper), k))]
+                upper = [
+                    [C[s], D[s], Z] for s in reversed(srange(max(0, r - 2), r + 1))
+                ]
+                lower = [
+                    [Z, C[s], D[s]] for s in reversed(srange(k - 3 + len(upper), k))
+                ]
                 return upper + lower
 
             return {r: Matrix.block(blocks(r)) for r in P.alphabet()}
 
         result = P.element_class(
             P,
-            linear_representation_morphism_recurrence_order_1(matrices_0,
-                                                              matrices_1),
-            vector(list(left) + (2*len(list(left)))*[0]),
-            vector(list(right) + (2*len(list(right)))*[0]))
+            linear_representation_morphism_recurrence_order_1(matrices_0, matrices_1),
+            vector(list(left) + (2 * len(list(left))) * [0]),
+            vector(list(right) + (2 * len(list(right))) * [0]),
+        )
 
         return result
 
@@ -1281,15 +1311,15 @@ class RegularSequence(RecognizableSeries):
         assert z == 0
         B = {z: Z}
         for r in A:
-            B[r+1] = B[r] + self.mu[r]
+            B[r + 1] = B[r] + self.mu[r]
         C = B[k]
 
         result = P.element_class(
             P,
             {r: Matrix.block([[C, B[r]], [Z, self.mu[r]]]) for r in A},
-            vector(chain(self.left,
-                         (dim * (0,) if not include_n else self.left))),
-            vector(chain(dim * (0,), self.right)))
+            vector(chain(self.left, (dim * (0,) if not include_n else self.left))),
+            vector(chain(dim * (0,), self.right)),
+        )
 
         return result
 
@@ -1403,6 +1433,7 @@ class RegularSequence(RecognizableSeries):
             True
         """
         from sage.combinat.regular_sequence_bounded import regular_sequence_is_bounded
+
         return regular_sequence_is_bounded(self)
 
 
@@ -1446,13 +1477,11 @@ class RegularSequenceRing(RecognizableSeriesSpace):
         :doc:`k-regular sequence <regular_sequence>`,
         :class:`RegularSequence`.
     """
+
     Element = RegularSequence
 
     @classmethod
-    def __normalize__(cls, k,
-                      coefficient_ring,
-                      category=None,
-                      **kwds):
+    def __normalize__(cls, k, coefficient_ring, category=None, **kwds):
         r"""
         Normalize the input in order to ensure a unique
         representation.
@@ -1469,11 +1498,11 @@ class RegularSequenceRing(RecognizableSeriesSpace):
         """
         from sage.arith.srange import srange
         from sage.categories.algebras import Algebras
+
         category = category or Algebras(coefficient_ring)
-        nargs = super().__normalize__(coefficient_ring,
-                                      alphabet=srange(k),
-                                      category=category,
-                                      **kwds)
+        nargs = super().__normalize__(
+            coefficient_ring, alphabet=srange(k), category=category, **kwds
+        )
         return (k,) + nargs
 
     def __init__(self, k, *args, **kwds):
@@ -1519,8 +1548,11 @@ class RegularSequenceRing(RecognizableSeriesSpace):
             sage: loads(dumps(Seq2))  # indirect doctest
             Space of 2-regular sequences over Integer Ring
         """
-        return _pickle_RegularSequenceRing, \
-            (self.k, self.coefficient_ring(), self.category())
+        return _pickle_RegularSequenceRing, (
+            self.k,
+            self.coefficient_ring(),
+            self.category(),
+        )
 
     def _repr_(self):
         r"""
@@ -1557,6 +1589,7 @@ class RegularSequenceRing(RecognizableSeriesSpace):
             ValueError: value -1 of index is negative
         """
         from sage.rings.integer_ring import ZZ
+
         n = ZZ(n)
         W = self.indices()
         try:
@@ -1591,11 +1624,12 @@ class RegularSequenceRing(RecognizableSeriesSpace):
         R = self.coefficient_ring()
         one = R.one()
         zero = R.zero()
-        return self.element_class(self,
-                                  [Matrix([[one]])]
-                                  + (self.k-1)*[Matrix([[zero]])],
-                                  vector([one]),
-                                  vector([one]))
+        return self.element_class(
+            self,
+            [Matrix([[one]])] + (self.k - 1) * [Matrix([[zero]])],
+            vector([one]),
+            vector([one]),
+        )
 
     def some_elements(self):
         r"""
@@ -1618,10 +1652,10 @@ class RegularSequenceRing(RecognizableSeriesSpace):
              ...
              2-regular sequence 2210, 170, 0, 0, 0, 0, 0, 0, 0, 0, ...)
         """
-        return iter(element.regenerated()
-                    for element
-                    in super().some_elements(
-                        allow_degenerated_sequence=True))
+        return iter(
+            element.regenerated()
+            for element in super().some_elements(allow_degenerated_sequence=True)
+        )
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -1951,6 +1985,7 @@ class RegularSequenceRing(RecognizableSeriesSpace):
             RuntimeError: no invertible submatrix found
         """
         import logging
+
         logger = logging.getLogger(__name__)
 
         from sage.arith.srange import srange, xsrange
@@ -2005,7 +2040,9 @@ class RegularSequenceRing(RecognizableSeriesSpace):
                 # Iterate over all increasing lists of length d consisting
                 # of nonnegative integers less than `n_verify`.
 
-                U = Matrix(domain, d, d, [values(m, lines) for m in m_indices]).transpose()
+                U = Matrix(
+                    domain, d, d, [values(m, lines) for m in m_indices]
+                ).transpose()
                 try:
                     return U.inverse(), m_indices
                 except ZeroDivisionError:
@@ -2039,9 +2076,10 @@ class RegularSequenceRing(RecognizableSeriesSpace):
             be evaluated beyond ``n_verify``, determining an invertible submatrix
             in ``some_inverse_U_matrix`` might require us to do so.
             """
-            return all(f(k**t_L * m + r_L) ==
-                       linear_combination * vector(values(m, lines))
-                       for m in xsrange(0, (n_verify - r_L) // k**t_L + 1))
+            return all(
+                f(k**t_L * m + r_L) == linear_combination * vector(values(m, lines))
+                for m in xsrange(0, (n_verify - r_L) // k**t_L + 1)
+            )
 
         class NoLinearCombination(RuntimeError):
             pass
@@ -2071,13 +2109,15 @@ class RegularSequenceRing(RecognizableSeriesSpace):
         if left is None:
             include(0, 0)  # entries (t, r) --> k**t * m + r
             assert len(lines) == 1
-            left = vector(len(seq(0))*(zero,) + (one,))
+            left = vector(len(seq(0)) * (zero,) + (one,))
 
         while to_branch:
             t_R, r_R = to_branch.pop(0)
             if t_R >= max_exponent:
-                raise RuntimeError(f'aborting as exponents would be larger '
-                                   f'than max_exponent={max_exponent}')
+                raise RuntimeError(
+                    f'aborting as exponents would be larger '
+                    f'than max_exponent={max_exponent}'
+                )
 
             t_L = t_R + 1
             for s_L in srange(k):
@@ -2086,14 +2126,17 @@ class RegularSequenceRing(RecognizableSeriesSpace):
                     linear_combination = find_linear_combination(t_L, r_L, lines)
                 except NoLinearCombination:
                     include(t_L, r_L)  # entries (t, r) --> k**t * m + r
-                    linear_combination = (len(lines)-1)*(zero,) + (one,)
-                logger.debug('M_%s: f_{%s*m+%s} = %s * F_m',
-                             s_L, k**t_L, r_L, linear_combination)
+                    linear_combination = (len(lines) - 1) * (zero,) + (one,)
+                logger.debug(
+                    'M_%s: f_{%s*m+%s} = %s * F_m', s_L, k**t_L, r_L, linear_combination
+                )
                 mu[s_L].append(linear_combination)
 
         d = len(seq(0)) + len(lines)
-        mu = tuple(Matrix(domain, [pad_right(tuple(row), d, zero=zero) for row in M])
-                         for M in mu)
+        mu = tuple(
+            Matrix(domain, [pad_right(tuple(row), d, zero=zero) for row in M])
+            for M in mu
+        )
         right = vector(values(0, lines))
         left = vector(pad_right(tuple(left), d, zero=zero))
         return self(mu, left, right)
@@ -2894,9 +2937,9 @@ class RecurrenceParser:
                 return [operands[0], operands[1]]
             if operands[0].operator() == function:
                 return [operands[1], operands[0]]
-            raise ValueError('Term %s in the equation %s '
-                             'does not contain %s.'
-                             % (op, eq, function))
+            raise ValueError(
+                'Term %s in the equation %s does not contain %s.' % (op, eq, function)
+            )
 
         def parse_one_summand(summand, eq):
             if summand.operator() == mul_vararg:
@@ -2904,40 +2947,47 @@ class RecurrenceParser:
             elif summand.operator() == function:
                 coeff, op = 1, summand
             else:
-                raise ValueError('Term %s in the equation %s is not a valid summand.'
-                                 % (summand, eq))
+                raise ValueError(
+                    'Term %s in the equation %s is not a valid summand.' % (summand, eq)
+                )
             try:
                 coeff = coefficient_ring(coeff)
             except (TypeError, ValueError):
-                raise ValueError("Term %s in the equation %s: "
-                                 "%s is not a valid coefficient "
-                                 "since it is not in %s."
-                                 % (summand, eq, coeff, coefficient_ring)) from None
+                raise ValueError(
+                    "Term %s in the equation %s: "
+                    "%s is not a valid coefficient "
+                    "since it is not in %s." % (summand, eq, coeff, coefficient_ring)
+                ) from None
             if len(op.operands()) > 1:
-                raise ValueError('Term %s in the equation %s has more than one argument.'
-                                 % (op, eq))
+                raise ValueError(
+                    'Term %s in the equation %s has more than one argument.' % (op, eq)
+                )
             elif len(op.operands()) == 0:
-                raise ValueError('Term %s in the equation %s has no argument.'
-                                 % (op, eq))
+                raise ValueError(
+                    'Term %s in the equation %s has no argument.' % (op, eq)
+                )
             try:
                 poly = ZZ[var](op.operands()[0])
             except TypeError:
-                raise ValueError('Term %s in the equation %s: '
-                                 '%s is not a polynomial in %s with integer coefficients.'
-                                 % (op, eq, op.operands()[0], var)) from None
+                raise ValueError(
+                    'Term %s in the equation %s: '
+                    '%s is not a polynomial in %s with integer coefficients.'
+                    % (op, eq, op.operands()[0], var)
+                ) from None
             if poly.degree() != 1:
-                raise ValueError("Term %s in the equation %s: "
-                                 "polynomial %s does not have degree 1."
-                                 % (op, eq, poly))
+                raise ValueError(
+                    "Term %s in the equation %s: "
+                    "polynomial %s does not have degree 1." % (op, eq, poly)
+                )
             d, base_power_m = list(poly)
             m = log(base_power_m, base=k)
             try:
                 m = ZZ(m)
             except (TypeError, ValueError):
-                raise ValueError("Term %s in the equation %s: "
-                                 "%s is not a power of %s."
-                                 % (summand, eq,
-                                    k**m, k)) from None
+                raise ValueError(
+                    "Term %s in the equation %s: "
+                    "%s is not a power of %s." % (summand, eq, k**m, k)
+                ) from None
             return [coeff, m, d]
 
         if not equations:
@@ -2946,42 +2996,50 @@ class RecurrenceParser:
         for eq in equations:
             try:
                 if eq.operator() != operator.eq:
-                    raise ValueError("%s is not an equation with ==."
-                                     % eq)
+                    raise ValueError("%s is not an equation with ==." % eq)
             except AttributeError:
-                raise ValueError("%s is not a symbolic expression."
-                                 % eq) from None
+                raise ValueError("%s is not a symbolic expression." % eq) from None
             left_side, right_side = eq.operands()
             if left_side.operator() != function:
-                raise ValueError("Term %s in the equation %s is not an evaluation of %s."
-                                 % (left_side, eq, function))
+                raise ValueError(
+                    "Term %s in the equation %s is not an evaluation of %s."
+                    % (left_side, eq, function)
+                )
             if len(left_side.operands()) != 1:
-                raise ValueError("Term %s in the equation %s does not have "
-                                 "one argument."
-                                 % (left_side, eq))
+                raise ValueError(
+                    "Term %s in the equation %s does not have "
+                    "one argument." % (left_side, eq)
+                )
             try:
                 polynomial_left = ZZ[var](left_side.operands()[0])
             except TypeError:
-                raise ValueError("Term %s in the equation %s: "
-                                 "%s is not a polynomial in %s with "
-                                 "integer coefficients."
-                                 % (left_side, eq,
-                                    left_side.operands()[0], var)) from None
+                raise ValueError(
+                    "Term %s in the equation %s: "
+                    "%s is not a polynomial in %s with "
+                    "integer coefficients."
+                    % (left_side, eq, left_side.operands()[0], var)
+                ) from None
             if polynomial_left.degree() > 1:
-                raise ValueError("Term %s in the equation %s: "
-                                 "%s is not a polynomial in %s of degree smaller than 2."
-                                 % (left_side, eq, polynomial_left, var))
+                raise ValueError(
+                    "Term %s in the equation %s: "
+                    "%s is not a polynomial in %s of degree smaller than 2."
+                    % (left_side, eq, polynomial_left, var)
+                )
             if polynomial_left in ZZ:
                 try:
                     right_side = coefficient_ring(right_side)
                 except (TypeError, ValueError):
-                    raise ValueError("Initial value %s given by the equation %s "
-                                     "is not in %s."
-                                     % (right_side, eq, coefficient_ring)) from None
-                if (polynomial_left in initial_values.keys() and
-                    initial_values[polynomial_left] != right_side):
-                    raise ValueError("Initial value %s is given twice."
-                                     % (function(polynomial_left)))
+                    raise ValueError(
+                        "Initial value %s given by the equation %s "
+                        "is not in %s." % (right_side, eq, coefficient_ring)
+                    ) from None
+                if (
+                    polynomial_left in initial_values.keys()
+                    and initial_values[polynomial_left] != right_side
+                ):
+                    raise ValueError(
+                        "Initial value %s is given twice." % (function(polynomial_left))
+                    )
                 initial_values.update({polynomial_left: right_side})
             else:
                 [r, base_power_M] = list(polynomial_left)
@@ -2989,64 +3047,81 @@ class RecurrenceParser:
                 try:
                     M_new = ZZ(M_new)
                 except (TypeError, ValueError):
-                    raise ValueError("Term %s in the equation %s: "
-                                     "%s is not a power of %s."
-                                     % (left_side, eq,
-                                        base_power_M, k)) from None
+                    raise ValueError(
+                        "Term %s in the equation %s: "
+                        "%s is not a power of %s." % (left_side, eq, base_power_M, k)
+                    ) from None
                 if M is not None and M != M_new:
-                    raise ValueError(("Term {0} in the equation {1}: "
-                                      "{2} does not equal {3}. Expected "
-                                      "subsequence modulo {3} as in another "
-                                      "equation, got subsequence modulo {2}.").format(
-                                          left_side, eq,
-                                          base_power_M, k**M))
+                    raise ValueError(
+                        (
+                            "Term {0} in the equation {1}: "
+                            "{2} does not equal {3}. Expected "
+                            "subsequence modulo {3} as in another "
+                            "equation, got subsequence modulo {2}."
+                        ).format(left_side, eq, base_power_M, k**M)
+                    )
                 elif M is None:
                     M = M_new
                     if M < 1:
-                        raise ValueError(("Term {0} in the equation {1}: "
-                                          "{2} is less than {3}. Modulus must "
-                                          "be at least {3}.").format(
-                                              left_side, eq,
-                                              base_power_M, k))
+                        raise ValueError(
+                            (
+                                "Term {0} in the equation {1}: "
+                                "{2} is less than {3}. Modulus must "
+                                "be at least {3}."
+                            ).format(left_side, eq, base_power_M, k)
+                        )
                 if r in remainders:
-                    raise ValueError("There are more than one recurrence relation for %s."
-                                     % (left_side,))
+                    raise ValueError(
+                        "There are more than one recurrence relation for %s."
+                        % (left_side,)
+                    )
                 if r >= k**M:
-                    raise ValueError("Term %s in the equation %s: "
-                                     "remainder %s is not smaller than modulus %s."
-                                     % (left_side, eq, r, k**M))
+                    raise ValueError(
+                        "Term %s in the equation %s: "
+                        "remainder %s is not smaller than modulus %s."
+                        % (left_side, eq, r, k**M)
+                    )
                 elif r < 0:
-                    raise ValueError("Term %s in the equation %s: "
-                                     "remainder %s is smaller than 0."
-                                     % (left_side, eq, r))
+                    raise ValueError(
+                        "Term %s in the equation %s: "
+                        "remainder %s is smaller than 0." % (left_side, eq, r)
+                    )
                 else:
                     remainders.add(r)
                 if right_side != 0:
-                    if (len(right_side.operands()) == 1 and right_side.operator() == function
-                        or right_side.operator() == mul_vararg and len(right_side.operands()) == 2):
+                    if (
+                        len(right_side.operands()) == 1
+                        and right_side.operator() == function
+                        or right_side.operator() == mul_vararg
+                        and len(right_side.operands()) == 2
+                    ):
                         summands = [right_side]
                     elif right_side.operator() == add_vararg:
                         summands = right_side.operands()
                     else:
-                        raise ValueError("%s is not a valid right hand side."
-                                         % (right_side,))
+                        raise ValueError(
+                            "%s is not a valid right hand side." % (right_side,)
+                        )
                     for summand in summands:
                         coeff, new_m, d = parse_one_summand(summand, eq)
                         if m is not None and m != new_m:
-                            raise ValueError(("Term {0} in the equation {1}: "
-                                              "{2} does not equal {3}. Expected "
-                                              "subsequence modulo {3} as in another "
-                                              "summand or equation, got subsequence "
-                                              "modulo {2}.").format(
-                                                  summand, eq,
-                                                  k**new_m, k**m))
+                            raise ValueError(
+                                (
+                                    "Term {0} in the equation {1}: "
+                                    "{2} does not equal {3}. Expected "
+                                    "subsequence modulo {3} as in another "
+                                    "summand or equation, got subsequence "
+                                    "modulo {2}."
+                                ).format(summand, eq, k**new_m, k**m)
+                            )
                         elif m is None:
                             m = new_m
                             if M <= m:
-                                raise ValueError("Term %s in the equation %s: "
-                                                 "%s is not smaller than %s."
-                                                 % (summand, eq,
-                                                    k**m, k**M))
+                                raise ValueError(
+                                    "Term %s in the equation %s: "
+                                    "%s is not smaller than %s."
+                                    % (summand, eq, k**m, k**M)
+                                )
                         coeffs.update({(r, d): coeff})
 
         if not M:
@@ -3054,12 +3129,12 @@ class RecurrenceParser:
         elif M and m is None:  # for the zero sequence
             m = M - 1
 
-        missing_remainders = [rem for rem in srange(k**M)
-                              if rem not in remainders]
+        missing_remainders = [rem for rem in srange(k**M) if rem not in remainders]
         if missing_remainders:
-            raise ValueError("Recurrence relations for %s are missing."
-                             % ([function(k**M*var + rem)
-                                 for rem in missing_remainders],))
+            raise ValueError(
+                "Recurrence relations for %s are missing."
+                % ([function(k**M * var + rem) for rem in missing_remainders],)
+            )
 
         return (M, m, coeffs, initial_values)
 
@@ -3190,53 +3265,59 @@ class RecurrenceParser:
         from sage.rings.integer_ring import ZZ
 
         if M not in ZZ or M < 1:
-            raise ValueError("%s is not a positive integer."
-                             % (M,)) from None
+            raise ValueError("%s is not a positive integer." % (M,)) from None
         if m not in ZZ or m < 0:
-            raise ValueError("%s is not a nonnegative integer."
-                             % (m,)) from None
+            raise ValueError("%s is not a nonnegative integer." % (m,)) from None
         if M <= m:
-            raise ValueError("%s is not larger than %s."
-                             % (M, m)) from None
+            raise ValueError("%s is not larger than %s." % (M, m)) from None
 
         coefficient_ring = self.coefficient_ring
         k = self.k
 
-        invalid_coeffs = [coeff for coeff in coeffs.values()
-                          if coeff not in coefficient_ring]
+        invalid_coeffs = [
+            coeff for coeff in coeffs.values() if coeff not in coefficient_ring
+        ]
         if invalid_coeffs:
-            raise ValueError("Coefficients %s are not valid "
-                             "since they are not in %s."
-                             % (invalid_coeffs, coefficient_ring)) from None
+            raise ValueError(
+                "Coefficients %s are not valid "
+                "since they are not in %s." % (invalid_coeffs, coefficient_ring)
+            ) from None
 
         coeffs_keys = coeffs.keys()
-        invalid_coeffs_keys = [key for key in coeffs_keys
-                               if key[0] not in ZZ or key[1] not in ZZ]
+        invalid_coeffs_keys = [
+            key for key in coeffs_keys if key[0] not in ZZ or key[1] not in ZZ
+        ]
         if invalid_coeffs_keys:
-            raise ValueError("Keys %s for coefficients are not valid "
-                             "since one of their components is no integer."
-                             % (invalid_coeffs_keys,)) from None
+            raise ValueError(
+                "Keys %s for coefficients are not valid "
+                "since one of their components is no integer." % (invalid_coeffs_keys,)
+            ) from None
 
-        invalid_coeffs_keys = [key for key in coeffs_keys if key[0] < 0 or key[0] >= k**M]
+        invalid_coeffs_keys = [
+            key for key in coeffs_keys if key[0] < 0 or key[0] >= k**M
+        ]
         if invalid_coeffs_keys:
-            raise ValueError("Keys %s for coefficients are not valid "
-                             "since their first component is either smaller than 0 "
-                             " or larger than or equal to %s."
-                             % (invalid_coeffs_keys, k**M)) from None
+            raise ValueError(
+                "Keys %s for coefficients are not valid "
+                "since their first component is either smaller than 0 "
+                " or larger than or equal to %s." % (invalid_coeffs_keys, k**M)
+            ) from None
 
-        invalid_initial_values = [value for value in initial_values.values()
-                                  if value not in coefficient_ring]
+        invalid_initial_values = [
+            value for value in initial_values.values() if value not in coefficient_ring
+        ]
         if invalid_initial_values:
-            raise ValueError("Initial values %s are not valid "
-                             "since they are not in %s."
-                             % (invalid_initial_values, coefficient_ring)) from None
+            raise ValueError(
+                "Initial values %s are not valid "
+                "since they are not in %s." % (invalid_initial_values, coefficient_ring)
+            ) from None
 
-        invalid_initial_keys = [key for key in initial_values.keys()
-                                if key not in ZZ]
+        invalid_initial_keys = [key for key in initial_values.keys() if key not in ZZ]
         if invalid_initial_keys:
-            raise ValueError("Keys %s for the initial values are not valid "
-                             "since they are no integers."
-                             % (invalid_initial_keys,)) from None
+            raise ValueError(
+                "Keys %s for the initial values are not valid "
+                "since they are no integers." % (invalid_initial_keys,)
+            ) from None
 
         return (M, m, coeffs, initial_values)
 
@@ -3375,31 +3456,45 @@ class RecurrenceParser:
             l = min(indices_right)
             u = max(indices_right)
 
-        if offset < max(0, -l/k**m):
-            offset = max(0, ceil(-l/k**m))
+        if offset < max(0, -l / k**m):
+            offset = max(0, ceil(-l / k**m))
 
-        ll = (floor((l*k**(M-m) - k**M + 1)/(k**(M-m) - 1)) + 1)*(l < 0)
-        uu = max([ceil((u*k**(M-m) + k**M - k**m)/(k**(M-m) - 1)) - 1, k**m - 1])
-        n1 = offset - floor(ll/k**M)
-        dim = (k**M - 1)/(k - 1) + (M - m)*(uu - ll - k**m + 1) + n1
+        ll = (floor((l * k ** (M - m) - k**M + 1) / (k ** (M - m) - 1)) + 1) * (l < 0)
+        uu = max(
+            [ceil((u * k ** (M - m) + k**M - k**m) / (k ** (M - m) - 1)) - 1, k**m - 1]
+        )
+        n1 = offset - floor(ll / k**M)
+        dim = (k**M - 1) / (k - 1) + (M - m) * (uu - ll - k**m + 1) + n1
 
         if inhomogeneities:
-            invalid_indices = [i for i in inhomogeneities
-                               if i not in srange(k**M)]
+            invalid_indices = [i for i in inhomogeneities if i not in srange(k**M)]
             if invalid_indices:
-                raise ValueError(f"Indices {invalid_indices} for inhomogeneities are no "
-                                 f"integers between 0 and {k**M - 1}.")
+                raise ValueError(
+                    f"Indices {invalid_indices} for inhomogeneities are no "
+                    f"integers between 0 and {k**M - 1}."
+                )
 
             Seq = RegularSequenceRing(k, coefficient_ring)
-            inhomogeneities.update({i: inhomogeneities[i] * Seq.one_hadamard()
-                                    for i in inhomogeneities
-                                    if inhomogeneities[i] in coefficient_ring})
-            invalid = {i: inhomogeneities[i] for i in inhomogeneities
-                       if not (isinstance(inhomogeneities[i].parent(), RegularSequenceRing) and
-                               inhomogeneities[i].parent().k == k)}
+            inhomogeneities.update(
+                {
+                    i: inhomogeneities[i] * Seq.one_hadamard()
+                    for i in inhomogeneities
+                    if inhomogeneities[i] in coefficient_ring
+                }
+            )
+            invalid = {
+                i: inhomogeneities[i]
+                for i in inhomogeneities
+                if not (
+                    isinstance(inhomogeneities[i].parent(), RegularSequenceRing)
+                    and inhomogeneities[i].parent().k == k
+                )
+            }
             if invalid:
-                raise ValueError(f"Inhomogeneities {invalid} are neither {k}-regular "
-                                 f"sequences nor elements of {coefficient_ring}.")
+                raise ValueError(
+                    f"Inhomogeneities {invalid} are neither {k}-regular "
+                    f"sequences nor elements of {coefficient_ring}."
+                )
 
         if not initial_values:
             raise ValueError("No initial values are given.")
@@ -3411,32 +3506,83 @@ class RecurrenceParser:
                 return coefficient_ring(v)
             except (TypeError, ValueError):
                 values_not_in_ring.append(n)
-        initial_values = {n: converted_value(n, v)
-                          for n, v in initial_values.items()}
+
+        initial_values = {n: converted_value(n, v) for n, v in initial_values.items()}
         if values_not_in_ring:
-            raise ValueError("Initial values for arguments in %s are not in %s."
-                             % (values_not_in_ring, coefficient_ring))
+            raise ValueError(
+                "Initial values for arguments in %s are not in %s."
+                % (values_not_in_ring, coefficient_ring)
+            )
 
         max_key = max(keys_initial)
         last_value_needed = max(
-            k**(M-1) - k**m + uu + (n1 > 0) * k**(M-1) * (k * (n1 - 1) + k - 1),  # for matrix W
-            k**m * offset + u, max_key)
+            k ** (M - 1)
+            - k**m
+            + uu
+            + (n1 > 0) * k ** (M - 1) * (k * (n1 - 1) + k - 1),  # for matrix W
+            k**m * offset + u,
+            max_key,
+        )
         initial_values = self.values(
-            M=M, m=m, l=l, u=u, ll=ll, coeffs=coeffs,
-            initial_values=initial_values, last_value_needed=last_value_needed,
-            offset=offset, inhomogeneities=inhomogeneities)
+            M=M,
+            m=m,
+            l=l,
+            u=u,
+            ll=ll,
+            coeffs=coeffs,
+            initial_values=initial_values,
+            last_value_needed=last_value_needed,
+            offset=offset,
+            inhomogeneities=inhomogeneities,
+        )
 
-        recurrence_rules = namedtuple('recurrence_rules',
-                                      ['M', 'm', 'l', 'u', 'll', 'uu', 'dim',
-                                       'coeffs', 'initial_values', 'offset', 'n1',
-                                       'inhomogeneities'])
+        recurrence_rules = namedtuple(
+            'recurrence_rules',
+            [
+                'M',
+                'm',
+                'l',
+                'u',
+                'll',
+                'uu',
+                'dim',
+                'coeffs',
+                'initial_values',
+                'offset',
+                'n1',
+                'inhomogeneities',
+            ],
+        )
 
-        return recurrence_rules(M=M, m=m, l=l, u=u, ll=ll, uu=uu, dim=dim,
-                                coeffs=coeffs, initial_values=initial_values,
-                                offset=offset, n1=n1, inhomogeneities=inhomogeneities)
+        return recurrence_rules(
+            M=M,
+            m=m,
+            l=l,
+            u=u,
+            ll=ll,
+            uu=uu,
+            dim=dim,
+            coeffs=coeffs,
+            initial_values=initial_values,
+            offset=offset,
+            n1=n1,
+            inhomogeneities=inhomogeneities,
+        )
 
-    def values(self, *, M, m, l, u, ll, coeffs,
-               initial_values, last_value_needed, offset, inhomogeneities):
+    def values(
+        self,
+        *,
+        M,
+        m,
+        l,
+        u,
+        ll,
+        coeffs,
+        initial_values,
+        last_value_needed,
+        offset,
+        inhomogeneities,
+    ):
         r"""
         Determine enough values of the corresponding recursive sequence by
         applying the recurrence relations given in :meth:`RegularSequenceRing.from_recurrence`
@@ -3578,8 +3724,10 @@ class RecurrenceParser:
         k = self.k
         keys_initial = initial_values.keys()
 
-        values = {n: None if n not in keys_initial else initial_values[n]
-                  for n in srange(last_value_needed + 1)}
+        values = {
+            n: None if n not in keys_initial else initial_values[n]
+            for n in srange(last_value_needed + 1)
+        }
         missing_values = []
 
         @cached_function
@@ -3607,25 +3755,28 @@ class RecurrenceParser:
             q, r = ZZ(n).quo_rem(k**M)
             if q < offset:
                 missing_values.append(n)
-            return sum([coeff(r, j)*f(k**m*q + j)
-                        for j in srange(l, u + 1)
-                        if coeff(r, j)]) + inhomogeneity(r, q)
+            return sum(
+                [coeff(r, j) * f(k**m * q + j) for j in srange(l, u + 1) if coeff(r, j)]
+            ) + inhomogeneity(r, q)
 
         for n in srange(last_value_needed + 1):
             values.update({n: f(n)})
 
         if missing_values:
-            raise ValueError("Initial values for arguments in %s are missing."
-                             % (list(set(missing_values)),))
+            raise ValueError(
+                "Initial values for arguments in %s are missing."
+                % (list(set(missing_values)),)
+            )
 
         for n in keys_initial:
             q, r = ZZ(n).quo_rem(k**M)
-            if (q >= offset and
-                values[n] != (sum([coeff(r, j)*values[k**m*q + j]
-                                  for j in srange(l, u + 1)])) + inhomogeneity(r, q)):
-                raise ValueError("Initial value for argument %s does not match with "
-                                 "the given recurrence relations."
-                                 % (n,))
+            if q >= offset and values[n] != (
+                sum([coeff(r, j) * values[k**m * q + j] for j in srange(l, u + 1)])
+            ) + inhomogeneity(r, q):
+                raise ValueError(
+                    "Initial value for argument %s does not match with "
+                    "the given recurrence relations." % (n,)
+                )
 
         values.update({n: 0 for n in srange(ll, 0)})
 
@@ -3690,12 +3841,15 @@ class RecurrenceParser:
 
         return ind
 
-    @cached_method(key=lambda self, recurrence_rules:
-                   (recurrence_rules.M,
-                    recurrence_rules.m,
-                    recurrence_rules.ll,
-                    recurrence_rules.uu,
-                    tuple(recurrence_rules.inhomogeneities.items())))
+    @cached_method(
+        key=lambda self, recurrence_rules: (
+            recurrence_rules.M,
+            recurrence_rules.m,
+            recurrence_rules.ll,
+            recurrence_rules.uu,
+            tuple(recurrence_rules.inhomogeneities.items()),
+        )
+    )
     def shifted_inhomogeneities(self, recurrence_rules):
         r"""
         Return a dictionary of all needed shifted inhomogeneities as described
@@ -3801,12 +3955,15 @@ class RecurrenceParser:
         uu = recurrence_rules.uu
         inhomogeneities = recurrence_rules.inhomogeneities
 
-        lower = floor(ll/k**M)
-        upper = floor((k**(M-1) - k**m + uu)/k**M) + 1
+        lower = floor(ll / k**M)
+        upper = floor((k ** (M - 1) - k**m + uu) / k**M) + 1
 
-        return {i: inhomogeneities[i].subsequence(1, {b: 1 for b in srange(lower, upper + 1)},
-                                                  minimize=False)
-                for i in inhomogeneities}
+        return {
+            i: inhomogeneities[i].subsequence(
+                1, {b: 1 for b in srange(lower, upper + 1)}, minimize=False
+            )
+            for i in inhomogeneities
+        }
 
     def v_eval_n(self, recurrence_rules, n):
         r"""
@@ -3853,14 +4010,18 @@ class RecurrenceParser:
         inhomogeneities = recurrence_rules.inhomogeneities
         ind = self.ind(M, m, ll, uu)
 
-        v = vector([initial_values[k**ind[i][0]*n + ind[i][1]] for i in srange(dim)])
+        v = vector(
+            [initial_values[k ** ind[i][0] * n + ind[i][1]] for i in srange(dim)]
+        )
 
         if not all(S.is_trivial_zero() for S in inhomogeneities.values()):
             Seq = list(inhomogeneities.values())[0].parent()
             W = Seq.indices()
             shifted_inhomogeneities = self.shifted_inhomogeneities(recurrence_rules)
-            vv = [(S.coefficient_of_word(W(ZZ(n).digits(k)), multiply_left=False))
-                  for S in shifted_inhomogeneities.values()]
+            vv = [
+                (S.coefficient_of_word(W(ZZ(n).digits(k)), multiply_left=False))
+                for S in shifted_inhomogeneities.values()
+            ]
             v = vector(chain(v, *vv))
 
         return v
@@ -4048,27 +4209,27 @@ class RecurrenceParser:
         def entry(i, kk):
             j, d = ind[i]
             if j < M - 1:
-                return int(kk == ind[(j + 1, k**j*rem + d)])
-            rem_d = k**(M-1)*rem + (d % k**M)
+                return int(kk == ind[(j + 1, k**j * rem + d)])
+            rem_d = k ** (M - 1) * rem + (d % k**M)
             dd = d // k**M
             if rem_d < k**M:
-                lambd = l - ind[(m, (k**m)*dd + l)]
+                lambd = l - ind[(m, (k**m) * dd + l)]
                 return coeff(rem_d, kk + lambd)
-            lambd = l - ind[(m, k**m*dd + k**m + l)]
+            lambd = l - ind[(m, k**m * dd + k**m + l)]
             return coeff(rem_d - k**M, kk + lambd)
 
         mat = Matrix(coefficient_ring, dim_without_corr, dim_without_corr, entry)
 
         if not all(S.is_trivial_zero() for S in inhomogeneities.values()):
             shifted_inhomogeneities = self.shifted_inhomogeneities(recurrence_rules)
-            lower = floor(ll/k**M)
-            upper = floor((k**(M-1) - k**m + uu)/k**M) + 1
+            lower = floor(ll / k**M)
+            upper = floor((k ** (M - 1) - k**m + uu) / k**M) + 1
 
             def wanted_inhomogeneity(row):
                 j, d = ind[row]
                 if j != M - 1:
                     return (None, None)
-                rem_d = k**(M-1)*rem + (d % k**M)
+                rem_d = k ** (M - 1) * rem + (d % k**M)
                 dd = d // k**M
                 if rem_d < k**M:
                     return (rem_d, dd)
@@ -4077,22 +4238,34 @@ class RecurrenceParser:
                 return (None, None)
 
             def left_for_inhomogeneity(wanted):
-                return list(chain(*[(wanted == (r, i))*inhomogeneity.left
-                                    for r, inhomogeneity in inhomogeneities.items()
-                                    for i in srange(lower, upper + 1)]))
+                return list(
+                    chain(
+                        *[
+                            (wanted == (r, i)) * inhomogeneity.left
+                            for r, inhomogeneity in inhomogeneities.items()
+                            for i in srange(lower, upper + 1)
+                        ]
+                    )
+                )
 
             def matrix_row(row):
                 wanted = wanted_inhomogeneity(row)
                 return left_for_inhomogeneity(wanted)
 
-            mat_upper_right = Matrix([matrix_row(row) for row in srange(dim_without_corr)])
-            mat_inhomog = block_diagonal_matrix([S.mu[rem]
-                                                 for S in shifted_inhomogeneities.values()],
-                                                subdivide=False)
+            mat_upper_right = Matrix(
+                [matrix_row(row) for row in srange(dim_without_corr)]
+            )
+            mat_inhomog = block_diagonal_matrix(
+                [S.mu[rem] for S in shifted_inhomogeneities.values()], subdivide=False
+            )
 
-            mat = block_matrix([[mat, mat_upper_right],
-                                [zero_matrix(mat_inhomog.nrows(), dim_without_corr),
-                                 mat_inhomog]], subdivide=False)
+            mat = block_matrix(
+                [
+                    [mat, mat_upper_right],
+                    [zero_matrix(mat_inhomog.nrows(), dim_without_corr), mat_inhomog],
+                ],
+                subdivide=False,
+            )
 
             dim_without_corr = mat.ncols()
             dim = dim_without_corr + n1
@@ -4101,12 +4274,13 @@ class RecurrenceParser:
             W = Matrix(coefficient_ring, dim_without_corr, 0)
             for i in srange(n1):
                 W = W.augment(
-                    self.v_eval_n(recurrence_rules, k*i + rem) -
-                    mat*self.v_eval_n(recurrence_rules, i))
+                    self.v_eval_n(recurrence_rules, k * i + rem)
+                    - mat * self.v_eval_n(recurrence_rules, i)
+                )
 
             J = Matrix(coefficient_ring, 0, n1)
             for i in srange(n1):
-                J = J.stack(vector([int(j*k == i - rem) for j in srange(n1)]))
+                J = J.stack(vector([int(j * k == i - rem) for j in srange(n1)]))
 
             Z = zero_matrix(coefficient_ring, n1, dim_without_corr)
             mat = block_matrix([[mat, W], [Z, J]], subdivide=False)
@@ -4158,10 +4332,12 @@ class RecurrenceParser:
 
         if not all(S.is_trivial_zero() for S in inhomogeneities.values()):
             shifted_inhomogeneities = self.shifted_inhomogeneities(recurrence_rules)
-            dim += sum(shifted_inhomogeneities[i].mu[0].ncols()
-                       for i in shifted_inhomogeneities)
+            dim += sum(
+                shifted_inhomogeneities[i].mu[0].ncols()
+                for i in shifted_inhomogeneities
+            )
 
-        return vector([1] + (dim - 1)*[0])
+        return vector([1] + (dim - 1) * [0])
 
     def right(self, recurrence_rules):
         r"""
@@ -4222,7 +4398,7 @@ class RecurrenceParser:
         right = self.v_eval_n(recurrence_rules, 0)
 
         if n1 >= 1:
-            right = vector(list(right) + [1] + (n1 - 1)*[0])
+            right = vector(list(right) + [1] + (n1 - 1) * [0])
 
         return right
 
@@ -4299,26 +4475,31 @@ class RecurrenceParser:
         k = self.k
         if len(args) == 3:
             M, m, coeffs, initial_values = self.parse_recurrence(*args)
-        elif len(args) == 0 and all(kwd in kwds for kwd in ['equations', 'function', 'var']):
-            args = (kwds.pop('equations'),
-                    kwds.pop('function'),
-                    kwds.pop('var'))
+        elif len(args) == 0 and all(
+            kwd in kwds for kwd in ['equations', 'function', 'var']
+        ):
+            args = (kwds.pop('equations'), kwds.pop('function'), kwds.pop('var'))
             M, m, coeffs, initial_values = self.parse_recurrence(*args)
         elif len(args) == 4:
             M, m, coeffs, initial_values = self.parse_direct_arguments(*args)
-        elif len(args) == 0 and all(kwd in kwds for kwd in ['M', 'm', 'coeffs', 'initial_values']):
-            args = (kwds.pop('M'),
-                    kwds.pop('m'),
-                    kwds.pop('coeffs'),
-                    kwds.pop('initial_values'))
+        elif len(args) == 0 and all(
+            kwd in kwds for kwd in ['M', 'm', 'coeffs', 'initial_values']
+        ):
+            args = (
+                kwds.pop('M'),
+                kwds.pop('m'),
+                kwds.pop('coeffs'),
+                kwds.pop('initial_values'),
+            )
             M, m, coeffs, initial_values = self.parse_direct_arguments(*args)
         else:
-            raise ValueError("Number of positional arguments must be three or four or all arguments provided as keywords.")
+            raise ValueError(
+                "Number of positional arguments must be three or four or all arguments provided as keywords."
+            )
 
         recurrence_rules = self.parameters(M, m, coeffs, initial_values, **kwds)
 
-        mu = [self.matrix(recurrence_rules, rem)
-              for rem in srange(k)]
+        mu = [self.matrix(recurrence_rules, rem) for rem in srange(k)]
 
         left = self.left(recurrence_rules)
         right = self.right(recurrence_rules)

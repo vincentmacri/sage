@@ -3,6 +3,7 @@ Restricted growth arrays
 
 These combinatorial objects are in bijection with set partitions.
 """
+
 # ***************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #

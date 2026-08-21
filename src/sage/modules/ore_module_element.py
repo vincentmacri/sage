@@ -24,6 +24,7 @@ class OreModuleElement(FreeModuleElement_generic_dense):
     r"""
     A generic element of a Ore module.
     """
+
     def _repr_(self):
         r"""
         Return a string representation of this element.
@@ -68,7 +69,9 @@ class OreModuleElement(FreeModuleElement_generic_dense):
         if parent._names is None:
             return self.parent()._latex_element(self)
         names = parent._latex_names
-        return repr_lincomb([(names[i], self[i]) for i in range(len(names))], is_latex=True)
+        return repr_lincomb(
+            [(names[i], self[i]) for i in range(len(names))], is_latex=True
+        )
 
     def is_mutable(self) -> bool:
         r"""
@@ -221,7 +224,7 @@ class OreModuleElement(FreeModuleElement_generic_dense):
             base = M.base_ring()
             scalar = M._denominator.value().inverse()
             scalar = base.fraction_field()(scalar)
-            coords = [scalar*c for c in y.list()]
+            coords = [scalar * c for c in y.list()]
             if not integral and scalar not in base:
                 M = M.over_fraction_field()
             y = M(coords)

@@ -88,8 +88,18 @@ def ascii_integer(B):
     if len(B) != 8:
         raise ValueError("B must consist of 8 bits.")
     L = [int(str(x)) for x in list(B)]
-    return sum([L[7], L[6]*2, L[5]*4, L[4]*8,
-                L[3]*16, L[2]*32, L[1]*64, L[0]*128])
+    return sum(
+        [
+            L[7],
+            L[6] * 2,
+            L[5] * 4,
+            L[4] * 8,
+            L[3] * 16,
+            L[2] * 32,
+            L[1] * 64,
+            L[0] * 128,
+        ]
+    )
 
 
 def ascii_to_bin(A):
@@ -252,7 +262,7 @@ def bin_to_ascii(B):
     for i in range(k):
         # Convert from 8-bit string to ASCII integer. Then convert the
         # ASCII integer to the corresponding ASCII character.
-        A.append(chr(ascii_integer(b[8*i: 8*(i+1)])))
+        A.append(chr(ascii_integer(b[8 * i : 8 * (i + 1)])))
     return "".join(A)
 
 

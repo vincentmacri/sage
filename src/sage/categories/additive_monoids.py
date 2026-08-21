@@ -1,12 +1,12 @@
 r"""
 Additive monoids
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2013-2014 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.lazy_import import LazyImport
 from sage.categories.category_with_axiom import CategoryWithAxiom_singleton
@@ -42,10 +42,17 @@ class AdditiveMonoids(CategoryWithAxiom_singleton):
         True
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (AdditiveSemigroups, "AdditiveUnital")
 
-    AdditiveCommutative = LazyImport('sage.categories.commutative_additive_monoids', 'CommutativeAdditiveMonoids', at_startup=True)
-    AdditiveInverse = LazyImport('sage.categories.additive_groups', 'AdditiveGroups', at_startup=True)
+    AdditiveCommutative = LazyImport(
+        'sage.categories.commutative_additive_monoids',
+        'CommutativeAdditiveMonoids',
+        at_startup=True,
+    )
+    AdditiveInverse = LazyImport(
+        'sage.categories.additive_groups', 'AdditiveGroups', at_startup=True
+    )
 
     class ParentMethods:
         def sum(self, args):
@@ -84,10 +91,10 @@ class AdditiveMonoids(CategoryWithAxiom_singleton):
                 0
             """
             from sage.misc.misc_c import balanced_sum
+
             return balanced_sum(args, self.zero(), 20)
 
     class Homsets(HomsetsCategory):
-
         def extra_super_categories(self):
             """
             Implement the fact that a homset between two monoids is

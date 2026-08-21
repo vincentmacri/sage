@@ -327,7 +327,7 @@ class BlumGoldwasser(SageObject):
         # sanity checks
         if p == q:
             raise ValueError("p and q must be distinct Blum primes.")
-        if (a*p + b*q) != 1:
+        if (a * p + b * q) != 1:
             raise ValueError("a and b must satisfy gcd(p, q) = ap + bq = 1.")
         if (not is_blum_prime(p)) or (not is_blum_prime(q)):
             raise ValueError("p and q must be distinct Blum primes.")
@@ -336,7 +336,7 @@ class BlumGoldwasser(SageObject):
         d2 = power_mod((q + 1) // 4, t + 1, q - 1)
         u = power_mod(xt1, d1, p)
         v = power_mod(xt1, d2, q)
-        x0 = mod(v*a*p + u*b*q, n).lift()
+        x0 = mod(v * a * p + u * b * q, n).lift()
         # perform the decryption
         M = []
         for i in range(t):
@@ -523,7 +523,7 @@ class BlumGoldwasser(SageObject):
             p = least_significant_bits(x1, h)
             # xor p with a sub-block of length h. There are t sub-blocks of
             # length h each.
-            C.append(list(map(xor, p, [to_int(_) for _ in M[i*h : (i+1)*h]])))
+            C.append(list(map(xor, p, [to_int(_) for _ in M[i * h : (i + 1) * h]])))
             x0 = x1
         x1 = power_mod(x0, 2, n)
         return (C, x1)

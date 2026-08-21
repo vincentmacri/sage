@@ -14,6 +14,7 @@ This is an implementation of Option 3 in `Github discussion 41067
 
 from sage.features import Feature, FeatureTestResult
 
+
 class BuildFeature(Feature):
     r"""
     A class for features that can be enabled or disabled at
@@ -99,6 +100,7 @@ class BuildFeature(Feature):
 
         """
         from sage.config import defer_feature_checks
+
         if not defer_feature_checks:
             return False
         if hasattr(self, "is_present_at_runtime"):
@@ -149,6 +151,7 @@ class BuildModule(BuildFeature):
     name of the feature. It is this ``module_name`` that we actually
     try to import when feature checks are deferred to runtime.
     """
+
     def __init__(self, name, module_name=None, **kwargs):
         r"""
         EXAMPLES::
@@ -197,6 +200,7 @@ class BuildModule(BuildFeature):
 
         """
         from importlib import import_module
+
         result = True
         msg = f"Successfully imported module `{self._module_name}`"
 

@@ -26,28 +26,35 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.bindable_class import BindableClass
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.structure.indexed_generators import (IndexedGenerators,
-                                               standardize_names_index_set)
+from sage.structure.indexed_generators import (
+    IndexedGenerators,
+    standardize_names_index_set,
+)
 from sage.categories.realizations import Realizations, Category_realization_of_parent
 from sage.categories.lie_algebras import LieAlgebras
 from sage.categories.homset import Hom
 
 from sage.algebras.free_algebra import FreeAlgebra
 from sage.algebras.lie_algebras.lie_algebra import FinitelyGeneratedLieAlgebra
-from sage.algebras.lie_algebras.lie_algebra_element import (LieGenerator,
-                                                            GradedLieBracket,
-                                                            LyndonBracket,
-                                                            FreeLieAlgebraElement)
+from sage.algebras.lie_algebras.lie_algebra_element import (
+    LieGenerator,
+    GradedLieBracket,
+    LyndonBracket,
+    FreeLieAlgebraElement,
+)
 from sage.algebras.lie_algebras.morphism import LieAlgebraHomomorphism_im_gens
 from sage.misc.superseded import experimental_warning
 
 from sage.rings.integer_ring import ZZ
 
 
-class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, BindableClass):
+class FreeLieBasis_abstract(
+    FinitelyGeneratedLieAlgebra, IndexedGenerators, BindableClass
+):
     """
     Abstract base class for all (stratified) bases of a free Lie algebra.
     """
+
     def __init__(self, lie, basis_name):
         """
         Initialize ``self``.
@@ -61,9 +68,13 @@ class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, Bind
         self._basis_name = basis_name
         IndexedGenerators.__init__(self, lie._indices, prefix='', bracket=False)
         cat = FreeLieAlgebraBases(lie).Graded().Stratified()
-        FinitelyGeneratedLieAlgebra.__init__(self, lie.base_ring(),
-                            names=lie._names, index_set=lie._indices,
-                            category=cat)
+        FinitelyGeneratedLieAlgebra.__init__(
+            self,
+            lie.base_ring(),
+            names=lie._names,
+            index_set=lie._indices,
+            category=cat,
+        )
 
     def _repr_(self):
         """
@@ -129,6 +140,7 @@ class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, Bind
             [x, y]
         """
         from sage.typeset.ascii_art import ascii_art
+
         return ascii_art(x)
 
     def _unicode_art_term(self, x):
@@ -147,6 +159,7 @@ class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, Bind
             [x, y]
         """
         from sage.typeset.unicode_art import unicode_art
+
         return unicode_art(x)
 
     def _element_constructor_(self, x):
@@ -230,7 +243,10 @@ class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, Bind
         from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
         from sage.sets.positive_integers import PositiveIntegers
         from sage.sets.family import Family
-        return DisjointUnionEnumeratedSets(Family(PositiveIntegers(), self.graded_basis, name="graded basis"))
+
+        return DisjointUnionEnumeratedSets(
+            Family(PositiveIntegers(), self.graded_basis, name="graded basis")
+        )
 
     def degree_on_basis(self, x):
         r"""
@@ -290,9 +306,10 @@ class FreeLieBasis_abstract(FinitelyGeneratedLieAlgebra, IndexedGenerators, Bind
         if k == 0:
             return ZZ.zero()
         from sage.arith.misc import moebius
+
         s = len(self.lie_algebra_generators())
         k = ZZ(k)  # Make sure we have something that is in ZZ
-        return ZZ.sum(moebius(d) * s**(k // d) for d in k.divisors()) // k
+        return ZZ.sum(moebius(d) * s ** (k // d) for d in k.divisors()) // k
 
     @abstract_method
     def graded_basis(self, k):
@@ -374,6 +391,7 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
         sage: all(H(Lyn(x)) == x for x in H.graded_basis(5))
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None, index_set=None):
         """
@@ -401,8 +419,9 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
         """
         self._names = names
         self._indices = index_set
-        Parent.__init__(self, base=R, names=names,
-                        category=LieAlgebras(R).WithRealizations())
+        Parent.__init__(
+            self, base=R, names=names, category=LieAlgebras(R).WithRealizations()
+        )
 
     def _repr_(self):
         """
@@ -413,7 +432,9 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
             sage: LieAlgebra(QQ, 3, 'x')
             Free Lie algebra generated by (x0, x1, x2) over Rational Field
         """
-        n = tuple(map(LieGenerator, self._names, range(len(self._names))))  # To remove those stupid quote marks
+        n = tuple(
+            map(LieGenerator, self._names, range(len(self._names)))
+        )  # To remove those stupid quote marks
         return "Free Lie algebra generated by {} over {}".format(n, self.base_ring())
 
     def _construct_UEA(self):
@@ -497,6 +518,7 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
         :class:`~sage.algebras.lie_algebras.lie_algebra_element.GradedLieBracket`
         (in degree `> 1`).
         """
+
         def __init__(self, lie):
             r"""
             EXAMPLES::
@@ -537,20 +559,31 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
             if k <= 0:
                 return ()
             if k == 1:
-                return tuple(map(LieGenerator, self.variable_names(),
-                                 range(len(self.variable_names()))))
+                return tuple(
+                    map(
+                        LieGenerator,
+                        self.variable_names(),
+                        range(len(self.variable_names())),
+                    )
+                )
             if k == 2:
                 basis = self._generate_hall_set(1)
-                ret = [GradedLieBracket(a, b, 2) for i, a in enumerate(basis)
-                       for b in basis[i+1:]]
+                ret = [
+                    GradedLieBracket(a, b, 2)
+                    for i, a in enumerate(basis)
+                    for b in basis[i + 1 :]
+                ]
                 return tuple(ret)
 
             # We don't want to do the middle when we're even, so we add 1 and
             #   take the floor after dividing by 2.
-            ret = [GradedLieBracket(a, b, k) for i in range(1, (k+1) // 2)
-                   for a in self._generate_hall_set(i)
-                   for b in self._generate_hall_set(k-i)
-                   if b._left <= a]
+            ret = [
+                GradedLieBracket(a, b, k)
+                for i in range(1, (k + 1) // 2)
+                for a in self._generate_hall_set(i)
+                for b in self._generate_hall_set(k - i)
+                if b._left <= a
+            ]
 
             # Special case for when k = 4, we get the pairs [[a, b], [x, y]]
             #    where a,b,x,y are all grade 1 elements. Thus if we take
@@ -558,13 +591,13 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
             if k == 4:
                 basis = self._generate_hall_set(2)
                 for i, a in enumerate(basis):
-                    for b in basis[i+1:]:
+                    for b in basis[i + 1 :]:
                         ret.append(GradedLieBracket(a, b, k))
             # Do the middle case when we are even and k > 4
             elif k % 2 == 0:
                 basis = self._generate_hall_set(k // 2)  # grade >= 2
                 for i, a in enumerate(basis):
-                    for b in basis[i+1:]:
+                    for b in basis[i + 1 :]:
                         if b._left <= a:
                             ret.append(GradedLieBracket(a, b, k))
 
@@ -604,8 +637,9 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
                 [3, 3, 8, 18, 48, 116, 312, 810, 2184, 5880]
             """
             one = self.base_ring().one()
-            return tuple([self.element_class(self, {x: one})
-                          for x in self._generate_hall_set(k)])
+            return tuple(
+                [self.element_class(self, {x: one}) for x in self._generate_hall_set(k)]
+            )
 
         # We require l < r because it is a requirement and to make the
         #    caching more efficient
@@ -700,6 +734,7 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
             sage: y.bracket(z)
             -[z, y]
         """
+
         def __init__(self, lie):
             r"""
             EXAMPLES::
@@ -826,9 +861,11 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
 
             for i in range(1, len(lw)):
                 if is_lyndon(lw[i:]):
-                    return LyndonBracket(self._standard_bracket(lw[:i]),
-                                         self._standard_bracket(lw[i:]),
-                                         len(lw))
+                    return LyndonBracket(
+                        self._standard_bracket(lw[:i]),
+                        self._standard_bracket(lw[i:]),
+                        len(lw),
+                    )
 
         @cached_method
         def graded_basis(self, k):
@@ -878,10 +915,13 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
             names = self.variable_names()
             one = self.base_ring().one()
             if k == 1:
-                return tuple(self.element_class(self, {LieGenerator(n, k): one})
-                             for k, n in enumerate(names))
+                return tuple(
+                    self.element_class(self, {LieGenerator(n, k): one})
+                    for k, n in enumerate(names)
+                )
 
             from sage.combinat.combinat_cython import lyndon_word_iterator
+
             n = len(self._indices)
             ret = []
             for lw in lyndon_word_iterator(n, k):
@@ -908,10 +948,12 @@ class FreeLieAlgebra(Parent, UniqueRepresentation):
 #######################################
 #  Category for the realizations
 
+
 class FreeLieAlgebraBases(Category_realization_of_parent):
     r"""
     The category of bases of a free Lie algebra.
     """
+
     def __init__(self, base):
         r"""
         Initialize the bases of a free Lie algebra.
@@ -956,7 +998,10 @@ class FreeLieAlgebraBases(Category_realization_of_parent):
             [Category of Lie algebras with basis over Rational Field,
              Category of realizations of Free Lie algebra generated by (x, y) over Rational Field]
         """
-        return [LieAlgebras(self.base().base_ring()).WithBasis(), Realizations(self.base())]
+        return [
+            LieAlgebras(self.base().base_ring()).WithBasis(),
+            Realizations(self.base()),
+        ]
 
 
 def is_lyndon(w) -> bool:

@@ -166,7 +166,10 @@ class WeightSpace_class(Parent):
             sage: pAdicWeightSpace(17)._repr_()
             'Space of 17-adic weight-characters defined over 17-adic Field with capped relative precision 20'
         """
-        return "Space of %s-adic weight-characters defined over %s" % (self.prime(), self.base_ring())
+        return "Space of %s-adic weight-characters defined over %s" % (
+            self.prime(),
+            self.base_ring(),
+        )
 
     def __reduce__(self):
         r"""
@@ -260,7 +263,9 @@ class WeightSpace_class(Parent):
         """
         if R.has_coerce_map_from(self.base_ring()):
             return WeightSpace_constructor(self.prime(), R)
-        raise TypeError("No coercion map from '%s' to '%s' is defined" % (self.base_ring(), R))
+        raise TypeError(
+            "No coercion map from '%s' to '%s' is defined" % (self.base_ring(), R)
+        )
 
     def _coerce_map_from_(self, other):
         r"""
@@ -274,9 +279,11 @@ class WeightSpace_class(Parent):
             sage: W2.coerce(w) # indirect doctest
             3
         """
-        return (isinstance(other, WeightSpace_class)
-                and other.prime() == self.prime()
-                and self.base_ring().has_coerce_map_from(other.base_ring()))
+        return (
+            isinstance(other, WeightSpace_class)
+            and other.prime() == self.prime()
+            and self.base_ring().has_coerce_map_from(other.base_ring())
+        )
 
     def _coerce_in_wtchar(self, x):
         r"""
@@ -365,7 +372,9 @@ class WeightCharacter(Element):
         if not self.is_even():
             raise ValueError("Eisenstein series not defined for odd weight-characters")
         q = ring.gen()
-        s = ring(1) + 2*self.one_over_Lvalue() * sum(sum(self(d)/d for d in divisors(n)) * q**n for n in range(1, prec))
+        s = ring(1) + 2 * self.one_over_Lvalue() * sum(
+            sum(self(d) / d for d in divisors(n)) * q**n for n in range(1, prec)
+        )
         return s.add_bigoh(prec)
 
     def values_on_gens(self):
@@ -387,7 +396,7 @@ class WeightCharacter(Element):
             (1 + 2*11 + O(11^5), 4)
         """
 
-        return ( self(self.parent()._param), self.teichmuller_type())
+        return (self(self.parent()._param), self.teichmuller_type())
 
     def is_trivial(self) -> bool:
         r"""
@@ -542,12 +551,12 @@ class AlgebraicWeight(WeightCharacter):
         if isinstance(x, pAdicGenericElement):
             if x.parent().prime() != self._p:
                 raise TypeError("x must be an integer or a %s-adic integer" % self._p)
-            if self._p**(x.precision_absolute()) < self._chi.conductor():
+            if self._p ** (x.precision_absolute()) < self._chi.conductor():
                 raise PrecisionError("Precision too low")
             xint = x.lift()
         else:
             xint = x
-        if (xint % self._p == 0):
+        if xint % self._p == 0:
             return 0
         return self._chi(xint) * x**self._k
 
@@ -633,7 +642,11 @@ class AlgebraicWeight(WeightCharacter):
                 return IntegerModRing(2).zero()
             return IntegerModRing(2).one()
         m = IntegerModRing(self._p).multiplicative_generator()
-        x = [y for y in IntegerModRing(self._chi.modulus()) if y == m and y**(self._p - 1) == 1]
+        x = [
+            y
+            for y in IntegerModRing(self._chi.modulus())
+            if y == m and y ** (self._p - 1) == 1
+        ]
         if len(x) != 1:
             raise ArithmeticError
         x = x[0]
@@ -679,7 +692,6 @@ class AlgebraicWeight(WeightCharacter):
 
 
 class ArbitraryWeight(WeightCharacter):
-
     def __init__(self, parent, w, t):
         r"""
         Create the element of `p`-adic weight space in the given component
@@ -696,7 +708,7 @@ class ArbitraryWeight(WeightCharacter):
         WeightCharacter.__init__(self, parent)
 
         self.t = ZZ(t) % (self._p > 2 and (self._p - 1) or 2)
-                # do we store w precisely?
+        # do we store w precisely?
         if (w - 1).valuation() <= 0:
             raise ValueError("Must send generator to something nearer 1")
         self.w = w
@@ -744,7 +756,7 @@ class ArbitraryWeight(WeightCharacter):
         e = xx.log() / self.parent()._param.log()
         verbose("Exponent is %s" % e)
 
-        return teich**(self.t) * (self.w.log() * e).exp()
+        return teich ** (self.t) * (self.w.log() * e).exp()
 
     def teichmuller_type(self):
         r"""

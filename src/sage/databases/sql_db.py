@@ -81,22 +81,129 @@ import re
 from sage.misc.temporary_file import tmp_filename
 from sage.structure.sage_object import SageObject
 
-sqlite_keywords = ['ABORT','ACTION','ADD','AFTER','ALL','ALTER','ANALYZE',
-    'AND','AS','ASC','ATTACH','AUTOINCREMENT','BEFORE','BEGIN','BETWEEN','BY',
-    'CASCADE','CASE','CAST','CHECK','COLLATE','COLUMN','COMMIT','CONFLICT',
-    'CONSTRAINT','CREATE','CROSS','CURRENT_DATE','CURRENT_TIME',
-    'CURRENT_TIMESTAMP','DATABASE','DEFAULT','DEFERRABLE','DEFERRED','DELETE',
-    'DESC','DETACH','DISTINCT','DROP','EACH','ELSE','END','ESCAPE','EXCEPT',
-    'EXCLUSIVE','EXISTS','EXPLAIN','FAIL','FOR','FOREIGN','FROM','FULL',
-    'GLOB','GROUP','HAVING','IF','IGNORE','IMMEDIATE','IN','INDEX','INDEXED',
-    'INITIALLY','INNER','INSERT','INSTEAD','INTERSECT','INTO','IS','ISNULL',
-    'JOIN','KEY','LEFT','LIKE','LIMIT','MATCH','NATURAL','NO','NOT','NOTNULL',
-    'NULL','OF','OFFSET','ON','OR','ORDER','OUTER','PLAN','PRAGMA','PRIMARY',
-    'QUERY','RAISE','REFERENCES','REGEXP','REINDEX','RELEASE','RENAME',
-    'REPLACE','RESTRICT','RIGHT','ROLLBACK','ROW','SAVEPOINT','SELECT','SET',
-    'TABLE','TEMP','TEMPORARY','THEN','TO','TRANSACTION','TRIGGER','UNION',
-    'UNIQUE','UPDATE','USING','VACUUM','VALUES','VIEW','VIRTUAL','WHEN',
-    'WHERE']
+sqlite_keywords = [
+    'ABORT',
+    'ACTION',
+    'ADD',
+    'AFTER',
+    'ALL',
+    'ALTER',
+    'ANALYZE',
+    'AND',
+    'AS',
+    'ASC',
+    'ATTACH',
+    'AUTOINCREMENT',
+    'BEFORE',
+    'BEGIN',
+    'BETWEEN',
+    'BY',
+    'CASCADE',
+    'CASE',
+    'CAST',
+    'CHECK',
+    'COLLATE',
+    'COLUMN',
+    'COMMIT',
+    'CONFLICT',
+    'CONSTRAINT',
+    'CREATE',
+    'CROSS',
+    'CURRENT_DATE',
+    'CURRENT_TIME',
+    'CURRENT_TIMESTAMP',
+    'DATABASE',
+    'DEFAULT',
+    'DEFERRABLE',
+    'DEFERRED',
+    'DELETE',
+    'DESC',
+    'DETACH',
+    'DISTINCT',
+    'DROP',
+    'EACH',
+    'ELSE',
+    'END',
+    'ESCAPE',
+    'EXCEPT',
+    'EXCLUSIVE',
+    'EXISTS',
+    'EXPLAIN',
+    'FAIL',
+    'FOR',
+    'FOREIGN',
+    'FROM',
+    'FULL',
+    'GLOB',
+    'GROUP',
+    'HAVING',
+    'IF',
+    'IGNORE',
+    'IMMEDIATE',
+    'IN',
+    'INDEX',
+    'INDEXED',
+    'INITIALLY',
+    'INNER',
+    'INSERT',
+    'INSTEAD',
+    'INTERSECT',
+    'INTO',
+    'IS',
+    'ISNULL',
+    'JOIN',
+    'KEY',
+    'LEFT',
+    'LIKE',
+    'LIMIT',
+    'MATCH',
+    'NATURAL',
+    'NO',
+    'NOT',
+    'NOTNULL',
+    'NULL',
+    'OF',
+    'OFFSET',
+    'ON',
+    'OR',
+    'ORDER',
+    'OUTER',
+    'PLAN',
+    'PRAGMA',
+    'PRIMARY',
+    'QUERY',
+    'RAISE',
+    'REFERENCES',
+    'REGEXP',
+    'REINDEX',
+    'RELEASE',
+    'RENAME',
+    'REPLACE',
+    'RESTRICT',
+    'RIGHT',
+    'ROLLBACK',
+    'ROW',
+    'SAVEPOINT',
+    'SELECT',
+    'SET',
+    'TABLE',
+    'TEMP',
+    'TEMPORARY',
+    'THEN',
+    'TO',
+    'TRANSACTION',
+    'TRIGGER',
+    'UNION',
+    'UNIQUE',
+    'UPDATE',
+    'USING',
+    'VACUUM',
+    'VALUES',
+    'VIEW',
+    'VIRTUAL',
+    'WHEN',
+    'WHERE',
+]
 
 
 def regexp(expr, item):
@@ -143,7 +250,7 @@ def verify_type(type):
         ...
         TypeError: float is not a legal type.
     """
-    types = ['INTEGER','INT','BOOLEAN','REAL','TEXT','BOOL','BLOB','NOTYPE']
+    types = ['INTEGER', 'INT', 'BOOLEAN', 'REAL', 'TEXT', 'BOOL', 'BLOB', 'NOTYPE']
     if type.upper() not in types:
         raise TypeError('%s is not a legal type.' % type)
     return True
@@ -211,8 +318,8 @@ def verify_operator(operator):
         ...
         TypeError: not_an_operator is not a legal operator.
     """
-    binaries = ['=','<=','>=','like','<','>','<>','regexp']
-    unaries = ['is null','is not null']
+    binaries = ['=', '<=', '>=', 'like', '<', '>', '<>', 'regexp']
+    unaries = ['is null', 'is not null']
     if operator not in binaries and operator not in unaries:
         raise TypeError('%s is not a legal operator.' % operator)
     return True
@@ -257,15 +364,19 @@ def construct_skeleton(database):
                 typ = 'NOTYPE'
             else:
                 typ = col[2]
-            skeleton[table[0]][col[1]] = {'sql':typ,
-                'primary_key':(col[5] != 0), 'index':(col[5] != 0), 'unique': False}
+            skeleton[table[0]][col[1]] = {
+                'sql': typ,
+                'primary_key': (col[5] != 0),
+                'index': (col[5] != 0),
+                'unique': False,
+            }
         exe2 = cur.execute("PRAGMA index_list(%s)" % table[0])
         for col in exe2.fetchall():
             if col[1].find('sqlite') == -1:
                 if os.path.basename(database.__dblocation__) == 'graphs.db':
                     name = col[1]
                 else:
-                    name = col[1][len(table[0])+3:]
+                    name = col[1][len(table[0]) + 3 :]
                 skeleton[table[0]][name]['index'] = True
                 skeleton[table[0]][name]['unique'] = bool(col[2])
             else:
@@ -336,8 +447,7 @@ def _create_print_table(cur, col_titles, **kwds):
             pcol_index.append(col_titles.index(col))
 
     max_field_size = kwds.get('max_field_size', 20)
-    id_col_index = col_titles.index(kwds['id_col']) if 'id_col' in kwds \
-        else None
+    id_col_index = col_titles.index(kwds['id_col']) if 'id_col' in kwds else None
 
     if 'relabel_cols' in kwds:
         relabel_cols = kwds['relabel_cols']
@@ -357,14 +467,15 @@ def _create_print_table(cur, col_titles, **kwds):
             if index in pcol_index:
                 if html:
                     plot = pcol_map[p % len(pcol_map)](row[index])
-                    plot.save('%d.png' % p, figsize=[1,1])
-                    field_val = '     <td bgcolor=white align=center> ' \
-                        + '%s <br> <img src="cell://%d.png"> ' % (row[index],p) \
+                    plot.save('%d.png' % p, figsize=[1, 1])
+                    field_val = (
+                        '     <td bgcolor=white align=center> '
+                        + '%s <br> <img src="cell://%d.png"> ' % (row[index], p)
                         + '</td>\n'
+                    )
                     p += 1
                 else:
-                    raise NotImplementedError('Cannot display plot on '
-                                              'command line.')
+                    raise NotImplementedError('Cannot display plot on command line.')
             else:
                 if index in fcol_index:
                     if id_col_index is None:
@@ -375,8 +486,11 @@ def _create_print_table(cur, col_titles, **kwds):
                 else:
                     field_val = row[index]
                 if html:
-                    field_val = '     <td bgcolor=white align=center> ' \
-                        + str(field_val) + ' </td>\n'
+                    field_val = (
+                        '     <td bgcolor=white align=center> '
+                        + str(field_val)
+                        + ' </td>\n'
+                    )
                 else:
                     field_val = str(field_val).ljust(max_field_size)
             cur_str.append(field_val)
@@ -387,11 +501,11 @@ def _create_print_table(cur, col_titles, **kwds):
         ret = '<html><!--notruncate-->\n'
         ret += '  <table bgcolor=lightgrey cellpadding=0>\n'
         ret += '    <tr>\n      <td bgcolor=white align=center> '
-        ret += (' </td>\n      <td bgcolor=white '
-               + 'align=center> ').join(col_titles)
+        ret += (' </td>\n      <td bgcolor=white ' + 'align=center> ').join(col_titles)
         ret += ' </td>\n    </tr>\n'
-        ret += '\n'.join(['    <tr>\n ' + row_str(row, True) + '    </tr>'
-               for row in cur])
+        ret += '\n'.join(
+            ['    <tr>\n ' + row_str(row, True) + '    </tr>' for row in cur]
+        )
         ret += '\n  </table>\n</html>'
     else:
         # Command Prompt Version
@@ -461,7 +575,7 @@ class SQLQuery(SageObject):
             self.__query_dict__ = {}
             return
         for x in args:
-            if isinstance(x,dict):
+            if isinstance(x, dict):
                 if 'query_dict' not in kwds:
                     kwds['query_dict'] = x
             elif isinstance(x, str):
@@ -470,11 +584,18 @@ class SQLQuery(SageObject):
             elif isinstance(x, tuple):
                 if 'param_tuple' not in kwds:
                     kwds['param_tuple'] = x
-        if total_args > 2 or not ('query_dict' in kwds or
-              'query_string' in kwds) or ('query_dict' in kwds and
-              ('param_tuple' in kwds or 'query_string' in kwds)):
-            raise ValueError('Query must be constructed with either a '
-                + 'dictionary or a string and tuple')
+        if (
+            total_args > 2
+            or not ('query_dict' in kwds or 'query_string' in kwds)
+            or (
+                'query_dict' in kwds
+                and ('param_tuple' in kwds or 'query_string' in kwds)
+            )
+        ):
+            raise ValueError(
+                'Query must be constructed with either a '
+                + 'dictionary or a string and tuple'
+            )
 
         if 'query_dict' in kwds:
             query_dict = kwds['query_dict']
@@ -488,32 +609,36 @@ class SQLQuery(SageObject):
         if query_dict:
             skel = database.__skeleton__
             if query_dict['table_name'] not in skel:
-                raise ValueError("Database has no table %s"
-                    % query_dict['table_name'])
+                raise ValueError("Database has no table %s" % query_dict['table_name'])
             table_name = query_dict['table_name']
             if query_dict['display_cols'] is not None:
                 for column in query_dict['display_cols']:
                     if column not in skel[table_name]:
                         raise ValueError("Table has no column %s" % column)
             if query_dict['expression'][0] not in skel[table_name]:
-                raise ValueError("Table has no column %s"
-                    % query_dict['expression'][0])
+                raise ValueError("Table has no column %s" % query_dict['expression'][0])
 
             self.__query_dict__ = query_dict
             self.__param_tuple__ = (str(query_dict['expression'][2]),)
             verify_operator(query_dict['expression'][1])
             if query_dict['display_cols'] is None:
-                self.__query_string__ = 'SELECT , FROM %s WHERE ' % table_name \
-                    + '%s.%s ' % (table_name, query_dict['expression'][0]) \
+                self.__query_string__ = (
+                    'SELECT , FROM %s WHERE ' % table_name
+                    + '%s.%s ' % (table_name, query_dict['expression'][0])
                     + '%s ?' % query_dict['expression'][1]
+                )
             else:
-                query_dict['display_cols'] = ['%s.%s' % (table_name, x)
-                    for x in query_dict['display_cols']]
-                self.__query_string__ = 'SELECT ' \
-                    + ', '.join(query_dict['display_cols']) + ' FROM ' \
-                    + '%s WHERE %s.' % (table_name, table_name) \
-                    + '%s ' % query_dict['expression'][0] \
+                query_dict['display_cols'] = [
+                    '%s.%s' % (table_name, x) for x in query_dict['display_cols']
+                ]
+                self.__query_string__ = (
+                    'SELECT '
+                    + ', '.join(query_dict['display_cols'])
+                    + ' FROM '
+                    + '%s WHERE %s.' % (table_name, table_name)
+                    + '%s ' % query_dict['expression'][0]
                     + '%s ?' % query_dict['expression'][1]
+                )
         else:
             self.__query_dict__ = {}
             self.__param_tuple__ = tuple()
@@ -541,10 +666,15 @@ class SQLQuery(SageObject):
         """
         if not self.__query_string__:
             return 'Empty query on %s.' % self.__database__.__dblocation__
-        return "Query for sql database: %s" % self.__database__.__dblocation__ \
-            + "\nQuery string: %s" % self.__query_string__ \
-            + ("\nParameter tuple: %s" % str(self.__param_tuple__) if
-            self.__param_tuple__ else "")
+        return (
+            "Query for sql database: %s" % self.__database__.__dblocation__
+            + "\nQuery string: %s" % self.__query_string__
+            + (
+                "\nParameter tuple: %s" % str(self.__param_tuple__)
+                if self.__param_tuple__
+                else ""
+            )
+        )
 
     def get_query_string(self):
         """
@@ -563,6 +693,7 @@ class SQLQuery(SageObject):
             'SELECT graph6 FROM graph_data WHERE num_vertices<=3'
         """
         from copy import copy
+
         return copy(self.__query_string__)
 
     def __iter__(self):
@@ -680,8 +811,7 @@ class SQLQuery(SageObject):
         except Exception:
             raise RuntimeError('Failure to fetch query.')
 
-        print(_create_print_table(cur, [des[0] for des in cur.description],
-                                  **kwds))
+        print(_create_print_table(cur, [des[0] for des in cur.description], **kwds))
 
     def __copy__(self):
         """
@@ -702,8 +832,7 @@ class SQLQuery(SageObject):
         d.__param_tuple__ = self.__param_tuple__
         return d
 
-    def intersect(self, other, join_table=None, join_dict=None,
-                  in_place=False):
+    def intersect(self, other, join_table=None, join_dict=None, in_place=False):
         """
         Return a new ``SQLQuery`` that is the intersection of ``self`` and
         ``other``. ``join_table`` and ``join_dict`` can be ``None`` iff the
@@ -751,11 +880,15 @@ class SQLQuery(SageObject):
             True
         """
         if self.__query_dict__ is None or other.__query_dict__ is None:
-            raise RuntimeError('Queries must be constructed using a '
-                + 'dictionary in order to be intersected.')
+            raise RuntimeError(
+                'Queries must be constructed using a '
+                + 'dictionary in order to be intersected.'
+            )
         if self.__database__ != other.__database__:
-            raise TypeError('Queries %s and %s must be ' % (self, other)
-                + 'attached to the same database.')
+            raise TypeError(
+                'Queries %s and %s must be ' % (self, other)
+                + 'attached to the same database.'
+            )
 
         if in_place:
             if not self.__query_string__:
@@ -767,12 +900,12 @@ class SQLQuery(SageObject):
                 self._merge_queries(other, self, join_table, join_dict, 'AND')
         else:
             from copy import copy
+
             if not self.__query_string__:
                 return copy(other)
             if not other.__query_string__:
                 return copy(self)
-            return self._merge_queries(other, copy(self), join_table,
-                join_dict, 'AND')
+            return self._merge_queries(other, copy(self), join_table, join_dict, 'AND')
 
     def _merge_queries(self, other, ret, join_table, join_dict, operator):
         """
@@ -798,27 +931,34 @@ class SQLQuery(SageObject):
         """
         if join_table is None or join_dict is None:
             pattern = ' JOIN '
-            if re.search(pattern, self.__query_string__) \
-              or re.search(pattern, other.__query_string__):
-                raise TypeError('Input queries have joins but join '
-                    + 'parameters are NoneType')
+            if re.search(pattern, self.__query_string__) or re.search(
+                pattern, other.__query_string__
+            ):
+                raise TypeError(
+                    'Input queries have joins but join ' + 'parameters are NoneType'
+                )
             s = ((self.__query_string__).upper()).split('FROM ')
             o = ((other.__query_string__).upper()).split('FROM ')
             s = s[1].split(' WHERE ')
             o = o[1].split(' WHERE ')
             if s[0] != o[0]:
-                raise ValueError('Input queries query different tables but '
-                    + 'join parameters are NoneType')
+                raise ValueError(
+                    'Input queries query different tables but '
+                    + 'join parameters are NoneType'
+                )
 
         # inner join clause
         if join_dict is not None:
             joins = join_table
             for table in join_dict:
-                joins += ' INNER JOIN %s ON %s.' % (table, join_table) \
-                    + '%s=%s.' % (join_dict[table][0], table) \
+                joins += (
+                    ' INNER JOIN %s ON %s.' % (table, join_table)
+                    + '%s=%s.' % (join_dict[table][0], table)
                     + '%s ' % join_dict[table][1]
-            ret.__query_string__ = re.sub(' FROM .* WHERE ', ' FROM ' + joins
-                + 'WHERE ', self.__query_string__)
+                )
+            ret.__query_string__ = re.sub(
+                ' FROM .* WHERE ', ' FROM ' + joins + 'WHERE ', self.__query_string__
+            )
 
         # concatenate display cols
         disp1 = ret.__query_string__.split(' FROM')
@@ -827,10 +967,8 @@ class SQLQuery(SageObject):
         new_query = ''.join(disp1)
 
         # concatenate where clause
-        new_query = re.sub(' WHERE ', ' WHERE ( ',
-                           new_query)
-        new_query += re.sub('^.* WHERE ', f' ) {operator} ( ',
-                            other.__query_string__)
+        new_query = re.sub(' WHERE ', ' WHERE ( ', new_query)
+        new_query += re.sub('^.* WHERE ', f' ) {operator} ( ', other.__query_string__)
         ret.__query_string__ = new_query + ' )'
 
         ret.__param_tuple__ = self.__param_tuple__ + other.__param_tuple__
@@ -875,23 +1013,27 @@ class SQLQuery(SageObject):
             [(1, 1), (4, 1)]
         """
         if self.__query_dict__ is None or other.__query_dict__ is None:
-            raise RuntimeError('Queries must be constructed using a '
-                + 'dictionary in order to be unioned.')
+            raise RuntimeError(
+                'Queries must be constructed using a '
+                + 'dictionary in order to be unioned.'
+            )
         if self.__database__ != other.__database__:
-            raise TypeError('Queries %s and %s must be ' % (self, other)
-                + 'attached to the same database.')
+            raise TypeError(
+                'Queries %s and %s must be ' % (self, other)
+                + 'attached to the same database.'
+            )
 
         if in_place:
             if self.__query_string__ and other.__query_string__:
                 self._merge_queries(other, self, join_table, join_dict, 'OR')
         else:
             from copy import copy
+
             if not self.__query_string__:
                 return copy(self)
             if not other.__query_string__:
                 return copy(other)
-            return self._merge_queries(other, copy(self), join_table,
-                join_dict, 'OR')
+            return self._merge_queries(other, copy(self), join_table, join_dict, 'OR')
 
 
 class SQLDatabase(SageObject):
@@ -1072,17 +1214,20 @@ class SQLDatabase(SageObject):
             if read_only is None:
                 read_only = False
             filename = tmp_filename() + '.db'
-        elif (filename[-3:] != '.db'):
-            raise ValueError('Please enter a valid database path (file name '
-                + '%s does not end in .db).' % filename)
+        elif filename[-3:] != '.db':
+            raise ValueError(
+                'Please enter a valid database path (file name '
+                + '%s does not end in .db).' % filename
+            )
         if read_only is None:
             read_only = True
 
         self.__read_only__ = read_only
         self.ignore_warnings = False
         self.__dblocation__ = filename
-        self.__connection__ = sqlite.connect(self.__dblocation__,
-            check_same_thread=False)
+        self.__connection__ = sqlite.connect(
+            self.__dblocation__, check_same_thread=False
+        )
         # this is to avoid the multiple thread problem with dsage:
         # pysqlite does not trust multiple threads for the same connection
         self.__connection__.create_function("regexp", 2, regexp)
@@ -1099,15 +1244,15 @@ class SQLDatabase(SageObject):
                 else:
                     for column in skeleton[table]:
                         if column not in self.__skeleton__[table]:
-                            self.add_column(table, column,
-                                            skeleton[table][column])
+                            self.add_column(table, column, skeleton[table][column])
                         else:
-                            print('Column attributes were ignored for '
+                            print(
+                                'Column attributes were ignored for '
                                 'table {}, column {} -- column is '
-                                'already in table.'.format(table, column))
+                                'already in table.'.format(table, column)
+                            )
         elif skeleton is not None:
-            raise RuntimeError('Cannot update skeleton of a read only '
-                + 'database.')
+            raise RuntimeError('Cannot update skeleton of a read only ' + 'database.')
 
     def __enter__(self):
         return self
@@ -1138,8 +1283,9 @@ class SQLDatabase(SageObject):
             for column in self.__skeleton__[table]:
                 s += '    column ' + column + ': '
                 for data in sorted(self.__skeleton__[table][column]):
-                    s += data + ': ' \
-                        + str(self.__skeleton__[table][column][data]) + '; '
+                    s += (
+                        data + ': ' + str(self.__skeleton__[table][column][data]) + '; '
+                    )
                 s += '\n'
         return s
 
@@ -1321,8 +1467,7 @@ class SQLDatabase(SageObject):
             cur.execute('SELECT * FROM ' + table_name)
         except Exception:
             raise RuntimeError('Failure to fetch data.')
-        print(_create_print_table(cur, [des[0] for des in cur.description],
-                                  **kwds))
+        print(_create_print_table(cur, [des[0] for des in cur.description], **kwds))
 
     def get_cursor(self, ignore_warning=None):
         """
@@ -1349,9 +1494,13 @@ class SQLDatabase(SageObject):
                 ignore_warning = self.ignore_warnings
             if not ignore_warning:
                 import warnings
-                warnings.warn('Database is read only, using the cursor can '
+
+                warnings.warn(
+                    'Database is read only, using the cursor can '
                     + 'alter the stored data. Set self.ignore_warnings to '
-                    + 'True in order to mute future warnings.', RuntimeWarning)
+                    + 'True in order to mute future warnings.',
+                    RuntimeWarning,
+                )
         return self.__connection__.cursor()
 
     def get_connection(self, ignore_warning=None):
@@ -1393,10 +1542,13 @@ class SQLDatabase(SageObject):
                 ignore_warning = self.ignore_warnings
             if not ignore_warning:
                 import warnings
-                warnings.warn('Database is read only, using the connection '
+
+                warnings.warn(
+                    'Database is read only, using the connection '
                     'can alter the stored data. Set self.ignore_warnings '
                     'to True in order to mute future warnings.',
-                    RuntimeWarning)
+                    RuntimeWarning,
+                )
         return self.__connection__
 
     def create_table(self, table_name, table_skeleton):
@@ -1448,8 +1600,7 @@ class SQLDatabase(SageObject):
         if self.__read_only__:
             raise RuntimeError('Cannot add table to a read only database.')
         if table_name in self.__skeleton__:
-            raise ValueError('Database already has a table named %s'
-                % table_name)
+            raise ValueError('Database already has a table named %s' % table_name)
         if table_name.find(' ') != -1:
             raise ValueError('Table names cannot contain spaces.')
         if table_name.upper() in sqlite_keywords:
@@ -1474,8 +1625,10 @@ class SQLDatabase(SageObject):
                 else:
                     statement.append(col + ' ' + typ)
                     if table_skeleton[col]['index']:
-                        index_statement += 'CREATE INDEX i_%s_%s' % (table_name,
-                            col) + ' ON %s(%s);\n' % (table_name, col)
+                        index_statement += 'CREATE INDEX i_%s_%s' % (
+                            table_name,
+                            col,
+                        ) + ' ON %s(%s);\n' % (table_name, col)
         create_statement += ', '.join(statement) + ') '
 
         self.__connection__.execute(create_statement)
@@ -1549,7 +1702,7 @@ class SQLDatabase(SageObject):
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
         if col_name in self.__skeleton__[table_name]:
-            raise ValueError("Table %s already has column %s." % (table_name,col_name))
+            raise ValueError("Table %s already has column %s." % (table_name, col_name))
 
         # Update the skeleton:
         self.__skeleton__[table_name][col_name] = verify_column(col_dict)
@@ -1650,27 +1803,33 @@ class SQLDatabase(SageObject):
         cols_attr = ', '.join(cols_attr)
 
         # Silly SQLite -- we have to make a temp table to hold info...
-        self.__connection__.executescript("""
+        self.__connection__.executescript(
+            """
             CREATE TEMPORARY TABLE spam(%s);
             INSERT INTO spam SELECT %s FROM %s;
             DROP TABLE %s;
             CREATE TABLE %s (%s);
-            """ % (cols_attr, original, table_name, table_name, table_name, cols_attr))
+            """
+            % (cols_attr, original, table_name, table_name, table_name, cols_attr)
+        )
         # Update indices in new table
         skeleton = self.__skeleton__[table_name]
-        index_statement = ''.join(f'CREATE INDEX i_{table_name}_{col} ON '
-                                  + f'{table_name}({col});\n'
-                                  for col in skeleton
-                                  if skeleton[col]['index']
-                                  and not skeleton[col]['primary_key'])
+        index_statement = ''.join(
+            f'CREATE INDEX i_{table_name}_{col} ON ' + f'{table_name}({col});\n'
+            for col in skeleton
+            if skeleton[col]['index'] and not skeleton[col]['primary_key']
+        )
         if index_statement:
             self.__connection__.executescript(index_statement)
 
         # Now we can plop our data into the *new* table:
-        self.__connection__.executescript("""
+        self.__connection__.executescript(
+            """
             INSERT INTO %s SELECT %s FROM spam;
             DROP TABLE spam;
-            """ % (table_name, cols))
+            """
+            % (table_name, cols)
+        )
 
         self.vacuum()
 
@@ -1715,7 +1874,7 @@ class SQLDatabase(SageObject):
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
         if col_name not in self.__skeleton__[table_name]:
-            raise ValueError("Table %s has no column %s." % (table_name,col_name))
+            raise ValueError("Table %s has no column %s." % (table_name, col_name))
 
         # Update the skeleton:
         self.__skeleton__[table_name].pop(col_name)
@@ -1750,8 +1909,7 @@ class SQLDatabase(SageObject):
         if new_name in self.__skeleton__:
             raise ValueError('Database already has table %s.' % new_name)
 
-        self.__connection__.execute('ALTER TABLE %s RENAME TO ' % table_name
-            + new_name)
+        self.__connection__.execute('ALTER TABLE %s RENAME TO ' % table_name + new_name)
 
         # Update skeleton:
         self.__skeleton__[new_name] = self.__skeleton__.pop(table_name)
@@ -1776,8 +1934,7 @@ class SQLDatabase(SageObject):
             {}
         """
         if self.__read_only__:
-            raise RuntimeError('Cannot drop tables from a read only '
-                + 'database.')
+            raise RuntimeError('Cannot drop tables from a read only ' + 'database.')
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
 
@@ -1842,14 +1999,22 @@ class SQLDatabase(SageObject):
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
         if col_name not in self.__skeleton__[table_name]:
-            raise ValueError("Table %s has no column %s." % (table_name,col_name))
+            raise ValueError("Table %s has no column %s." % (table_name, col_name))
 
         if unique:
-            index_string = 'CREATE UNIQUE INDEX ' + col_name + ' ON ' \
-                + table_name + ' (' + col_name + ')'
+            index_string = (
+                'CREATE UNIQUE INDEX '
+                + col_name
+                + ' ON '
+                + table_name
+                + ' ('
+                + col_name
+                + ')'
+            )
         else:
-            index_string = 'CREATE INDEX ' + col_name + ' ON ' + table_name \
-                + ' (' + col_name + ')'
+            index_string = (
+                'CREATE INDEX ' + col_name + ' ON ' + table_name + ' (' + col_name + ')'
+            )
         cur = self.__connection__.cursor()
         cur.execute(index_string)
 
@@ -1883,10 +2048,9 @@ class SQLDatabase(SageObject):
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
         if index_name not in self.__skeleton__[table_name]:
-            raise ValueError("Table %s has no column %s." % (table_name,
-                                                             index_name))
+            raise ValueError("Table %s has no column %s." % (table_name, index_name))
         if not self.__skeleton__[table_name][index_name]['index']:
-            return # silently
+            return  # silently
 
         cur = self.__connection__.cursor()
         cur.execute('DROP INDEX i_' + table_name + '_' + index_name)
@@ -2049,9 +2213,9 @@ class SQLDatabase(SageObject):
         if table_name not in self.__skeleton__:
             raise ValueError("Database has no table %s." % table_name)
         if col_name not in self.__skeleton__[table_name]:
-            raise ValueError("Table %s has no column %s." % (table_name,col_name))
+            raise ValueError("Table %s has no column %s." % (table_name, col_name))
         if not self.__skeleton__[table_name][col_name]['primary_key']:
-            return # silently
+            return  # silently
 
         # Update the skeleton:
         self.__skeleton__[table_name][col_name]['primary_key'] = False
@@ -2135,11 +2299,14 @@ class SQLDatabase(SageObject):
         if query.__database__ is not self:
             raise ValueError('%s is not associated to this database.' % query)
         if (query.__query_string__).find(' JOIN ') != -1:
-            raise ValueError(f'{query} is not a valid query. Can only '
-                             'delete from one table at a time.')
+            raise ValueError(
+                f'{query} is not a valid query. Can only '
+                'delete from one table at a time.'
+            )
 
-        delete_statement = re.sub('SELECT .* FROM', 'DELETE FROM',
-                                  query.__query_string__)
+        delete_statement = re.sub(
+            'SELECT .* FROM', 'DELETE FROM', query.__query_string__
+        )
 
         try:
             cur = self.get_cursor()
@@ -2172,11 +2339,18 @@ class SQLDatabase(SageObject):
         strows = [tuple(str(entry) for entry in row) for row in rows]
 
         if entry_order is not None:
-            self.__connection__.executemany('INSERT INTO ' + table_name
-                + str(tuple(entry_order)) + ' VALUES ' + quest, strows)
+            self.__connection__.executemany(
+                'INSERT INTO '
+                + table_name
+                + str(tuple(entry_order))
+                + ' VALUES '
+                + quest,
+                strows,
+            )
         else:
-            self.__connection__.executemany('INSERT INTO ' + table_name
-                + ' VALUES ' + quest, strows)
+            self.__connection__.executemany(
+                'INSERT INTO ' + table_name + ' VALUES ' + quest, strows
+            )
 
     add_data = add_rows
 

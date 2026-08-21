@@ -13,7 +13,6 @@ H(yperplane) and V(ertex) representation objects for polyhedra
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Vector
 from sage.structure.richcmp import richcmp_method, richcmp
@@ -158,8 +157,11 @@ class PolyhedronRepresentation(SageObject):
         """
         if not isinstance(other, PolyhedronRepresentation):
             return NotImplemented
-        return richcmp((self.type(), self._vector*self._comparison_scalar()),
-                (other.type(), other._vector*other._comparison_scalar()), op)
+        return richcmp(
+            (self.type(), self._vector * self._comparison_scalar()),
+            (other.type(), other._vector * other._comparison_scalar()),
+            op,
+        )
 
     def _comparison_scalar(self):
         r"""
@@ -206,8 +208,8 @@ class PolyhedronRepresentation(SageObject):
 
         lcf = self._vector.leading_coefficient()
         if self.type() == self.EQUATION or self.type() == self.LINE:
-            return 1/lcf
-        return 1/lcf.abs()
+            return 1 / lcf
+        return 1 / lcf.abs()
 
     def vector(self, base_ring=None):
         """
@@ -424,7 +426,9 @@ class Hrepresentation(PolyhedronRepresentation):
         """
         assert polyhedron.parent() is self._polyhedron_parent
         if len(data) != self._vector.degree():
-            raise ValueError('H-representation data requires a list of length ambient_dim+1')
+            raise ValueError(
+                'H-representation data requires a list of length ambient_dim+1'
+            )
 
         self._vector[:] = data
         self._A[:] = data[1:]
@@ -555,7 +559,7 @@ class Hrepresentation(PolyhedronRepresentation):
         adjacency_matrix = self.polyhedron().facet_adjacency_matrix()
         for x in self.polyhedron().Hrep_generator():
             if not x.is_equation():
-                if adjacency_matrix[self.index()-n_eqs, x.index()-n_eqs] == 1:
+                if adjacency_matrix[self.index() - n_eqs, x.index() - n_eqs] == 1:
                     yield x
 
     def adjacent(self):
@@ -829,6 +833,7 @@ class Inequality(Hrepresentation):
             ....:     assert ieq.is_facet_defining_inequality(p1)
         """
         from sage.geometry.polyhedron.base import Polyhedron_base
+
         if not isinstance(other, Polyhedron_base):
             raise ValueError("other must be a polyhedron")
 
@@ -839,10 +844,14 @@ class Inequality(Hrepresentation):
         # We evaluate ``self`` on the Vrepresentation of other.
 
         from sage.matrix.constructor import matrix
+
         Vrep_matrix = matrix(other.base_ring(), other.Vrepresentation())
 
         # Getting homogeneous coordinates of the Vrepresentation.
-        hom_helper = matrix(other.base_ring(), [1 if v.is_vertex() else 0 for v in other.Vrepresentation()])
+        hom_helper = matrix(
+            other.base_ring(),
+            [1 if v.is_vertex() else 0 for v in other.Vrepresentation()],
+        )
         hom_Vrep = hom_helper.stack(Vrep_matrix.transpose())
 
         self_matrix = matrix(self.vector())
@@ -925,13 +934,13 @@ class Inequality(Hrepresentation):
         """
         try:
             if Vobj.is_vector():  # assume we were passed a point
-                return self.polyhedron()._is_nonneg( self.eval(Vobj) )
+                return self.polyhedron()._is_nonneg(self.eval(Vobj))
         except AttributeError:
             pass
 
         if Vobj.is_line():
-            return self.polyhedron()._is_zero( self.eval(Vobj) )
-        return self.polyhedron()._is_nonneg( self.eval(Vobj) )
+            return self.polyhedron()._is_zero(self.eval(Vobj))
+        return self.polyhedron()._is_nonneg(self.eval(Vobj))
 
     def interior_contains(self, Vobj):
         """
@@ -957,17 +966,17 @@ class Inequality(Hrepresentation):
             [True, True, False, True]
         """
         try:
-            if Vobj.is_vector(): # assume we were passed a point
-                return self.polyhedron()._is_positive( self.eval(Vobj) )
+            if Vobj.is_vector():  # assume we were passed a point
+                return self.polyhedron()._is_positive(self.eval(Vobj))
         except AttributeError:
             pass
 
         if Vobj.is_line():
-            return self.polyhedron()._is_zero( self.eval(Vobj) )
+            return self.polyhedron()._is_zero(self.eval(Vobj))
         if Vobj.is_vertex():
-            return self.polyhedron()._is_positive( self.eval(Vobj) )
+            return self.polyhedron()._is_positive(self.eval(Vobj))
         # Vobj.is_ray()
-        return self.polyhedron()._is_nonneg( self.eval(Vobj) )
+        return self.polyhedron()._is_nonneg(self.eval(Vobj))
 
     def outer_normal(self):
         r"""
@@ -1078,7 +1087,7 @@ class Equation(Hrepresentation):
             sage: a.contains(v)
             True
         """
-        return self.polyhedron()._is_zero( self.eval(Vobj) )
+        return self.polyhedron()._is_zero(self.eval(Vobj))
 
     def interior_contains(self, Vobj):
         """
@@ -1152,7 +1161,9 @@ class Vrepresentation(PolyhedronRepresentation):
         assert polyhedron.parent() is self._polyhedron_parent
         data = list(data)
         if len(data) != self._vector.degree():
-            raise ValueError('V-representation data requires a list of length ambient_dim')
+            raise ValueError(
+                'V-representation data requires a list of length ambient_dim'
+            )
 
         self._vector[:] = data
 
@@ -1636,8 +1647,9 @@ class Line(Vrepresentation):
         return Hobj.A() * self.vector()
 
 
-def repr_pretty(coefficients, type, prefix='x', indices=None,
-                latex=False, style='>=', split=False):
+def repr_pretty(
+    coefficients, type, prefix='x', indices=None, latex=False, style='>=', split=False
+):
     r"""
     Return a pretty representation of equation/inequality represented
     by the coefficients.
@@ -1679,7 +1691,7 @@ def repr_pretty(coefficients, type, prefix='x', indices=None,
 
     coeffs = list(coefficients)
     if indices is None:
-        indices = range(len(coeffs)-1)
+        indices = range(len(coeffs) - 1)
     vars = [1]
     if latex:
         vars += [f'{prefix}_{{{i}}}' for i in indices]
@@ -1694,7 +1706,8 @@ def repr_pretty(coefficients, type, prefix='x', indices=None,
             rel = r'\geq' if latex else '>='
     else:
         raise NotImplementedError(
-            'no pretty printing available: wrong type {}'.format(type))
+            'no pretty printing available: wrong type {}'.format(type)
+        )
 
     rvars = range(len(vars))
 
@@ -1702,16 +1715,30 @@ def repr_pretty(coefficients, type, prefix='x', indices=None,
         pos_part = [max(c, 0) for c in coeffs]
         neg_part = [pos_part[i] - coeffs[i] for i in rvars]
         assert all(coeffs[i] == pos_part[i] - neg_part[i] for i in rvars)
-        left_part = repr_lincomb([[vars[i], pos_part[i]] for i in rvars], is_latex=latex, strip_one=True)
-        right_part = repr_lincomb([[vars[i], neg_part[i]] for i in rvars], is_latex=latex, strip_one=True)
+        left_part = repr_lincomb(
+            [[vars[i], pos_part[i]] for i in rvars], is_latex=latex, strip_one=True
+        )
+        right_part = repr_lincomb(
+            [[vars[i], neg_part[i]] for i in rvars], is_latex=latex, strip_one=True
+        )
     elif style == '>=':
-        left_part = repr_lincomb([[vars[i], coeffs[i]] for i in rvars[1:]], is_latex=latex)
-        right_part = repr_lincomb([[vars[0], -coeffs[0]]], is_latex=latex, strip_one=True)
+        left_part = repr_lincomb(
+            [[vars[i], coeffs[i]] for i in rvars[1:]], is_latex=latex
+        )
+        right_part = repr_lincomb(
+            [[vars[0], -coeffs[0]]], is_latex=latex, strip_one=True
+        )
     elif style == '<=':
-        left_part = repr_lincomb([[vars[i], -coeffs[i]] for i in rvars[1:]], is_latex=latex)
-        right_part = repr_lincomb([[vars[0], coeffs[0]]], is_latex=latex, strip_one=True)
+        left_part = repr_lincomb(
+            [[vars[i], -coeffs[i]] for i in rvars[1:]], is_latex=latex
+        )
+        right_part = repr_lincomb(
+            [[vars[0], coeffs[0]]], is_latex=latex, strip_one=True
+        )
     else:
-        raise NotImplementedError('no pretty printing available: wrong style {}'.format(style))
+        raise NotImplementedError(
+            'no pretty printing available: wrong style {}'.format(style)
+        )
 
     if not split:
         return '{} {} {}'.format(left_part, rel, right_part)

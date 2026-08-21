@@ -15,21 +15,44 @@ modules = default_required_modules + default_optional_modules
 
 aliases = cython_aliases(required_modules=(), optional_modules=modules)
 
-library_order_list = aliases.get("SINGULAR_LIBRARIES", []) + [
-    "intl", "curl",
-    "ec", "ecm"
-] + aliases.get("LINBOX_LIBRARIES", []) + aliases.get("FFLASFFPACK_LIBRARIES", []) + aliases.get("GSL_LIBRARIES", []) + [
-    "pari", "flint", "ecl", "glpk", "ppl",
-] + [
-    "mpfi", "mpfr", "mpc", "ntl", "gmp", "gmpxx",
-    "brial",
-    "brial_groebner",
-    "m4rie",
-] + aliases.get("M4RI_LIBRARIES", []) + [
-    "gap",
-] + aliases.get("GDLIB_LIBRARIES", []) + aliases.get("LIBPNG_LIBRARIES", []) + [
-    "m", "readline", "Lfunction",
-] + aliases.get("CBLAS_LIBRARIES", []) + aliases.get("ZLIB_LIBRARIES", [])
+library_order_list = (
+    aliases.get("SINGULAR_LIBRARIES", [])
+    + ["intl", "curl", "ec", "ecm"]
+    + aliases.get("LINBOX_LIBRARIES", [])
+    + aliases.get("FFLASFFPACK_LIBRARIES", [])
+    + aliases.get("GSL_LIBRARIES", [])
+    + [
+        "pari",
+        "flint",
+        "ecl",
+        "glpk",
+        "ppl",
+    ]
+    + [
+        "mpfi",
+        "mpfr",
+        "mpc",
+        "ntl",
+        "gmp",
+        "gmpxx",
+        "brial",
+        "brial_groebner",
+        "m4rie",
+    ]
+    + aliases.get("M4RI_LIBRARIES", [])
+    + [
+        "gap",
+    ]
+    + aliases.get("GDLIB_LIBRARIES", [])
+    + aliases.get("LIBPNG_LIBRARIES", [])
+    + [
+        "m",
+        "readline",
+        "Lfunction",
+    ]
+    + aliases.get("CBLAS_LIBRARIES", [])
+    + aliases.get("ZLIB_LIBRARIES", [])
+)
 
 # Make a dict with library:order pairs, where the order are negative
 # integers sorted according to library_order_list. When sorting,
@@ -39,4 +62,4 @@ n = len(library_order_list)
 library_order = {}
 for i in range(n):
     lib = library_order_list[i]
-    library_order[lib] = i-n
+    library_order[lib] = i - n

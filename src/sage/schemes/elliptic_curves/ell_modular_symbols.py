@@ -72,7 +72,7 @@ AUTHORS:
 - John Cremona (2016): reworked eclib interface
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 William Stein <wstein@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -85,12 +85,14 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-from sage.arith.misc import (kronecker as kronecker_symbol,
-                             next_prime,
-                             prime_divisors,
-                             valuation)
+from sage.arith.misc import (
+    kronecker as kronecker_symbol,
+    next_prime,
+    prime_divisors,
+    valuation,
+)
 from sage.databases.cremona import parse_cremona_label
 from sage.misc.verbose import verbose
 from sage.modular.cusps import Cusps
@@ -219,7 +221,10 @@ class ModularSymbol(SageObject):
              Elliptic Curve defined by y^2 + y = x^3 + x^2 over Rational Field
         """
         return "Modular symbol with sign %s over %s attached to %s" % (
-            self._sign, self._base_ring, self._E)
+            self._sign,
+            self._base_ring,
+            self._E,
+        )
 
 
 class ModularSymbolECLIB(ModularSymbol):
@@ -335,7 +340,7 @@ class ModularSymbolECLIB(ModularSymbol):
             raise TypeError('sign must -1 or 1')
         self._sign = ZZ(sign)
         self._E = E
-        self._scaling = 1 if E.discriminant() > 0 else ZZ(1)/2
+        self._scaling = 1 if E.discriminant() > 0 else ZZ(1) / 2
         self._implementation = "eclib"
         self._base_ring = QQ
         # The ECModularSymbol class must be initialized with sign=0 to compute minus symbols
@@ -357,7 +362,10 @@ class ModularSymbolECLIB(ModularSymbol):
             return cache[r]
         except KeyError:
             pass
-        c = self._modsym(r, sign=self._sign, base_at_infinity=base_at_infinity) * self._scaling
+        c = (
+            self._modsym(r, sign=self._sign, base_at_infinity=base_at_infinity)
+            * self._scaling
+        )
         cache[r] = c
         return c
 
@@ -372,10 +380,14 @@ class ModularSymbolECLIB(ModularSymbol):
             1/5
         """
         from sage.rings.rational import Rational
+
         if r != oo:
             r = Rational(r)
             r = r.numer() % r.denom() / r.denom()
-        return self._modsym(r, sign=self._sign, base_at_infinity=base_at_infinity) * self._scaling
+        return (
+            self._modsym(r, sign=self._sign, base_at_infinity=base_at_infinity)
+            * self._scaling
+        )
 
 
 class ModularSymbolSage(ModularSymbol):
@@ -464,13 +476,15 @@ class ModularSymbolSage(ModularSymbol):
                 self._find_scaling_period()  # will reset _e and _scaling
             else:
                 self._e *= self._scaling
-        elif normalize == "period" :
-            self._find_scaling_period()      # this will set _e and _scaling
+        elif normalize == "period":
+            self._find_scaling_period()  # this will set _e and _scaling
         elif normalize == "none":
             self._scaling = 1
             self._e = self._modsym.dual_eigenvector()
-        else :
-            raise ValueError("no normalization %s known for modular symbols" % normalize)
+        else:
+            raise ValueError(
+                "no normalization %s known for modular symbols" % normalize
+            )
 
     def _find_scaling_L_ratio(self):
         r"""
@@ -547,56 +561,144 @@ class ModularSymbolSage(ModularSymbol):
             ....:           assert ED.lseries().L_ratio()*ED.real_components() * etaD == md
         """
         E = self._E
-        self._scaling = 1 # initial value, may be changed later.
+        self._scaling = 1  # initial value, may be changed later.
         self._failed_to_scale = False
 
-        if self._sign == 1 :
+        if self._sign == 1:
             at0 = self(0)
-            if at0 != 0 :
+            if at0 != 0:
                 l1 = self.__lalg__(1)
                 if at0 != l1:
-                    verbose('scale modular symbols by %s' % (l1/at0))
-                    self._scaling = l1/at0
-            else :
+                    verbose('scale modular symbols by %s' % (l1 / at0))
+                    self._scaling = l1 / at0
+            else:
                 # if [0] = 0, we can still hope to scale it correctly by considering twists of E
-                Dlist = [5,8,12,13,17,21,24,28,29, 33, 37, 40, 41, 44, 53, 56, 57, 60, 61, 65, 69, 73, 76, 77, 85, 88, 89, 92, 93, 97]  # a list of positive fundamental discriminants
+                Dlist = [
+                    5,
+                    8,
+                    12,
+                    13,
+                    17,
+                    21,
+                    24,
+                    28,
+                    29,
+                    33,
+                    37,
+                    40,
+                    41,
+                    44,
+                    53,
+                    56,
+                    57,
+                    60,
+                    61,
+                    65,
+                    69,
+                    73,
+                    76,
+                    77,
+                    85,
+                    88,
+                    89,
+                    92,
+                    93,
+                    97,
+                ]  # a list of positive fundamental discriminants
                 j = 0
                 at0 = 0
                 # computes [0]+ for the twist of E by D until one value is nonzero
-                while j < 30 and at0 == 0 :
+                while j < 30 and at0 == 0:
                     D = Dlist[j]
                     # the following line checks if the twist of the newform of E by D is a newform
                     # this is to avoid that we 'twist back'
-                    if all( valuation(E.conductor(),ell) <= valuation(D,ell) for ell in prime_divisors(D) ) :
-                        at0 = sum([kronecker_symbol(D,u) * self(ZZ(u)/D) for u in range(1,abs(D))])
+                    if all(
+                        valuation(E.conductor(), ell) <= valuation(D, ell)
+                        for ell in prime_divisors(D)
+                    ):
+                        at0 = sum(
+                            [
+                                kronecker_symbol(D, u) * self(ZZ(u) / D)
+                                for u in range(1, abs(D))
+                            ]
+                        )
                     j += 1
-                if j == 30 and at0 == 0: # curves like "121b1", "225a1", "225e1", "256a1", "256b1", "289a1", "361a1", "400a1", "400c1", "400h1", "441b1", "441c1", "441d1", "441f1 .. will arrive here
-                    print("Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by -1 and a power of 2")
+                if (
+                    j == 30 and at0 == 0
+                ):  # curves like "121b1", "225a1", "225e1", "256a1", "256b1", "289a1", "361a1", "400a1", "400c1", "400h1", "441b1", "441c1", "441d1", "441f1 .. will arrive here
+                    print(
+                        "Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by -1 and a power of 2"
+                    )
                     self._failed_to_scale = True
-                else :
+                else:
                     l1 = self.__lalg__(D)
                     if at0 != l1:
-                        verbose('scale modular symbols by %s found at D=%s ' % (l1/at0,D), level=2)
-                        self._scaling = l1/at0
+                        verbose(
+                            'scale modular symbols by %s found at D=%s '
+                            % (l1 / at0, D),
+                            level=2,
+                        )
+                        self._scaling = l1 / at0
 
-        else : # that is when sign = -1
-            Dlist = [-3,-4,-7,-8,-11,-15,-19,-20,-23,-24, -31, -35, -39, -40, -43, -47, -51, -52, -55, -56, -59, -67, -68, -71, -79, -83, -84, -87, -88, -91]  # a list of negative fundamental discriminants
+        else:  # that is when sign = -1
+            Dlist = [
+                -3,
+                -4,
+                -7,
+                -8,
+                -11,
+                -15,
+                -19,
+                -20,
+                -23,
+                -24,
+                -31,
+                -35,
+                -39,
+                -40,
+                -43,
+                -47,
+                -51,
+                -52,
+                -55,
+                -56,
+                -59,
+                -67,
+                -68,
+                -71,
+                -79,
+                -83,
+                -84,
+                -87,
+                -88,
+                -91,
+            ]  # a list of negative fundamental discriminants
             j = 0
             at0 = 0
-            while j < 30 and at0 == 0 :
+            while j < 30 and at0 == 0:
                 # computes [0]+ for the twist of E by D until one value is nonzero
                 D = Dlist[j]
-                if all( valuation(E.conductor(),ell) <= valuation(D,ell) for ell in prime_divisors(D) ) :
-                    at0 = - sum([kronecker_symbol(D,u) * self(ZZ(u)/D) for u in range(1,abs(D))])
+                if all(
+                    valuation(E.conductor(), ell) <= valuation(D, ell)
+                    for ell in prime_divisors(D)
+                ):
+                    at0 = -sum(
+                        [
+                            kronecker_symbol(D, u) * self(ZZ(u) / D)
+                            for u in range(1, abs(D))
+                        ]
+                    )
                 j += 1
-            if j == 30 and at0 == 0: # no more hope for a normalization
-                print("Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by -1 and a power of 2")
+            if j == 30 and at0 == 0:  # no more hope for a normalization
+                print(
+                    "Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by -1 and a power of 2"
+                )
                 self._failed_to_scale = True
-            else :
+            else:
                 l1 = self.__lalg__(D)
                 if at0 != l1:
-                    verbose('scale modular symbols by %s' % (l1/at0))
-                    self._scaling = l1/at0
+                    verbose('scale modular symbols by %s' % (l1 / at0))
+                    self._scaling = l1 / at0
 
     def __lalg__(self, D):
         r"""
@@ -625,13 +727,15 @@ class ModularSymbolSage(ModularSymbol):
 
         E = self._E
         ED = E.quadratic_twist(D)
-        lv = ED.lseries().L_ratio()  # this is L(ED,1) divided by the Néron period omD of ED
+        lv = (
+            ED.lseries().L_ratio()
+        )  # this is L(ED,1) divided by the Néron period omD of ED
         lv *= ED.real_components()  # now it is by the least positive period
         omD = ED.period_lattice().basis()[0]
-        if D > 0 :
+        if D > 0:
             om = E.period_lattice().basis()[0]
             q = sqrt(D) * omD / om * 8
-        else :
+        else:
             om = E.period_lattice().basis()[1].imag()
             if E.real_components() == 1:
                 om *= 2
@@ -684,18 +788,23 @@ class ModularSymbolSage(ModularSymbol):
         self._e = P.matrix().transpose().row(0)
         self._e /= 2
         E = self._E
-        try :
+        try:
             crla = parse_cremona_label(E.label())
-        except RuntimeError: # raised when curve is outside of the table
-            print("Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by a rational number.")
+        except RuntimeError:  # raised when curve is outside of the table
+            print(
+                "Warning : Could not normalize the modular symbols, maybe all further results will be multiplied by a rational number."
+            )
             self._scaling = 1
-        else :
+        else:
             cr0 = Integer(crla[0]).str() + crla[1] + '1'
             E0 = EllipticCurve(cr0)
             if self._sign == 1:
-                q = E0.period_lattice().basis()[0]/E.period_lattice().basis()[0]
+                q = E0.period_lattice().basis()[0] / E.period_lattice().basis()[0]
             else:
-                q = E0.period_lattice().basis()[1].imag()/E.period_lattice().basis()[1].imag()
+                q = (
+                    E0.period_lattice().basis()[1].imag()
+                    / E.period_lattice().basis()[1].imag()
+                )
                 if E0.real_components() == 1:
                     q *= 2
                 if E.real_components() == 1:
@@ -726,7 +835,7 @@ class ModularSymbolSage(ModularSymbol):
             self.__cache = {}
         except KeyError:
             pass
-        w = self._ambient_modsym([oo,r]).element()
+        w = self._ambient_modsym([oo, r]).element()
         c = (self._e).dot_product(w)
         self.__cache[r] = c
         return c

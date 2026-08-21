@@ -291,6 +291,7 @@ def gens_to_basis_matrix(syms, relation_matrix, mod, field, sparse):
         (24 x 2 sparse matrix over Finite Field of size 3, [13, 23])
     """
     from sage.structure.element import Matrix
+
     if not isinstance(relation_matrix, Matrix):
         raise TypeError("relation_matrix must be a matrix")
     if not isinstance(mod, list):
@@ -304,8 +305,7 @@ def gens_to_basis_matrix(syms, relation_matrix, mod, field, sparse):
         h = 9999999
     tm = verbose("putting relation matrix in echelon form (height = %s)" % h)
     if h < 10:
-        A = relation_matrix.echelon_form(algorithm='multimodular',
-                                         height_guess=1)
+        A = relation_matrix.echelon_form(algorithm='multimodular', height_guess=1)
     else:
         A = relation_matrix.echelon_form()
     A.set_immutable()
@@ -336,10 +336,12 @@ def gens_to_basis_matrix(syms, relation_matrix, mod, field, sparse):
         if t:
             B[i, l] = ONE
         else:
-            _, r = search(pivots, i)    # so pivots[r] = i
+            _, r = search(pivots, i)  # so pivots[r] = i
             # Set row i to -(row r of A), but where we only take
             # the non-pivot columns of A:
-            B._set_row_to_negative_of_row_of_A_using_subset_of_columns(i, A, r, basis, cols_index)
+            B._set_row_to_negative_of_row_of_A_using_subset_of_columns(
+                i, A, r, basis, cols_index
+            )
 
     verbose("done making quotient matrix", tm)
 
@@ -348,7 +350,7 @@ def gens_to_basis_matrix(syms, relation_matrix, mod, field, sparse):
     k = 0
     for i in range(len(mod)):
         j, s = mod[i]
-        if j != i and s != 0:   # ignored in the above matrix
+        if j != i and s != 0:  # ignored in the above matrix
             k += 1
             B.set_row_to_multiple_of_row(i, j, s)
     verbose("set %s rows" % k)
@@ -494,6 +496,7 @@ def relation_matrix_wtk_g0(syms, sign, field, sparse):
 
     if syms._apply_S_only_0pm1() and isinstance(field, RationalField):
         from . import relation_matrix_pyx
+
         mod = relation_matrix_pyx.sparse_2term_quotient_only_pm1(rels, len(syms))
     else:
         mod = sparse_2term_quotient(rels, len(syms), field)

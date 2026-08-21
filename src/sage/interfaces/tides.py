@@ -37,6 +37,7 @@ REFERENCES:
 
 - [TIDES]_
 """
+
 from pathlib import Path
 
 from sage.ext.fast_callable import fast_callable
@@ -149,6 +150,7 @@ def subexpressions_list(f, pars=None):
         ('exp', x^2 + sin(y))])
     """
     from sage.functions.trig import sin, cos, arcsin, arctan, arccos
+
     variables = f[0].arguments()
     if not pars:
         parameters = []
@@ -167,14 +169,14 @@ def subexpressions_list(f, pars=None):
         elif i[0] == 'ipow':
             if i[1] in NN:
                 basis = stack[-1]
-                for j in range(i[1]-1):
+                for j in range(i[1] - 1):
                     a = stack.pop(-1)
                     detail.append(('mul', a, basis))
-                    stack.append(a*basis)
+                    stack.append(a * basis)
                     stackcomp.append(stack[-1])
             else:
                 detail.append(('pow', stack[-1], i[1]))
-                stack[-1] = stack[-1]**i[1]
+                stack[-1] = stack[-1] ** i[1]
                 stackcomp.append(stack[-1])
 
         elif i[0] == 'load_const':
@@ -184,21 +186,21 @@ def subexpressions_list(f, pars=None):
             a = stack.pop(-1)
             b = stack.pop(-1)
             detail.append(('mul', a, b))
-            stack.append(a*b)
+            stack.append(a * b)
             stackcomp.append(stack[-1])
 
         elif i == 'div':
             a = stack.pop(-1)
             b = stack.pop(-1)
             detail.append(('div', a, b))
-            stack.append(b/a)
+            stack.append(b / a)
             stackcomp.append(stack[-1])
 
         elif i == 'add':
             a = stack.pop(-1)
             b = stack.pop(-1)
             detail.append(('add', a, b))
-            stack.append(a+b)
+            stack.append(a + b)
             stackcomp.append(stack[-1])
 
         elif i == 'pow':
@@ -245,46 +247,46 @@ def subexpressions_list(f, pars=None):
             detail.append(('div', b, c))
             stackcomp.append(b)
             stackcomp.append(c)
-            stackcomp.append(b/c)
-            stack.append(b/c)
+            stackcomp.append(b / c)
+            stack.append(b / c)
 
         elif i[0] == 'py_call' and str(i[1]) == 'arctan':
             a = stack.pop(-1)
             detail.append(('mul', a, a))
-            detail.append(('add', 1, a*a))
+            detail.append(('add', 1, a * a))
             detail.append(('atan', a))
-            stackcomp.append(a*a)
-            stackcomp.append(1+a*a)
+            stackcomp.append(a * a)
+            stackcomp.append(1 + a * a)
             stackcomp.append(arctan(a))
             stack.append(arctan(a))
 
         elif i[0] == 'py_call' and str(i[1]) == 'arcsin':
             a = stack.pop(-1)
             detail.append(('mul', a, a))
-            detail.append(('mul', -1, a*a))
-            detail.append(('add', 1, -a*a))
-            detail.append(('pow', 1 - a*a, 0.5))
+            detail.append(('mul', -1, a * a))
+            detail.append(('add', 1, -a * a))
+            detail.append(('pow', 1 - a * a, 0.5))
             detail.append(('asin', a))
-            stackcomp.append(a*a)
-            stackcomp.append(-a*a)
-            stackcomp.append(1-a*a)
-            stackcomp.append(sqrt(1-a*a))
+            stackcomp.append(a * a)
+            stackcomp.append(-a * a)
+            stackcomp.append(1 - a * a)
+            stackcomp.append(sqrt(1 - a * a))
             stackcomp.append(arcsin(a))
             stack.append(arcsin(a))
 
         elif i[0] == 'py_call' and str(i[1]) == 'arccos':
             a = stack.pop(-1)
             detail.append(('mul', a, a))
-            detail.append(('mul', -1, a*a))
-            detail.append(('add', 1, -a*a))
-            detail.append(('pow', 1 - a*a, 0.5))
-            detail.append(('mul', -1, sqrt(1-a*a)))
+            detail.append(('mul', -1, a * a))
+            detail.append(('add', 1, -a * a))
+            detail.append(('pow', 1 - a * a, 0.5))
+            detail.append(('mul', -1, sqrt(1 - a * a)))
             detail.append(('acos', a))
-            stackcomp.append(a*a)
-            stackcomp.append(-a*a)
-            stackcomp.append(1-a*a)
-            stackcomp.append(sqrt(1-a*a))
-            stackcomp.append(-sqrt(1-a*a))
+            stackcomp.append(a * a)
+            stackcomp.append(-a * a)
+            stackcomp.append(1 - a * a)
+            stackcomp.append(sqrt(1 - a * a))
+            stackcomp.append(-sqrt(1 - a * a))
             stackcomp.append(arccos(a))
             stack.append(arccos(a))
 
@@ -333,8 +335,8 @@ def remove_repeated(l1, l2):
         ('pow', -a^2 + 1, 0.5),
         ('asin', a)])
     """
-    for i in range(len(l1)-1):
-        j = i+1
+    for i in range(len(l1) - 1):
+        j = i + 1
         while j < len(l1):
             if str(l1[j]) == str(l1[i]):
                 l1.pop(j)
@@ -369,8 +371,18 @@ def remove_constants(l1, l2):
             i += 1
 
 
-def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
-                      tolrel=1e-16, tolabs=1e-16, output : str = ''):
+def genfiles_mintides(
+    integrator,
+    driver,
+    f,
+    ics,
+    initial,
+    final,
+    delta,
+    tolrel=1e-16,
+    tolabs=1e-16,
+    output: str = '',
+):
     r"""
     Generate the needed files for the min_tides library.
 
@@ -479,7 +491,7 @@ def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
             if a in var:
                 l3.append((oper, 'XX[{}]'.format(lv.index(str(a)))))
             elif a in l1:
-                l3.append((oper, 'XX[{}]'.format(l0.index(str(a))+len(var))))
+                l3.append((oper, 'XX[{}]'.format(l0.index(str(a)) + len(var))))
 
         else:
             a = i[1]
@@ -490,14 +502,14 @@ def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
             if str(a) in lv:
                 aa = 'XX[{}]'.format(lv.index(str(a)))
             elif str(a) in l0:
-                aa = 'XX[{}]'.format(l0.index(str(a))+len(var))
+                aa = 'XX[{}]'.format(l0.index(str(a)) + len(var))
             else:
                 consta = True
                 aa = RR(a).str()
             if str(b) in lv:
                 bb = 'XX[{}]'.format(lv.index(str(b)))
             elif str(b) in l0:
-                bb = 'XX[{}]'.format(l0.index(str(b))+len(var))
+                bb = 'XX[{}]'.format(l0.index(str(b)) + len(var))
             else:
                 constb = True
                 bb = RR(b).str()
@@ -519,30 +531,30 @@ def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
         elif el[0] == 'add_c':
             string += "(i==0)? {}+".format(el[2]) + el[1] + "[0] : " + el[1] + "[i];"
         elif el[0] == 'mul':
-            string += "mul_mc("+el[1]+","+el[2]+",i);"
+            string += "mul_mc(" + el[1] + "," + el[2] + ",i);"
         elif el[0] == 'mul_c':
             string += el[2] + "*" + el[1] + "[i];"
         elif el[0] == 'pow_c':
-            string += "pow_mc_c("+el[1]+","+el[2]+",XX[{}], i);".format(i+n)
+            string += "pow_mc_c(" + el[1] + "," + el[2] + ",XX[{}], i);".format(i + n)
         elif el[0] == 'div':
-            string += "div_mc("+el[2]+","+el[1]+",XX[{}], i);".format(i+n)
+            string += "div_mc(" + el[2] + "," + el[1] + ",XX[{}], i);".format(i + n)
         elif el[0] == 'div_c':
-            string += "inv_mc("+el[2]+","+el[1]+",XX[{}], i);".format(i+n)
+            string += "inv_mc(" + el[2] + "," + el[1] + ",XX[{}], i);".format(i + n)
         elif el[0] == 'log':
-            string += "log_mc(" + el[1] + ",XX[{}], i);".format(i+n)
+            string += "log_mc(" + el[1] + ",XX[{}], i);".format(i + n)
         elif el[0] == 'exp':
-            string += "exp_mc(" + el[1] + ",XX[{}], i);".format(i+n)
+            string += "exp_mc(" + el[1] + ",XX[{}], i);".format(i + n)
         elif el[0] == 'sin':
-            string += "sin_mc(" + el[1] + ",XX[{}], i);".format(i+n+1)
+            string += "sin_mc(" + el[1] + ",XX[{}], i);".format(i + n + 1)
         elif el[0] == 'cos':
-            string += "cos_mc(" + el[1] + ",XX[{}], i);".format(i+n-1)
+            string += "cos_mc(" + el[1] + ",XX[{}], i);".format(i + n - 1)
 
         res.append(string)
 
     l0 = lv + l0
     indices = [l0.index(str(i(*var))) + n for i in f]
     for i in range(1, n):
-        res.append("XX[{}][i+1] = XX[{}][i] / (i+1.0);".format(i, indices[i-1]-n))
+        res.append("XX[{}][i+1] = XX[{}][i] / (i+1.0);".format(i, indices[i - 1] - n))
 
     code = res
 
@@ -612,7 +624,7 @@ def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
     double tolrel, tolabs, tini, tend, dt;
     double v[VARS], p[PARS];
 
-    """ % (n-1)
+    """ % (n - 1)
     outfile.write(auxstring)
     for i in range(len(ics)):
         outfile.write('\tv[{}] = {} ; \n'.format(i, RR(ics[i]).str()))
@@ -628,9 +640,21 @@ def genfiles_mintides(integrator, driver, f, ics, initial, final, delta,
     outfile.close()
 
 
-def genfiles_mpfr(integrator, driver, f, ics, initial, final, delta,
-                  parameters=None, parameter_values=None, dig=20, tolrel=1e-16,
-                  tolabs=1e-16, output : str = ''):
+def genfiles_mpfr(
+    integrator,
+    driver,
+    f,
+    ics,
+    initial,
+    final,
+    delta,
+    parameters=None,
+    parameter_values=None,
+    dig=20,
+    tolrel=1e-16,
+    tolabs=1e-16,
+    output: str = '',
+):
     r"""
         Generate the needed files for the mpfr module of the tides library.
 
@@ -809,7 +833,7 @@ def genfiles_mpfr(integrator, driver, f, ics, initial, final, delta,
         if aux < n:
             code.append(f'mpfrts_var_t(itd, var[{aux}], var[{i}], i);')
         else:
-            code.append(f'mpfrts_var_t(itd, link[{aux-n}], var[{i}], i);')
+            code.append(f'mpfrts_var_t(itd, link[{aux - n}], var[{i}], i);')
 
     for i in range(len(l3)):
         el = l3[i]
@@ -833,17 +857,17 @@ def genfiles_mpfr(integrator, driver, f, ics, initial, final, delta,
         elif el[0] == 'exp':
             string += 'exp_t(itd, ' + el[1] + f', link[{i}], i);'
         elif el[0] == 'sin':
-            string += 'sin_t(itd, ' + el[1] + f', link[{i+1}], link[{i}], i);'
+            string += 'sin_t(itd, ' + el[1] + f', link[{i + 1}], link[{i}], i);'
         elif el[0] == 'cos':
-            string += 'cos_t(itd, ' + el[1] + f', link[{i-1}], link[{i}], i);'
+            string += 'cos_t(itd, ' + el[1] + f', link[{i - 1}], link[{i}], i);'
         elif el[0] == 'atan':
-            indarg = l0.index(str(1+l2[i][1]**2))-n
+            indarg = l0.index(str(1 + l2[i][1] ** 2)) - n
             string += 'atan_t(itd, ' + el[1] + f', link[{indarg}], link[{i}], i);'
         elif el[0] == 'asin':
-            indarg = l0.index(str(sqrt(1-l2[i][1]**2)))-n
+            indarg = l0.index(str(sqrt(1 - l2[i][1] ** 2))) - n
             string += 'asin_t(itd, ' + el[1] + f', link[{indarg}], link[{i}], i);'
         elif el[0] == 'acos':
-            indarg = l0.index(str(-sqrt(1-l2[i][1]**2)))-n
+            indarg = l0.index(str(-sqrt(1 - l2[i][1] ** 2))) - n
             string += 'acos_t(itd, ' + el[1] + f', link[{indarg}], link[{i}], i);'
         code.append(string)
 
@@ -920,24 +944,42 @@ def genfiles_mpfr(integrator, driver, f, ics, initial, final, delta,
         outfile.write('\tfor(i=0; i<npar; i++) mpfr_init2(p[i], TIDES_PREC);\n')
 
         for i in range(npar):
-            outfile.write('\tmpfr_set_str(p[{}], "{}", 10, TIDES_RND);\n'.format(i, RR(parameter_values[i]).str()))
+            outfile.write(
+                '\tmpfr_set_str(p[{}], "{}", 10, TIDES_RND);\n'.format(
+                    i, RR(parameter_values[i]).str()
+                )
+            )
         outfile.write('\tint nvar = {};\n\tmpfr_t v[nvar];\n'.format(VAR))
         outfile.write('\tfor(i=0; i<nvar; i++) mpfr_init2(v[i], TIDES_PREC);\n')
         for i in range(len(ics)):
-            outfile.write('\tmpfr_set_str(v[{}], "{}", 10, TIDES_RND);\n'.format(i, RR(ics[i]).str()))
+            outfile.write(
+                '\tmpfr_set_str(v[{}], "{}", 10, TIDES_RND);\n'.format(
+                    i, RR(ics[i]).str()
+                )
+            )
         outfile.write('\tmpfr_t tolrel, tolabs;\n')
         outfile.write('\tmpfr_init2(tolrel, TIDES_PREC); \n')
         outfile.write('\tmpfr_init2(tolabs, TIDES_PREC); \n')
-        outfile.write('\tmpfr_set_str(tolrel, "{}", 10, TIDES_RND);\n'.format(RR(tolrel).str()))
-        outfile.write('\tmpfr_set_str(tolabs, "{}", 10, TIDES_RND);\n'.format(RR(tolabs).str()))
+        outfile.write(
+            '\tmpfr_set_str(tolrel, "{}", 10, TIDES_RND);\n'.format(RR(tolrel).str())
+        )
+        outfile.write(
+            '\tmpfr_set_str(tolabs, "{}", 10, TIDES_RND);\n'.format(RR(tolabs).str())
+        )
 
         outfile.write('\tmpfr_t tini, dt; \n')
         outfile.write('\tmpfr_init2(tini, TIDES_PREC); \n')
         outfile.write('\tmpfr_init2(dt, TIDES_PREC); \n')
 
-        outfile.write('\tmpfr_set_str(tini, "{}", 10, TIDES_RND);;\n'.format(RR(initial).str()))
-        outfile.write('\tmpfr_set_str(dt, "{}", 10, TIDES_RND);\n'.format(RR(delta).str()))
-        outfile.write('\tint nipt = {};\n'.format(floor((final-initial)/delta)))
+        outfile.write(
+            '\tmpfr_set_str(tini, "{}", 10, TIDES_RND);;\n'.format(RR(initial).str())
+        )
+        outfile.write(
+            '\tmpfr_set_str(dt, "{}", 10, TIDES_RND);\n'.format(RR(delta).str())
+        )
+        outfile.write('\tint nipt = {};\n'.format(floor((final - initial) / delta)))
         outfile.write('\tFILE* fd = fopen("' + output + '", "w");\n')
-        outfile.write('\tmp_tides_delta(function_iteration, NULL, nvar, npar, nfun, v, p, tini, dt, nipt, tolrel, tolabs, NULL, fd);\n')
+        outfile.write(
+            '\tmp_tides_delta(function_iteration, NULL, nvar, npar, nfun, v, p, tini, dt, nipt, tolrel, tolabs, NULL, fd);\n'
+        )
         outfile.write('\tfclose(fd);\n\treturn 0;\n}')

@@ -138,6 +138,7 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
         sage: D.decode_to_message(y)
         (3, 0)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -214,29 +215,43 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
         """
         if column_multipliers:
             if len(evaluation_points) != len(column_multipliers):
-                raise ValueError("There must be the same number of evaluation points as column multipliers")
+                raise ValueError(
+                    "There must be the same number of evaluation points as column multipliers"
+                )
             try:
-                common_points = vector(list(evaluation_points) + list(column_multipliers))
+                common_points = vector(
+                    list(evaluation_points) + list(column_multipliers)
+                )
                 F = common_points.base_ring()
-                self._evaluation_points = common_points[:len(evaluation_points)]
-                self._column_multipliers = common_points[len(evaluation_points):]
+                self._evaluation_points = common_points[: len(evaluation_points)]
+                self._column_multipliers = common_points[len(evaluation_points) :]
             except (TypeError, ValueError) as e:
-                raise ValueError("Failed converting all evaluation points and column multipliers to the same field (%s)" % e)
+                raise ValueError(
+                    "Failed converting all evaluation points and column multipliers to the same field (%s)"
+                    % e
+                )
         else:
             try:
                 self._evaluation_points = vector(evaluation_points)
                 F = self._evaluation_points.base_ring()
-                self._column_multipliers = vector(F, [F.one()] * len(self._evaluation_points))
+                self._column_multipliers = vector(
+                    F, [F.one()] * len(self._evaluation_points)
+                )
             except (TypeError, ValueError) as e:
-                raise ValueError("Failed converting all evaluation points to the same field (%s)" % e)
+                raise ValueError(
+                    "Failed converting all evaluation points to the same field (%s)" % e
+                )
 
         if not F.is_finite() or not F.is_field():
-            raise ValueError("Evaluation points must be in a finite field (and %s is not one)" % F)
-        super().__init__(F,
-                len(self._evaluation_points), "EvaluationVector", "Gao")
+            raise ValueError(
+                "Evaluation points must be in a finite field (and %s is not one)" % F
+            )
+        super().__init__(F, len(self._evaluation_points), "EvaluationVector", "Gao")
 
         if dimension not in ZZ or dimension > self._length or dimension < 1:
-            raise ValueError("The dimension must be a positive integer at most the length of the code.")
+            raise ValueError(
+                "The dimension must be a positive integer at most the length of the code."
+            )
         self._dimension = dimension
 
         if F.zero() in self._column_multipliers:
@@ -257,12 +272,14 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             sage: C1 == C2
             True
         """
-        return isinstance(other, GeneralizedReedSolomonCode) \
-            and self.base_field() == other.base_field() \
-            and self.length() == other.length() \
-            and self.dimension() == other.dimension() \
-            and self.evaluation_points() == other.evaluation_points() \
+        return (
+            isinstance(other, GeneralizedReedSolomonCode)
+            and self.base_field() == other.base_field()
+            and self.length() == other.length()
+            and self.dimension() == other.dimension()
+            and self.evaluation_points() == other.evaluation_points()
             and self.column_multipliers() == other.column_multipliers()
+        )
 
     def __hash__(self):
         """
@@ -277,9 +294,15 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             sage: hash(C1) == hash(C2)
             True
         """
-        return hash((self.base_field(), self.length(), self.dimension(),
-                     tuple(self.evaluation_points()),
-                     tuple(self.column_multipliers())))
+        return hash(
+            (
+                self.base_field(),
+                self.length(),
+                self.dimension(),
+                tuple(self.evaluation_points()),
+                tuple(self.column_multipliers()),
+            )
+        )
 
     def _repr_(self):
         r"""
@@ -297,10 +320,13 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             sage: C2
             [40, 12, 29] Generalized Reed-Solomon Code over GF(59)
         """
-        return "[%s, %s, %s] %sReed-Solomon Code over GF(%s)"\
-            % (self.length(), self.dimension(), self.minimum_distance(),
-               "Generalized " if self.is_generalized() else "",
-               self.base_field().cardinality())
+        return "[%s, %s, %s] %sReed-Solomon Code over GF(%s)" % (
+            self.length(),
+            self.dimension(),
+            self.minimum_distance(),
+            "Generalized " if self.is_generalized() else "",
+            self.base_field().cardinality(),
+        )
 
     def _latex_(self):
         r"""
@@ -318,10 +344,13 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             sage: latex(C2)
             [40, 12, 29] \textnormal{ Generalized Reed-Solomon Code over } \Bold{F}_{59}
         """
-        return "[%s, %s, %s] \\textnormal{ %sReed-Solomon Code over } %s"\
-            % (self.length(), self.dimension(), self.minimum_distance(),
-               "Generalized " if self.is_generalized() else "",
-               self.base_field()._latex_())
+        return "[%s, %s, %s] \\textnormal{ %sReed-Solomon Code over } %s" % (
+            self.length(),
+            self.dimension(),
+            self.minimum_distance(),
+            "Generalized " if self.is_generalized() else "",
+            self.base_field()._latex_(),
+        )
 
     def minimum_distance(self):
         r"""
@@ -412,8 +441,10 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
         """
         a = self.evaluation_points()
         one = self.base_ring().one()
-        return [one / prod(ai - ah for h, ah in enumerate(a) if h != i)
-                for i, ai in enumerate(a)]
+        return [
+            one / prod(ai - ah for h, ah in enumerate(a) if h != i)
+            for i, ai in enumerate(a)
+        ]
 
     @cached_method
     def parity_column_multipliers(self):
@@ -473,9 +504,9 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             True
         """
         col_mults = self.parity_column_multipliers()
-        return GeneralizedReedSolomonCode(self.evaluation_points(),
-                                          self.length() - self.dimension(),
-                                          col_mults)
+        return GeneralizedReedSolomonCode(
+            self.evaluation_points(), self.length() - self.dimension(), col_mults
+        )
 
     def covering_radius(self):
         r"""
@@ -540,7 +571,12 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
         wd = [1] + [0] * (d - 1)
         for i in range(d, n + 1):
             tmp = binomial(n, i) * (q - 1)
-            wd.append(tmp * symbolic_sum(binomial(i-1, s) * (-1)**s * q**(i - d - s), s, 0, i-d))
+            wd.append(
+                tmp
+                * symbolic_sum(
+                    binomial(i - 1, s) * (-1) ** s * q ** (i - d - s), s, 0, i - d
+                )
+            )
         return wd
 
     def _punctured_form(self, points):
@@ -559,7 +595,9 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
             [38, 12, 27] Reed-Solomon Code over GF(59)
         """
         if not isinstance(points, (Integer, int, set)):
-            raise TypeError("points must be either a Sage Integer, a Python int, or a set")
+            raise TypeError(
+                "points must be either a Sage Integer, a Python int, or a set"
+            )
         alphas = list(self.evaluation_points())
         col_mults = list(self.column_multipliers())
         n = self.length()
@@ -570,7 +608,9 @@ class GeneralizedReedSolomonCode(AbstractLinearCode):
         G = self.generator_matrix()
         G = G.delete_columns(list(points))
         dimension = G.rank()
-        return GeneralizedReedSolomonCode(punctured_alphas, dimension, punctured_col_mults)
+        return GeneralizedReedSolomonCode(
+            punctured_alphas, dimension, punctured_col_mults
+        )
 
 
 def ReedSolomonCode(base_field, length, dimension, primitive_root=None):
@@ -639,15 +679,22 @@ def ReedSolomonCode(base_field, length, dimension, primitive_root=None):
         sage: C == D
         False
     """
-    if not length.divides(base_field.cardinality()-1):
-        raise ValueError("A classical Reed-Solomon code has a length which divides the field cardinality minus 1")
+    if not length.divides(base_field.cardinality() - 1):
+        raise ValueError(
+            "A classical Reed-Solomon code has a length which divides the field cardinality minus 1"
+        )
     if primitive_root is None:
         g = base_field.multiplicative_generator()
-        primitive_root = g**((base_field.cardinality()-1)/length)
+        primitive_root = g ** ((base_field.cardinality() - 1) / length)
     else:
         if primitive_root.multiplicative_order() != length:
-            raise ValueError("Supplied primitive_root is not a primitive n'th root of unity")
-    return GeneralizedReedSolomonCode([primitive_root**i for i in range(length)], dimension)
+            raise ValueError(
+                "Supplied primitive_root is not a primitive n'th root of unity"
+            )
+    return GeneralizedReedSolomonCode(
+        [primitive_root**i for i in range(length)], dimension
+    )
+
 
 # ###################### encoders ###############################
 
@@ -722,8 +769,10 @@ class GRSEvaluationVectorEncoder(Encoder):
             sage: D1 is D2
             False
         """
-        return isinstance(other, GRSEvaluationVectorEncoder) \
+        return (
+            isinstance(other, GRSEvaluationVectorEncoder)
             and self.code() == other.code()
+        )
 
     def _repr_(self):
         r"""
@@ -754,7 +803,10 @@ class GRSEvaluationVectorEncoder(Encoder):
             \textnormal{Evaluation vector-style encoder for }[40, 12, 29]
              \textnormal{ Reed-Solomon Code over } \Bold{F}_{59}
         """
-        return "\\textnormal{Evaluation vector-style encoder for }%s" % self.code()._latex_()
+        return (
+            "\\textnormal{Evaluation vector-style encoder for }%s"
+            % self.code()._latex_()
+        )
 
     @cached_method
     def generator_matrix(self):
@@ -788,7 +840,12 @@ class GRSEvaluationVectorEncoder(Encoder):
         C = self.code()
         alphas = C.evaluation_points()
         col_mults = C.column_multipliers()
-        g = matrix(C.base_field(), C.dimension(), C.length(), lambda i, j: col_mults[j] * alphas[j]**i)
+        g = matrix(
+            C.base_field(),
+            C.dimension(),
+            C.length(),
+            lambda i, j: col_mults[j] * alphas[j] ** i,
+        )
         g.set_immutable()
         return g
 
@@ -874,16 +931,23 @@ class GRSEvaluationPolynomialEncoder(Encoder):
             ValueError: polynomial_ring's base field has to be the same as code's
         """
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_commutative
+
         super().__init__(code)
         if polynomial_ring is None:
             self._polynomial_ring = code.base_field()['x']
         else:
             if not isinstance(polynomial_ring, PolynomialRing_commutative):
-                raise ValueError("polynomial_ring has to be a univariate polynomial ring")
+                raise ValueError(
+                    "polynomial_ring has to be a univariate polynomial ring"
+                )
             elif not len(polynomial_ring.variable_names()) == 1:
-                raise ValueError("polynomial_ring has to be a univariate polynomial ring")
+                raise ValueError(
+                    "polynomial_ring has to be a univariate polynomial ring"
+                )
             if not polynomial_ring.base_ring() == code.base_field():
-                raise ValueError("polynomial_ring's base field has to be the same as code's")
+                raise ValueError(
+                    "polynomial_ring's base field has to be the same as code's"
+                )
             self._polynomial_ring = polynomial_ring
 
     def __eq__(self, other):
@@ -906,9 +970,11 @@ class GRSEvaluationPolynomialEncoder(Encoder):
             sage: D1.__eq__(D3)
             False
         """
-        return (isinstance(other, GRSEvaluationPolynomialEncoder)
-                and self.code() == other.code()
-                and self.polynomial_ring() == other.polynomial_ring())
+        return (
+            isinstance(other, GRSEvaluationPolynomialEncoder)
+            and self.code() == other.code()
+            and self.polynomial_ring() == other.polynomial_ring()
+        )
 
     def _repr_(self):
         r"""
@@ -939,7 +1005,10 @@ class GRSEvaluationPolynomialEncoder(Encoder):
             \textnormal{Evaluation polynomial-style encoder for }[40, 12, 29]
              \textnormal{ Reed-Solomon Code over } \Bold{F}_{59}
         """
-        return "\\textnormal{Evaluation polynomial-style encoder for }%s" % self.code()._latex_()
+        return (
+            "\\textnormal{Evaluation polynomial-style encoder for }%s"
+            % self.code()._latex_()
+        )
 
     def encode(self, p):
         r"""
@@ -1008,10 +1077,15 @@ class GRSEvaluationPolynomialEncoder(Encoder):
             raise ValueError("The value to encode must be in %s" % M)
         C = self.code()
         if p.degree() >= C.dimension():
-            raise ValueError("The polynomial to encode must have degree at most %s" % (C.dimension() - 1))
+            raise ValueError(
+                "The polynomial to encode must have degree at most %s"
+                % (C.dimension() - 1)
+            )
         alphas = C.evaluation_points()
         col_mults = C.column_multipliers()
-        c = vector(C.base_ring(), [col_mults[i]*p(alphas[i]) for i in range(C.length())])
+        c = vector(
+            C.base_ring(), [col_mults[i] * p(alphas[i]) for i in range(C.length())]
+        )
         return c
 
     def unencode_nocheck(self, c):
@@ -1059,7 +1133,7 @@ class GRSEvaluationPolynomialEncoder(Encoder):
         alphas = C.evaluation_points()
         col_mults = C.column_multipliers()
 
-        c = [c[i]/col_mults[i] for i in range(C.length())]
+        c = [c[i] / col_mults[i] for i in range(C.length())]
         points = [(alphas[i], c[i]) for i in range(C.dimension())]
 
         Pc = self.polynomial_ring().lagrange_polynomial(points)
@@ -1128,8 +1202,7 @@ class GRSBerlekampWelchDecoder(Decoder):
         """
         if not isinstance(code, GeneralizedReedSolomonCode):
             raise ValueError("code has to be a generalized Reed-Solomon code")
-        super().__init__(code, code.ambient_space(),
-                         "EvaluationPolynomial")
+        super().__init__(code, code.ambient_space(), "EvaluationPolynomial")
 
     def __eq__(self, other):
         r"""
@@ -1147,9 +1220,11 @@ class GRSBerlekampWelchDecoder(Decoder):
             sage: D1 is D2
             False
         """
-        return (isinstance(other, GRSBerlekampWelchDecoder)
-                and self.code() == other.code()
-                and self.input_space() == other.input_space())
+        return (
+            isinstance(other, GRSBerlekampWelchDecoder)
+            and self.code() == other.code()
+            and self.input_space() == other.input_space()
+        )
 
     def _repr_(self):
         r"""
@@ -1180,8 +1255,7 @@ class GRSBerlekampWelchDecoder(Decoder):
             \textnormal{Berlekamp Welch decoder for }[40, 12, 29]
              \textnormal{ Reed-Solomon Code over } \Bold{F}_{59}
         """
-        return "\\textnormal{Berlekamp Welch decoder for }%s"\
-            % self.code()._latex_()
+        return "\\textnormal{Berlekamp Welch decoder for }%s" % self.code()._latex_()
 
     def _decode_to_code_and_message(self, r):
         r"""
@@ -1217,7 +1291,9 @@ class GRSBerlekampWelchDecoder(Decoder):
         """
         C = self.code()
         if r not in C.ambient_space():
-            raise ValueError("The word to decode has to be in the ambient space of the code")
+            raise ValueError(
+                "The word to decode has to be in the ambient space of the code"
+            )
         n, k = C.length(), C.dimension()
         if n == k:
             return r, self.connected_encoder().unencode_nocheck(r)
@@ -1232,9 +1308,14 @@ class GRSBerlekampWelchDecoder(Decoder):
         l0 = n - 1 - t
         l1 = n - t - k
         pts = C.evaluation_points()
-        S = matrix(C.base_field(), n, l0 + l1 + 2,
-                   lambda i, j: (pts[i]**j if j < (l0 + 1)
-                                 else r_list[i] * pts[i]**(j - (l0 + 1))))
+        S = matrix(
+            C.base_field(),
+            n,
+            l0 + l1 + 2,
+            lambda i, j: (
+                pts[i] ** j if j < (l0 + 1) else r_list[i] * pts[i] ** (j - (l0 + 1))
+            ),
+        )
         S = S.right_kernel()
         S = S.basis_matrix().row(0)
         R = C.base_field()['x']
@@ -1244,12 +1325,18 @@ class GRSBerlekampWelchDecoder(Decoder):
 
         f, rem = (-Q0).quo_rem(Q1)
         if not rem.is_zero():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         if f not in R:
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         c = self.connected_encoder().encode(f)
         if (c - r).hamming_weight() > self.decoding_radius():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         return c, f
 
     def decode_to_message(self, r):
@@ -1387,7 +1474,7 @@ class GRSBerlekampWelchDecoder(Decoder):
             sage: D.decoding_radius()
             14
         """
-        return (self.code().minimum_distance()-1)//2
+        return (self.code().minimum_distance() - 1) // 2
 
 
 class GRSGaoDecoder(Decoder):
@@ -1432,8 +1519,7 @@ class GRSGaoDecoder(Decoder):
         """
         if not isinstance(code, GeneralizedReedSolomonCode):
             raise ValueError("code has to be a generalized Reed-Solomon code")
-        super().__init__(code, code.ambient_space(),
-                         "EvaluationPolynomial")
+        super().__init__(code, code.ambient_space(), "EvaluationPolynomial")
 
     def __eq__(self, other):
         r"""
@@ -1451,9 +1537,11 @@ class GRSGaoDecoder(Decoder):
             sage: D1 is D2
             False
         """
-        return (isinstance(other, GRSGaoDecoder)
-                and self.code() == other.code()
-                and self.input_space() == other.input_space())
+        return (
+            isinstance(other, GRSGaoDecoder)
+            and self.code() == other.code()
+            and self.input_space() == other.input_space()
+        )
 
     def __hash__(self):
         """
@@ -1527,7 +1615,7 @@ class GRSGaoDecoder(Decoder):
         G = PolRing.one()
         x = PolRing.gen()
         for i in range(self.code().length()):
-            G = G*(x-self.code().evaluation_points()[i])
+            G = G * (x - self.code().evaluation_points()[i])
         return G
 
     def _partial_xgcd(self, a, b, PolRing):
@@ -1603,7 +1691,9 @@ class GRSGaoDecoder(Decoder):
         """
         C = self.code()
         if r not in C.ambient_space():
-            raise ValueError("The word to decode has to be in the ambient space of the code")
+            raise ValueError(
+                "The word to decode has to be in the ambient space of the code"
+            )
         alphas = C.evaluation_points()
         col_mults = C.column_multipliers()
         PolRing = C.base_field()['x']
@@ -1613,19 +1703,25 @@ class GRSGaoDecoder(Decoder):
         if n == C.dimension() or r in C:
             return r, self.connected_encoder().unencode_nocheck(r)
 
-        points = [(alphas[i], r[i]/col_mults[i]) for i in range(n)]
+        points = [(alphas[i], r[i] / col_mults[i]) for i in range(n)]
         R = PolRing.lagrange_polynomial(points)
 
         Q1, Q0 = self._partial_xgcd(G, R, PolRing)
 
         h, rem = Q1.quo_rem(Q0)
         if not rem.is_zero():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         if h not in PolRing:
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         c = self.connected_encoder().encode(h)
         if (c - r).hamming_weight() > self.decoding_radius():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         return c, h
 
     def decode_to_message(self, r):
@@ -1822,8 +1918,9 @@ class GRSErrorErasureDecoder(Decoder):
         """
         if not isinstance(code, GeneralizedReedSolomonCode):
             raise ValueError("code has to be a generalized Reed-Solomon code")
-        input_space = cartesian_product([code.ambient_space(),
-                VectorSpace(GF(2), code.ambient_space().dimension())])
+        input_space = cartesian_product(
+            [code.ambient_space(), VectorSpace(GF(2), code.ambient_space().dimension())]
+        )
         super().__init__(code, input_space, "EvaluationVector")
 
     def __eq__(self, other):
@@ -1842,8 +1939,7 @@ class GRSErrorErasureDecoder(Decoder):
             sage: D1 is D2
             False
         """
-        return isinstance(other, GRSErrorErasureDecoder) \
-            and self.code() == other.code()
+        return isinstance(other, GRSErrorErasureDecoder) and self.code() == other.code()
 
     def _repr_(self) -> str:
         r"""
@@ -1874,8 +1970,7 @@ class GRSErrorErasureDecoder(Decoder):
             \textnormal{Error-Erasure decoder for }[40, 12, 29]
              \textnormal{ Reed-Solomon Code over } \Bold{F}_{59}
         """
-        return "\\textnormal{Error-Erasure decoder for }%s"\
-            % self.code()._latex_()
+        return "\\textnormal{Error-Erasure decoder for }%s" % self.code()._latex_()
 
     def decode_to_message(self, word_and_erasure_vector):
         r"""
@@ -1954,22 +2049,32 @@ class GRSErrorErasureDecoder(Decoder):
         word, erasure_vector = word_and_erasure_vector
         n, k = C.length(), C.dimension()
         if word not in C.ambient_space():
-            raise ValueError("The word to decode has to be in the ambient space of the code")
+            raise ValueError(
+                "The word to decode has to be in the ambient space of the code"
+            )
         if erasure_vector not in VectorSpace(GF(2), n):
-            raise ValueError("The erasure vector has to be a vector over GF(2) of the same length as the code")
+            raise ValueError(
+                "The erasure vector has to be a vector over GF(2) of the same length as the code"
+            )
         if erasure_vector.hamming_weight() >= self.code().minimum_distance():
             raise DecodingError("Too many erasures in the received word")
 
-        punctured_word = vector(self.code().base_ring(),
-                                [word[i] for i in range(len(word))
-                                 if not erasure_vector[i]])
+        punctured_word = vector(
+            self.code().base_ring(),
+            [word[i] for i in range(len(word)) if not erasure_vector[i]],
+        )
         C1_length = len(punctured_word)
-        C1_evaluation_points = [self.code().evaluation_points()[i] for i in
-                range(n) if erasure_vector[i] != 1]
-        C1_column_multipliers = [self.code().column_multipliers()[i] for i in
-                range(n) if erasure_vector[i] != 1]
-        C1 = GeneralizedReedSolomonCode(C1_evaluation_points, k,
-                C1_column_multipliers)
+        C1_evaluation_points = [
+            self.code().evaluation_points()[i]
+            for i in range(n)
+            if erasure_vector[i] != 1
+        ]
+        C1_column_multipliers = [
+            self.code().column_multipliers()[i]
+            for i in range(n)
+            if erasure_vector[i] != 1
+        ]
+        C1 = GeneralizedReedSolomonCode(C1_evaluation_points, k, C1_column_multipliers)
         if C1_length == k:
             return C1.unencode(punctured_word, nocheck=True)
         return C1.decode_to_message(punctured_word)
@@ -2061,9 +2166,10 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
         if not isinstance(code, GeneralizedReedSolomonCode):
             raise ValueError("code has to be a generalized Reed-Solomon code")
         if code.base_field().zero() in code.evaluation_points():
-            raise ValueError("Impossible to use this decoder over a GRS code which contains 0 amongst its evaluation points")
-        super().__init__(code, code.ambient_space(),
-                         "EvaluationVector")
+            raise ValueError(
+                "Impossible to use this decoder over a GRS code which contains 0 amongst its evaluation points"
+            )
+        super().__init__(code, code.ambient_space(), "EvaluationVector")
 
     def __eq__(self, other):
         r"""
@@ -2081,9 +2187,11 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
             sage: D1 is D2
             False
         """
-        return isinstance(other, GRSKeyEquationSyndromeDecoder) \
-            and self.code() == other.code()\
+        return (
+            isinstance(other, GRSKeyEquationSyndromeDecoder)
+            and self.code() == other.code()
             and self.input_space() == other.input_space()
+        )
 
     def _repr_(self):
         r"""
@@ -2222,9 +2330,14 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
         e = []
 
         for i in range(C.length()):
-            alpha_inv = one/alphas[i]
+            alpha_inv = one / alphas[i]
             if error_locator(alpha_inv) == zero:
-                e.append(-alphas[i]/col_mults[i] * error_evaluator(alpha_inv)/ELPp(alpha_inv))
+                e.append(
+                    -alphas[i]
+                    / col_mults[i]
+                    * error_evaluator(alpha_inv)
+                    / ELPp(alpha_inv)
+                )
             else:
                 e.append(zero)
 
@@ -2286,7 +2399,9 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
         """
         C = self.code()
         if r not in C.ambient_space():
-            raise ValueError("The word to decode has to be in the ambient space of the code")
+            raise ValueError(
+                "The word to decode has to be in the ambient space of the code"
+            )
         PolRing = C.base_field()['x']
         x = PolRing.gen()
 
@@ -2301,7 +2416,9 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
         e = self._forney_formula(EEP, ELP)
         dec = r - e
         if dec not in C:
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         return dec
 
     def decode_to_message(self, r):
@@ -2358,14 +2475,22 @@ class GRSKeyEquationSyndromeDecoder(Decoder):
 
 # ###################### registration ###############################
 
-GeneralizedReedSolomonCode._registered_encoders["EvaluationVector"] = GRSEvaluationVectorEncoder
-GeneralizedReedSolomonCode._registered_encoders["EvaluationPolynomial"] = GRSEvaluationPolynomialEncoder
+GeneralizedReedSolomonCode._registered_encoders["EvaluationVector"] = (
+    GRSEvaluationVectorEncoder
+)
+GeneralizedReedSolomonCode._registered_encoders["EvaluationPolynomial"] = (
+    GRSEvaluationPolynomialEncoder
+)
 
-GeneralizedReedSolomonCode._registered_decoders["BerlekampWelch"] = GRSBerlekampWelchDecoder
+GeneralizedReedSolomonCode._registered_decoders["BerlekampWelch"] = (
+    GRSBerlekampWelchDecoder
+)
 GRSBerlekampWelchDecoder._decoder_type = {"hard-decision", "always-succeed"}
 GeneralizedReedSolomonCode._registered_decoders["Gao"] = GRSGaoDecoder
 GRSGaoDecoder._decoder_type = {"hard-decision", "always-succeed"}
 GeneralizedReedSolomonCode._registered_decoders["ErrorErasure"] = GRSErrorErasureDecoder
 GRSErrorErasureDecoder._decoder_type = {"error-erasure", "always-succeed"}
-GeneralizedReedSolomonCode._registered_decoders["KeyEquationSyndrome"] = GRSKeyEquationSyndromeDecoder
+GeneralizedReedSolomonCode._registered_decoders["KeyEquationSyndrome"] = (
+    GRSKeyEquationSyndromeDecoder
+)
 GRSKeyEquationSyndromeDecoder._decoder_type = {"hard-decision", "always-succeed"}

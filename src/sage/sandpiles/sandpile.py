@@ -355,6 +355,7 @@ from sage.rings.rational_field import QQ
 from sage.symbolic.constants import I, pi
 from sage.symbolic.ring import SR
 from sage.features.four_ti_2 import FourTi2Executable
+
 lazy_import("sage.plot.colors", "rainbow")
 
 
@@ -370,6 +371,7 @@ def _sandpile_help(cls, usage, verbose=True):
     # in the string, take the sentence to be the empty string.  If the
     # latter occurs, something should be changed.
     from sage.misc.sagedoc import detex
+
     methods = []
     for attr in sorted(vars(cls)):
         if attr[0] != '_':
@@ -407,6 +409,7 @@ class Sandpile(DiGraph):
     """
     Class for Dhar's abelian sandpile model.
     """
+
     @staticmethod
     def version():
         r"""
@@ -497,10 +500,13 @@ class Sandpile(DiGraph):
             zero_config              -- The all-zero configuration.
             zero_div                 -- The all-zero divisor.
         """
-        _sandpile_help(Sandpile, dedent("""\
+        _sandpile_help(
+            Sandpile,
+            dedent("""\
             For detailed help with any method FOO listed below,
             enter "Sandpile.FOO?" or enter "S.FOO?" for any Sandpile S."""),
-                       verbose=verbose)
+            verbose=verbose,
+        )
 
     def __init__(self, g, sink=None) -> None:
         r"""
@@ -604,7 +610,7 @@ class Sandpile(DiGraph):
                 if p == -1:
                     name = name + ' sandpile graph'
                 else:
-                    name = name[:p] + 'sandpile graph' + name[p + 5:]
+                    name = name[:p] + 'sandpile graph' + name[p + 5 :]
             self._name = name
         else:
             self._name = 'sandpile graph'
@@ -621,8 +627,9 @@ class Sandpile(DiGraph):
             else:
                 vi = {v: i for i, v in enumerate(g.vertices(sort=True))}
                 ad = g.weighted_adjacency_matrix()
-                g = {v: {w: ad[vi[v], vi[w]] for w in g.neighbor_iterator(v)}
-                     for v in g}
+                g = {
+                    v: {w: ad[vi[v], vi[w]] for w in g.neighbor_iterator(v)} for v in g
+                }
         else:
             raise SyntaxError(g)
 
@@ -778,7 +785,13 @@ class Sandpile(DiGraph):
             sage: repr(Sandpile({0:[1,1], 1:[0]}))
             'sandpile graph: 2 vertices, sink = 0'
         """
-        return self._name + ': ' + str(self.n_vertices()) + ' vertices, sink = ' + str(self.sink())
+        return (
+            self._name
+            + ': '
+            + str(self.n_vertices())
+            + ' vertices, sink = '
+            + str(self.sink())
+        )
 
     def show(self, **kwds):
         r"""
@@ -1310,12 +1323,16 @@ class Sandpile(DiGraph):
         """
         if self.name() == 'Complete sandpile graph':
             n = self.n_vertices()
-            self._recurrents = [SandpileConfig(self, [n - 1 - i for i in p])
-                                for p in ParkingFunctions(n - 1)]
+            self._recurrents = [
+                SandpileConfig(self, [n - 1 - i for i in p])
+                for p in ParkingFunctions(n - 1)
+            ]
         elif self.name() == 'Cycle sandpile graph':
             n = self.n_vertices()
             one = [1] * (n - 2)
-            self._recurrents = [SandpileConfig(self, [1] * (n - 1))] + [SandpileConfig(self, one[:i] + [0] + one[i:]) for i in range(n - 1)]
+            self._recurrents = [SandpileConfig(self, [1] * (n - 1))] + [
+                SandpileConfig(self, one[:i] + [0] + one[i:]) for i in range(n - 1)
+            ]
         else:
             self._recurrents = []
             active = [self._max_stable]
@@ -1443,9 +1460,12 @@ class Sandpile(DiGraph):
         D, U, _ = self.reduced_laplacian().transpose().smith_form()
         F = U.inverse()
         self._group_generators = tuple(
-            SandpileConfig(self, [Integer(j)
-                                  for j in F.column(i)]).equivalent_recurrent()
-            for i in range(F.nrows()) if D[i][i] != 1)
+            SandpileConfig(
+                self, [Integer(j) for j in F.column(i)]
+            ).equivalent_recurrent()
+            for i in range(F.nrows())
+            if D[i][i] != 1
+        )
 
     def group_generators(self, verbose=True) -> tuple:
         r"""
@@ -1692,8 +1712,9 @@ class Sandpile(DiGraph):
         if multivariable:
             return deepcopy(self._avalanche_polynomial)
         X = self._avalanche_polynomial.parent().gens()
-        return self._avalanche_polynomial.subs({X[i]: X[0]
-            for i in range(1, self.n_vertices() - 1)})
+        return self._avalanche_polynomial.subs(
+            {X[i]: X[0] for i in range(1, self.n_vertices() - 1)}
+        )
 
     def nonspecial_divisors(self, verbose=True) -> list:
         r"""
@@ -1762,8 +1783,9 @@ class Sandpile(DiGraph):
             The underlying graph must be undirected.
         """
         if self.is_undirected():
-            return SandpileDivisor(self, [self.laplacian()[i][i] - 2
-                                          for i in range(self.n_vertices())])
+            return SandpileDivisor(
+                self, [self.laplacian()[i][i] - 2 for i in range(self.n_vertices())]
+            )
         raise TypeError("only for undirected graphs")
 
     def _set_invariant_factors(self):
@@ -1816,8 +1838,9 @@ class Sandpile(DiGraph):
         self._h_vector = [v.count(i) for i in range(self._postulation + 1)]
         self._hilbert_function = [1]
         for i in range(self._postulation):
-            self._hilbert_function.append(self._hilbert_function[i]
-                                          + self._h_vector[i + 1])
+            self._hilbert_function.append(
+                self._hilbert_function[i] + self._h_vector[i + 1]
+            )
 
     def h_vector(self):
         r"""
@@ -1959,7 +1982,7 @@ class Sandpile(DiGraph):
             result = []
             for r in self.superstables():
                 D = {v: r[v] for v in self._nonsink_vertices}
-                D[self._sink] = - r.deg()
+                D[self._sink] = -r.deg()
                 result.append(SandpileDivisor(self, D))
                 self._jacobian_representatives = result
         else:
@@ -2094,8 +2117,9 @@ class Sandpile(DiGraph):
         else:
             c = SandpileConfig(self, smax)
             if c > self.max_stable():
-                smax = [min(c[v], self.max_stable()[v])
-                        for v in self.nonsink_vertices()]
+                smax = [
+                    min(c[v], self.max_stable()[v]) for v in self.nonsink_vertices()
+                ]
             else:
                 smax = c.values()
         for c in IntegerVectorsIterator(smax):
@@ -2233,7 +2257,12 @@ class Sandpile(DiGraph):
         """
         if self.name() == 'Complete sandpile graph':
             n = Integer(self.n_vertices())
-            self._stationary_density = (n + QQ.one() / n + sum(falling_factorial(n, i) / n**i for i in range(1, n + 1)) - 3) / 2
+            self._stationary_density = (
+                n
+                + QQ.one() / n
+                + sum(falling_factorial(n, i) / n**i for i in range(1, n + 1))
+                - 3
+            ) / 2
         elif self.is_undirected() and '_h_vector' not in self.__dict__:
             t = Graph(self).tutte_polynomial().subs(x=1)
             myR = PolynomialRing(QQ, 'y')
@@ -2241,13 +2270,15 @@ class Sandpile(DiGraph):
             t = myR(t)
             dt = derivative(t, y).subs(y=1)
             t = t.subs(y=1)
-            self._stationary_density = (self.n_edges()/2 + dt/t)/self.n_vertices()
+            self._stationary_density = (self.n_edges() / 2 + dt / t) / self.n_vertices()
         else:
             sink_deg = self.out_degree(self.sink())
             h = vector(ZZ, self.h_vector())
             m = self.max_stable().deg()
-            d = vector(ZZ, range(m, m-len(h), -1))
-            self._stationary_density = (h*d/self.group_order() + sink_deg)/self.n_vertices()
+            d = vector(ZZ, range(m, m - len(h), -1))
+            self._stationary_density = (
+                h * d / self.group_order() + sink_deg
+            ) / self.n_vertices()
 
     def stationary_density(self):
         r"""
@@ -2295,7 +2326,7 @@ class Sandpile(DiGraph):
             sage: S.all_k_div(7)
             {0: 7, 1: 7, 2: 7, 3: 7, 4: 7}
         """
-        return SandpileDivisor(self, [k]*self.n_vertices())
+        return SandpileDivisor(self, [k] * self.n_vertices())
 
     def zero_div(self):
         r"""
@@ -2338,7 +2369,10 @@ class Sandpile(DiGraph):
                 complex = sD.Dcomplex()
                 if sum(complex.betti().values()) > 1:  # change from 0 to 1
                     results.append([deepcopy(sD), complex])
-                if len(complex.maximal_faces()) == 1 and list(complex.maximal_faces()[0]) == verts:
+                if (
+                    len(complex.maximal_faces()) == 1
+                    and list(complex.maximal_faces()[0]) == verts
+                ):
                     test = False
         self._betti_complexes = results
 
@@ -2433,6 +2467,7 @@ class Sandpile(DiGraph):
             True
         """
         from sage.libs.singular.function_factory import ff
+
         try:
             sat = ff.elim__lib.sat_with_exp
         except NameError:
@@ -2544,8 +2579,8 @@ class Sandpile(DiGraph):
             for j in range(self._betti[i]):
                 row = new[j].transpose().sage_matrix(self._ring)
                 row = list(row[0])
-                if len(row) < self._betti[i-1]:
-                    row += [zero]*(self._betti[i-1]-len(row))
+                if len(row) < self._betti[i - 1]:
+                    row += [zero] * (self._betti[i - 1] - len(row))
                 syz_mat.append(row)
             syz_mat = matrix(self._ring, syz_mat).transpose()
             result.append(syz_mat)
@@ -2592,7 +2627,7 @@ class Sandpile(DiGraph):
         """
         if verbose:
             return self._resolution
-        r = ['R^'+str(i) for i in self._betti]
+        r = ['R^' + str(i) for i in self._betti]
         return ' <-- '.join(r)
 
     def _set_groebner(self):
@@ -2655,8 +2690,11 @@ class Sandpile(DiGraph):
             [1, 6, 9, 4]
         """
         if verbose:
-            print(singular.eval('print(betti(%s), "betti")' %
-                                self._singular_resolution.name()))
+            print(
+                singular.eval(
+                    'print(betti(%s), "betti")' % self._singular_resolution.name()
+                )
+            )
         else:
             return self._betti
 
@@ -2697,8 +2735,7 @@ class Sandpile(DiGraph):
         v = [singular.var(i) for i in range(1, int(singular.nvars(self._ring)))]
         vars_ = '({})'.format(','.join(str(i) for i in v))
 
-        L = singular.subst(self._ideal,
-                           singular.var(singular.nvars(self._ring)), 1)
+        L = singular.subst(self._ideal, singular.var(singular.nvars(self._ring)), 1)
         _ = singular.ring(0, vars_, 'lp')
         K = singular.fetch(self._ring, L)
         K = singular.groebner(K)
@@ -2809,6 +2846,7 @@ class SandpileConfig(dict):
     r"""
     Class for configurations on a sandpile.
     """
+
     @staticmethod
     def help(verbose=True):
         r"""
@@ -2859,7 +2897,9 @@ class SandpileConfig(dict):
             unstable               -- The unstable vertices.
             values                 -- The values of the configuration as a list.
         """
-        _sandpile_help(SandpileConfig, dedent("""\
+        _sandpile_help(
+            SandpileConfig,
+            dedent("""\
             Shortcuts for SandpileConfig operations:
             ~c    -- stabilize
             c & d -- add and stabilize
@@ -2869,7 +2909,8 @@ class SandpileConfig(dict):
 
             For detailed help with any method FOO listed below,
             enter "SandpileConfig.FOO?" or enter "c.FOO?" for any SandpileConfig c."""),
-                       verbose=verbose)
+            verbose=verbose,
+        )
 
     def __init__(self, S, c) -> None:
         r"""
@@ -3045,9 +3086,9 @@ class SandpileConfig(dict):
             sage: c + d
             {1: 4, 2: 4}
         """
-        return SandpileConfig(self.sandpile(),
-                              [i + j for i, j in zip(self.values(),
-                                                     other.values())])
+        return SandpileConfig(
+            self.sandpile(), [i + j for i, j in zip(self.values(), other.values())]
+        )
 
     def __sub__(self, other):
         r"""
@@ -3116,8 +3157,7 @@ class SandpileConfig(dict):
             sage: -c
             {1: -1, 2: -2}
         """
-        return SandpileConfig(self._sandpile,
-                              [-self[v] for v in self._vertices])
+        return SandpileConfig(self._sandpile, [-self[v] for v in self._vertices])
 
     # recurrent addition or multiplication on the right by an integer
     def __mul__(self, other):
@@ -3154,8 +3194,7 @@ class SandpileConfig(dict):
         if isinstance(other, SandpileConfig):
             return (self + other).equivalent_recurrent()
         if isinstance(other, Integer):
-            return SandpileConfig(self.sandpile(),
-                                  [other * i for i in self.values()])
+            return SandpileConfig(self.sandpile(), [other * i for i in self.values()])
         raise TypeError(other)
 
     def __rmul__(self, other):
@@ -3179,8 +3218,7 @@ class SandpileConfig(dict):
             sage: 3*c == c*3
             True
         """
-        return SandpileConfig(self.sandpile(),
-                              [other * i for i in self.values()])
+        return SandpileConfig(self.sandpile(), [other * i for i in self.values()])
 
     def __le__(self, other) -> bool:
         r"""
@@ -3489,8 +3527,7 @@ class SandpileConfig(dict):
             sage: c.unstable()
             [2, 3]
         """
-        return [v for v in self._vertices
-                if self[v] >= self._sandpile.out_degree(v)]
+        return [v for v in self._vertices if self[v] >= self._sandpile.out_degree(v)]
 
     def fire_unstable(self):
         r"""
@@ -3709,7 +3746,7 @@ class SandpileConfig(dict):
             True
         """
         v = vector(self.values())
-        w = v * self._sandpile.reduced_laplacian().dense_matrix()**(-1)
+        w = v * self._sandpile.reduced_laplacian().dense_matrix() ** (-1)
         return lcm([i.denominator() for i in w])
 
     def is_stable(self) -> bool:
@@ -3806,14 +3843,14 @@ class SandpileConfig(dict):
             True
         """
         if '_recurrents' in self._sandpile.__dict__:
-            self._is_recurrent = (self in self._sandpile._recurrents)
+            self._is_recurrent = self in self._sandpile._recurrents
         elif '_equivalent_recurrent' in self.__dict__:
-            self._is_recurrent = (self._equivalent_recurrent == self)
+            self._is_recurrent = self._equivalent_recurrent == self
         else:
             # add the burning configuration to config
             b = self._sandpile._burning_config
             c = ~(self + b)
-            self._is_recurrent = (c == self)
+            self._is_recurrent = c == self
 
     def is_recurrent(self) -> bool:
         r"""
@@ -3897,9 +3934,9 @@ class SandpileConfig(dict):
             True
         """
         if '_superstables' in self._sandpile.__dict__:
-            self._is_superstable = (self in self._sandpile._superstables)
+            self._is_superstable = self in self._sandpile._superstables
         elif '_equivalent_superstable' in self.__dict__:
-            self._is_superstable = (self._equivalent_superstable[0] == self)
+            self._is_superstable = self._equivalent_superstable[0] == self
         else:
             self._is_superstable = self.dualize().is_recurrent()
 
@@ -4053,6 +4090,7 @@ pretty.for_type(SandpileConfig, pretty.for_type(dict, None))
 #           SandpileDivisor Class             #
 ###############################################
 
+
 class SandpileDivisor(dict):
     r"""
     Class for divisors on a sandpile.
@@ -4106,10 +4144,13 @@ class SandpileDivisor(dict):
             weierstrass_pts        -- The Weierstrass points (vertices).
             weierstrass_rank_seq   -- The Weierstrass rank sequence at the given vertex.
         """
-        _sandpile_help(SandpileDivisor, dedent("""\
+        _sandpile_help(
+            SandpileDivisor,
+            dedent("""\
             For detailed help with any method FOO listed below,
             enter "SandpileDivisor.FOO?" or enter "D.FOO?" for any SandpileDivisor D."""),
-                       verbose=verbose)
+            verbose=verbose,
+        )
 
     def __init__(self, S, D) -> None:
         r"""
@@ -4306,9 +4347,9 @@ class SandpileDivisor(dict):
             sage: D + E
             {0: 4, 1: 4, 2: 4}
         """
-        return SandpileDivisor(self.sandpile(),
-                               [i + j for i, j in zip(self.values(),
-                                                      other.values())])
+        return SandpileDivisor(
+            self.sandpile(), [i + j for i, j in zip(self.values(), other.values())]
+        )
 
     def __mul__(self, other):
         r"""
@@ -4331,8 +4372,7 @@ class SandpileDivisor(dict):
             sage: 3*D == D*3
             True
         """
-        return SandpileDivisor(self.sandpile(),
-                               [i * other for i in self.values()])
+        return SandpileDivisor(self.sandpile(), [i * other for i in self.values()])
 
     def __rmul__(self, other):
         r"""
@@ -4355,7 +4395,7 @@ class SandpileDivisor(dict):
             sage: 3*D == D*3
             True
         """
-        return SandpileDivisor(self.sandpile(), [other*i for i in self.values()])
+        return SandpileDivisor(self.sandpile(), [other * i for i in self.values()])
 
     def __radd__(self, other):
         r"""
@@ -4681,8 +4721,7 @@ class SandpileDivisor(dict):
             sage: D.unstable()
             [1, 2]
         """
-        return [v for v in self._vertices if
-                self[v] >= self._sandpile.out_degree(v)]
+        return [v for v in self._vertices if self[v] >= self._sandpile.out_degree(v)]
 
     def fire_unstable(self):
         r"""
@@ -4931,27 +4970,27 @@ class SandpileDivisor(dict):
         lin_sys_log = lin_sys + '.log'
 
         with open(lin_sys_mat, 'w') as mat_file:
-            mat_file.write(str(n)+' ')
-            mat_file.write(str(n)+'\n')
+            mat_file.write(str(n) + ' ')
+            mat_file.write(str(n) + '\n')
             for r in L:
                 mat_file.write(''.join(map(str, r)))
                 mat_file.write('\n')
         # relations file
         with open(lin_sys_rel, 'w') as rel_file:
             rel_file.write('1 ')
-            rel_file.write(str(n)+'\n')
-            rel_file.write('>'*n)
+            rel_file.write(str(n) + '\n')
+            rel_file.write('>' * n)
             rel_file.write('\n')
         # right-hand side file
         with open(lin_sys_rhs, 'w') as rhs_file:
             rhs_file.write('1 ')
-            rhs_file.write(str(n)+'\n')
+            rhs_file.write(str(n) + '\n')
             rhs_file.write(''.join(str(-i) for i in self.values()))
             rhs_file.write('\n')
         # sign file
         with open(lin_sys_sign, 'w') as sign_file:
             sign_file.write('1 ')
-            sign_file.write(str(n)+'\n')
+            sign_file.write(str(n) + '\n')
             """
             Conjecture: taking only 1s just below is OK, i.e.,
             looking for solutions with nonnegative entries.  The
@@ -4961,14 +5000,17 @@ class SandpileDivisor(dict):
             nonnegative solution.  What if the vector in the kernel
             does not have full support though?
             """
-            sign_file.write('2'*n)  # so maybe a 1 could go here
+            sign_file.write('2' * n)  # so maybe a 1 could go here
             sign_file.write('\n')
         # compute
         import os
         import shlex
+
         try:
             path_to_zsolve = FourTi2Executable('zsolve').absolute_filename()
-            os.system(shlex.quote(path_to_zsolve) + ' -q ' + lin_sys + ' > ' + lin_sys_log)
+            os.system(
+                shlex.quote(path_to_zsolve) + ' -q ' + lin_sys + ' > ' + lin_sys_log
+            )
             # process the results
             zhom_file = open(lin_sys_zhom)
         except OSError:
@@ -4991,8 +5033,12 @@ class SandpileDivisor(dict):
         b = b.split('\n')
         num_inhomog = int(b[0].split()[0])
         inhomog = [map(int, i.split()) for i in b[1:-1]]
-        self._linear_system = {'num_homog': num_homog, 'homog': homog,
-                               'num_inhomog': num_inhomog, 'inhomog': inhomog}
+        self._linear_system = {
+            'num_homog': num_homog,
+            'homog': homog,
+            'num_inhomog': num_inhomog,
+            'inhomog': inhomog,
+        }
 
     def _set_polytope(self) -> None:
         r"""
@@ -5008,7 +5054,9 @@ class SandpileDivisor(dict):
         """
         S = self.sandpile()
         myL = S.laplacian().transpose().delete_columns([S._sink_ind])
-        my_ieqs = [[self[v]] + list(-myL[i]) for i, v in enumerate(S.vertices(sort=True))]
+        my_ieqs = [
+            [self[v]] + list(-myL[i]) for i, v in enumerate(S.vertices(sort=True))
+        ]
         self._polytope = Polyhedron(ieqs=my_ieqs)
 
     def polytope(self) -> Polyhedron:
@@ -5099,8 +5147,9 @@ class SandpileDivisor(dict):
         S = self.sandpile()
         myL = S.laplacian().transpose().delete_columns([S._sink_ind])
         dv = vector(ZZ, self.values())
-        self._effective_div = [SandpileDivisor(S, list(dv - myL*i))
-                               for i in self._polytope_integer_pts]
+        self._effective_div = [
+            SandpileDivisor(S, list(dv - myL * i)) for i in self._polytope_integer_pts
+        ]
 
     def effective_div(self, verbose=True, with_firing_vectors=False) -> list:
         r"""
@@ -5164,11 +5213,13 @@ class SandpileDivisor(dict):
         S = self.sandpile()
         eff = deepcopy(self._effective_div)
         if with_firing_vectors:
-            fv = [vector(list(i)[:S._sink_ind] + [0] + list(i)[S._sink_ind:])
-                  for i in self._polytope_integer_pts]
+            fv = [
+                vector(list(i)[: S._sink_ind] + [0] + list(i)[S._sink_ind :])
+                for i in self._polytope_integer_pts
+            ]
         if verbose and with_firing_vectors:
             return list(zip(eff, fv))
-        if verbose:   # verbose without firing vectors
+        if verbose:  # verbose without firing vectors
             return eff
         if with_firing_vectors:  # not verbose but with firing vectors
             return list(zip([i.values() for i in eff], fv))
@@ -5337,10 +5388,10 @@ class SandpileDivisor(dict):
         # standard basis vectors
         e = []
         for i in range(n):
-            v = vector([0]*n)
+            v = vector([0] * n)
             v[i] += 1
             e.append(v)
-        level = [vector([0]*n)]
+        level = [vector([0] * n)]
         while True:
             r += 1
             if verbose:
@@ -5483,8 +5534,13 @@ class SandpileDivisor(dict):
             sage: '_weierstrass_pts' in D.__dict__
             True
         """
-        self._weierstrass_pts = tuple([v for v in self.sandpile().vertices(sort=True)
-                                       if self.is_weierstrass_pt(v)])
+        self._weierstrass_pts = tuple(
+            [
+                v
+                for v in self.sandpile().vertices(sort=True)
+                if self.is_weierstrass_pt(v)
+            ]
+        )
 
     def weierstrass_pts(self, with_rank_seq=False):
         r"""
@@ -5736,7 +5792,7 @@ class SandpileDivisor(dict):
                 result.append(newD)
                 oldD = deepcopy(newD)
             else:
-                self._life = result[result.index(newD):]
+                self._life = result[result.index(newD) :]
                 return
 
     def is_alive(self, cycle=False):
@@ -5852,6 +5908,7 @@ pretty.for_type(SandpileDivisor, pretty.for_type(dict, None))
 #         Some test graphs            #
 #######################################
 
+
 def sandlib(selector=None):
     r"""
     Return the sandpile identified by ``selector``.  If no argument is
@@ -5881,37 +5938,52 @@ def sandlib(selector=None):
     """
     # The convention is for the sink to be zero.
     sandpiles = {
-        'generic': {'description': 'generic digraph with 6 vertices',
-                    'graph': {0: {}, 1: {0: 1, 3: 1, 4: 1},
-                              2: {0: 1, 3: 1, 5: 1},
-                              3: {2: 1, 5: 1}, 4: {1: 1, 3: 1},
-                              5: {2: 1, 3: 1}}},
-        'kite': {'description': 'generic undirected graphs with 5 vertices',
-                 'graph': {0: {}, 1: {0: 1, 2: 1, 3: 1},
-                           2: {1: 1, 3: 1, 4: 1}, 3: {1: 1, 2: 1, 4: 1},
-                           4: {2: 1, 3: 1}}},
-        'riemann-roch1': {'description': 'directed graph with postulation 9 and 3 maximal weight superstables',
-                          'graph': {0: {1: 3, 3: 1},
-                                    1: {0: 2, 2: 2, 3: 2},
-                                    2: {0: 1, 1: 1},
-                                    3: {0: 3, 1: 1, 2: 1}}},
-        'riemann-roch2': {'description': 'directed graph with a superstable not majorized by a maximal superstable',
-                          'graph': {0: {},
-                                    1: {0: 1, 2: 1},
-                                    2: {0: 1, 3: 1},
-                                    3: {0: 1, 1: 1, 2: 1}}},
-        'gor': {'description': 'Gorenstein but not a complete intersection',
-                'graph': {0: {},
-                          1: {0: 1, 2: 1, 3: 4},
-                          2: {3: 5},
-                          3: {1: 1, 2: 1}}},
-        'ci1': {'description': 'complete intersection, non-DAG but equivalent to a DAG',
-                'graph': {0: {}, 1: {2: 2}, 2: {0: 4, 1: 1}}},
-        'genus2': {'description': 'Undirected graph of genus 2',
-                   'graph': {0: [1, 2],
-                             1: [0, 2, 3],
-                             2: [0, 1, 3],
-                             3: [1, 2]}},
+        'generic': {
+            'description': 'generic digraph with 6 vertices',
+            'graph': {
+                0: {},
+                1: {0: 1, 3: 1, 4: 1},
+                2: {0: 1, 3: 1, 5: 1},
+                3: {2: 1, 5: 1},
+                4: {1: 1, 3: 1},
+                5: {2: 1, 3: 1},
+            },
+        },
+        'kite': {
+            'description': 'generic undirected graphs with 5 vertices',
+            'graph': {
+                0: {},
+                1: {0: 1, 2: 1, 3: 1},
+                2: {1: 1, 3: 1, 4: 1},
+                3: {1: 1, 2: 1, 4: 1},
+                4: {2: 1, 3: 1},
+            },
+        },
+        'riemann-roch1': {
+            'description': 'directed graph with postulation 9 and 3 maximal weight superstables',
+            'graph': {
+                0: {1: 3, 3: 1},
+                1: {0: 2, 2: 2, 3: 2},
+                2: {0: 1, 1: 1},
+                3: {0: 3, 1: 1, 2: 1},
+            },
+        },
+        'riemann-roch2': {
+            'description': 'directed graph with a superstable not majorized by a maximal superstable',
+            'graph': {0: {}, 1: {0: 1, 2: 1}, 2: {0: 1, 3: 1}, 3: {0: 1, 1: 1, 2: 1}},
+        },
+        'gor': {
+            'description': 'Gorenstein but not a complete intersection',
+            'graph': {0: {}, 1: {0: 1, 2: 1, 3: 4}, 2: {3: 5}, 3: {1: 1, 2: 1}},
+        },
+        'ci1': {
+            'description': 'complete intersection, non-DAG but equivalent to a DAG',
+            'graph': {0: {}, 1: {2: 2}, 2: {0: 4, 1: 1}},
+        },
+        'genus2': {
+            'description': 'Undirected graph of genus 2',
+            'graph': {0: [1, 2], 1: [0, 2, 3], 2: [0, 1, 3], 3: [1, 2]},
+        },
     }
     if selector is None:
         print()
@@ -5928,6 +6000,7 @@ def sandlib(selector=None):
 #################################################
 #          Some useful functions                #
 #################################################
+
 
 def triangle_sandpile(n):
     r"""
@@ -5949,25 +6022,25 @@ def triangle_sandpile(n):
     """
     T = {(-1, -1): {}}
     for i in range(n):
-        for j in range(n-i):
+        for j in range(n - i):
             T[(i, j)] = {}
-            if i < n-j-1:
-                T[(i, j)][(i+1, j)] = 1
-                T[(i, j)][(i, j+1)] = 1
+            if i < n - j - 1:
+                T[(i, j)][(i + 1, j)] = 1
+                T[(i, j)][(i, j + 1)] = 1
             if i > 0:
-                T[(i, j)][(i-1, j+1)] = 1
-                T[(i, j)][(i-1, j)] = 1
+                T[(i, j)][(i - 1, j + 1)] = 1
+                T[(i, j)][(i - 1, j)] = 1
             if j > 0:
-                T[(i, j)][(i, j-1)] = 1
-                T[(i, j)][(i+1, j-1)] = 1
+                T[(i, j)][(i, j - 1)] = 1
+                T[(i, j)][(i + 1, j - 1)] = 1
             d = len(T[(i, j)])
             if d < 6:
-                T[(i, j)][(-1, -1)] = 6-d
+                T[(i, j)][(-1, -1)] = 6 - d
     T = Sandpile(T, (-1, -1))
     pos = {}
     for x in T.nonsink_vertices():
         coords = list(x)
-        coords[0] += QQ(1)/2*coords[1]
+        coords[0] += QQ(1) / 2 * coords[1]
         pos[x] = tuple(coords)
     pos[(-1, -1)] = (-1, -1)
     T.set_pos(pos)
@@ -6001,11 +6074,11 @@ def aztec_sandpile(n):
     aztec_sandpile = {}
     half = QQ((1, 2))
     for i in xsrange(n):
-        for j in xsrange(n-i):
-            aztec_sandpile[(half+i, half+j)] = {}
-            aztec_sandpile[(-half-i, half+j)] = {}
-            aztec_sandpile[(half+i, -half-j)] = {}
-            aztec_sandpile[(-half-i, -half-j)] = {}
+        for j in xsrange(n - i):
+            aztec_sandpile[(half + i, half + j)] = {}
+            aztec_sandpile[(-half - i, half + j)] = {}
+            aztec_sandpile[(half + i, -half - j)] = {}
+            aztec_sandpile[(-half - i, -half - j)] = {}
     non_sinks = list(aztec_sandpile)
     aztec_sandpile[(0, 0)] = {}
     for vert in non_sinks:
@@ -6013,16 +6086,21 @@ def aztec_sandpile(n):
         x = vert[0]
         y = vert[1]
         if weight < n:
-            aztec_sandpile[vert] = {(x+1, y): 1, (x, y+1): 1, (x-1, y): 1, (x, y-1): 1}
+            aztec_sandpile[vert] = {
+                (x + 1, y): 1,
+                (x, y + 1): 1,
+                (x - 1, y): 1,
+                (x, y - 1): 1,
+            }
         else:
-            if (x+1, y) in aztec_sandpile:
-                aztec_sandpile[vert][(x+1, y)] = 1
-            if (x, y+1) in aztec_sandpile:
-                aztec_sandpile[vert][(x, y+1)] = 1
-            if (x-1, y) in aztec_sandpile:
-                aztec_sandpile[vert][(x-1, y)] = 1
-            if (x, y-1) in aztec_sandpile:
-                aztec_sandpile[vert][(x, y-1)] = 1
+            if (x + 1, y) in aztec_sandpile:
+                aztec_sandpile[vert][(x + 1, y)] = 1
+            if (x, y + 1) in aztec_sandpile:
+                aztec_sandpile[vert][(x, y + 1)] = 1
+            if (x - 1, y) in aztec_sandpile:
+                aztec_sandpile[vert][(x - 1, y)] = 1
+            if (x, y - 1) in aztec_sandpile:
+                aztec_sandpile[vert][(x, y - 1)] = 1
             if len(aztec_sandpile[vert]) < 4:
                 out_degree = 4 - len(aztec_sandpile[vert])
                 aztec_sandpile[vert][(0, 0)] = out_degree
@@ -6090,8 +6168,8 @@ def glue_graphs(g, h, glue_g, glue_h):
         if i != g_sink:
             new_edges = {}
             for j in g[i]:
-                new_edges['x'+str(j)] = g[i][j]
-            k['x'+str(i)] = new_edges
+                new_edges['x' + str(j)] = g[i][j]
+            k['x' + str(i)] = new_edges
     for i in h:
         if i != h_sink:
             new_edges = {}
@@ -6099,18 +6177,18 @@ def glue_graphs(g, h, glue_g, glue_h):
                 if j == h_sink:
                     new_edges['sink'] = h[i][j]
                 else:
-                    new_edges['y'+str(j)] = h[i][j]
-            k['y'+str(i)] = new_edges
+                    new_edges['y' + str(j)] = h[i][j]
+            k['y' + str(i)] = new_edges
     # now handle the glue vertex (old g sink)
     new_edges = {}
     for i in glue_g:
-        new_edges['x'+str(i)] = glue_g[i]
+        new_edges['x' + str(i)] = glue_g[i]
     for i in glue_h:
         if i == h_sink:
             new_edges['sink'] = glue_h[i]
         else:
-            new_edges['y'+str(i)] = glue_h[i]
-    k['x'+str(g_sink)] = new_edges
+            new_edges['y' + str(i)] = glue_h[i]
+    k['x' + str(g_sink)] = new_edges
     return k
 
 
@@ -6270,6 +6348,7 @@ def partition_sandpile(S, p) -> Sandpile:
         total:     1     6     8     3
     """
     from itertools import combinations
+
     g = Graph()
     g.add_vertices(tuple(i) for i in p)
     for u, v in combinations(g, 2):
@@ -6336,21 +6415,21 @@ def wilmes_algorithm(M):
     if M.matrix_over_field().is_invertible():
         L = matrix(ZZ, M)
         U = matrix(ZZ, [sum(i) for i in L]).smith_form()[2].transpose()
-        L = U*M
-        for k in range(1, M.nrows()-1):
-            sm = matrix(ZZ, [i[k-1] for i in L[k:]]).smith_form()[2].transpose()
+        L = U * M
+        for k in range(1, M.nrows() - 1):
+            sm = matrix(ZZ, [i[k - 1] for i in L[k:]]).smith_form()[2].transpose()
             U = identity_matrix(ZZ, k).block_sum(sm)
-            L = U*L
+            L = U * L
             L[k] = -L[k]
         if L[-1][-2] > 0:
             L[-1] = -L[-1]
-        for k in range(M.nrows()-2, -1, -1):
-            for i in range(k+2, M.nrows()):
-                while L[k][i-1] > 0:
+        for k in range(M.nrows() - 2, -1, -1):
+            for i in range(k + 2, M.nrows()):
+                while L[k][i - 1] > 0:
                     L[k] = L[k] + L[i]
-            v = -L[k+1]
-            for i in range(k+2, M.nrows()):
-                v = abs(L[i, i-1])*v + v[i-1]*L[i]
+            v = -L[k + 1]
+            for i in range(k + 2, M.nrows()):
+                v = abs(L[i, i - 1]) * v + v[i - 1] * L[i]
             while L[k, k] <= 0 or L[k, -1] > 0:
                 L[k] = L[k] + v
         return L

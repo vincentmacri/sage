@@ -60,7 +60,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 
 class Sigma0ActionAdjuster(UniqueRepresentation):
-
     @abstract_method
     def __call__(self, x):
         r"""
@@ -96,6 +95,7 @@ class _default_adjuster(Sigma0ActionAdjuster):
         <sage.modular.pollack_stevens.sigma0._default_adjuster object at 0x...>
         sage: TestSuite(A).run()
     """
+
     def __call__(self, g):
         """
         EXAMPLES::
@@ -188,6 +188,7 @@ class Sigma0Element(MonoidElement):
         [ 1 -2]
         [ 0  1]
     """
+
     def __init__(self, parent, mat):
         r"""
         EXAMPLES::
@@ -331,6 +332,7 @@ class _Sigma0Embedding(Morphism):
     framework so that "x * y" will work if ``x`` is a matrix and ``y`` is a `\Sigma_0`
     element (returning a matrix, *not* a Sigma0 element).
     """
+
     def __init__(self, domain):
         r"""
         TESTS::
@@ -391,6 +393,7 @@ class Sigma0_class(Parent):
         [1 2]
         [5 1]
     """
+
     Element = Sigma0Element
 
     def __init__(self, N, base_ring, adjuster):
@@ -474,9 +477,11 @@ class Sigma0_class(Parent):
         of nasty things will go wrong with scalar multiplication of
         distributions. Do not let this happen!)
         """
-        return (isinstance(other, Sigma0_class)
-                and self.level().divides(other.level())
-                and self.base_ring().has_coerce_map_from(other.base_ring()))
+        return (
+            isinstance(other, Sigma0_class)
+            and self.level().divides(other.level())
+            and self.base_ring().has_coerce_map_from(other.base_ring())
+        )
 
     def _element_constructor_(self, x, check=True):
         r"""
@@ -509,7 +514,7 @@ class Sigma0_class(Parent):
         if check:
             x = self._matrix_space(x)
             a, b, c, d = self._adjuster(x)
-            for (p, e) in self._primes:
+            for p, e in self._primes:
                 if c.valuation(p) < e:
                     raise TypeError("level %s^%s does not divide %s" % (p, e, c))
                 if a.valuation(p) != 0:
@@ -530,5 +535,7 @@ class Sigma0_class(Parent):
             sage: S._repr_()
             'Monoid Sigma0(3) with coefficients in Integer Ring'
         """
-        return 'Monoid Sigma0(%s) with coefficients in %s' % (self.level(),
-                                                              self.base_ring())
+        return 'Monoid Sigma0(%s) with coefficients in %s' % (
+            self.level(),
+            self.base_ring(),
+        )

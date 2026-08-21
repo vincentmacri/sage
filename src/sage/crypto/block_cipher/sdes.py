@@ -95,6 +95,7 @@ class SimplifiedDES(SageObject):
             True
         """
         from sage.crypto.sbox import SBox
+
         # the number of bits in a secret key
         self._key_size = 10
         # the S-box S_0
@@ -192,13 +193,18 @@ class SimplifiedDES(SageObject):
         """
         from sage.monoids.string_monoid_element import StringMonoidElement
         from sage.rings.finite_rings.integer_mod import Mod
+
         # S-DES operates on 8-bit ciphertext/plaintext blocks
         Blength = 8
 
         if not isinstance(B, StringMonoidElement):
-            raise TypeError("input B must be a non-empty binary string with number of bits a multiple of 8")
+            raise TypeError(
+                "input B must be a non-empty binary string with number of bits a multiple of 8"
+            )
         if (len(B) == 0) or (Mod(len(B), Blength).lift() != 0):
-            raise ValueError("the number of bits in the binary string B must be positive and a multiple of 8")
+            raise ValueError(
+                "the number of bits in the binary string B must be positive and a multiple of 8"
+            )
         if not isinstance(K, StringMonoidElement):
             raise TypeError("secret key must be a 10-bit binary string")
         if len(K) != self._key_size:
@@ -211,7 +217,7 @@ class SimplifiedDES(SageObject):
         if algorithm == "encrypt":
             for i in range(N):
                 # get an 8-bit block
-                block = B[i*Blength : (i+1)*Blength]
+                block = B[i * Blength : (i + 1) * Blength]
                 block = self.string_to_list(str(block))
                 key = self.string_to_list(str(K))
                 # encrypt the block using key
@@ -224,7 +230,7 @@ class SimplifiedDES(SageObject):
         if algorithm == "decrypt":
             for i in range(N):
                 # get an 8-bit block
-                block = B[i*Blength : (i+1)*Blength]
+                block = B[i * Blength : (i + 1) * Blength]
                 block = self.string_to_list(str(block))
                 key = self.string_to_list(str(K))
                 # decrypt the block using key
@@ -250,9 +256,11 @@ class SimplifiedDES(SageObject):
             sage: s == loads(dumps(s))
             True
         """
-        return ( (self._key_size == other._key_size) and
-                 (self._sbox0 == other._sbox0) and
-                 (self._sbox1 == other._sbox1) )
+        return (
+            (self._key_size == other._key_size)
+            and (self._sbox0 == other._sbox0)
+            and (self._sbox1 == other._sbox1)
+        )
 
     def __repr__(self):
         r"""
@@ -613,17 +621,29 @@ class SimplifiedDES(SageObject):
 
         # use the initial permutation P
         if not inverse:
-            return [ bin(str(B[1])), bin(str(B[5])),
-                     bin(str(B[2])), bin(str(B[0])),
-                     bin(str(B[3])), bin(str(B[7])),
-                     bin(str(B[4])), bin(str(B[6])) ]
+            return [
+                bin(str(B[1])),
+                bin(str(B[5])),
+                bin(str(B[2])),
+                bin(str(B[0])),
+                bin(str(B[3])),
+                bin(str(B[7])),
+                bin(str(B[4])),
+                bin(str(B[6])),
+            ]
 
         # use the inverse permutation P^-1
         if inverse:
-            return [ bin(str(B[3])), bin(str(B[0])),
-                     bin(str(B[2])), bin(str(B[4])),
-                     bin(str(B[6])), bin(str(B[1])),
-                     bin(str(B[7])), bin(str(B[5])) ]
+            return [
+                bin(str(B[3])),
+                bin(str(B[0])),
+                bin(str(B[2])),
+                bin(str(B[4])),
+                bin(str(B[6])),
+                bin(str(B[1])),
+                bin(str(B[7])),
+                bin(str(B[5])),
+            ]
 
     def left_shift(self, B, n=1):
         r"""
@@ -737,18 +757,32 @@ class SimplifiedDES(SageObject):
         bin = BinaryStrings()
         # circular left shift by 1 position
         if n == 1:
-            return [ bin(str(B[1])), bin(str(B[2])),
-                     bin(str(B[3])), bin(str(B[4])),
-                     bin(str(B[0])), bin(str(B[6])),
-                     bin(str(B[7])), bin(str(B[8])),
-                     bin(str(B[9])), bin(str(B[5])) ]
+            return [
+                bin(str(B[1])),
+                bin(str(B[2])),
+                bin(str(B[3])),
+                bin(str(B[4])),
+                bin(str(B[0])),
+                bin(str(B[6])),
+                bin(str(B[7])),
+                bin(str(B[8])),
+                bin(str(B[9])),
+                bin(str(B[5])),
+            ]
         # circular left shift by 2 positions
         if n == 2:
-            return [ bin(str(B[2])), bin(str(B[3])),
-                     bin(str(B[4])), bin(str(B[0])),
-                     bin(str(B[1])), bin(str(B[7])),
-                     bin(str(B[8])), bin(str(B[9])),
-                     bin(str(B[5])), bin(str(B[6])) ]
+            return [
+                bin(str(B[2])),
+                bin(str(B[3])),
+                bin(str(B[4])),
+                bin(str(B[0])),
+                bin(str(B[1])),
+                bin(str(B[7])),
+                bin(str(B[8])),
+                bin(str(B[9])),
+                bin(str(B[5])),
+                bin(str(B[6])),
+            ]
         # an invalid number of shift positions
         raise ValueError("input n must be either 1 or 2")
 
@@ -800,6 +834,7 @@ class SimplifiedDES(SageObject):
 
         # perform the conversion from list to binary string
         from sage.rings.integer import Integer
+
         bin = BinaryStrings()
         return bin([Integer(str(b)) for b in B])
 
@@ -882,8 +917,7 @@ class SimplifiedDES(SageObject):
 
         # perform the permutation
         bin = BinaryStrings()
-        return [ bin(str(B[1])), bin(str(B[3])),
-                 bin(str(B[2])), bin(str(B[0])) ]
+        return [bin(str(B[1])), bin(str(B[3])), bin(str(B[2])), bin(str(B[0]))]
 
     def permutation8(self, B):
         r"""
@@ -969,10 +1003,16 @@ class SimplifiedDES(SageObject):
 
         # perform the permutation
         bin = BinaryStrings()
-        return [ bin(str(B[5])), bin(str(B[2])),
-                 bin(str(B[6])), bin(str(B[3])),
-                 bin(str(B[7])), bin(str(B[4])),
-                 bin(str(B[9])), bin(str(B[8])) ]
+        return [
+            bin(str(B[5])),
+            bin(str(B[2])),
+            bin(str(B[6])),
+            bin(str(B[3])),
+            bin(str(B[7])),
+            bin(str(B[4])),
+            bin(str(B[9])),
+            bin(str(B[8])),
+        ]
 
     def permutation10(self, B):
         r"""
@@ -1057,11 +1097,18 @@ class SimplifiedDES(SageObject):
 
         # perform the permutation
         bin = BinaryStrings()
-        return [ bin(str(B[2])), bin(str(B[4])),
-                 bin(str(B[1])), bin(str(B[6])),
-                 bin(str(B[3])), bin(str(B[9])),
-                 bin(str(B[0])), bin(str(B[8])),
-                 bin(str(B[7])), bin(str(B[5])) ]
+        return [
+            bin(str(B[2])),
+            bin(str(B[4])),
+            bin(str(B[1])),
+            bin(str(B[6])),
+            bin(str(B[3])),
+            bin(str(B[9])),
+            bin(str(B[0])),
+            bin(str(B[8])),
+            bin(str(B[7])),
+            bin(str(B[5])),
+        ]
 
     def permute_substitute(self, B, key):
         r"""
@@ -1236,30 +1283,31 @@ class SimplifiedDES(SageObject):
             raise ValueError("input key must be an 8-bit subkey")
 
         from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
         GF = FiniteField(2, "x")
         bin = BinaryStrings()
         bin_to_GF2 = {bin("0"): GF(0), bin("1"): GF(1)}
 
         # the leftmost 4 bits of B
-        L = [ bin_to_GF2[bin(str(B[i]))] for i in range(4) ]
+        L = [bin_to_GF2[bin(str(B[i]))] for i in range(4)]
         # the rightmost 4 bits of B
-        R = [ bin_to_GF2[bin(str(B[i]))] for i in range(4, len(B)) ]
+        R = [bin_to_GF2[bin(str(B[i]))] for i in range(4, len(B))]
         # get the GF(2) representation of the subkey
-        K = [ bin_to_GF2[bin(str(key[i]))] for i in range(len(key)) ]
+        K = [bin_to_GF2[bin(str(key[i]))] for i in range(len(key))]
         # expand the rightmost 4 bits into an 8-bit block
-        RX = [ R[3], R[0], R[1], R[2], R[1], R[2], R[3], R[0] ]
+        RX = [R[3], R[0], R[1], R[2], R[1], R[2], R[3], R[0]]
         # add the subkey to the expanded 8-bit block using exclusive-OR
-        P = [ RX[i] + K[i] for i in range(len(K)) ]
+        P = [RX[i] + K[i] for i in range(len(K))]
         # run each half of P separately through the S-boxes
-        left = self._sbox0([ P[0], P[3], P[1], P[2] ])
-        right = self._sbox1([ P[4], P[7], P[5], P[6] ])
+        left = self._sbox0([P[0], P[3], P[1], P[2]])
+        right = self._sbox1([P[4], P[7], P[5], P[6]])
         # First concatenate the left and right parts, then get the
         # output of the function F.
         F = self.permutation4(left + right)
-        F = [ bin_to_GF2[F[i]] for i in range(len(F)) ]
+        F = [bin_to_GF2[F[i]] for i in range(len(F))]
         # Add L to F using exclusive-OR. Then concatenate the result with
         # the rightmost 4 bits of B. This is the output of the function Pi_F.
-        L = [ L[i] + F[i] for i in range(len(F)) ]
+        L = [L[i] + F[i] for i in range(len(F))]
         return L + R
 
     def random_key(self):
@@ -1277,6 +1325,7 @@ class SimplifiedDES(SageObject):
             True
         """
         from sage.misc.prandom import randint
+
         bin = BinaryStrings()
         return [bin(str(randint(0, 1))) for i in range(self._key_size)]
 
@@ -1517,7 +1566,13 @@ class SimplifiedDES(SageObject):
 
         # perform the switch
         bin = BinaryStrings()
-        return [ bin(str(B[4])), bin(str(B[5])),
-                 bin(str(B[6])), bin(str(B[7])),
-                 bin(str(B[0])), bin(str(B[1])),
-                 bin(str(B[2])), bin(str(B[3])) ]
+        return [
+            bin(str(B[4])),
+            bin(str(B[5])),
+            bin(str(B[6])),
+            bin(str(B[7])),
+            bin(str(B[0])),
+            bin(str(B[1])),
+            bin(str(B[2])),
+            bin(str(B[3])),
+        ]

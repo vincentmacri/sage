@@ -170,6 +170,7 @@ class AlgorithmExt(Enum):
 
     This extends the ``Algorithm`` class of Regina.
     """
+
     ALG_SIMPLIFY = 4
     ALG_WIRTINGER = 5
     ALG_USE_EXTERIOR = 6
@@ -189,6 +190,7 @@ class Regina(PythonInternalInterface):
 
     More examples can be found in the module header.
     """
+
     def __init__(self):
         r"""
         Python constructor.
@@ -213,8 +215,10 @@ class Regina(PythonInternalInterface):
         """
         if not self._interface_globals:
             from sage.features.interfaces import Regina
+
             Regina().module.require()
             import regina
+
             self._namespace = regina.engine
             d = self._namespace.__dict__
             # add extras to the fixed namespace
@@ -300,6 +304,7 @@ class ReginaElement(PythonInternalElement):
         sage: p = regina.Polynomial([-2, ~7])
         sage: TestSuite(p).run(skip='_test_category')
     """
+
     def __deepcopy__(self, memo=None):
         r"""
         EXAMPLES::
@@ -372,6 +377,7 @@ class ReginaElement(PythonInternalElement):
             sage: fr.sage() == f
             True
         """
+
         def from_detail_str(lc):
             r"""
             Regina provides a detail method for many of its classes.
@@ -381,6 +387,7 @@ class ReginaElement(PythonInternalElement):
                 lc.update(locals)
             from sage.misc.sage_eval import sage_eval
             from sage.repl.preparse import implicit_mul
+
             s = self.detail().split('\n')[0]
             s = s.replace(' ', '')
             v = list(lc)
@@ -400,12 +407,16 @@ class ReginaElement(PythonInternalElement):
                 R = self._sage_parent
                 old_var_names = ['x', 'y']
                 new_var_names = R.variable_names()
-                lc = {old_var_names[i]: R.gens_dict()[new_var_names[i]] for i in range(len(new_var_names))}
+                lc = {
+                    old_var_names[i]: R.gens_dict()[new_var_names[i]]
+                    for i in range(len(new_var_names))
+                }
             elif isinstance(inst, nspc.Polynomial):
                 from sage.rings.integer_ring import ZZ
                 from sage.rings.polynomial.polynomial_ring_constructor import (
                     PolynomialRing,
                 )
+
                 R = PolynomialRing(ZZ, 'x')
                 lc = R.gens_dict()
             else:
@@ -413,6 +424,7 @@ class ReginaElement(PythonInternalElement):
                 from sage.rings.polynomial.laurent_polynomial_ring import (
                     LaurentPolynomialRing,
                 )
+
                 if isinstance(inst, nspc.Laurent):
                     R = LaurentPolynomialRing(ZZ, 'x')
                 else:
@@ -425,12 +437,14 @@ class ReginaElement(PythonInternalElement):
                 F = self._sage_parent
             else:
                 from sage.groups.free_group import FreeGroup
+
                 F = FreeGroup(num_gens)
             gens = F.gens()
             lc = {'g%s' % i: gens[i] for i in range(num_gens)}
             return from_detail_str(lc)
         if isinstance(inst, nspc.Link):
             from sage.knots.link import Link
+
             return Link(inst.pdData())
         if hasattr(self, 'detail'):
             return from_detail_str(locals)
@@ -438,6 +452,7 @@ class ReginaElement(PythonInternalElement):
             # if locals are given we use `_sage_repr`
             # surely this only covers simple cases
             from sage.misc.sage_eval import sage_eval
+
             return sage_eval(self._sage_repr(), locals=locals)
         return inst
 

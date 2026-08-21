@@ -142,6 +142,7 @@ class WeakReversePlanePartition(Tableau):
         sage: x.shape()
         [3, 3, 3, 3, 1]
     """
+
     @staticmethod
     def __classcall_private__(cls, r):
         r"""
@@ -411,6 +412,7 @@ class WeakReversePlanePartitions(Tableaux):
     r"""
     The set of all weak reverse plane partitions.
     """
+
     @staticmethod
     def __classcall_private__(cls, shape=None, **kwds):
         """

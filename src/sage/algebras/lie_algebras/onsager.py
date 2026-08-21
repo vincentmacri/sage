@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2017-07): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.algebras import Algebras
@@ -23,7 +23,10 @@ from sage.combinat.free_module import CombinatorialFreeModule
 from sage.structure.indexed_generators import IndexedGenerators
 from sage.sets.family import Family
 from sage.algebras.lie_algebras.lie_algebra_element import LieAlgebraElement
-from sage.algebras.lie_algebras.lie_algebra import LieAlgebraWithGenerators, InfinitelyGeneratedLieAlgebra
+from sage.algebras.lie_algebras.lie_algebra import (
+    LieAlgebraWithGenerators,
+    InfinitelyGeneratedLieAlgebra,
+)
 
 
 class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
@@ -111,6 +114,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
     - [Onsager1944]_
     - [DG1982]_
     """
+
     def __init__(self, R):
         """
         Initialize ``self``.
@@ -122,9 +126,11 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
         """
         cat = LieAlgebras(R).WithBasis()
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
-        IndexedGenerators.__init__(self, FiniteEnumeratedSet([0,1]))
-        LieAlgebraWithGenerators.__init__(self, R, index_set=self._indices,
-                                          names=('A0', 'A1'), category=cat)
+
+        IndexedGenerators.__init__(self, FiniteEnumeratedSet([0, 1]))
+        LieAlgebraWithGenerators.__init__(
+            self, R, index_set=self._indices, names=('A0', 'A1'), category=cat
+        )
 
     def _repr_(self):
         """
@@ -148,6 +154,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
             \mathcal{O}_{\Bold{Q}}
         """
         from sage.misc.latex import latex
+
         return "\\mathcal{{O}}_{{{}}}".format(latex(self.base_ring()))
 
     def _repr_generator(self, m):
@@ -201,8 +208,10 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
         from sage.rings.integer_ring import ZZ
         from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
         from sage.sets.positive_integers import PositiveIntegers
-        I = DisjointUnionEnumeratedSets([ZZ, PositiveIntegers()],
-                                        keepkey=True, facade=True)
+
+        I = DisjointUnionEnumeratedSets(
+            [ZZ, PositiveIntegers()], keepkey=True, facade=True
+        )
         return Family(I, self.monomial, name='Onsager monomial')
 
     @cached_method
@@ -216,7 +225,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
             sage: O.lie_algebra_generators()
             Finite family {'A0': A[0], 'A1': A[1]}
         """
-        d = {"A0": self.basis()[0,0], "A1": self.basis()[0,1]}
+        d = {"A0": self.basis()[0, 0], "A1": self.basis()[0, 1]}
         return Family(self._names, d.__getitem__)
 
     def bracket_on_basis(self, x, y):
@@ -239,11 +248,11 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
             # Therefore, we have [G_n, G_{n'}] = 0
             return self.zero()
         R = self.base_ring()
-        if y[0] == 1: # [A_m, G_n] = -(2A_{m-n} - 2A_{m+n})
-            d = {(0, x[1]-y[1]): R(-2), (0, x[1]+y[1]): R(2)}
+        if y[0] == 1:  # [A_m, G_n] = -(2A_{m-n} - 2A_{m+n})
+            d = {(0, x[1] - y[1]): R(-2), (0, x[1] + y[1]): R(2)}
             return self.element_class(self, d)
         # [A_m, A_{m'}] = -G_{m' - m}, where m < m'
-        return self.element_class(self, {(1, y[1]-x[1]): -R.one()})
+        return self.element_class(self, {(1, y[1] - x[1]): -R.one()})
 
     def _an_element_(self):
         """
@@ -256,7 +265,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
             -2*A[-3] + A[2] + 3*G[2]
         """
         B = self.basis()
-        return B[0,2] - 2*B[0,-3] + 3*B[1,2]
+        return B[0, 2] - 2 * B[0, -3] + 3 * B[1, 2]
 
     def some_elements(self):
         """
@@ -269,7 +278,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
             [A[0], A[2], A[-1], G[4], -2*A[-3] + A[2] + 3*G[2]]
         """
         B = self.basis()
-        return [B[0,0], B[0,2], B[0,-1], B[1,4], self.an_element()]
+        return [B[0, 0], B[0, 2], B[0, -1], B[1, 4], self.an_element()]
 
     def quantum_group(self, q=None, c=None):
         r"""
@@ -295,6 +304,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
         """
         if q is None:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             q = PolynomialRing(self.base_ring(), 'q').fraction_field().gen()
         if c is None:
             c = q
@@ -316,6 +326,7 @@ class OnsagerAlgebra(LieAlgebraWithGenerators, IndexedGenerators):
         return OnsagerAlgebraACE(self.base_ring())
 
     Element = LieAlgebraElement
+
 
 #####################################################################
 # q-Onsager algebra (the quantum group)
@@ -388,6 +399,7 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
 
     - [BK2017]_
     """
+
     def __init__(self, g, q, c):
         """
         Initialize ``self``.
@@ -404,13 +416,20 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
         self._q_two = q + ~q
         R = self._q_two.parent()
         from sage.monoids.indexed_free_monoid import IndexedFreeAbelianMonoid
-        monomials = IndexedFreeAbelianMonoid(g.basis().keys(),
-                                             prefix='B', bracket=False,
-                                             sorting_key=self._monoid_key)
-        CombinatorialFreeModule.__init__(self, R, monomials,
-                                         prefix='', bracket=False, latex_bracket=False,
-                                         sorting_key=self._monomial_key,
-                                         category=Algebras(R).WithBasis().Filtered())
+
+        monomials = IndexedFreeAbelianMonoid(
+            g.basis().keys(), prefix='B', bracket=False, sorting_key=self._monoid_key
+        )
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            monomials,
+            prefix='',
+            bracket=False,
+            latex_bracket=False,
+            sorting_key=self._monomial_key,
+            category=Algebras(R).WithBasis().Filtered(),
+        )
 
     def _basis_key(self, k):
         r"""
@@ -481,8 +500,9 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             q-Onsager algebra with c=q over Fraction Field of
              Univariate Polynomial Ring in q over Rational Field
         """
-        return "{}-Onsager algebra with c={} over {}".format(self._q, self._c,
-                                                             self.base_ring())
+        return "{}-Onsager algebra with c={} over {}".format(
+            self._q, self._c, self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -496,8 +516,10 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             U_{-1}(\mathcal{O}_{\Bold{Q}})_{-1}
         """
         from sage.misc.latex import latex
-        return "U_{{{}}}(\\mathcal{{O}}_{{{}}})_{{{}}}".format(latex(self._q),
-                            latex(self._g.base_ring()), latex(self._c))
+
+        return "U_{{{}}}(\\mathcal{{O}}_{{{}}})_{{{}}}".format(
+            latex(self._q), latex(self._g.base_ring()), latex(self._c)
+        )
 
     def _repr_term(self, m):
         r"""
@@ -517,15 +539,16 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: Q._repr_term(I[0,-1]^2 * I[1,3]^13 * I[0,3])
             'B[a0]^2*B[3d]^13*B[3d+a1]'
         """
+
         def to_str(x):
-            k,e = x
+            k, e = x
             if k[0] == 0:
                 if k[1] == -1:
                     ret = 'B[a0]'
                 elif k[1] == 0:
                     ret = 'B[a1]'
                 elif k[1] < -1:
-                    ret = 'B[{}d+a0]'.format(-k[1]-1)
+                    ret = 'B[{}d+a0]'.format(-k[1] - 1)
                 elif k[1] > 0:
                     ret = 'B[{}d+a1]'.format(k[1])
             else:
@@ -533,6 +556,7 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             if e > 1:
                 ret = ret + '^{}'.format(e)
             return ret
+
         return '*'.join(to_str(x) for x in m._sorted_items())
 
     def _latex_term(self, m):
@@ -553,15 +577,16 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: Q._latex_term(I[0,-1]^2 * I[1,3]^13 * I[0,3])
             'B_{\\alpha_0}^{2} B_{3\\delta}^{13} B_{3\\delta+\\alpha_1}'
         """
+
         def to_str(x):
-            k,e = x
+            k, e = x
             if k[0] == 0:
                 if k[1] == -1:
                     ret = 'B_{\\alpha_0}'
                 elif k[1] == 0:
                     ret = 'B_{\\alpha_1}'
                 elif k[1] < -1:
-                    ret = 'B_{{{}\\delta+\\alpha_0}}'.format(-k[1]-1)
+                    ret = 'B_{{{}\\delta+\\alpha_0}}'.format(-k[1] - 1)
                 elif k[1] > 0:
                     ret = 'B_{{{}\\delta+\\alpha_1}}'.format(k[1])
             else:
@@ -569,6 +594,7 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             if e > 1:
                 ret = ret + '^{{{}}}'.format(e)
             return ret
+
         return ' '.join(to_str(x) for x in m._sorted_items())
 
     def lie_algebra(self):
@@ -599,8 +625,9 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
              Family (Integer Ring, Positive integers)}
         """
         G = self._indices.gens()
-        return Family(self._indices._indices, lambda x: self.monomial(G[x]),
-                      name="generator map")
+        return Family(
+            self._indices._indices, lambda x: self.monomial(G[x]), name="generator map"
+        )
 
     gens = algebra_generators
 
@@ -659,7 +686,7 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             -2*B[2d+a0] + q*B[2d] + B[2d+a1]
         """
         G = self.algebra_generators()
-        return G[0,2] - 2*G[0,-3] + self.base_ring().an_element()*G[1,2]
+        return G[0, 2] - 2 * G[0, -3] + self.base_ring().an_element() * G[1, 2]
 
     def some_elements(self):
         """
@@ -673,7 +700,7 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             [B[a1], B[3d+a1], B[a0], B[1d], B[4d]]
         """
         G = self.algebra_generators()
-        return [G[0,0], G[0,3], G[0,-1], G[1,1], G[1,4]]
+        return [G[0, 0], G[0, 3], G[0, -1], G[1, 1], G[1, 4]]
 
     def degree_on_basis(self, m):
         r"""
@@ -781,23 +808,30 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             return self.monomial(lhs * B[kr]) * self.monomial(rhs // B[kr])
 
         if kl[0] == 0 and kr[0] == 0:
+
             def a(m, p):
                 if p <= (m - 1) // 2:
-                    return q**(-2*(p-1)) * (1 + q**-2)
+                    return q ** (-2 * (p - 1)) * (1 + q**-2)
                 # Assume m is even and p == m/2
                 assert p == m // 2 and m % 2 == 0
-                return q**(-m+2)
+                return q ** (-m + 2)
+
             if kl[1] * kr[1] > 0 or (kl[1] == 0 and kr[1] > 0):
                 # Same sign
                 # [B[rd+a1], B[(r+m)d+a1]]
                 m = kr[1] - kl[1]
                 assert m > 0
                 terms = q**-2 * self.monomial(B[kr] * B[kl])
-                terms -= self.monomial(B[1,m])
-                temp = (-sum(q**(-2*(p-1)) * self.monomial(B[1,m-2*p])
-                             for p in range(1, (m - 1) // 2 + 1))
-                         + sum(a(m,p) * self.monomial(B[0,kr[1]-p]) * self.monomial(B[0,p+kl[1]])
-                               for p in range(1, m // 2 + 1)))
+                terms -= self.monomial(B[1, m])
+                temp = -sum(
+                    q ** (-2 * (p - 1)) * self.monomial(B[1, m - 2 * p])
+                    for p in range(1, (m - 1) // 2 + 1)
+                ) + sum(
+                    a(m, p)
+                    * self.monomial(B[0, kr[1] - p])
+                    * self.monomial(B[0, p + kl[1]])
+                    for p in range(1, m // 2 + 1)
+                )
                 terms += (q**-2 - 1) * temp
             else:
                 r = -kr[1] - 1
@@ -805,32 +839,52 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
                 if r <= kl[1]:
                     # [B[rd+a0], B[sd+a1]] r <= s
                     terms = -self.monomial(B[kr] * B[kl])
-                    terms -= self.monomial(B[1,r+kl[1]+1])
-                    terms -= (q**2-1) * sum(q**(2*k) * self.monomial(B[1,r+kl[1]-1-2*k])
-                                            for k in range(r))
-                    terms -= (q**2-q**-2) * sum(q**(2*(r-1-k)) * self.monomial(B[0,-(k+1)]) * self.monomial(B[0,-r+kl[1]+k])
-                                                for k in range(r))
+                    terms -= self.monomial(B[1, r + kl[1] + 1])
+                    terms -= (q**2 - 1) * sum(
+                        q ** (2 * k) * self.monomial(B[1, r + kl[1] - 1 - 2 * k])
+                        for k in range(r)
+                    )
+                    terms -= (q**2 - q**-2) * sum(
+                        q ** (2 * (r - 1 - k))
+                        * self.monomial(B[0, -(k + 1)])
+                        * self.monomial(B[0, -r + kl[1] + k])
+                        for k in range(r)
+                    )
                     m = -r + kl[1] + 1
-                    temp = (-sum(q**(-2*(p-1)) * self.monomial(B[1,m-2*p])
-                                 for p in range(1, (m - 1) // 2 + 1))
-                             + sum(a(m,p) * self.monomial(B[0,m-p-1]) * self.monomial(B[0,p-1])
-                                   for p in range(1, m // 2 + 1)))
-                    terms += (q**-2 - 1) * q**(2*r) * temp
+                    temp = -sum(
+                        q ** (-2 * (p - 1)) * self.monomial(B[1, m - 2 * p])
+                        for p in range(1, (m - 1) // 2 + 1)
+                    ) + sum(
+                        a(m, p)
+                        * self.monomial(B[0, m - p - 1])
+                        * self.monomial(B[0, p - 1])
+                        for p in range(1, m // 2 + 1)
+                    )
+                    terms += (q**-2 - 1) * q ** (2 * r) * temp
                 else:
                     # [B[rd+a0], B[sd+a1]] r > s
                     terms = -self.monomial(B[kr] * B[kl])
-                    terms -= self.monomial(B[1,r+kl[1]+1])
-                    terms -= (q**2-1) * sum(q**(2*k) * self.monomial(B[1,r+kl[1]-1-2*k])
-                                            for k in range(kl[1]))
-                    terms -= (q**2-q**-2) * sum(q**(2*(kl[1]-1-k)) * self.monomial(B[0,-(r-kl[1]+k+1)]) * self.monomial(B[0,k])
-                                                for k in range(kl[1]))
+                    terms -= self.monomial(B[1, r + kl[1] + 1])
+                    terms -= (q**2 - 1) * sum(
+                        q ** (2 * k) * self.monomial(B[1, r + kl[1] - 1 - 2 * k])
+                        for k in range(kl[1])
+                    )
+                    terms -= (q**2 - q**-2) * sum(
+                        q ** (2 * (kl[1] - 1 - k))
+                        * self.monomial(B[0, -(r - kl[1] + k + 1)])
+                        * self.monomial(B[0, k])
+                        for k in range(kl[1])
+                    )
                     m = r - kl[1] + 1
-                    temp = (-sum(q**(-2*(p-1)) * self.monomial(B[1,m-2*p])
-                                 for p in range(1, (m - 1) // 2 + 1))
-                             + sum(a(m,p) * self.monomial(B[0,-p]) * self.monomial(B[0,p-m])
-                                   for p in range(1, m // 2 + 1)))
-                    terms += (q**-2 - 1) * q**(2*kl[1]) * temp
-                terms = -q**2 * terms
+                    temp = -sum(
+                        q ** (-2 * (p - 1)) * self.monomial(B[1, m - 2 * p])
+                        for p in range(1, (m - 1) // 2 + 1)
+                    ) + sum(
+                        a(m, p) * self.monomial(B[0, -p]) * self.monomial(B[0, p - m])
+                        for p in range(1, m // 2 + 1)
+                    )
+                    terms += (q**-2 - 1) * q ** (2 * kl[1]) * temp
+                terms = -(q**2) * terms
         elif kl[0] == 1 and kr[0] == 0:
             terms = self.monomial(B[kr] * B[kl])
             # We have kr[1] < 0
@@ -839,87 +893,168 @@ class QuantumOnsagerAlgebra(CombinatorialFreeModule):
             if p < kl[1]:
                 # [B[md], B[pd+a0]] with p < m
                 # m = kl[1]
-                terms += self._c * self._q_two * (
-                           q**(-2*(kl[1]-1)) * self.monomial(B[0,-(kl[1]+p+1)])
-                         + (q**2 - q**-2) * sum(q**(-2*(kl[1]-2*p+2*h))
-                                                * self.monomial(B[0,-(kl[1]-p+2*h+1)])
-                                                for h in range(p))
-                         - q**(-2*(kl[1]-2*p-1)) * self.monomial(B[0,kl[1]-p-1])
-                         )
+                terms += (
+                    self._c
+                    * self._q_two
+                    * (
+                        q ** (-2 * (kl[1] - 1)) * self.monomial(B[0, -(kl[1] + p + 1)])
+                        + (q**2 - q**-2)
+                        * sum(
+                            q ** (-2 * (kl[1] - 2 * p + 2 * h))
+                            * self.monomial(B[0, -(kl[1] - p + 2 * h + 1)])
+                            for h in range(p)
+                        )
+                        - q ** (-2 * (kl[1] - 2 * p - 1))
+                        * self.monomial(B[0, kl[1] - p - 1])
+                    )
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[0,-(ell+p+1)] * B[1,kl[1]-ell])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[0,-(ell+p-2*h+1)] * B[1,kl[1]-ell])
-                                                for h in range(1, ell))
-                         - q**(2*(ell-1)) * self.monomial(B[0,-(p-ell+1)] * B[1,kl[1]-ell])
-                         for ell in range(1, p+1))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[0, -(ell + p + 1)] * B[1, kl[1] - ell])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(
+                            B[0, -(ell + p - 2 * h + 1)] * B[1, kl[1] - ell]
+                        )
+                        for h in range(1, ell)
+                    )
+                    - q ** (2 * (ell - 1))
+                    * self.monomial(B[0, -(p - ell + 1)] * B[1, kl[1] - ell])
+                    for ell in range(1, p + 1)
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[0,-(ell+p+1)] * B[1,kl[1]-ell])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[0,-(ell+p-2*h+1)] * B[1,kl[1]-ell])
-                                                for h in range(1, p+1))
-                         for ell in range(p+1, kl[1]))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[0, -(ell + p + 1)] * B[1, kl[1] - ell])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(
+                            B[0, -(ell + p - 2 * h + 1)] * B[1, kl[1] - ell]
+                        )
+                        for h in range(1, p + 1)
+                    )
+                    for ell in range(p + 1, kl[1])
+                )
                 terms += (q**2 - q**-2) * sum(
-                           q**(-2*(ell-2*p-1)) * self.monomial(B[1,kl[1]-ell] * B[0,ell-p-1])
-                         for ell in range(p+1, kl[1]))
+                    q ** (-2 * (ell - 2 * p - 1))
+                    * self.monomial(B[1, kl[1] - ell] * B[0, ell - p - 1])
+                    for ell in range(p + 1, kl[1])
+                )
             else:
                 # [B[md], B[pd+a0]] with p >= m
                 # m = kl[1]
-                terms += self._c * self._q_two * (
-                           q**(-2*(kl[1]-1)) * self.monomial(B[0,-(p+kl[1]+1)])
-                         + (q**2 - q**-2) * sum(q**(2*(kl[1]-2-2*h))
-                                                * self.monomial(B[0,-(p-kl[1]+2+2*h+1)])
-                                                for h in range(kl[1]-1))
-                         - q**(2*(kl[1]-1)) * self.monomial(B[0,-(p-kl[1]+1)])
-                         )
+                terms += (
+                    self._c
+                    * self._q_two
+                    * (
+                        q ** (-2 * (kl[1] - 1)) * self.monomial(B[0, -(p + kl[1] + 1)])
+                        + (q**2 - q**-2)
+                        * sum(
+                            q ** (2 * (kl[1] - 2 - 2 * h))
+                            * self.monomial(B[0, -(p - kl[1] + 2 + 2 * h + 1)])
+                            for h in range(kl[1] - 1)
+                        )
+                        - q ** (2 * (kl[1] - 1)) * self.monomial(B[0, -(p - kl[1] + 1)])
+                    )
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[0,-(p+ell+1)] * B[1,kl[1]-ell])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[0,-(p+ell-2*h+1)] * B[1,kl[1]-ell])
-                                                for h in range(1, ell))
-                         - q**(2*(ell-1)) * self.monomial(B[0,-(p-ell+1)] * B[1,kl[1]-ell])
-                         for ell in range(1, kl[1]))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[0, -(p + ell + 1)] * B[1, kl[1] - ell])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(
+                            B[0, -(p + ell - 2 * h + 1)] * B[1, kl[1] - ell]
+                        )
+                        for h in range(1, ell)
+                    )
+                    - q ** (2 * (ell - 1))
+                    * self.monomial(B[0, -(p - ell + 1)] * B[1, kl[1] - ell])
+                    for ell in range(1, kl[1])
+                )
         else:  # kl[0] == 0 and kr[0] == 1:
             terms = self.monomial(B[kr] * B[kl])
             if kl[1] < kr[1]:
                 # [B[pd+a1], B[md]] with p < m
                 # p = kl[1], m = kr[1]
-                terms += self._c * self._q_two * (
-                           q**(-2*(kr[1]-1)) * self.monomial(B[0,kr[1]+kl[1]])
-                         + (q**2 - q**-2) * sum(q**(-2*(kr[1]-2*kl[1]+2*h))
-                                                * self.monomial(B[0,kr[1]-kl[1]+2*h])
-                                                for h in range(kl[1]))
-                         - q**(-2*(kr[1]-2*kl[1]-1)) * self.monomial(B[0,kl[1]-kr[1]])
-                         )
+                terms += (
+                    self._c
+                    * self._q_two
+                    * (
+                        q ** (-2 * (kr[1] - 1)) * self.monomial(B[0, kr[1] + kl[1]])
+                        + (q**2 - q**-2)
+                        * sum(
+                            q ** (-2 * (kr[1] - 2 * kl[1] + 2 * h))
+                            * self.monomial(B[0, kr[1] - kl[1] + 2 * h])
+                            for h in range(kl[1])
+                        )
+                        - q ** (-2 * (kr[1] - 2 * kl[1] - 1))
+                        * self.monomial(B[0, kl[1] - kr[1]])
+                    )
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[1,kr[1]-ell] * B[0,ell+kl[1]])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[1,kr[1]-ell] * B[0,ell+kl[1]-2*h])
-                                                for h in range(1, ell))
-                         - q**(2*(ell-1)) * self.monomial(B[1,kr[1]-ell] * B[0,kl[1]-ell])
-                         for ell in range(1, kl[1]+1))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[1, kr[1] - ell] * B[0, ell + kl[1]])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(B[1, kr[1] - ell] * B[0, ell + kl[1] - 2 * h])
+                        for h in range(1, ell)
+                    )
+                    - q ** (2 * (ell - 1))
+                    * self.monomial(B[1, kr[1] - ell] * B[0, kl[1] - ell])
+                    for ell in range(1, kl[1] + 1)
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[1,kr[1]-ell] * B[0,ell+kl[1]])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[1,kr[1]-ell] * B[0,ell+kl[1]-2*h])
-                                                for h in range(1, kl[1]+1))
-                         for ell in range(kl[1]+1, kr[1]))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[1, kr[1] - ell] * B[0, ell + kl[1]])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(B[1, kr[1] - ell] * B[0, ell + kl[1] - 2 * h])
+                        for h in range(1, kl[1] + 1)
+                    )
+                    for ell in range(kl[1] + 1, kr[1])
+                )
                 terms += (q**2 - q**-2) * sum(
-                           q**(-2*(ell-2*kl[1]-1)) * self.monomial(B[0,kl[1]-ell] * B[1,kr[1]-ell])
-                         for ell in range(kl[1]+1, kr[1]))
+                    q ** (-2 * (ell - 2 * kl[1] - 1))
+                    * self.monomial(B[0, kl[1] - ell] * B[1, kr[1] - ell])
+                    for ell in range(kl[1] + 1, kr[1])
+                )
             else:
                 # [B[pd+a1], B[md]] with p >= m
                 # p = kl[1], m = kr[1]
-                terms += self._c * self._q_two * (
-                           q**(-2*(kr[1]-1)) * self.monomial(B[0,kl[1]+kr[1]])
-                         + (q**2 - q**-2) * sum(q**(2*(kr[1]-2-2*h))
-                                                * self.monomial(B[0,kl[1]-kr[1]+2+2*h])
-                                                for h in range(kr[1]-1))
-                         - q**(2*(kr[1]-1)) * self.monomial(B[0,kl[1]-kr[1]])
-                         )
+                terms += (
+                    self._c
+                    * self._q_two
+                    * (
+                        q ** (-2 * (kr[1] - 1)) * self.monomial(B[0, kl[1] + kr[1]])
+                        + (q**2 - q**-2)
+                        * sum(
+                            q ** (2 * (kr[1] - 2 - 2 * h))
+                            * self.monomial(B[0, kl[1] - kr[1] + 2 + 2 * h])
+                            for h in range(kr[1] - 1)
+                        )
+                        - q ** (2 * (kr[1] - 1)) * self.monomial(B[0, kl[1] - kr[1]])
+                    )
+                )
                 terms -= (q**2 - q**-2) * sum(
-                           q**(-2*(ell-1)) * self.monomial(B[1,kr[1]-ell] * B[0,kl[1]+ell])
-                         + (q**2 - q**-2) * sum(q**(-2*(ell-2*h)) * self.monomial(B[1,kr[1]-ell] * B[0,kl[1]+ell-2*h])
-                                                for h in range(1, ell))
-                         - q**(2*(ell-1)) * self.monomial(B[1,kr[1]-ell] * B[0,kl[1]-ell])
-                         for ell in range(1, kr[1]))
+                    q ** (-2 * (ell - 1))
+                    * self.monomial(B[1, kr[1] - ell] * B[0, kl[1] + ell])
+                    + (q**2 - q**-2)
+                    * sum(
+                        q ** (-2 * (ell - 2 * h))
+                        * self.monomial(B[1, kr[1] - ell] * B[0, kl[1] + ell - 2 * h])
+                        for h in range(1, ell)
+                    )
+                    - q ** (2 * (ell - 1))
+                    * self.monomial(B[1, kr[1] - ell] * B[0, kl[1] - ell])
+                    for ell in range(1, kr[1])
+                )
 
         return self.monomial(lhs // B[kl]) * terms * self.monomial(rhs // B[kr])
+
 
 #####################################################################
 # ACE of the Onsager algebra
@@ -1031,6 +1166,7 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
         ....:     for k in range(-4,4) for m in range(-4,4))
         True
     """
+
     def __init__(self, R):
         r"""
         Initialize ``self``.
@@ -1048,6 +1184,7 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
         cat = LieAlgebras(R).WithBasis()
         from sage.rings.integer_ring import ZZ
         from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
+
         I = DisjointUnionEnumeratedSets([ZZ, ZZ], keepkey=True, facade=True)
         IndexedGenerators.__init__(self, I)
         InfinitelyGeneratedLieAlgebra.__init__(self, R, index_set=I, category=cat)
@@ -1061,7 +1198,9 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             sage: lie_algebras.OnsagerAlgebra(QQ).alternating_central_extension()
             Alternating central extension of the Onsager algebra over Rational Field
         """
-        return "Alternating central extension of the Onsager algebra over {}".format(self.base_ring())
+        return "Alternating central extension of the Onsager algebra over {}".format(
+            self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -1074,6 +1213,7 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             \mathcal{O}_{\Bold{Q}}
         """
         from sage.misc.latex import latex
+
         return "\\mathcal{{O}}_{{{}}}".format(latex(self.base_ring()))
 
     def _repr_generator(self, m):
@@ -1151,7 +1291,7 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             -2*A[-3] + A[2] + B[-1] + 3*B[2]
         """
         B = self.basis()
-        return B[0,2] - 2*B[0,-3] + 3*B[1,2] + B[1,-1]
+        return B[0, 2] - 2 * B[0, -3] + 3 * B[1, 2] + B[1, -1]
 
     def some_elements(self):
         r"""
@@ -1164,7 +1304,7 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             [A[0], A[2], A[-1], B[4], B[-3], -2*A[-3] + A[2] + B[-1] + 3*B[2]]
         """
         B = self.basis()
-        return [B[0,0], B[0,2], B[0,-1], B[1,4], B[1,-3], self.an_element()]
+        return [B[0, 0], B[0, 2], B[0, -1], B[1, 4], B[1, -3], self.an_element()]
 
     def bracket_on_basis(self, x, y):
         r"""
@@ -1187,13 +1327,13 @@ class OnsagerAlgebraACE(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
             return self.zero()
         R = self.base_ring()
         one = R.one()
-        if y[0] == 1: # [A_k, B_m] = A_{k+m} - A_{k-m}
+        if y[0] == 1:  # [A_k, B_m] = A_{k+m} - A_{k-m}
             if y[1] == 0:  # special case for m = 0, as A_k - A_k = 0
                 return self.zero()
-            d = {(0, x[1]-y[1]): -one, (0, y[1]+x[1]): one}
+            d = {(0, x[1] - y[1]): -one, (0, y[1] + x[1]): one}
         else:
             # [A_k, A_m] = B_{k-m} - B_{m-k}
-            d = {(1, x[1]-y[1]): one, (1, y[1]-x[1]): -one}
+            d = {(1, x[1] - y[1]): one, (1, y[1] - x[1]): -one}
         return self.element_class(self, d)
 
     def _coerce_map_from_(self, R):

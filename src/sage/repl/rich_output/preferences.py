@@ -72,14 +72,12 @@ Values can also be specified as keyword arguments to the constructor::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from textwrap import dedent
 
 from sage.structure.sage_object import SageObject
 
 
 class Property(property):
-
     def __init__(self, name, allowed_values, doc=None):
         r"""
         Preference item.
@@ -105,8 +103,7 @@ class Property(property):
         self.underscore_name = '_{0}'.format(name)
         self.allowed_values = tuple(allowed_values)
         self.__doc__ = doc = self._make_doc(doc)
-        super().__init__(fget=self.getter, fset=self.setter,
-                         fdel=self.deleter, doc=doc)
+        super().__init__(fget=self.getter, fset=self.setter, fdel=self.deleter, doc=doc)
 
     def _make_doc(self, doc):
         """
@@ -142,8 +139,7 @@ class Property(property):
         doc += '\n\n'
         doc += 'Allowed values:\n\n'
         values_doc = ['* ``None`` (default): no preference']
-        values_doc.extend('* {0}'.format(repr(value))
-                          for value in self.allowed_values)
+        values_doc.extend('* {0}'.format(repr(value)) for value in self.allowed_values)
         return doc + '\n\n'.join(values_doc)
 
     def __repr__(self):
@@ -226,8 +222,11 @@ class Property(property):
             return self.deleter(prefs)
         allowed = self.allowed_values
         if value not in allowed:
-            raise ValueError('value must be unset (None) or one of {0}, got {1}'
-                             .format(allowed, value))
+            raise ValueError(
+                'value must be unset (None) or one of {0}, got {1}'.format(
+                    allowed, value
+                )
+            )
         setattr(prefs, self.underscore_name, value)
 
     def deleter(self, prefs):
@@ -259,7 +258,6 @@ class Property(property):
 
 
 class PreferencesABC(SageObject):
-
     def __init__(self, *args, **kwds):
         """
         Preferences for displaying graphics.
@@ -398,7 +396,7 @@ DisplayPreferences._add_option(
     ('plain', 'ascii_art', 'unicode_art', 'latex'),
     """
     Which textual representation is preferred
-    """
+    """,
 )
 
 
@@ -407,7 +405,7 @@ DisplayPreferences._add_option(
     ('center', 'left'),
     """
     Preferred mode of latex displays
-    """
+    """,
 )
 
 
@@ -416,7 +414,7 @@ DisplayPreferences._add_option(
     ('disable', 'vector', 'raster'),
     """
     Preferred graphics format
-    """
+    """,
 )
 
 
@@ -427,5 +425,5 @@ DisplayPreferences._add_option(
     Whether to graphically display graphs and other graph-like objects
     that implement rich output. When not specified small objects are
     show graphically and large objects as textual overview.
-    """
+    """,
 )

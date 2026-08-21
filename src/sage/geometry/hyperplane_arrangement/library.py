@@ -51,7 +51,7 @@ def make_parent(base_ring, dimension, names=None):
         Rational Field with coordinates t0, t1, t2
     """
     if names is None:
-        names = tuple('t'+str(i) for i in range(dimension))
+        names = tuple('t' + str(i) for i in range(dimension))
     else:
         names = tuple(map(str, names))
         if len(names) != dimension:
@@ -204,12 +204,12 @@ class HyperplaneArrangementLibrary:
         x = H.gens()
         hyperplanes = []
         for i in range(n):
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 for k in [-1, 0, 1]:
                     hyperplanes.append(x[i] - x[j] - k)
         Cn = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = x*prod([x-n-i for i in range(1, n)])
+        charpoly = x * prod([x - n - i for i in range(1, n)])
         Cn.characteristic_polynomial.set_cache(charpoly)
         return Cn
 
@@ -306,7 +306,9 @@ class HyperplaneArrangementLibrary:
         else:
             cartan_type = CartanType(data)
         if not cartan_type.is_crystallographic():
-            raise NotImplementedError("Coxeter arrangements are not implemented for non crystallographic Cartan types")
+            raise NotImplementedError(
+                "Coxeter arrangements are not implemented for non crystallographic Cartan types"
+            )
         W = WeylGroup(cartan_type)
         Ra = RootSystem(cartan_type).ambient_space()
         PR = Ra.positive_roots()
@@ -501,14 +503,19 @@ class HyperplaneArrangementLibrary:
         x = H.gens()
         hyperplanes = []
         for i in range(n):
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 hyperplanes.append(x[i] - x[j])
-                hyperplanes.append(x[0] - x[j] - (i+1))
+                hyperplanes.append(x[0] - x[j] - (i + 1))
         A = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = x * sum([(-1)**k * stirling_number2(n, n-k) *
-                            prod([(x - 1 - j) for j in range(k, n-1)])
-                            for k in range(n)])
+        charpoly = x * sum(
+            [
+                (-1) ** k
+                * stirling_number2(n, n - k)
+                * prod([(x - 1 - j) for j in range(k, n - 1)])
+                for k in range(n)
+            ]
+        )
         A.characteristic_polynomial.set_cache(charpoly)
         return A
 
@@ -578,14 +585,14 @@ class HyperplaneArrangementLibrary:
         x = H.gens()
         hyperplanes = []
         for i in range(n):
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 hyperplanes.append(x[i] - x[j])
                 hyperplanes.append(x[i] + x[j])
-            for a in range(i+1-n, n-i+1):
+            for a in range(i + 1 - n, n - i + 1):
                 hyperplanes.append(x[i] - a)
         A = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = (x - 2*n) ** n
+        charpoly = (x - 2 * n) ** n
         A.characteristic_polynomial.set_cache(charpoly)
         return A
 
@@ -627,11 +634,13 @@ class HyperplaneArrangementLibrary:
         x = H.gens()
         hyperplanes = []
         for i in range(n):
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 hyperplanes.append(x[i] - x[j] - 1)
         A = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = x * sum(binomial(n, k)*(x - k)**(n - 1) for k in range(n + 1)) / 2**n
+        charpoly = (
+            x * sum(binomial(n, k) * (x - k) ** (n - 1) for k in range(n + 1)) / 2**n
+        )
         A.characteristic_polynomial.set_cache(charpoly)
         return A
 
@@ -673,13 +682,17 @@ class HyperplaneArrangementLibrary:
         x = H.gens()
         hyperplanes = []
         for i in range(n):
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 for k in [-1, 1]:
                     hyperplanes.append(x[i] - x[j] - k)
         A = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = x * sum([stirling_number2(n, k) * prod([x - k - i for i in range(1, k)])
-                            for k in range(1, n+1)])
+        charpoly = x * sum(
+            [
+                stirling_number2(n, k) * prod([x - k - i for i in range(1, k)])
+                for k in range(1, n + 1)
+            ]
+        )
         A.characteristic_polynomial.set_cache(charpoly)
         return A
 
@@ -788,7 +801,9 @@ class HyperplaneArrangementLibrary:
         else:
             cartan_type = CartanType(data)
         if not cartan_type.is_crystallographic():
-            raise NotImplementedError("Shi arrangements are not defined for non crystallographic Cartan types")
+            raise NotImplementedError(
+                "Shi arrangements are not defined for non crystallographic Cartan types"
+            )
         n = cartan_type.rank()
         h = cartan_type.coxeter_number()
         Ra = RootSystem(cartan_type).ambient_space()
@@ -800,10 +815,10 @@ class HyperplaneArrangementLibrary:
 
         for a in PR:
             for const in range(-m + 1, m + 1):
-                hyperplanes.append(sum(a[j]*x[j] for j in range(d))-const)
+                hyperplanes.append(sum(a[j] * x[j] for j in range(d)) - const)
         A = H(*hyperplanes)
         x = polygen(QQ, 'x')
-        charpoly = x**(d-n) * (x-m*h)**n
+        charpoly = x ** (d - n) * (x - m * h) ** n
         A.characteristic_polynomial.set_cache(charpoly)
         return A
 

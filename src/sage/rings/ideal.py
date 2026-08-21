@@ -199,9 +199,12 @@ def Ideal(*args, **kwds):
 
     if inferred_field and not isinstance(I, Ideal_fractional):  # trac 32320
         import warnings
-        warnings.warn(f'Constructing an ideal in {R}, which is a field.'
-                      ' Did you intend to take numerators first?'
-                      ' This warning can be muted by passing the base ring to Ideal() explicitly.')
+
+        warnings.warn(
+            f'Constructing an ideal in {R}, which is a field.'
+            ' Did you intend to take numerators first?'
+            ' This warning can be muted by passing the base ring to Ideal() explicitly.'
+        )
 
     return I
 
@@ -212,6 +215,7 @@ class Ideal_generic(MonoidElement):
 
     See :func:`Ideal()`.
     """
+
     def __init__(self, ring, gens, coerce=True, **kwds) -> None:
         """
         Initialize this ideal.
@@ -341,10 +345,14 @@ class Ideal_generic(MonoidElement):
             return rich_to_bool(op, 1)  # self.is_zero() is already False
 
         from sage.rings.integer_ring import ZZ
+
         if self.ring().base_ring() is ZZ:
-            #assert self.ring().implementation() != "singular"
+            # assert self.ring().implementation() != "singular"
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-            Rs = PolynomialRing(ZZ, self.ring().variable_names(), implementation="singular")
+
+            Rs = PolynomialRing(
+                ZZ, self.ring().variable_names(), implementation="singular"
+            )
             Is = Rs.ideal(self.gens())
             Js = Rs.ideal(other.gens())
             return Is.__richcmp__(Js, op)
@@ -357,7 +365,9 @@ class Ideal_generic(MonoidElement):
             return rich_to_bool(op, -1)
         if S > T:
             return rich_to_bool(op, +1)
-        raise NotImplementedError(f'ideal comparison in {self.ring()} is not implemented')
+        raise NotImplementedError(
+            f'ideal comparison in {self.ring()} is not implemented'
+        )
 
     def __contains__(self, x) -> bool:
         """
@@ -524,6 +534,7 @@ class Ideal_generic(MonoidElement):
             Fractional ideal (2, a + 1)
         """
         from sage.categories.morphism import Morphism
+
         if not isinstance(phi, Morphism):
             raise TypeError("phi must be a morphism")
         # delegate: morphisms know how to apply themselves to ideals
@@ -539,9 +550,11 @@ class Ideal_generic(MonoidElement):
             \left(3\right)\Bold{Z}
         """
         from sage.misc import latex
-        return '\\left(%s\\right)%s' % (", ".join(latex.latex(g)
-                                                  for g in self.gens()),
-                                        latex.latex(self.ring()))
+
+        return '\\left(%s\\right)%s' % (
+            ", ".join(latex.latex(g) for g in self.gens()),
+            latex.latex(self.ring()),
+        )
 
     def ring(self):
         """
@@ -601,7 +614,7 @@ class Ideal_generic(MonoidElement):
             sage: parent(ZZ.ideal(5).reduce(17))
             Integer Ring
         """
-        return f       # default
+        return f  # default
 
     def gens(self):  # -> tuple | PolynomialSequence
         """
@@ -699,6 +712,7 @@ class Ideal_generic(MonoidElement):
             False
         """
         from sage.rings.integer_ring import ZZ
+
         R = self.ring()
         if hasattr(R, 'cover_ring') and R.cover_ring() is ZZ:
             # The following test only works for quotients of Z/nZ: for
@@ -824,6 +838,7 @@ class Ideal_generic(MonoidElement):
             For general rings, uses the list of associated primes.
         """
         from sage.rings.integer_ring import ZZ
+
         R = self.ring()
         if hasattr(R, 'cover_ring') and R.cover_ring() is ZZ and R.is_finite():
             # For quotient rings of ZZ, prime is the same as maximal.
@@ -984,6 +999,7 @@ class Ideal_generic(MonoidElement):
             over Integer Ring
         """
         import sage.categories.all
+
         return sage.categories.all.Ideals(self.__ring)
 
     def __add__(self, other):
@@ -1065,8 +1081,9 @@ class Ideal_generic(MonoidElement):
             sage: I._mul_(J)
             Ideal (x^3*y, x^2*y^2, x^3*z, x^2*y*z, x^4, x^3*y) of Multivariate Polynomial Ring in x, y, z over Rational Field
         """
-        return self.ring().ideal([z for x in self.gens() for y in other.gens()
-                                  if (z := x * y)])
+        return self.ring().ideal(
+            [z for x in self.gens() for y in other.gens() if (z := x * y)]
+        )
 
     def __rmul__(self, other):
         """
@@ -1086,8 +1103,9 @@ class Ideal_generic(MonoidElement):
             except (TypeError, ArithmeticError, ValueError):
                 pass
             other = self.ring().ideal(other)
-        return self.ring().ideal([z for x in self.gens() for y in other.gens()
-                                  if (z := y * x)])
+        return self.ring().ideal(
+            [z for x in self.gens() for y in other.gens() if (z := y * x)]
+        )
 
     def norm(self):
         """
@@ -1191,6 +1209,7 @@ class Ideal_generic(MonoidElement):
         """
         if macaulay2 is None:
             from sage.interfaces.macaulay2 import macaulay2 as m2_default
+
             macaulay2 = m2_default
 
         R = self.ring()
@@ -1217,6 +1236,7 @@ class Ideal_generic(MonoidElement):
         if not self.is_principal():
             raise NotImplementedError("the ideal must be a principal ideal")
         from sage.homology.free_resolution import FiniteFreeResolution_free_module
+
         return FiniteFreeResolution_free_module(self, *args, **kwds)
 
     def graded_free_resolution(self, *args, **kwds):
@@ -1233,7 +1253,10 @@ class Ideal_generic(MonoidElement):
             sage: I.graded_free_resolution()                                            # needs sage.modules
             S(0) <-- S(-3) <-- 0
         """
-        from sage.homology.graded_resolution import GradedFiniteFreeResolution_free_module
+        from sage.homology.graded_resolution import (
+            GradedFiniteFreeResolution_free_module,
+        )
+
         return GradedFiniteFreeResolution_free_module(self, *args, **kwds)
 
 
@@ -1243,6 +1266,7 @@ class Ideal_principal(Ideal_generic):
 
     See :func:`Ideal()`.
     """
+
     # now Ideal_principal takes a list.
     # def __init__(self, ring, gen):
     #    Ideal_generic.__init__(self, ring, [gen])
@@ -1456,6 +1480,7 @@ class Ideal_pid(Ideal_principal):
         sage: I
         Principal ideal (8) of Integer Ring
     """
+
     def __add__(self, other):
         """
         Add the two ideals.
@@ -1584,7 +1609,7 @@ class Ideal_pid(Ideal_principal):
         if self.is_zero():  # PIDs are integral domains by definition
             return True
         g = self.gen()
-        if g.is_one():      # The ideal (1) is never prime
+        if g.is_one():  # The ideal (1) is never prime
             return False
         if hasattr(g, 'is_irreducible'):
             return g.is_irreducible()
@@ -1674,9 +1699,12 @@ class Ideal_pid(Ideal_principal):
         if not self.is_prime():
             raise ValueError("The ideal (%s) is not prime" % self)
         from sage.rings.integer_ring import ZZ
+
         if self.ring() is ZZ:
             return ZZ.residue_field(self, check=False)
-        raise NotImplementedError("residue_field() is only implemented for ZZ and rings of integers of number fields.")
+        raise NotImplementedError(
+            "residue_field() is only implemented for ZZ and rings of integers of number fields."
+        )
 
     def radical(self):
         r"""
@@ -1696,6 +1724,7 @@ class Ideal_fractional(Ideal_generic):
 
     See :func:`Ideal()`.
     """
+
     def _repr_(self) -> str:
         """
         Return a string representation of ``self``.
@@ -1709,6 +1738,7 @@ class Ideal_fractional(Ideal_generic):
             Fractional ideal (a) of Number Field in a with defining polynomial x^2 + 1
         """
         return "Fractional ideal %s of %s" % (self._repr_short(), self.ring())
+
 
 # constructors for standard (benchmark) ideals, written uppercase as
 # these are constructors
@@ -1767,6 +1797,7 @@ def Cyclic(R, n=None, homog=False, singular=None):
 
     if singular is None:
         from sage.interfaces.singular import singular as singular_default
+
         singular = singular_default
 
     singular.lib("polylib")
@@ -1811,6 +1842,7 @@ def Katsura(R, n=None, homog=False, singular=None):
         Ideal (x - 1) of Multivariate Polynomial Ring in x over Rational Field
     """
     from .rational_field import RationalField
+
     if n:
         if n > R.ngens():
             raise ArithmeticError("n must be <= R.ngens().")
@@ -1819,6 +1851,7 @@ def Katsura(R, n=None, homog=False, singular=None):
 
     if singular is None:
         from sage.interfaces.singular import singular as singular_default
+
         singular = singular_default
     singular.lib("polylib")
     R2 = R.change_ring(RationalField())
@@ -1863,6 +1896,9 @@ def FieldIdeal(R):
     """
     q = R.base_ring().order()
     import sage.rings.infinity
+
     if q is sage.rings.infinity.infinity:
-        raise TypeError("Cannot construct field ideal for R.base_ring().order()==infinity")
+        raise TypeError(
+            "Cannot construct field ideal for R.base_ring().order()==infinity"
+        )
     return R.ideal([x**q - x for x in R.gens()])

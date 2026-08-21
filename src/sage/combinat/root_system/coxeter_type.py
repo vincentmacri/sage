@@ -36,6 +36,7 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
     """
     Abstract class for Coxeter types.
     """
+
     @staticmethod
     def __classcall_private__(cls, *x):
         """
@@ -60,7 +61,9 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
         if len(x) == 1:  # In case the input is similar to CoxeterType([['A',2]])
             return CoxeterType(x[0])
 
-        raise NotImplementedError("Coxeter types not from Cartan types not yet implemented")
+        raise NotImplementedError(
+            "Coxeter types not from Cartan types not yet implemented"
+        )
 
     @classmethod
     def samples(self, finite=None, affine=None, crystallographic=None):
@@ -176,15 +179,42 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
              Coxeter type of ['F', 4, 1], Coxeter type of ['G', 2, 1],
              Coxeter type of ['A', 1, 1]]
         """
-        finite = [CoxeterType(t) for t in [['A', 1], ['A', 5], ['B', 1], ['B', 5],
-                                           ['C', 1], ['C', 5], ['D', 4], ['D', 5],
-                                           ['E', 6], ['E', 7], ['E', 8], ['F', 4],
-                                           ['H', 3], ['H', 4], ['I', 10]]]
+        finite = [
+            CoxeterType(t)
+            for t in [
+                ['A', 1],
+                ['A', 5],
+                ['B', 1],
+                ['B', 5],
+                ['C', 1],
+                ['C', 5],
+                ['D', 4],
+                ['D', 5],
+                ['E', 6],
+                ['E', 7],
+                ['E', 8],
+                ['F', 4],
+                ['H', 3],
+                ['H', 4],
+                ['I', 10],
+            ]
+        ]
 
-        affine = [CoxeterType(t) for t in [['A', 2, 1], ['B', 5, 1],
-                                           ['C', 5, 1], ['D', 5, 1], ['E', 6, 1],
-                                           ['E', 7, 1], ['E', 8, 1], ['F', 4, 1],
-                                           ['G', 2, 1], ['A', 1, 1]]]
+        affine = [
+            CoxeterType(t)
+            for t in [
+                ['A', 2, 1],
+                ['B', 5, 1],
+                ['C', 5, 1],
+                ['D', 5, 1],
+                ['E', 6, 1],
+                ['E', 7, 1],
+                ['E', 8, 1],
+                ['F', 4, 1],
+                ['G', 2, 1],
+                ['A', 1, 1],
+            ]
+        ]
 
         return finite + affine
 
@@ -385,14 +415,14 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
 
             def val(x):
                 if x > -1:
-                    return (E(2*x) + ~E(2*x)) / R(-2)
+                    return (E(2 * x) + ~E(2 * x)) / R(-2)
                 return R(x)
         elif isinstance(R, sage.rings.abc.NumberField_quadratic):
             E = UniversalCyclotomicField().gen
 
             def val(x):
                 if x > -1:
-                    return R((E(2*x) + ~E(2*x)).to_cyclotomic_field()) / R(-2)
+                    return R((E(2 * x) + ~E(2 * x)).to_cyclotomic_field()) / R(-2)
                 return R(x)
         else:
             from sage.functions.trig import cos
@@ -404,9 +434,12 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
                     return -R(cos(pi / SR(x)))
                 return R(x)
 
-        entries = [SparseEntry(i, j, val(mat[i, j]))
-                   for i in range(n) for j in range(n)
-                   if mat[i, j] != 2]
+        entries = [
+            SparseEntry(i, j, val(mat[i, j]))
+            for i in range(n)
+            for j in range(n)
+            if mat[i, j] != 2
+        ]
         bilinear = Matrix(R, n, entries)
         bilinear.set_immutable()
         return bilinear
@@ -416,6 +449,7 @@ class CoxeterTypeFromCartanType(UniqueRepresentation, CoxeterType):
     """
     A Coxeter type associated to a Cartan type.
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """

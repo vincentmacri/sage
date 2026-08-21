@@ -106,10 +106,21 @@ class DegenerateManifold(DifferentiableManifold):
     - [DB1996]_
     - [DS2010]_
     """
-    def __init__(self, n, name, metric_name=None, signature=None,
-                 base_manifold=None, diff_degree=infinity, latex_name=None,
-                 metric_latex_name=None, start_index=0, category=None,
-                 unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        metric_name=None,
+        signature=None,
+        base_manifold=None,
+        diff_degree=infinity,
+        latex_name=None,
+        metric_latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a degenerate manifold.
 
@@ -126,16 +137,23 @@ class DegenerateManifold(DifferentiableManifold):
             sage: TestSuite(M).run()
         """
         if base_manifold and not isinstance(base_manifold, DegenerateManifold):
-            raise TypeError("the argument 'base_manifold' must be a " +
-                            "Degenerate manifold")
+            raise TypeError(
+                "the argument 'base_manifold' must be a " + "Degenerate manifold"
+            )
         structure = DegenerateStructure()
-        DifferentiableManifold.__init__(self, n, name, 'real', structure,
-                                        base_manifold=base_manifold,
-                                        diff_degree=diff_degree,
-                                        latex_name=latex_name,
-                                        start_index=start_index,
-                                        category=category)
-        self._metric = None # to be initialized by metric()
+        DifferentiableManifold.__init__(
+            self,
+            n,
+            name,
+            'real',
+            structure,
+            base_manifold=base_manifold,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
+        self._metric = None  # to be initialized by metric()
         self._metric_signature = signature
         if metric_name is None:
             metric_name = 'g'
@@ -149,8 +167,9 @@ class DegenerateManifold(DifferentiableManifold):
                 raise TypeError("{} is not a string".format(metric_latex_name))
             self._metric_latex_name = metric_latex_name
 
-    def metric(self, name=None, signature=None, latex_name=None,
-               dest_map=None) -> DegenerateMetric:
+    def metric(
+        self, name=None, signature=None, latex_name=None, dest_map=None
+    ) -> DegenerateMetric:
         r"""
         Return the metric giving the null manifold structure to the
         manifold, or define a new metric tensor on the manifold.
@@ -262,16 +281,18 @@ class DegenerateManifold(DifferentiableManifold):
                     self._metric = self._manifold._metric.restrict(self)
                 else:
                     # creation from scratch:
-                    self._metric = DifferentiableManifold.metric(self,
-                                           self._metric_name,
-                                           signature=self._metric_signature,
-                                           latex_name=self._metric_latex_name)
+                    self._metric = DifferentiableManifold.metric(
+                        self,
+                        self._metric_name,
+                        signature=self._metric_signature,
+                        latex_name=self._metric_latex_name,
+                    )
             return self._metric
         # Metric distinct from the default one: it is created by the method
         # metric of the superclass for generic differentiable manifolds:
-        return DifferentiableManifold.metric(self, name, signature=signature,
-                                             latex_name=latex_name,
-                                             dest_map=dest_map)
+        return DifferentiableManifold.metric(
+            self, name, signature=signature, latex_name=latex_name, dest_map=dest_map
+        )
 
     def open_subset(self, name, latex_name=None, coord_def={}):
         r"""
@@ -338,14 +359,17 @@ class DegenerateManifold(DifferentiableManifold):
             sage: gV is g.restrict(V)
             True
         """
-        resu = DegenerateManifold(self._dim, name,
-                                        metric_name=self._metric_name,
-                                        signature=self._metric_signature,
-                                        base_manifold=self._manifold,
-                                        diff_degree=self._diff_degree,
-                                        latex_name=latex_name,
-                                        metric_latex_name=self._metric_latex_name,
-                                        start_index=self._sindex)
+        resu = DegenerateManifold(
+            self._dim,
+            name,
+            metric_name=self._metric_name,
+            signature=self._metric_signature,
+            base_manifold=self._manifold,
+            diff_degree=self._diff_degree,
+            latex_name=latex_name,
+            metric_latex_name=self._metric_latex_name,
+            start_index=self._sindex,
+        )
         resu._calculus_method = self._calculus_method
         resu._supersets.update(self._supersets)
         for sd in self._supersets:
@@ -354,8 +378,10 @@ class DegenerateManifold(DifferentiableManifold):
         # Charts on the result from the coordinate definition:
         for chart, restrictions in coord_def.items():
             if chart not in self._atlas:
-                raise ValueError("the {} does not belong to ".format(chart) +
-                                 "the atlas of {}".format(self))
+                raise ValueError(
+                    "the {} does not belong to ".format(chart)
+                    + "the atlas of {}".format(self)
+                )
             chart.restrict(resu, restrictions)
         # Transition maps on the result inferred from those of self:
         for chart1 in coord_def:
@@ -366,7 +392,7 @@ class DegenerateManifold(DifferentiableManifold):
         return resu
 
 
-#*******************************************************************************************
+# *******************************************************************************************
 
 from sage.manifolds.differentiable.tensorfield import TensorField
 from sage.manifolds.differentiable.tensorfield_paral import TensorFieldParal
@@ -427,6 +453,7 @@ class TangentTensor(TensorFieldParal):
             sage: T2(xi.along(Phi)).display()
             sqrt(u^2 + v^2) ∂/∂t
     """
+
     def __init__(self, tensor, embedding, screen=None):
         r"""
 
@@ -465,18 +492,32 @@ class TangentTensor(TensorFieldParal):
         except ValueError:
             pass
         if isinstance(tensor, TensorFieldParal):
-            TensorFieldParal.__init__(self, tensor._vmodule, tensor._tensor_type, name=tensor._name,
-                   latex_name=tensor._latex_name, sym=tensor._sym, antisym=tensor._antisym)
+            TensorFieldParal.__init__(
+                self,
+                tensor._vmodule,
+                tensor._tensor_type,
+                name=tensor._name,
+                latex_name=tensor._latex_name,
+                sym=tensor._sym,
+                antisym=tensor._antisym,
+            )
         else:
-            TensorField.__init__(self, tensor._vmodule, tensor._tensor_type, name=tensor._name,
-                   latex_name=tensor._latex_name, sym=tensor._sym, antisym=tensor._antisym)
+            TensorField.__init__(
+                self,
+                tensor._vmodule,
+                tensor._tensor_type,
+                name=tensor._name,
+                latex_name=tensor._latex_name,
+                sym=tensor._sym,
+                antisym=tensor._antisym,
+            )
         f = tensor._domain._ambient.default_frame().along(embedding)
         self[f, :] = tensor[f, :]
         frame = self._domain.adapted_frame(screen)
         self.display(frame)
         for i in self._domain._ambient.index_generator(tensor.tensor_rank()):
             for j in range(len(i)):
-                if i[j] == self._domain._ambient._dim-self._domain._sindex-1:
+                if i[j] == self._domain._ambient._dim - self._domain._sindex - 1:
                     self[frame, i] = 0
 
     def __call__(self, *args):
@@ -513,8 +554,10 @@ class TangentTensor(TensorFieldParal):
             except ValueError:
                 pass
             if not self._domain.is_tangent(vector):
-                raise ValueError("The provided vector field is not " +
-                        "tangent to {}".format(self._domain._name))
+                raise ValueError(
+                    "The provided vector field is not "
+                    + "tangent to {}".format(self._domain._name)
+                )
         try:
             return TensorField.__call__(self._tensor.along(self._embedding), *args)
         except ValueError:

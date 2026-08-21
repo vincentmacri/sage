@@ -120,11 +120,13 @@ def _compare_formal_sums(self_data, other_data, zero, op) -> bool:
     if op == op_GE:
         return all(self_data.get(x, zero) >= other_data.get(x, zero) for x in support)
     if op == op_LT:
-        return (self_data != other_data
-                and all(self_data.get(x, zero) <= other_data.get(x, zero) for x in support))
+        return self_data != other_data and all(
+            self_data.get(x, zero) <= other_data.get(x, zero) for x in support
+        )
     if op == op_GT:
-        return (self_data != other_data
-                and all(self_data.get(x, zero) >= other_data.get(x, zero) for x in support))
+        return self_data != other_data and all(
+            self_data.get(x, zero) >= other_data.get(x, zero) for x in support
+        )
     raise ValueError(f"unknown comparison operator {op}")
 
 
@@ -132,6 +134,7 @@ class FormalSum(ModuleElement):
     """
     A formal sum over a ring.
     """
+
     def __init__(self, x, parent=None, check=True, reduce=True):
         """
         INPUT:
@@ -189,7 +192,7 @@ class FormalSum(ModuleElement):
         assert isinstance(parent, parent.category().parent_class)
         if reduce:  # first reduce
             self.reduce()
-        if check:   # then check
+        if check:  # then check
             k = parent.base_ring()
             try:
                 self._data = [(k(t[0]), t[1]) for t in self._data]
@@ -254,6 +257,7 @@ class FormalSum(ModuleElement):
             2 + 5\cdot \frac{8}{9} - 3\cdot 7
         """
         from sage.misc.latex import repr_lincomb
+
         symbols = [z[1] for z in self]
         coeffs = [z[0] for z in self]
         return repr_lincomb(symbols, coeffs)
@@ -319,7 +323,9 @@ class FormalSum(ModuleElement):
             sage: -FormalSum([(1,3),(2,5)])
             -3 - 2*5
         """
-        return self.__class__([(-c, s) for (c, s) in self._data], check=False, parent=self.parent())
+        return self.__class__(
+            [(-c, s) for (c, s) in self._data], check=False, parent=self.parent()
+        )
 
     def _add_(self, other):
         """
@@ -328,7 +334,9 @@ class FormalSum(ModuleElement):
             sage: FormalSum([(1,3/7),(2,5/8)]) + FormalSum([(1,3/7),(-2,5)])  # indirect doctest
             2*3/7 + 2*5/8 - 2*5
         """
-        return self.__class__(self._data + other._data, check=False, parent=self.parent())
+        return self.__class__(
+            self._data + other._data, check=False, parent=self.parent()
+        )
 
     def _lmul_(self, s):
         """
@@ -337,7 +345,9 @@ class FormalSum(ModuleElement):
             sage: FormalSum([(1,3/7),(-2,5)])*(-3)
             -3*3/7 + 6*5
         """
-        return self.__class__([(c*s, x) for (c, x) in self], check=False, parent=self.parent())
+        return self.__class__(
+            [(c * s, x) for (c, x) in self], check=False, parent=self.parent()
+        )
 
     def _rmul_(self, s):
         """
@@ -346,7 +356,9 @@ class FormalSum(ModuleElement):
             sage: -3*FormalSum([(1,3/7),(-2,5)])
             -3*3/7 + 6*5
         """
-        return self.__class__([(s*c, x) for (c, x) in self], check=False, parent=self.parent())
+        return self.__class__(
+            [(s * c, x) for (c, x) in self], check=False, parent=self.parent()
+        )
 
     def __bool__(self) -> bool:
         """
@@ -404,6 +416,7 @@ class FormalSums(UniqueRepresentation, Module):
 
         sage: TestSuite(FormalSums(QQ)).run()
     """
+
     Element = FormalSum
 
     @staticmethod
@@ -453,13 +466,12 @@ class FormalSums(UniqueRepresentation, Module):
                 return x
             x = x._data
         if isinstance(x, list):
-            return self.element_class(x, check=check,
-                                      reduce=reduce, parent=self)
+            return self.element_class(x, check=check, reduce=reduce, parent=self)
         if x == 0:
-            return self.element_class([], check=False,
-                                      reduce=False, parent=self)
-        return self.element_class([(self.base_ring()(1), x)],
-                                  check=False, reduce=False, parent=self)
+            return self.element_class([], check=False, reduce=False, parent=self)
+        return self.element_class(
+            [(self.base_ring()(1), x)], check=False, reduce=False, parent=self
+        )
 
     def _coerce_map_from_(self, X):
         r"""
@@ -519,11 +531,15 @@ class FormalSums(UniqueRepresentation, Module):
             if self_is_left:
                 action = RightModuleAction(other, extended)
                 if extended is not self:
-                    action = PrecomposedAction(action, extended._internal_coerce_map_from(self), None)
+                    action = PrecomposedAction(
+                        action, extended._internal_coerce_map_from(self), None
+                    )
             else:
                 action = LeftModuleAction(other, extended)
                 if extended is not self:
-                    action = PrecomposedAction(action, None, extended._internal_coerce_map_from(self))
+                    action = PrecomposedAction(
+                        action, None, extended._internal_coerce_map_from(self)
+                    )
             return action
 
     def _an_element_(self, check=False, reduce=False):
@@ -537,8 +553,12 @@ class FormalSums(UniqueRepresentation, Module):
             sage: QQ.an_element()
             1/2
         """
-        return self.element_class([(self.base_ring().an_element(), 1)],
-                                  check=check, reduce=reduce, parent=self)
+        return self.element_class(
+            [(self.base_ring().an_element(), 1)],
+            check=check,
+            reduce=reduce,
+            parent=self,
+        )
 
 
 formal_sums = FormalSums()
@@ -546,4 +566,6 @@ formal_sums = FormalSums()
 # Formal sums now derives from UniqueRepresentation, which makes the
 # factory function unnecessary. This is why the name was changed from
 # class FormalSums_generic to class FormalSums.
-register_unpickle_override('sage.structure.formal_sum', 'FormalSums_generic', FormalSums)
+register_unpickle_override(
+    'sage.structure.formal_sum', 'FormalSums_generic', FormalSums
+)

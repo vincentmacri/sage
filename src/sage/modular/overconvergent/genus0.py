@@ -187,6 +187,7 @@ classical) does not apply.
     sage: efuncs[3].slope()
     9
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 William Stein <wstein@gmail.com>
 #                     2008-9 David Loeffler <d.loeffler.01@cantab.net>
@@ -234,6 +235,7 @@ __ocmfdict = {}
 ####################
 # Factory function #
 ####################
+
 
 def OverconvergentModularForms(prime, weight, radius, base_ring=QQ, prec=20, char=None):
     r"""
@@ -303,6 +305,7 @@ def OverconvergentModularForms(prime, weight, radius, base_ring=QQ, prec=20, cha
 # Main class definition #
 #########################
 
+
 class OverconvergentModularFormsSpace(Module):
     r"""
     A space of overconvergent modular forms of level `\Gamma_0(p)`,
@@ -347,12 +350,17 @@ class OverconvergentModularFormsSpace(Module):
             raise TypeError("Base ring must be QQ or a p-adic field")
 
         if base_ring != QQ and base_ring.prime() != self._p:
-            raise TypeError("Residue characteristic of base ring (=%s) must be %s" % (base_ring, self._p))
+            raise TypeError(
+                "Residue characteristic of base ring (=%s) must be %s"
+                % (base_ring, self._p)
+            )
 
         if isinstance(weight, WeightCharacter):
             self._wtchar = weight
         else:
-            self._wtchar = WeightSpace(prime, base_ring=char.base_ring())(weight, char, algebraic=True)
+            self._wtchar = WeightSpace(prime, base_ring=char.base_ring())(
+                weight, char, algebraic=True
+            )
 
         if not self._wtchar.is_even():
             raise ValueError("Weight-character must be even")
@@ -367,10 +375,16 @@ class OverconvergentModularFormsSpace(Module):
         self._cached_recurrence_matrix = None
         self._set_radius(radius)
         self._basis_cache = [self._wtchar.pAdicEisensteinSeries(self._qsr, self.prec())]
-        self._uniformiser = self._qsr(EtaProduct(prime, {prime: 24/ZZ(prime-1), ZZ(1): -24/ZZ(prime-1)}).qexp(self.prec()))
+        self._uniformiser = self._qsr(
+            EtaProduct(
+                prime, {prime: 24 / ZZ(prime - 1), ZZ(1): -24 / ZZ(prime - 1)}
+            ).qexp(self.prec())
+        )
 
         for i in range(1, self.prec()):
-            self._basis_cache.append(self._basis_cache[-1] * self._uniformiser * self._const)
+            self._basis_cache.append(
+                self._basis_cache[-1] * self._uniformiser * self._const
+            )
 
     #####################################
     # Methods called by the init script #
@@ -408,9 +422,9 @@ class OverconvergentModularFormsSpace(Module):
 
         p = ZZ(self.prime())
 
-        if (radius < 0 or radius > p/(p+1)):
+        if radius < 0 or radius > p / (p + 1):
             raise ValueError("radius (=%s) must be between 0 and p/(p+1)" % radius)
-        d = 12/(p-1)*radius
+        d = 12 / (p - 1) * radius
         if d.is_integral():
             self._const = p ** ZZ(d)
             self._radius = radius
@@ -422,7 +436,10 @@ class OverconvergentModularFormsSpace(Module):
                 pi = p
                 e = d
             if not e.is_integral():
-                raise ValueError("no element of base ring (=%s) has normalised valuation %s" % (self.base_ring(), radius * 12 / (p-1)))
+                raise ValueError(
+                    "no element of base ring (=%s) has normalised valuation %s"
+                    % (self.base_ring(), radius * 12 / (p - 1))
+                )
             self._radius = radius
             self._const = pi ** ZZ(e)
 
@@ -456,7 +473,14 @@ class OverconvergentModularFormsSpace(Module):
             Space of 2-adic 1/2-overconvergent modular forms of weight-character 0
              over 2-adic Field with ...
         """
-        return OverconvergentModularForms(self.prime(), self.weight(), self.radius(), ring, self.prec(), self.character())
+        return OverconvergentModularForms(
+            self.prime(),
+            self.weight(),
+            self.radius(),
+            ring,
+            self.prec(),
+            self.character(),
+        )
 
     def base_extend(self, ring):
         r"""
@@ -480,7 +504,10 @@ class OverconvergentModularFormsSpace(Module):
         """
         if ring.has_coerce_map_from(self.base_ring()):
             return self.change_ring(ring)
-        raise TypeError("Base extension of self (over '%s') to ring '%s' not defined." % (self.base_ring(), ring))
+        raise TypeError(
+            "Base extension of self (over '%s') to ring '%s' not defined."
+            % (self.base_ring(), ring)
+        )
 
     def _an_element_(self):
         r"""
@@ -617,7 +644,14 @@ class OverconvergentModularFormsSpace(Module):
              20,
              Dirichlet character modulo 7 of conductor 1 mapping 3 |--> 1)
         """
-        return (self.prime(), self.weight().k(), self.radius(), self.base_ring(), self.prec(), self.weight().chi())
+        return (
+            self.prime(),
+            self.weight().k(),
+            self.radius(),
+            self.base_ring(),
+            self.prec(),
+            self.weight().chi(),
+        )
 
     def __reduce__(self):
         r"""
@@ -656,7 +690,7 @@ class OverconvergentModularFormsSpace(Module):
              with q-expansion O(q^4)
         """
 
-        return OverconvergentModularFormElement(self, gexp=self._gsr.gen()**i)
+        return OverconvergentModularFormElement(self, gexp=self._gsr.gen() ** i)
 
     def _repr_(self):
         r"""
@@ -667,7 +701,10 @@ class OverconvergentModularFormsSpace(Module):
             sage: OverconvergentModularForms(3, 0, 1/2)._repr_()
             'Space of 3-adic 1/2-overconvergent modular forms of weight-character 0 over Rational Field'
         """
-        return "Space of %s-adic %s-overconvergent modular forms of weight-character %s over %s" % (self.prime(), self.radius(), self.weight(), self.base_ring())
+        return (
+            "Space of %s-adic %s-overconvergent modular forms of weight-character %s over %s"
+            % (self.prime(), self.radius(), self.weight(), self.base_ring())
+        )
 
     def prime(self):
         r"""
@@ -807,28 +844,46 @@ class OverconvergentModularFormsSpace(Module):
             return self._coerce_from_ocmf(input)
 
         if isinstance(input, ModularFormElement):
-            if ((input.level() == 1 or input.level().prime_factors() == [self.prime()])
-                    and input.weight() == self.weight().k()
-                    and input.character().primitive_character() == self.weight().chi().primitive_character()):
+            if (
+                (input.level() == 1 or input.level().prime_factors() == [self.prime()])
+                and input.weight() == self.weight().k()
+                and input.character().primitive_character()
+                == self.weight().chi().primitive_character()
+            ):
                 p = ZZ(self.prime())
-                nu = (input.level() == 1 and p/(p+1)) or (1 / (p + 1) * p**(2 - input.level().valuation(p)))
+                nu = (input.level() == 1 and p / (p + 1)) or (
+                    1 / (p + 1) * p ** (2 - input.level().valuation(p))
+                )
                 if self.radius() > nu:
-                    raise ValueError("Form is not overconvergent enough (form is only %s-overconvergent)" % nu)
+                    raise ValueError(
+                        "Form is not overconvergent enough (form is only %s-overconvergent)"
+                        % nu
+                    )
                 else:
                     return self(self._qsr(input.q_expansion(self.prec())))
             else:
-                raise TypeError("Cannot create an element of '%s' from element of incompatible space '%s'" % (self, input.parent()))
+                raise TypeError(
+                    "Cannot create an element of '%s' from element of incompatible space '%s'"
+                    % (self, input.parent())
+                )
 
         elif isinstance(input, (list, tuple, Vector)):
             v = list(input)
             n = len(v)
-            return OverconvergentModularFormElement(self, gexp=self._gsr(v).add_bigoh(n), qexp=None)
+            return OverconvergentModularFormElement(
+                self, gexp=self._gsr(v).add_bigoh(n), qexp=None
+            )
 
         elif self._qsr.has_coerce_map_from(input.parent()):
-            return OverconvergentModularFormElement(self, gexp=None, qexp=self._qsr(input))
+            return OverconvergentModularFormElement(
+                self, gexp=None, qexp=self._qsr(input)
+            )
 
         else:
-            raise TypeError("Don't know how to create an overconvergent modular form from %s" % input)
+            raise TypeError(
+                "Don't know how to create an overconvergent modular form from %s"
+                % input
+            )
 
     @cached_method
     def zero(self):
@@ -863,8 +918,15 @@ class OverconvergentModularFormsSpace(Module):
             True
         """
         prime, weight, radius, base_ring, prec, char = f.parent()._params()
-        if (prime, weight, char) != (self.prime(), self.weight().k(), self.weight().chi()):
-            raise TypeError("Cannot create an element of '%s' from element of incompatible space '%s'" % (self, input.parent()))
+        if (prime, weight, char) != (
+            self.prime(),
+            self.weight().k(),
+            self.weight().chi(),
+        ):
+            raise TypeError(
+                "Cannot create an element of '%s' from element of incompatible space '%s'"
+                % (self, input.parent())
+            )
         return self(self._qsr(f.q_expansion()))
 
     def _coerce_map_from_(self, other):
@@ -886,8 +948,9 @@ class OverconvergentModularFormsSpace(Module):
             sage: M.coerce(1)
             3-adic overconvergent modular form of weight-character 0 with q-expansion 1 + O(q^20)
         """
-        if (isinstance(other, OverconvergentModularFormsSpace) and
-                self.base_ring().has_coerce_map_from(other.base_ring())):
+        if isinstance(
+            other, OverconvergentModularFormsSpace
+        ) and self.base_ring().has_coerce_map_from(other.base_ring()):
             return True
         return self.base_ring().has_coerce_map_from(other)
 
@@ -970,7 +1033,9 @@ class OverconvergentModularFormsSpace(Module):
                 return f.parent().hecke_operator(f, m)
             raise TypeError("Not an element of this space")
         else:
-            return hecke_operator_on_qexp(f, m, self.weight().k(), eps=self.weight().chi())
+            return hecke_operator_on_qexp(
+                f, m, self.weight().k(), eps=self.weight().chi()
+            )
 
     def _convert_to_basis(self, qexp):
         r"""
@@ -1061,9 +1126,14 @@ class OverconvergentModularFormsSpace(Module):
                         raise ValueError("n is too large for current precision")
                     else:
                         if i <= self.prime() * j:
-                            raise ValueError("n is too large computing initial conds: can't work out u[%s, %s]" % (i, j))
+                            raise ValueError(
+                                "n is too large computing initial conds: can't work out u[%s, %s]"
+                                % (i, j)
+                            )
                         else:
-                            mat[i, j] = 0  # computations are exact for weight 0, and we know these terms are zero
+                            mat[i, j] = (
+                                0  # computations are exact for weight 0, and we know these terms are zero
+                            )
         if use_recurrence:
             if m != self.prime():
                 raise ValueError("Recurrence method not valid when m != p")
@@ -1075,17 +1145,26 @@ class OverconvergentModularFormsSpace(Module):
                             raise ValueError("n is too large for current precision")
                         else:
                             if j <= self.prime() * i:
-                                raise ValueError("n is too large computing initial conds: can't work out u[%s,%s]" % (i, j))
+                                raise ValueError(
+                                    "n is too large computing initial conds: can't work out u[%s,%s]"
+                                    % (i, j)
+                                )
                         mat[i, j] = 0
 
                 else:
-                    l = self._convert_to_basis(self.hecke_operator(self._basis_cache[j], m))
+                    l = self._convert_to_basis(
+                        self.hecke_operator(self._basis_cache[j], m)
+                    )
                     for i in range(self.prime()):
                         mat[i, j] = l[i]
                 for i in range(self.prime(), n):
                     for u in range(self.prime()):
                         for v in range(self.prime()):
-                            mat[i, j] = mat[i, j] + mat[i-u-1, j-v-1]*self.recurrence_matrix()[u, v]
+                            mat[i, j] = (
+                                mat[i, j]
+                                + mat[i - u - 1, j - v - 1]
+                                * self.recurrence_matrix()[u, v]
+                            )
 
         else:
             if n * self.prime() > self.prec():
@@ -1189,12 +1268,14 @@ class OverconvergentModularFormsSpace(Module):
             # raise TypeError("cannot calculate eigenfunctions over exact base fields")
             F = pAdicField(self.prime(), 100)  # noqa:F821
 
-        m = self.hecke_matrix(self.prime(), n, use_recurrence=True, exact_arith=exact_arith)
+        m = self.hecke_matrix(
+            self.prime(), n, use_recurrence=True, exact_arith=exact_arith
+        )
         cp = m.charpoly()
         eigenvalues = cp.roots(F)
         eigenfunctions = []
         verbose("Expected %s eigenvalues, got %s" % (n, len(eigenvalues)))
-        for (r, d) in eigenvalues:
+        for r, d in eigenvalues:
             if d != 1:
                 continue
 
@@ -1202,10 +1283,16 @@ class OverconvergentModularFormsSpace(Module):
             # Annoying thing: r isn't quite as precise as it claims to be
             # (bug reported to sage-support list)
             while F(mr.matdet()) != 0:
-                verbose("p-adic solver returned wrong result in slope %s; refining" % r.valuation(), level=2)
-                r = r - cp(r)/cp.derivative()(r)
+                verbose(
+                    "p-adic solver returned wrong result in slope %s; refining"
+                    % r.valuation(),
+                    level=2,
+                )
+                r = r - cp(r) / cp.derivative()(r)
                 mr2 = m.__pari__() - r.__pari__()
-                if mr2.matdet().valuation(self.prime()) > mr.matdet().valuation(self.prime()):
+                if mr2.matdet().valuation(self.prime()) > mr.matdet().valuation(
+                    self.prime()
+                ):
                     mr = mr2
                 else:
                     mr = None
@@ -1227,18 +1314,20 @@ class OverconvergentModularFormsSpace(Module):
                 # indistinguishable from 0?
 
             if v.ncols() != 1:
-                verbose("PARI returned non-simple eigenspace in slope %s" % r.valuation())
+                verbose(
+                    "PARI returned non-simple eigenspace in slope %s" % r.valuation()
+                )
                 continue
 
             gexp = self._gsr(0)
             for i in range(v.nrows()):
-                gexp += self._gsr.gen()**i * F(v[i, 0])
-            gexp = gexp + O(self._gsr.gen()**int(v.nrows()))
+                gexp += self._gsr.gen() ** i * F(v[i, 0])
+            gexp = gexp + O(self._gsr.gen() ** int(v.nrows()))
 
             if gexp[0] != 0:
-                gexp = gexp/gexp[0]
+                gexp = gexp / gexp[0]
             elif gexp[1] != 0:
-                gexp = gexp/gexp[1]/self._const
+                gexp = gexp / gexp[1] / self._const
             # This is slightly subtle. We want all eigenfunctions to have q-exps in Z_p.
             # Normalising the q-term to be 1 doesn't work for the Eisenstein series if
             # we're in the 0 component of weight-character space. But normalising the const term
@@ -1301,10 +1390,12 @@ class OverconvergentModularFormsSpace(Module):
             return self._cached_recurrence_matrix
 
         MM = OverconvergentModularForms(self.prime(), 0, 0, base_ring=QQ)
-        m = MM._discover_recurrence_matrix(use_smithline=True).base_extend(self.base_ring())
+        m = MM._discover_recurrence_matrix(use_smithline=True).base_extend(
+            self.base_ring()
+        )
 
         r = diagonal_matrix([self._const**i for i in range(self.prime())])
-        self._cached_recurrence_matrix = (r**(-1)) * m * r
+        self._cached_recurrence_matrix = (r ** (-1)) * m * r
         self._cached_recurrence_matrix.set_immutable()
         return self._cached_recurrence_matrix
 
@@ -1336,18 +1427,18 @@ class OverconvergentModularFormsSpace(Module):
 
                 coeffs.append(h[i] / fi[i])
                 h = h - coeffs[-1] * fi
-                fi = fi*self._uniformiser
+                fi = fi * self._uniformiser
             SmiH = f_ring(coeffs)
             assert SmiH.degree() == self.prime() + 1
             xyring = PolynomialRing(self.base_ring(), ["x", "y"], 2)
             x, y = xyring.gens()
-            cc = self.prime() ** (-12/(self.prime() - 1))
-            bigI = x*SmiH(y*cc) - y*cc*SmiH(x)
-            smallI = xyring(bigI / (x - cc*y))
+            cc = self.prime() ** (-12 / (self.prime() - 1))
+            bigI = x * SmiH(y * cc) - y * cc * SmiH(x)
+            smallI = xyring(bigI / (x - cc * y))
             r = matrix(ZZ, self.prime(), self.prime())
             for i in range(self.prime()):
                 for j in range(self.prime()):
-                    r[i, j] = -smallI[i+1, j+1]
+                    r[i, j] = -smallI[i + 1, j + 1]
             return r
         # compute from U(f^j) for small j via Newton's identities
         # to be implemented when I can remember Newton's identities!
@@ -1431,10 +1522,17 @@ class OverconvergentModularFormElement(ModuleElement):
         self._p = self.parent().prime()
         # self.weight = self.parent().weight
         if (gexp is None and qexp is None) or (gexp is not None and qexp is not None):
-            raise ValueError("Must supply exactly one of a q-expansion and a g-expansion")
+            raise ValueError(
+                "Must supply exactly one of a q-expansion and a g-expansion"
+            )
         if gexp is not None:
             self._gexp = gexp.add_bigoh(self.parent().prec())
-            self._qexp = sum([self.parent()._basis_cache[i] * gexp[i] for i in range(min(gexp.prec(), self.parent().prec()))])
+            self._qexp = sum(
+                [
+                    self.parent()._basis_cache[i] * gexp[i]
+                    for i in range(min(gexp.prec(), self.parent().prec()))
+                ]
+            )
             self._qexp = self._qexp.add_bigoh(self._gexp.prec())
         else:  # qexp is not None
             self._qexp = qexp.add_bigoh(self.parent().prec())
@@ -1457,7 +1555,9 @@ class OverconvergentModularFormElement(ModuleElement):
             sage: f + f # indirect doctest
             2-adic overconvergent modular form of weight-character 12 with q-expansion 2 - 131040/1414477*q ...
         """
-        return OverconvergentModularFormElement(self.parent(), gexp=self.gexp() + other.gexp())
+        return OverconvergentModularFormElement(
+            self.parent(), gexp=self.gexp() + other.gexp()
+        )
 
     def _lmul_(self, x):
         r"""
@@ -1682,7 +1782,9 @@ class OverconvergentModularFormElement(ModuleElement):
             False
         """
         for co in self.q_expansion().list():
-            if (co * (1 + O(self.prime()))).valuation() < 0:  # have to force it into ZZ_p
+            if (
+                co * (1 + O(self.prime()))
+            ).valuation() < 0:  # have to force it into ZZ_p
                 return False
         return True
 
@@ -1696,7 +1798,10 @@ class OverconvergentModularFormElement(ModuleElement):
             sage: o([1, 0, 1, 3])._repr_()
             '3-adic overconvergent modular form of weight-character 0 with q-expansion 1 + 729*q^2 + 76545*q^3 + O(q^4)'
         """
-        return "%s-adic overconvergent modular form of weight-character %s with q-expansion %s" % (self.prime(), self.weight(), self.q_expansion())
+        return (
+            "%s-adic overconvergent modular form of weight-character %s with q-expansion %s"
+            % (self.prime(), self.weight(), self.q_expansion())
+        )
 
     def _richcmp_(self, other, op):
         r"""
@@ -1734,7 +1839,10 @@ class OverconvergentModularFormElement(ModuleElement):
             F = pAdicField(p)  # noqa:F821
 
         for i in range(self.prec()):
-            ord = max(ord, 12/ZZ(p - 1)*i*(r - s) - F(self.gexp()[i]).normalized_valuation())
+            ord = max(
+                ord,
+                12 / ZZ(p - 1) * i * (r - s) - F(self.gexp()[i]).normalized_valuation(),
+            )
 
         return ord
 
@@ -1777,7 +1885,9 @@ class OverconvergentModularFormElement(ModuleElement):
         p = self.prime()
 
         for i in range(self.gexp().prec()):
-            if 12/ZZ(p - 1)*i*(r - s) - F(self.gexp()[i]).normalized_valuation() == self.r_ord(r):
+            if 12 / ZZ(p - 1) * i * (r - s) - F(
+                self.gexp()[i]
+            ).normalized_valuation() == self.r_ord(r):
                 return i
         raise RuntimeError("Can't get here")
 
@@ -1832,6 +1942,7 @@ class OverconvergentModularFormElement(ModuleElement):
             1
         """
         from sage.rings.infinity import Infinity
+
         if self.is_zero():
             return ZZ(1)
         return Infinity

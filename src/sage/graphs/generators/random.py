@@ -14,6 +14,7 @@ The methods defined here appear in :mod:`sage.graphs.graph_generators`.
 ###########################################################################
 
 import sys
+
 # import from Sage library
 from sage.graphs.graph import Graph
 from sage.misc.randstate import current_randstate
@@ -110,12 +111,14 @@ def RandomGNP(n, p, seed=None, fast=True, algorithm='Sage', immutable=False):
 
     if p == 1:
         from sage.graphs.generators.basic import CompleteGraph
+
         return CompleteGraph(n, immutable=immutable)
 
     if algorithm == 'networkx':
         if seed is None:
             seed = int(current_randstate().long_seed() % sys.maxsize)
         import networkx
+
         if fast:
             G = networkx.fast_gnp_random_graph(n, p, seed=seed)
         else:
@@ -124,6 +127,7 @@ def RandomGNP(n, p, seed=None, fast=True, algorithm='Sage', immutable=False):
     if algorithm in ['Sage', 'sage']:
         # We use the Sage generator
         from sage.graphs.graph_generators_pyx import RandomGNP as sageGNP
+
         return sageGNP(n, p, seed=seed, immutable=immutable)
     raise ValueError("'algorithm' must be equal to 'networkx' or to 'Sage'")
 
@@ -188,8 +192,12 @@ def RandomBarabasiAlbert(n, m, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
-    return Graph(networkx.barabasi_albert_graph(int(n), int(m), seed=seed),
-                 format="NX", immutable=immutable)
+
+    return Graph(
+        networkx.barabasi_albert_graph(int(n), int(m), seed=seed),
+        format="NX",
+        immutable=immutable,
+    )
 
 
 def RandomBipartite(n1, n2, p, set_position=False, seed=None, immutable=False):
@@ -247,7 +255,9 @@ def RandomBipartite(n1, n2, p, set_position=False, seed=None, immutable=False):
         sage: graphs.RandomBipartite(2, 2, .1, set_position=False).get_pos()
     """
     if not (p >= 0 and p <= 1):
-        raise ValueError("parameter p is a probability, and so should be a real value between 0 and 1")
+        raise ValueError(
+            "parameter p is a probability, and so should be a real value between 0 and 1"
+        )
     if not (n1 > 0 and n2 > 0):
         raise ValueError("n1 and n2 should be integers strictly greater than 0")
     if seed is not None:
@@ -260,8 +270,12 @@ def RandomBipartite(n1, n2, p, set_position=False, seed=None, immutable=False):
     S1 = [(0, i) for i in range(n1)]
     S2 = [(1, i) for i in range(n2)]
     edges = ((v, w) for w in S2 for v in S1 if uniform() <= p)
-    g = Graph([chain(S1, S2), edges], format="vertices_and_edges",
-              name=name, immutable=immutable)
+    g = Graph(
+        [chain(S1, S2), edges],
+        format="vertices_and_edges",
+        name=name,
+        immutable=immutable,
+    )
 
     # We now assign positions to vertices:
     # - vertices in S1 are placed on the line from (0, 1) to (max(n1, n2), 1)
@@ -275,8 +289,7 @@ def RandomBipartite(n1, n2, p, set_position=False, seed=None, immutable=False):
     return g
 
 
-def RandomRegularBipartite(n1, n2, d1, set_position=False, seed=None,
-                           immutable=False):
+def RandomRegularBipartite(n1, n2, d1, set_position=False, seed=None, immutable=False):
     r"""
     Return a random regular bipartite graph on `n1 + n2` vertices.
 
@@ -423,10 +436,15 @@ def RandomRegularBipartite(n1, n2, d1, set_position=False, seed=None,
 
     if complement:
         from sage.graphs.generators.basic import CompleteBipartiteGraph
-        E = E.symmetric_difference(CompleteBipartiteGraph(n1, n2).edges(sort=False, labels=False))
+
+        E = E.symmetric_difference(
+            CompleteBipartiteGraph(n1, n2).edges(sort=False, labels=False)
+        )
         d1, d2 = n2 - d1, n1 - d2
 
-    name = "Random regular bipartite graph of order {}+{} and degrees {} and {}".format(n1, n2, d1, d2)
+    name = "Random regular bipartite graph of order {}+{} and degrees {} and {}".format(
+        n1, n2, d1, d2
+    )
     G = Graph(E, format="list_of_edges", name=name, immutable=immutable)
 
     # We now assign positions to vertices:
@@ -441,8 +459,9 @@ def RandomRegularBipartite(n1, n2, d1, set_position=False, seed=None,
     return G
 
 
-def RandomBlockGraph(m, k, kmax=None, incidence_structure=False, seed=None,
-                     immutable=False):
+def RandomBlockGraph(
+    m, k, kmax=None, incidence_structure=False, seed=None, immutable=False
+):
     r"""
     Return a Random Block Graph.
 
@@ -564,7 +583,9 @@ def RandomBlockGraph(m, k, kmax=None, incidence_structure=False, seed=None,
     if kmax is None:
         kmax = k
     elif kmax < k:
-        raise ValueError("the maximum number `kmax` of vertices in a block must be >= `k`")
+        raise ValueError(
+            "the maximum number `kmax` of vertices in a block must be >= `k`"
+        )
     if seed is not None:
         set_random_seed(seed)
 
@@ -604,6 +625,7 @@ def RandomBlockGraph(m, k, kmax=None, incidence_structure=False, seed=None,
     else:
         name = f"Random Block Graph with {m} blocks of order {k} to {kmax}"
     from itertools import chain, combinations
+
     edges = chain.from_iterable(combinations(block, 2) for block in IS)
     return Graph(edges, format="list_of_edges", name=name, immutable=immutable)
 
@@ -663,7 +685,7 @@ def RandomBoundedToleranceGraph(n, seed=None, immutable=False):
 
     from sage.graphs.generators.intersection import ToleranceGraph
 
-    W = n ** 2 * 2 ** n
+    W = n**2 * 2**n
     tolrep = []
     for _ in range(n):
         left = randint(0, W - 1)
@@ -727,11 +749,16 @@ def RandomGNM(n, m, dense=False, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
+
     if dense:
-        return Graph(networkx.dense_gnm_random_graph(n, m, seed=seed),
-                     format="NX", immutable=immutable)
-    return Graph(networkx.gnm_random_graph(n, m, seed=seed),
-                 format="NX", immutable=immutable)
+        return Graph(
+            networkx.dense_gnm_random_graph(n, m, seed=seed),
+            format="NX",
+            immutable=immutable,
+        )
+    return Graph(
+        networkx.gnm_random_graph(n, m, seed=seed), format="NX", immutable=immutable
+    )
 
 
 def RandomNewmanWattsStrogatz(n, k, p, seed=None, immutable=False):
@@ -800,8 +827,12 @@ def RandomNewmanWattsStrogatz(n, k, p, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
-    return Graph(networkx.newman_watts_strogatz_graph(n, k, p, seed=seed),
-                 format="NX", immutable=immutable)
+
+    return Graph(
+        networkx.newman_watts_strogatz_graph(n, k, p, seed=seed),
+        format="NX",
+        immutable=immutable,
+    )
 
 
 def RandomHolmeKim(n, m, p, seed=None, immutable=False):
@@ -848,8 +879,12 @@ def RandomHolmeKim(n, m, p, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
-    return Graph(networkx.powerlaw_cluster_graph(n, m, p, seed=seed),
-                 format="NX", immutable=immutable)
+
+    return Graph(
+        networkx.powerlaw_cluster_graph(n, m, p, seed=seed),
+        format="NX",
+        immutable=immutable,
+    )
 
 
 def RandomIntervalGraph(n, seed=None, immutable=False):
@@ -993,7 +1028,7 @@ def RandomProperIntervalGraph(n, seed=None, immutable=False):
         #
         # Since the i-th interval starts at the i-th symbol [ and ends at the
         # i-th symbol ], we directly build the intervals
-        intervals = [[0, 2*n] for _ in range(n)]
+        intervals = [[0, 2 * n] for _ in range(n)]
         L = 1  # next starting interval
         R = 0  # next ending interval
         hx = [0]
@@ -1068,7 +1103,9 @@ def RandomProperIntervalGraph(n, seed=None, immutable=False):
     y = ['[']
     for i in range(np - 1, 0, -1):
         # Choose symbol x_i
-        if random() < (hx[i + 1] + 2) * (i - hx[i + 1] + 1) / (2 * (i + 1) * (hx[i + 1] + 1)):
+        if random() < (hx[i + 1] + 2) * (i - hx[i + 1] + 1) / (
+            2 * (i + 1) * (hx[i + 1] + 1)
+        ):
             hx[i] = hx[i + 1] + 1
             x.append(']')
             y.append('[')
@@ -1100,6 +1137,7 @@ def RandomProperIntervalGraph(n, seed=None, immutable=False):
 
 
 # Random Chordal Graphs
+
 
 def growing_subtrees(T, k):
     r"""
@@ -1135,6 +1173,7 @@ def growing_subtrees(T, k):
         10
     """
     from sage.misc.prandom import choice
+
     n = T.order()
     S = []
     for _ in range(n):
@@ -1336,8 +1375,9 @@ def pruned_tree(T, f, s):
     return S
 
 
-def RandomChordalGraph(n, algorithm='growing', k=None, l=None, f=None, s=None,
-                       seed=None, immutable=False):
+def RandomChordalGraph(
+    n, algorithm='growing', k=None, l=None, f=None, s=None, seed=None, immutable=False
+):
     r"""
     Return a random chordal graph of order ``n``.
 
@@ -1464,12 +1504,14 @@ def RandomChordalGraph(n, algorithm='growing', k=None, l=None, f=None, s=None,
 
     # 1. Generate a random tree of order n
     from sage.graphs.generators.trees import RandomTree
+
     T = RandomTree(n)
 
     # 2. Generate n non-empty subtrees of T: {T1,...,Tn}
     if algorithm == "growing":
         if k is None:
             from sage.misc.functional import isqrt
+
             k = isqrt(n)
         elif k < 1:
             raise ValueError("parameter k must be >= 1")
@@ -1479,6 +1521,7 @@ def RandomChordalGraph(n, algorithm='growing', k=None, l=None, f=None, s=None,
     elif algorithm == "connecting":
         if l is None:
             from sage.rings.integer import Integer
+
             l = Integer(n).log(2)
         elif l <= 0:
             raise ValueError("parameter l must be > 0")
@@ -1488,11 +1531,12 @@ def RandomChordalGraph(n, algorithm='growing', k=None, l=None, f=None, s=None,
     elif algorithm == "pruned":
         if f is None:
             from sage.rings.rational import Rational
+
             f = 1 / Rational(n - 1)
         elif f < 0 or f > 1:
             raise ValueError("parameter f must be 0 <= f <= 1")
         if s is None:
-            s = .5
+            s = 0.5
         elif s <= 0 or s >= 1:
             raise ValueError("parameter s must be 0 < s < 1")
 
@@ -1507,9 +1551,14 @@ def RandomChordalGraph(n, algorithm='growing', k=None, l=None, f=None, s=None,
         for x in s:
             vertex_to_subtrees[x].append(i)
     from itertools import chain, combinations
+
     edges = chain.from_iterable(combinations(X, 2) for X in vertex_to_subtrees)
-    return Graph([range(n), edges], format="vertices_and_edges",
-                 name="Random Chordal Graph", immutable=immutable)
+    return Graph(
+        [range(n), edges],
+        format="vertices_and_edges",
+        name="Random Chordal Graph",
+        immutable=immutable,
+    )
 
 
 def RandomKTree(n, k, seed=None, immutable=False):
@@ -1585,23 +1634,28 @@ def RandomKTree(n, k, seed=None, immutable=False):
         set_random_seed(seed)
 
     from itertools import chain, combinations
+
     first_clique = combinations(range(k + 1), 2)
 
     def extra_edges():
-        cliques = [list(range(k+1))]
+        cliques = [list(range(k + 1))]
 
         # Randomly choose a row, and copy 1 of the cliques
         # One of those vertices is then replaced with a new vertex
         for newVertex in range(k + 1, n):
-            copiedClique = cliques[randint(0, len(cliques)-1)].copy()
+            copiedClique = cliques[randint(0, len(cliques) - 1)].copy()
             copiedClique[randint(0, k)] = newVertex
             cliques.append(copiedClique)
             for u in copiedClique:
                 if u != newVertex:
                     yield (u, newVertex)
 
-    return Graph(chain(first_clique, extra_edges()), format="list_of_edges",
-                 name=f"Random {k}-tree", immutable=immutable)
+    return Graph(
+        chain(first_clique, extra_edges()),
+        format="list_of_edges",
+        name=f"Random {k}-tree",
+        immutable=immutable,
+    )
 
 
 def RandomPartialKTree(n, k, x, seed=None, immutable=False):
@@ -1698,7 +1752,9 @@ def RandomPartialKTree(n, k, x, seed=None, immutable=False):
 
     # Check that x doesn't delete too many edges
     if x > edgesInKTree:
-        raise ValueError("x must be less than the number of edges in the `k`-tree with `n` nodes")
+        raise ValueError(
+            "x must be less than the number of edges in the `k`-tree with `n` nodes"
+        )
 
     # The graph will have no edges
     if x == edgesInKTree:
@@ -1717,8 +1773,12 @@ def RandomPartialKTree(n, k, x, seed=None, immutable=False):
         return g
 
     # Build an immutable graph without the x first edges
-    return Graph([g, edges[x:]], format="vertices_and_edges",
-                 name=f"Random partial {k}-tree", immutable=True)
+    return Graph(
+        [g, edges[x:]],
+        format="vertices_and_edges",
+        name=f"Random partial {k}-tree",
+        immutable=True,
+    )
 
 
 def RandomRegular(d, n, seed=None, immutable=False):
@@ -1764,6 +1824,7 @@ def RandomRegular(d, n, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
+
     try:
         N = networkx.random_regular_graph(d, n, seed=seed)
         if N is False:
@@ -1804,8 +1865,12 @@ def RandomShell(constructor, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
-    return Graph(networkx.random_shell_graph(constructor, seed=seed),
-                 format="NX", immutable=immutable)
+
+    return Graph(
+        networkx.random_shell_graph(constructor, seed=seed),
+        format="NX",
+        immutable=immutable,
+    )
 
 
 def RandomToleranceGraph(n, seed=None, immutable=False):
@@ -1871,11 +1936,11 @@ def RandomToleranceGraph(n, seed=None, immutable=False):
         # The tolerance value must be > 0
         tolrep.append((left, right, randint(1, W)))
 
-    return ToleranceGraph(tolrep, immutable=immutable,
-                          name="Random tolerance graph")
+    return ToleranceGraph(tolrep, immutable=immutable, name="Random tolerance graph")
 
 
 # uniform random triangulation using Schaeffer-Poulalhon algorithm
+
 
 def _auxiliary_random_forest_word(n, k):
     r"""
@@ -1941,7 +2006,8 @@ def _auxiliary_random_forest_word(n, k):
         ....:             assert partial_sum >= -2*k + 4
     """
     from sage.misc.prandom import shuffle
-    w = [0] * (3*n + 2*k - 3) + [1] * n
+
+    w = [0] * (3 * n + 2 * k - 3) + [1] * n
     shuffle(w)
 
     # Finding the admissible shift
@@ -1956,7 +2022,7 @@ def _auxiliary_random_forest_word(n, k):
         if partial_sum < min_value:
             min_value = partial_sum
             min_pos = i
-    return w[min_pos+1:] + w[:min_pos]
+    return w[min_pos + 1 :] + w[:min_pos]
 
 
 def _contour_and_graph_from_words(pendant_word, forest_word):
@@ -2068,7 +2134,7 @@ def _contour_and_graph_from_words(pendant_word, forest_word):
             leaf_stack = [index, index]
             # stack of active inner nodes
             inner_stack = [word[curr_word_pos][1], index]
-            word.insert(curr_word_pos+1, ('in', index))
+            word.insert(curr_word_pos + 1, ('in', index))
             curr_word_pos += 1
             while len(inner_stack) > 1:
                 curr_forest_word_pos += 1
@@ -2080,19 +2146,19 @@ def _contour_and_graph_from_words(pendant_word, forest_word):
                     leaf_stack.extend([index, index])
                     inner_stack.append(index)
                     edges.append(inner_stack[-2:])
-                    word.insert(curr_word_pos+1, ('in', index))
+                    word.insert(curr_word_pos + 1, ('in', index))
                     curr_word_pos += 1
                 else:
                     # up and down to a new leaf
                     if leaf_stack and inner_stack[-1] == leaf_stack[-1]:
                         leaf_stack.pop()
-                        word.insert(curr_word_pos+1, ('lf', inner_stack[-1]))
-                        word.insert(curr_word_pos+2, ('in', inner_stack[-1]))
+                        word.insert(curr_word_pos + 1, ('lf', inner_stack[-1]))
+                        word.insert(curr_word_pos + 2, ('in', inner_stack[-1]))
                         curr_word_pos += 2
                     # going down to a known inner vertex
                     else:
                         inner_stack.pop()
-                        word.insert(curr_word_pos+1, ('in', inner_stack[-1]))
+                        word.insert(curr_word_pos + 1, ('in', inner_stack[-1]))
                         curr_word_pos += 1
         # go to next insertion position
         else:
@@ -2202,15 +2268,18 @@ def RandomTriangulation(n, set_position=False, k=3, seed=None, immutable=False):
     if k < 3:
         raise ValueError("The size 'k' of the outer face must be at least 3.")
     if n < k:
-        raise ValueError("The number 'n' of vertices must be at least the size "
-                         "'k' of the outer face.")
+        raise ValueError(
+            "The number 'n' of vertices must be at least the size "
+            "'k' of the outer face."
+        )
     if seed is not None:
         set_random_seed(seed)
 
     from sage.misc.prandom import shuffle
-    pendant_word = [0] * (k-1) + [1] * (k-3)
+
+    pendant_word = [0] * (k - 1) + [1] * (k - 3)
     shuffle(pendant_word)
-    forest_word = _auxiliary_random_forest_word(n-k, k)
+    forest_word = _auxiliary_random_forest_word(n - k, k)
     word, graph = _contour_and_graph_from_words(pendant_word, forest_word)
     edges = []
     embedding = graph.get_embedding()
@@ -2241,7 +2310,7 @@ def RandomTriangulation(n, set_position=False, k=3, seed=None, immutable=False):
     graph.add_edges(edges)
     graph.set_embedding(embedding)
     graph.relabel({0: -2, 1: -1})
-    assert graph.n_edges() == 3*n - 3 - k
+    assert graph.n_edges() == 3 * n - 3 - k
     assert graph.n_vertices() == n
     if set_position:
         graph.layout(layout='planar', save_pos=True)
@@ -2401,6 +2470,7 @@ def RandomBicubicPlanar(n, seed=None, immutable=False):
     """
     from sage.combinat.binary_tree import BinaryTrees
     from sage.rings.finite_rings.integer_mod_ring import Zmod
+
     if not n:
         raise ValueError("n must be at least 1")
     if seed is not None:
@@ -2410,7 +2480,7 @@ def RandomBicubicPlanar(n, seed=None, immutable=False):
     t = BinaryTrees(n).random_element()
 
     # next pick a random blossoming of this tree, compute its contour
-    contour = blossoming_contour(t) + [('xb',)]   # adding the final xb
+    contour = blossoming_contour(t) + [('xb',)]  # adding the final xb
 
     # first step : rotate the contour word to one of 3 balanced
     N = len(contour)
@@ -2428,7 +2498,7 @@ def RandomBicubicPlanar(n, seed=None, immutable=False):
 
     # random choice among 3 possibilities for a balanced word
     idx = not_touched[randint(0, 2)]
-    w = contour[idx + 1:] + contour[:idx + 1]
+    w = contour[idx + 1 :] + contour[: idx + 1]
 
     # second step : create the graph by closure from the balanced word
     G = Graph(multiedges=True)
@@ -2464,7 +2534,7 @@ def RandomBicubicPlanar(n, seed=None, immutable=False):
     return G.copy(immutable=True) if immutable else G
 
 
-def RandomUnitDiskGraph(n, radius=.1, side=1, seed=None, immutable=False):
+def RandomUnitDiskGraph(n, radius=0.1, side=1, seed=None, immutable=False):
     r"""
     Return a random unit disk graph of order `n`.
 
@@ -2515,10 +2585,17 @@ def RandomUnitDiskGraph(n, radius=.1, side=1, seed=None, immutable=False):
     if seed is not None:
         set_random_seed(seed)
     from scipy.spatial import KDTree
-    points = [(side*random(), side*random()) for i in range(n)]
+
+    points = [(side * random(), side * random()) for i in range(n)]
     T = KDTree(points)
-    adj = {i: [u for u in T.query_ball_point([points[i]], radius).item() if u != i]
-           for i in range(n)}
-    return Graph(adj, format='dict_of_lists',
-                 pos={i: points[i] for i in range(n)},
-                 name="Random unit disk graph", immutable=immutable)
+    adj = {
+        i: [u for u in T.query_ball_point([points[i]], radius).item() if u != i]
+        for i in range(n)
+    }
+    return Graph(
+        adj,
+        format='dict_of_lists',
+        pos={i: points[i] for i in range(n)},
+        name="Random unit disk graph",
+        immutable=immutable,
+    )

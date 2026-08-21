@@ -108,20 +108,28 @@ class PrincipalIdealDomains(Category_singleton):
             except (AttributeError, NotImplementedError):
                 has_gcd = False
 
-            tester.assertTrue(has_gcd,
-                    "The ring {} provides a xgcd but no gcd".format(self))
+            tester.assertTrue(
+                has_gcd, "The ring {} provides a xgcd but no gcd".format(self)
+            )
             for (x, y), gcd, xgcd in zip(pairs, gcds, xgcds):
-                tester.assertTrue(gcd.parent() == self,
-                        "The parent of the gcd is {} for element of {}".format(
-                            gcd.parent(), self))
-                tester.assertTrue(xgcd[0].parent() == self and
-                                  xgcd[1].parent() == self == xgcd[2].parent(),
-                                  "The parent of output in xgcd is different from "
-                                  "the parent of input for elements in {}".format(self))
-                tester.assertTrue(gcd == xgcd[0],
-                        "The methods gcd and xgcd disagree on {}:\n"
-                        "  gcd({},{}) = {}\n"
-                        " xgcd({},{}) = {}\n".format(self, x, y, gcd, x, y, xgcd))
+                tester.assertTrue(
+                    gcd.parent() == self,
+                    "The parent of the gcd is {} for element of {}".format(
+                        gcd.parent(), self
+                    ),
+                )
+                tester.assertTrue(
+                    xgcd[0].parent() == self
+                    and xgcd[1].parent() == self == xgcd[2].parent(),
+                    "The parent of output in xgcd is different from "
+                    "the parent of input for elements in {}".format(self),
+                )
+                tester.assertTrue(
+                    gcd == xgcd[0],
+                    "The methods gcd and xgcd disagree on {}:\n"
+                    "  gcd({},{}) = {}\n"
+                    " xgcd({},{}) = {}\n".format(self, x, y, gcd, x, y, xgcd),
+                )
 
         def is_noetherian(self) -> bool:
             """
@@ -144,6 +152,7 @@ class PrincipalIdealDomains(Category_singleton):
                 Trivial Abelian group
             """
             from sage.groups.abelian_gps.abelian_group import AbelianGroup
+
             return AbelianGroup([])
 
         def gcd(self, x, y, coerce=True):
@@ -263,6 +272,7 @@ class PrincipalIdealDomains(Category_singleton):
                 <class 'sage.rings.ideal.Ideal_pid'>
             """
             from sage.rings.ideal import Ideal_pid
+
             return Ideal_pid
 
     class ElementMethods:

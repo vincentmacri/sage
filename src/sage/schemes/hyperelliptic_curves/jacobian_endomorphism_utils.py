@@ -197,11 +197,13 @@ def get_is_geom_field(f, C, bad_primes, B=200):
         # if f was odd to begin with, then f_odd = f
         assert f_odd.degree() == 5
 
-        if (4*f_odd + h_odd**2).degree() == 5:
-            f_new = 4*f_odd + h_odd**2
+        if (4 * f_odd + h_odd**2).degree() == 5:
+            f_new = 4 * f_odd + h_odd**2
             if f_new.is_irreducible():
                 # i.e. the Jacobian is geometrically simple
-                f_disc_odd_prime_exponents = [v for _,v in f_new.discriminant().prime_to_S_part([ZZ(2)]).factor()]
+                f_disc_odd_prime_exponents = [
+                    v for _, v in f_new.discriminant().prime_to_S_part([ZZ(2)]).factor()
+                ]
                 if 1 in f_disc_odd_prime_exponents:
                     return (True, True)  # Theorem 4.8 (2)
                 # At this point we are in the situation of Algorithm 4.10
@@ -219,12 +221,12 @@ def get_is_geom_field(f, C, bad_primes, B=200):
         if G.order() in [360, 720]:
             return (True, True)  # Algorithm 4.10 Step 2
 
-    R = PolynomialRing(ZZ,2,"xv")
-    x,v = R.gens()
-    T = PolynomialRing(QQ,'v')
+    R = PolynomialRing(ZZ, 2, "xv")
+    x, v = R.gens()
+    T = PolynomialRing(QQ, 'v')
     g = v - x**12
 
-    for p in prime_range(3,B):
+    for p in prime_range(3, B):
         if p not in bad_primes:
             fp = C.change_ring(FiniteField(p)).frobenius_polynomial()
 
@@ -233,10 +235,12 @@ def get_is_geom_field(f, C, bad_primes, B=200):
 
             if fp12.is_irreducible():
                 # i.e. the Jacobian is geometrically simple
-                f_disc_odd_prime_exponents = [v for _,v in f.discriminant().prime_to_S_part([ZZ(2)]).factor()]
+                f_disc_odd_prime_exponents = [
+                    v for _, v in f.discriminant().prime_to_S_part([ZZ(2)]).factor()
+                ]
                 if 1 in f_disc_odd_prime_exponents:
                     return (True, True)  # Theorem 4.8 (2)
-                return (True, False) # Algorithm 4.10 Step 3 plus Prop 4.7 as above
+                return (True, False)  # Algorithm 4.10 Step 3 plus Prop 4.7 as above
     return (False, False)
 
 
@@ -292,12 +296,12 @@ def is_geom_trivial_when_field(C, bad_primes, B=200):
     """
 
     running_gcd = 0
-    R = PolynomialRing(ZZ,2,"xv")
-    x,v = R.gens()
-    T = PolynomialRing(QQ,'v')
+    R = PolynomialRing(ZZ, 2, "xv")
+    x, v = R.gens()
+    T = PolynomialRing(QQ, 'v')
     g = v - x**4
 
-    for p in prime_range(3,B):
+    for p in prime_range(3, B):
         if p not in bad_primes:
             Cp = C.change_ring(FiniteField(p))
             fp = Cp.frobenius_polynomial()
@@ -305,7 +309,7 @@ def is_geom_trivial_when_field(C, bad_primes, B=200):
                 # This defines the polynomial f_v**[4] from the paper
                 fp4 = T(R(fp).resultant(g))
                 if fp4.is_irreducible():
-                    running_gcd = gcd(running_gcd, NumberField(fp,'a').discriminant())
+                    running_gcd = gcd(running_gcd, NumberField(fp, 'a').discriminant())
                     if running_gcd <= 24:
                         return True
     return False

@@ -70,6 +70,7 @@ The arguments in the definition must be symbolic variables (:issue:`10747`)::
     ...
     SyntaxError: can...t assign to function call...
 """
+
 from sage.misc.lazy_import import lazy_import
 from sage.symbolic.ring import SymbolicRing, SR
 from sage.categories.pushout import ConstructionFunctor
@@ -79,6 +80,7 @@ from sage.structure.factory import UniqueFactory
 ######################################################################
 #  Callable functions
 ######################################################################
+
 
 class CallableSymbolicExpressionFunctor(ConstructionFunctor):
     def __init__(self, arguments):
@@ -100,6 +102,7 @@ class CallableSymbolicExpressionFunctor(ConstructionFunctor):
         """
         self._arguments = arguments
         from sage.categories.rings import Rings
+
         self.rank = 3
         ConstructionFunctor.__init__(self, Rings(), Rings())
 
@@ -139,7 +142,9 @@ class CallableSymbolicExpressionFunctor(ConstructionFunctor):
             Callable function ring with arguments (x, y)
         """
         if R is not SR:
-            raise ValueError("can only make callable symbolic expression rings from the Symbolic Ring")
+            raise ValueError(
+                "can only make callable symbolic expression rings from the Symbolic Ring"
+            )
         return CallableSymbolicExpressionRing(self.arguments())
 
     def arguments(self):
@@ -376,6 +381,7 @@ class CallableSymbolicExpressionRing_class(SymbolicRing):
             '\\mu \\ {\\mapsto}\\ \\mu^{3}'
         """
         from sage.misc.latex import latex
+
         args = self.args()
         args = [latex(arg) for arg in args]
         latex_x = SymbolicRing._latex_element_(self, x)
@@ -416,8 +422,13 @@ class CallableSymbolicExpressionRing_class(SymbolicRing):
             sage: f(z=100)
             a + 2*x + 3*y + 100
         """
-        if any(type(arg).__module__ == 'numpy' and type(arg).__name__ == "ndarray" for arg in args):  # avoid importing
-            raise NotImplementedError("Numpy arrays are not supported as arguments for symbolic expressions")
+        if any(
+            type(arg).__module__ == 'numpy' and type(arg).__name__ == "ndarray"
+            for arg in args
+        ):  # avoid importing
+            raise NotImplementedError(
+                "Numpy arrays are not supported as arguments for symbolic expressions"
+            )
 
         d = dict(zip([repr(_) for _ in self.arguments()], args))
         d.update(kwds)
@@ -438,11 +449,14 @@ class CallableSymbolicExpressionRingFactory(UniqueFactory):
         """
         if check:
             from sage.structure.element import Expression
+
             if len(args) == 1 and isinstance(args[0], (list, tuple)):
-                args, = args
+                (args,) = args
             for arg in args:
                 if not (isinstance(arg, Expression) and arg.is_symbol()):
-                    raise TypeError("must construct a function with a tuple (or list) of variables")
+                    raise TypeError(
+                        "must construct a function with a tuple (or list) of variables"
+                    )
             args = tuple(args)
         return args
 
@@ -459,4 +473,6 @@ class CallableSymbolicExpressionRingFactory(UniqueFactory):
         return CallableSymbolicExpressionRing_class(key)
 
 
-CallableSymbolicExpressionRing = CallableSymbolicExpressionRingFactory('sage.symbolic.callable.CallableSymbolicExpressionRing')
+CallableSymbolicExpressionRing = CallableSymbolicExpressionRingFactory(
+    'sage.symbolic.callable.CallableSymbolicExpressionRing'
+)

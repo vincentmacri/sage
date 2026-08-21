@@ -231,13 +231,29 @@ lazy_import('sage.symbolic.constants', 'pi')
 lazy_import('sage.symbolic.ring', 'SR')
 
 lazy_import('sage.libs.mpmath.utils', 'call', as_='_mpmath_utils_call')
-lazy_import('mpmath',
-            ['besseli', 'besselj', 'besselk',
-             'bessely', 'hankel1', 'hankel2',
-             'struveh', 'struvel'],
-            as_=['_mpmath_besseli', '_mpmath_besselj', '_mpmath_besselk',
-                 '_mpmath_bessely', '_mpmath_hankel1', '_mpmath_hankel2',
-                 '_mpmath_struveh', '_mpmath_struvel'])
+lazy_import(
+    'mpmath',
+    [
+        'besseli',
+        'besselj',
+        'besselk',
+        'bessely',
+        'hankel1',
+        'hankel2',
+        'struveh',
+        'struvel',
+    ],
+    as_=[
+        '_mpmath_besseli',
+        '_mpmath_besselj',
+        '_mpmath_besselk',
+        '_mpmath_bessely',
+        '_mpmath_hankel1',
+        '_mpmath_hankel2',
+        '_mpmath_struveh',
+        '_mpmath_struvel',
+    ],
+)
 
 
 class Function_Bessel_J(BuiltinFunction):
@@ -334,6 +350,7 @@ class Function_Bessel_J(BuiltinFunction):
 
     - [AS-Bessel]_
     """
+
     def __init__(self):
         """
         See the docstring for :meth:`Function_Bessel_J`.
@@ -345,13 +362,19 @@ class Function_Bessel_J(BuiltinFunction):
             sage: bessel_J(x, x)._sympy_()                                              # needs sympy sage.symbolic
             besselj(x, x)
         """
-        BuiltinFunction.__init__(self, 'bessel_J', nargs=2,
-                                 conversions=dict(maple='BesselJ',
-                                                  mathematica='BesselJ',
-                                                  maxima='bessel_j',
-                                                  sympy='besselj',
-                                                  fricas='besselJ',
-                                                  giac='BesselJ'))
+        BuiltinFunction.__init__(
+            self,
+            'bessel_J',
+            nargs=2,
+            conversions=dict(
+                maple='BesselJ',
+                mathematica='BesselJ',
+                maxima='bessel_j',
+                sympy='besselj',
+                fricas='besselJ',
+                giac='BesselJ',
+            ),
+        )
 
     def _eval_(self, n, x):
         """
@@ -556,6 +579,7 @@ class Function_Bessel_Y(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         """
         See the docstring for :meth:`Function_Bessel_Y`.
@@ -567,13 +591,19 @@ class Function_Bessel_Y(BuiltinFunction):
             sage: bessel_Y(x, x)._sympy_()                                              # needs sympy sage.symbolic
             bessely(x, x)
         """
-        BuiltinFunction.__init__(self, 'bessel_Y', nargs=2,
-                                 conversions=dict(maple='BesselY',
-                                                  mathematica='BesselY',
-                                                  maxima='bessel_y',
-                                                  sympy='bessely',
-                                                  fricas='besselY',
-                                                  giac='BesselY'))
+        BuiltinFunction.__init__(
+            self,
+            'bessel_Y',
+            nargs=2,
+            conversions=dict(
+                maple='BesselY',
+                mathematica='BesselY',
+                maxima='bessel_y',
+                sympy='bessely',
+                fricas='besselY',
+                giac='BesselY',
+            ),
+        )
 
     def _eval_(self, n, x):
         """
@@ -768,6 +798,7 @@ class Function_Bessel_I(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         """
         See the docstring for :meth:`Function_Bessel_I`.
@@ -779,12 +810,18 @@ class Function_Bessel_I(BuiltinFunction):
             sage: bessel_I(x, x)._sympy_()                                              # needs sympy sage.symbolic
             besseli(x, x)
         """
-        BuiltinFunction.__init__(self, 'bessel_I', nargs=2,
-                                 conversions=dict(maple='BesselI',
-                                                  mathematica='BesselI',
-                                                  maxima='bessel_i',
-                                                  sympy='besseli',
-                                                  fricas='besselI'))
+        BuiltinFunction.__init__(
+            self,
+            'bessel_I',
+            nargs=2,
+            conversions=dict(
+                maple='BesselI',
+                mathematica='BesselI',
+                maxima='bessel_i',
+                sympy='besseli',
+                fricas='besselI',
+            ),
+        )
 
     def _eval_(self, n, x):
         """
@@ -970,6 +1007,7 @@ class Function_Bessel_K(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         """
         See the docstring for :meth:`Function_Bessel_K`.
@@ -981,12 +1019,18 @@ class Function_Bessel_K(BuiltinFunction):
             sage: bessel_K(x, x)._sympy_()                                              # needs sympy sage.symbolic
             besselk(x, x)
         """
-        BuiltinFunction.__init__(self, 'bessel_K', nargs=2,
-                                 conversions=dict(maple='BesselK',
-                                                  mathematica='BesselK',
-                                                  maxima='bessel_k',
-                                                  sympy='besselk',
-                                                  fricas='besselK'))
+        BuiltinFunction.__init__(
+            self,
+            'bessel_K',
+            nargs=2,
+            conversions=dict(
+                maple='BesselK',
+                mathematica='BesselK',
+                maxima='bessel_k',
+                sympy='besselk',
+                fricas='besselK',
+            ),
+        )
 
     def _eval_(self, n, x):
         """
@@ -1202,7 +1246,7 @@ def Bessel(*args, **kwds):
     # Determine the order and type of function from the arguments and keywords.
     # These are recorded in local variables: _type, _order, _system, _nargs.
     _type = None
-    if len(args) == 0:    # no order specified
+    if len(args) == 0:  # no order specified
         _order = None
         _nargs = 2
     elif len(args) == 1:  # order is specified
@@ -1260,6 +1304,7 @@ class Function_Struve_H(BuiltinFunction):
 
     - [WP-Struve]_
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -1273,12 +1318,18 @@ class Function_Struve_H(BuiltinFunction):
             sage: loads(dumps(struve_H(n,x)))
             struve_H(n, x)
         """
-        BuiltinFunction.__init__(self, 'struve_H', nargs=2,
-                                 conversions=dict(maple='StruveH',
-                                                  mathematica='StruveH',
-                                                  maxima='struve_h',
-                                                  fricas='struveH',
-                                                  sympy='struveh'))
+        BuiltinFunction.__init__(
+            self,
+            'struve_H',
+            nargs=2,
+            conversions=dict(
+                maple='StruveH',
+                mathematica='StruveH',
+                maxima='struve_h',
+                fricas='struveH',
+                sympy='struveh',
+            ),
+        )
 
     def _eval_(self, a, z):
         """
@@ -1300,9 +1351,11 @@ class Function_Struve_H(BuiltinFunction):
             sage: struve_H(-3/2, x)
             -bessel_J(3/2, x)
         """
-        if z.is_zero() \
-                and (SR(a).is_numeric() or SR(a).is_constant()) \
-                and a.real() >= -1:
+        if (
+            z.is_zero()
+            and (SR(a).is_numeric() or SR(a).is_constant())
+            and a.real() >= -1
+        ):
             return ZZ.zero()
         if a == QQ((-1, 2)):
             return sqrt(2 / (pi * z)) * sin(z)
@@ -1310,7 +1363,7 @@ class Function_Struve_H(BuiltinFunction):
             return sqrt(2 / (pi * z)) * (1 - cos(z))
         if a < 0 and not SR(a).is_integer() and SR(2 * a).is_integer():
             n = (a * (-2) - 1) / 2
-            return Integer(-1)**n * bessel_J(n + QQ((1, 2)), z)
+            return Integer(-1) ** n * bessel_J(n + QQ((1, 2)), z)
 
     def _evalf_(self, a, z, parent=None, algorithm=None):
         """
@@ -1335,7 +1388,12 @@ class Function_Struve_H(BuiltinFunction):
             raise ValueError("cannot differentiate struve_H in the first parameter")
 
         from .other import sqrt
-        return (z**a / (sqrt(pi) * 2**a * gamma(a + Integer(3) / Integer(2))) - struve_H(a + 1, z) + struve_H(a - 1, z)) / 2
+
+        return (
+            z**a / (sqrt(pi) * 2**a * gamma(a + Integer(3) / Integer(2)))
+            - struve_H(a + 1, z)
+            + struve_H(a - 1, z)
+        ) / 2
 
     def _print_latex_(self, a, z):
         """
@@ -1375,6 +1433,7 @@ class Function_Struve_L(BuiltinFunction):
 
     - [WP-Struve]_
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -1388,12 +1447,18 @@ class Function_Struve_L(BuiltinFunction):
             sage: loads(dumps(struve_L(n, x)))
             struve_L(n, x)
         """
-        BuiltinFunction.__init__(self, 'struve_L', nargs=2,
-                                 conversions=dict(maple='StruveL',
-                                                  mathematica='StruveL',
-                                                  maxima='struve_l',
-                                                  fricas='struveL',
-                                                  sympy='struvel'))
+        BuiltinFunction.__init__(
+            self,
+            'struve_L',
+            nargs=2,
+            conversions=dict(
+                maple='StruveL',
+                mathematica='StruveL',
+                maxima='struve_l',
+                fricas='struveL',
+                sympy='struvel',
+            ),
+        )
 
     def _eval_(self, a, z):
         """
@@ -1415,9 +1480,11 @@ class Function_Struve_L(BuiltinFunction):
             sage: struve_L(-3/2, x)
             -bessel_I(3/2, x)
         """
-        if z.is_zero() \
-                and (SR(a).is_numeric() or SR(a).is_constant()) \
-                and a.real() >= -1:
+        if (
+            z.is_zero()
+            and (SR(a).is_numeric() or SR(a).is_constant())
+            and a.real() >= -1
+        ):
             return ZZ.zero()
         if a == -Integer(1) / 2:
             return sqrt(2 / (pi * z)) * sinh(z)
@@ -1425,7 +1492,7 @@ class Function_Struve_L(BuiltinFunction):
             return sqrt(2 / (pi * z)) * (cosh(z) - 1)
         if a < 0 and not SR(a).is_integer() and SR(2 * a).is_integer():
             n = (a * (-2) - 1) / 2
-            return Integer(-1)**n * bessel_I(n + QQ((1, 2)), z)
+            return Integer(-1) ** n * bessel_I(n + QQ((1, 2)), z)
 
     def _evalf_(self, a, z, parent=None, algorithm=None):
         """
@@ -1449,7 +1516,12 @@ class Function_Struve_L(BuiltinFunction):
             raise ValueError("cannot differentiate struve_L in the first parameter")
 
         from .other import sqrt
-        return (z**a / (sqrt(pi) * 2**a * gamma(a + Integer(3) / Integer(2))) - struve_L(a + 1, z) + struve_L(a - 1, z)) / 2
+
+        return (
+            z**a / (sqrt(pi) * 2**a * gamma(a + Integer(3) / Integer(2)))
+            - struve_L(a + 1, z)
+            + struve_L(a - 1, z)
+        ) / 2
 
     def _print_latex_(self, a, z):
         """
@@ -1491,6 +1563,7 @@ class Function_Hankel1(BuiltinFunction):
 
     - [AS-Bessel]_ see 9.1.6
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1498,12 +1571,18 @@ class Function_Hankel1(BuiltinFunction):
             sage: hankel1(3, x)._sympy_()                                               # needs sympy sage.symbolic
             hankel1(3, x)
         """
-        BuiltinFunction.__init__(self, 'hankel1', nargs=2,
-                                 conversions=dict(maple='HankelH1',
-                                                  mathematica='HankelH1',
-                                                  maxima='hankel1',
-                                                  sympy='hankel1',
-                                                  fricas='hankelH1'))
+        BuiltinFunction.__init__(
+            self,
+            'hankel1',
+            nargs=2,
+            conversions=dict(
+                maple='HankelH1',
+                mathematica='HankelH1',
+                maxima='hankel1',
+                sympy='hankel1',
+                fricas='hankelH1',
+            ),
+        )
 
     def _evalf_(self, nu, z, parent, algorithm=None):
         r"""
@@ -1577,6 +1656,7 @@ class Function_Hankel2(BuiltinFunction):
 
     - [AS-Bessel]_ see 9.1.6
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1584,12 +1664,18 @@ class Function_Hankel2(BuiltinFunction):
             sage: hankel2(3, x)._sympy_()                                               # needs sympy sage.symbolic
             hankel2(3, x)
         """
-        BuiltinFunction.__init__(self, 'hankel2', nargs=2,
-                                 conversions=dict(maple='HankelH2',
-                                                  mathematica='HankelH2',
-                                                  maxima='hankel2',
-                                                  sympy='hankel2',
-                                                  fricas='hankelH2'))
+        BuiltinFunction.__init__(
+            self,
+            'hankel2',
+            nargs=2,
+            conversions=dict(
+                maple='HankelH2',
+                mathematica='HankelH2',
+                maxima='hankel2',
+                sympy='hankel2',
+                fricas='hankelH2',
+            ),
+        )
 
     def _evalf_(self, nu, z, parent, algorithm=None):
         r"""
@@ -1675,6 +1761,7 @@ class SphericalBesselJ(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1682,11 +1769,12 @@ class SphericalBesselJ(BuiltinFunction):
             sage: spherical_bessel_J(3, x)._sympy_()                                    # needs sympy sage.symbolic
             jn(3, x)
         """
-        conversions = dict(mathematica='SphericalBesselJ',
-                           maxima='spherical_bessel_j',
-                           sympy='jn')
-        BuiltinFunction.__init__(self, 'spherical_bessel_J', nargs=2,
-                                 conversions=conversions)
+        conversions = dict(
+            mathematica='SphericalBesselJ', maxima='spherical_bessel_j', sympy='jn'
+        )
+        BuiltinFunction.__init__(
+            self, 'spherical_bessel_J', nargs=2, conversions=conversions
+        )
 
     def _evalf_(self, n, z, parent, algorithm=None):
         r"""
@@ -1697,8 +1785,7 @@ class SphericalBesselJ(BuiltinFunction):
             sage: spherical_bessel_J(I, I).n()                                          # needs sage.symbolic
             0.215520585196889 - 0.282308805801851*I
         """
-        return _mpmath_utils_call(spherical_bessel_f, 'besselj', n, z,
-                                 parent=parent)
+        return _mpmath_utils_call(spherical_bessel_f, 'besselj', n, z, parent=parent)
 
     def _latex_(self):
         r"""
@@ -1727,10 +1814,13 @@ class SphericalBesselJ(BuiltinFunction):
             -(x + 1)*spherical_bessel_J(x, y)/y + spherical_bessel_J(x - 1, y)
         """
         if SR(n).is_numeric() and not SR(n).is_integer():
-            raise NotImplementedError('derivative of spherical function with noninteger index')
+            raise NotImplementedError(
+                'derivative of spherical function with noninteger index'
+            )
         if diff_param == 1:
-            return (spherical_bessel_J(n - 1, z) -
-                    ((n + 1) / z) * spherical_bessel_J(n, z))
+            return spherical_bessel_J(n - 1, z) - ((n + 1) / z) * spherical_bessel_J(
+                n, z
+            )
         raise NotImplementedError('derivative with respect to order')
 
 
@@ -1773,6 +1863,7 @@ class SphericalBesselY(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1780,11 +1871,12 @@ class SphericalBesselY(BuiltinFunction):
             sage: spherical_bessel_Y(3, x)._sympy_()                                    # needs sympy sage.symbolic
             yn(3, x)
         """
-        conversions = dict(mathematica='SphericalBesselY',
-                           maxima='spherical_bessel_y',
-                           sympy='yn')
-        BuiltinFunction.__init__(self, 'spherical_bessel_Y', nargs=2,
-                                 conversions=conversions)
+        conversions = dict(
+            mathematica='SphericalBesselY', maxima='spherical_bessel_y', sympy='yn'
+        )
+        BuiltinFunction.__init__(
+            self, 'spherical_bessel_Y', nargs=2, conversions=conversions
+        )
 
     def _evalf_(self, n, z, parent, algorithm=None):
         r"""
@@ -1795,8 +1887,7 @@ class SphericalBesselY(BuiltinFunction):
             sage: spherical_bessel_Y(I, I).n()                                          # needs sage.symbolic
             -0.174225389805399 + 1.36247234140312*I
         """
-        return _mpmath_utils_call(spherical_bessel_f, 'bessely', n, z,
-                                 parent=parent)
+        return _mpmath_utils_call(spherical_bessel_f, 'bessely', n, z, parent=parent)
 
     def _latex_(self):
         r"""
@@ -1826,11 +1917,14 @@ class SphericalBesselY(BuiltinFunction):
             1/2*spherical_bessel_Y(x + 1, y) + 1/2*spherical_bessel_Y(x - 1, y)
         """
         if SR(n).is_numeric() and not SR(n).is_integer():
-            raise NotImplementedError('derivative of spherical function with noninteger index')
+            raise NotImplementedError(
+                'derivative of spherical function with noninteger index'
+            )
         if diff_param == 1:
-            return (-spherical_bessel_Y(n, z) / (2 * z) +
-                    (spherical_bessel_Y(n - 1, z) -
-                     spherical_bessel_Y(n + 1, z)) / 2)
+            return (
+                -spherical_bessel_Y(n, z) / (2 * z)
+                + (spherical_bessel_Y(n - 1, z) - spherical_bessel_Y(n + 1, z)) / 2
+            )
         raise NotImplementedError('derivative with respect to order')
 
 
@@ -1871,6 +1965,7 @@ class SphericalHankel1(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1878,10 +1973,10 @@ class SphericalHankel1(BuiltinFunction):
             sage: spherical_hankel1
             spherical_hankel1
         """
-        conversions = dict(mathematica='SphericalHankelH1',
-                           maxima='spherical_hankel1')
-        BuiltinFunction.__init__(self, 'spherical_hankel1', nargs=2,
-                                 conversions=conversions)
+        conversions = dict(mathematica='SphericalHankelH1', maxima='spherical_hankel1')
+        BuiltinFunction.__init__(
+            self, 'spherical_hankel1', nargs=2, conversions=conversions
+        )
 
     def _evalf_(self, n, z, parent, algorithm=None):
         r"""
@@ -1892,8 +1987,7 @@ class SphericalHankel1(BuiltinFunction):
             sage: spherical_hankel1(I, I).n()                                           # needs sage.symbolic
             -1.14695175620623 - 0.456534195607250*I
         """
-        return _mpmath_utils_call(spherical_bessel_f, 'hankel1', n, z,
-                                 parent=parent)
+        return _mpmath_utils_call(spherical_bessel_f, 'hankel1', n, z, parent=parent)
 
     def _latex_(self):
         r"""
@@ -1923,11 +2017,14 @@ class SphericalHankel1(BuiltinFunction):
             1/2*spherical_hankel1(x + 1, y) + 1/2*spherical_hankel1(x - 1, y)
         """
         if SR(n).is_numeric() and not SR(n).is_integer():
-            raise NotImplementedError('derivative of spherical function with noninteger index')
+            raise NotImplementedError(
+                'derivative of spherical function with noninteger index'
+            )
         if diff_param == 1:
-            return (-spherical_hankel1(n, z) / (2 * z) +
-                    (spherical_hankel1(n - 1, z) -
-                     spherical_hankel1(n + 1, z)) / 2)
+            return (
+                -spherical_hankel1(n, z) / (2 * z)
+                + (spherical_hankel1(n - 1, z) - spherical_hankel1(n + 1, z)) / 2
+            )
         raise NotImplementedError('derivative with respect to order')
 
 
@@ -1972,6 +2069,7 @@ class SphericalHankel2(BuiltinFunction):
 
     - [WP-Bessel]_
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -1979,9 +2077,14 @@ class SphericalHankel2(BuiltinFunction):
             sage: spherical_hankel2
             spherical_hankel2
         """
-        BuiltinFunction.__init__(self, 'spherical_hankel2', nargs=2,
-            conversions=dict(mathematica='SphericalHankelH2',
-                             maxima='spherical_hankel2'))
+        BuiltinFunction.__init__(
+            self,
+            'spherical_hankel2',
+            nargs=2,
+            conversions=dict(
+                mathematica='SphericalHankelH2', maxima='spherical_hankel2'
+            ),
+        )
 
     def _evalf_(self, n, z, parent, algorithm=None):
         r"""
@@ -1992,8 +2095,7 @@ class SphericalHankel2(BuiltinFunction):
             sage: spherical_hankel2(I, I).n()                                           # needs sage.symbolic
             1.57799292660001 - 0.108083415996452*I
         """
-        return _mpmath_utils_call(spherical_bessel_f, 'hankel2', n, z,
-                                  parent=parent)
+        return _mpmath_utils_call(spherical_bessel_f, 'hankel2', n, z, parent=parent)
 
     def _latex_(self):
         r"""
@@ -2032,11 +2134,14 @@ class SphericalHankel2(BuiltinFunction):
             NotImplementedError: derivative of spherical function with noninteger index
         """
         if SR(n).is_numeric() and not SR(n).is_integer():
-            raise NotImplementedError('derivative of spherical function with noninteger index')
+            raise NotImplementedError(
+                'derivative of spherical function with noninteger index'
+            )
         if diff_param == 1:
-            return (-spherical_hankel2(n, z) / (2 * z) +
-                    (spherical_hankel2(n - 1, z) -
-                     spherical_hankel2(n + 1, z)) / 2)
+            return (
+                -spherical_hankel2(n, z) / (2 * z)
+                + (spherical_hankel2(n - 1, z) - spherical_hankel2(n + 1, z)) / 2
+            )
         raise NotImplementedError('derivative with respect to order')
 
 
@@ -2069,6 +2174,7 @@ def spherical_bessel_f(F, n, z):
         mpc(real='-0.21864196590306359', imag='0.0')
     """
     from mpmath import mp as ctx
+
     prec = ctx.prec
     try:
         n = ctx.convert(n)

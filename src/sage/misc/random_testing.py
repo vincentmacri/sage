@@ -156,6 +156,7 @@ def random_testing(fn):
                 print("Please include this random seed in your bug report:")
                 print("Random seed: {}".format(used_seed))
                 print(repr(e))
+
     return wrapped_fun
 
 
@@ -179,6 +180,7 @@ def check_add_commutes(trials, verbose=False):
         sage: check_add_commutes(1000) # long time
     """
     from sage.rings.rational_field import QQ
+
     for _ in range(trials):
         a = QQ.random_element()
         b = QQ.random_element()
@@ -253,6 +255,7 @@ def check_add_is_mul(trials, verbose=False):
         AssertionError()
     """
     from sage.rings.rational_field import QQ
+
     for _ in range(trials):
         a = QQ.random_element()
         b = QQ.random_element()

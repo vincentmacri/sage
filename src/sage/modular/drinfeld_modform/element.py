@@ -92,12 +92,15 @@ class DrinfeldModularFormsElement(ModuleElement):
         :class:`~sage.modular.drinfeld_modform.ring.DrinfeldModularForms`
         and access its elements using the relevant methods.
     """
+
     def __init__(self, parent, polynomial):
         if not isinstance(polynomial, MPolynomial):
             raise TypeError("input must be a multivariate polynomial")
         if not parent.base_ring().has_coerce_map_from(polynomial.base_ring()):
-            raise ValueError("unable to coerce base ring of the given "
-                             "polynomial into Drinfeld modular form ring")
+            raise ValueError(
+                "unable to coerce base ring of the given "
+                "polynomial into Drinfeld modular form ring"
+            )
         poly = parent._poly_ring(polynomial)
         self._polynomial = poly
 
@@ -146,7 +149,7 @@ class DrinfeldModularFormsElement(ModuleElement):
             sage: (M.0 + M.1)*M.0
             g1*g2 + g1^2
         """
-        return self.__class__(self.parent(), self._polynomial*other._polynomial)
+        return self.__class__(self.parent(), self._polynomial * other._polynomial)
 
     def _lmul_(self, c):
         r"""
@@ -165,7 +168,7 @@ class DrinfeldModularFormsElement(ModuleElement):
             sage: M.0 * 0
             0
         """
-        return self.__class__(self.parent(), c*self._polynomial)
+        return self.__class__(self.parent(), c * self._polynomial)
 
     def __neg__(self):
         r"""
@@ -411,7 +414,7 @@ class DrinfeldModularFormsElement(ModuleElement):
         if not self.parent()._has_type:
             return ZZ(0)
         q = self.base_ring().base_ring().cardinality()
-        return self.polynomial().degrees()[-1] % (q-1)
+        return self.polynomial().degrees()[-1] % (q - 1)
 
     def weight(self):
         r"""

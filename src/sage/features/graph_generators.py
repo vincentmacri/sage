@@ -31,6 +31,7 @@ class Plantri(Executable):
         sage: Plantri().is_present()  # optional - plantri
         FeatureTestResult('plantri', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -39,9 +40,13 @@ class Plantri(Executable):
             sage: isinstance(Plantri(), Plantri)
             True
         """
-        Executable.__init__(self, name='plantri', spkg='plantri',
-                            executable='plantri',
-                            url='http://users.cecs.anu.edu.au/~bdm/plantri/')
+        Executable.__init__(
+            self,
+            name='plantri',
+            spkg='plantri',
+            executable='plantri',
+            url='http://users.cecs.anu.edu.au/~bdm/plantri/',
+        )
 
     def is_functional(self):
         r"""
@@ -57,13 +62,23 @@ class Plantri(Executable):
         try:
             lines = subprocess.check_output(command, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` failed with exit code {e.returncode}".format(command=" ".join(command), e=e))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` failed with exit code {e.returncode}".format(
+                    command=" ".join(command), e=e
+                ),
+            )
 
         expected = b"1 triangulations written"
         if lines.find(expected) == -1:
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` did not produce output which contains `{expected}`".format(command=" ".join(command), expected=expected))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` did not produce output which contains `{expected}`".format(
+                    command=" ".join(command), expected=expected
+                ),
+            )
 
         return FeatureTestResult(self, True)
 
@@ -78,6 +93,7 @@ class Buckygen(Executable):
         sage: Buckygen().is_present()  # optional - buckygen
         FeatureTestResult('buckygen', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -86,9 +102,13 @@ class Buckygen(Executable):
             sage: isinstance(Buckygen(), Buckygen)
             True
         """
-        Executable.__init__(self, name='buckygen', spkg='buckygen',
-                            executable='buckygen',
-                            url='http://caagt.ugent.be/buckygen/')
+        Executable.__init__(
+            self,
+            name='buckygen',
+            spkg='buckygen',
+            executable='buckygen',
+            url='http://caagt.ugent.be/buckygen/',
+        )
 
     def is_functional(self):
         r"""
@@ -104,13 +124,23 @@ class Buckygen(Executable):
         try:
             lines = subprocess.check_output(command, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` failed with exit code {e.returncode}".format(command=" ".join(command), e=e))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` failed with exit code {e.returncode}".format(
+                    command=" ".join(command), e=e
+                ),
+            )
 
         expected = b"Number of fullerenes generated with 13 vertices: 0"
         if lines.find(expected) == -1:
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` did not produce output which contains `{expected}`".format(command=" ".join(command), expected=expected))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` did not produce output which contains `{expected}`".format(
+                    command=" ".join(command), expected=expected
+                ),
+            )
 
         return FeatureTestResult(self, True)
 
@@ -126,6 +156,7 @@ class Benzene(Executable):
         sage: Benzene().is_present()  # optional - benzene
         FeatureTestResult('benzene', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -134,9 +165,13 @@ class Benzene(Executable):
             sage: isinstance(Benzene(), Benzene)
             True
         """
-        Executable.__init__(self, name='benzene', spkg='benzene',
-                            executable='benzene',
-                            url='http://www.grinvin.org/')
+        Executable.__init__(
+            self,
+            name='benzene',
+            spkg='benzene',
+            executable='benzene',
+            url='http://www.grinvin.org/',
+        )
 
     def is_functional(self):
         r"""
@@ -153,18 +188,26 @@ class Benzene(Executable):
         try:
             lines = subprocess.check_output(command, stderr=devnull)
         except subprocess.CalledProcessError as e:
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` failed with exit code {e.returncode}".format(command=" ".join(command), e=e))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` failed with exit code {e.returncode}".format(
+                    command=" ".join(command), e=e
+                ),
+            )
 
         expected = b">>planar_code<<"
         if not lines.startswith(expected):
-            return FeatureTestResult(self, False,
-                    reason="Call `{command}` did not produce output that started with `{expected}`.".format(command=" ".join(command), expected=expected))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Call `{command}` did not produce output that started with `{expected}`.".format(
+                    command=" ".join(command), expected=expected
+                ),
+            )
 
         return FeatureTestResult(self, True)
 
 
 def all_features():
-    return [Plantri(),
-            Buckygen(),
-            Benzene()]
+    return [Plantri(), Buckygen(), Benzene()]

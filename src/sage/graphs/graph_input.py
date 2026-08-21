@@ -17,6 +17,7 @@ Note that because they are called by the constructors of :class:`Graph` and
 Functions
 ---------
 """
+
 from sage.cpython.string import bytes_to_str
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 import sys
@@ -40,7 +41,10 @@ def from_graph6(G, g6_string):
         sage: g.is_isomorphic(graphs.PetersenGraph())
         True
     """
-    from .generic_graph_pyx import length_and_string_from_graph6, binary_string_from_graph6
+    from .generic_graph_pyx import (
+        length_and_string_from_graph6,
+        binary_string_from_graph6,
+    )
 
     if isinstance(g6_string, bytes):
         g6_string = bytes_to_str(g6_string)
@@ -54,9 +58,15 @@ def from_graph6(G, g6_string):
     m = binary_string_from_graph6(s, n)
     expected = n * (n - 1) // 2 + (6 - n * (n - 1) // 2) % 6
     if len(m) > expected:
-        raise RuntimeError("the string (%s) seems corrupt: for n = %d, the string is too long" % (ss, n))
+        raise RuntimeError(
+            "the string (%s) seems corrupt: for n = %d, the string is too long"
+            % (ss, n)
+        )
     elif len(m) < expected:
-        raise RuntimeError("the string (%s) seems corrupt: for n = %d, the string is too short" % (ss, n))
+        raise RuntimeError(
+            "the string (%s) seems corrupt: for n = %d, the string is too short"
+            % (ss, n)
+        )
     G.add_vertices(range(n))
     k = 0
     for i in range(n):
@@ -100,20 +110,24 @@ def from_sparse6(G, g6_string):
         edges = []
     else:
         from sage.rings.integer_ring import ZZ
+
         k = int((ZZ(n) - 1).nbits())
         ords = [ord(i) for i in s]
         if any(o > 126 or o < 63 for o in ords):
-            raise RuntimeError("the string seems corrupt: valid characters are \n" + ''.join(chr(i) for i in range(63, 127)))
-        bits = ''.join(int_to_binary_string(o-63).zfill(6) for o in ords)
+            raise RuntimeError(
+                "the string seems corrupt: valid characters are \n"
+                + ''.join(chr(i) for i in range(63, 127))
+            )
+        bits = ''.join(int_to_binary_string(o - 63).zfill(6) for o in ords)
         if not k:
             b = [int(x) for x in bits]
             x = [0] * len(b)
         else:
             b = []
             x = []
-            for i in range(0, len(bits)-k, k+1):
-                b.append(int(bits[i:i+1], 2))
-                x.append(int(bits[i+1:i+k+1], 2))
+            for i in range(0, len(bits) - k, k + 1):
+                b.append(int(bits[i : i + 1], 2))
+                x.append(int(bits[i + 1 : i + k + 1], 2))
         v = 0
         edges = []
         for i in range(len(b)):
@@ -152,7 +166,11 @@ def from_dig6(G, dig6_string):
         sage: L.edges(labels=False, sort=True)
         [(0, 1), (0, 2), (1, 2), (2, 3), (3, 3)]
     """
-    from .generic_graph_pyx import length_and_string_from_graph6, binary_string_from_dig6
+    from .generic_graph_pyx import (
+        length_and_string_from_graph6,
+        binary_string_from_dig6,
+    )
+
     if isinstance(dig6_string, bytes):
         dig6_string = bytes_to_str(dig6_string)
     elif not isinstance(dig6_string, str):
@@ -165,9 +183,15 @@ def from_dig6(G, dig6_string):
     m = binary_string_from_dig6(s, n)
     expected = n**2
     if len(m) > expected:
-        raise RuntimeError("the string (%s) seems corrupt: for n = %d, the string is too long" % (ss, n))
+        raise RuntimeError(
+            "the string (%s) seems corrupt: for n = %d, the string is too long"
+            % (ss, n)
+        )
     elif len(m) < expected:
-        raise RuntimeError("the string (%s) seems corrupt: for n = %d, the string is too short" % (ss, n))
+        raise RuntimeError(
+            "the string (%s) seems corrupt: for n = %d, the string is too short"
+            % (ss, n)
+        )
     G.add_vertices(range(n))
     k = 0
     for i in range(n):
@@ -198,14 +222,17 @@ def from_seidel_adjacency_matrix(G, M):
     """
     from sage.structure.element import Matrix
     from sage.rings.integer_ring import ZZ
+
     assert isinstance(M, Matrix)
 
     if M.base_ring() != ZZ:
         try:
             M = M.change_ring(ZZ)
         except TypeError:
-            raise ValueError("the adjacency matrix of a Seidel graph must" +
-                             " have only 0,1,-1 integer entries")
+            raise ValueError(
+                "the adjacency matrix of a Seidel graph must"
+                + " have only 0,1,-1 integer entries"
+            )
 
     if M.is_sparse():
         entries = set(M[i, j] for i, j in M.nonzero_positions())
@@ -213,11 +240,15 @@ def from_seidel_adjacency_matrix(G, M):
         entries = set(M.list())
 
     if any(e < -1 or e > 1 for e in entries):
-        raise ValueError("the adjacency matrix of a Seidel graph must" +
-                         " have only 0,1,-1 integer entries")
+        raise ValueError(
+            "the adjacency matrix of a Seidel graph must"
+            + " have only 0,1,-1 integer entries"
+        )
     if any(i == j for i, j in M.nonzero_positions()):
-        raise ValueError("the adjacency matrix of a Seidel graph must" +
-                         " have 0s on the main diagonal")
+        raise ValueError(
+            "the adjacency matrix of a Seidel graph must"
+            + " have 0s on the main diagonal"
+        )
     if not M.is_symmetric():
         raise ValueError("the adjacency matrix of a Seidel graph must be symmetric")
 
@@ -248,6 +279,7 @@ def from_adjacency_matrix(G, M, loops=False, multiedges=False, weighted=False):
     """
     from sage.structure.element import Matrix
     from sage.rings.integer_ring import ZZ
+
     assert isinstance(M, Matrix)
     # note: the adjacency matrix might be weighted and hence not
     # necessarily consists of integers
@@ -256,8 +288,10 @@ def from_adjacency_matrix(G, M, loops=False, multiedges=False, weighted=False):
             M = M.change_ring(ZZ)
         except TypeError:
             if weighted is False:
-                raise ValueError("the adjacency matrix of a non-weighted graph" +
-                                 " must have only nonnegative integer entries")
+                raise ValueError(
+                    "the adjacency matrix of a non-weighted graph"
+                    + " must have only nonnegative integer entries"
+                )
             weighted = True
 
     if M.is_sparse():
@@ -267,8 +301,10 @@ def from_adjacency_matrix(G, M, loops=False, multiedges=False, weighted=False):
 
     if not weighted and any(e < 0 for e in entries):
         if weighted is False:
-            raise ValueError("the adjacency matrix of a non-weighted graph" +
-                             " must have only nonnegative integer entries")
+            raise ValueError(
+                "the adjacency matrix of a non-weighted graph"
+                + " must have only nonnegative integer entries"
+            )
         weighted = True
         if multiedges is None:
             multiedges = False
@@ -276,12 +312,14 @@ def from_adjacency_matrix(G, M, loops=False, multiedges=False, weighted=False):
         weighted = False
 
     if multiedges is None:
-        multiedges = ((not weighted) and any(e != 0 and e != 1 for e in entries))
+        multiedges = (not weighted) and any(e != 0 and e != 1 for e in entries)
 
     if not loops and any(M[i, i] for i in range(M.nrows())):
         if loops is False:
-            raise ValueError("the adjacency matrix of a non-weighted graph" +
-                             " must have zeroes on the diagonal")
+            raise ValueError(
+                "the adjacency matrix of a non-weighted graph"
+                + " must have zeroes on the diagonal"
+            )
         loops = True
     if loops is None:
         loops = False
@@ -323,6 +361,7 @@ def from_incidence_matrix(G, M, loops=False, multiedges=False, weighted=False):
         True
     """
     from sage.structure.element import Matrix
+
     assert isinstance(M, Matrix)
 
     oriented = any(M[pos] < 0 for pos in M.nonzero_positions(copy=False))
@@ -332,18 +371,29 @@ def from_incidence_matrix(G, M, loops=False, multiedges=False, weighted=False):
         NZ = M.nonzero_positions_in_column(i)
         if len(NZ) == 1:
             if oriented:
-                raise ValueError("column {} of the (oriented) incidence "
-                                 "matrix contains only one nonzero value".format(i))
+                raise ValueError(
+                    "column {} of the (oriented) incidence "
+                    "matrix contains only one nonzero value".format(i)
+                )
             elif M[NZ[0], i] != 2:
-                raise ValueError("each column of a non-oriented incidence "
-                                 "matrix must sum to 2, but column {} does not".format(i))
+                raise ValueError(
+                    "each column of a non-oriented incidence "
+                    "matrix must sum to 2, but column {} does not".format(i)
+                )
             if loops is None:
                 loops = True
             positions.append((NZ[0], NZ[0]))
-        elif (len(NZ) != 2 or
-              (oriented and not ((M[NZ[0], i] == +1 and M[NZ[1], i] == -1) or
-                                 (M[NZ[0], i] == -1 and M[NZ[1], i] == +1))) or
-              (not oriented and (M[NZ[0], i] != 1 or M[NZ[1], i] != 1))):
+        elif (
+            len(NZ) != 2
+            or (
+                oriented
+                and not (
+                    (M[NZ[0], i] == +1 and M[NZ[1], i] == -1)
+                    or (M[NZ[0], i] == -1 and M[NZ[1], i] == +1)
+                )
+            )
+            or (not oriented and (M[NZ[0], i] != 1 or M[NZ[1], i] != 1))
+        ):
             msg = "there must be one or two nonzero entries per column in an incidence matrix, "
             msg += "got entries {} in column {}".format([M[j, i] for j in NZ], i)
             raise ValueError(msg)
@@ -418,6 +468,7 @@ def from_oriented_incidence_matrix(G, M, loops=False, multiedges=False, weighted
         [(1, 0)]
     """
     from sage.structure.element import Matrix
+
     assert isinstance(M, Matrix)
 
     positions = []
@@ -443,7 +494,14 @@ def from_oriented_incidence_matrix(G, M, loops=False, multiedges=False, weighted
     G.add_edges(positions)
 
 
-def from_dict_of_dicts(G, M, loops=False, multiedges=False, weighted=False, convert_empty_dict_labels_to_None=False):
+def from_dict_of_dicts(
+    G,
+    M,
+    loops=False,
+    multiedges=False,
+    weighted=False,
+    convert_empty_dict_labels_to_None=False,
+):
     r"""
     Fill ``G`` with the data of a dictionary of dictionaries.
 
@@ -490,7 +548,11 @@ def from_dict_of_dicts(G, M, loops=False, multiedges=False, weighted=False, conv
         if any(u in neighb for u, neighb in M.items()):
             if loops is False:
                 u = next(u for u, neighb in M.items() if u in neighb)
-                raise ValueError("the graph was built with loops=False but input M has a loop at {}".format(u))
+                raise ValueError(
+                    "the graph was built with loops=False but input M has a loop at {}".format(
+                        u
+                    )
+                )
             loops = True
         if loops is None:
             loops = False
@@ -500,7 +562,9 @@ def from_dict_of_dicts(G, M, loops=False, multiedges=False, weighted=False, conv
     if multiedges is not False:
         if not all(isinstance(M[u][v], list) for u in M for v in M[u]):
             if multiedges:
-                raise ValueError("dict of dicts for multigraph must be in the format {v: {u: list}}")
+                raise ValueError(
+                    "dict of dicts for multigraph must be in the format {v: {u: list}}"
+                )
             multiedges = False
         if multiedges is None and M:
             multiedges = True
@@ -513,9 +577,11 @@ def from_dict_of_dicts(G, M, loops=False, multiedges=False, weighted=False, conv
         verts.update(d)
     G.add_vertices(verts.keys())
     if convert_empty_dict_labels_to_None:
+
         def relabel(x):
             return x if x != {} else None
     else:
+
         def relabel(x):
             return x
 
@@ -576,7 +642,11 @@ def from_dict_of_lists(G, D, loops=False, multiedges=False, weighted=False):
         if any(u in neighb for u, neighb in D.items()):
             if loops is False:
                 u = next(u for u, neighb in D.items() if u in neighb)
-                raise ValueError("the graph was built with loops=False but input D has a loop at {}".format(u))
+                raise ValueError(
+                    "the graph was built with loops=False but input D has a loop at {}".format(
+                        u
+                    )
+                )
             loops = True
         if loops is None:
             loops = False
@@ -587,7 +657,9 @@ def from_dict_of_lists(G, D, loops=False, multiedges=False, weighted=False):
             if len(set(D[u])) != len(D[u]):
                 if multiedges is False:
                     v = next(v for v in D[u] if D[u].count(v) > 1)
-                    raise ValueError("non-multigraph got several edges (%s, %s)" % (u, v))
+                    raise ValueError(
+                        "non-multigraph got several edges (%s, %s)" % (u, v)
+                    )
                 multiedges = True
                 break
         if multiedges is None:
@@ -601,8 +673,7 @@ def from_dict_of_lists(G, D, loops=False, multiedges=False, weighted=False):
         v_to_id = {v: i for i, v in enumerate(verts.keys())}
         for u in D:
             for v in D[u]:
-                if (v_to_id[u] <= v_to_id[v] or
-                        v not in D or u not in D[v] or u == v):
+                if v_to_id[u] <= v_to_id[v] or v not in D or u not in D[v] or u == v:
                     G._backend.add_edge(u, v, None, False)
     else:
         for u in D:
@@ -610,8 +681,14 @@ def from_dict_of_lists(G, D, loops=False, multiedges=False, weighted=False):
                 G._backend.add_edge(u, v, None, is_directed)
 
 
-def from_networkx_graph(G, gnx, weighted=None, loops=None, multiedges=None,
-                        convert_empty_dict_labels_to_None=None):
+def from_networkx_graph(
+    G,
+    gnx,
+    weighted=None,
+    loops=None,
+    multiedges=None,
+    convert_empty_dict_labels_to_None=None,
+):
     r"""
     Fill `G` with the data of a NetworkX (di)graph.
 
@@ -778,9 +855,11 @@ def from_networkx_graph(G, gnx, weighted=None, loops=None, multiedges=None,
     """
     from sage.graphs.graph import Graph
     from sage.graphs.digraph import DiGraph
+
     if not isinstance(G, (Graph, DiGraph)):
         raise ValueError("the first parameter must a Sage Graph or DiGraph")
     import networkx
+
     if not isinstance(gnx, (networkx.Graph, networkx.DiGraph)):
         raise ValueError("the second parameter must be a NetworkX (Multi)(Di)Graph")
 
@@ -801,8 +880,10 @@ def from_networkx_graph(G, gnx, weighted=None, loops=None, multiedges=None,
     G.add_vertices(gnx.nodes())
     G.set_vertices(gnx.nodes(data=True))
     if convert_empty_dict_labels_to_None is not False:
+
         def r(label):
             return None if label == {} else label
+
         G.add_edges((u, v, r(ll)) for u, v, ll in gnx.edges(data=True))
     else:
         G.add_edges(gnx.edges(data=True))

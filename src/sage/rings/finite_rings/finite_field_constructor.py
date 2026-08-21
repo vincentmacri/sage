@@ -503,6 +503,7 @@ class FiniteFieldFactory(UniqueFactory):
         sage: GF(5, 2) is GF((5, 2))
         True
     """
+
     def __init__(self, *args, **kwds):
         """
         Initialization.
@@ -515,11 +516,21 @@ class FiniteFieldFactory(UniqueFactory):
         super().__init__(*args, **kwds)
 
     @rename_keyword(impl='implementation')
-    def create_key_and_extra_args(self, order, name=None, modulus=None, names=None,
-                                  implementation=None, proof=None,
-                                  check_prime: bool = True, check_irreducible: bool = True,
-                                  prefix=None, repr=None, elem_cache=None,
-                                  **kwds):
+    def create_key_and_extra_args(
+        self,
+        order,
+        name=None,
+        modulus=None,
+        names=None,
+        implementation=None,
+        proof=None,
+        check_prime: bool = True,
+        check_irreducible: bool = True,
+        prefix=None,
+        repr=None,
+        elem_cache=None,
+        **kwds,
+    ):
         """
         EXAMPLES::
 
@@ -655,12 +666,20 @@ class FiniteFieldFactory(UniqueFactory):
         """
         for key, val in kwds.items():
             if key not in ['structure', 'prec', 'embedding', 'latex_names']:
-                raise TypeError("create_key_and_extra_args() got an unexpected keyword argument '%s'" % key)
-            if not (val is None or isinstance(val, list) and all(c is None for c in val)):
-                raise NotImplementedError("ring extension with prescribed %s is not implemented" % key)
+                raise TypeError(
+                    "create_key_and_extra_args() got an unexpected keyword argument '%s'"
+                    % key
+                )
+            if not (
+                val is None or isinstance(val, list) and all(c is None for c in val)
+            ):
+                raise NotImplementedError(
+                    "ring extension with prescribed %s is not implemented" % key
+                )
 
         from sage.structure.proof.proof import WithProof
         from sage.structure.proof.all import arithmetic
+
         if proof is None:
             proof = arithmetic()
         with WithProof('arithmetic', proof):
@@ -669,7 +688,9 @@ class FiniteFieldFactory(UniqueFactory):
                     raise ValueError('wrong input for finite field constructor')
                 p, n = map(Integer, order)
                 if p < 2 or n < 1:
-                    raise ValueError("the order of a finite field must be a prime power")
+                    raise ValueError(
+                        "the order of a finite field must be a prime power"
+                    )
                 order = p**n
             else:
                 order = Integer(order)
@@ -702,7 +723,9 @@ class FiniteFieldFactory(UniqueFactory):
                         prefix = 'z'
                     name = prefix + str(n)
                     if modulus is not None:
-                        raise ValueError("no modulus may be specified if variable name not given")
+                        raise ValueError(
+                            "no modulus may be specified if variable name not given"
+                        )
                     # Fpbar will have a strong reference, since algebraic_closure caches its results,
                     # and the coefficients of modulus lie in GF(p)
                     Fpbar = GF(p).algebraic_closure(prefix)
@@ -725,7 +748,10 @@ class FiniteFieldFactory(UniqueFactory):
             # optimization which we also need to avoid an infinite loop:
             # a modulus of None is a shorthand for x-1.
             if modulus is not None or implementation != 'modn':
-                from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+                from sage.rings.polynomial.polynomial_ring_constructor import (
+                    PolynomialRing,
+                )
+
                 R = PolynomialRing(FiniteField(p), 'x')
                 if modulus is None:
                     modulus = R.irreducible_element(n)
@@ -734,16 +760,20 @@ class FiniteFieldFactory(UniqueFactory):
                     if modulus != "random" and modulus in self._modulus_cache[order]:
                         modulus = self._modulus_cache[order][modulus]
                     else:
-                        self._modulus_cache[order][modulus] = modulus = R.irreducible_element(n, algorithm=modulus)
+                        self._modulus_cache[order][modulus] = modulus = (
+                            R.irreducible_element(n, algorithm=modulus)
+                        )
                 else:
                     if isinstance(modulus, Polynomial):
                         modulus = modulus.change_variable_name('x')
                     modulus = R(modulus).monic()
 
                     if modulus.degree() != n:
-                        raise ValueError("the degree of the modulus does not equal the degree of the field")
+                        raise ValueError(
+                            "the degree of the modulus does not equal the degree of the field"
+                        )
                 # If modulus is x - 1 for implementation="modn", set it to None
-                if implementation == 'modn' and modulus.list() == [-1,1]:
+                if implementation == 'modn' and modulus.list() == [-1, 1]:
                     modulus = None
             if modulus is None:
                 check_irreducible = False
@@ -754,13 +784,26 @@ class FiniteFieldFactory(UniqueFactory):
                 if repr is None:
                     repr = 'poly'
                 if elem_cache is None:
-                    elem_cache = (order < 500)
+                    elem_cache = order < 500
             else:
                 # This has the effect of ignoring these keywords
                 repr = None
                 elem_cache = None
 
-            return (order, name, modulus, implementation, p, n, proof, prefix, repr, elem_cache, check_prime, check_irreducible), {}
+            return (
+                order,
+                name,
+                modulus,
+                implementation,
+                p,
+                n,
+                proof,
+                prefix,
+                repr,
+                elem_cache,
+                check_prime,
+                check_irreducible,
+            ), {}
 
     @rename_keyword(deprecation=30507, impl='implementation')
     def create_object(self, version, key, **kwds):
@@ -825,7 +868,7 @@ class FiniteFieldFactory(UniqueFactory):
             # We can set the defaults here to be those for givaro
             #   as they are otherwise ignored
             repr = 'poly'
-            elem_cache = (order < 500)
+            elem_cache = order < 500
             check_prime = check_irreducible = False
         elif len(key) == 8:
             # For backward compatibility of pickles (see trac #21433)
@@ -837,22 +880,50 @@ class FiniteFieldFactory(UniqueFactory):
             elem_cache = kwds.get('elem_cache', (order < 500))
             check_prime = check_irreducible = False
         elif len(key) == 10:
-            order, name, modulus, implementation, p, n, proof, prefix, repr, elem_cache = key
+            (
+                order,
+                name,
+                modulus,
+                implementation,
+                p,
+                n,
+                proof,
+                prefix,
+                repr,
+                elem_cache,
+            ) = key
             check_prime = check_irreducible = False
         else:
-            order, name, modulus, implementation, p, n, proof, prefix, repr, elem_cache, check_prime, check_irreducible = key
+            (
+                order,
+                name,
+                modulus,
+                implementation,
+                p,
+                n,
+                proof,
+                prefix,
+                repr,
+                elem_cache,
+                check_prime,
+                check_irreducible,
+            ) = key
 
         from sage.structure.proof.proof import WithProof
+
         with WithProof('arithmetic', proof):
             if check_prime and not p.is_prime():
                 raise ValueError("the order of a finite field must be a prime power")
             if check_irreducible and not modulus.is_irreducible():
-                raise ValueError("finite field modulus must be irreducible but it is not")
+                raise ValueError(
+                    "finite field modulus must be irreducible but it is not"
+                )
 
         if implementation == 'modn':
             if n != 1:
                 raise ValueError("the 'modn' implementation requires a prime order")
             from .finite_field_prime_modn import FiniteField_prime_modn
+
             # Using a check option here is probably a worthwhile
             # compromise since this constructor is simple and used a
             # huge amount.
@@ -868,12 +939,16 @@ class FiniteFieldFactory(UniqueFactory):
                     K = FiniteField_givaro(order, name, modulus, repr, elem_cache)
                 elif implementation == 'ntl':
                     from .finite_field_ntl_gf2e import FiniteField_ntl_gf2e
+
                     K = FiniteField_ntl_gf2e(order, name, modulus)
                 elif implementation == 'pari_ffelt' or implementation == 'pari':
                     from .finite_field_pari_ffelt import FiniteField_pari_ffelt
+
                     K = FiniteField_pari_ffelt(p, modulus, name)
                 else:
-                    raise ValueError("no such finite field implementation: %r" % implementation)
+                    raise ValueError(
+                        "no such finite field implementation: %r" % implementation
+                    )
 
             # Temporary; see create_key_and_extra_args() above.
             if prefix is not None:

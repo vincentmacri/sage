@@ -63,24 +63,25 @@ def _inplace_height_function_gyration(hf):
     k = hf.nrows() - 1
     for i in range(1, k):
         for j in range(1, k):
-            if (i+j) % 2 == 0 \
-                    and hf[i-1,j] == hf[i+1,j] == hf[i,j+1] == hf[i,j-1]:
-                if hf[i,j] < hf[i+1,j]:
-                    hf[i,j] += 2
+            if (i + j) % 2 == 0 and hf[i - 1, j] == hf[i + 1, j] == hf[i, j + 1] == hf[
+                i, j - 1
+            ]:
+                if hf[i, j] < hf[i + 1, j]:
+                    hf[i, j] += 2
                 else:
-                    hf[i,j] -= 2
-    for i in range(1,k):
-        for j in range(1,k):
-            if (i+j) % 2 == 1 \
-                    and hf[i-1,j] == hf[i+1,j] == hf[i,j+1] == hf[i,j-1]:
-                if hf[i,j] < hf[i+1,j]:
-                    hf[i,j] += 2
+                    hf[i, j] -= 2
+    for i in range(1, k):
+        for j in range(1, k):
+            if (i + j) % 2 == 1 and hf[i - 1, j] == hf[i + 1, j] == hf[i, j + 1] == hf[
+                i, j - 1
+            ]:
+                if hf[i, j] < hf[i + 1, j]:
+                    hf[i, j] += 2
                 else:
-                    hf[i,j] -= 2
+                    hf[i, j] -= 2
 
 
-class AlternatingSignMatrix(Element,
-        metaclass=InheritComparisonClasscallMetaclass):
+class AlternatingSignMatrix(Element, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     An alternating sign matrix.
 
@@ -90,6 +91,7 @@ class AlternatingSignMatrix(Element,
 
     These were introduced in [MRR1983]_.
     """
+
     @staticmethod
     def __classcall_private__(cls, asm, check=True):
         """
@@ -267,8 +269,9 @@ class AlternatingSignMatrix(Element,
         add_row = zero_vector(ZZ, n)
         for j, row in enumerate(self._matrix):
             add_row = row + add_row
-            triangle[n - 1 - j] = [i + 1 for i in range(n - 1, -1, -1)
-                                   if add_row[i] == 1]
+            triangle[n - 1 - j] = [
+                i + 1 for i in range(n - 1, -1, -1) if add_row[i] == 1
+            ]
         return MonotoneTriangles(n)(triangle)
 
     @combinatorial_map(name='rotate counterclockwise')
@@ -472,7 +475,7 @@ class AlternatingSignMatrix(Element,
         for i in range(n):
             for j in range(n):
                 col_sum[j] += asm[i, j]
-                ans[j+1, i+1] = ans[j, i+1] + 1 - 2 * col_sum[j]
+                ans[j + 1, i + 1] = ans[j, i + 1] + 1 - 2 * col_sum[j]
         return ans
 
     def to_six_vertex_model(self):
@@ -536,6 +539,7 @@ class AlternatingSignMatrix(Element,
                 │         │
         """
         from sage.combinat.fully_packed_loop import FullyPackedLoop
+
         return FullyPackedLoop(self)
 
     def link_pattern(self):
@@ -686,8 +690,12 @@ class AlternatingSignMatrix(Element,
         BB = B.corner_sum_matrix()
         for i in range(len(AA[0])):
             for j in range(len(AA[0])):
-                if not (AA[i,j] >= BB[i,j] and AA[i,j] >= BB[i+1,j+1]-1
-                        and AA[i,j] <= BB[i+1,j] and AA[i,j] <= BB[i,j+1]):
+                if not (
+                    AA[i, j] >= BB[i, j]
+                    and AA[i, j] >= BB[i + 1, j + 1] - 1
+                    and AA[i, j] <= BB[i + 1, j]
+                    and AA[i, j] <= BB[i, j + 1]
+                ):
                     return False
         return True
 
@@ -724,36 +732,43 @@ class AlternatingSignMatrix(Element,
         n = self.parent()._n + 1
         M = AlternatingSignMatrices(n)
         sign = []
-        B = matrix(ZZ, n+1)
+        B = matrix(ZZ, n + 1)
         A = 2 * self.height_function()
         for i in range(n):
             for j in range(n):
                 A.add_to_entry(i, j, ZZ.one())
-        for a in range(n+1):
-            B[a,0] = B[0,a] = 2*a
-            B[a,n] = B[n,a] = 2*(n-a)
+        for a in range(n + 1):
+            B[a, 0] = B[0, a] = 2 * a
+            B[a, n] = B[n, a] = 2 * (n - a)
 
-        for i in range(1,n):
-            for j in range(1,n):
-                if A[i-1,j-1] == A[i,j] == A[i-1,j]-2 == A[i,j-1]-2:
-                    B[i,j] = -A[i,j]
-                    sign.append([i,j])
+        for i in range(1, n):
+            for j in range(1, n):
+                if A[i - 1, j - 1] == A[i, j] == A[i - 1, j] - 2 == A[i, j - 1] - 2:
+                    B[i, j] = -A[i, j]
+                    sign.append([i, j])
                 else:
-                    s = {A[i-1,j-1]-1,A[i-1,j-1]+3} & {A[i-1,j]-3,A[i-1,j]+1} & {A[i,j-1]-3,A[i,j-1]+1} & {A[i,j]-1,A[i,j]+3}
+                    s = (
+                        {A[i - 1, j - 1] - 1, A[i - 1, j - 1] + 3}
+                        & {A[i - 1, j] - 3, A[i - 1, j] + 1}
+                        & {A[i, j - 1] - 3, A[i, j - 1] + 1}
+                        & {A[i, j] - 1, A[i, j] + 3}
+                    )
                     assert len(s) == 1
-                    B[i,j] = s.pop()
+                    B[i, j] = s.pop()
 
         output = [B]
         for b in range(len(sign)):
             N = len(output)
             for c in range(N):
                 d = copy.copy(output[c])
-                output[c][sign[b][0],sign[b][1]] = -output[c][sign[b][0], sign[b][1]] + 3
-                d[sign[b][0],sign[b][1]] = -d[sign[b][0], sign[b][1]]-1
+                output[c][sign[b][0], sign[b][1]] = (
+                    -output[c][sign[b][0], sign[b][1]] + 3
+                )
+                d[sign[b][0], sign[b][1]] = -d[sign[b][0], sign[b][1]] - 1
                 output.append(d)
 
         for k in range(len(output)):
-            output[k] = M.from_height_function(output[k]/2)
+            output[k] = M.from_height_function(output[k] / 2)
         return output
 
     def ASM_compatible_smaller(self):
@@ -782,34 +797,41 @@ class AlternatingSignMatrix(Element,
             ]
         """
         n = self.parent()._n
-        M = AlternatingSignMatrices(n-1)
+        M = AlternatingSignMatrices(n - 1)
         A = matrix(ZZ, n)
-        B = 2*self.height_function()[:n,:n]
+        B = 2 * self.height_function()[:n, :n]
         sign = []
         for a in range(n):
-            A[a,0] = 2*a + 1
-            A[0,a] = 2*a + 1
-            A[n-1,a] = 2*(n-a) - 1
-            A[a,n-1] = 2*(n-a) - 1
+            A[a, 0] = 2 * a + 1
+            A[0, a] = 2 * a + 1
+            A[n - 1, a] = 2 * (n - a) - 1
+            A[a, n - 1] = 2 * (n - a) - 1
 
-        for i in range(n-1):
-            for j in range(n-1):
-                if B[i+1,j+1] == B[i,j] == B[i,j+1]+2 == B[i+1,j]+2:
-                    A[i,j] = -B[i,j]
-                    sign.append([i,j])
+        for i in range(n - 1):
+            for j in range(n - 1):
+                if B[i + 1, j + 1] == B[i, j] == B[i, j + 1] + 2 == B[i + 1, j] + 2:
+                    A[i, j] = -B[i, j]
+                    sign.append([i, j])
                 else:
-                    A[i,j] = list({B[i,j]+1,B[i,j]-3} & {B[i,j+1]+3,B[i,j+1]-1} & {B[i+1,j]+3,B[i+1,j]-1} & {B[i+1,j+1]+1,B[i+1,j+1]-3})[0]
+                    A[i, j] = list(
+                        {B[i, j] + 1, B[i, j] - 3}
+                        & {B[i, j + 1] + 3, B[i, j + 1] - 1}
+                        & {B[i + 1, j] + 3, B[i + 1, j] - 1}
+                        & {B[i + 1, j + 1] + 1, B[i + 1, j + 1] - 3}
+                    )[0]
 
         output = [A]
         for b in range(len(sign)):
             N = len(output)
             for c in range(N):
                 d = copy.copy(output[c])
-                output[c][sign[b][0], sign[b][1]] = -output[c][sign[b][0], sign[b][1]]+1
-                d[sign[b][0], sign[b][1]] = -d[sign[b][0], sign[b][1]]-3
+                output[c][sign[b][0], sign[b][1]] = (
+                    -output[c][sign[b][0], sign[b][1]] + 1
+                )
+                d[sign[b][0], sign[b][1]] = -d[sign[b][0], sign[b][1]] - 3
                 output.append(d)
         for k in range(len(output)):
-            output[k] = M.from_height_function((output[k]-matrix.ones(n, n))/2)
+            output[k] = M.from_height_function((output[k] - matrix.ones(n, n)) / 2)
         return output
 
     @combinatorial_map(name='to Dyck word')
@@ -867,6 +889,7 @@ class AlternatingSignMatrix(Element,
         if algorithm == 'link_pattern':
             from sage.combinat.perfect_matching import PerfectMatching
             from sage.combinat.dyck_word import DyckWords
+
             p = PerfectMatching(self.link_pattern()).to_noncrossing_set_partition()
             asm = self.to_matrix()
             n = asm.nrows()
@@ -952,11 +975,12 @@ class AlternatingSignMatrix(Element,
             Semistandard tableaux
         """
         from sage.combinat.tableau import SemistandardTableau
+
         mt = self.to_monotone_triangle()
-        ssyt = [[0]*(len(mt) - j) for j in range(len(mt))]
+        ssyt = [[0] * (len(mt) - j) for j in range(len(mt))]
         for i in range(len(mt)):
             for j in range(len(mt[i])):
-                ssyt[i][j] = mt[j][-(i+1)]
+                ssyt[i][j] = mt[j][-(i + 1)]
         return SemistandardTableau(ssyt)
 
     def left_key(self):
@@ -989,10 +1013,10 @@ class AlternatingSignMatrix(Element,
             Alternating sign matrices of size 3
         """
         lkey = self.to_semistandard_tableau().left_key_tableau()
-        mt = [[0]*(len(lkey) - j) for j in range(len(lkey))]
+        mt = [[0] * (len(lkey) - j) for j in range(len(lkey))]
         for i in range(len(lkey)):
             for j in range(len(lkey[i])):
-                mt[i][j] = lkey[len(lkey[i])-j-1][i]
+                mt[i][j] = lkey[len(lkey[i]) - j - 1][i]
         A = AlternatingSignMatrices(len(lkey))
         return A.from_monotone_triangle(mt)
 
@@ -1155,11 +1179,11 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
             # and i-th column are either 0 or 1
             rs = cs = ZZ.zero()
             for j in range(n):
-                rs += asm[i,j]
+                rs += asm[i, j]
                 if not (rs.is_zero() or rs.is_one()):
                     return False
 
-                cs += asm[j,i]
+                cs += asm[j, i]
                 if not (cs.is_zero() or cs.is_one()):
                     return False
 
@@ -1203,7 +1227,9 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
         if isinstance(asm, AlternatingSignMatrix):
             if asm.parent() is self:
                 return asm
-            raise ValueError("cannot convert between alternating sign matrices of different sizes")
+            raise ValueError(
+                "cannot convert between alternating sign matrices of different sizes"
+            )
         try:
             m = self._matrix_space(asm)
         except (TypeError, ValueError):
@@ -1257,6 +1283,7 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
         an alternating sign matrix.
         """
         from sage.combinat.gelfand_tsetlin_patterns import GelfandTsetlinPatterns
+
         n = self._n
         toprow = [n - i for i in range(n)]
         gt = GelfandTsetlinPatterns(top_row=toprow, strict=True)
@@ -1326,8 +1353,8 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
             True
         """
         n = self._n
-        corner = MatrixSpace(ZZ, n+1)(corner)
-        asm = corner[1:,1:] + corner[:n,:n] - corner[:n,1:] - corner[1:,:n]
+        corner = MatrixSpace(ZZ, n + 1)(corner)
+        asm = corner[1:, 1:] + corner[:n, :n] - corner[:n, 1:] - corner[1:, :n]
         return self.element_class(self, asm)
 
     def from_height_function(self, height):
@@ -1348,9 +1375,9 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
         """
         n = self._n
         height = MatrixSpace(ZZ, n + 1)(height)
-        return self.from_corner_sum([[(i + j - height[i, j]) // 2
-                                      for i in range(n + 1)]
-                                     for j in range(n + 1)])
+        return self.from_corner_sum(
+            [[(i + j - height[i, j]) // 2 for i in range(n + 1)] for j in range(n + 1)]
+        )
 
     def from_contre_tableau(self, comps):
         r"""
@@ -1372,12 +1399,12 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
         M = [[0 for _ in range(n)] for _ in range(n)]
 
         previous_set = set()
-        for col in range(n-1, -1, -1):
+        for col in range(n - 1, -1, -1):
             s = set(comps[col])
             for x in s.difference(previous_set):
-                M[x-1][col] = 1
+                M[x - 1][col] = 1
             for x in previous_set.difference(s):
-                M[x-1][col] = -1
+                M[x - 1][col] = -1
 
             previous_set = s
 
@@ -1411,8 +1438,9 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
             sage: [AlternatingSignMatrices(n).cardinality() for n in range(11)]
             [1, 1, 2, 7, 42, 429, 7436, 218348, 10850216, 911835460, 129534272700]
         """
-        return Integer(prod(factorial(3 * k + 1) / factorial(self._n + k)
-                            for k in range(self._n)))
+        return Integer(
+            prod(factorial(3 * k + 1) / factorial(self._n + k) for k in range(self._n))
+        )
 
     def matrix_space(self):
         """
@@ -1568,8 +1596,9 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
             Finite lattice containing 7 elements
         """
         cat = FiniteLatticePosets().Distributive()
-        return LatticePoset(self._lattice_initializer(), cover_relations=True,
-                            check=False, category=cat)
+        return LatticePoset(
+            self._lattice_initializer(), cover_relations=True, check=False, category=cat
+        )
 
     @cached_method
     def gyration_orbits(self):
@@ -1596,9 +1625,8 @@ class AlternatingSignMatrices(UniqueRepresentation, Parent):
              ))
         """
         ASMs = list(self)
-        perm = Permutation([ASMs.index(asm.gyration())+1 for asm in ASMs])
-        return tuple([tuple([ASMs[i-1] for i in cyc])
-                      for cyc in perm.cycle_tuples()])
+        perm = Permutation([ASMs.index(asm.gyration()) + 1 for asm in ASMs])
+        return tuple([tuple([ASMs[i - 1] for i in cyc]) for cyc in perm.cycle_tuples()])
 
     def gyration_orbit_sizes(self):
         r"""
@@ -1677,7 +1705,9 @@ class MonotoneTriangles(GelfandTsetlinPatternsTopRow):
             sage: M is M2
             True
         """
-        GelfandTsetlinPatternsTopRow.__init__(self, tuple(reversed(range(1, n+1))), True)
+        GelfandTsetlinPatternsTopRow.__init__(
+            self, tuple(reversed(range(1, n + 1))), True
+        )
 
     def _repr_(self):
         r"""
@@ -1708,8 +1738,9 @@ class MonotoneTriangles(GelfandTsetlinPatternsTopRow):
             sage: M.cardinality()
             42
         """
-        return Integer(prod(factorial(3 * k + 1) / factorial(self._n + k)
-                            for k in range(self._n)))
+        return Integer(
+            prod(factorial(3 * k + 1) / factorial(self._n + k) for k in range(self._n))
+        )
 
     def _lattice_initializer(self):
         r"""
@@ -1768,8 +1799,9 @@ class MonotoneTriangles(GelfandTsetlinPatternsTopRow):
             sage: P
             Finite lattice containing 7 elements
         """
-        return LatticePoset(self._lattice_initializer(), cover_relations=True,
-                            check=False)
+        return LatticePoset(
+            self._lattice_initializer(), cover_relations=True, check=False
+        )
 
 
 def _is_a_cover(mt0, mt1):
@@ -1800,8 +1832,15 @@ def _is_a_cover(mt0, mt1):
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.alternating_sign_matrix', 'AlternatingSignMatrices_n', AlternatingSignMatrices)
-register_unpickle_override('sage.combinat.alternating_sign_matrix', 'MonotoneTriangles_n', MonotoneTriangles)
+
+register_unpickle_override(
+    'sage.combinat.alternating_sign_matrix',
+    'AlternatingSignMatrices_n',
+    AlternatingSignMatrices,
+)
+register_unpickle_override(
+    'sage.combinat.alternating_sign_matrix', 'MonotoneTriangles_n', MonotoneTriangles
+)
 
 
 class ContreTableaux(Parent, metaclass=ClasscallMetaclass):
@@ -1815,6 +1854,7 @@ class ContreTableaux(Parent, metaclass=ClasscallMetaclass):
         sage: ct4.cardinality()
         42
     """
+
     @staticmethod
     def __classcall_private__(cls, n, **kwds):
         r"""
@@ -1870,8 +1910,9 @@ class ContreTableaux_n(ContreTableaux):
             sage: [ContreTableaux(n).cardinality() for n in range(11)]
             [1, 1, 2, 7, 42, 429, 7436, 218348, 10850216, 911835460, 129534272700]
         """
-        return Integer(prod(factorial(3 * k + 1) / factorial(self.n + k)
-                            for k in range(self.n)))
+        return Integer(
+            prod(factorial(3 * k + 1) / factorial(self.n + k) for k in range(self.n))
+        )
 
     def _iterator_rec(self, i):
         """
@@ -1890,9 +1931,11 @@ class ContreTableaux_n(ContreTableaux):
         elif i == 1:
             yield [list(range(1, self.n + 1))]
         else:
-            for columns in self._iterator_rec(i-1):
+            for columns in self._iterator_rec(i - 1):
                 previous_column = columns[-1]
-                for column in _next_column_iterator(previous_column, len(previous_column)-1):
+                for column in _next_column_iterator(
+                    previous_column, len(previous_column) - 1
+                ):
                     yield columns + [column]
 
     def __iter__(self):
@@ -1941,13 +1984,13 @@ def _next_column_iterator(previous_column, height, i=None):
     if i == 0:
         yield [-1] * height
     else:
-        for column in _next_column_iterator(previous_column, height, i-1):
-            min_value = previous_column[i-1]
+        for column in _next_column_iterator(previous_column, height, i - 1):
+            min_value = previous_column[i - 1]
             if i > 1:
-                min_value = max(min_value, column[i-2]+1)
-            for value in range(min_value, previous_column[i]+1):
+                min_value = max(min_value, column[i - 2] + 1)
+            for value in range(min_value, previous_column[i] + 1):
                 c = column[:]
-                c[i-1] = value
+                c[i - 1] = value
                 yield c
 
 
@@ -1975,6 +2018,7 @@ class TruncatedStaircases(Parent, metaclass=ClasscallMetaclass):
         sage: t4.cardinality()
         4
     """
+
     @staticmethod
     def __classcall_private__(cls, n, last_column, **kwds):
         r"""
@@ -2012,7 +2056,10 @@ class TruncatedStaircases_nlastcolumn(TruncatedStaircases):
             sage: repr(TruncatedStaircases(4, [2,3]))
             'Truncated staircases of size 4 with last column [2, 3]'
         """
-        return "Truncated staircases of size %s with last column %s" % (self.n, self.last_column)
+        return "Truncated staircases of size %s with last column %s" % (
+            self.n,
+            self.last_column,
+        )
 
     def _iterator_rec(self, i):
         """
@@ -2031,9 +2078,11 @@ class TruncatedStaircases_nlastcolumn(TruncatedStaircases):
         elif i == len(self.last_column):
             yield [self.last_column]
         else:
-            for columns in self._iterator_rec(i-1):
+            for columns in self._iterator_rec(i - 1):
                 previous_column = columns[0]
-                for column in _previous_column_iterator(previous_column, len(previous_column)+1, self.n):
+                for column in _previous_column_iterator(
+                    previous_column, len(previous_column) + 1, self.n
+                ):
                     yield [column] + columns
 
     def __iter__(self):
@@ -2054,8 +2103,7 @@ class TruncatedStaircases_nlastcolumn(TruncatedStaircases):
             sage: T == loads(dumps(T))
             True
         """
-        return (self.n == other.n and
-                self.last_column == other.last_column)
+        return self.n == other.n and self.last_column == other.last_column
 
     def cardinality(self):
         r"""

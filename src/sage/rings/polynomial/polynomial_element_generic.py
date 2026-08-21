@@ -82,6 +82,7 @@ class Polynomial_generic_sparse(Polynomial):
         sage: (s + T)**2
         s^2 + 2*Tbar*s + 4
     """
+
     def __init__(self, parent, x=None, check=True, is_gen=False, construct=False):
         """
         TESTS::
@@ -119,7 +120,7 @@ class Polynomial_generic_sparse(Polynomial):
             x = y
             check = True
         elif not isinstance(x, dict):
-            x = {0: x}   # constant polynomials
+            x = {0: x}  # constant polynomials
         if check:
             self.__coeffs = {}
             for i, z in x.items():
@@ -268,15 +269,14 @@ class Polynomial_generic_sparse(Polynomial):
         if var is not None and var != P.gen():
             try:
                 # call _derivative() recursively on coefficients
-                return P({n:self.__coeffs[n]._derivative(var)
-                            for n in self.__coeffs})
+                return P({n: self.__coeffs[n]._derivative(var) for n in self.__coeffs})
             except AttributeError:
                 raise ValueError('cannot differentiate with respect to {}'.format(var))
 
         # compute formal derivative with respect to generator
         d = {}
         for n, c in self.__coeffs.items():
-            d[n-1] = n*c
+            d[n - 1] = n * c
         if -1 in d:
             del d[-1]
         return P(d)
@@ -335,17 +335,19 @@ class Polynomial_generic_sparse(Polynomial):
         import operator
 
         from sage.structure.element import coercion_model as cm
+
         try:
             Q = cm.bin_op(R.one(), ZZ.one(), operator.truediv).parent()
         except TypeError:
-            F = (R.base_ring().one()/ZZ.one()).parent()
+            F = (R.base_ring().one() / ZZ.one()).parent()
             Q = R.change_ring(F)
 
         if var is not None and var != R.gen():
-            return Q({k: v.integral(var) for k, v in self.__coeffs.items()},
-                     check=False)
+            return Q(
+                {k: v.integral(var) for k, v in self.__coeffs.items()}, check=False
+            )
 
-        return Q({k+1: v/(k+1) for k, v in self.__coeffs.items()}, check=False)
+        return Q({k + 1: v / (k + 1) for k, v in self.__coeffs.items()}, check=False)
 
     def _dict_unsafe(self):
         """
@@ -393,24 +395,28 @@ class Polynomial_generic_sparse(Polynomial):
             name = self.parent().variable_name()
         atomic_repr = self.parent().base_ring()._repr_option('element_is_atomic')
         coeffs = sorted(self.__coeffs.items())
-        for (n, x) in reversed(coeffs):
+        for n, x in reversed(coeffs):
             if x:
-                if n != m-1:
+                if n != m - 1:
                     s += " + "
                 x = y = repr(x)
                 if y.find("-") == 0:
                     y = y[1:]
-                if not atomic_repr and n > 0 and (y.find("+") != -1 or y.find("-") != -1):
+                if (
+                    not atomic_repr
+                    and n > 0
+                    and (y.find("+") != -1 or y.find("-") != -1)
+                ):
                     x = "(%s)" % x
                 if n > 1:
-                    var = "*%s^%s" % (name,n)
+                    var = "*%s^%s" % (name, n)
                 elif n == 1:
                     var = "*%s" % name
                 else:
                     var = ""
-                s += "%s%s" % (x,var)
+                s += "%s%s" % (x, var)
         s = s.replace(" + -", " - ")
-        s = s.replace(" 1*"," ")
+        s = s.replace(" 1*", " ")
         s = s.replace(" -1*", " -")
         if s == " ":
             return "0"
@@ -479,14 +485,15 @@ class Polynomial_generic_sparse(Polynomial):
             d = self.degree() + 1
             if stop is None or stop > d:
                 stop = d
-            v = {key: val for key, val in self.__coeffs.items()
-                 if key < stop}
+            v = {key: val for key, val in self.__coeffs.items() if key < stop}
             return self.parent()(v)
 
         try:
             n = n.__index__()
         except AttributeError:
-            raise TypeError("list indices must be integers, not {0}".format(type(n).__name__))
+            raise TypeError(
+                "list indices must be integers, not {0}".format(type(n).__name__)
+            )
         try:
             return self.__coeffs[n]
         except KeyError:
@@ -537,7 +544,7 @@ class Polynomial_generic_sparse(Polynomial):
             [0, 17, 15, 0, 0, 13]
         """
         zero = self.base_ring().zero()
-        v = [zero] * (self.degree()+1)
+        v = [zero] * (self.degree() + 1)
         for n, x in self.__coeffs.items():
             v[n] = x
         return v
@@ -593,7 +600,7 @@ class Polynomial_generic_sparse(Polynomial):
         """
         output = dict(self.__coeffs)
 
-        for (index, coeff) in right.__coeffs.items():
+        for index, coeff in right.__coeffs.items():
             if index in output:
                 output[index] += coeff
             else:
@@ -613,8 +620,7 @@ class Polynomial_generic_sparse(Polynomial):
             sage: -a
             -x^10000000
         """
-        output = {index: -coeff
-                  for index, coeff in self.__coeffs.items()}
+        output = {index: -coeff for index, coeff in self.__coeffs.items()}
         return self.parent()(output, check=False)
 
     def _mul_(self, right):
@@ -661,7 +667,7 @@ class Polynomial_generic_sparse(Polynomial):
         """
         output = {}
 
-        for (index, coeff) in self.__coeffs.items():
+        for index, coeff in self.__coeffs.items():
             output[index] = left * coeff
 
         output = self.parent()(output, check=False)
@@ -684,7 +690,7 @@ class Polynomial_generic_sparse(Polynomial):
         """
         output = {}
 
-        for (index, coeff) in self.__coeffs.items():
+        for index, coeff in self.__coeffs.items():
             output[index] = coeff * right
 
         output = self.parent()(output, check=False)
@@ -789,10 +795,14 @@ class Polynomial_generic_sparse(Polynomial):
         if n == 0:
             return self
         if n > 0:
-            output = {index+n: coeff for index, coeff in self.__coeffs.items()}
+            output = {index + n: coeff for index, coeff in self.__coeffs.items()}
             return self.parent()(output, check=False)
         if n < 0:
-            output = {index+n:coeff for index, coeff in self.__coeffs.items() if index + n >= 0}
+            output = {
+                index + n: coeff
+                for index, coeff in self.__coeffs.items()
+                if index + n >= 0
+            }
             return self.parent()(output, check=False)
 
     @coerce_binop
@@ -896,13 +906,15 @@ class Polynomial_generic_sparse(Polynomial):
             try:
                 c = R(rem.leading_coefficient() * ~other.leading_coefficient())
             except TypeError:
-                raise ArithmeticError("Division non exact (consider coercing to polynomials over the fraction field)")
+                raise ArithmeticError(
+                    "Division non exact (consider coercing to polynomials over the fraction field)"
+                )
             e = rem.degree() - d
-            quo += c*R.one().shift(e)
+            quo += c * R.one().shift(e)
             # we know that the leading coefficient of rem vanishes
             # thus we avoid doing a useless computation
-            rem = rem[:rem.degree()] - c*other[:d].shift(e)
-        return (quo,rem)
+            rem = rem[: rem.degree()] - c * other[:d].shift(e)
+        return (quo, rem)
 
     @coerce_binop
     def gcd(self, other, algorithm=None):
@@ -979,16 +991,17 @@ class Polynomial_generic_sparse(Polynomial):
             # <https://groups.google.com/d/msg/sage-devel/6qhW90dgd1k/Hoq3N7fWe4QJ>
             sd = self.degree()
             od = other.degree()
-            if ((sd < 100 or len(self.__coeffs)/sd > .06)
-                    and (od < 100 or len(other.__coeffs)/od > .06)):
+            if (sd < 100 or len(self.__coeffs) / sd > 0.06) and (
+                od < 100 or len(other.__coeffs) / od > 0.06
+            ):
                 implementation = "FLINT"
             else:
                 implementation = "NTL"
-            D = PolynomialRing(S.base_ring(),'x',implementation=implementation)
+            D = PolynomialRing(S.base_ring(), 'x', implementation=implementation)
             g = D(self).gcd(D(other))
             return S(g)
         if algorithm == "generic":
-            return Polynomial.gcd(self,other)
+            return Polynomial.gcd(self, other)
         raise ValueError("Unknown algorithm '%s'" % algorithm)
 
     def reverse(self, degree=None):
@@ -1010,9 +1023,11 @@ class Polynomial_generic_sparse(Polynomial):
         """
         if degree is None:
             degree = self.degree()
-        if not isinstance(degree, (int,Integer)):
-            raise ValueError("degree argument must be a nonnegative integer, got %s" % degree)
-        d = {degree-k: v for k,v in self.__coeffs.items() if degree >= k}
+        if not isinstance(degree, (int, Integer)):
+            raise ValueError(
+                "degree argument must be a nonnegative integer, got %s" % degree
+            )
+        d = {degree - k: v for k, v in self.__coeffs.items() if degree >= k}
         return self.parent()(d, check=False)
 
     def truncate(self, n):
@@ -1077,10 +1092,9 @@ class Polynomial_generic_domain(Polynomial, IntegralDomainElement):
         return self[0].is_unit()
 
 
-class Polynomial_generic_field(Polynomial_singular_repr,
-                               Polynomial_generic_domain,
-                               EuclideanDomainElement):
-
+class Polynomial_generic_field(
+    Polynomial_singular_repr, Polynomial_generic_domain, EuclideanDomainElement
+):
     @coerce_binop
     def quo_rem(self, other):
         """
@@ -1107,8 +1121,8 @@ class Polynomial_generic_field(Polynomial_singular_repr,
         R = A
         Q = P.zero()
         while R.degree() >= B.degree():
-            aaa = R.leading_coefficient()/B.leading_coefficient()
-            diff_deg = R.degree()-B.degree()
+            aaa = R.leading_coefficient() / B.leading_coefficient()
+            diff_deg = R.degree() - B.degree()
             Q += P(aaa).shift(diff_deg)
             # We know that S*B exactly cancels the leading coefficient of R.
             # Thus, we skip the computation of this leading coefficient.
@@ -1116,11 +1130,13 @@ class Polynomial_generic_field(Polynomial_singular_repr,
             # inexact fields, the leading coefficient might not end up
             # exactly equal to zero; and for AA/QQbar, verifying that
             # the coefficient is exactly zero triggers exact computation.
-            R = R[:R.degree()] - (aaa*B[:B.degree()]).shift(diff_deg)
+            R = R[: R.degree()] - (aaa * B[: B.degree()]).shift(diff_deg)
         return (Q, R)
 
 
-class Polynomial_generic_sparse_field(Polynomial_generic_sparse, Polynomial_generic_field):
+class Polynomial_generic_sparse_field(
+    Polynomial_generic_sparse, Polynomial_generic_field
+):
     """
     EXAMPLES::
 
@@ -1131,11 +1147,14 @@ class Polynomial_generic_sparse_field(Polynomial_generic_sparse, Polynomial_gene
         sage: loads(f.dumps()) == f
         True
     """
+
     def __init__(self, parent, x=None, check=True, is_gen=False, construct=False):
         Polynomial_generic_sparse.__init__(self, parent, x, check, is_gen)
 
 
-class Polynomial_generic_dense_field(Polynomial_generic_dense, Polynomial_generic_field):
+class Polynomial_generic_dense_field(
+    Polynomial_generic_dense, Polynomial_generic_field
+):
     def __init__(self, parent, x=None, check=True, is_gen=False, construct=False):
         Polynomial_generic_dense.__init__(self, parent, x, check, is_gen)
 
@@ -1143,6 +1162,7 @@ class Polynomial_generic_dense_field(Polynomial_generic_dense, Polynomial_generi
 ##########################################
 # Over discrete valuation rings and fields
 ##########################################
+
 
 class Polynomial_generic_cdv(Polynomial_generic_domain):
     """
@@ -1153,6 +1173,7 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
 
     - Xavier Caruso (2013-03)
     """
+
     def newton_slopes(self, repetition=True):
         """
         Return a list of the Newton slopes of this polynomial.
@@ -1220,19 +1241,29 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
         """
         d = self.degree()
         from sage.geometry.newton_polygon import NewtonPolygon
-        polygon = NewtonPolygon([(x, self[x].valuation()) for x in range(d+1)])
-        polygon_prec = NewtonPolygon([ (x, self[x].precision_absolute()) for x in range(d+1) ])
+
+        polygon = NewtonPolygon([(x, self[x].valuation()) for x in range(d + 1)])
+        polygon_prec = NewtonPolygon(
+            [(x, self[x].precision_absolute()) for x in range(d + 1)]
+        )
         vertices = polygon.vertices(copy=False)
         vertices_prec = polygon_prec.vertices(copy=False)
         if len(vertices_prec) > 0:
             if vertices[0][0] > vertices_prec[0][0]:
-                raise PrecisionError("first term with non-infinite valuation must have determined valuation")
+                raise PrecisionError(
+                    "first term with non-infinite valuation must have determined valuation"
+                )
             elif vertices[-1][0] < vertices_prec[-1][0]:
-                raise PrecisionError("last term with non-infinite valuation must have determined valuation")
+                raise PrecisionError(
+                    "last term with non-infinite valuation must have determined valuation"
+                )
             else:
-                for (x, y) in vertices:
+                for x, y in vertices:
                     if polygon_prec(x) <= y:
-                        raise PrecisionError("The coefficient of %s^%s has not enough precision" % (self.parent().variable_name(), x))
+                        raise PrecisionError(
+                            "The coefficient of %s^%s has not enough precision"
+                            % (self.parent().variable_name(), x)
+                        )
         return polygon
 
     def hensel_lift(self, a):
@@ -1326,7 +1357,7 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
             Precision is not optimal, and can be improved.
         """
         coeffs = self.list()
-        a = coeffs[:deg+1]
+        a = coeffs[: deg + 1]
         # The leading coefficient need to be known at finite precision
         # in order to ensure that the while loop below terminates
         if a[deg].precision_absolute() is Infinity:
@@ -1414,7 +1445,7 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
             div = self._factor_of_degree(deg_last)
         if deg_first > 0:
             div2 = div._factor_of_degree(deg_first)
-            div,_ = div.quo_rem(div2)
+            div, _ = div.quo_rem(div2)
         return div.monic()
 
     def slope_factorization(self):
@@ -1465,9 +1496,9 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
             P >>= deg_first
             factors.append((self._parent.gen(), deg_first))
         if len(vertices) > 2:
-            for i in range(1, len(vertices)-1):
+            for i in range(1, len(vertices) - 1):
                 deg = vertices[i][0]
-                div = P._factor_of_degree(deg-deg_first)
+                div = P._factor_of_degree(deg - deg_first)
                 factors.append((div, 1))
                 P, _ = P.quo_rem(div)
                 deg_first = deg
@@ -1510,6 +1541,7 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
              (1 + O(2^10), 2)]
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         K = self.base_ring()
         Pk = PolynomialRing(K.residue_field(), names='xbar')
         x = self.parent().gen()
@@ -1525,23 +1557,29 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
         while self[i] == 0:
             i += 1
         if secure and i > 1:
-            raise PrecisionError("not enough precision to determine the number of roots")
+            raise PrecisionError(
+                "not enough precision to determine the number of roots"
+            )
         if i == 0:
             roots = []
             P = self
         else:
             vali = self[i].valuation()
-            prec = min((self[j].precision_absolute()-vali) / (i-j) for j in range(i))
+            prec = min(
+                (self[j].precision_absolute() - vali) / (i - j) for j in range(i)
+            )
             if prec is not Infinity:
                 prec = prec.ceil()
-            roots = [ (K(0,prec), i) ]
-            P = self // self[:i+1]  # we do not shift because we need to track precision here
+            roots = [(K(0, prec), i)]
+            P = (
+                self // self[: i + 1]
+            )  # we do not shift because we need to track precision here
 
         # We use Newton polygon and slope factorisation to find roots
         vertices = P.newton_polygon().vertices(copy=False)
         deg = 0
         for i in range(1, len(vertices)):
-            deg_left, val_left = vertices[i-1]
+            deg_left, val_left = vertices[i - 1]
             deg_right, val_right = vertices[i]
             slope = (val_right - val_left) / (deg_left - deg_right)
             if slope not in ZZ or slope < minval:
@@ -1561,17 +1599,26 @@ class Polynomial_generic_cdv(Polynomial_generic_domain):
             deg = deg_right
             val = F[0].valuation()
             if hint is None or slope != minval:
-                Fbar = Pk([ F[j] >> (val - j*slope) for j in range(F.degree()+1) ])
-                rootsbar = [ r for (r, _) in Fbar.roots() ]
+                Fbar = Pk([F[j] >> (val - j * slope) for j in range(F.degree() + 1)])
+                rootsbar = [r for (r, _) in Fbar.roots()]
                 if not rootsbar:
                     continue
             rbar = rootsbar.pop()
-            shift = K(rbar).lift_to_precision() << slope  # probably we should choose a better lift
-            roots += [(r+shift, m) for (r, m) in F(x+shift)._roots(secure, slope, [r-rbar for r in rootsbar])]  # recursive call
+            shift = (
+                K(rbar).lift_to_precision() << slope
+            )  # probably we should choose a better lift
+            roots += [
+                (r + shift, m)
+                for (r, m) in F(x + shift)._roots(
+                    secure, slope, [r - rbar for r in rootsbar]
+                )
+            ]  # recursive call
         return roots
 
 
-class Polynomial_generic_dense_cdv(Polynomial_generic_dense_inexact, Polynomial_generic_cdv):
+class Polynomial_generic_dense_cdv(
+    Polynomial_generic_dense_inexact, Polynomial_generic_cdv
+):
     pass
 
 
@@ -1583,11 +1630,15 @@ class Polynomial_generic_cdvr(Polynomial_generic_cdv):
     pass
 
 
-class Polynomial_generic_dense_cdvr(Polynomial_generic_dense_cdv, Polynomial_generic_cdvr):
+class Polynomial_generic_dense_cdvr(
+    Polynomial_generic_dense_cdv, Polynomial_generic_cdvr
+):
     pass
 
 
-class Polynomial_generic_sparse_cdvr(Polynomial_generic_sparse_cdv, Polynomial_generic_cdvr):
+class Polynomial_generic_sparse_cdvr(
+    Polynomial_generic_sparse_cdv, Polynomial_generic_cdvr
+):
     pass
 
 
@@ -1595,11 +1646,15 @@ class Polynomial_generic_cdvf(Polynomial_generic_cdv, Polynomial_generic_field):
     pass
 
 
-class Polynomial_generic_dense_cdvf(Polynomial_generic_dense_cdv, Polynomial_generic_cdvf):
+class Polynomial_generic_dense_cdvf(
+    Polynomial_generic_dense_cdv, Polynomial_generic_cdvf
+):
     pass
 
 
-class Polynomial_generic_sparse_cdvf(Polynomial_generic_sparse_cdv, Polynomial_generic_cdvf):
+class Polynomial_generic_sparse_cdvf(
+    Polynomial_generic_sparse_cdv, Polynomial_generic_cdvf
+):
     pass
 
 
@@ -1615,5 +1670,9 @@ except ImportError:
     pass
 else:
     from sage.misc.persist import register_unpickle_override
-    register_unpickle_override('sage.rings.polynomial.polynomial_element_generic',
-                               'Polynomial_rational_dense', Polynomial_rational_flint)
+
+    register_unpickle_override(
+        'sage.rings.polynomial.polynomial_element_generic',
+        'Polynomial_rational_dense',
+        Polynomial_rational_flint,
+    )

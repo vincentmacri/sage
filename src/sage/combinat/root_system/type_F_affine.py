@@ -1,14 +1,14 @@
 """
 Root system data for (untwisted) type F affine
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_untwisted_affine
 
@@ -64,10 +64,11 @@ class CartanType(CartanType_standard_untwisted_affine):
              (2, 3, 2), (3, 2, 1), (3, 4, 1), (4, 3, 1)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
         for i in range(1, 4):
-            g.add_edge(i, i+1)
-        g.set_edge_label(2,3,2)
+            g.add_edge(i, i + 1)
+        g.set_edge_label(2, 3, 2)
         g.add_edge(0, 1)
         return g
 
@@ -118,9 +119,16 @@ class CartanType(CartanType_standard_untwisted_affine):
             label = lambda i: i
         if node is None:
             node = self._ascii_art_node
-        ret = "{}---{}---{}=>={}---{}\n".format(node(label(0)), node(label(1)),
-                             node(label(2)), node(label(3)), node(label(4)))
-        ret += ("{!s:4}"*5 + "\n").format(label(0), label(1), label(2), label(3), label(4))
+        ret = "{}---{}---{}=>={}---{}\n".format(
+            node(label(0)),
+            node(label(1)),
+            node(label(2)),
+            node(label(3)),
+            node(label(4)),
+        )
+        ret += ("{!s:4}" * 5 + "\n").format(
+            label(0), label(1), label(2), label(3), label(4)
+        )
         return ret
 
     def _default_folded_cartan_type(self):
@@ -133,4 +141,5 @@ class CartanType(CartanType_standard_untwisted_affine):
             ['F', 4, 1] as a folding of ['E', 6, 1]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         return CartanTypeFolded(self, ['E', 6, 1], [[0], [2], [4], [3, 5], [1, 6]])

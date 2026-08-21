@@ -17,6 +17,7 @@ AUTHOR:
 - Arpit Merchant (2016-08-16)
 - Marketa Slukova (2019-08-19): initial version
 """
+
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
 from sage.coding.encoder import Encoder
@@ -54,11 +55,19 @@ class GabidulinCode(AbstractLinearRankMetricCode):
         sage: C
         [2, 2, 1] linear Gabidulin code over GF(16)/GF(4)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, base_field, length, dimension, sub_field=None,
-            twisting_homomorphism=None, evaluation_points=None):
+    def __init__(
+        self,
+        base_field,
+        length,
+        dimension,
+        sub_field=None,
+        twisting_homomorphism=None,
+        evaluation_points=None,
+    ):
         r"""
         Representation of a Gabidulin Code.
 
@@ -171,8 +180,8 @@ class GabidulinCode(AbstractLinearRankMetricCode):
             ValueError: if 'sub_field' is not given, the twisting homomorphism has to have a 'fixed_field' method
         """
         twist_fix_field = None
-        have_twist = (twisting_homomorphism is not None)
-        have_subfield = (sub_field is not None)
+        have_twist = twisting_homomorphism is not None
+        have_subfield = sub_field is not None
 
         if have_twist and have_subfield:
             try:
@@ -180,16 +189,22 @@ class GabidulinCode(AbstractLinearRankMetricCode):
             except AttributeError:
                 pass
             if twist_fix_field and twist_fix_field.order() != sub_field.order():
-                raise ValueError("the fixed field of the twisting homomorphism has to be the relative field of the extension")
+                raise ValueError(
+                    "the fixed field of the twisting homomorphism has to be the relative field of the extension"
+                )
 
         if have_twist and not have_subfield:
             if not twist_fix_field:
-                raise ValueError("if 'sub_field' is not given, the twisting homomorphism has to have a 'fixed_field' method")
+                raise ValueError(
+                    "if 'sub_field' is not given, the twisting homomorphism has to have a 'fixed_field' method"
+                )
             else:
                 sub_field = twist_fix_field
 
         if (not have_twist) and have_subfield:
-            twisting_homomorphism = base_field.frobenius_endomorphism(n=sub_field.degree())
+            twisting_homomorphism = base_field.frobenius_endomorphism(
+                n=sub_field.degree()
+            )
 
         if (not have_twist) and not have_subfield:
             sub_field = base_field.base_ring()
@@ -200,18 +215,30 @@ class GabidulinCode(AbstractLinearRankMetricCode):
         super().__init__(base_field, sub_field, length, "VectorEvaluation", "Gao")
 
         if length > self.extension_degree():
-            raise ValueError("'length' can be at most the degree of the extension, {}".format(self.extension_degree()))
+            raise ValueError(
+                "'length' can be at most the degree of the extension, {}".format(
+                    self.extension_degree()
+                )
+            )
         if evaluation_points is None:
-            evaluation_points = [base_field.gen()**i for i in range(base_field.degree())][:length]
+            evaluation_points = [
+                base_field.gen() ** i for i in range(base_field.degree())
+            ][:length]
         else:
             if not len(evaluation_points) == length:
-                raise ValueError("the number of evaluation points should be equal to the length of the code")
+                raise ValueError(
+                    "the number of evaluation points should be equal to the length of the code"
+                )
             for i in range(length):
                 if evaluation_points[i] not in base_field:
-                    raise ValueError("evaluation point does not belong to the 'base field'")
+                    raise ValueError(
+                        "evaluation point does not belong to the 'base field'"
+                    )
             basis = self.matrix_form_of_vector(vector(evaluation_points))
             if basis.rank() != length:
-                raise ValueError("the evaluation points provided are not linearly independent")
+                raise ValueError(
+                    "the evaluation points provided are not linearly independent"
+                )
         self._evaluation_points = evaluation_points
         self._dimension = dimension
 
@@ -229,8 +256,20 @@ class GabidulinCode(AbstractLinearRankMetricCode):
         R = self.base_field()
         S = self.sub_field()
         if R and S in Fields():
-            return "[%s, %s, %s] linear Gabidulin code over GF(%s)/GF(%s)" % (self.length(), self.dimension(), self.minimum_distance(), R.cardinality(), S.cardinality())
-        return "[%s, %s, %s] linear Gabidulin code over %s/%s" % (self.length(), self.dimension(), self.minimum_distance(), R, S)
+            return "[%s, %s, %s] linear Gabidulin code over GF(%s)/GF(%s)" % (
+                self.length(),
+                self.dimension(),
+                self.minimum_distance(),
+                R.cardinality(),
+                S.cardinality(),
+            )
+        return "[%s, %s, %s] linear Gabidulin code over %s/%s" % (
+            self.length(),
+            self.dimension(),
+            self.minimum_distance(),
+            R,
+            S,
+        )
 
     def _latex_(self):
         r"""
@@ -245,8 +284,13 @@ class GabidulinCode(AbstractLinearRankMetricCode):
             [2, 2, 1] \textnormal{ linear Gabidulin code over } \Bold{F}_{2^{4}}/\Bold{F}_{2^{2}}
         """
         txt = "[%s, %s, %s] \\textnormal{ linear Gabidulin code over } %s/%s"
-        return txt % (self.length(), self.dimension(), self.minimum_distance(),
-                      self.base_field()._latex_(), self.sub_field()._latex_())
+        return txt % (
+            self.length(),
+            self.dimension(),
+            self.minimum_distance(),
+            self.base_field()._latex_(),
+            self.sub_field()._latex_(),
+        )
 
     def __eq__(self, other):
         """
@@ -272,12 +316,14 @@ class GabidulinCode(AbstractLinearRankMetricCode):
             sage: C3.__eq__(C2)
             False
         """
-        return isinstance(other, GabidulinCode) \
-            and self.base_field() == other.base_field() \
-            and self.sub_field() == other.sub_field() \
-            and self.length() == other.length() \
-            and self.dimension() == other.dimension() \
+        return (
+            isinstance(other, GabidulinCode)
+            and self.base_field() == other.base_field()
+            and self.sub_field() == other.sub_field()
+            and self.length() == other.length()
+            and self.dimension() == other.dimension()
             and self.evaluation_points() == other.evaluation_points()
+        )
 
     def twisting_homomorphism(self):
         r"""
@@ -327,8 +373,12 @@ class GabidulinCode(AbstractLinearRankMetricCode):
         k = self.dimension()
         sigma = self.twisting_homomorphism()
 
-        coefficient_matrix = matrix(self.base_field(), n - 1, n,
-                                    lambda i, j: (sigma**(-n + k + 1 + i))(eval_pts[j]))
+        coefficient_matrix = matrix(
+            self.base_field(),
+            n - 1,
+            n,
+            lambda i, j: (sigma ** (-n + k + 1 + i))(eval_pts[j]),
+        )
         solution_space = coefficient_matrix.right_kernel()
         return list(solution_space.basis()[0])
 
@@ -348,11 +398,14 @@ class GabidulinCode(AbstractLinearRankMetricCode):
             sage: C == C1.dual_code()
             True
         """
-        return GabidulinCode(self.base_field(), self.length(),
-                             self.length() - self.dimension(),
-                             self.sub_field(),
-                             self.twisting_homomorphism(),
-                             self.parity_evaluation_points())
+        return GabidulinCode(
+            self.base_field(),
+            self.length(),
+            self.length() - self.dimension(),
+            self.sub_field(),
+            self.twisting_homomorphism(),
+            self.parity_evaluation_points(),
+        )
 
     def parity_check_matrix(self):
         r"""
@@ -384,11 +437,11 @@ class GabidulinCode(AbstractLinearRankMetricCode):
         """
         return self._evaluation_points
 
+
 # ---------------------- encoders ------------------------------
 
 
 class GabidulinVectorEvaluationEncoder(Encoder):
-
     def __init__(self, code):
         """
         This method constructs the vector evaluation encoder for
@@ -454,7 +507,10 @@ class GabidulinVectorEvaluationEncoder(Encoder):
             sage: latex(E)
             \textnormal{Vector evaluation style encoder for } [4, 4, 1] \textnormal{ linear Gabidulin code over } \Bold{F}_{5^{20}}/\Bold{F}_{5^{4}}
         """
-        return "\\textnormal{Vector evaluation style encoder for } %s" % self.code()._latex_()
+        return (
+            "\\textnormal{Vector evaluation style encoder for } %s"
+            % self.code()._latex_()
+        )
 
     def __eq__(self, other):
         """
@@ -483,8 +539,10 @@ class GabidulinVectorEvaluationEncoder(Encoder):
             sage: E3.__eq__(E2)
             False
         """
-        return isinstance(other, GabidulinVectorEvaluationEncoder) \
+        return (
+            isinstance(other, GabidulinVectorEvaluationEncoder)
             and self.code() == other.code()
+        )
 
     def generator_matrix(self):
         """
@@ -500,15 +558,20 @@ class GabidulinVectorEvaluationEncoder(Encoder):
             True
         """
         from functools import reduce
+
         C = self.code()
         eval_pts = C.evaluation_points()
         sigma = C.twisting_homomorphism()
 
         def create_matrix_elements(A, k, f):
-            return reduce(lambda L, x: [x] +
-                          [list(map(f, l)) for l in L], [A] * k, [])
-        return matrix(C.base_field(), C.dimension(), C.length(),
-                      create_matrix_elements(eval_pts, C.dimension(), sigma))
+            return reduce(lambda L, x: [x] + [list(map(f, l)) for l in L], [A] * k, [])
+
+        return matrix(
+            C.base_field(),
+            C.dimension(),
+            C.length(),
+            create_matrix_elements(eval_pts, C.dimension(), sigma),
+        )
 
 
 class GabidulinPolynomialEvaluationEncoder(Encoder):
@@ -610,7 +673,10 @@ class GabidulinPolynomialEvaluationEncoder(Encoder):
             sage: latex(E)
             \textnormal{Polynomial evaluation style encoder for } [4, 4, 1] \textnormal{ linear Gabidulin code over } \Bold{F}_{5^{20}}/\Bold{F}_{5^{4}}
         """
-        return "\\textnormal{Polynomial evaluation style encoder for } %s" % self.code()._latex_()
+        return (
+            "\\textnormal{Polynomial evaluation style encoder for } %s"
+            % self.code()._latex_()
+        )
 
     def __eq__(self, other):
         """
@@ -639,8 +705,10 @@ class GabidulinPolynomialEvaluationEncoder(Encoder):
             sage: E3.__eq__(E2)
             False
         """
-        return isinstance(other, GabidulinPolynomialEvaluationEncoder) \
+        return (
+            isinstance(other, GabidulinPolynomialEvaluationEncoder)
             and self.code() == other.code()
+        )
 
     def message_space(self):
         r"""
@@ -721,14 +789,19 @@ class GabidulinPolynomialEvaluationEncoder(Encoder):
         if p not in M:
             raise ValueError("the message to encode must be in %s" % M)
         if p.degree() >= C.dimension():
-            raise ValueError("the skew polynomial to encode must have degree at most %s" % (C.dimension() - 1))
+            raise ValueError(
+                "the skew polynomial to encode must have degree at most %s"
+                % (C.dimension() - 1)
+            )
         eval_pts = C.evaluation_points()
         codeword = p.multi_point_evaluation(eval_pts)
         if form == "vector":
             return vector(codeword)
         if form == "matrix":
             return C.matrix_form_of_vector(vector(codeword))
-        return ValueError("the argument 'form' takes only either 'vector' or 'matrix' as valid input")
+        return ValueError(
+            "the argument 'form' takes only either 'vector' or 'matrix' as valid input"
+        )
 
     def unencode_nocheck(self, c):
         """
@@ -771,7 +844,6 @@ class GabidulinPolynomialEvaluationEncoder(Encoder):
 
 
 class GabidulinGaoDecoder(Decoder):
-
     def __init__(self, code):
         r"""
         Gao style decoder for Gabidulin Codes.
@@ -865,8 +937,7 @@ class GabidulinGaoDecoder(Decoder):
             sage: D3.__eq__(D2)
             False
         """
-        return isinstance(other, GabidulinGaoDecoder) \
-            and self.code() == other.code()
+        return isinstance(other, GabidulinGaoDecoder) and self.code() == other.code()
 
     def _partial_xgcd(self, a, b, d_stop):
         """
@@ -906,7 +977,9 @@ class GabidulinGaoDecoder(Decoder):
         if (a not in S) or (b not in S):
             raise ValueError("both the input polynomials must belong to %s" % S)
         if a.degree() < b.degree():
-            raise ValueError("degree of first polynomial must be greater than or equal to degree of second polynomial")
+            raise ValueError(
+                "degree of first polynomial must be greater than or equal to degree of second polynomial"
+            )
         r_p = a
         r_c = b
         u_p = S.zero()
@@ -961,16 +1034,25 @@ class GabidulinGaoDecoder(Decoder):
         points = [(eval_pts[i], r[i]) for i in range(len(eval_pts))]
         # R = S.lagrange_polynomial(eval_pts, list(r))
         R = S.lagrange_polynomial(points)
-        r_out, u_out = self._partial_xgcd(S.minimal_vanishing_polynomial(eval_pts),
-                R, (C.length() + C.dimension()) // 2)
+        r_out, u_out = self._partial_xgcd(
+            S.minimal_vanishing_polynomial(eval_pts),
+            R,
+            (C.length() + C.dimension()) // 2,
+        )
         quo, rem = r_out.left_quo_rem(u_out)
         if not rem.is_zero():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         if quo not in S:
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         c = self.connected_encoder().encode(quo)
         if C.rank_weight_of_vector(c - r) > self.decoding_radius():
-            raise DecodingError("Decoding failed because the number of errors exceeded the decoding radius")
+            raise DecodingError(
+                "Decoding failed because the number of errors exceeded the decoding radius"
+            )
         return c, quo
 
     def decode_to_code(self, r):
@@ -1047,10 +1129,15 @@ class GabidulinGaoDecoder(Decoder):
         """
         return (self.code().minimum_distance() - 1) // 2
 
+
 # ----------------------------- registration --------------------------------
 
 
-GabidulinCode._registered_encoders["PolynomialEvaluation"] = GabidulinPolynomialEvaluationEncoder
-GabidulinCode._registered_encoders["VectorEvaluation"] = GabidulinVectorEvaluationEncoder
+GabidulinCode._registered_encoders["PolynomialEvaluation"] = (
+    GabidulinPolynomialEvaluationEncoder
+)
+GabidulinCode._registered_encoders["VectorEvaluation"] = (
+    GabidulinVectorEvaluationEncoder
+)
 
 GabidulinCode._registered_decoders["Gao"] = GabidulinGaoDecoder

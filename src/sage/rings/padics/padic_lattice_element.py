@@ -17,7 +17,6 @@ AUTHOR:
 #                  http://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.misc.abstract_method import abstract_method
 
 from sage.rings.integer import Integer
@@ -91,7 +90,18 @@ class pAdicLatticeElement(pAdicGenericElement):
         sage: x
         1 + O(2^10)
     """
-    def __init__(self, parent, x, prec=None, dx=[], dx_mode='linear_combination', valuation=None, check=True, reduce=True):
+
+    def __init__(
+        self,
+        parent,
+        x,
+        prec=None,
+        dx=[],
+        dx_mode='linear_combination',
+        valuation=None,
+        check=True,
+        reduce=True,
+    ):
         r"""
         TESTS::
 
@@ -107,7 +117,9 @@ class pAdicLatticeElement(pAdicGenericElement):
         if check:
             if isinstance(x, pAdicGenericElement):
                 if parent.prime() != x.parent().prime():
-                    raise TypeError("conversion between different p-adic rings/fields not supported")
+                    raise TypeError(
+                        "conversion between different p-adic rings/fields not supported"
+                    )
                 if prec is None:
                     prec = x.precision_absolute()
                 else:
@@ -293,21 +305,27 @@ class pAdicLatticeElement(pAdicGenericElement):
         if not isinstance(absprec, Integer):
             absprec = Integer(absprec)
         if check_prec and absprec > self.precision_absolute():
-            raise PrecisionError("not enough precision known in order to compute residue")
+            raise PrecisionError(
+                "not enough precision known in order to compute residue"
+            )
         elif absprec < 0:
             raise ValueError("cannot reduce modulo a negative power of p")
         if self.valuation() < 0:
-            raise ValueError("element must have nonnegative valuation in order to compute residue")
+            raise ValueError(
+                "element must have nonnegative valuation in order to compute residue"
+            )
         if field is None:
-            field = (absprec == 1)
+            field = absprec == 1
         elif field and absprec != 1:
             raise ValueError("field keyword may only be set at precision 1")
         p = self._parent.prime()
         if field:
             from sage.rings.finite_rings.finite_field_constructor import GF
+
             ring = GF(p)
         else:
             from sage.rings.finite_rings.integer_mod_ring import Integers
+
             ring = Integers(p**absprec)
         return ring(self.value())
 
@@ -511,7 +529,7 @@ class pAdicLatticeElement(pAdicGenericElement):
             sage: z - x
             2^7 + O(2^10)
         """
-        return (self-other).is_zero(prec)
+        return (self - other).is_zero(prec)
 
     def _add_(self, other):
         r"""
@@ -538,10 +556,13 @@ class pAdicLatticeElement(pAdicGenericElement):
         # elements whose valuation are not less than _zero_cap are assumed to vanish
         # (_zero_cap is set at the creation of the parent)
         if self._parent._zero_cap is not None:
-            if x.valuation() >= min(self._value.valuation(), other._value.valuation()) + self._parent._zero_cap:
+            if (
+                x.valuation()
+                >= min(self._value.valuation(), other._value.valuation())
+                + self._parent._zero_cap
+            ):
                 x = self._parent._approx_zero
-        dx = [  [self, self._parent._approx_one],
-               [other, self._parent._approx_one] ]
+        dx = [[self, self._parent._approx_one], [other, self._parent._approx_one]]
         return self.__class__(self._parent, x, dx=dx, check=False)
 
     def _sub_(self, other):
@@ -560,10 +581,13 @@ class pAdicLatticeElement(pAdicGenericElement):
         """
         x = self._value - other._value
         if self._parent._zero_cap is not None:
-            if x.valuation() >= min(self._value.valuation(), other._value.valuation()) + self._parent._zero_cap:
+            if (
+                x.valuation()
+                >= min(self._value.valuation(), other._value.valuation())
+                + self._parent._zero_cap
+            ):
                 x = self._parent._approx_zero
-        dx = [  [self, self._parent._approx_one],
-               [other, self._parent._approx_minusone] ]
+        dx = [[self, self._parent._approx_one], [other, self._parent._approx_minusone]]
         return self.__class__(self._parent, x, dx=dx, check=False)
 
     def _mul_(self, other):
@@ -596,8 +620,7 @@ class pAdicLatticeElement(pAdicGenericElement):
         x_self = self._value
         x_other = other._value
         x = x_self * x_other
-        dx = [  [self, x_other],
-               [other, x_self ] ]
+        dx = [[self, x_other], [other, x_self]]
         return self.__class__(self._parent, x, dx=dx, check=False)
 
     def _div_(self, other):
@@ -634,13 +657,17 @@ class pAdicLatticeElement(pAdicGenericElement):
             PrecisionError: cannot divide by something indistinguishable from zero
         """
         if other.is_zero():
-            raise PrecisionError("cannot divide by something indistinguishable from zero")
+            raise PrecisionError(
+                "cannot divide by something indistinguishable from zero"
+            )
         x_self = self._value
         x_other = other._value
         x = x_self / x_other
         # dx = (1/other)*dself - (self/other^2)*dother
-        dx = [  [self, self._parent._approx_one/x_other],
-               [other, -x_self/(x_other*x_other)] ]
+        dx = [
+            [self, self._parent._approx_one / x_other],
+            [other, -x_self / (x_other * x_other)],
+        ]
         return self.__class__(self._parent.fraction_field(), x, dx=dx, check=False)
 
     def __invert__(self):
@@ -675,7 +702,7 @@ class pAdicLatticeElement(pAdicGenericElement):
         x_self = self._value
         x = self._parent._approx_one / x_self
         # dx = -(1/self^2)*dself
-        dx = [  [self, self._parent._approx_minusone/(x_self*x_self)] ]
+        dx = [[self, self._parent._approx_minusone / (x_self * x_self)]]
         return self.__class__(self._parent.fraction_field(), x, dx=dx, check=False)
 
     def _quo_rem(self, other):
@@ -698,7 +725,9 @@ class pAdicLatticeElement(pAdicGenericElement):
         """
         if other.is_zero():
             # We use ZeroDivisionError since _test_quo_rem expects it.
-            raise ZeroDivisionError("cannot divide by something indistinguishable from zero")
+            raise ZeroDivisionError(
+                "cannot divide by something indistinguishable from zero"
+            )
         if other.valuation() > self.precision_absolute():
             raise PrecisionError
         q, r = self._value._quo_rem(other._value)
@@ -748,7 +777,7 @@ class pAdicLatticeElement(pAdicGenericElement):
             field = self._parent.fraction_field()
             return self._copy(field).add_bigoh(prec)
         x = self._value
-        dx = [ [self, self._parent._approx_one ] ]
+        dx = [[self, self._parent._approx_one]]
         return self.__class__(self._parent, x, prec, dx=dx, check=False)
 
     def lift_to_precision(self, prec=None, infer_precision=False):
@@ -829,11 +858,14 @@ class pAdicLatticeElement(pAdicGenericElement):
 
             :meth:`lift_to_precision` of the precision object
         """
-        #from warnings import warn
-        #warn("use lift_to_precision with extreme caution in the framework of lattice precision")
+        # from warnings import warn
+        # warn("use lift_to_precision with extreme caution in the framework of lattice precision")
         parent = self._parent
         if infer_precision:
-            cap = min(parent.precision_cap_absolute(), parent.precision_cap_relative() + self._value.valuation())
+            cap = min(
+                parent.precision_cap_absolute(),
+                parent.precision_cap_relative() + self._value.valuation(),
+            )
             if prec is None or prec > cap:
                 prec = cap
             lift = self._copy()
@@ -969,6 +1001,7 @@ class pAdicLatticeElement(pAdicGenericElement):
             3*5^3 + 5^4 + O(5^23)
         """
         from sage.rings.padics.generic_nodes import pAdicRingBaseGeneric
+
         parent = self._parent
         p = parent.prime()
         if isinstance(parent, pAdicRingBaseGeneric):
@@ -978,7 +1011,7 @@ class pAdicLatticeElement(pAdicGenericElement):
         x = self._value * powp
         if isinstance(parent, pAdicRingBaseGeneric):
             x -= x.reduce(0)
-        dx = [ [self, powp] ]
+        dx = [[self, powp]]
         return self.__class__(parent, x, dx=dx, check=False)
 
     def unit_part(self):
@@ -1117,9 +1150,12 @@ class pAdicLatticeElement(pAdicGenericElement):
             except AttributeError:
                 raise TypeError("parent must share the same precision object")
             from sage.rings.padics.generic_nodes import pAdicRingBaseGeneric
+
             if isinstance(parent, pAdicRingBaseGeneric) and self.valuation() < 0:
-                raise ValueError("element of negative valuation cannot be converted to the integer ring")
-        dx = [ [ self, self._parent._approx_one ] ]
+                raise ValueError(
+                    "element of negative valuation cannot be converted to the integer ring"
+                )
+        dx = [[self, self._parent._approx_one]]
         return self.__class__(parent, self._value, dx=dx, check=False)
 
     def __copy__(self):
@@ -1180,7 +1216,9 @@ class pAdicLatticeElement(pAdicGenericElement):
             [4, 1, 4, 4, 1, 0, 0, 0, 0, 0]
         """
         if lift_mode != 'simple':
-            raise NotImplementedError("other modes than 'simple' are not implemented yet")
+            raise NotImplementedError(
+                "other modes than 'simple' are not implemented yet"
+            )
         prec = self.precision_absolute()
         val = self.valuation()
         expansion = self._value.list(prec)
@@ -1188,7 +1226,7 @@ class pAdicLatticeElement(pAdicGenericElement):
             if n < val:
                 return ZZ(0)
             try:
-                return expansion[n-val]
+                return expansion[n - val]
             except KeyError:
                 raise PrecisionError("the digit in position %s is not determined" % n)
         if start_val is None:
@@ -1197,8 +1235,8 @@ class pAdicLatticeElement(pAdicGenericElement):
             else:
                 start_val = 0
         if start_val > val:
-            return expansion[start_val-val:]
-        return (val-start_val)*[ZZ(0)] + expansion
+            return expansion[start_val - val :]
+        return (val - start_val) * [ZZ(0)] + expansion
 
     def dist(self, other):
         r"""
@@ -1227,7 +1265,7 @@ class pAdicLatticeElement(pAdicGenericElement):
         p = self._parent.prime()
         if x.is_zero():
             return ZZ(0)
-        return p**(-x.valuation())
+        return p ** (-x.valuation())
 
 
 class pAdicLatticeCapElement(pAdicLatticeElement):
@@ -1250,13 +1288,18 @@ class pAdicLatticeCapElement(pAdicLatticeElement):
             True
         """
         parent = self._parent
-        cap = min(parent.precision_cap_absolute(), parent.precision_cap_relative() + self._value.valuation())
+        cap = min(
+            parent.precision_cap_absolute(),
+            parent.precision_cap_relative() + self._value.valuation(),
+        )
         if prec is None or prec > cap:
             capped = True
             prec = cap
         else:
             capped = False
-        self._precision._new_element(self, dx, bigoh=prec, dx_mode=dx_mode, capped=capped)
+        self._precision._new_element(
+            self, dx, bigoh=prec, dx_mode=dx_mode, capped=capped
+        )
         return prec
 
     def _is_exact_zero(self):
@@ -1320,4 +1363,7 @@ class pAdicLatticeFloatElement(pAdicLatticeElement):
             sage: R(1)._is_exact_zero()
             False
         """
-        return self._value.is_zero() and self._precision._precision_absolute(self) is Infinity
+        return (
+            self._value.is_zero()
+            and self._precision._precision_absolute(self) is Infinity
+        )

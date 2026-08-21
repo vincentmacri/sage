@@ -25,6 +25,7 @@ letter, see chapter 3 of the book [BR2010b]_::
     sage: w[10000000]                                                                   # needs sage.modules
     'b'
 """
+
 from collections.abc import Iterator
 from itertools import chain
 
@@ -40,8 +41,8 @@ class WordDatatype_morphic(WordDatatype_callable):
     Datatype for a morphic word defined by a morphism, a starting letter
     and a coding.
     """
-    def __init__(self, parent, morphism, letter,
-                 coding=None, length=Infinity) -> None:
+
+    def __init__(self, parent, morphism, letter, coding=None, length=Infinity) -> None:
         r"""
         INPUT:
 
@@ -156,8 +157,13 @@ class WordDatatype_morphic(WordDatatype_callable):
               {'a': 'a', 'b': 'b'},
               2))
         """
-        return self.__class__, (self._parent, self._morphism, self._letter,
-                                self._coding, self._len)
+        return self.__class__, (
+            self._parent,
+            self._morphism,
+            self._letter,
+            self._coding,
+            self._len,
+        )
 
     def representation(self, n) -> list:
         r"""
@@ -213,7 +219,9 @@ class WordDatatype_morphic(WordDatatype_callable):
             length_of_images.append(vMk)
             vMk_next = vMk * M
             if vMk[position] == vMk_next[position]:
-                raise IndexError(f'index (={n}) out of range, the fixed point is finite and has length {vMk[position]}')
+                raise IndexError(
+                    f'index (={n}) out of range, the fixed point is finite and has length {vMk[position]}'
+                )
             vMk = vMk_next
         k = len(length_of_images)
         letter_k = self._letter

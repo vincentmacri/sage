@@ -16,6 +16,7 @@ class Glucose(Executable):
         sage: Glucose().is_present()                  # optional - glucose
         FeatureTestResult('glucose', True)
     """
+
     def __init__(self, executable="glucose"):
         r"""
         TESTS::
@@ -24,8 +25,13 @@ class Glucose(Executable):
             sage: isinstance(Glucose(), Glucose)
             True
         """
-        Executable.__init__(self, name=executable, executable=executable,
-                            spkg="glucose", type="optional")
+        Executable.__init__(
+            self,
+            name=executable,
+            executable=executable,
+            spkg="glucose",
+            type="optional",
+        )
 
 
 class Kissat(Executable):
@@ -39,6 +45,7 @@ class Kissat(Executable):
         sage: Kissat().is_present()                             # optional - kissat
         FeatureTestResult('kissat', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -47,8 +54,9 @@ class Kissat(Executable):
             sage: isinstance(Kissat(), Kissat)
             True
         """
-        Executable.__init__(self, name="kissat", executable="kissat",
-                            spkg="kissat", type="optional")
+        Executable.__init__(
+            self, name="kissat", executable="kissat", spkg="kissat", type="optional"
+        )
 
 
 class Pycosat(PythonModule):
@@ -61,6 +69,7 @@ class Pycosat(PythonModule):
         sage: Pycosat().is_present()                  # optional - pycosat
         FeatureTestResult('pycosat', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -69,8 +78,7 @@ class Pycosat(PythonModule):
             sage: isinstance(Pycosat(), Pycosat)
             True
         """
-        PythonModule.__init__(self, "pycosat",
-                              spkg="pycosat", type="optional")
+        PythonModule.__init__(self, "pycosat", spkg="pycosat", type="optional")
 
 
 class Pycryptosat(PythonModule):
@@ -83,6 +91,7 @@ class Pycryptosat(PythonModule):
         sage: Pycryptosat().is_present()              # optional - pycryptosat
         FeatureTestResult('pycryptosat', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -91,12 +100,8 @@ class Pycryptosat(PythonModule):
             sage: isinstance(Pycryptosat(), Pycryptosat)
             True
         """
-        PythonModule.__init__(self, "pycryptosat",
-                              spkg="pycryptosat", type="optional")
+        PythonModule.__init__(self, "pycryptosat", spkg="pycryptosat", type="optional")
 
 
 def all_features():
-    return [Glucose(),
-            Kissat(),
-            Pycosat(),
-            Pycryptosat()]
+    return [Glucose(), Kissat(), Pycosat(), Pycryptosat()]

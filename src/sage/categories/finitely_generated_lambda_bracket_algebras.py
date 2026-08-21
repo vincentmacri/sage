@@ -6,7 +6,7 @@ AUTHORS:
 - Reimundo Heluani (2020-08-21): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2020 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.graded_modules import GradedModulesCategory
@@ -31,7 +31,11 @@ class FinitelyGeneratedLambdaBracketAlgebras(CategoryWithAxiom_over_base_ring):
         sage: LambdaBracketAlgebras(QQbar).FinitelyGenerated()                          # needs sage.rings.number_field
         Category of finitely generated lambda bracket algebras over Algebraic Field
     """
-    _base_category_class_and_axiom = (LambdaBracketAlgebras, "FinitelyGeneratedAsLambdaBracketAlgebra")
+
+    _base_category_class_and_axiom = (
+        LambdaBracketAlgebras,
+        "FinitelyGeneratedAsLambdaBracketAlgebra",
+    )
 
     class ParentMethods:
         def ngens(self):
@@ -85,8 +89,9 @@ class FinitelyGeneratedLambdaBracketAlgebras(CategoryWithAxiom_over_base_ring):
             """
             S = list(self.gens())
             from sage.misc.misc import some_tuples
-            for x,y in some_tuples(S, 2, 0, max_samples=self.ngens()):
-                S.append(x.T() + 2*y.T(2))
+
+            for x, y in some_tuples(S, 2, 0, max_samples=self.ngens()):
+                S.append(x.T() + 2 * y.T(2))
             return S
 
     class Graded(GradedModulesCategory):
@@ -99,6 +104,7 @@ class FinitelyGeneratedLambdaBracketAlgebras(CategoryWithAxiom_over_base_ring):
             Category of H-graded finitely generated Lie conformal algebras
              over Algebraic Field
         """
+
         def _repr_object_names(self):
             """
             The names of the objects of ``self``.

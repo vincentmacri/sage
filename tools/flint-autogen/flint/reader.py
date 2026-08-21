@@ -2,7 +2,7 @@ r"""
 Extraction of function, macros, types from flint documentation.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2023 Vincent Delecroix <20100.delecroix@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -10,7 +10,7 @@ Extraction of function, macros, types from flint documentation.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 import os
 from .env import FLINT_INCLUDE_DIR, FLINT_DOC_DIR
@@ -25,6 +25,7 @@ class Extractor:
     r"""
     Tool to extract function declarations from a flint .rst file
     """
+
     NONE = 0
     DOC = 1
     FUNCTION_DECLARATION = 2
@@ -37,12 +38,12 @@ class Extractor:
             raise ValueError
 
         # Attributes that are modified throughout the document parsing
-        self.state = self.NONE    # position in the documentation
-        self.section = None       # current section
-        self.content = {}         # section -> list of pairs (function signatures, func documentation)
-        self.functions = []       # current list of pairs (function signatures, func documentation)
-        self.signatures = []      # current list of function/macro/type signatures
-        self.doc = []             # current function documentation
+        self.state = self.NONE  # position in the documentation
+        self.section = None  # current section
+        self.content = {}  # section -> list of pairs (function signatures, func documentation)
+        self.functions = []  # current list of pairs (function signatures, func documentation)
+        self.signatures = []  # current list of function/macro/type signatures
+        self.doc = []  # current function documentation
 
         with open(filename) as f:
             text = f.read()
@@ -97,29 +98,42 @@ class Extractor:
 
         func_name = func_name[1]
 
-        return func_name.startswith('is_') or \
-               '_is_' in func_name or \
-               func_name.endswith('_eq') or \
-               func_name.endswith('_ne') or \
-               func_name.endswith('_lt') or \
-               func_name.endswith('_le') or \
-               func_name.endswith('_gt') or \
-               func_name.endswith('_ge') or \
-               '_contains_' in func_name or \
-               func_name.endswith('_contains') or \
-               '_equal_' in func_name or \
-               func_name.endswith('_equal') or \
-               func_name.endswith('_overlaps')
+        return (
+            func_name.startswith('is_')
+            or '_is_' in func_name
+            or func_name.endswith('_eq')
+            or func_name.endswith('_ne')
+            or func_name.endswith('_lt')
+            or func_name.endswith('_le')
+            or func_name.endswith('_gt')
+            or func_name.endswith('_ge')
+            or '_contains_' in func_name
+            or func_name.endswith('_contains')
+            or '_equal_' in func_name
+            or func_name.endswith('_equal')
+            or func_name.endswith('_overlaps')
+        )
 
     def clean_signatures(self):
-        if (self.state & self.FUNCTION_DECLARATION) or (self.state & self.MACRO_DECLARATION):
+        if (self.state & self.FUNCTION_DECLARATION) or (
+            self.state & self.MACRO_DECLARATION
+        ):
             for i, func_signature in enumerate(self.signatures):
                 replacement = [('(void)', '()'), (' enum ', ' ')]
                 for bad_type, good_type in replacement:
                     func_signature = func_signature.replace(bad_type, good_type)
 
-                bad_arg_names = [('in', 'input'), ('lambda', 'lmbda'), ('iter', 'it'), ('is', 'iis')]
-                replacements = [(pattern.format(bad), pattern.format(good)) for pattern in [' {},', ' {})', '*{},', '*{})'] for bad, good in bad_arg_names]
+                bad_arg_names = [
+                    ('in', 'input'),
+                    ('lambda', 'lmbda'),
+                    ('iter', 'it'),
+                    ('is', 'iis'),
+                ]
+                replacements = [
+                    (pattern.format(bad), pattern.format(good))
+                    for pattern in [' {},', ' {})', '*{},', '*{})']
+                    for bad, good in bad_arg_names
+                ]
                 for bad_form, good_form in replacements:
                     func_signature = func_signature.replace(bad_form, good_form)
 
@@ -177,7 +191,12 @@ class Extractor:
         if self.i >= len(self.lines):
             return 0
 
-        if bool(self.state & self.FUNCTION_DECLARATION) + bool(self.state & self.MACRO_DECLARATION) + bool(self.state & self.TYPE_DECLARATION) > 1:
+        if (
+            bool(self.state & self.FUNCTION_DECLARATION)
+            + bool(self.state & self.MACRO_DECLARATION)
+            + bool(self.state & self.TYPE_DECLARATION)
+            > 1
+        ):
             raise RuntimeError('self.state = {} and i = {}'.format(self.state, self.i))
 
         line = self.lines[self.i]
@@ -190,7 +209,11 @@ class Extractor:
             self.i += 1
             signature = line_rest.strip()
             while signature.endswith('\\'):
-                signature = signature.removesuffix('\\').strip() + ' ' + self.lines[self.i].strip()
+                signature = (
+                    signature.removesuffix('\\').strip()
+                    + ' '
+                    + self.lines[self.i].strip()
+                )
                 self.i += 1
             self.signatures.append(signature)
         elif line.startswith('.. macro::'):

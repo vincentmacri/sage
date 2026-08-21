@@ -200,20 +200,20 @@ def lifting(p, t, A, G):
     if t == 0:
         return matrix(DX, d, 0)
 
-    if not (A*G % p**(t-1)).is_zero():
-        raise ValueError("A*G not zero mod %s^%s" % (p, t-1))
+    if not (A * G % p ** (t - 1)).is_zero():
+        raise ValueError("A*G not zero mod %s^%s" % (p, t - 1))
 
-    R = A*G/p**(t-1)
+    R = A * G / p ** (t - 1)
     R.change_ring(DX)
 
     AR = matrix.block([[A, R]])
-    Fp = D.quotient(p*D)
+    Fp = D.quotient(p * D)
     FpX = PolynomialRing(Fp, name=X)
 
     ARb = AR.change_ring(FpX)
     (Db, Sb, Tb) = ARb.smith_form()
-    #assert Sb * ARb * Tb == Db
-    #assert all(i == j or Db[i, j].is_zero()
+    # assert Sb * ARb * Tb == Db
+    # assert all(i == j or Db[i, j].is_zero()
     #           for i in range(Db.nrows())
     #           for j in range(Db.ncols()))
 
@@ -223,9 +223,9 @@ def lifting(p, t, A, G):
 
     T = Tb.change_ring(DX)
 
-    F1 = matrix.block([[p**(t-1) * matrix.identity(d), G]])*T
+    F1 = matrix.block([[p ** (t - 1) * matrix.identity(d), G]]) * T
     F = F1.matrix_from_columns(range(r, F1.ncols()))
-    assert (A*F % (p**t)).is_zero(), "A*F=%s" % (A*F)
+    assert (A * F % (p**t)).is_zero(), "A*F=%s" % (A * F)
 
     return F
 
@@ -265,8 +265,7 @@ def p_part(f, p):
     """
     DX = f.parent()
     (X,) = DX.gens()
-    return DX(sum(c//p * X**i for i, c in enumerate(f.list())
-               if c % p == 0))
+    return DX(sum(c // p * X**i for i, c in enumerate(f.list()) if c % p == 0))
 
 
 class ComputeMinimalPolynomials(SageObject):
@@ -315,6 +314,7 @@ class ComputeMinimalPolynomials(SageObject):
         sage: C.integer_valued_polynomials_generators()
         (x^3 + x^2 - 12*x - 20, [1, 1/4*x^2 + 3/4*x + 1/2])
     """
+
     def __init__(self, B):
         r"""
         Initialize the ComputeMinimalPolynomials class.
@@ -341,11 +341,11 @@ class ComputeMinimalPolynomials(SageObject):
         self._D = B.base_ring()
         X = polygen(self._D)
         adjugate = (X - B).adjugate()
-        d = B.nrows()**2
+        d = B.nrows() ** 2
         b = matrix(d, 1, adjugate.list())
         self.chi_B = B.charpoly(X)
         self.mu_B = B.minimal_polynomial()
-        self._A = matrix.block([[b , -self.chi_B*matrix.identity(d)]])
+        self._A = matrix.block([[b, -self.chi_B * matrix.identity(d)]])
         self._DX = X.parent()
         self._cache = {}
 
@@ -398,13 +398,11 @@ class ComputeMinimalPolynomials(SageObject):
         """
         from sage.arith.misc import xgcd
 
-        if not all((g(self._B) % p**t).is_zero()
-                   for g in pt_generators):
-            raise ValueError("%s not in N_{(%s^%s)}(B)" %
-                             (pt_generators, p, t))
+        if not all((g(self._B) % p**t).is_zero() for g in pt_generators):
+            raise ValueError("%s not in N_{(%s^%s)}(B)" % (pt_generators, p, t))
 
-        if not (prev_nu(self._B) % p**(t-1)).is_zero():
-            raise ValueError("%s not in N_{(%s^%s)}(B)" % (prev_nu, p, t-1))
+        if not (prev_nu(self._B) % p ** (t - 1)).is_zero():
+            raise ValueError("%s not in N_{(%s^%s)}(B)" % (prev_nu, p, t - 1))
 
         (X,) = self._DX.gens()
 
@@ -413,19 +411,22 @@ class ComputeMinimalPolynomials(SageObject):
             g = f
             p_prt = p_part(g, p)
 
-            while g != p*p_prt:
+            while g != p * p_prt:
                 r = p_prt.quo_rem(prev_nu)[1]
-                g1 = g - p*p_prt
+                g1 = g - p * p_prt
                 d, u, v = xgcd(g1.leading_coefficient(), p)
-                h = u*(p*r + g1) + v*p*prev_nu*X**(g1.degree()-prev_nu.degree())
+                h = u * (p * r + g1) + v * p * prev_nu * X ** (
+                    g1.degree() - prev_nu.degree()
+                )
                 replacements.append(h % p**t)
-                #reduce coefficients mod p^t to keep coefficients small
+                # reduce coefficients mod p^t to keep coefficients small
                 g = g.quo_rem(h)[1]
                 p_prt = p_part(g, p)
 
         replacements = list(set(replacements))
-        assert all(g.is_monic() for g in replacements),\
+        assert all(g.is_monic() for g in replacements), (
             "Something went wrong in find_monic_replacements"
+        )
 
         return replacements
 
@@ -478,13 +479,11 @@ class ComputeMinimalPolynomials(SageObject):
 
         from sage.misc.verbose import verbose
 
-        if not all((g(self._B) % p**t).is_zero()
-                   for g in pt_generators):
-            raise ValueError("%s not in N_{(%s^%s)}(B)" %
-                             (pt_generators, p, t))
+        if not all((g(self._B) % p**t).is_zero() for g in pt_generators):
+            raise ValueError("%s not in N_{(%s^%s)}(B)" % (pt_generators, p, t))
 
-        if not (prev_nu(self._B) % p**(t-1)).is_zero():
-            raise ValueError("%s not in N_{(%s^%s)}(B)" % (prev_nu, p, t-1))
+        if not (prev_nu(self._B) % p ** (t - 1)).is_zero():
+            raise ValueError("%s not in N_{(%s^%s)}(B)" % (prev_nu, p, t - 1))
 
         generators = self.find_monic_replacements(p, t, pt_generators, prev_nu)
 
@@ -502,7 +501,7 @@ class ComputeMinimalPolynomials(SageObject):
         # find nu
         while heap:
             deg_f, f = heapq.heappop(heap)
-            #take first element in generators not equal g
+            # take first element in generators not equal g
             r = (f.quo_rem(g)[1]) % p**t
             if r != 0:
                 for h in self.find_monic_replacements(p, t, [r], prev_nu):
@@ -558,15 +557,16 @@ class ComputeMinimalPolynomials(SageObject):
             ValueError: x^2 + x not in (2^2)-ideal
         """
         if not (nu(self._B) % p**t).is_zero():
-            raise ValueError(
-                "%s not in (%s^%s)-ideal" % (nu, p, t))
+            raise ValueError("%s not in (%s^%s)-ideal" % (nu, p, t))
 
-        column = matrix(self._DX, self._A.ncols(), 1,
-                        [nu] + [(nu*b).quo_rem(self.chi_B)[0]
-                                  for b in self._A[:, 0].list()])
+        column = matrix(
+            self._DX,
+            self._A.ncols(),
+            1,
+            [nu] + [(nu * b).quo_rem(self.chi_B)[0] for b in self._A[:, 0].list()],
+        )
 
-        assert (self._A * column % p**t).is_zero(),\
-                                 "McCoy column incorrect"
+        assert (self._A * column % p**t).is_zero(), "McCoy column incorrect"
 
         return column
 
@@ -780,7 +780,7 @@ class ComputeMinimalPolynomials(SageObject):
 
             if nu.degree() == deg_prev_nu:
                 G = G.delete_columns([G.ncols() - 1])
-                del p_min_polys[t-1]
+                del p_min_polys[t - 1]
 
             column = self.mccoy_column(p, t, nu)
             verbose("corresponding columns for G")
@@ -792,8 +792,9 @@ class ComputeMinimalPolynomials(SageObject):
         self._cache[p] = (t, G, p_min_polys)
 
         if s_max < t:
-            result = {r: polynomial
-                      for r, polynomial in p_min_polys.items() if r < s_max}
+            result = {
+                r: polynomial for r, polynomial in p_min_polys.items() if r < s_max
+            }
             next_t_candidates = [r for r in p_min_polys if r >= s_max]
             if next_t_candidates:
                 next_t = min(next_t_candidates)
@@ -845,16 +846,18 @@ class ComputeMinimalPolynomials(SageObject):
         if b == 0:
             mu_B_coefficients = [1]
         else:
-            for (p, t) in factor(b):
+            for p, t in factor(b):
                 cofactor = b // p**t
                 p_polynomials = self.p_minimal_polynomials(p, t)
-                generators += [cofactor*p**(t-s)*nu
-                               for s, nu in p_polynomials.items()]
+                generators += [
+                    cofactor * p ** (t - s) * nu for s, nu in p_polynomials.items()
+                ]
                 if not p_polynomials or max(p_polynomials) < t:
                     mu_B_coefficients.append(cofactor)
 
-            assert all((g(self._B) % b).is_zero() for g in generators), \
+            assert all((g(self._B) % b).is_zero() for g in generators), (
                 "Polynomials not in %s-ideal" % (b,)
+            )
 
         if mu_B_coefficients:
             (mu_B_coefficient,) = self._D.ideal(mu_B_coefficients).gens()
@@ -919,7 +922,12 @@ class ComputeMinimalPolynomials(SageObject):
             sage: C.integer_valued_polynomials_generators()
             (x^3 + x^2 - 12*x - 20, [1, 1/4*x^2 + 3/4*x + 1/2])
         """
-        return (self.mu_B, [self._DX(1)] +
-                [nu / p**s
-                 for p in self.prime_candidates()
-                 for s, nu in self.p_minimal_polynomials(p).items()])
+        return (
+            self.mu_B,
+            [self._DX(1)]
+            + [
+                nu / p**s
+                for p in self.prime_candidates()
+                for s, nu in self.p_minimal_polynomials(p).items()
+            ],
+        )

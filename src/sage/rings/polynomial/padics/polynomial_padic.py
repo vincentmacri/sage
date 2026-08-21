@@ -11,7 +11,7 @@ AUTHORS:
   polynomials.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 David Roe <roed.math@gmail.com>
 #       Copyright (C) 2013 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -19,7 +19,7 @@ AUTHORS:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 import re
 
 from sage.rings.padics.precision_error import PrecisionError
@@ -62,8 +62,8 @@ class Polynomial_padic(Polynomial):
             name = self.parent().variable_name()
         for n in reversed(range(m)):
             x = y = str(coeffs[n])
-            if n == m-1 or x != "0":
-                if n != m-1:
+            if n == m - 1 or x != "0":
+                if n != m - 1:
                     s += " + "
                 if y.find("-") == 0:
                     y = y[1:]
@@ -77,8 +77,8 @@ class Polynomial_padic(Polynomial):
                     var = ""
                 s += x + var
         s = s.replace(" + -", " - ")
-        s = re.sub(r' 1\*',' ', s)
-        s = re.sub(r' -1\*',' -', s)
+        s = re.sub(r' 1\*', ' ', s)
+        s = re.sub(r' -1\*', ' -', s)
         if s == " ":
             return "0"
         return s[1:]
@@ -141,7 +141,11 @@ class Polynomial_padic(Polynomial):
         """
         if self.is_zero():
             return self[0]
-        return self.base_ring()(self.base_ring().prime_pow(min([x.valuation() for x in self.coefficients(sparse=False)])))
+        return self.base_ring()(
+            self.base_ring().prime_pow(
+                min([x.valuation() for x in self.coefficients(sparse=False)])
+            )
+        )
 
     def factor(self):
         r"""
@@ -250,9 +254,12 @@ class Polynomial_padic(Polynomial):
         absprec = min([x.precision_absolute() for x in self_normal])
         if self_normal.discriminant().valuation() >= absprec:
             raise PrecisionError(
-                "p-adic factorization not well-defined since the discriminant is zero up to the requestion p-adic precision")
+                "p-adic factorization not well-defined since the discriminant is zero up to the requestion p-adic precision"
+            )
         G = self_normal.__pari__().factorpadic(self.base_ring().prime(), absprec)
-        return _pari_padic_factorization_to_sage(G, self.parent(), self.leading_coefficient())
+        return _pari_padic_factorization_to_sage(
+            G, self.parent(), self.leading_coefficient()
+        )
 
     def root_field(self, names, check_irreducible=True, **kwds):
         """

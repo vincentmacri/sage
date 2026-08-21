@@ -102,15 +102,17 @@ def _smallscale_present_linearlayer(nsboxes=16):
     from sage.rings.finite_rings.finite_field_constructor import GF
 
     def present_llayer(n, x):
-        dim = 4*n
-        y = [0]*dim
-        for i in range(dim-1):
+        dim = 4 * n
+        y = [0] * dim
+        for i in range(dim - 1):
             y[i] = x[(n * i) % (dim - 1)]
-        y[dim-1] = x[dim-1]
+        y[dim - 1] = x[dim - 1]
         return vector(GF(2), y)
 
-    m = Matrix(GF(2), [present_llayer(nsboxes, ei)
-                       for ei in VectorSpace(GF(2), 4*nsboxes).basis()])
+    m = Matrix(
+        GF(2),
+        [present_llayer(nsboxes, ei) for ei in VectorSpace(GF(2), 4 * nsboxes).basis()],
+    )
     return m
 
 
@@ -257,8 +259,10 @@ class PRESENT(SageObject):
         elif rounds <= self.keySchedule._rounds:
             self._rounds = rounds
         else:
-            raise ValueError('number of rounds must be less or equal to the '
-                             'number of rounds of the key schedule')
+            raise ValueError(
+                'number of rounds must be less or equal to the '
+                'number of rounds of the key schedule'
+            )
         self._blocksize = 64
         self.sbox = PRESENTSBOX
         self._permutationMatrix = _smallscale_present_linearlayer()
@@ -301,8 +305,9 @@ class PRESENT(SageObject):
             return self.encrypt(block, key)
         if algorithm == 'decrypt':
             return self.decrypt(block, key)
-        raise ValueError('Algorithm must be \'encrypt\' or \'decrypt\' and'
-                         ' not \'%s\'' % algorithm)
+        raise ValueError(
+            'Algorithm must be \'encrypt\' or \'decrypt\' and not \'%s\'' % algorithm
+        )
 
     def __eq__(self, other):
         r"""
@@ -340,10 +345,15 @@ class PRESENT(SageObject):
             last round and the following key schedule:
             Original PRESENT key schedule with 80-bit keys and 31 rounds
         """
-        return ('PRESENT block cipher with %s rounds, %s linear layer in last '
-                'round and the following key schedule:\n%s'
-                % (self._rounds, 'activated' if self._doFinalRound else
-                   'deactivated', self.keySchedule.__repr__()))
+        return (
+            'PRESENT block cipher with %s rounds, %s linear layer in last '
+            'round and the following key schedule:\n%s'
+            % (
+                self._rounds,
+                'activated' if self._doFinalRound else 'deactivated',
+                self.keySchedule.__repr__(),
+            )
+        )
 
     def encrypt(self, plaintext, key):
         r"""
@@ -423,7 +433,7 @@ class PRESENT(SageObject):
         state = convert_to_vector(plaintext, 64)
         key = convert_to_vector(key, self._keysize)
         roundKeys = self.keySchedule(key)
-        for r, K in enumerate(roundKeys[:self._rounds]):
+        for r, K in enumerate(roundKeys[: self._rounds]):
             state = self.round(state, r, K)
         state = state + roundKeys[self._rounds]
         return state if inputType == 'vector' else ZZ(list(state), 2)
@@ -480,7 +490,7 @@ class PRESENT(SageObject):
         key = convert_to_vector(key, self._keysize)
         roundKeys = self.keySchedule(key)
         state = state + roundKeys[self._rounds]
-        for r, K in enumerate(roundKeys[:self._rounds][::-1]):
+        for r, K in enumerate(roundKeys[: self._rounds][::-1]):
             state = self.round(state, r, K, inverse=True)
         return state if inputType == 'vector' else ZZ(list(state), 2)
 
@@ -556,7 +566,7 @@ class PRESENT(SageObject):
         """
         sbox = self.sbox if not inverse else self.sbox.inverse()
         out = vector(GF(2), 64)
-        for nibble in [slice(4*j, 4*j+4) for j in range(16)]:
+        for nibble in [slice(4 * j, 4 * j + 4) for j in range(16)]:
             out[nibble] = sbox(state[nibble][::-1])[::-1]
         return out
 
@@ -736,8 +746,7 @@ class PRESENT_KS(SageObject):
             omit ``master_key`` and pass a key when you call the object.
         """
         if keysize != 80 and keysize != 128:
-            raise ValueError('keysize must bei either 80 or 128 and not %s'
-                             % keysize)
+            raise ValueError('keysize must bei either 80 or 128 and not %s' % keysize)
         self._keysize = keysize
         self._rounds = rounds
         self.sbox = PRESENTSBOX
@@ -779,7 +788,7 @@ class PRESENT_KS(SageObject):
         K = convert_to_vector(K, self._keysize)
         roundKeys = []
         if self._keysize == 80:
-            for i in range(1, self._rounds+1):
+            for i in range(1, self._rounds + 1):
                 roundKeys.append(K[16:])
                 K[0:] = list(K[19:]) + list(K[:19])
                 K[76:] = self.sbox(K[76:][::-1])[::-1]
@@ -787,7 +796,7 @@ class PRESENT_KS(SageObject):
                 K[15:20] = K[15:20] + rc
             roundKeys.append(K[16:])
         elif self._keysize == 128:
-            for i in range(1, self._rounds+1):
+            for i in range(1, self._rounds + 1):
                 roundKeys.append(K[64:])
                 K[0:] = list(K[67:]) + list(K[:67])
                 K[124:] = self.sbox(K[124:][::-1])[::-1]
@@ -795,8 +804,9 @@ class PRESENT_KS(SageObject):
                 rc = vector(GF(2), ZZ(i).digits(2, padto=5))
                 K[62:67] = K[62:67] + rc
             roundKeys.append(K[64:])
-        return roundKeys if inputType == 'vector' else [ZZ(list(k), 2) for k in
-                                                        roundKeys]
+        return (
+            roundKeys if inputType == 'vector' else [ZZ(list(k), 2) for k in roundKeys]
+        )
 
     def __eq__(self, other):
         r"""
@@ -828,8 +838,10 @@ class PRESENT_KS(SageObject):
             sage: PRESENT_KS() # indirect doctest
             Original PRESENT key schedule with 80-bit keys and 31 rounds
         """
-        return ('Original PRESENT key schedule with %s-bit keys and %s rounds'
-                % (self._keysize, self._rounds))
+        return 'Original PRESENT key schedule with %s-bit keys and %s rounds' % (
+            self._keysize,
+            self._rounds,
+        )
 
     def __getitem__(self, r):
         r"""

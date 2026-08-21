@@ -164,6 +164,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
         [(t1 - 1/2, t2, t3, t1), [t2 - 9/2 <= t1, t1 <= t3 + 1/2, t2 - 5 <= t3], 1],
         [(2*t1 - t2 + 4, t2, t3, t1), [t1 <= min(1/2*t2 + 1/2*t3 - 2, t2 - 9/2)], 1]]
     """
+
     def __init__(self, poly):
         r"""
         Initialize ``self``.
@@ -199,8 +200,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
         self._poly = poly
         self._hypersurface = []
         tropical_roots = []
-        variables = [SR.var(name)
-                     for name in poly.parent().variable_names()]
+        variables = [SR.var(name) for name in poly.parent().variable_names()]
 
         # Convert each term to its linear function
         linear_eq = {}
@@ -258,8 +258,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                     xy_interval.append(parameter_solution[0])
                     tropical_roots.append(xy_interval)
                     # Calculate the order
-                    index_diff = [abs(ai - bi)
-                                  for ai, bi in zip(keys[0], keys[1])]
+                    index_diff = [abs(ai - bi) for ai, bi in zip(keys[0], keys[1])]
                     order = gcd(index_diff)
                     temp_order.append(order)
                     temp_keys.append(keys)
@@ -350,6 +349,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
             13
         """
         from sage.rings.integer_ring import ZZ
+
         return ZZ(len(self._hypersurface))
 
     def _repr_(self):
@@ -504,7 +504,9 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                 left = expr.lhs()
                 right = expr.rhs()
                 # If the lhs contains a min or max operator
-                if (left.operator() == max_symbolic) or (left.operator() == min_symbolic):
+                if (left.operator() == max_symbolic) or (
+                    left.operator() == min_symbolic
+                ):
                     for operand in expr.lhs().operands():
                         points = list(comp[0])
                         new_expr = [e.subs(**{str(right): operand}) for e in comp[1]]
@@ -513,7 +515,9 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                             points[i] = new_eq
                         update_result(result)
                 # If the rhs contains a min or max operator
-                elif (right.operator() == max_symbolic) or (right.operator() == min_symbolic):
+                elif (right.operator() == max_symbolic) or (
+                    right.operator() == min_symbolic
+                ):
                     for operand in expr.rhs().operands():
                         points = list(comp[0])
                         new_expr = [e.subs(**{str(left): operand}) for e in comp[1]]
@@ -630,7 +634,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                         is_unique = False
                         break
                     subs_dict = {}
-                    while len(subs_dict) != dim-2 and subs_index < dim:
+                    while len(subs_dict) != dim - 2 and subs_index < dim:
                         eq1 = eqn[subs_index].subs(subs_dict)
                         vib = None
                         for unk in eq1.variables():
@@ -665,7 +669,9 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                     line_comps[index] = [i]
                     index += 1
                 else:
-                    match_key = [k for k, v in index_line.items() if v[0] == tuple(new_line)][0]
+                    match_key = [
+                        k for k, v in index_line.items() if v[0] == tuple(new_line)
+                    ][0]
                     line_comps[match_key].append(i)
 
         WV = {i: [] for i in range(len(line_comps)) if len(line_comps[i]) > 1}
@@ -697,7 +703,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                 normal_vec = vec_matrix.det()
                 temp_nor = [QQ(diff(normal_vec, tvar)) for tvar in t_vars]
                 normal_vec = vector(temp_nor)
-                normal_vec *= 1/gcd(normal_vec)
+                normal_vec *= 1 / gcd(normal_vec)
 
                 # Calculate the weight vector
                 temp_final = [t_vars]
@@ -712,7 +718,7 @@ class TropicalVariety(UniqueRepresentation, SageObject):
                 WV[k].append(weight_vec)
 
             balance = False
-            for i in range(1, len(WV[k])+1):
+            for i in range(1, len(WV[k]) + 1):
                 for j in combinations(range(len(WV[k])), i):
                     test_vectors = list(WV[k])
                     for idx in j:
@@ -753,6 +759,7 @@ class TropicalSurface(TropicalVariety):
         [(t1, 0, t2), [t2 <= 0, t1 <= 0], 1],
         [(t1, t2, 0), [t1 <= 0, t2 <= 0], 1]]
     """
+
     def _axes(self):
         r"""
         Set the default axes for ``self``.
@@ -838,26 +845,30 @@ class TropicalSurface(TropicalVariety):
                         temp_u.add(sol[0][0].rhs())
             u_set = u_set.union(temp_u)
             v_set = v_set.union(temp_v)
-        axes = [[min(u_set)-1, max(u_set)+1], [min(v_set)-1, max(v_set)+1]]
+        axes = [[min(u_set) - 1, max(u_set) + 1], [min(v_set) - 1, max(v_set) + 1]]
 
         # Calculate the z-axis
         step = 10
-        du = (axes[0][1]-axes[0][0]) / step
-        dv = (axes[1][1]-axes[1][0]) / step
-        u_range = srange(axes[0][0], axes[0][1]+du, du)
-        v_range = srange(axes[1][0], axes[1][1]+dv, dv)
+        du = (axes[0][1] - axes[0][0]) / step
+        dv = (axes[1][1] - axes[1][0]) / step
+        u_range = srange(axes[0][0], axes[0][1] + du, du)
+        v_range = srange(axes[1][0], axes[1][1] + dv, dv)
         zmin, zmax = None, None
         for comp in self._hypersurface:
             for u in u_range:
                 for v in v_range:
                     checkpoint = True
                     for exp in comp[1]:
-                        final_exp = exp.subs(**{str(self._vars[0]): u, str(self._vars[1]): v})
+                        final_exp = exp.subs(
+                            **{str(self._vars[0]): u, str(self._vars[1]): v}
+                        )
                         if not final_exp:
                             checkpoint = False
                             break
                     if checkpoint:
-                        z = comp[0][2].subs(**{str(self._vars[0]): u, str(self._vars[1]): v})
+                        z = comp[0][2].subs(
+                            **{str(self._vars[0]): u, str(self._vars[1]): v}
+                        )
                         if (zmin is None) and (zmax is None):
                             zmin = z
                             zmax = z
@@ -927,7 +938,7 @@ class TropicalSurface(TropicalVariety):
                         poly_verts[index].add(tuple(vertex))
 
         def find_edge_vertices(i):
-            j = (i+1) % 2
+            j = (i + 1) % 2
             if i == 0:  # interval for t1
                 interval = interval1
             else:  # interval for t2
@@ -967,8 +978,28 @@ class TropicalSurface(TropicalVariety):
                         final_int = int1.intersection(int2)
                         interval_param = interval_param.intersection(final_int)
                     if interval_param:
-                        vertex1 = [QQ(e.subs(**{str(vars[i]): p, str(vars[j]): interval_param.inf()})) for e in comps[index][0]]
-                        vertex2 = [QQ(e.subs(**{str(vars[i]): p, str(vars[j]): interval_param.sup()})) for e in comps[index][0]]
+                        vertex1 = [
+                            QQ(
+                                e.subs(
+                                    **{
+                                        str(vars[i]): p,
+                                        str(vars[j]): interval_param.inf(),
+                                    }
+                                )
+                            )
+                            for e in comps[index][0]
+                        ]
+                        vertex2 = [
+                            QQ(
+                                e.subs(
+                                    **{
+                                        str(vars[i]): p,
+                                        str(vars[j]): interval_param.sup(),
+                                    }
+                                )
+                            )
+                            for e in comps[index][0]
+                        ]
                         poly_verts[index].add(tuple(vertex1))
                         poly_verts[index].add(tuple(vertex2))
 
@@ -1159,6 +1190,7 @@ class TropicalCurve(TropicalVariety):
         p3 = p1 * p2
         sphinx_plot(p3.tropical_variety().plot())
     """
+
     def _axes(self):
         """
         Set the default axes for ``self``.
@@ -1215,7 +1247,7 @@ class TropicalCurve(TropicalVariety):
                 ymin = vertex[1]
             elif vertex[1] > ymax:
                 ymax = vertex[1]
-        return [[xmin-1, xmax+1], [ymin-1, ymax+1]]
+        return [[xmin - 1, xmax + 1], [ymin - 1, ymax + 1]]
 
     def vertices(self):
         r"""
@@ -1341,7 +1373,7 @@ class TropicalCurve(TropicalVariety):
             dx = diff(comp[0][0], par)
             dy = diff(comp[0][1], par)
             multiplier = gcd(QQ(dx), QQ(dy))
-            temp_vectors.append(vector([dx/multiplier, dy/multiplier]))
+            temp_vectors.append(vector([dx / multiplier, dy / multiplier]))
 
         # Calculate the weight vectors of each vertex
         cov = self._vertices_components()
@@ -1350,7 +1382,7 @@ class TropicalCurve(TropicalVariety):
             vectors = []
             for comp in cov[vertex]:
                 weight = self._hypersurface[comp[0]][2]
-                vectors.append(weight*comp[1]*temp_vectors[comp[0]])
+                vectors.append(weight * comp[1] * temp_vectors[comp[0]])
             result[vertex] = vectors
         return result
 
@@ -1449,7 +1481,7 @@ class TropicalCurve(TropicalVariety):
         for component in self._hypersurface:
             if len(component[1]) == 1:
                 unbounded += 1
-        return trivalent//2 - unbounded//2 + 1
+        return trivalent // 2 - unbounded // 2 + 1
 
     def contribution(self):
         r"""
@@ -1498,7 +1530,7 @@ class TropicalCurve(TropicalVariety):
                 index2 = voc[vertex][1][0]
                 w1 = self._hypersurface[index1][2]
                 w2 = self._hypersurface[index2][2]
-                det = u1[0]*u2[1] - u1[1]*u2[0]
+                det = u1[0] * u2[1] - u1[1] * u2[0]
                 result *= w1 * w2 * abs(det)
         return result
 
@@ -1655,15 +1687,17 @@ class TropicalCurve(TropicalVariety):
             else:
                 lower = interval[0].lower()
                 upper = interval[0].upper()
-                midpoint = (lower+upper) / 2
+                midpoint = (lower + upper) / 2
 
             if (lower == infinity) and (upper == infinity):
                 midpoint = 0
-                plot = parametric_plot(parametric_function, (var, -large_int,
-                                       large_int), color='red')
+                plot = parametric_plot(
+                    parametric_function, (var, -large_int, large_int), color='red'
+                )
             else:
-                plot = parametric_plot(parametric_function, (var, lower, upper),
-                                       color='red')
+                plot = parametric_plot(
+                    parametric_function, (var, lower, upper), color='red'
+                )
 
             # Add the order if it is greater than or equal to 2
             if component[2] > 1:
@@ -1671,8 +1705,9 @@ class TropicalCurve(TropicalVariety):
                 for eq in component[0]:
                     value = eq.subs(**{str(var): midpoint})
                     point.append(value)
-                text_order = text(str(order), (point[0], point[1]),
-                                  fontsize=16, color='black')
+                text_order = text(
+                    str(order), (point[0], point[1]), fontsize=16, color='black'
+                )
                 combined_plot += plot + text_order
             else:
                 combined_plot += plot
@@ -1681,8 +1716,7 @@ class TropicalCurve(TropicalVariety):
         axes = self._axes()
         xmin, xmax = axes[0][0], axes[0][1]
         ymin, ymax = axes[1][0], axes[1][1]
-        combined_plot.set_axes_range(xmin=xmin, xmax=xmax,
-                                     ymin=ymin, ymax=ymax)
+        combined_plot.set_axes_range(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
         return combined_plot
 
     def _repr_(self):

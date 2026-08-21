@@ -49,5 +49,8 @@ def cunningham_prime_factors():
             return [Integer(_) for _ in load(file)]
 
     from warnings import warn
-    warn("The optional cunningham_tables package for factoring Cunningham numbers is not installed")
+
+    warn(
+        "The optional cunningham_tables package for factoring Cunningham numbers is not installed"
+    )
     return []

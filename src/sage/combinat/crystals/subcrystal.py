@@ -9,7 +9,7 @@ AUTHORS:
 - Travis Scrimshaw (2013-10-16): Initial implementation
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -22,7 +22,7 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 import collections.abc
 
@@ -114,10 +114,19 @@ class Subcrystal(UniqueRepresentation, Parent):
         sage: S.category()
         Category of finite super crystals
     """
+
     @staticmethod
-    def __classcall_private__(cls, ambient, contained=None, generators=None,
-                              virtualization=None, scaling_factors=None,
-                              cartan_type=None, index_set=None, category=None):
+    def __classcall_private__(
+        cls,
+        ambient,
+        contained=None,
+        generators=None,
+        virtualization=None,
+        scaling_factors=None,
+        cartan_type=None,
+        index_set=None,
+        category=None,
+    ):
         """
         Normalize arguments to ensure a (relatively) unique representation.
 
@@ -131,7 +140,7 @@ class Subcrystal(UniqueRepresentation, Parent):
         """
         if isinstance(contained, (collections.abc.Sequence, collections.abc.Set)):
             contained = frozenset(contained)
-        #elif contained in Sets():
+        # elif contained in Sets():
 
         if cartan_type is None:
             cartan_type = ambient.cartan_type()
@@ -150,25 +159,49 @@ class Subcrystal(UniqueRepresentation, Parent):
 
         if virtualization is not None:
             if scaling_factors is None:
-                scaling_factors = {i:1 for i in index_set}
+                scaling_factors = {i: 1 for i in index_set}
             from sage.combinat.crystals.virtual_crystal import VirtualCrystal
-            return VirtualCrystal(ambient, virtualization, scaling_factors, contained,
-                                  generators, cartan_type, index_set, category)
+
+            return VirtualCrystal(
+                ambient,
+                virtualization,
+                scaling_factors,
+                contained,
+                generators,
+                cartan_type,
+                index_set,
+                category,
+            )
         if scaling_factors is not None:
             # virtualization must be None
-            virtualization = {i:(i,) for i in index_set}
+            virtualization = {i: (i,) for i in index_set}
             from sage.combinat.crystals.virtual_crystal import VirtualCrystal
-            return VirtualCrystal(ambient, virtualization, scaling_factors, contained,
-                                  generators, cartan_type, index_set, category)
+
+            return VirtualCrystal(
+                ambient,
+                virtualization,
+                scaling_factors,
+                contained,
+                generators,
+                cartan_type,
+                index_set,
+                category,
+            )
 
         # We need to give these as optional arguments so it unpickles correctly
-        return super().__classcall__(cls, ambient, contained,
-                                     tuple(generators),
-                                     cartan_type=cartan_type,
-                                     index_set=tuple(index_set),
-                                     category=category)
+        return super().__classcall__(
+            cls,
+            ambient,
+            contained,
+            tuple(generators),
+            cartan_type=cartan_type,
+            index_set=tuple(index_set),
+            category=category,
+        )
 
-    def __init__(self, ambient, contained, generators, cartan_type, index_set, category):
+    def __init__(
+        self, ambient, contained, generators, cartan_type, index_set, category
+    ):
         """
         Initialize ``self``.
 
@@ -180,12 +213,13 @@ class Subcrystal(UniqueRepresentation, Parent):
         """
         self._ambient = ambient
         self._contained = contained
-        self._cardinality = None # ``None`` means currently unknown
+        self._cardinality = None  # ``None`` means currently unknown
         self._cartan_type = cartan_type
         self._index_set = tuple(index_set)
         Parent.__init__(self, category=category)
-        self.module_generators = tuple(self.element_class(self, g) for g in generators
-                                       if self._containing(g))
+        self.module_generators = tuple(
+            self.element_class(self, g) for g in generators if self._containing(g)
+        )
 
         if isinstance(contained, frozenset):
             self._cardinality = Integer(len(contained))
@@ -221,7 +255,7 @@ class Subcrystal(UniqueRepresentation, Parent):
             return lambda x: True
         if isinstance(self._contained, frozenset):
             return self._contained.__contains__
-        return self._contained # Otherwise it should be a function
+        return self._contained  # Otherwise it should be a function
 
     def __contains__(self, x):
         """
@@ -252,8 +286,10 @@ class Subcrystal(UniqueRepresentation, Parent):
 
         # TODO: make this work for infinite crystals
         import warnings
-        warnings.warn("Testing containment in an infinite crystal"
-                      " defaults to returning True")
+
+        warnings.warn(
+            "Testing containment in an infinite crystal defaults to returning True"
+        )
         return True
 
     def cardinality(self):

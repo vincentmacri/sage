@@ -5,6 +5,7 @@ AUTHOR:
 
 - William Stein
 """
+
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.power_series_ring import PowerSeriesRing
@@ -52,10 +53,10 @@ def theta2_qexp(prec=10, var='q', K=ZZ, sparse=False):
         v = [Integer(0)] * prec
     one = Integer(1)
     n = int(sqrt(prec))
-    if n*n < prec:
+    if n * n < prec:
         n += 1
     for m in range(1, n, 2):
-        v[m*m] = one
+        v[m * m] = one
     R = PowerSeriesRing(K, sparse=sparse, names=var)
     return R(v, prec=prec)
 
@@ -100,10 +101,10 @@ def theta_qexp(prec=10, var='q', K=ZZ, sparse=False):
     v[0] = Integer(1)
     two = Integer(2)
     n = int(sqrt(prec))
-    if n*n != prec:
+    if n * n != prec:
         n += 1
     for m in range(1, n):
-        v[m*m] = two
+        v[m * m] = two
 
     R = PowerSeriesRing(K, sparse=sparse, names=var)
     return R(v, prec=prec)

@@ -38,6 +38,9 @@ class GradedLieAlgebrasWithBasis(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
-    FiniteDimensional = LazyImport('sage.categories.finite_dimensional_graded_lie_algebras_with_basis',
-                                  'FiniteDimensionalGradedLieAlgebrasWithBasis',
-                                  as_name='FiniteDimensional')
+
+    FiniteDimensional = LazyImport(
+        'sage.categories.finite_dimensional_graded_lie_algebras_with_basis',
+        'FiniteDimensionalGradedLieAlgebrasWithBasis',
+        as_name='FiniteDimensional',
+    )

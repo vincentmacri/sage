@@ -114,7 +114,7 @@ AUTHORS:
 - Reimundo Heluani (2019-10-05): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -122,7 +122,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.lambda_bracket_algebras import LambdaBracketAlgebras
@@ -174,6 +174,7 @@ class LieConformalAlgebras(Category_over_base_ring):
         ValueError: base must be a commutative ring
         got Quaternion Algebra (-1, -1) with base ring Rational Field
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -227,6 +228,7 @@ class LieConformalAlgebras(Category_over_base_ring):
         from sage.algebras.lie_conformal_algebras.virasoro_lie_conformal_algebra import (
             VirasoroLieConformalAlgebra,
         )
+
         return VirasoroLieConformalAlgebra(self.base_ring())
 
     def _repr_object_names(self):
@@ -241,7 +243,6 @@ class LieConformalAlgebras(Category_over_base_ring):
         return "Lie conformal algebras over {}".format(self.base_ring())
 
     class ParentMethods:
-
         def _test_jacobi(self, **options):
             """
             Test the Jacobi axiom of this Lie conformal algebra.
@@ -287,31 +288,32 @@ class LieConformalAlgebras(Category_over_base_ring):
             S = tester.some_elements()
             from sage.arith.misc import binomial
             from sage.misc.misc import some_tuples
+
             pz = tester._instance.zero()
-            for x,y,z in some_tuples(S, 3, tester._max_runs):
+            for x, y, z in some_tuples(S, 3, tester._max_runs):
                 brxy = x.bracket(y)
                 brxz = x.bracket(z)
                 bryz = y.bracket(z)
-                br1 = {k: x.bracket(v) for k,v in bryz.items()}
-                br2 = {k: v.bracket(z) for k,v in brxy.items()}
-                br3 = {k: y.bracket(v) for k,v in brxz.items()}
-                jac1 = {(j,k): v for k in br1 for j,v in br1[k].items()}
-                jac3 = {(k,j): v for k in br3 for j,v in br3[k].items()}
+                br1 = {k: x.bracket(v) for k, v in bryz.items()}
+                br2 = {k: v.bracket(z) for k, v in brxy.items()}
+                br3 = {k: y.bracket(v) for k, v in brxz.items()}
+                jac1 = {(j, k): v for k in br1 for j, v in br1[k].items()}
+                jac3 = {(k, j): v for k in br3 for j, v in br3[k].items()}
                 jac2 = {}
-                for k,br in br2.items():
-                    for j,v in br.items():
-                        for r in range(j+1):
-                            jac2[(k+r, j-r)] = (jac2.get((k+r, j-r), pz)
-                                                + binomial(k+r, r)*v)
-                for k,v in jac2.items():
+                for k, br in br2.items():
+                    for j, v in br.items():
+                        for r in range(j + 1):
+                            jac2[(k + r, j - r)] = (
+                                jac2.get((k + r, j - r), pz) + binomial(k + r, r) * v
+                            )
+                for k, v in jac2.items():
                     jac1[k] = jac1.get(k, pz) - v
-                for k,v in jac3.items():
+                for k, v in jac3.items():
                     jac1[k] = jac1.get(k, pz) - v
-                jacobiator = {k: v for k,v in jac1.items() if v}
+                jacobiator = {k: v for k, v in jac1.items() if v}
                 tester.assertDictEqual(jacobiator, {})
 
     class ElementMethods:
-
         def is_even_odd(self):
             """
             Return ``0`` if this element is *even* and ``1`` if it is
@@ -335,15 +337,25 @@ class LieConformalAlgebras(Category_over_base_ring):
             """
             return 0
 
-    Graded = LazyImport("sage.categories.graded_lie_conformal_algebras",
-                        "GradedLieConformalAlgebras", "Graded")
+    Graded = LazyImport(
+        "sage.categories.graded_lie_conformal_algebras",
+        "GradedLieConformalAlgebras",
+        "Graded",
+    )
 
-    Super = LazyImport("sage.categories.super_lie_conformal_algebras",
-                       "SuperLieConformalAlgebras", "Super")
+    Super = LazyImport(
+        "sage.categories.super_lie_conformal_algebras",
+        "SuperLieConformalAlgebras",
+        "Super",
+    )
 
-    WithBasis = LazyImport("sage.categories.lie_conformal_algebras_with_basis",
-                           "LieConformalAlgebrasWithBasis", "WithBasis")
+    WithBasis = LazyImport(
+        "sage.categories.lie_conformal_algebras_with_basis",
+        "LieConformalAlgebrasWithBasis",
+        "WithBasis",
+    )
 
     FinitelyGeneratedAsLambdaBracketAlgebra = LazyImport(
         'sage.categories.finitely_generated_lie_conformal_algebras',
-        'FinitelyGeneratedLieConformalAlgebras')
+        'FinitelyGeneratedLieConformalAlgebras',
+    )

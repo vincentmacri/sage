@@ -52,7 +52,6 @@ from sage.schemes.generic.morphism import SchemeMorphism_polynomial
 
 
 class WeierstrassTransformation(SchemeMorphism_polynomial):
-
     def __init__(self, domain, codomain, defining_polynomials, post_multiplication):
         r"""
         A morphism of a genus-one curve to/from the Weierstrass form.
@@ -138,9 +137,14 @@ class WeierstrassTransformation(SchemeMorphism_polynomial):
         return self._post
 
 
-def WeierstrassTransformationWithInverse(domain, codomain,
-                                         defining_polynomials, post_multiplication,
-                                         inv_defining_polynomials, inv_post_multiplication):
+def WeierstrassTransformationWithInverse(
+    domain,
+    codomain,
+    defining_polynomials,
+    post_multiplication,
+    inv_defining_polynomials,
+    inv_post_multiplication,
+):
     """
     Construct morphism of a genus-one curve to/from the Weierstrass
     form with its inverse.
@@ -164,16 +168,17 @@ def WeierstrassTransformationWithInverse(domain, codomain,
                 (-w : -v + w : 3*u + 3*v)
     """
     fwd = WeierstrassTransformationWithInverse_class(
-        domain, codomain, defining_polynomials, post_multiplication)
+        domain, codomain, defining_polynomials, post_multiplication
+    )
     inv = WeierstrassTransformationWithInverse_class(
-        codomain, domain, inv_defining_polynomials, inv_post_multiplication)
+        codomain, domain, inv_defining_polynomials, inv_post_multiplication
+    )
     fwd._inverse = inv
     inv._inverse = fwd
     return fwd
 
 
 class WeierstrassTransformationWithInverse_class(WeierstrassTransformation):
-
     def inverse(self):
         """
         Return the inverse.

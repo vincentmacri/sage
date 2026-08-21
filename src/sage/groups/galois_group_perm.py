@@ -1,8 +1,12 @@
 r"""
 Galois groups of field extensions as permutation groups
 """
+
 from sage.groups.galois_group import _GaloisMixin, _SubGaloisMixin
-from sage.groups.perm_gps.permgroup import PermutationGroup_generic, PermutationGroup_subgroup
+from sage.groups.perm_gps.permgroup import (
+    PermutationGroup_generic,
+    PermutationGroup_subgroup,
+)
 from sage.misc.abstract_method import abstract_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
@@ -25,6 +29,7 @@ class GaloisGroup_perm(_GaloisMixin, PermutationGroup_generic):
       defining polynomial of the original extension); the default value may
       vary based on the type of field
     """
+
     @abstract_method
     def transitive_number(self, algorithm=None, recompute=False):
         """
@@ -78,6 +83,7 @@ class GaloisGroup_perm(_GaloisMixin, PermutationGroup_generic):
         # We do only the parts of the initialization of PermutationGroup_generic
         # that don't depend on _gens
         from sage.categories.permutation_groups import PermutationGroups
+
         category = PermutationGroups().FinitelyGenerated().Finite()
         # Note that we DON'T call the __init__ method for PermutationGroup_generic
         # Instead, the relevant attributes are computed lazily
@@ -182,6 +188,7 @@ class GaloisSubgroup_perm(PermutationGroup_subgroup, _SubGaloisMixin):
     we require that generators for a subgroup be specified during initialization,
     as specified in the ``__init__`` method of permutation subgroups.
     """
+
     pass
 
 

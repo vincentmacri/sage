@@ -2,12 +2,12 @@
 r"""
 Vector Bundles
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2019 Michael Jung <micjung at uni-potsdam.de>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -36,6 +36,7 @@ class VectorBundles(Category_over_base_ring):
 
         sage: TestSuite(C).run(skip='_test_category_over_bases')
     """
+
     def __init__(self, base_space, base_field, name=None):
         r"""
         Initialize ``self``.
@@ -92,8 +93,10 @@ class VectorBundles(Category_over_base_ring):
              space 2-dimensional differentiable manifold M'
         """
         base_space = self._base_space
-        return Category_over_base_ring._repr_object_names(self) + \
-               " with base space %s" % base_space
+        return (
+            Category_over_base_ring._repr_object_names(self)
+            + " with base space %s" % base_space
+        )
 
     class SubcategoryMethods:
         @cached_method

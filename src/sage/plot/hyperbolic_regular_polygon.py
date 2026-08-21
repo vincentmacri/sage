@@ -7,7 +7,7 @@ AUTHORS:
 - Javier Honrubia (2016-01)
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2016 Javier Honrubia Gonzalez <jhonrubia6@alumno.uned.es>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.matrix.constructor import matrix
 from sage.misc.decorators import options, rename_keyword
@@ -100,6 +100,7 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
          ...
          ValueError: degenerated polygons (sides<=2) are not supported
     """
+
     def __init__(self, sides, i_angle, center, options):
         """
         Initialize HyperbolicRegularPolygon.
@@ -112,17 +113,26 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
         """
         self.center = CC(center)
         if self.center.imag() <= 0:
-            raise ValueError("center: %s is not a valid point in the upper half plane model of the hyperbolic plane" % (self.center))
+            raise ValueError(
+                "center: %s is not a valid point in the upper half plane model of the hyperbolic plane"
+                % (self.center)
+            )
         if sides < 3:
             raise ValueError("degenerated polygons (sides<=2) are not supported")
         if i_angle <= 0 or i_angle >= pi:
-            raise ValueError("interior angle %s must be in (0, pi) interval" % (i_angle))
-        if pi*(sides-2) - sides*i_angle <= 0:
-            raise ValueError("there exists no hyperbolic regular compact polygon,"
-                             " for sides={} the interior angle must be less than {}".format(sides, pi * (sides-2) / sides))
+            raise ValueError(
+                "interior angle %s must be in (0, pi) interval" % (i_angle)
+            )
+        if pi * (sides - 2) - sides * i_angle <= 0:
+            raise ValueError(
+                "there exists no hyperbolic regular compact polygon,"
+                " for sides={} the interior angle must be less than {}".format(
+                    sides, pi * (sides - 2) / sides
+                )
+            )
         self.sides = sides
         self.i_angle = i_angle
-        beta = 2 * pi / self.sides # compute the rotation angle to be used ahead
+        beta = 2 * pi / self.sides  # compute the rotation angle to be used ahead
         alpha = self.i_angle / Integer(2)
         I = CC(0, 1)
         # compute using cosine theorem the radius of the circumscribed circle
@@ -131,7 +141,7 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
 
         # The first point will be always on the imaginary axis limited
         # to 8 digits for efficiency in the subsequent calculations.
-        z_0 = [I*(e**r).n(digits=8)]
+        z_0 = [I * (e**r).n(digits=8)]
 
         # Compute the dilation isometry used to move the center
         # from I to the imaginary part of the given center.
@@ -141,9 +151,11 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
         # real part of the given center.
         h_disp = self.center.real()
 
-        d_z_k = [z_0[0]*scale + h_disp]  # d_k has the points for the polygon in the given center
-        z_k = z_0                      # z_k has the Re(z)>0 vertices for the I centered polygon
-        r_z_k = []                     # r_z_k has the Re(z)<0 vertices
+        d_z_k = [
+            z_0[0] * scale + h_disp
+        ]  # d_k has the points for the polygon in the given center
+        z_k = z_0  # z_k has the Re(z)>0 vertices for the I centered polygon
+        r_z_k = []  # r_z_k has the Re(z)<0 vertices
         if is_odd(self.sides):
             vert = (self.sides - 1) // 2
         else:
@@ -157,7 +169,7 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
         if is_odd(self.sides):
             HyperbolicPolygon.__init__(self, d_z_k + r_z_k, "UHP", options)
         else:
-            z_opo = [I * (e**(-r)).n(digits=8) * scale + h_disp]
+            z_opo = [I * (e ** (-r)).n(digits=8) * scale + h_disp]
             HyperbolicPolygon.__init__(self, d_z_k + z_opo + r_z_k, "UHP", options)
 
     def _repr_(self):
@@ -170,7 +182,9 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
             sage: HyperbolicRegularPolygon(5,pi/2,I, {})
             Hyperbolic regular polygon (sides=5, i_angle=1/2*pi, center=1.00000000000000*I)
         """
-        return ("Hyperbolic regular polygon (sides={}, i_angle={}, center={})".format(self.sides, self.i_angle, self.center))
+        return "Hyperbolic regular polygon (sides={}, i_angle={}, center={})".format(
+            self.sides, self.i_angle, self.center
+        )
 
     def _i_rotation(self, z, alpha):
         r"""
@@ -201,9 +215,8 @@ class HyperbolicRegularPolygon(HyperbolicPolygon):
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, fill=False, thickness=1, rgbcolor='blue', zorder=2,
-         linestyle='solid')
-def hyperbolic_regular_polygon(sides, i_angle, center=CC(0,1), **options):
+@options(alpha=1, fill=False, thickness=1, rgbcolor='blue', zorder=2, linestyle='solid')
+def hyperbolic_regular_polygon(sides, i_angle, center=CC(0, 1), **options):
     r"""
     Return a hyperbolic regular polygon in the upper half model of
     Hyperbolic plane given the number of sides, interior angle and

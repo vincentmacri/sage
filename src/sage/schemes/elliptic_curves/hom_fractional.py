@@ -85,6 +85,7 @@ AUTHORS:
 
 - Lorenz Panny (2024)
 """
+
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
@@ -281,11 +282,12 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
             Q = t.inverse_mod(n) * self._phi._eval(P)
         else:
             ls = t.prime_divisors()
-            qs = [l**t.valuation(l) for l in ls]
-            ms = [l**n.valuation(l) for l in ls]
+            qs = [l ** t.valuation(l) for l in ls]
+            ms = [l ** n.valuation(l) for l in ls]
             ms[0] *= n.prime_to_m_part(t)
             Ts = [P]
             from sage.rings.generic import ProductTree
+
             for bas in ProductTree(ms).CRT_bases()[::-1]:
                 Ts = [k * T for (vec, T) in zip(bas, Ts) for k in vec]
             # now sum(Ts) == P and each T has the corresponding order m
@@ -318,9 +320,11 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
                          To:   Elliptic Curve defined by y^2 = x^3 + 9*x over Finite Field of size 13)
               Denominator: 2
         """
-        return f'Fractional elliptic-curve morphism of degree {self._degree}:' \
-            f'\n  Numerator:   {self._phi}' \
+        return (
+            f'Fractional elliptic-curve morphism of degree {self._degree}:'
+            f'\n  Numerator:   {self._phi}'
             f'\n  Denominator: {self._d}'
+        )
 
     @cached_method
     def to_isogeny_chain(self):
@@ -355,7 +359,7 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
             assert len(pts) == 2 or l == E.base_field().characteristic()
             if not pts:
                 # supersingular, hence [p] is the only p^2-isogeny up to isomorphism
-                insep += 2*self._d.valuation(l)
+                insep += 2 * self._d.valuation(l)
                 continue
             if len(pts) == 1:
                 # ordinary, hence [p] is Frobenius times its dual
@@ -367,26 +371,35 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
             if self.is_endomorphism():
                 RS = None
             else:
-                RS = self._codomain.change_ring(P.curve().base_field()).torsion_basis(l**e, extend=False)
+                RS = self._codomain.change_ring(P.curve().base_field()).torsion_basis(
+                    l**e, extend=False
+                )
 
             mat = self._phi.matrix_on_subgroup((P, Q), RS)
-            for row in filter(bool, self._d.p_primary_part(l) * mat.left_kernel_matrix()):
-                K = sum(ZZ(c)*T for c, T in zip(row, (P, Q)))
+            for row in filter(
+                bool, self._d.p_primary_part(l) * mat.left_kernel_matrix()
+            ):
+                K = sum(ZZ(c) * T for c, T in zip(row, (P, Q)))
                 K.set_order(multiple=l**e)
                 assert self._eval(K) == 0
                 ker.append(K)
 
-        from sage.schemes.elliptic_curves.hom_composite import EllipticCurveHom_composite
+        from sage.schemes.elliptic_curves.hom_composite import (
+            EllipticCurveHom_composite,
+        )
+
         chain = EllipticCurveHom_composite(E, [])
         ker = ker[::-1]
         while ker:
             if not (P := ker.pop()):
                 continue
-            (l, e), = P.order().factor()
-            K = l**(e-1)*P
+            ((l, e),) = P.order().factor()
+            K = l ** (e - 1) * P
             if e > 1:
                 ker.append(P)
-            poly = E.kernel_polynomial_from_point(K, algorithm='basic')  # FIXME algorithm='basic' is a workaround for #34907
+            poly = E.kernel_polynomial_from_point(
+                K, algorithm='basic'
+            )  # FIXME algorithm='basic' is a workaround for #34907
             step = E.isogeny(poly)
             chain = step * chain
             ker = [step._eval(T) for T in ker]
@@ -418,9 +431,12 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
               To:   Elliptic Curve defined by y^2 = x^3 + 418*x over Finite Field of size 419
         """
         from sage.schemes.elliptic_curves.hom_scalar import EllipticCurveHom_scalar
+
         if isinstance(left, EllipticCurveHom_scalar):
             left, right = right, left
-        if isinstance(left, EllipticCurveHom_fractional) and isinstance(right, EllipticCurveHom_scalar):
+        if isinstance(left, EllipticCurveHom_fractional) and isinstance(
+            right, EllipticCurveHom_scalar
+        ):
             r = right._m / left._d
             num, den = r.numerator(), r.denominator()
             if num.is_one():
@@ -451,7 +467,9 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
             sage: 1 - 2 * endo == pi
             False
         """
-        assert isinstance(left, EllipticCurveHom_fractional) or isinstance(right, EllipticCurveHom_fractional)
+        assert isinstance(left, EllipticCurveHom_fractional) or isinstance(
+            right, EllipticCurveHom_fractional
+        )
         if isinstance(left, EllipticCurveHom_fractional):
             right = left._d * right
             left = left._phi
@@ -571,4 +589,7 @@ class EllipticCurveHom_fractional(EllipticCurveHom):
             sage: ((3*pi - pi) / 2).inseparable_degree()
             419
         """
-        return self._phi.inseparable_degree() / self._domain.scalar_multiplication(self._d).inseparable_degree()
+        return (
+            self._phi.inseparable_degree()
+            / self._domain.scalar_multiplication(self._d).inseparable_degree()
+        )

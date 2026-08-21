@@ -63,7 +63,9 @@ from sage.functions.log import exp
 from sage.rings.real_mpfr import RealField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler
+from sage.stats.distributions.discrete_gaussian_integer import (
+    DiscreteGaussianDistributionIntegerSampler,
+)
 from sage.structure.sage_object import SageObject
 from sage.misc.cachefunc import cached_method
 from sage.misc.functional import sqrt
@@ -95,7 +97,9 @@ def _iter_vectors(n, lower, upper, step=None):
     """
     if step is None:
         if ZZ(lower) >= ZZ(upper):
-            raise ValueError("expected lower < upper, but got %d >= %d" % (lower, upper))
+            raise ValueError(
+                "expected lower < upper, but got %d >= %d" % (lower, upper)
+            )
         if ZZ(n) <= 0:
             raise ValueError("expected n>0 but got %d <= 0" % n)
         step = n
@@ -152,6 +156,7 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
     .. automethod:: __init__
     .. automethod:: __call__
     """
+
     @staticmethod
     def compute_precision(precision, sigma):
         r"""
@@ -276,6 +281,7 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             ...
             NotImplementedError: lattice must be integral
         """
+
         # If σ > 1:
         # We use the Fourier transform g(t) of f(x) = exp(-k^2 / 2σ^2), but
         # taking the norm of vector t^2 as input, and with norm_factor factored.
@@ -288,7 +294,7 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             # RR(1 + 100 * exp(-5.0 * pi^2)) == 0
 
             if sigma > 1:
-                return R(exp(-pi**2 * (2 * sigma**2) * x))
+                return R(exp(-(pi**2) * (2 * sigma**2) * x))
 
             return R(exp(-x / (2 * sigma**2)))
 
@@ -298,16 +304,20 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             # is essentially the same, but I can't figure out how to
             # tweak the `.qfrep` call below correctly.
             from warnings import warn
-            warn("Note: `_normalisation_factor_zz` has not been properly "
-                 "implemented for non-spherical distributions.")
+
+            warn(
+                "Note: `_normalisation_factor_zz` has not been properly "
+                "implemented for non-spherical distributions."
+            )
             import itertools
             from sage.functions.log import log
+
             basis = self.B.LLL()
             base = vector(ZZ, [v.round() for v in basis.solve_left(self._c)])
             # BOUND is the largest integer such that |coords| <= 10^4
             # However, this might still drift from true value for larger lattices
             # So optimally one should fix the TODO above
-            BOUND = max(1, (self._RR(10**(4 / self.n)).ceil() - 1) // 2)
+            BOUND = max(1, (self._RR(10 ** (4 / self.n)).ceil() - 1) // 2)
             BOUND = min(BOUND, 10)
             coords = itertools.product(range(-BOUND, BOUND + 1), repeat=self.n)
             return sum(self.f((vector(u) + base) * self.B) for u in coords)
@@ -319,16 +329,16 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             raise NotImplementedError("lattice must be integral")
 
         if self.is_spherical and not self._c_in_lattice_and_lattice_trivial:
-            raise NotImplementedError("center must be at zero and basis must be trivial")
+            raise NotImplementedError(
+                "center must be at zero and basis must be trivial"
+            )
 
         sigma = self._sigma
-        prec = DiscreteGaussianDistributionLatticeSampler.compute_precision(
-            prec, sigma
-        )
+        prec = DiscreteGaussianDistributionLatticeSampler.compute_precision(prec, sigma)
         R = RealField(prec=prec)
         if sigma > 1:
             det = self.B.det()
-            norm_factor = (sigma * sqrt(2 * pi))**self.n / det
+            norm_factor = (sigma * sqrt(2 * pi)) ** self.n / det
         else:
             det = 1
             norm_factor = 1
@@ -404,7 +414,9 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             sage: all(D._randomise([0, 0, 0]).norm() <= 16 for _ in range(100))
             True
         """
-        return vector(ZZ, [DiscreteGaussianDistributionIntegerSampler(self.r, c=vi)() for vi in v])
+        return vector(
+            ZZ, [DiscreteGaussianDistributionIntegerSampler(self.r, c=vi)() for vi in v]
+        )
 
     def __init__(self, B, sigma=1, c=0, r=None, precision=None, sigma_basis=False):
         r"""
@@ -550,7 +562,9 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             sage: D().parent() is D.c().parent()
             True
         """
-        precision = DiscreteGaussianDistributionLatticeSampler.compute_precision(precision, sigma)
+        precision = DiscreteGaussianDistributionLatticeSampler.compute_precision(
+            precision, sigma
+        )
 
         self._RR = RealField(precision)
         # Check if sigma is a (real) number or a scaled identity matrix
@@ -567,7 +581,9 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
                 if sigma_basis:
                     self._sigma = self._sigma * self._sigma.T
                 if not self._sigma.is_positive_definite():
-                    raise RuntimeError(f"Sigma(={self._sigma}) is not positive definite")
+                    raise RuntimeError(
+                        f"Sigma(={self._sigma}) is not positive definite"
+                    )
                 self.is_spherical = False
 
         # TODO: Support taking a basis for the covariance
@@ -630,7 +646,9 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
                     D = []
                     for i in range(self.B.nrows()):
                         sigma_ = self._sigma / self._G[i].norm()
-                        D.append(DiscreteGaussianDistributionIntegerSampler(sigma=sigma_))
+                        D.append(
+                            DiscreteGaussianDistributionIntegerSampler(sigma=sigma_)
+                        )
                     self.D = tuple(D)
                     self.VS = FreeModule(ZZ, self.B.nrows())
         else:
@@ -651,13 +669,17 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
 
             Sigma2 = self._sigma - self.r**2 * self.Q
             try:
-                verbose(f"Computing Cholesky decomposition of a {Sigma2.dimensions()} matrix")
+                verbose(
+                    f"Computing Cholesky decomposition of a {Sigma2.dimensions()} matrix"
+                )
                 self.B2 = Sigma2.cholesky().T
                 self.B2_B_inv = self.B2 * self.B_inv
             except ValueError:
-                raise ValueError("Σ₂ is not positive definite. Is your "
-                                 f"r(={self.r}) too large? It should be at most "
-                                 f"{self._maximal_r()}")
+                raise ValueError(
+                    "Σ₂ is not positive definite. Is your "
+                    f"r(={self.r}) too large? It should be at most "
+                    f"{self._maximal_r()}"
+                )
 
     def __call__(self):
         r"""
@@ -717,7 +739,7 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
                 x = vector(self._RR, self.n, x)
         x -= self._c
         if self.is_spherical:
-            return exp(-x.norm() ** 2 / (2 * self._sigma**2))
+            return exp(-(x.norm() ** 2) / (2 * self._sigma**2))
         return exp(-x * self.sigma_inv * x / 2)
 
     def sigma(self):
@@ -866,7 +888,9 @@ class DiscreteGaussianDistributionLatticeSampler(SageObject):
             c_ = c.dot_product(b_) / b_.dot_product(b_)
             sigma_ = sigma / b_.norm()
             assert sigma_ > 0
-            z = DiscreteGaussianDistributionIntegerSampler(sigma=sigma_, c=c_, algorithm='uniform+online')()
+            z = DiscreteGaussianDistributionIntegerSampler(
+                sigma=sigma_, c=c_, algorithm='uniform+online'
+            )()
             c = c - z * B[i]
             v = v + z * B[i]
         return v

@@ -59,7 +59,7 @@ def _calc_factlist(nn):
     if nn >= len(_Factlist):
         for ii in range(len(_Factlist), nn + 1):
             _Factlist.append(_Factlist[ii - 1] * ii)
-    return _Factlist[:Integer(nn) + 1]
+    return _Factlist[: Integer(nn) + 1]
 
 
 def wigner_3j(j_1, j_2, j_3, m_1, m_2, m_3, prec=None):
@@ -146,11 +146,9 @@ def wigner_3j(j_1, j_2, j_3, m_1, m_2, m_3, prec=None):
 
     - Jens Rasch (2009-03-24): initial version
     """
-    if int(j_1 * 2) != j_1 * 2 or int(j_2 * 2) != j_2 * 2 or \
-            int(j_3 * 2) != j_3 * 2:
+    if int(j_1 * 2) != j_1 * 2 or int(j_2 * 2) != j_2 * 2 or int(j_3 * 2) != j_3 * 2:
         raise ValueError("j values must be integer or half integer")
-    if int(m_1 * 2) != m_1 * 2 or int(m_2 * 2) != m_2 * 2 or \
-            int(m_3 * 2) != m_3 * 2:
+    if int(m_1 * 2) != m_1 * 2 or int(m_2 * 2) != m_2 * 2 or int(m_3 * 2) != m_3 * 2:
         raise ValueError("m values must be integer or half integer")
     if m_1 + m_2 + m_3 != 0:
         return 0
@@ -168,22 +166,23 @@ def wigner_3j(j_1, j_2, j_3, m_1, m_2, m_3, prec=None):
     if (abs(m_1) > j_1) or (abs(m_2) > j_2) or (abs(m_3) > j_3):
         return 0
 
-    maxfact = max(j_1 + j_2 + j_3 + 1,
-                  j_1 + abs(m_1),
-                  j_2 + abs(m_2),
-                  j_3 + abs(m_3))
+    maxfact = max(j_1 + j_2 + j_3 + 1, j_1 + abs(m_1), j_2 + abs(m_2), j_3 + abs(m_3))
     _calc_factlist(maxfact)
 
-    argsqrt = Integer(_Factlist[int(j_1 + j_2 - j_3)] *
-                      _Factlist[int(j_1 - j_2 + j_3)] *
-                      _Factlist[int(-j_1 + j_2 + j_3)] *
-                      _Factlist[int(j_1 - m_1)] *
-                      _Factlist[int(j_1 + m_1)] *
-                      _Factlist[int(j_2 - m_2)] *
-                      _Factlist[int(j_2 + m_2)] *
-                      _Factlist[int(j_3 - m_3)] *
-                      _Factlist[int(j_3 + m_3)]) / \
-                          _Factlist[int(j_1 + j_2 + j_3 + 1)]
+    argsqrt = (
+        Integer(
+            _Factlist[int(j_1 + j_2 - j_3)]
+            * _Factlist[int(j_1 - j_2 + j_3)]
+            * _Factlist[int(-j_1 + j_2 + j_3)]
+            * _Factlist[int(j_1 - m_1)]
+            * _Factlist[int(j_1 + m_1)]
+            * _Factlist[int(j_2 - m_2)]
+            * _Factlist[int(j_2 + m_2)]
+            * _Factlist[int(j_3 - m_3)]
+            * _Factlist[int(j_3 + m_3)]
+        )
+        / _Factlist[int(j_1 + j_2 + j_3 + 1)]
+    )
 
     ressqrt = argsqrt.sqrt(prec)
     if isinstance(ressqrt, ComplexNumber):
@@ -193,12 +192,14 @@ def wigner_3j(j_1, j_2, j_3, m_1, m_2, m_3, prec=None):
     imax = int(min(j_2 + m_2, j_1 - m_1, j_1 + j_2 - j_3))
     sumres = 0
     for ii in range(imin, imax + 1):
-        den = _Factlist[ii] * \
-            _Factlist[int(ii + j_3 - j_1 - m_2)] * \
-            _Factlist[int(j_2 + m_2 - ii)] * \
-            _Factlist[int(j_1 - ii - m_1)] * \
-            _Factlist[int(ii + j_3 - j_2 + m_1)] * \
-            _Factlist[int(j_1 + j_2 - j_3 - ii)]
+        den = (
+            _Factlist[ii]
+            * _Factlist[int(ii + j_3 - j_1 - m_2)]
+            * _Factlist[int(j_2 + m_2 - ii)]
+            * _Factlist[int(j_1 - ii - m_1)]
+            * _Factlist[int(ii + j_3 - j_2 + m_1)]
+            * _Factlist[int(j_1 + j_2 - j_3 - ii)]
+        )
         sumres = sumres + Integer((-1) ** ii) / den
 
     return ressqrt * sumres * prefid
@@ -250,8 +251,11 @@ def clebsch_gordan(j_1, j_2, j_3, m_1, m_2, m_3, prec=None):
 
     - Jens Rasch (2009-03-24): initial version
     """
-    return (-1) ** int(j_1 - j_2 + m_3) * (2 * j_3 + 1).sqrt(prec) * \
-        wigner_3j(j_1, j_2, j_3, m_1, m_2, -m_3, prec)
+    return (
+        (-1) ** int(j_1 - j_2 + m_3)
+        * (2 * j_3 + 1).sqrt(prec)
+        * wigner_3j(j_1, j_2, j_3, m_1, m_2, -m_3, prec)
+    )
 
 
 def _big_delta_coeff(aa, bb, cc, prec=None):
@@ -279,11 +283,17 @@ def _big_delta_coeff(aa, bb, cc, prec=None):
         1/2*sqrt(1/6)
     """
     if int(aa + bb - cc) != (aa + bb - cc):
-        raise ValueError("j values must be integer or half integer and fulfill the triangle relation")
+        raise ValueError(
+            "j values must be integer or half integer and fulfill the triangle relation"
+        )
     if int(aa + cc - bb) != (aa + cc - bb):
-        raise ValueError("j values must be integer or half integer and fulfill the triangle relation")
+        raise ValueError(
+            "j values must be integer or half integer and fulfill the triangle relation"
+        )
     if int(bb + cc - aa) != (bb + cc - aa):
-        raise ValueError("j values must be integer or half integer and fulfill the triangle relation")
+        raise ValueError(
+            "j values must be integer or half integer and fulfill the triangle relation"
+        )
     if (aa + bb - cc) < 0:
         return 0
     if (aa + cc - bb) < 0:
@@ -294,10 +304,11 @@ def _big_delta_coeff(aa, bb, cc, prec=None):
     maxfact = max(aa + bb - cc, aa + cc - bb, bb + cc - aa, aa + bb + cc + 1)
     _calc_factlist(maxfact)
 
-    argsqrt = Integer(_Factlist[int(aa + bb - cc)] *
-                      _Factlist[int(aa + cc - bb)] *
-                      _Factlist[int(bb + cc - aa)]) /\
-                      Integer(_Factlist[int(aa + bb + cc + 1)])
+    argsqrt = Integer(
+        _Factlist[int(aa + bb - cc)]
+        * _Factlist[int(aa + cc - bb)]
+        * _Factlist[int(bb + cc - aa)]
+    ) / Integer(_Factlist[int(aa + bb + cc + 1)])
 
     ressqrt = argsqrt.sqrt(prec)
     if isinstance(ressqrt, ComplexNumber):
@@ -352,28 +363,31 @@ def racah(aa, bb, cc, dd, ee, ff, prec=None):
 
     - Jens Rasch (2009-03-24): initial version
     """
-    prefac = _big_delta_coeff(aa, bb, ee, prec) * \
-        _big_delta_coeff(cc, dd, ee, prec) * \
-        _big_delta_coeff(aa, cc, ff, prec) * \
-        _big_delta_coeff(bb, dd, ff, prec)
+    prefac = (
+        _big_delta_coeff(aa, bb, ee, prec)
+        * _big_delta_coeff(cc, dd, ee, prec)
+        * _big_delta_coeff(aa, cc, ff, prec)
+        * _big_delta_coeff(bb, dd, ff, prec)
+    )
     if prefac == 0:
         return 0
     imin = int(max(aa + bb + ee, cc + dd + ee, aa + cc + ff, bb + dd + ff))
     imax = int(min(aa + bb + cc + dd, aa + dd + ee + ff, bb + cc + ee + ff))
 
-    maxfact = max(imax + 1, aa + bb + cc + dd, aa + dd + ee + ff,
-                  bb + cc + ee + ff)
+    maxfact = max(imax + 1, aa + bb + cc + dd, aa + dd + ee + ff, bb + cc + ee + ff)
     _calc_factlist(maxfact)
 
     sumres = 0
     for kk in range(imin, imax + 1):
-        den = _Factlist[int(kk - aa - bb - ee)] * \
-            _Factlist[int(kk - cc - dd - ee)] * \
-            _Factlist[int(kk - aa - cc - ff)] * \
-            _Factlist[int(kk - bb - dd - ff)] * \
-            _Factlist[int(aa + bb + cc + dd - kk)] * \
-            _Factlist[int(aa + dd + ee + ff - kk)] * \
-            _Factlist[int(bb + cc + ee + ff - kk)]
+        den = (
+            _Factlist[int(kk - aa - bb - ee)]
+            * _Factlist[int(kk - cc - dd - ee)]
+            * _Factlist[int(kk - aa - cc - ff)]
+            * _Factlist[int(kk - bb - dd - ff)]
+            * _Factlist[int(aa + bb + cc + dd - kk)]
+            * _Factlist[int(aa + dd + ee + ff - kk)]
+            * _Factlist[int(bb + cc + ee + ff - kk)]
+        )
         sumres = sumres + Integer((-1) ** kk * _Factlist[kk + 1]) / den
 
     res = prefac * sumres * (-1) ** int(aa + bb + cc + dd)
@@ -471,8 +485,7 @@ def wigner_6j(j_1, j_2, j_3, j_4, j_5, j_6, prec=None):
     for finite precision arithmetic and only useful for a computer
     algebra system [RH2003]_.
     """
-    res = (-1) ** int(j_1 + j_2 + j_4 + j_5) * \
-        racah(j_1, j_2, j_5, j_4, j_3, j_6, prec)
+    res = (-1) ** int(j_1 + j_2 + j_4 + j_5) * racah(j_1, j_2, j_5, j_4, j_3, j_6, prec)
     return res
 
 
@@ -549,10 +562,11 @@ def wigner_9j(j_1, j_2, j_3, j_4, j_5, j_6, j_7, j_8, j_9, prec=None):
 
     sumres = 0
     for kk in range(imin, imax + 1):
-        sumres = sumres + (2 * kk + 1) * \
-            racah(j_1, j_2, j_9, j_6, j_3, kk, prec) * \
-            racah(j_4, j_6, j_8, j_2, j_5, kk, prec) * \
-            racah(j_1, j_4, j_9, j_8, j_7, kk, prec)
+        sumres = sumres + (2 * kk + 1) * racah(
+            j_1, j_2, j_9, j_6, j_3, kk, prec
+        ) * racah(j_4, j_6, j_8, j_2, j_5, kk, prec) * racah(
+            j_1, j_4, j_9, j_8, j_7, kk, prec
+        )
     return sumres
 
 
@@ -701,22 +715,41 @@ def gaunt(l_1, l_2, l_3, m_1, m_2, m_3, prec=None):
     maxfact = max(l_1 + l_2 + l_3 + 1, imax + 1)
     _calc_factlist(maxfact)
 
-    argsqrt = (2 * l_1 + 1) * (2 * l_2 + 1) * (2 * l_3 + 1) * \
-        _Factlist[l_1 - m_1] * _Factlist[l_1 + m_1] * _Factlist[l_2 - m_2] * \
-        _Factlist[l_2 + m_2] * _Factlist[l_3 - m_3] * _Factlist[l_3 + m_3] / \
-        (4*pi)
+    argsqrt = (
+        (2 * l_1 + 1)
+        * (2 * l_2 + 1)
+        * (2 * l_3 + 1)
+        * _Factlist[l_1 - m_1]
+        * _Factlist[l_1 + m_1]
+        * _Factlist[l_2 - m_2]
+        * _Factlist[l_2 + m_2]
+        * _Factlist[l_3 - m_3]
+        * _Factlist[l_3 + m_3]
+        / (4 * pi)
+    )
     ressqrt = argsqrt.sqrt()
 
-    prefac = Integer(_Factlist[bigL] * _Factlist[l_2 - l_1 + l_3] *
-                     _Factlist[l_1 - l_2 + l_3] * _Factlist[l_1 + l_2 - l_3]) / \
-                     _Factlist[2 * bigL + 1] / \
-                     (_Factlist[bigL - l_1] * _Factlist[bigL - l_2] * _Factlist[bigL - l_3])
+    prefac = (
+        Integer(
+            _Factlist[bigL]
+            * _Factlist[l_2 - l_1 + l_3]
+            * _Factlist[l_1 - l_2 + l_3]
+            * _Factlist[l_1 + l_2 - l_3]
+        )
+        / _Factlist[2 * bigL + 1]
+        / (_Factlist[bigL - l_1] * _Factlist[bigL - l_2] * _Factlist[bigL - l_3])
+    )
 
     sumres = 0
     for ii in range(imin, imax + 1):
-        den = _Factlist[ii] * _Factlist[ii + l_3 - l_1 - m_2] * \
-            _Factlist[l_2 + m_2 - ii] * _Factlist[l_1 - ii - m_1] * \
-            _Factlist[ii + l_3 - l_2 + m_1] * _Factlist[l_1 + l_2 - l_3 - ii]
+        den = (
+            _Factlist[ii]
+            * _Factlist[ii + l_3 - l_1 - m_2]
+            * _Factlist[l_2 + m_2 - ii]
+            * _Factlist[l_1 - ii - m_1]
+            * _Factlist[ii + l_3 - l_2 + m_1]
+            * _Factlist[l_1 + l_2 - l_3 - ii]
+        )
         sumres = sumres + Integer((-1) ** ii) / den
 
     res = ressqrt * prefac * sumres * (-1) ** (bigL + l_3 + m_1 - m_2)

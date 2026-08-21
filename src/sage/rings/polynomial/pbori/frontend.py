@@ -34,7 +34,6 @@ EXAMPLES::
     a
 """
 
-
 from sage.rings.polynomial.pbori.blocks import declare_ring as orig_declare_ring
 from sage.rings.polynomial.pbori.pbori import VariableFactory
 from sage.rings.polynomial.pbori.PyPolyBoRi import Ring
@@ -46,6 +45,7 @@ def block_scheme_names(blocks):
     """
     context = {}
     from .blocks import declare_block_scheme
+
     declare_block_scheme(blocks, context)
 
     return list(context.keys())
@@ -60,11 +60,16 @@ def polybori_start(global_context):
             context = global_context
 
         return orig_declare_ring(blocks, context)
+
     declare_ring.__doc__ = orig_declare_ring.__doc__
     global_context["declare_ring"] = declare_ring
 
-    print(ipbname + """ -- The interactive command line tool of PolyBoRi/BRiAL %s
-""" % global_context.get("polybori_version", ''))
+    print(
+        ipbname
+        + """ -- The interactive command line tool of PolyBoRi/BRiAL %s
+"""
+        % global_context.get("polybori_version", '')
+    )
 
 
 # Here come the defaults

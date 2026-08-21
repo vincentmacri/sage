@@ -16,7 +16,9 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
+from sage.algebras.lie_algebras.structure_coefficients import (
+    LieAlgebraWithStructureCoefficients,
+)
 from sage.categories.lie_algebras import LieAlgebras
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.global_options import GlobalOptions
@@ -71,8 +73,9 @@ class NilpotentLieAlgebra_dense(LieAlgebraWithStructureCoefficients):
     """
 
     @staticmethod
-    def __classcall_private__(cls, R, s_coeff, names=None, index_set=None,
-                              category=None, **kwds):
+    def __classcall_private__(
+        cls, R, s_coeff, names=None, index_set=None, category=None, **kwds
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -124,15 +127,18 @@ class NilpotentLieAlgebra_dense(LieAlgebraWithStructureCoefficients):
                         names.append(k)
 
         from sage.structure.indexed_generators import standardize_names_index_set
+
         names, index_set = standardize_names_index_set(names, index_set)
         s_coeff = LieAlgebraWithStructureCoefficients._standardize_s_coeff(
-            s_coeff, index_set)
+            s_coeff, index_set
+        )
 
         cat = LieAlgebras(R).FiniteDimensional().WithBasis().Nilpotent()
         category = cat.or_subcategory(category)
 
-        return super().__classcall__(cls, R, s_coeff, names,
-                                     index_set, category=category, **kwds)
+        return super().__classcall__(
+            cls, R, s_coeff, names, index_set, category=category, **kwds
+        )
 
     def __init__(self, R, s_coeff, names, index_set, step=None, **kwds) -> None:
         r"""
@@ -146,9 +152,9 @@ class NilpotentLieAlgebra_dense(LieAlgebraWithStructureCoefficients):
         if step is not None:
             self._step = step
 
-        LieAlgebraWithStructureCoefficients.__init__(self, R, s_coeff,
-                                                     names, index_set,
-                                                     **kwds)
+        LieAlgebraWithStructureCoefficients.__init__(
+            self, R, s_coeff, names, index_set, **kwds
+        )
 
     def _repr_(self) -> str:
         """
@@ -327,8 +333,11 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
         sage: len(set(repr(b) for b in L.basis())) == L.dimension()
         True
     """
+
     @staticmethod
-    def __classcall_private__(cls, R, r, s, names=None, naming='index', category=None, **kwds):
+    def __classcall_private__(
+        cls, R, r, s, names=None, naming='index', category=None, **kwds
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -347,8 +356,8 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
         category = cat.Graded().Stratified().or_subcategory(category)
 
         return super().__classcall__(
-            cls, R, r, s, names=tuple(names), naming=naming,
-            category=category, **kwds)
+            cls, R, r, s, names=tuple(names), naming=naming, category=category, **kwds
+        )
 
     def __init__(self, R, r, s, names, naming, category, **kwds) -> None:
         r"""
@@ -363,8 +372,7 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
             sage: TestSuite(L).run()  # long time
         """
         if r not in ZZ or r <= 0:
-            raise ValueError("number of generators %s is not "
-                             "a positive integer" % r)
+            raise ValueError("number of generators %s is not a positive integer" % r)
         if s not in ZZ or s <= 0:
             raise ValueError("step %s is not a positive integer" % s)
 
@@ -380,21 +388,26 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
         for d in range(1, s + 1):
             for X in L.graded_basis(d):
                 # convert brackets of form [X_1, [X_1, X_2]] to words (1,1,2)
-                w = tuple(free_gen_names_inv[s]
-                          for s in X.leading_support().to_word())
+                w = tuple(free_gen_names_inv[s] for s in X.leading_support().to_word())
                 basis_by_deg[d].append((w, X))
 
         index_set = [ind for d in basis_by_deg for ind, val in basis_by_deg[d]]
 
         if len(names) == 1 and len(index_set) > 1:
             if naming == 'linear':
-                names = ['%s_%d' % (names[0], k + 1)
-                         for k in range(len(index_set))]
+                names = ['%s_%d' % (names[0], k + 1) for k in range(len(index_set))]
             elif naming == 'index':
                 if r < 10:
                     let = repr
                 elif r <= 16:
-                    hexdata = [repr(i) for i in range(10)] + ['a','b','c','d','e','f']
+                    hexdata = [repr(i) for i in range(10)] + [
+                        'a',
+                        'b',
+                        'c',
+                        'd',
+                        'e',
+                        'f',
+                    ]
 
                     def let(i):
                         return hexdata[i]
@@ -403,9 +416,12 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
 
                     def let(i):
                         ret = repr(i)
-                        return '0'*(rlen-len(ret)) + ret
-                names = ['%s_%s' % (names[0], "".join(let(s) for s in ind))
-                         for ind in index_set]
+                        return '0' * (rlen - len(ret)) + ret
+
+                names = [
+                    '%s_%s' % (names[0], "".join(let(s) for s in ind))
+                    for ind in index_set
+                ]
             else:
                 raise ValueError("unknown naming scheme %s" % naming)
 
@@ -418,27 +434,32 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
                 if dx == dy:
                     for i, val in enumerate(basis_by_deg[dx]):
                         X_ind, X = val
-                        for Y_ind, Y in basis_by_deg[dy][i + 1:]:
+                        for Y_ind, Y in basis_by_deg[dy][i + 1 :]:
                             Z = L[X, Y]
                             if not Z.is_zero():
-                                s_coeff[(X_ind, Y_ind)] = {W_ind: Z[W.leading_support()]
-                                                           for W_ind, W in basis_by_deg[dx + dy]}
+                                s_coeff[(X_ind, Y_ind)] = {
+                                    W_ind: Z[W.leading_support()]
+                                    for W_ind, W in basis_by_deg[dx + dy]
+                                }
                 else:
                     for X_ind, X in basis_by_deg[dx]:
                         for Y_ind, Y in basis_by_deg[dy]:
                             Z = L[X, Y]
                             if not Z.is_zero():
-                                s_coeff[(X_ind, Y_ind)] = {W_ind: Z[W.leading_support()]
-                                                           for W_ind, W in basis_by_deg[dx + dy]}
+                                s_coeff[(X_ind, Y_ind)] = {
+                                    W_ind: Z[W.leading_support()]
+                                    for W_ind, W in basis_by_deg[dx + dy]
+                                }
 
         names, index_set = standardize_names_index_set(names, index_set)
         s_coeff = LieAlgebraWithStructureCoefficients._standardize_s_coeff(
-            s_coeff, index_set)
+            s_coeff, index_set
+        )
 
         self._rank = r
-        NilpotentLieAlgebra_dense.__init__(self, R, s_coeff, names,
-                                           index_set, s,
-                                           category=category, **kwds)
+        NilpotentLieAlgebra_dense.__init__(
+            self, R, s_coeff, names, index_set, s, category=category, **kwds
+        )
 
     class options(GlobalOptions):
         r"""
@@ -461,13 +482,18 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
              + [[[X_1, X_2], X_2], X_2]
             sage: L.options._reset()
         """
+
         NAME = 'FreeNilpotentLieAlgebra'
         module = 'sage.algebras.lie_algebras.nilpotent_lie_algebra'
-        display = dict(default='variables',
-                     description='Controls the way elements are printed',
-                     values=dict(variables='print basis elements as variables',
-                                 brackets='print basis elements as brackets'),
-                     case_sensitive=False)
+        display = dict(
+            default='variables',
+            description='Controls the way elements are printed',
+            values=dict(
+                variables='print basis elements as variables',
+                brackets='print basis elements as brackets',
+            ),
+            case_sensitive=False,
+        )
 
     def _repr_generator(self, w, use_latex=False) -> str:
         r"""
@@ -505,9 +531,10 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
             ret = self.variable_names()[i]
             if use_latex:
                 from sage.misc.latex import latex
+
                 ind = ret.find("_")
                 if ind != -1:
-                    ret = ret[:ind] + "_{{{}}}".format(latex(ret[ind+1:]))
+                    ret = ret[:ind] + "_{{{}}}".format(latex(ret[ind + 1 :]))
             return ret
 
         basis = self.basis()
@@ -524,6 +551,7 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
 
         if use_latex:
             from sage.misc.latex import latex
+
             return latex(standard_bracket(w))
         return repr(standard_bracket(w))
 
@@ -569,7 +597,8 @@ class FreeNilpotentLieAlgebra(NilpotentLieAlgebra_dense):
             Free Nilpotent Lie algebra of rank 2 and step 5 over Rational Field
         """
         return "Free Nilpotent Lie algebra of rank {} and step {} over {}".format(
-            self._rank, self._step, self.base_ring())
+            self._rank, self._step, self.base_ring()
+        )
 
     def degree_on_basis(self, w) -> int:
         r"""

@@ -188,8 +188,9 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
     Element = DrinfeldModularFormsElement
 
     @staticmethod
-    def __classcall_private__(cls, base_ring, rank=None, group=None,
-                              has_type=False, names=None):
+    def __classcall_private__(
+        cls, base_ring, rank=None, group=None, has_type=False, names=None
+    ):
         r"""
         Check input validity and return a ``DrinfeldModularForms``
         object.
@@ -263,11 +264,11 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
             TypeError: rank or names must be specified
         """
         if not isinstance(base_ring, FractionField_generic):
-            raise TypeError("base ring must be a fraction field of a "
-                            "polynomial ring")
+            raise TypeError("base ring must be a fraction field of a polynomial ring")
         if not isinstance(base_ring.base(), PolynomialRing_generic):
-            raise NotImplementedError("Drinfeld modular forms are currently "
-                                      "only implemented for A = Fq[T]")
+            raise NotImplementedError(
+                "Drinfeld modular forms are currently only implemented for A = Fq[T]"
+            )
         if not base_ring.characteristic():
             raise ValueError("base ring characteristic must be finite")
         if not base_ring.base().base().is_field():
@@ -275,9 +276,11 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
         if not base_ring.base().base().is_finite():
             raise ValueError("the ring of constants must be finite")
         if group is not None:  # placeholder
-            raise NotImplementedError("Drinfeld modular forms are currently "
-                                      "only implemented for the full group")
-        if names is None: # default names
+            raise NotImplementedError(
+                "Drinfeld modular forms are currently "
+                "only implemented for the full group"
+            )
+        if names is None:  # default names
             if rank is None:
                 raise TypeError("rank or names must be specified")
             rank = ZZ(rank)  # check the type of rank
@@ -296,13 +299,15 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
                     g = names[0]
                     names = [f'{g}{i}' for i in range(1, rank + 1)]
                 elif nb_names != rank:
-                    raise ValueError(f"the number of generators (={nb_names}) "
-                                     f"must be equal to the rank (={rank})")
+                    raise ValueError(
+                        f"the number of generators (={nb_names}) "
+                        f"must be equal to the rank (={rank})"
+                    )
         else:
-            raise TypeError("names must be None, a comma separated string "
-                            "or a list of string")
-        return cls.__classcall__(cls, base_ring, rank, group, has_type,
-                                 tuple(names))
+            raise TypeError(
+                "names must be None, a comma separated string or a list of string"
+            )
+        return cls.__classcall__(cls, base_ring, rank, group, has_type, tuple(names))
 
     def __init__(self, base_ring, rank, group, has_type, names):
         r"""
@@ -334,8 +339,9 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
             degs.append((q**rank - 1) / (q - 1))
         else:
             degs = [q**i - 1 for i in range(1, rank + 1, 1)]
-        self._poly_ring = PolynomialRing(base_ring, rank, names=names,
-                                         order=TermOrder('wdeglex', degs))
+        self._poly_ring = PolynomialRing(
+            base_ring, rank, names=names, order=TermOrder('wdeglex', degs)
+        )
         self._assign_names(names)
         cat = GradedAlgebras(base_ring).Commutative()
         super().__init__(base=base_ring, category=cat)
@@ -367,8 +373,10 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
             sage: M._repr_()
             'Ring of Drinfeld modular forms of rank 3 over Fraction Field of Univariate Polynomial Ring in T over Finite Field of size 2 (using GF2X)'
         """
-        return ("Ring of Drinfeld modular forms of rank %s over %s"
-                % (self._rank, self._base_ring))
+        return "Ring of Drinfeld modular forms of rank %s over %s" % (
+            self._rank,
+            self._base_ring,
+        )
 
     def _generator_coefficient_form(self, i):
         r"""
@@ -402,7 +410,7 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
         """
         if self._has_type and i == self.rank():
             q = self._base_ring.base_ring().cardinality()
-            return self.gen(i-1)**(q - 1)
+            return self.gen(i - 1) ** (q - 1)
         return self.gen(i - 1)
 
     def _coefficient_forms(self, a):
@@ -438,12 +446,18 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
         gen.extend(poly_ring_gens)
         ore_pol_ring = OrePolynomialRing(poly_ring, Frob, 't')
         gen = ore_pol_ring(gen)
-        f = sum(c*(gen**idx) for idx, c in enumerate(a.coefficients(sparse=False)))
+        f = sum(c * (gen**idx) for idx, c in enumerate(a.coefficients(sparse=False)))
         coeff_forms = []
-        for i in range(1, a.degree()*self.rank()+1):
+        for i in range(1, a.degree() * self.rank() + 1):
             form = f[i]
-            coeff_forms.append(form.subs({g: self._generator_coefficient_form(j+1)
-                                          for j, g in enumerate(poly_ring_gens)}))
+            coeff_forms.append(
+                form.subs(
+                    {
+                        g: self._generator_coefficient_form(j + 1)
+                        for j, g in enumerate(poly_ring_gens)
+                    }
+                )
+            )
         return coeff_forms
 
     def coefficient_form(self, i, a=None):
@@ -516,8 +530,9 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
         i = ZZ(i)
         if a is None:
             if i < 1 or i > self.rank():
-                raise ValueError(f"index (={i}) must be >= 1 and <= rank "
-                                 f"(={self.rank()})")
+                raise ValueError(
+                    f"index (={i}) must be >= 1 and <= rank (={self.rank()})"
+                )
             return self._generator_coefficient_form(i)
         try:
             A = self._base_ring.base()
@@ -526,9 +541,11 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
             raise TypeError("unable to convert a to an element in Fq[T]")
         except ValueError:
             raise ValueError("a must be an integral element")
-        if i < 1 or i > a.degree()*self.rank():
-            raise ValueError(f"index (={i}) must be >= 1 and <= deg(a)*rank "
-                             f"(={a.degree()*self.rank()})")
+        if i < 1 or i > a.degree() * self.rank():
+            raise ValueError(
+                f"index (={i}) must be >= 1 and <= deg(a)*rank "
+                f"(={a.degree() * self.rank()})"
+            )
         coeff_forms = self._coefficient_forms(a)
         return coeff_forms[i - 1]
 
@@ -582,8 +599,9 @@ class DrinfeldModularForms(Parent, UniqueRepresentation):
             TypeError: unable to convert a to an element in Fq[T]
         """
         if a is None:
-            return [self._generator_coefficient_form(i)
-                    for i in range(1, self.rank() + 1)]
+            return [
+                self._generator_coefficient_form(i) for i in range(1, self.rank() + 1)
+            ]
         try:
             A = self._base_ring.base()
             a = A(a)

@@ -15,6 +15,7 @@ Features for testing the presence of ``tdlib``
 from sage.config import tdlib_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Tdlib(BuildModule):
     r"""
     A :class:`~sage.features.Feature` describing the presence of
@@ -38,6 +39,7 @@ class Tdlib(BuildModule):
         FeatureTestResult('tdlib', True)
 
     """
+
     _enabled_in_build = tdlib_enabled
 
     def __init__(self):

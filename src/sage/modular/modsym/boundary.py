@@ -88,7 +88,6 @@ REFERENCES:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 import sage.modular.arithgroup.all as arithgroup
 import sage.modular.hecke.all as hecke
 from sage.categories.rings import Rings
@@ -166,8 +165,12 @@ class BoundarySpaceElement(hecke.HeckeModuleElement):
             sage: (-6*ModularSymbols(Gamma0(11), 2).boundary_space()(Cusp(0)))._repr_()
             '-6*[0]'
         """
-        return repr_lincomb([('[' + repr(self.parent()._known_gens[i]) + ']', c)
-                             for i, c in sorted(self.__x.items())])
+        return repr_lincomb(
+            [
+                ('[' + repr(self.parent()._known_gens[i]) + ']', c)
+                for i, c in sorted(self.__x.items())
+            ]
+        )
 
     # can't inherit arithmetic operations from HeckeModule, because basis
     # dimension might change!
@@ -274,12 +277,9 @@ class BoundarySpaceElement(hecke.HeckeModuleElement):
 
 @richcmp_method
 class BoundarySpace(hecke.HeckeModule_generic):
-    def __init__(self,
-                 group=arithgroup.Gamma0(1),
-                 weight=2,
-                 sign=0,
-                 base_ring=QQ,
-                 character=None):
+    def __init__(
+        self, group=arithgroup.Gamma0(1), weight=2, sign=0, base_ring=QQ, character=None
+    ):
         """
         Space of boundary symbols for a congruence subgroup of SL_2(Z).
 
@@ -315,9 +315,13 @@ class BoundarySpace(hecke.HeckeModule_generic):
             raise TypeError("base_ring must be a commutative ring")
         if character is None and isinstance(group, arithgroup.Gamma0_class):
             character = dirichlet.TrivialCharacter(group.level(), base_ring)
-        (self.__group, self.__weight, self.__character,
-         self.__sign, self.__base_ring) = (group, weight,
-                                           character, sign, base_ring)
+        (
+            self.__group,
+            self.__weight,
+            self.__character,
+            self.__sign,
+            self.__base_ring,
+        ) = (group, weight, character, sign, base_ring)
         self._known_gens = []
         self._zero_cusps = []
         hecke.HeckeModule_generic.__init__(self, base_ring, group.level())
@@ -336,9 +340,11 @@ class BoundarySpace(hecke.HeckeModule_generic):
         if type(self) is not type(other):
             return NotImplemented
 
-        return richcmp((self.group(), self.weight(), self.character()),
-                       (other.group(), other.weight(), other.character()),
-                       op)
+        return richcmp(
+            (self.group(), self.weight(), self.character()),
+            (other.group(), other.weight(), other.character()),
+            op,
+        )
 
     def _known_cusps(self) -> list:
         """
@@ -436,7 +442,9 @@ class BoundarySpace(hecke.HeckeModule_generic):
             [1/3]
         """
         if i >= len(self._known_gens) or i < 0:
-            raise ValueError("only %s generators known for %s" % (len(self._known_gens), self))
+            raise ValueError(
+                "only %s generators known for %s" % (len(self._known_gens), self)
+            )
         return BoundarySpaceElement(self, {i: 1})
 
     def free_module(self):
@@ -451,7 +459,9 @@ class BoundarySpace(hecke.HeckeModule_generic):
             sage: x = B(Cusp(0)) ; y = B(Cusp(1/7)) ; B.free_module()
             Sparse vector space of dimension 1 over Rational Field
         """
-        return free_module.FreeModule(self.__base_ring, len(self._known_gens), sparse=True)
+        return free_module.FreeModule(
+            self.__base_ring, len(self._known_gens), sparse=True
+        )
 
     def rank(self):
         """
@@ -537,6 +547,7 @@ class BoundarySpace(hecke.HeckeModule_generic):
             TypeError: Coercion of 7 (of type <class 'sage.rings.integer.Integer'>) into Space of Boundary Modular Symbols for Congruence Subgroup Gamma0(15) of weight 2 over Rational Field not (yet) defined.
         """
         from .ambient import ModularSymbolsAmbient
+
         if isinstance(x, int) and x == 0:
             return BoundarySpaceElement(self, {})
 
@@ -549,10 +560,15 @@ class BoundarySpace(hecke.HeckeModule_generic):
         if isinstance(x, element.ModularSymbolsElement):
             M = x.parent()
             if not isinstance(M, ModularSymbolsAmbient):
-                raise TypeError("x (=%s) must be an element of a space of modular symbols of type ModularSymbolsAmbient" % x)
+                raise TypeError(
+                    "x (=%s) must be an element of a space of modular symbols of type ModularSymbolsAmbient"
+                    % x
+                )
             if M.level() != self.level():
-                raise TypeError("x (=%s) must have level %s but has level %s" % (
-                    x, self.level(), M.level()))
+                raise TypeError(
+                    "x (=%s) must have level %s but has level %s"
+                    % (x, self.level(), M.level())
+                )
             S = x.manin_symbol_rep()
             if len(S) == 0:
                 return self(0)
@@ -562,7 +578,10 @@ class BoundarySpace(hecke.HeckeModule_generic):
             y = dict(enumerate(x))
             return BoundarySpaceElement(self, y)
 
-        raise TypeError("Coercion of %s (of type %s) into %s not (yet) defined." % (x, type(x), self))
+        raise TypeError(
+            "Coercion of %s (of type %s) into %s not (yet) defined."
+            % (x, type(x), self)
+        )
 
     def _repr_(self):
         """
@@ -573,10 +592,16 @@ class BoundarySpace(hecke.HeckeModule_generic):
             sage: sage.modular.modsym.boundary.BoundarySpace(Gamma0(3), 2)._repr_()
             'Space of Boundary Modular Symbols of weight 2 for Congruence Subgroup Gamma0(3) with sign 0 and character [1] over Rational Field'
         """
-        return ("Space of Boundary Modular Symbols of weight %s for" +
-                " %s with sign %s and character %s over %s") % (
-                    self.weight(), self.group(), self.sign(),
-                    self.character()._repr_short_(), self.base_ring())
+        return (
+            "Space of Boundary Modular Symbols of weight %s for"
+            + " %s with sign %s and character %s over %s"
+        ) % (
+            self.weight(),
+            self.group(),
+            self.sign(),
+            self.character()._repr_short_(),
+            self.base_ring(),
+        )
 
     def _cusp_index(self, cusp):
         """
@@ -638,11 +663,9 @@ class BoundarySpace_wtk_g0(BoundarySpace):
             raise ArithmeticError("sign must be an int in [-1,0,1]")
         if level <= 0:
             raise ArithmeticError("level must be positive")
-        BoundarySpace.__init__(self,
-                               weight=weight,
-                               group=arithgroup.Gamma0(level),
-                               sign=sign,
-                               base_ring=F)
+        BoundarySpace.__init__(
+            self, weight=weight, group=arithgroup.Gamma0(level), sign=sign, base_ring=F
+        )
 
     def _repr_(self):
         """
@@ -654,8 +677,11 @@ class BoundarySpace_wtk_g0(BoundarySpace):
             sage: B._repr_()
             'Space of Boundary Modular Symbols for Congruence Subgroup Gamma0(97) of weight 3 over Rational Field'
         """
-        return ("Space of Boundary Modular Symbols for %s of weight %s over %s"
-                % (self.group(), self.weight(), self.base_ring()))
+        return "Space of Boundary Modular Symbols for %s of weight %s over %s" % (
+            self.group(),
+            self.weight(),
+            self.base_ring(),
+        )
 
     def _coerce_cusp(self, c):
         """
@@ -779,11 +805,9 @@ class BoundarySpace_wtk_g1(BoundarySpace):
         if level <= 0:
             raise ArithmeticError("level must be positive")
 
-        BoundarySpace.__init__(self,
-                               weight=weight,
-                               group=arithgroup.Gamma1(level),
-                               sign=sign,
-                               base_ring=F)
+        BoundarySpace.__init__(
+            self, weight=weight, group=arithgroup.Gamma1(level), sign=sign, base_ring=F
+        )
 
     def _repr_(self):
         """
@@ -794,8 +818,9 @@ class BoundarySpace_wtk_g1(BoundarySpace):
             sage: ModularSymbols(Gamma1(5), 3, sign=1).boundary_space()._repr_()
             'Boundary Modular Symbols space for Gamma_1(5) of weight 3 over Rational Field'
         """
-        return ("Boundary Modular Symbols space for Gamma_1(%s) of weight %s " +
-                "over %s") % (self.level(), self.weight(), self.base_ring())
+        return (
+            "Boundary Modular Symbols space for Gamma_1(%s) of weight %s " + "over %s"
+        ) % (self.level(), self.weight(), self.base_ring())
 
     def _is_equiv(self, c1, c2):
         """
@@ -931,15 +956,18 @@ class BoundarySpace_wtk_g1(BoundarySpace):
         #    (-1)^k.
         #
         if sign:
-            if (c.is_infinity() and sign != (-1)**self.weight()) or \
-               (c.is_zero() and sign == -1):
+            if (c.is_infinity() and sign != (-1) ** self.weight()) or (
+                c.is_zero() and sign == -1
+            ):
                 self._zero_cusps.append(c)
                 del self._known_gens[-1]
                 return self(0)
-            if (not c.is_infinity() and not c.is_zero()):
+            if not c.is_infinity() and not c.is_zero():
                 t, eps = self._is_equiv(c, -c)
-                if t and ((eps == 1 and sign == -1) or
-                          (eps == -1 and sign != (-1)**self.weight())):
+                if t and (
+                    (eps == 1 and sign == -1)
+                    or (eps == -1 and sign != (-1) ** self.weight())
+                ):
                     self._zero_cusps.append(c)
                     del self._known_gens[-1]
                     return self(0)
@@ -985,11 +1013,7 @@ class BoundarySpace_wtk_gamma_h(BoundarySpace):
         if sign not in [-1, 0, 1]:
             raise ArithmeticError("sign must be an int in [-1,0,1]")
 
-        BoundarySpace.__init__(self,
-                               weight=weight,
-                               group=group,
-                               sign=sign,
-                               base_ring=F)
+        BoundarySpace.__init__(self, weight=weight, group=group, sign=sign, base_ring=F)
 
     def _repr_(self):
         """
@@ -1000,8 +1024,11 @@ class BoundarySpace_wtk_gamma_h(BoundarySpace):
             sage: ModularSymbols(GammaH(7,[2]), 4).boundary_space()._repr_()
             'Boundary Modular Symbols space for Congruence Subgroup Gamma_H(7) with H generated by [2] of weight 4 over Rational Field'
         """
-        return ("Boundary Modular Symbols space for %s of weight %s " +
-                "over %s") % (self.group(), self.weight(), self.base_ring())
+        return ("Boundary Modular Symbols space for %s of weight %s " + "over %s") % (
+            self.group(),
+            self.weight(),
+            self.base_ring(),
+        )
 
     def _is_equiv(self, c1, c2):
         """
@@ -1180,15 +1207,18 @@ class BoundarySpace_wtk_gamma_h(BoundarySpace):
         # when H is larger than {1}.)
         #
         if sign:
-            if (c.is_infinity() and sign != (-1)**self.weight()) or \
-               (c.is_zero() and sign == -1):
+            if (c.is_infinity() and sign != (-1) ** self.weight()) or (
+                c.is_zero() and sign == -1
+            ):
                 self._zero_cusps.append(c)
                 del self._known_gens[-1]
                 return self(0)
-            if (not c.is_infinity() and not c.is_zero()):
+            if not c.is_infinity() and not c.is_zero():
                 t, eps = self._is_equiv(c, -c)
-                if t and ((eps == 1 and sign == -1) or
-                          (eps == -1 and sign != (-1)**self.weight())):
+                if t and (
+                    (eps == 1 and sign == -1)
+                    or (eps == -1 and sign != (-1) ** self.weight())
+                ):
                     self._zero_cusps.append(c)
                     del self._known_gens[-1]
                     return self(0)
@@ -1227,12 +1257,14 @@ class BoundarySpace_wtk_eps(BoundarySpace):
             raise ArithmeticError("sign must be an int in [-1,0,1]")
         if level <= 0:
             raise ArithmeticError("level must be positive")
-        BoundarySpace.__init__(self,
-                               weight=weight,
-                               group=arithgroup.Gamma1(level),
-                               sign=sign,
-                               base_ring=eps.base_ring(),
-                               character=eps)
+        BoundarySpace.__init__(
+            self,
+            weight=weight,
+            group=arithgroup.Gamma1(level),
+            sign=sign,
+            base_ring=eps.base_ring(),
+            character=eps,
+        )
 
     def _repr_(self):
         """
@@ -1243,11 +1275,16 @@ class BoundarySpace_wtk_eps(BoundarySpace):
             sage: ModularSymbols(DirichletGroup(6).0, 4).boundary_space()._repr_()
             'Boundary Modular Symbols space of level 6, weight 4, character [-1] and dimension 0 over Rational Field'
         """
-        return ("Boundary Modular Symbols space of level %s, weight %s, character %s " +
-                "and dimension %s over %s") % (self.level(), self.weight(),
-                                               self.character()._repr_short_(),
-                                               self.rank(),
-                                               self.base_ring())
+        return (
+            "Boundary Modular Symbols space of level %s, weight %s, character %s "
+            + "and dimension %s over %s"
+        ) % (
+            self.level(),
+            self.weight(),
+            self.character()._repr_short_(),
+            self.rank(),
+            self.base_ring(),
+        )
 
     def _is_equiv(self, c1, c2):
         """
@@ -1396,7 +1433,7 @@ class BoundarySpace_wtk_eps(BoundarySpace):
                     del self._known_gens[-1]
                     return self(0)
             elif c.is_infinity():
-                if sign != (-1)**self.weight():
+                if sign != (-1) ** self.weight():
                     self._zero_cusps.append(c)
                     del self._known_gens[-1]
                     return self(0)

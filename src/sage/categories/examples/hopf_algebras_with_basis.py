@@ -2,12 +2,12 @@
 r"""
 Examples of Hopf algebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.sets.family import Family
@@ -34,8 +34,7 @@ class MyGroupAlgebra(CombinatorialFreeModule):
             sage: TestSuite(A).run()
         """
         self._group = G
-        CombinatorialFreeModule.__init__(self, R, G,
-                                         category=HopfAlgebrasWithBasis(R))
+        CombinatorialFreeModule.__init__(self, R, G, category=HopfAlgebrasWithBasis(R))
 
     def _repr_(self):
         """
@@ -44,7 +43,10 @@ class MyGroupAlgebra(CombinatorialFreeModule):
             sage: HopfAlgebrasWithBasis(QQ).example() # indirect doctest
             An example of Hopf algebra with basis: the group algebra of the Dihedral group of order 6 as a permutation group over Rational Field
         """
-        return "An example of Hopf algebra with basis: the group algebra of the %s over %s" % (self._group, self.base_ring())
+        return (
+            "An example of Hopf algebra with basis: the group algebra of the %s over %s"
+            % (self._group, self.base_ring())
+        )
 
     @cached_method
     def one_basis(self):

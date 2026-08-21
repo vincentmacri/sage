@@ -97,8 +97,13 @@ def BullGraph(immutable=False):
     """
     edge_list = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4)]
     pos_dict = {0: (0, 0), 1: (-1, 1), 2: (1, 1), 3: (-2, 2), 4: (2, 2)}
-    return Graph([range(5), edge_list], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Bull graph")
+    return Graph(
+        [range(5), edge_list],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Bull graph",
+    )
 
 
 def ButterflyGraph(immutable=False):
@@ -156,19 +161,15 @@ def ButterflyGraph(immutable=False):
         sage: graphs.ButterflyGraph(immutable=True).is_immutable()
         True
     """
-    edge_dict = {
-        0: [3, 4],
-        1: [2, 4],
-        2: [4],
-        3: [4]}
-    pos_dict = {
-        0: [-1, 1],
-        1: [1, 1],
-        2: [1, -1],
-        3: [-1, -1],
-        4: [0, 0]}
-    return Graph(edge_dict, format='dict_of_lists',
-                 immutable=immutable, pos=pos_dict, name="Butterfly graph")
+    edge_dict = {0: [3, 4], 1: [2, 4], 2: [4], 3: [4]}
+    pos_dict = {0: [-1, 1], 1: [1, 1], 2: [1, -1], 3: [-1, -1], 4: [0, 0]}
+    return Graph(
+        edge_dict,
+        format='dict_of_lists',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Butterfly graph",
+    )
 
 
 def CircularLadderGraph(n, immutable=False):
@@ -226,17 +227,21 @@ def CircularLadderGraph(n, immutable=False):
         True
     """
     from itertools import chain
+
     edges_1 = zip(range(n), chain(range(1, n), (0,)))
     edges_2 = zip(range(n, 2 * n), chain(range(n + 1, 2 * n), (n,)))
     edges_3 = ((i, i + n) for i in range(n))
-    G = Graph([range(2 * n), chain(edges_1, edges_2, edges_3)],
-              format='vertices_and_edges', immutable=immutable,
-              name="Circular Ladder graph")
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
+    G = Graph(
+        [range(2 * n), chain(edges_1, edges_2, edges_3)],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name="Circular Ladder graph",
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
     if n == 2:
-        G._circle_embedding(list(range(4)), radius=1, angle=pi/2 + pi/8)
+        G._circle_embedding(list(range(4)), radius=1, angle=pi / 2 + pi / 8)
     else:
-        G._circle_embedding(list(range(n, 2*n)), radius=2, angle=pi/2)
+        G._circle_embedding(list(range(n, 2 * n)), radius=2, angle=pi / 2)
     return G
 
 
@@ -275,8 +280,13 @@ def ClawGraph(immutable=False):
     """
     edge_list = [(0, 1), (0, 2), (0, 3)]
     pos_dict = {0: (0, 1), 1: (-1, 0), 2: (0, 0), 3: (1, 0)}
-    return Graph([range(4), edge_list], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Claw graph")
+    return Graph(
+        [range(4), edge_list],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Claw graph",
+    )
 
 
 def CycleGraph(n, immutable=False):
@@ -369,13 +379,18 @@ def CycleGraph(n, immutable=False):
         raise ValueError("parameter n must be a positive integer")
 
     from itertools import chain
+
     edges = zip(range(n), chain(range(1, n), (0,))) if n > 1 else []
-    G = Graph([range(n), edges], format='vertices_and_edges',
-              immutable=immutable, name="Cycle graph")
+    G = Graph(
+        [range(n), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name="Cycle graph",
+    )
     if n == 1:
         G.set_pos({0: (0, 0)})
     else:
-        G._circle_embedding(list(range(n)), angle=pi/2)
+        G._circle_embedding(list(range(n)), angle=pi / 2)
     return G
 
 
@@ -474,13 +489,17 @@ def CompleteGraph(n, immutable=False):
         True
     """
     from itertools import combinations
-    G = Graph([range(n), combinations(range(n), 2)],
-              format='vertices_and_edges', immutable=immutable,
-              name="Complete graph")
+
+    G = Graph(
+        [range(n), combinations(range(n), 2)],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name="Complete graph",
+    )
     if n == 1:
         G.set_pos({0: (0, 0)})
     else:
-        G._circle_embedding(list(range(n)), angle=pi/2)
+        G._circle_embedding(list(range(n)), angle=pi / 2)
     return G
 
 
@@ -548,8 +567,12 @@ def CorrelationGraph(seqs, alpha, include_anticorrelation, immutable=False):
     adjacency_matrix = Matrix(boolean_adjacency_matrix.astype(int))
 
     # call graph constructor
-    return Graph(adjacency_matrix, format='adjacency_matrix',
-                 immutable=immutable, name="Correlation Graph")
+    return Graph(
+        adjacency_matrix,
+        format='adjacency_matrix',
+        immutable=immutable,
+        name="Correlation Graph",
+    )
 
 
 def CompleteBipartiteGraph(p, q, set_position=True, immutable=False, name=None):
@@ -681,12 +704,18 @@ def CompleteBipartiteGraph(p, q, set_position=True, immutable=False, name=None):
         foo: Graph on 3 vertices
     """
     if p < 0 or q < 0:
-        raise ValueError('the arguments p(={}) and q(={}) must be positive integers'.format(p, q))
+        raise ValueError(
+            'the arguments p(={}) and q(={}) must be positive integers'.format(p, q)
+        )
 
     name = f"Complete bipartite graph of order {p}+{q}" if name is None else name
     edges = ((i, j) for i in range(p) for j in range(p, p + q))
-    G = Graph([range(p + q), edges], format='vertices_and_edges',
-              immutable=immutable, name=name)
+    G = Graph(
+        [range(p + q), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name=name,
+    )
 
     # We now assign positions to vertices:
     # - vertices 0,..,p-1 are placed on the line (0, 1) to (max(p, q), 1)
@@ -770,8 +799,13 @@ def CompleteMultipartiteGraph(L, immutable=False):
 
     # This position code gives bad results on bipartite or isolated graphs
     points = [(cos(2 * pi * i / r), sin(2 * pi * i / r)) for i in range(r)]
-    slopes = [(points[(i + 1) % r][0] - points[i % r][0],
-               points[(i + 1) % r][1] - points[i % r][1]) for i in range(r)]
+    slopes = [
+        (
+            points[(i + 1) % r][0] - points[i % r][0],
+            points[(i + 1) % r][1] - points[i % r][1],
+        )
+        for i in range(r)
+    ]
 
     counter = 0
     parts = []
@@ -786,9 +820,15 @@ def CompleteMultipartiteGraph(L, immutable=False):
             counter += 1
 
     from itertools import combinations
+
     edges = ((a, b) for A, B in combinations(parts, 2) for a in A for b in B)
-    return Graph([range(counter), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=positions, name=name)
+    return Graph(
+        [range(counter), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=positions,
+        name=name,
+    )
 
 
 def DiamondGraph(immutable=False):
@@ -823,8 +863,13 @@ def DiamondGraph(immutable=False):
     """
     pos_dict = {0: (0, 1), 1: (-1, 0), 2: (1, 0), 3: (0, -1)}
     edges = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3)]
-    return Graph([range(4), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Diamond Graph")
+    return Graph(
+        [range(4), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Diamond Graph",
+    )
 
 
 def GemGraph(immutable=False):
@@ -858,8 +903,13 @@ def GemGraph(immutable=False):
     """
     pos_dict = {0: (0.5, 0), 1: (0, 0.75), 2: (0.25, 1), 3: (0.75, 1), 4: (1, 0.75)}
     edges = [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (2, 3), (3, 4)]
-    return Graph([range(5), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Gem Graph")
+    return Graph(
+        [range(5), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Gem Graph",
+    )
 
 
 def ForkGraph(immutable=False):
@@ -893,8 +943,13 @@ def ForkGraph(immutable=False):
     """
     pos_dict = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0, 2)}
     edges = [(0, 2), (2, 3), (3, 1), (2, 4)]
-    return Graph([range(5), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Fork Graph")
+    return Graph(
+        [range(5), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Fork Graph",
+    )
 
 
 def DartGraph(immutable=False):
@@ -926,8 +981,13 @@ def DartGraph(immutable=False):
     """
     pos_dict = {0: (0, 1), 1: (-1, 0), 2: (1, 0), 3: (0, -1), 4: (0, 0)}
     edges = [(0, 1), (0, 2), (1, 4), (2, 4), (0, 4), (3, 4)]
-    return Graph([range(5), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="Dart Graph")
+    return Graph(
+        [range(5), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Dart Graph",
+    )
 
 
 def EmptyGraph(immutable=False):
@@ -1026,8 +1086,8 @@ def ToroidalGrid2dGraph(p, q, immutable=False):
     g.add_edges([((0, i), (p - 1, i)) for i in range(q)])
 
     pos = g._pos
-    p += 0.
-    q += 0.
+    p += 0.0
+    q += 0.0
     uf = (p / 2) * (p / 2)
     vf = (q / 2) * (q / 2)
     for u, v in g:
@@ -1176,14 +1236,21 @@ def Grid2dGraph(p, q, set_positions=True, immutable=False, name=None):
 
     vertices = ((i, j) for i in range(p) for j in range(q))
     from itertools import chain
-    edges = chain((((i, j), (i + 1, j)) for i in range(p - 1) for j in range(q)),
-                  (((i, j), (i, j + 1)) for i in range(p) for j in range(q - 1)))
+
+    edges = chain(
+        (((i, j), (i + 1, j)) for i in range(p - 1) for j in range(q)),
+        (((i, j), (i, j + 1)) for i in range(p) for j in range(q - 1)),
+    )
     pos_dict = None
     if set_positions:
         pos_dict = {(i, j): (j, -i) for i in range(p) for j in range(q)}
-    return Graph([vertices, edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict,
-                 name=f"2D Grid Graph for [{p}, {q}]" if name is None else name)
+    return Graph(
+        [vertices, edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name=f"2D Grid Graph for [{p}, {q}]" if name is None else name,
+    )
 
 
 def GridGraph(dim_list, immutable=False):
@@ -1303,6 +1370,7 @@ def GridGraph(dim_list, immutable=False):
 
     def edges():
         from itertools import product
+
         for u in product(*[range(d) for d in dim]):
             for i in range(n_dim):
                 if u[i] + 1 < dim[i]:
@@ -1310,8 +1378,9 @@ def GridGraph(dim_list, immutable=False):
                     v[i] = u[i] + 1
                     yield (u, tuple(v))
 
-    return Graph([V, edges()], format='vertices_and_edges',
-                 immutable=immutable, name=name)
+    return Graph(
+        [V, edges()], format='vertices_and_edges', immutable=immutable, name=name
+    )
 
 
 def HouseGraph(immutable=False):
@@ -1350,8 +1419,13 @@ def HouseGraph(immutable=False):
     """
     pos_dict = {0: (-1, 0), 1: (1, 0), 2: (-1, 1), 3: (1, 1), 4: (0, 2)}
     edges = [(0, 1), (0, 2), (1, 3), (2, 3), (2, 4), (3, 4)]
-    return Graph([range(5), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="House Graph")
+    return Graph(
+        [range(5), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="House Graph",
+    )
 
 
 def HouseXGraph(immutable=False):
@@ -1391,8 +1465,13 @@ def HouseXGraph(immutable=False):
     """
     pos_dict = {0: (-1, 0), 1: (1, 0), 2: (-1, 1), 3: (1, 1), 4: (0, 2)}
     edges = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (2, 4), (3, 4)]
-    return Graph([range(5), edges], format='vertices_and_edges',
-                 immutable=immutable, pos=pos_dict, name="House Graph")
+    return Graph(
+        [range(5), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="House Graph",
+    )
 
 
 def LadderGraph(n, immutable=False):
@@ -1448,12 +1527,17 @@ def LadderGraph(n, immutable=False):
         x = i - n
         pos_dict[i] = (x, 0)
     from itertools import chain
+
     edges_1 = zip(range(n), range(1, n))
     edges_2 = zip(range(n, 2 * n), range(n + 1, 2 * n))
     edges_3 = ((i, i + n) for i in range(n))
-    return Graph([range(2 * n), chain(edges_1, edges_2, edges_3)],
-                 format='vertices_and_edges', immutable=immutable,
-                 pos=pos_dict, name="Ladder graph")
+    return Graph(
+        [range(2 * n), chain(edges_1, edges_2, edges_3)],
+        format='vertices_and_edges',
+        immutable=immutable,
+        pos=pos_dict,
+        name="Ladder graph",
+    )
 
 
 def MoebiusLadderGraph(n, immutable=False):
@@ -1541,12 +1625,16 @@ def MoebiusLadderGraph(n, immutable=False):
         raise ValueError("parameter n must be a nonnegative integer")
 
     from itertools import chain
+
     edges_1 = zip(range(2 * n), chain(range(1, 2 * n), (0,)))
     edges_2 = ((i, i + n) for i in range(n))
-    G = Graph([range(2 * n), chain(edges_1, edges_2)],
-              format='vertices_and_edges', immutable=immutable,
-              name="Moebius ladder graph")
-    G._circle_embedding(list(range(2 * n)), angle=pi/2)
+    G = Graph(
+        [range(2 * n), chain(edges_1, edges_2)],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name="Moebius ladder graph",
+    )
+    G._circle_embedding(list(range(2 * n)), angle=pi / 2)
     return G
 
 
@@ -1618,8 +1706,12 @@ def PathGraph(n, pos=None, immutable=False, name=None):
         foo: Graph on 4 vertices
     """
     edges = ((i, i + 1) for i in range(n - 1))
-    G = Graph([range(n), edges], format='vertices_and_edges',
-              immutable=immutable, name="Path graph" if name is None else name)
+    G = Graph(
+        [range(n), edges],
+        format='vertices_and_edges',
+        immutable=immutable,
+        name="Path graph" if name is None else name,
+    )
 
     pos_dict = {}
 
@@ -1638,7 +1730,7 @@ def PathGraph(n, pos=None, immutable=False, name=None):
         if n == 1:
             G.set_pos({0: (0, 0)})
         else:
-            G._circle_embedding(list(range(n)), angle=pi/2)
+            G._circle_embedding(list(range(n)), angle=pi / 2)
     # Draw 'line'
     else:
         counter = 0  # node index
@@ -1755,8 +1847,12 @@ def StarGraph(n, immutable=False):
         sage: graphs.StarGraph(4, immutable=True).is_immutable()
         True
     """
-    G = Graph({0: list(range(1, n + 1))}, format='dict_of_lists',
-              immutable=immutable, name="Star graph")
+    G = Graph(
+        {0: list(range(1, n + 1))},
+        format='dict_of_lists',
+        immutable=immutable,
+        name="Star graph",
+    )
     G.set_pos({0: (0, 0)})
-    G._circle_embedding(list(range(1, n + 1)), angle=pi/2)
+    G._circle_embedding(list(range(1, n + 1)), angle=pi / 2)
     return G

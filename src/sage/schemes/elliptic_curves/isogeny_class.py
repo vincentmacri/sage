@@ -156,8 +156,11 @@ class IsogenyClass_EC(SageObject):
             True
         """
         if isinstance(other, IsogenyClass_EC):
-            return richcmp(sorted(e.a_invariants() for e in self.curves),
-                           sorted(f.a_invariants() for f in other.curves), op)
+            return richcmp(
+                sorted(e.a_invariants() for e in self.curves),
+                sorted(f.a_invariants() for f in other.curves),
+                op,
+            )
         return NotImplemented
 
     def __hash__(self) -> int:
@@ -294,10 +297,16 @@ class IsogenyClass_EC(SageObject):
             self._compute_matrix()
         mat = self._mat
         if fill and mat[0, 0] == 0:
-            from sage.schemes.elliptic_curves.ell_curve_isogeny import fill_isogeny_matrix
+            from sage.schemes.elliptic_curves.ell_curve_isogeny import (
+                fill_isogeny_matrix,
+            )
+
             mat = fill_isogeny_matrix(mat)
         if not fill and mat[0, 0] == 1:
-            from sage.schemes.elliptic_curves.ell_curve_isogeny import unfill_isogeny_matrix
+            from sage.schemes.elliptic_curves.ell_curve_isogeny import (
+                unfill_isogeny_matrix,
+            )
+
             mat = unfill_isogeny_matrix(mat)
         return mat
 
@@ -326,7 +335,9 @@ class IsogenyClass_EC(SageObject):
             [[[1], [2, 2, 3]], [[2, 2, 3], [1]]]
         """
         if self._qfmat is None:
-            raise ValueError("qf_matrix only defined for isogeny classes with rational CM")
+            raise ValueError(
+                "qf_matrix only defined for isogeny classes with rational CM"
+            )
         else:
             return self._qfmat
 
@@ -418,7 +429,7 @@ class IsogenyClass_EC(SageObject):
             return G
 
         M = self.matrix(fill=False)
-        n = M.nrows() # = M.ncols()
+        n = M.nrows()  # = M.ncols()
         G = Graph(M, format='weighted_adjacency_matrix')
         N = self.matrix(fill=True)
         D = {v: self.curves[v] for v in G.vertices(sort=False)}
@@ -445,59 +456,122 @@ class IsogenyClass_EC(SageObject):
                 # o--o<8
                 centervert = next(i for i in range(4) if max(N.row(i)) < maxdegree)
                 other = [i for i in range(4) if i != centervert]
-                G.set_pos(pos={centervert: [0, 0], other[0]: [0, 1],
-                               other[1]: [-0.8660254, -0.5], other[2]: [0.8660254, -0.5]})
+                G.set_pos(
+                    pos={
+                        centervert: [0, 0],
+                        other[0]: [0, 1],
+                        other[1]: [-0.8660254, -0.5],
+                        other[2]: [0.8660254, -0.5],
+                    }
+                )
             elif maxdegree == 27:
                 # o--o--o--o
                 centers = [i for i in range(4) if list(N.row(i)).count(3) == 2]
-                left = next(j for j in range(4) if N[centers[0], j] == 3 and j not in centers)
-                right = next(j for j in range(4) if N[centers[1], j] == 3 and j not in centers)
-                G.set_pos(pos={left: [-1.5, 0], centers[0]: [-0.5, 0],
-                               centers[1]: [0.5, 0], right: [1.5, 0]})
+                left = next(
+                    j for j in range(4) if N[centers[0], j] == 3 and j not in centers
+                )
+                right = next(
+                    j for j in range(4) if N[centers[1], j] == 3 and j not in centers
+                )
+                G.set_pos(
+                    pos={
+                        left: [-1.5, 0],
+                        centers[0]: [-0.5, 0],
+                        centers[1]: [0.5, 0],
+                        right: [1.5, 0],
+                    }
+                )
             elif n == 4:
                 # square
                 opp = next(i for i in range(1, 4) if not N[0, i].is_prime())
                 other = [i for i in range(1, 4) if i != opp]
-                G.set_pos(pos={0: [1, 1], other[0]: [-1, 1],
-                               opp: [-1, -1], other[1]: [1, -1]})
+                G.set_pos(
+                    pos={0: [1, 1], other[0]: [-1, 1], opp: [-1, -1], other[1]: [1, -1]}
+                )
             elif maxdegree == 8:
                 # 8>o--o<8
                 centers = [i for i in range(6) if list(N.row(i)).count(2) == 3]
-                left = [j for j in range(6) if N[centers[0], j] == 2 and j not in centers]
-                right = [j for j in range(6) if N[centers[1], j] == 2 and j not in centers]
-                G.set_pos(pos={centers[0]: [-0.5, 0], left[0]: [-1, 0.8660254],
-                               left[1]: [-1, -0.8660254], centers[1]: [0.5, 0],
-                               right[0]: [1, 0.8660254], right[1]: [1, -0.8660254]})
+                left = [
+                    j for j in range(6) if N[centers[0], j] == 2 and j not in centers
+                ]
+                right = [
+                    j for j in range(6) if N[centers[1], j] == 2 and j not in centers
+                ]
+                G.set_pos(
+                    pos={
+                        centers[0]: [-0.5, 0],
+                        left[0]: [-1, 0.8660254],
+                        left[1]: [-1, -0.8660254],
+                        centers[1]: [0.5, 0],
+                        right[0]: [1, 0.8660254],
+                        right[1]: [1, -0.8660254],
+                    }
+                )
             elif maxdegree == 18:
                 # two squares joined on an edge
                 centers = [i for i in range(6) if list(N.row(i)).count(3) == 2]
                 top = [j for j in range(6) if N[centers[0], j] == 3]
                 bl = next(j for j in range(6) if N[top[0], j] == 2)
                 br = next(j for j in range(6) if N[top[1], j] == 2)
-                G.set_pos(pos={centers[0]: [0, 0.5], centers[1]: [0, -0.5],
-                               top[0]: [-1, 0.5], top[1]: [1, 0.5],
-                               bl: [-1, -0.5], br: [1, -0.5]})
+                G.set_pos(
+                    pos={
+                        centers[0]: [0, 0.5],
+                        centers[1]: [0, -0.5],
+                        top[0]: [-1, 0.5],
+                        top[1]: [1, 0.5],
+                        bl: [-1, -0.5],
+                        br: [1, -0.5],
+                    }
+                )
             elif maxdegree == 16:
                 # tree from bottom, 3 regular except for the leaves.
                 centers = [i for i in range(8) if list(N.row(i)).count(2) == 3]
-                center = next(i for i in centers if len([j for j in centers if N[i, j] == 2]) == 2)
+                center = next(
+                    i for i in centers if len([j for j in centers if N[i, j] == 2]) == 2
+                )
                 centers.remove(center)
-                bottom = next(j for j in range(8) if N[center, j] == 2 and j not in centers)
+                bottom = next(
+                    j for j in range(8) if N[center, j] == 2 and j not in centers
+                )
                 left = [j for j in range(8) if N[centers[0], j] == 2 and j != center]
                 right = [j for j in range(8) if N[centers[1], j] == 2 and j != center]
-                G.set_pos(pos={center: [0, 0], bottom: [0, -1], centers[0]: [-0.8660254, 0.5],
-                               centers[1]: [0.8660254, 0.5], left[0]: [-0.8660254, 1.5],
-                               right[0]: [0.8660254, 1.5], left[1]: [-1.7320508, 0], right[1]: [1.7320508, 0]})
+                G.set_pos(
+                    pos={
+                        center: [0, 0],
+                        bottom: [0, -1],
+                        centers[0]: [-0.8660254, 0.5],
+                        centers[1]: [0.8660254, 0.5],
+                        left[0]: [-0.8660254, 1.5],
+                        right[0]: [0.8660254, 1.5],
+                        left[1]: [-1.7320508, 0],
+                        right[1]: [1.7320508, 0],
+                    }
+                )
             elif maxdegree == 12:
                 # tent
                 centers = [i for i in range(8) if list(N.row(i)).count(2) == 3]
                 left = [j for j in range(8) if N[centers[0], j] == 2]
                 right = []
                 for i in range(3):
-                    right.append(next(j for j in range(8) if N[centers[1], j] == 2 and N[left[i], j] == 3))
-                G.set_pos(pos={centers[0]: [-0.75, 0], centers[1]: [0.75, 0], left[0]: [-0.75, 1],
-                               right[0]: [0.75, 1], left[1]: [-1.25, -0.75], right[1]: [0.25, -0.75],
-                               left[2]: [-0.25, -0.25], right[2]: [1.25, -0.25]})
+                    right.append(
+                        next(
+                            j
+                            for j in range(8)
+                            if N[centers[1], j] == 2 and N[left[i], j] == 3
+                        )
+                    )
+                G.set_pos(
+                    pos={
+                        centers[0]: [-0.75, 0],
+                        centers[1]: [0.75, 0],
+                        left[0]: [-0.75, 1],
+                        right[0]: [0.75, 1],
+                        left[1]: [-1.25, -0.75],
+                        right[1]: [0.25, -0.75],
+                        left[2]: [-0.25, -0.25],
+                        right[2]: [1.25, -0.25],
+                    }
+                )
         G.set_vertices(D)
         G.relabel(list(range(1, n + 1)))
         return G
@@ -546,8 +620,7 @@ class IsogenyClass_EC(SageObject):
             return self
         if isinstance(order, str):
             if order == "lmfdb":
-                reordered_curves = sorted(self.curves,
-                                          key=lambda E: E.a_invariants())
+                reordered_curves = sorted(self.curves, key=lambda E: E.a_invariants())
             else:
                 reordered_curves = list(self.E.isogeny_class(algorithm=order))
         elif isinstance(order, (list, tuple, IsogenyClass_EC)):
@@ -555,7 +628,9 @@ class IsogenyClass_EC(SageObject):
             if len(reordered_curves) != len(self.curves):
                 raise ValueError("Incorrect length")
         else:
-            raise TypeError("order parameter should be a string, list of curves or isogeny class")
+            raise TypeError(
+                "order parameter should be a string, list of curves or isogeny class"
+            )
         need_perm = self._mat is not None
         cpy = self.copy()
         curves = []
@@ -570,18 +645,18 @@ class IsogenyClass_EC(SageObject):
                     raise ValueError("order does not yield a permutation of curves")
             curves.append(self.curves[j])
             if need_perm:
-                perm.append(j+1)
+                perm.append(j + 1)
         cpy.curves = tuple(curves)
         if need_perm:
             from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
             perm = SymmetricGroup(len(self.curves))(perm)
             cpy._mat = perm.matrix() * self._mat * (~perm).matrix()
             if self._maps is not None:
                 n = len(self._maps)
-                cpy._maps = [self._maps[perm(i+1)-1] for i in range(n)]
+                cpy._maps = [self._maps[perm(i + 1) - 1] for i in range(n)]
                 for i in range(n):
-                    cpy._maps[i] = [cpy._maps[i][perm(jj + 1)-1]
-                                    for jj in range(n)]
+                    cpy._maps[i] = [cpy._maps[i][perm(jj + 1) - 1] for jj in range(n)]
         else:
             cpy._mat = None
             cpy._maps = None
@@ -592,8 +667,10 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
     """
     Isogeny classes for elliptic curves over number fields.
     """
-    def __init__(self, E, reducible_primes=None,
-                 algorithm='Billerey', minimal_models=True) -> None:
+
+    def __init__(
+        self, E, reducible_primes=None, algorithm='Billerey', minimal_models=True
+    ) -> None:
         r"""
         INPUT:
 
@@ -744,7 +821,12 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
             sage: C == C2
             True
         """
-        ans = IsogenyClass_EC_NumberField(self.E, reducible_primes=self._reducible_primes, algorithm=self._algorithm, minimal_models=self._minimal_models)
+        ans = IsogenyClass_EC_NumberField(
+            self.E,
+            reducible_primes=self._reducible_primes,
+            algorithm=self._algorithm,
+            minimal_models=self._minimal_models,
+        )
         # The following isn't needed internally, but it will keep
         # things from breaking if this is used for something other
         # than reordering.
@@ -795,6 +877,7 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
         from sage.schemes.elliptic_curves.ell_curve_isogeny import fill_isogeny_matrix
         from sage.matrix.matrix_space import MatrixSpace
         from sage.sets.set import Set
+
         self._maps = None
 
         if self._minimal_models:
@@ -804,15 +887,20 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
 
         degs = self._reducible_primes
         if degs is None:
-            self._reducible_primes = possible_isogeny_degrees(E, algorithm=self._algorithm)
+            self._reducible_primes = possible_isogeny_degrees(
+                E, algorithm=self._algorithm
+            )
             degs = self._reducible_primes
         if verbose:
             import sys
+
             sys.stdout.write(" possible isogeny degrees: %s" % degs)
             sys.stdout.flush()
         isogenies = E.isogenies_prime_degree(degs, minimal_models=self._minimal_models)
         if verbose:
-            sys.stdout.write(" -actual isogeny degrees: %s" % Set(phi.degree() for phi in isogenies))
+            sys.stdout.write(
+                " -actual isogeny degrees: %s" % Set(phi.degree() for phi in isogenies)
+            )
             sys.stdout.flush()
         # Add all new codomains to the list and collect degrees:
         curves = [E]
@@ -835,9 +923,9 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
             if not any(E2.is_isomorphic(E3) for E3 in curves):
                 curves.append(E2)
                 if verbose:
-                    sys.stdout.write(" -added curve #%s (degree %s)..." % (ncurves,d))
+                    sys.stdout.write(" -added curve #%s (degree %s)..." % (ncurves, d))
                     sys.stdout.flush()
-                add_tup([0,ncurves,d,phi])
+                add_tup([0, ncurves, d, phi])
                 ncurves += 1
                 if d not in degs:
                     degs.append(d)
@@ -853,24 +941,26 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
                 sys.stdout.write(" -processing curve #%s..." % i)
                 sys.stdout.flush()
 
-            isogenies = E1.isogenies_prime_degree(degs, minimal_models=self._minimal_models)
+            isogenies = E1.isogenies_prime_degree(
+                degs, minimal_models=self._minimal_models
+            )
 
             for phi in isogenies:
                 E2 = phi.codomain()
                 d = phi.degree()
-                js = [j for j,E3 in enumerate(curves) if E2.is_isomorphic(E3)]
-                if js: # seen codomain already -- up to isomorphism
+                js = [j for j, E3 in enumerate(curves) if E2.is_isomorphic(E3)]
+                if js:  # seen codomain already -- up to isomorphism
                     j = js[0]
                     if phi.codomain() != curves[j]:
                         phi = E2.isomorphism_to(curves[j]) * phi
                     assert phi.domain() == curves[i] and phi.codomain() == curves[j]
-                    add_tup([i,j,d,phi])
+                    add_tup([i, j, d, phi])
                 else:
                     curves.append(E2)
                     if verbose:
                         sys.stdout.write(" -added curve #%s..." % ncurves)
                         sys.stdout.flush()
-                    add_tup([i,ncurves,d,phi])
+                    add_tup([i, ncurves, d, phi])
                     ncurves += 1
             i += 1
 
@@ -879,14 +969,15 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
 
         # key function for sorting
         if E.has_rational_cm():
-            key_function = lambda E: (-E.cm_discriminant(),
-                                      flatten([list(ai) for ai in E.ainvs()]))
+            key_function = lambda E: (
+                -E.cm_discriminant(),
+                flatten([list(ai) for ai in E.ainvs()]),
+            )
         else:
             key_function = lambda E: flatten([list(ai) for ai in E.ainvs()])
 
         self.curves = sorted(curves, key=key_function)
-        perm = {ind: self.curves.index(Ei)
-                for ind, Ei in enumerate(curves)}
+        perm = {ind: self.curves.index(Ei) for ind, Ei in enumerate(curves)}
         if verbose:
             print("Sorting permutation = %s" % perm)
 
@@ -928,19 +1019,21 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
             print("Creating degree matrix (CM case)")
 
         allQs = {}  # keys: discriminants d
-                    # values: lists of equivalence classes of
-                    # primitive forms of discriminant d
+        # values: lists of equivalence classes of
+        # primitive forms of discriminant d
 
         def find_quadratic_form(d, n):
             if d not in allQs:
-                from sage.quadratic_forms.binary_qf import BinaryQF_reduced_representatives
+                from sage.quadratic_forms.binary_qf import (
+                    BinaryQF_reduced_representatives,
+                )
 
                 allQs[d] = BinaryQF_reduced_representatives(d, primitive_only=True)
             # now test which of the Qs represents n
             for Q in allQs[d]:
                 if Q.solve_integer(n):
                     return Q
-            raise ValueError("No form of discriminant %d represents %s" % (d,n))
+            raise ValueError("No form of discriminant %d represents %s" % (d, n))
 
         mat = self._mat
         qfmat = [[0 for i in range(ncurves)] for j in range(ncurves)]
@@ -948,19 +1041,19 @@ class IsogenyClass_EC_NumberField(IsogenyClass_EC):
             for j, E2 in enumerate(self.curves):
                 if j < i:
                     qfmat[i][j] = qfmat[j][i]
-                    mat[i,j] = mat[j,i]
+                    mat[i, j] = mat[j, i]
                 elif i == j:
                     qfmat[i][j] = [1]
                     # mat[i,j] already 1
                 else:
                     d = E1.cm_discriminant()
                     if d != E2.cm_discriminant():
-                        qfmat[i][j] = [mat[i,j]]
+                        qfmat[i][j] = [mat[i, j]]
                         # mat[i,j] already unique
-                    else: # horizontal isogeny
-                        q = find_quadratic_form(d,mat[i,j])
+                    else:  # horizontal isogeny
+                        q = find_quadratic_form(d, mat[i, j])
                         qfmat[i][j] = list(q)
-                        mat[i,j] = q.small_prime_value()
+                        mat[i, j] = q.small_prime_value()
 
         self._mat = mat
         self._qfmat = qfmat
@@ -1003,6 +1096,7 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
     r"""
     Isogeny classes for elliptic curves over `\QQ`.
     """
+
     def __init__(self, E, algorithm='sage', label=None, empty=False) -> None:
         r"""
         INPUT:
@@ -1080,6 +1174,7 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
         """
         algorithm = self._algorithm
         from sage.matrix.matrix_space import MatrixSpace
+
         self._maps = None
         if algorithm == "database":
             try:
@@ -1092,8 +1187,7 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
                 raise RuntimeError("unable to find %s in the database" % self.E)
             # All curves will have the same conductor and isogeny class,
             # and there are most 8 of them, so lexicographic sorting is okay.
-            self.curves = tuple(sorted(curves,
-                                       key=lambda E: E.cremona_label()))
+            self.curves = tuple(sorted(curves, key=lambda E: E.cremona_label()))
             self._mat = None
         elif algorithm == "sage":
             curves = [self.E.minimal_model()]
@@ -1115,16 +1209,16 @@ class IsogenyClass_EC_Rational(IsogenyClass_EC_NumberField):
                     except ValueError:
                         j = len(curves)
                         curves.append(Edash)
-                    ijl_triples.append((i,j,l,phi))
+                    ijl_triples.append((i, j, l, phi))
                 if l_list is None:
                     l_list = list({ZZ(f.degree()) for f in isogs})
                 i += 1
             self.curves = tuple(curves)
             ncurves = len(curves)
-            self._mat = MatrixSpace(ZZ,ncurves)(0)
-            self._maps = [[0]*ncurves for _ in range(ncurves)]
-            for i,j,l,phi in ijl_triples:
-                self._mat[i,j] = l
+            self._mat = MatrixSpace(ZZ, ncurves)(0)
+            self._maps = [[0] * ncurves for _ in range(ncurves)]
+            for i, j, l, phi in ijl_triples:
+                self._mat[i, j] = l
                 self._maps[i][j] = phi
         else:
             raise ValueError("unknown algorithm '%s'" % algorithm)
@@ -1212,7 +1306,9 @@ def isogeny_degrees_cm(E, verbose=False):
         [3, 5]
     """
     if not E.has_cm():
-        raise ValueError("possible_isogeny_degrees_cm(E) requires E to be an elliptic curve with CM")
+        raise ValueError(
+            "possible_isogeny_degrees_cm(E) requires E to be an elliptic curve with CM"
+        )
     d = E.cm_discriminant()
 
     if verbose:
@@ -1243,7 +1339,7 @@ def isogeny_degrees_cm(E, verbose=False):
     # see if the j-invariants of any proper sub-orders could lie
     # in the same field
 
-    n_over_2h = n//(2*h)
+    n_over_2h = n // (2 * h)
 
     # Collect possible primes.  First put in 2, and also 3 for
     # discriminant -3 (special case because of units):
@@ -1271,7 +1367,6 @@ def isogeny_degrees_cm(E, verbose=False):
             print("ramified primes: %s" % L1)
 
     else:
-
         # "Upward" primes (index divided by l):
 
         L1 = Set([l for l in ram_l if d.valuation(l) > 1])
@@ -1290,8 +1385,13 @@ def isogeny_degrees_cm(E, verbose=False):
     # (b) Downward split primes; the suborder has class number (l-1)*h, so
     # l-1 must divide n/2h:
 
-    L1 = Set([lm1+1 for lm1 in divs
-              if (lm1+1).is_prime() and kronecker_symbol(d,lm1+1) == +1])
+    L1 = Set(
+        [
+            lm1 + 1
+            for lm1 in divs
+            if (lm1 + 1).is_prime() and kronecker_symbol(d, lm1 + 1) == +1
+        ]
+    )
     L += L1
     if verbose:
         print("downward split primes: %s" % L1)
@@ -1299,8 +1399,13 @@ def isogeny_degrees_cm(E, verbose=False):
     # (c) Downward inert primes; the suborder has class number (l+1)*h, so
     # l+1 must divide n/2h:
 
-    L1 = Set([lp1-1 for lp1 in divs
-              if (lp1-1).is_prime() and kronecker_symbol(d,lp1-1) == -1])
+    L1 = Set(
+        [
+            lp1 - 1
+            for lp1 in divs
+            if (lp1 - 1).is_prime() and kronecker_symbol(d, lp1 - 1) == -1
+        ]
+    )
     L += L1
     if verbose:
         print("downward inert primes: %s" % L1)
@@ -1311,6 +1416,7 @@ def isogeny_degrees_cm(E, verbose=False):
 
     if E.has_rational_cm():
         from sage.quadratic_forms.binary_qf import BinaryQF
+
         Qs = [BinaryQF(list(q)) for q in data[2]]
 
         L1 = [Q.small_prime_value() for Q in Qs]
@@ -1325,14 +1431,16 @@ def isogeny_degrees_cm(E, verbose=False):
 
     # This filter will quickly eliminate most false entries in the set
     from .gal_reps_number_field import Frobenius_filter
+
     L = Frobenius_filter(E, sorted(L))
     if verbose:
         print("List of primes after filtering: %s" % L)
     return L
 
 
-def possible_isogeny_degrees(E, algorithm='Billerey', max_l=None,
-                             num_l=None, exact=True, verbose=False):
+def possible_isogeny_degrees(
+    E, algorithm='Billerey', max_l=None, num_l=None, exact=True, verbose=False
+):
     r"""
     Return a list of primes `\ell` sufficient to generate the
     isogeny class of `E`.
@@ -1469,7 +1577,10 @@ def possible_isogeny_degrees(E, algorithm='Billerey', max_l=None,
         return isogeny_degrees_cm(E, verbose)
 
     if E.base_field() == QQ:
-        from sage.schemes.elliptic_curves.gal_reps_number_field import reducible_primes_naive
+        from sage.schemes.elliptic_curves.gal_reps_number_field import (
+            reducible_primes_naive,
+        )
+
         return reducible_primes_naive(E, max_l=37, verbose=verbose)
 
     #  Non-CM case
@@ -1493,15 +1604,23 @@ def possible_isogeny_degrees(E, algorithm='Billerey', max_l=None,
         L = E.galois_representation().isogeny_bound()
 
     elif algorithm == 'Billerey':
-        from sage.schemes.elliptic_curves.gal_reps_number_field import reducible_primes_Billerey
+        from sage.schemes.elliptic_curves.gal_reps_number_field import (
+            reducible_primes_Billerey,
+        )
+
         L = reducible_primes_Billerey(E, num_l=num_l, max_l=max_l, verbose=verbose)
 
     elif algorithm == 'heuristic':
-        from sage.schemes.elliptic_curves.gal_reps_number_field import reducible_primes_naive
+        from sage.schemes.elliptic_curves.gal_reps_number_field import (
+            reducible_primes_naive,
+        )
+
         L = reducible_primes_naive(E, max_l=max_l, num_P=num_l, verbose=verbose)
 
     else:
-        raise ValueError("algorithm for possible_isogeny_degrees must be one of 'Larson', 'Billerey', 'heuristic'")
+        raise ValueError(
+            "algorithm for possible_isogeny_degrees must be one of 'Larson', 'Billerey', 'heuristic'"
+        )
 
     # The set L may contain irreducible primes.  We optionally test
     # each one to see if it is actually reducible, by computing ell-isogenies:

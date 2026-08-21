@@ -183,8 +183,16 @@ class Octave(Expect):
         True
     """
 
-    def __init__(self, maxread=None, script_subdirectory=None, logfile=None,
-            server=None, server_tmpdir=None, seed=None, command=None):
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        seed=None,
+        command=None,
+    ):
         """
         EXAMPLES::
 
@@ -198,20 +206,23 @@ class Octave(Expect):
             server = os.getenv('SAGE_OCTAVE_SERVER') or None
         # Use a temporary workspace file.
         workspace_file = tmp_filename()
-        Expect.__init__(self,
-                        name='octave',
-                        # We want the prompt sequence to be unique to avoid confusion with syntax error messages containing >>>
-                        prompt=r'octave\:\d+> ',
-                        # We don't want any pagination of output
-                        command=command + f" --no-line-editing --silent --eval 'PS2(PS1());more off; octave_core_file_name (\"{workspace_file}\")' --persist",
-                        maxread=maxread,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=100)
+        Expect.__init__(
+            self,
+            name='octave',
+            # We want the prompt sequence to be unique to avoid confusion with syntax error messages containing >>>
+            prompt=r'octave\:\d+> ',
+            # We don't want any pagination of output
+            command=command
+            + f" --no-line-editing --silent --eval 'PS2(PS1());more off; octave_core_file_name (\"{workspace_file}\")' --persist",
+            maxread=maxread,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=100,
+        )
         self._seed = seed
 
     def set_seed(self, seed=None):
@@ -285,8 +296,14 @@ class Octave(Expect):
            * Darwin ports and fink have Octave as well.
         """
 
-    def _eval_line(self, line, reformat=True, allow_use_file=False,
-                   wait_for_prompt=True, restart_if_needed=False):
+    def _eval_line(
+        self,
+        line,
+        reformat=True,
+        allow_use_file=False,
+        wait_for_prompt=True,
+        restart_if_needed=False,
+    ):
         """
         EXAMPLES::
 
@@ -294,6 +311,7 @@ class Octave(Expect):
               ans =  4
         """
         from pexpect.exceptions import EOF
+
         if not wait_for_prompt:
             return Expect._eval_line(self, line)
         if line == '':
@@ -332,9 +350,14 @@ class Octave(Expect):
             try:
                 self._expect.close(force=1)
             except pexpect.ExceptionPexpect as msg:
-                raise RuntimeError("THIS IS A BUG -- PLEASE REPORT. This should never happen.\n" + msg)
+                raise RuntimeError(
+                    "THIS IS A BUG -- PLEASE REPORT. This should never happen.\n" + msg
+                )
             self._start()
-            raise KeyboardInterrupt("Restarting %s (WARNING: all variables defined in previous session are now invalid)" % self)
+            raise KeyboardInterrupt(
+                "Restarting %s (WARNING: all variables defined in previous session are now invalid)"
+                % self
+            )
         else:
             self._expect.send('\003')  # control-c
             raise KeyboardInterrupt("Ctrl-c pressed while running %s" % self)
@@ -417,7 +440,10 @@ class Octave(Expect):
         cmd = '%s=%s;' % (var, value)
         out = self.eval(cmd)
         if out.find("error") != -1 or out.find("Error") != -1:
-            raise TypeError("Error executing code in Octave\nCODE:\n\t%s\nOctave ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Octave\nCODE:\n\t%s\nOctave ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -431,7 +457,7 @@ class Octave(Expect):
         """
         s = self.eval('%s' % var)
         i = s.find('=')
-        return s[i+1:]
+        return s[i + 1 :]
 
     def clear(self, var):
         """
@@ -516,6 +542,7 @@ class Octave(Expect):
             raise ValueError("dimensions of A and b must be compatible")
         from sage.matrix.matrix_space import MatrixSpace
         from sage.rings.rational_field import QQ
+
         MS = MatrixSpace(QQ, m, 1)
         b = MS(list(b))  # converted b to a "column vector"
         sA = self.sage2octave_matrix_string(A)
@@ -583,7 +610,10 @@ class Octave(Expect):
         """
         eqn1 = f[0].replace('x', 'x(1)').replace('y', 'x(2)')
         eqn2 = f[1].replace('x', 'x(1)').replace('y', 'x(2)')
-        fcn = "function xdot = f(x,t) xdot(1) = %s; xdot(2) = %s; endfunction" % (eqn1, eqn2)
+        fcn = "function xdot = f(x,t) xdot(1) = %s; xdot(2) = %s; endfunction" % (
+            eqn1,
+            eqn2,
+        )
         self.eval(fcn)
         x0_eqn = "x0 = [%s; %s]" % (ics[0], ics[1])
         self.eval(x0_eqn)
@@ -637,12 +667,15 @@ class OctaveElement(ExpectElement):
         """
         if self.isinteger():
             import sage.rings.integer_ring
+
             return sage.rings.integer_ring.ZZ
         if self.isreal():
             import sage.rings.real_double
+
             return sage.rings.real_double.RDF
         if self.iscomplex():
             import sage.rings.complex_double
+
             return sage.rings.complex_double.CDF
         raise TypeError("no Sage ring associated to this element.")
 
@@ -715,6 +748,7 @@ class OctaveElement(ExpectElement):
             w = [[to_complex(x, R) for x in row] for row in w]
 
         from sage.matrix.matrix_space import MatrixSpace
+
         return MatrixSpace(R, nrows, ncols)(w)
 
     def _vector_(self, R=None):
@@ -735,6 +769,7 @@ class OctaveElement(ExpectElement):
             (1.0, 1.0*I)
         """
         from sage.modules.free_module import FreeModule
+
         if not self.isvector():
             raise TypeError('not an octave vector')
         if R is None:
@@ -853,6 +888,9 @@ def octave_console():
     another.
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%octave magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%octave magics instead.'
+        )
     os.system('octave-cli')

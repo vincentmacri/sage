@@ -481,7 +481,7 @@ def AllExactCovers(M):
         [(1, 0, 1), (0, 1, 0)]
     """
     ones = []
-    r = 1    # damn 1-indexing
+    r = 1  # damn 1-indexing
     for R in M.rows():
         row = [i for i, Ri in enumerate(R, start=1) if Ri]
         ones.append([r, row])

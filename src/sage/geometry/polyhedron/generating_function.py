@@ -39,10 +39,9 @@ Functions
 Hrepresentation_str_options = {'prefix': 'b', 'style': 'positive'}
 
 
-def generating_function_of_integral_points(polyhedron, split=False,
-                                           result_as_tuple=None,
-                                           name=None, names=None,
-                                           **kwds):
+def generating_function_of_integral_points(
+    polyhedron, split=False, result_as_tuple=None, name=None, names=None, **kwds
+):
     r"""
     Return the multivariate generating function of the
     integral points of the ``polyhedron``.
@@ -461,6 +460,7 @@ def generating_function_of_integral_points(polyhedron, split=False,
         TypeError: base ring Real Double Field of the polyhedron not ZZ or QQ
     """
     import logging
+
     logger = logging.getLogger(__name__)
 
     from sage.combinat.permutation import Permutations
@@ -474,21 +474,26 @@ def generating_function_of_integral_points(polyhedron, split=False,
 
     if polyhedron.is_empty():
         from sage.structure.factorization import Factorization
+
         result = Factorization([], unit=0)
         if result_as_tuple:
             return (result,)
         return result
 
     if polyhedron.base_ring() not in (ZZ, QQ):
-        raise TypeError('base ring {} of the polyhedron not '
-                        'ZZ or QQ'.format(polyhedron.base_ring()))
+        raise TypeError(
+            'base ring {} of the polyhedron not ZZ or QQ'.format(polyhedron.base_ring())
+        )
 
     d = polyhedron.ambient_dim()
-    nonnegative_orthant = Polyhedron(ieqs=[dd*(0,) + (1,) + (d-dd)*(0,)
-                                           for dd in range(1, d+1)])
+    nonnegative_orthant = Polyhedron(
+        ieqs=[dd * (0,) + (1,) + (d - dd) * (0,) for dd in range(1, d + 1)]
+    )
     if polyhedron & nonnegative_orthant != polyhedron:
-        raise NotImplementedError('cannot compute the generating function of '
-                                  'polyhedra with negative coordinates')
+        raise NotImplementedError(
+            'cannot compute the generating function of '
+            'polyhedra with negative coordinates'
+        )
 
     logger.info('%s', polyhedron)
 
@@ -507,13 +512,11 @@ def generating_function_of_integral_points(polyhedron, split=False,
         if result_as_tuple:
             return result
         if len(result) != 1:
-            raise ValueError("cannot unpack result "
-                             "(set 'result_as_tuple=True')")
+            raise ValueError("cannot unpack result (set 'result_as_tuple=True')")
         return result[0]
 
     if d <= 1:
-        raise ValueError('cannot do splitting with only '
-                         'dimension {}'.format(d))
+        raise ValueError('cannot do splitting with only dimension {}'.format(d))
 
     parts = None
     if split is True:
@@ -521,18 +524,19 @@ def generating_function_of_integral_points(polyhedron, split=False,
         def polyhedron_from_permutation(pi):
 
             def ieq(a, b):
-                return ((0 if a < b else -1,) +
-                        tuple(1 if i == b else (-1 if i == a else 0)
-                              for i in range(1, d + 1)))
+                return (0 if a < b else -1,) + tuple(
+                    1 if i == b else (-1 if i == a else 0) for i in range(1, d + 1)
+                )
 
             def ieq_repr_rhs(a, b):
-                return (' <= ' if a < b else ' < ') + 'b{}'.format(b-1)
+                return (' <= ' if a < b else ' < ') + 'b{}'.format(b - 1)
 
             def ieqs_repr_lhs(pi):
-                return 'b{}'.format(pi[0]-1)
+                return 'b{}'.format(pi[0] - 1)
 
-            ieqs, repr_rhss = zip(*[(ieq(a, b), ieq_repr_rhs(a, b))
-                                    for a, b in zip(pi[:-1], pi[1:])])
+            ieqs, repr_rhss = zip(
+                *[(ieq(a, b), ieq_repr_rhs(a, b)) for a, b in zip(pi[:-1], pi[1:])]
+            )
             return Polyhedron(ieqs=ieqs), ieqs_repr_lhs(pi) + ''.join(repr_rhss)
 
         split = (polyhedron_from_permutation(pi) for pi in Permutations(d))
@@ -540,26 +544,28 @@ def generating_function_of_integral_points(polyhedron, split=False,
     else:
         if isinstance(split, (list, tuple)):
             parts = len(split)
-        split = ((ph, ph.Hrepresentation_str(**Hrepresentation_str_options))
-                 for ph in split)
+        split = (
+            (ph, ph.Hrepresentation_str(**Hrepresentation_str_options)) for ph in split
+        )
 
     result = []
     for part, (split_polyhedron, pi_log) in enumerate(split):
         if parts is None:
-            parts_log = str(part+1)
+            parts_log = str(part + 1)
         else:
-            parts_log = '{}/{}'.format(part+1, parts)
+            parts_log = '{}/{}'.format(part + 1, parts)
         logger.info('(%s) split polyhedron by %s', parts_log, pi_log)
-        result.append(_generating_function_of_integral_points_(
-            polyhedron & split_polyhedron, name=name, **kwds))
+        result.append(
+            _generating_function_of_integral_points_(
+                polyhedron & split_polyhedron, name=name, **kwds
+            )
+        )
     if not result_as_tuple:
-        raise ValueError("cannot unpack result"
-                         "(unset 'result_as_tuple=False')")
+        raise ValueError("cannot unpack result(unset 'result_as_tuple=False')")
     return sum(result, ())
 
 
-def _generating_function_of_integral_points_(
-        polyhedron, indices=None, **kwds):
+def _generating_function_of_integral_points_(polyhedron, indices=None, **kwds):
     r"""
     Helper function for :func:`generating_function_of_integral_points` which
     does the mid-level stuff.
@@ -576,21 +582,23 @@ def _generating_function_of_integral_points_(
          y0*y1*y2 * (-y1^2*y2 + 1)^-1 * (-y0^2*y1^2*y2^2 + 1)^-1)
     """
     import logging
+
     logger = logging.getLogger(__name__)
 
-    logger.info('using polyhedron %s',
-                polyhedron.Hrepresentation_str(**Hrepresentation_str_options))
+    logger.info(
+        'using polyhedron %s',
+        polyhedron.Hrepresentation_str(**Hrepresentation_str_options),
+    )
 
     if polyhedron.is_empty():
         from sage.structure.factorization import Factorization
+
         return (Factorization([], unit=0),)
 
     Hrepr = polyhedron.Hrepresentation()
 
-    inequalities = tuple(tuple(entry)
-                         for entry in Hrepr if entry.is_inequality())
-    equations = tuple(tuple(entry)
-                      for entry in Hrepr if entry.is_equation())
+    inequalities = tuple(tuple(entry) for entry in Hrepr if entry.is_inequality())
+    equations = tuple(tuple(entry) for entry in Hrepr if entry.is_equation())
     if len(inequalities) + len(equations) != len(Hrepr):
         raise ValueError('cannot handle {}.'.format(polyhedron))
 
@@ -602,24 +610,35 @@ def _generating_function_of_integral_points_(
 
     n = len(indices) + 1
     if any(len(e) != n for e in inequalities):
-        raise ValueError('not all coefficient vectors of the inequalities '
-                         'have the same length')
+        raise ValueError(
+            'not all coefficient vectors of the inequalities have the same length'
+        )
     if any(len(e) != n for e in equations):
-        raise ValueError('not all coefficient vectors of the equations '
-                         'have the same length')
+        raise ValueError(
+            'not all coefficient vectors of the equations have the same length'
+        )
 
     mods = _TransformMod.generate_mods(equations)
     logger.debug('splitting by moduli %s', mods)
 
-    return tuple(__generating_function_of_integral_points__(
-        indices, inequalities, equations, mod, **kwds) for mod in mods)
+    return tuple(
+        __generating_function_of_integral_points__(
+            indices, inequalities, equations, mod, **kwds
+        )
+        for mod in mods
+    )
 
 
 def __generating_function_of_integral_points__(
-        indices, inequalities, equations, mod,
-        name,
-        Factorization_sort=False, Factorization_simplify=False,
-        sort_factors=False):
+    indices,
+    inequalities,
+    equations,
+    mod,
+    name,
+    Factorization_sort=False,
+    Factorization_simplify=False,
+    sort_factors=False,
+):
     r"""
     Helper function for :func:`generating_function_of_integral_points` which
     does the actual computation of the generating function.
@@ -642,18 +661,20 @@ def __generating_function_of_integral_points__(
         y0*y1*y2 * (-y1^2*y2 + 1)^-1 * (-y0^2*y1^2*y2^2 + 1)^-1
     """
     import logging
+
     logger = logging.getLogger(__name__)
 
     from sage.rings.integer_ring import ZZ
     from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
     from sage.structure.factorization import Factorization
 
-    B = LaurentPolynomialRing(ZZ,
-                              tuple(name + str(k) for k in indices),
-                              len(indices))
+    B = LaurentPolynomialRing(ZZ, tuple(name + str(k) for k in indices), len(indices))
 
-    logger.info('preprocessing %s inequalities and %s equations...',
-                len(inequalities), len(equations))
+    logger.info(
+        'preprocessing %s inequalities and %s equations...',
+        len(inequalities),
+        len(equations),
+    )
 
     T_mod = _TransformMod(inequalities, equations, B, mod)
     inequalities = T_mod.inequalities
@@ -670,21 +691,25 @@ def __generating_function_of_integral_points__(
 
     logger.info('%s inequalities left; using Omega...', len(inequalities))
     numerator, terms = _generating_function_via_Omega_(
-        inequalities, B, skip_indices=T_equations.indices)
+        inequalities, B, skip_indices=T_equations.indices
+    )
 
     numerator, terms = T_inequalities.apply_rules(numerator, terms)
     numerator, terms = T_equations.apply_rules(numerator, terms)
     numerator, terms = T_mod.apply_rules(numerator, terms)
 
     if sort_factors:
+
         def key(t):
             D = t.monomial_coefficients().popitem()[0]
             return (-sum(abs(d) for d in D), D)
+
         terms = sorted(terms, key=key, reverse=True)
-    return Factorization([(numerator, 1)] +
-                         [(1 - t, -1) for t in terms],
-                         sort=Factorization_sort,
-                         simplify=Factorization_simplify)
+    return Factorization(
+        [(numerator, 1)] + [(1 - t, -1) for t in terms],
+        sort=Factorization_sort,
+        simplify=Factorization_simplify,
+    )
 
 
 def _generating_function_via_Omega_(inequalities, B, skip_indices=()):
@@ -720,6 +745,7 @@ def _generating_function_via_Omega_(inequalities, B, skip_indices=()):
         (1, (y2, y0*y2, y1*y2))
     """
     import logging
+
     logger = logging.getLogger(__name__)
 
     from .representation import repr_pretty
@@ -735,13 +761,13 @@ def _generating_function_via_Omega_(inequalities, B, skip_indices=()):
         l = L.gen()
         logger.debug('mapping %s --> %s', l, repr_pretty(coeffs, 0))
         it_coeffs = iter(coeffs)
-        numerator *= l**next(it_coeffs)
+        numerator *= l ** next(it_coeffs)
         assert numerator.parent() == L
         terms = tuple(l**c * t for c, t in zip(it_coeffs, terms))
-    assert all(y == t for y, t in
-               (tuple(zip(B.gens(), terms))[i] for i in skip_indices))
-    terms = tuple(t for i, t in enumerate(terms)
-                  if i not in skip_indices)
+    assert all(
+        y == t for y, t in (tuple(zip(B.gens(), terms))[i] for i in skip_indices)
+    )
+    terms = tuple(t for i, t in enumerate(terms) if i not in skip_indices)
 
     logger.debug('terms denominator %s', terms)
 
@@ -757,12 +783,13 @@ def _generating_function_via_Omega_(inequalities, B, skip_indices=()):
         logger.debug('...(numerator has %s terms)', numerator.number_of_terms())
         logger.debug('...numerator %s', numerator)
 
-        decoded_factors, other_factors = \
-            partition((decode_factor(factor) for factor in terms),
-                      lambda factor: factor[1] == 0)
+        decoded_factors, other_factors = partition(
+            (decode_factor(factor) for factor in terms), lambda factor: factor[1] == 0
+        )
         other_factors = tuple(factor[0] for factor in other_factors)
-        numerator, factors_denominator = \
-            _Omega_(numerator.monomial_coefficients(), tuple(decoded_factors))
+        numerator, factors_denominator = _Omega_(
+            numerator.monomial_coefficients(), tuple(decoded_factors)
+        )
         terms = other_factors + factors_denominator
 
     return _simplify_(numerator, terms)
@@ -872,8 +899,10 @@ class _TransformHrepresentation:
             sage: T.apply_rules(*gf(T.inequalities, B))
             (1, (y0*y1, y1, y2))
         """
-        return (numerator.subs(self.rules) * self.factor,
-                tuple(t.subs(self.rules) for t in terms))
+        return (
+            numerator.subs(self.rules) * self.factor,
+            tuple(t.subs(self.rules) for t in terms),
+        )
 
 
 class _SplitOffSimpleInequalities(_TransformHrepresentation):
@@ -1114,6 +1143,7 @@ class _SplitOffSimpleInequalities(_TransformHrepresentation):
         B = self.B
 
         import logging
+
         logger = logging.getLogger(__name__)
 
         from itertools import takewhile
@@ -1128,20 +1158,20 @@ class _SplitOffSimpleInequalities(_TransformHrepresentation):
         for coeffs in inequalities:
             dim = len(coeffs)
             if all(c >= 0 for c in coeffs):
-                logger.debug('skipping %s (all coefficients >= 0)',
-                             repr_pretty(coeffs, 0))
+                logger.debug(
+                    'skipping %s (all coefficients >= 0)', repr_pretty(coeffs, 0)
+                )
                 continue
             constant = coeffs[0]
-            ones = tuple(i+1 for i, c in enumerate(coeffs[1:]) if c == 1)
-            mones = tuple(i+1 for i, c in enumerate(coeffs[1:]) if c == -1)
-            absgetwo = tuple(i+1 for i, c in enumerate(coeffs[1:]) if abs(c) >= 2)
+            ones = tuple(i + 1 for i, c in enumerate(coeffs[1:]) if c == 1)
+            mones = tuple(i + 1 for i, c in enumerate(coeffs[1:]) if c == -1)
+            absgetwo = tuple(i + 1 for i, c in enumerate(coeffs[1:]) if abs(c) >= 2)
             if len(ones) == 1 and not mones and not absgetwo:
                 if constant < 0:
                     # This case could be cleverly skipped...
                     inequalities_filtered.append(coeffs)
             elif len(ones) == 1 and len(mones) == 1 and not absgetwo and constant <= 0:
-                logger.debug('handling %s',
-                             repr_pretty(coeffs, 0))
+                logger.debug('handling %s', repr_pretty(coeffs, 0))
                 chain_links[(mones[0], ones[0])] = constant
             else:
                 inequalities_filtered.append(coeffs)
@@ -1154,9 +1184,15 @@ class _SplitOffSimpleInequalities(_TransformHrepresentation):
         for i in range(dim):
             D[(i, i)] = 1
         for v in G.topological_sort():
-            NP = iter(sorted(((n, potential[n] + chain_links[(n, v)])
-                              for n in G.neighbor_in_iterator(v)),
-                             key=lambda k: (k[1], k[0])))
+            NP = iter(
+                sorted(
+                    (
+                        (n, potential[n] + chain_links[(n, v)])
+                        for n in G.neighbor_in_iterator(v)
+                    ),
+                    key=lambda k: (k[1], k[0]),
+                )
+            )
             n, p = next(NP, (None, 0))
             potential[v] = p
             D[(0, v)] = -p
@@ -1165,9 +1201,10 @@ class _SplitOffSimpleInequalities(_TransformHrepresentation):
                 D[(u, v)] = 1
 
             for n, p in NP:
-                ell = len(tuple(takewhile(lambda u: u[0] == u[1],
-                                          zip(paths[n], paths[v]))))
-                coeffs = dim*[0]
+                ell = len(
+                    tuple(takewhile(lambda u: u[0] == u[1], zip(paths[n], paths[v])))
+                )
+                coeffs = dim * [0]
                 for u in paths[v][ell:]:
                     coeffs[u] = 1
                 for u in paths[n][ell:]:
@@ -1176,12 +1213,13 @@ class _SplitOffSimpleInequalities(_TransformHrepresentation):
                 inequalities_extra.append(tuple(coeffs))
         T = matrix(ZZ, dim, dim, D)
 
-        self.inequalities = ([tuple(T * vector(ieq))
-                              for ieq in inequalities_filtered]
-                             + inequalities_extra)
+        self.inequalities = [
+            tuple(T * vector(ieq)) for ieq in inequalities_filtered
+        ] + inequalities_extra
 
-        rules_pre = ((y, B({tuple(row[1:]): 1}))
-                     for y, row in zip((1,) + B.gens(), T.rows()))
+        rules_pre = (
+            (y, B({tuple(row[1:]): 1})) for y, row in zip((1,) + B.gens(), T.rows())
+        )
         self.factor = next(rules_pre)[1]
         self.rules = dict(rules_pre)
 
@@ -1282,16 +1320,20 @@ class _EliminateByEquations(_TransformHrepresentation):
             self.indices = ()
             return
 
-        TE, indices, indicesn = _EliminateByEquations.prepare_equations_transformation(E)
+        TE, indices, indicesn = _EliminateByEquations.prepare_equations_transformation(
+            E
+        )
 
         gens = (1,) + B.gens()
         z = tuple(gens[i] for i in indices)
         gens_cols = tuple(zip(gens, TE.columns()))
-        rules_pre = ((y, y * prod(zz**(-c) for zz, c in zip(z, col)))
-                     for y, col in (gens_cols[i] for i in indicesn))
+        rules_pre = (
+            (y, y * prod(zz ** (-c) for zz, c in zip(z, col)))
+            for y, col in (gens_cols[i] for i in indicesn)
+        )
         self.factor = next(rules_pre)[1]
         self.rules = dict(rules_pre)
-        self.indices = tuple(i-1 for i in indices)
+        self.indices = tuple(i - 1 for i in indices)
         self.equations = []
 
     @staticmethod
@@ -1335,8 +1377,9 @@ class _EliminateByEquations(_TransformHrepresentation):
             [   0 -2/3    0    1], (2, 3), (0, 1)
             )
         """
-        indices_nonzero = tuple(i for i, col in enumerate(E.columns())
-                                if i > 0 and not col.is_zero())
+        indices_nonzero = tuple(
+            i for i, col in enumerate(E.columns()) if i > 0 and not col.is_zero()
+        )
         indices = []
         r = 0
         for i in reversed(indices_nonzero):
@@ -1454,12 +1497,13 @@ class _TransformMod(_TransformHrepresentation):
 
         D = {(i, i): 1 for i in range(n)}
         for i, mr in mod.items():
-            D[(i+1, i+1)] = mr[0]
-            D[(i+1, 0)] = mr[1]
+            D[(i + 1, i + 1)] = mr[0]
+            D[(i + 1, 0)] = mr[1]
         T = matrix(ZZ, n, n, D)
 
-        rules_pre = ((y, B({tuple(row[1:]): 1}))
-                     for y, row in zip((1,) + B.gens(), T.columns()))
+        rules_pre = (
+            (y, B({tuple(row[1:]): 1})) for y, row in zip((1,) + B.gens(), T.columns())
+        )
         self.factor = next(rules_pre)[1]
         self.rules = dict(rules_pre)
 
@@ -1494,7 +1538,9 @@ class _TransformMod(_TransformHrepresentation):
         from sage.rings.integer_ring import ZZ
         from sage.rings.rational_field import QQ
 
-        TE, TEi, TEin = _EliminateByEquations.prepare_equations_transformation(matrix(equations))
+        TE, TEi, TEin = _EliminateByEquations.prepare_equations_transformation(
+            matrix(equations)
+        )
         TEin = TEin[1:]
         if TE.base_ring() == ZZ:
             mods = [{}]
@@ -1505,16 +1551,26 @@ class _TransformMod(_TransformHrepresentation):
             else:
                 cols = TE.columns()
                 assert all(cols[j][i] == 1 for i, j in enumerate(TEi))
-                pre_mods = _compositions_mod((tuple(ZZ(cc*m) for cc in cols[i])
-                                              for i in TEin),
-                                             m, r=(-cc*m for cc in cols[0]),
-                                             multidimensional=True)
-                mods = tuple({i-1: (aa.modulus(), ZZ(aa))
-                              for i, aa in zip(TEin, a) if aa.modulus() > 1}
-                             for a in pre_mods)
+                pre_mods = _compositions_mod(
+                    (tuple(ZZ(cc * m) for cc in cols[i]) for i in TEin),
+                    m,
+                    r=(-cc * m for cc in cols[0]),
+                    multidimensional=True,
+                )
+                mods = tuple(
+                    {
+                        i - 1: (aa.modulus(), ZZ(aa))
+                        for i, aa in zip(TEin, a)
+                        if aa.modulus() > 1
+                    }
+                    for a in pre_mods
+                )
         else:
-            raise TypeError('equations over ZZ or QQ expected, but got '
-                            'equations over {}.'.format(TE.base_ring()))
+            raise TypeError(
+                'equations over ZZ or QQ expected, but got equations over {}.'.format(
+                    TE.base_ring()
+                )
+            )
 
         return mods
 
@@ -1611,7 +1667,7 @@ def _compositions_mod(u, m, r=0, multidimensional=False):
         m = lcm(vv.order() for vv in v)
         Z = Zmod(m)
         for j in srange(m):
-            for a in recursively_build_compositions(u[1:], r - j*v):
+            for a in recursively_build_compositions(u[1:], r - j * v):
                 yield (Z(j),) + a
 
     yield from recursively_build_compositions(u, r)

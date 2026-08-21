@@ -61,6 +61,7 @@ from sage.structure.parent import Parent
 # TODO: Think about Parent/Element for this and the category
 # sage.categories.finite_enumerated_sets.FiniteEnumeratedSets
 
+
 class ShuffleProduct_abstract(Parent):
     """
     Abstract base class for shuffle products.
@@ -237,8 +238,10 @@ class SetShuffleProduct(ShuffleProduct_abstract):
             sage: SetShuffleProduct([()], [[1,4]])
             Shuffle set product of: [()] and [[1, 4]]
         """
-        return "Shuffle set product of: %s and %s" % (self._element_constructor_(self._l1),
-                                                      self._element_constructor_(self._l2))
+        return "Shuffle set product of: %s and %s" % (
+            self._element_constructor_(self._l1),
+            self._element_constructor_(self._l2),
+        )
 
     def _ascii_art_(self):
         r"""
@@ -253,9 +256,10 @@ class SetShuffleProduct(ShuffleProduct_abstract):
             [ [  ], [    o   o ] ] and [ [ 1, 4 ] ]
         """
         from sage.typeset.ascii_art import ascii_art
-        return (ascii_art("Set shuffle product of:") *
-                (ascii_art(self._l1) + ascii_art(" and ") +
-                 ascii_art(self._l2)))
+
+        return ascii_art("Set shuffle product of:") * (
+            ascii_art(self._l1) + ascii_art(" and ") + ascii_art(self._l2)
+        )
 
     def __iter__(self):
         """
@@ -281,9 +285,9 @@ class SetShuffleProduct(ShuffleProduct_abstract):
              {1, 3, 4}]
         """
         return itertools.chain.from_iterable(
-            ShuffleProduct(*pair,
-                           element_constructor=self._element_constructor_)
-            for pair in itertools.product(self._l1, self._l2))
+            ShuffleProduct(*pair, element_constructor=self._element_constructor_)
+            for pair in itertools.product(self._l1, self._l2)
+        )
 
     def cardinality(self):
         """
@@ -296,13 +300,15 @@ class SetShuffleProduct(ShuffleProduct_abstract):
             sage: SetShuffleProduct([[1,2],[3,4]], [[1,4]], element_constructor=set).cardinality()
             12
         """
+
         def comp_binom(el1, el2):
             ll1 = Integer(len(el1))
             ll2 = Integer(len(el2))
             return (ll1 + ll2).binomial(ll2)
 
-        return sum(comp_binom(el1, el2)
-                   for el1, el2 in itertools.product(self._l1, self._l2))
+        return sum(
+            comp_binom(el1, el2) for el1, el2 in itertools.product(self._l1, self._l2)
+        )
 
 
 class ShuffleProduct(ShuffleProduct_abstract):
@@ -390,9 +396,10 @@ class ShuffleProduct(ShuffleProduct_abstract):
             [    o   o ] and [ o   o   o   ]
         """
         from sage.typeset.ascii_art import ascii_art
-        return ascii_art("Shuffle product of:") * \
-            (ascii_art(self._l1) + ascii_art(" and ") +
-             ascii_art(self._l2))
+
+        return ascii_art("Shuffle product of:") * (
+            ascii_art(self._l1) + ascii_art(" and ") + ascii_art(self._l2)
+        )
 
     def __iter__(self):
         r"""
@@ -504,9 +511,9 @@ class ShuffleProduct(ShuffleProduct_abstract):
             else:
                 return False
             if i_l1 == len_l1:
-                return iterable[i + 1:] == l2[i_l2:]
+                return iterable[i + 1 :] == l2[i_l2:]
             if i_l2 == len_l2:
-                return iterable[i + 1:] == l1[i_l1:]
+                return iterable[i + 1 :] == l1[i_l1:]
         return i_l1 + 1 == len_l1 and i_l2 + 1 == len_l2
 
     def cardinality(self):
@@ -583,7 +590,11 @@ class ShuffleProduct_overlapping_r(ShuffleProduct_abstract):
             sage: ShuffleProduct_overlapping_r(w,u,1).__repr__()
             'Overlapping shuffle product of word: 29 and word: 91 with 1 overlaps'
         """
-        return "Overlapping shuffle product of %s and %s with %s overlaps" % (repr(self._l1), repr(self._l2), self.r)
+        return "Overlapping shuffle product of %s and %s with %s overlaps" % (
+            repr(self._l1),
+            repr(self._l2),
+            self.r,
+        )
 
     def __eq__(self, other):
         """
@@ -792,8 +803,10 @@ class ShuffleProduct_overlapping(ShuffleProduct_abstract):
             sage: ShuffleProduct_overlapping(w,u).__repr__()
             'Overlapping shuffle product of word: 29 and word: 91'
         """
-        return "Overlapping shuffle product of %s and %s" % (repr(self._l1),
-                                                             repr(self._l2))
+        return "Overlapping shuffle product of %s and %s" % (
+            repr(self._l1),
+            repr(self._l2),
+        )
 
     def __iter__(self):
         """
@@ -817,6 +830,6 @@ class ShuffleProduct_overlapping(ShuffleProduct_abstract):
         m = len(self._l1)
         n = len(self._l2)
         for r in range(min(m, n) + 1):
-            yield from ShuffleProduct_overlapping_r(self._l1, self._l2, r,
-                                                    self._element_constructor_,
-                                                    add=self._add)
+            yield from ShuffleProduct_overlapping_r(
+                self._l1, self._l2, r, self._element_constructor_, add=self._add
+            )

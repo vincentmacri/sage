@@ -256,7 +256,7 @@ class Gammoid(Matroid):
         if not isinstance(other, Gammoid):
             return False
         # The roots are implied by self._D
-        return (self._D == other._D and self._groundset == other._groundset)
+        return self._D == other._D and self._groundset == other._groundset
 
     def __ne__(self, other):
         """
@@ -283,7 +283,7 @@ class Gammoid(Matroid):
             sage: M.delete(8) == N.delete('a')
             True
         """
-        return (not self == other)
+        return not self == other
 
     def __reduce__(self):
         """
@@ -313,6 +313,7 @@ class Gammoid(Matroid):
             Gammoid of rank 3 on 7 elements
         """
         import sage.matroids.unpickling
+
         data = (self._D, self._roots, self._groundset, self.get_custom_name())
         version = 0
         return sage.matroids.unpickling.unpickle_gammoid, (version, data)
@@ -358,8 +359,12 @@ class Gammoid(Matroid):
         # Vertices just in the ending set are blue "#0072B2"
         # Vertices in both are pink "#CC79A7"
         # Vertices in neither are grey "#999999"
-        d = {"#D55E00": list(self._buckets), "#CC79A7": list(self._inter),
-             "#0072B2": list(self._ending), "#999999": list(self._therest)}
+        d = {
+            "#D55E00": list(self._buckets),
+            "#CC79A7": list(self._inter),
+            "#0072B2": list(self._ending),
+            "#999999": list(self._therest),
+        }
         return self._G.plot(vertex_colors=d)
 
     def _rank(self, X):
@@ -529,8 +534,7 @@ class Gammoid(Matroid):
             if neighbors:
                 raise ValueError("neighbors of vertex in digraph cannot be changed")
             new_groundset = set(self._groundset).union([vertex])
-            return Gammoid(D=self._G, roots=self._roots,
-                           groundset=new_groundset)
+            return Gammoid(D=self._G, roots=self._roots, groundset=new_groundset)
         else:
             if not set(neighbors).issubset(self._G.vertices()):
                 raise ValueError("neighbors must already be in graph")
@@ -591,7 +595,9 @@ class Gammoid(Matroid):
         else:
             vertices = set(vertices)
             if not vertices.issubset(free_vertices):
-                raise ValueError("vertices must be in the digraph and not already in the groundset")
+                raise ValueError(
+                    "vertices must be in the digraph and not already in the groundset"
+                )
         for v in vertices:
             new_groundset = self._groundset.union([v])
             yield Gammoid(self._G, self._roots, new_groundset)

@@ -1112,8 +1112,9 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
 
     _name: Optional[str]
 
-    def __init__(self, parent, coord_expression=None, chart=None, name=None,
-                 latex_name=None):
+    def __init__(
+        self, parent, coord_expression=None, chart=None, name=None, latex_name=None
+    ):
         r"""
         Construct a scalar field.
 
@@ -1167,7 +1168,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                         self._express[ch] = ch.function(coord_expression)
                 else:
                     self._express[chart] = chart.function(coord_expression)
-        self._init_derived()   # initialization of derived quantities
+        self._init_derived()  # initialization of derived quantities
 
     # ### Required methods for an algebra element (beside arithmetic) ###
 
@@ -1341,8 +1342,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         """
         if self._is_zero:
             return False
-        return not any(func.is_trivial_zero()
-                       for func in self._express.values())
+        return not any(func.is_trivial_zero() for func in self._express.values())
 
     def __eq__(self, other):
         r"""
@@ -1542,8 +1542,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             \Phi
         """
         if self.is_immutable():
-            raise ValueError("the name of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the name of an immutable element cannot be changed")
         if name is not None:
             self._name = name
             if latex_name is None:
@@ -1670,11 +1669,11 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             False
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         if other not in self.parent():
-            raise TypeError("the original must be an element of "
-                            f"{self.parent()}")
+            raise TypeError(f"the original must be an element of {self.parent()}")
         self._del_derived()
         for chart, funct in other._express.items():
             self._express[chart] = funct.copy()
@@ -1749,8 +1748,10 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             chart = self._domain._def_chart
         else:
             if chart not in self._domain._atlas:
-                raise ValueError("the {} is not a chart ".format(chart) +
-                                 "defined on the {}".format(self._domain))
+                raise ValueError(
+                    "the {} is not a chart ".format(chart)
+                    + "defined on the {}".format(self._domain)
+                )
         if chart not in self._express:
             # Check whether chart corresponds to a subchart of a chart
             # where the expression of self is known:
@@ -1774,17 +1775,21 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                             found = True
                             if skchart not in self._express:
                                 self._express[skchart] = skchart.function(
-                                    self._express[kchart].expr())
+                                    self._express[kchart].expr()
+                                )
                             break
                     if found:
                         break
                 if not found:
-                    raise ValueError("no starting chart could be found to " +
-                                     "compute the expression in the {}".format(chart))
+                    raise ValueError(
+                        "no starting chart could be found to "
+                        + "compute the expression in the {}".format(chart)
+                    )
             change = self._domain._coord_changes[(chart, from_chart)]
             # old coordinates expressed in terms of the new ones:
-            coords = [change._transf._functions[i].expr()
-                      for i in range(self._manifold.dim())]
+            coords = [
+                change._transf._functions[i].expr() for i in range(self._manifold.dim())
+            ]
             new_expr = self._express[from_chart](*coords)
             self._express[chart] = chart.function(new_expr)
             self._del_derived()
@@ -1900,8 +1905,9 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
              changed
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         if chart is None:
             chart = self._domain._def_chart
         self._express.clear()
@@ -1963,8 +1969,9 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
              changed
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         if chart is None:
             chart = self._domain._def_chart
         self._express[chart] = chart.function(coord_expression)
@@ -2032,11 +2039,13 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             on V: (u, v) ↦ arctan(1/(u^2 + v^2))
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         if not chart.domain().is_subset(self._domain):
-            raise ValueError("the chart is not defined on a subset of " +
-                             "the scalar field domain")
+            raise ValueError(
+                "the chart is not defined on a subset of " + "the scalar field domain"
+            )
         schart = chart.restrict(subdomain)
         self._express[chart] = chart.function(self.expr(schart))
         self._is_zero = False  # a priori
@@ -2069,15 +2078,19 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             True
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         if not isinstance(rst, ScalarField):
             raise TypeError("the argument must be a scalar field")
         if not rst._domain.is_subset(self._domain):
-            raise ValueError("the domain of the declared restriction is not " +
-                             "a subset of the field's domain")
-        self._restrictions[rst._domain] = rst.copy(name=self._name,
-                                                   latex_name=self._latex_name)
+            raise ValueError(
+                "the domain of the declared restriction is not "
+                + "a subset of the field's domain"
+            )
+        self._restrictions[rst._domain] = rst.copy(
+            name=self._name, latex_name=self._latex_name
+        )
         for chart, expr in rst._express.items():
             intersection = chart.domain().intersection(rst._domain)
             self._express[chart.restrict(intersection)] = expr
@@ -2166,12 +2179,13 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                 result._latex += " & "
             else:
                 result._txt += "on " + chart.domain()._name + ": "
-                result._latex += r"\text{on}\ " + latex(chart.domain()) \
-                                 + r": & "
-            result._txt += repr(coords) + " " + unicode_mapsto + " " \
-                + repr(expression) + "\n"
-            result._latex += latex(coords) + r"& \longmapsto & " \
-                + latex(expression) + r"\\"
+                result._latex += r"\text{on}\ " + latex(chart.domain()) + r": & "
+            result._txt += (
+                repr(coords) + " " + unicode_mapsto + " " + repr(expression) + "\n"
+            )
+            result._latex += (
+                latex(coords) + r"& \longmapsto & " + latex(expression) + r"\\"
+            )
 
         # Name of the base field:
         field = self._domain.base_field()
@@ -2191,15 +2205,22 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             symbol = ""
         else:
             symbol = self._name + ": "
-        result._txt = symbol + self._domain._name + " " + unicode_to + " " \
-            + field_name + "\n"
+        result._txt = (
+            symbol + self._domain._name + " " + unicode_to + " " + field_name + "\n"
+        )
         if self._latex_name is None:
             symbol = ""
         else:
             symbol = self._latex_name + ":"
-        result._latex = r"\begin{array}{llcl} " + symbol + r"&" + \
-                        latex(self._domain) + r"& \longrightarrow & " + \
-                        field_latex_name + r" \\"
+        result._latex = (
+            r"\begin{array}{llcl} "
+            + symbol
+            + r"&"
+            + latex(self._domain)
+            + r"& \longrightarrow & "
+            + field_latex_name
+            + r" \\"
+        )
         if chart is None:
             for ch in self._domain._top_charts:
                 ###
@@ -2284,8 +2305,10 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the specified domain is not a subset of " +
-                                 "the domain of definition of the scalar field")
+                raise ValueError(
+                    "the specified domain is not a subset of "
+                    + "the domain of definition of the scalar field"
+                )
             # Special case of the zero scalar field:
             if self._is_zero:
                 return subdomain._zero_scalar_field
@@ -2301,9 +2324,12 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                     for schart in subdomain.atlas():
                         if schart in chart._subcharts:
                             sexpress[schart] = funct.expr()
-                resu = type(self)(subdomain.scalar_field_algebra(),
-                                  coord_expression=sexpress, name=self._name,
-                                  latex_name=self._latex_name)
+                resu = type(self)(
+                    subdomain.scalar_field_algebra(),
+                    coord_expression=sexpress,
+                    name=self._name,
+                    latex_name=self._latex_name,
+                )
                 if self.is_immutable():
                     resu.set_immutable()  # restriction must be immutable, too
                 self._restrictions[subdomain] = resu
@@ -2497,8 +2523,11 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         # ! # it should be "if p not in self_domain:" instead, but this test is
         # skipped for efficiency
         if p not in self._manifold:
-            raise ValueError("the {} ".format(p) + "does not belong " +
-                             "to the {}".format(self._manifold))
+            raise ValueError(
+                "the {} ".format(p)
+                + "does not belong "
+                + "to the {}".format(self._manifold)
+            )
         if self._is_zero:
             return 0
         if chart is None:
@@ -2531,8 +2560,10 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                     except (TypeError, ValueError):
                         pass
         if chart is None:
-            raise ValueError("no common chart has been found to evaluate " +
-                             "the action of {} on the {}".format(self, p))
+            raise ValueError(
+                "no common chart has been found to evaluate "
+                + "the action of {} on the {}".format(self, p)
+            )
         return self._express[chart](*(p._coordinates[chart]))
 
     def preimage(self, codomain_subset, name=None, latex_name=None):
@@ -2572,8 +2603,10 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         if self.is_trivial_zero() and 0 in codomain_subset:
             return self.domain()
         from sage.manifolds.subsets.pullback import ManifoldSubsetPullback
-        return ManifoldSubsetPullback(self, codomain_subset,
-                                      name=name, latex_name=latex_name)
+
+        return ManifoldSubsetPullback(
+            self, codomain_subset, name=name, latex_name=latex_name
+        )
 
     pullback = preimage
 
@@ -2595,7 +2628,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         """
         result = type(self)(self.parent())
         for chart in self._express:
-            result._express[chart] = + self._express[chart]
+            result._express[chart] = +self._express[chart]
         if self._name is not None:
             result._name = '+' + self._name
         if self._latex_name is not None:
@@ -2623,7 +2656,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         """
         result = type(self)(self.parent())
         for chart in self._express:
-            result._express[chart] = - self._express[chart]
+            result._express[chart] = -self._express[chart]
         if self._name is not None:
             result._name = '-' + self._name
         if self._latex_name is not None:
@@ -2773,6 +2806,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             format_mul_latex,
             format_mul_txt,
         )
+
         com_charts = self.common_charts(other)
         if com_charts is None:
             raise ValueError("no common chart for the multiplication")
@@ -2781,8 +2815,9 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             # ChartFunction multiplication:
             result._express[chart] = self._express[chart] * other._express[chart]
         result._name = format_mul_txt(self._name, '*', other._name)
-        result._latex_name = format_mul_latex(self._latex_name, r' \cdot ',
-                                              other._latex_name)
+        result._latex_name = format_mul_latex(
+            self._latex_name, r' \cdot ', other._latex_name
+        )
         return result
 
     def _div_(self, other):
@@ -2820,6 +2855,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             format_mul_latex,
             format_mul_txt,
         )
+
         # Trivial cases:
         if other.is_trivial_zero():
             raise ZeroDivisionError("division of a scalar field by zero")
@@ -2834,8 +2870,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             # ChartFunction division:
             result._express[chart] = self._express[chart] / other._express[chart]
         result._name = format_mul_txt(self._name, '/', other._name)
-        result._latex_name = format_mul_latex(self._latex_name, '/',
-                                              other._latex_name)
+        result._latex_name = format_mul_latex(self._latex_name, '/', other._latex_name)
         return result
 
     def _lmul_(self, number):
@@ -2916,8 +2951,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
                         # or (ii) no symbolic variable in number belongs to a
                         # different chart
                         chart_coords = chart[:]
-                        var_not_in_chart = [s for s in var
-                                            if s not in chart_coords]
+                        var_not_in_chart = [s for s in var if s not in chart_coords]
                         any_in_other_chart = False
                         if var_not_in_chart:
                             for other_chart in self._domain.atlas():
@@ -3086,6 +3120,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             True
         """
         from sage.misc.latex import latex
+
         if self._name is None:
             name = None
         else:
@@ -3093,8 +3128,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
         if self._latex_name is None:
             latex_name = None
         else:
-            latex_name = r"{" + self._latex_name + r"}^{" + \
-                         latex(exponent) + r"}"
+            latex_name = r"{" + self._latex_name + r"}^{" + latex(exponent) + r"}"
         resu = type(self)(self.parent(), name=name, latex_name=latex_name)
         for chart, func in self._express.items():
             resu._express[chart] = func.__pow__(exponent)
@@ -3127,8 +3161,7 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             sage: sqrt(M.zero_scalar_field()) == M.zero_scalar_field()
             True
         """
-        name, latex_name = self._function_name("sqrt", r"\sqrt",
-                                               parentheses=False)
+        name, latex_name = self._function_name("sqrt", r"\sqrt", parentheses=False)
         resu = type(self)(self.parent(), name=name, latex_name=latex_name)
         for chart, func in self._express.items():
             resu._express[chart] = func.sqrt()
@@ -3711,6 +3744,5 @@ class ScalarField(CommutativeAlgebraElement, ModuleElementWithMutability):
             1
         """
         if self.is_mutable():
-            raise ValueError('element must be immutable in order to be '
-                             'hashable')
+            raise ValueError('element must be immutable in order to be hashable')
         return hash((type(self).__name__, self._domain))

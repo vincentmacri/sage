@@ -24,6 +24,7 @@ AUTHORS:
 
 from sage.misc.lazy_import import lazy_import
 from sage.features.phitigra import Phitigra
+
 lazy_import('phitigra', 'GraphEditor', feature=Phitigra())
 
 

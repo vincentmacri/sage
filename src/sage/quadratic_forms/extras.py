@@ -102,7 +102,7 @@ def extend_to_primitive(A_input):
     """
     # Deal with a list of vectors
     if not isinstance(A_input, Matrix):
-        A = matrix(A_input)      # Make a matrix A with the given rows.
+        A = matrix(A_input)  # Make a matrix A with the given rows.
         vec_output_flag = True
     else:
         A = A_input
@@ -128,7 +128,7 @@ def extend_to_primitive(A_input):
     for i in range(n - k):
         B_new[i, n - i - 1] = 1
     C = B.stack(B_new)
-    D = C * V**(-1)
+    D = C * V ** (-1)
 
     # Normalize for a positive determinant
     if D.det() < 0:
@@ -188,6 +188,7 @@ def least_quadratic_nonresidue(p):
     if not p.is_prime():
         raise ValueError("p must be a prime number > 2")
     from sage.arith.srange import xsrange
+
     for r in xsrange(7, p):
         if legendre_symbol(r, p) == -1:
             return ZZ(r)

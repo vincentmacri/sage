@@ -95,9 +95,9 @@ class PiecewiseFunction(BuiltinFunction):
             sage: f(-1/2)
             1/2*y^2
         """
-        BuiltinFunction.__init__(self, "piecewise",
-                                 latex_name='piecewise',
-                                 conversions=dict(), nargs=2)
+        BuiltinFunction.__init__(
+            self, "piecewise", latex_name='piecewise', conversions=dict(), nargs=2
+        )
 
     def __call__(self, function_pieces, **kwds):
         r"""
@@ -136,6 +136,7 @@ class PiecewiseFunction(BuiltinFunction):
             (-1, 0, 1)
         """
         from types import FunctionType
+
         var = kwds.pop('var', None)
         parameters = []
         domain_list = []
@@ -178,8 +179,7 @@ class PiecewiseFunction(BuiltinFunction):
         """
         s = 'piecewise('
         # NOTE : could use ⟼ instead of |-->
-        args = (f'{variable}|-->{func} on {domain}'
-                for domain, func in parameters)
+        args = (f'{variable}|-->{func} on {domain}' for domain, func in parameters)
         s += ', '.join(args) + f'; {variable})'
         return s
 
@@ -220,8 +220,9 @@ class PiecewiseFunction(BuiltinFunction):
         point = subs_map.apply_to(x, 0)
 
         if point.is_symbol():  # avoid to compare with x (see #37925)
-            new_params = [(domain, subs_map.apply_to(func, 0))
-                          for domain, func in parameters]
+            new_params = [
+                (domain, subs_map.apply_to(func, 0)) for domain, func in parameters
+            ]
             return piecewise(new_params, var=point)
 
         if (point.is_numeric() or point.is_constant()) and point.is_real():
@@ -258,10 +259,12 @@ class PiecewiseFunction(BuiltinFunction):
             sage: piecewise.in_operands(1+sin(0*f))
             False
         """
+
         def is_piecewise(ex):
             if ex.operator() is piecewise:
                 return True
             return any(is_piecewise(op) for op in ex.operands())
+
         return is_piecewise(ex)
 
     @staticmethod
@@ -312,12 +315,12 @@ class PiecewiseFunction(BuiltinFunction):
             sage: f.diff()
             piecewise(x|-->0 on (-oo, -1), x|-->-2*x*e^(1/(x^2 - 1))/(x^2 - 1)^2 on (-1, 1), x|-->0 on (1, +oo); x)
         """
-        return piecewise([(domain, func.derivative(*args))
-                          for domain, func in parameters],
-                         var=variable)
+        return piecewise(
+            [(domain, func.derivative(*args)) for domain, func in parameters],
+            var=variable,
+        )
 
     class EvaluationMethods:
-
         def __pow__(self, parameters, variable, n):
             """
             Return the `n`-th power of the piecewise function by applying the
@@ -334,9 +337,9 @@ class PiecewiseFunction(BuiltinFunction):
                 sage: (f^2).integral(definite=True)
                 4/3
             """
-            return piecewise(zip(self.domains(),
-                                 [ex**n for ex in self.expressions()]),
-                             var=variable)
+            return piecewise(
+                zip(self.domains(), [ex**n for ex in self.expressions()]), var=variable
+            )
 
         def expression_at(self, parameters, variable, point):
             """
@@ -597,8 +600,7 @@ class PiecewiseFunction(BuiltinFunction):
                 sage: bool(h == f)
                 True
             """
-            result = [(domain, func) for domain, func in parameters
-                      if func != 0]
+            result = [(domain, func) for domain, func in parameters if func != 0]
             if len(result) == len(self):
                 return self
             return piecewise(result, var=variable)
@@ -619,8 +621,9 @@ class PiecewiseFunction(BuiltinFunction):
                 (piecewise(x|-->-x on (-1, 0); x),
                  piecewise(x|-->x on [0, 1]; x))
             """
-            return tuple(piecewise([(domain, func)], var=variable)
-                         for domain, func in parameters)
+            return tuple(
+                piecewise([(domain, func)], var=variable) for domain, func in parameters
+            )
 
         def end_points(self, parameters, variable) -> list:
             """
@@ -663,9 +666,11 @@ class PiecewiseFunction(BuiltinFunction):
                           x|-->x + 1 on (1/2, 1],
                           x|-->x on (1, 2) ∪ (2, 3); x)
             """
-            points = ([minus_infinity] +
-                      sorted(set(self.end_points() + other.end_points())) +
-                      [infinity])
+            points = (
+                [minus_infinity]
+                + sorted(set(self.end_points() + other.end_points()))
+                + [infinity]
+            )
             domain = []
             funcs = []
             contains_lower = False
@@ -673,10 +678,12 @@ class PiecewiseFunction(BuiltinFunction):
             for i in range(len(points) - 1):
                 a, b = points[i], points[i + 1]
                 try:
-                    contains_lower = (self.domain().contains(a) or
-                        other.domain().contains(a)) and not contains_upper
-                    contains_upper = (self.domain().contains(b) or
-                        other.domain().contains(b))
+                    contains_lower = (
+                        self.domain().contains(a) or other.domain().contains(a)
+                    ) and not contains_upper
+                    contains_upper = self.domain().contains(
+                        b
+                    ) or other.domain().contains(b)
                     if contains_lower:
                         if contains_upper:
                             rs = RealSet.closed(a, b)
@@ -724,7 +731,9 @@ class PiecewiseFunction(BuiltinFunction):
                     funcs.append(ex)
             return piecewise(zip(domain, funcs))
 
-        def integral(self, parameters, variable, x=None, a=None, b=None, definite=False, **kwds):
+        def integral(
+            self, parameters, variable, x=None, a=None, b=None, definite=False, **kwds
+        ):
             r"""
             By default, return the indefinite integral of the function.
 
@@ -873,6 +882,7 @@ class PiecewiseFunction(BuiltinFunction):
             # after the first piece.
 
             from sage.symbolic.assumptions import assume, forget
+
             for domain, fun in parameters:
                 for interval in domain:
                     start = interval.lower()
@@ -923,6 +933,7 @@ class PiecewiseFunction(BuiltinFunction):
                 True
             """
             from sage.calculus.calculus import maxima
+
             x = self.default_variable()
             crit_pts = []
             for domain, f in parameters:
@@ -1012,6 +1023,7 @@ class PiecewiseFunction(BuiltinFunction):
                           x|-->1/2*x^2 - 3*x + 9/2 on (2, 3]; x)
             """
             from sage.symbolic.integration.integral import definite_integral
+
             f = self
             g = other
             if not f.end_points() or not g.end_points():
@@ -1057,9 +1069,12 @@ class PiecewiseFunction(BuiltinFunction):
                     i1 = f0.subs({variable: uu})
                     i2 = g0.subs({variable: variable - uu})
                     expr = i1 * i2
-                    h = piecewise([[(start, stop),
-                                    definite_integral(expr, uu, mini, maxi)]
-                                   for start, stop, mini, maxi in todo])
+                    h = piecewise(
+                        [
+                            [(start, stop), definite_integral(expr, uu, mini, maxi)]
+                            for start, stop, mini, maxi in todo
+                        ]
+                    )
                 flat_zero = piecewise([[(minus_infinity, infinity), 0]])
                 return (flat_zero.piecewise_add(h)).unextend_zero()  # why ?
 
@@ -1106,19 +1121,28 @@ class PiecewiseFunction(BuiltinFunction):
                           y|-->7/2*y - 5/2 on (1, 3/2),
                           y|-->-7/2*y + 8 on (3/2, 2); y)
             """
+
             def func(x0, x1):
                 f0, f1 = self(x0), self(x1)
-                return [[(x0, x1), f0 + (f1-f0) * (x1-x0)**(-1)
-                         * (self.default_variable()-x0)]]
+                return [
+                    [
+                        (x0, x1),
+                        f0
+                        + (f1 - f0)
+                        * (x1 - x0) ** (-1)
+                        * (self.default_variable() - x0),
+                    ]
+                ]
+
             rsum = []
             for domain, f in parameters:
                 for interval in domain:
                     a = interval.lower()
                     b = interval.upper()
-                    h = (b-a)/N
+                    h = (b - a) / N
                     for i in range(N):
-                        x0 = a+i*h
-                        x1 = a+(i+1)*h
+                        x0 = a + i * h
+                        x1 = a + (i + 1) * h
                         rsum += func(x0, x1)
             return piecewise(rsum)
 
@@ -1177,8 +1201,7 @@ class PiecewiseFunction(BuiltinFunction):
             forget(s > 0)
             return result
 
-        def fourier_series_cosine_coefficient(self, parameters,
-                                              variable, n, L=None):
+        def fourier_series_cosine_coefficient(self, parameters, variable, n, L=None):
             r"""
             Return the `n`-th cosine coefficient of the Fourier series of
             the periodic function `f` extending the piecewise-defined
@@ -1254,25 +1277,27 @@ class PiecewiseFunction(BuiltinFunction):
             """
             from sage.functions.trig import cos
             from sage.symbolic.constants import pi
+
             L0 = (self.domain().sup() - self.domain().inf()) / 2
             if not L:
                 L = L0
             else:
                 m = L0 / L
                 if not (m.is_integer() and m > 0):
-                    raise ValueError("the width of the domain of " +
-                                     "{} is not a multiple ".format(self) +
-                                     "of the given period")
+                    raise ValueError(
+                        "the width of the domain of "
+                        + "{} is not a multiple ".format(self)
+                        + "of the given period"
+                    )
             result = 0
             for domain, f in parameters:
                 for interval in domain:
                     a = interval.lower()
                     b = interval.upper()
-                    result += (f*cos(pi*variable*n/L)).integrate(variable, a, b)
+                    result += (f * cos(pi * variable * n / L)).integrate(variable, a, b)
             return SR(result / L0).simplify_trig()
 
-        def fourier_series_sine_coefficient(self, parameters, variable,
-                                            n, L=None):
+        def fourier_series_sine_coefficient(self, parameters, variable, n, L=None):
             r"""
             Return the `n`-th sine coefficient of the Fourier series of
             the periodic function `f` extending the piecewise-defined
@@ -1342,25 +1367,27 @@ class PiecewiseFunction(BuiltinFunction):
             """
             from sage.functions.trig import sin
             from sage.symbolic.constants import pi
+
             L0 = (self.domain().sup() - self.domain().inf()) / 2
             if not L:
                 L = L0
             else:
                 m = L0 / L
                 if not (m.is_integer() and m > 0):
-                    raise ValueError("the width of the domain of " +
-                                     "{} is not a multiple ".format(self) +
-                                     "of the given period")
+                    raise ValueError(
+                        "the width of the domain of "
+                        + "{} is not a multiple ".format(self)
+                        + "of the given period"
+                    )
             result = 0
             for domain, f in parameters:
                 for interval in domain:
                     a = interval.lower()
                     b = interval.upper()
-                    result += (f*sin(pi*variable*n/L)).integrate(variable, a, b)
-            return SR(result/L0).simplify_trig()
+                    result += (f * sin(pi * variable * n / L)).integrate(variable, a, b)
+            return SR(result / L0).simplify_trig()
 
-        def fourier_series_partial_sum(self, parameters, variable, N,
-                                       L=None):
+        def fourier_series_partial_sum(self, parameters, variable, N, L=None):
             r"""
             Return the partial sum up to a given order of the Fourier series
             of the periodic function `f` extending the piecewise-defined
@@ -1436,9 +1463,17 @@ class PiecewiseFunction(BuiltinFunction):
                 L = (self.domain().sup() - self.domain().inf()) / 2
             x = self.default_variable()
             a0 = self.fourier_series_cosine_coefficient(0, L)
-            result = a0/2 + sum([(self.fourier_series_cosine_coefficient(n, L)*cos(n*pi*x/L) +
-                                  self.fourier_series_sine_coefficient(n, L)*sin(n*pi*x/L))
-                                 for n in srange(1, N+1)])
+            result = a0 / 2 + sum(
+                [
+                    (
+                        self.fourier_series_cosine_coefficient(n, L)
+                        * cos(n * pi * x / L)
+                        + self.fourier_series_sine_coefficient(n, L)
+                        * sin(n * pi * x / L)
+                    )
+                    for n in srange(1, N + 1)
+                ]
+            )
             return SR(result).expand()
 
         def _sympy_(self, parameters, variable):
@@ -1460,9 +1495,11 @@ class PiecewiseFunction(BuiltinFunction):
                 Piecewise((-1/x**2, (x > -100) & (x < -2)), (-sin(x), x > 1))
             """
             from sympy import Piecewise as pw
-            args = [(func._sympy_(),
-                     domain._sympy_condition_(variable))
-                    for domain, func in parameters]
+
+            args = [
+                (func._sympy_(), domain._sympy_condition_(variable))
+                for domain, func in parameters
+            ]
             return pw(*args)
 
         def _giac_init_(self, parameters, variable):
@@ -1495,9 +1532,11 @@ class PiecewiseFunction(BuiltinFunction):
                 piecewise(((sageVARx>=0) and (1>=sageVARx)),sageVARx,((sageVARx>1) and (2>sageVARx)),sageVARx*3)
             """
             from sage.misc.flatten import flatten
-            args = [(domain._giac_condition_(variable),
-                     func._giac_init_())
-                    for domain, func in parameters]
+
+            args = [
+                (domain._giac_condition_(variable), func._giac_init_())
+                for domain, func in parameters
+            ]
             args = ",".join(flatten(args))
             return f"piecewise({args})"
 

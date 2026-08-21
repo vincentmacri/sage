@@ -39,7 +39,7 @@ class SubsetSpeciesStructure(GenericSpeciesStructure):
             {}
         """
         s = GenericSpeciesStructure.__repr__(self)
-        return "{"+s[1:-1]+"}"
+        return "{" + s[1:-1] + "}"
 
     def canonical_label(self):
         """
@@ -107,6 +107,7 @@ class SubsetSpeciesStructure(GenericSpeciesStructure):
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         a = SymmetricGroup(self._list)
         b = SymmetricGroup(self.complement()._list)
         return PermutationGroup(a.gens() + b.gens())
@@ -123,7 +124,7 @@ class SubsetSpeciesStructure(GenericSpeciesStructure):
             sage: a.complement()
             {'b'}
         """
-        new_list = [i for i in range(1, len(self._labels)+1) if i not in self._list]
+        new_list = [i for i in range(1, len(self._labels) + 1) if i not in self._list]
         return SubsetSpeciesStructure(self.parent(), self._labels, new_list)
 
 
@@ -174,7 +175,8 @@ class SubsetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [{}, {'a'}, {'b'}, {'a', 'b'}]
         """
         from sage.combinat.combination import Combinations
-        for c in Combinations(range(1, len(labels)+1)):
+
+        for c in Combinations(range(1, len(labels) + 1)):
             yield structure_class(self, labels, c)
 
     def _isotypes(self, structure_class, labels):
@@ -187,8 +189,8 @@ class SubsetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: S.isotypes(['a','b']).list()
             [{}, {'a'}, {'a', 'b'}]
         """
-        for i in range(len(labels)+1):
-            yield structure_class(self, labels, range(1, i+1))
+        for i in range(len(labels) + 1):
+            yield structure_class(self, labels, range(1, i + 1))
 
     def _gs_callable(self, base_ring, n):
         """
@@ -201,7 +203,7 @@ class SubsetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: [S.generating_series().coefficient(i) for i in range(5)]
             [1, 2, 2, 4/3, 2/3]
         """
-        return base_ring(2)**n / base_ring(factorial(n))
+        return base_ring(2) ** n / base_ring(factorial(n))
 
     def _itgs_callable(self, base_ring, n):
         r"""
@@ -241,5 +243,5 @@ class SubsetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
         return res
 
 
-#Backward compatibility
+# Backward compatibility
 SubsetSpecies_class = SubsetSpecies

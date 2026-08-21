@@ -24,7 +24,10 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.categories.modules import Modules
 from sage.categories.tensor import tensor
-from sage.combinat.free_module import CombinatorialFreeModule, CombinatorialFreeModule_Tensor
+from sage.combinat.free_module import (
+    CombinatorialFreeModule,
+    CombinatorialFreeModule_Tensor,
+)
 from sage.monoids.indexed_free_monoid import IndexedFreeMonoid
 from sage.misc.cachefunc import cached_method
 from sage.sets.family import Family
@@ -90,6 +93,7 @@ class TensorAlgebra(CombinatorialFreeModule):
         sage: TA.algebra_generators()
         Finite family {'a': B['a'], 'b': B['b'], 'c': B['c']}
     """
+
     def __init__(self, M, prefix='T', category=None, **options):
         r"""
         Initialize ``self``.
@@ -107,11 +111,19 @@ class TensorAlgebra(CombinatorialFreeModule):
         R = M.base_ring()
         category = GradedHopfAlgebrasWithBasis(R.category()).or_subcategory(category)
 
-        CombinatorialFreeModule.__init__(self, R, IndexedFreeMonoid(M.indices()),
-                                         prefix=prefix, category=category, **options)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            IndexedFreeMonoid(M.indices()),
+            prefix=prefix,
+            category=category,
+            **options,
+        )
 
         # the following is not the best option, but it's better than nothing.
-        self._print_options['tensor_symbol'] = options.get('tensor_symbol', tensor.symbol)
+        self._print_options['tensor_symbol'] = options.get(
+            'tensor_symbol', tensor.symbol
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -149,7 +161,9 @@ class TensorAlgebra(CombinatorialFreeModule):
         symb = self._print_options['tensor_symbol']
         if symb is None:
             symb = tensor.symbol
-        return symb.join(self._base_module._repr_term(k) for k,e in m._monomial for i in range(e))
+        return symb.join(
+            self._base_module._repr_term(k) for k, e in m._monomial for i in range(e)
+        )
 
     def _latex_term(self, m) -> str:
         r"""
@@ -170,7 +184,9 @@ class TensorAlgebra(CombinatorialFreeModule):
         if len(m) == 0:
             return '1'
         symb = " \\otimes "
-        return symb.join(self._base_module._latex_term(k) for k,e in m._monomial for i in range(e))
+        return symb.join(
+            self._base_module._latex_term(k) for k, e in m._monomial for i in range(e)
+        )
 
     def _ascii_art_term(self, m):
         """
@@ -204,13 +220,15 @@ class TensorAlgebra(CombinatorialFreeModule):
         if len(m) == 0:
             return '1'
         from sage.typeset.ascii_art import AsciiArt, ascii_art
+
         symb = self._print_options['tensor_symbol']
         if symb is None:
             symb = tensor.symbol
         M = self._base_module
-        return ascii_art(*(M._ascii_art_term(k)
-                           for k, e in m._monomial for _ in range(e)),
-                         sep=AsciiArt([symb], breakpoints=[len(symb)]))
+        return ascii_art(
+            *(M._ascii_art_term(k) for k, e in m._monomial for _ in range(e)),
+            sep=AsciiArt([symb], breakpoints=[len(symb)]),
+        )
 
     def _element_constructor_(self, x):
         """
@@ -240,7 +258,7 @@ class TensorAlgebra(CombinatorialFreeModule):
         if x in FM._indices:
             return self.monomial(FM.gen(x))
         if x in self._base_module:
-            return self.sum_of_terms((FM.gen(k), v) for k,v in x)
+            return self.sum_of_terms((FM.gen(k), v) for k, v in x)
         return CombinatorialFreeModule._element_constructor_(self, x)
 
     def _tensor_constructor_(self, elts):
@@ -273,11 +291,11 @@ class TensorAlgebra(CombinatorialFreeModule):
 
         zero = self.base_ring().zero()
         I = self._indices
-        cur = {I.gen(k): v for k,v in elts[0]}
+        cur = {I.gen(k): v for k, v in elts[0]}
         for x in elts[1:]:
             next = {}
-            for k,v in cur.items():
-                for m,c in x:
+            for k, v in cur.items():
+                for m, c in x:
                     i = k * I.gen(m)
                     next[i] = cur.get(i, zero) + v * c
             cur = next
@@ -347,7 +365,9 @@ class TensorAlgebra(CombinatorialFreeModule):
         if self_base_ring == R:
             return BaseRingLift(Hom(self_base_ring, self))
         if self_base_ring.has_coerce_map_from(R):
-            return BaseRingLift(Hom(self_base_ring, self)) * self_base_ring.coerce_map_from(R)
+            return BaseRingLift(
+                Hom(self_base_ring, self)
+            ) * self_base_ring.coerce_map_from(R)
 
         M = self._base_module
         # Base module coercions
@@ -361,20 +381,27 @@ class TensorAlgebra(CombinatorialFreeModule):
         if isinstance(R, TensorAlgebra) and M.has_coerce_map_from(R._base_module):
             RM = R._base_module
             phi = M.coerce_map_from(RM)
-            return R.module_morphism(lambda m: self._tensor_constructor_(
-                                               [phi(RM.monomial(k)) for k in m.to_word_list()]),
-                                     codomain=self)
+            return R.module_morphism(
+                lambda m: self._tensor_constructor_(
+                    [phi(RM.monomial(k)) for k in m.to_word_list()]
+                ),
+                codomain=self,
+            )
 
         # Coercions from tensor products
-        if (R in Modules(self_base_ring).WithBasis().TensorProducts()
-                and isinstance(R, CombinatorialFreeModule_Tensor)
-                and all(M.has_coerce_map_from(RM) for RM in R._sets)):
+        if (
+            R in Modules(self_base_ring).WithBasis().TensorProducts()
+            and isinstance(R, CombinatorialFreeModule_Tensor)
+            and all(M.has_coerce_map_from(RM) for RM in R._sets)
+        ):
             modules = R._sets
             vector_map = [M.coerce_map_from(RM) for RM in R._sets]
-            return R.module_morphism(lambda x: self._tensor_constructor_(
-                                               [vector_map[i](M.monomial(x[i]))
-                                                for i,M in enumerate(modules)]),
-                                     codomain=self)
+            return R.module_morphism(
+                lambda x: self._tensor_constructor_(
+                    [vector_map[i](M.monomial(x[i])) for i, M in enumerate(modules)]
+                ),
+                codomain=self,
+            )
 
         return super()._coerce_map_from_(R)
 
@@ -461,9 +488,11 @@ class TensorAlgebra(CombinatorialFreeModule):
             sage: Tm.algebra_generators()
             Lazy family (generator(i))_{i in Partitions}
         """
-        return Family(self._indices.indices(),
-                      lambda i: self.monomial(self._indices.gen(i)),
-                      name='generator')
+        return Family(
+            self._indices.indices(),
+            lambda i: self.monomial(self._indices.gen(i)),
+            name='generator',
+        )
 
     gens = algebra_generators
 
@@ -566,19 +595,21 @@ class TensorAlgebra(CombinatorialFreeModule):
             return S.sum_of_monomials([(m, ob), (ob, m)])
 
         I = self._indices
-        m_word = [k for k,e in m._monomial for dummy in range(e)]
+        m_word = [k for k, e in m._monomial for dummy in range(e)]
         ob = self.one_basis()
-        return S.prod(S.sum_of_monomials([(I.gen(x), ob), (ob, I.gen(x))])
-                      for x in m_word)
+        return S.prod(
+            S.sum_of_monomials([(I.gen(x), ob), (ob, I.gen(x))]) for x in m_word
+        )
 
         # TODO: Implement a coproduct using shuffles.
         # This isn't quite right:
-        #from sage.combinat.words.word import Word
-        #k = len(m)
-        #return S.sum_of_monomials( (I.prod(I.gen(m_word[i]) for i in w[:p]),
+        # from sage.combinat.words.word import Word
+        # k = len(m)
+        # return S.sum_of_monomials( (I.prod(I.gen(m_word[i]) for i in w[:p]),
         #                            I.prod(I.gen(m_word[i]) for i in w[p:]))
         #                          for p in range(k+1)
         #                          for w in Word(range(p)).shuffle(range(p, k)) )
+
 
 #####################################################################
 # TensorAlgebra functor
@@ -598,6 +629,7 @@ class TensorAlgebraFunctor(ConstructionFunctor):
 
     - ``base`` -- the base `R`
     """
+
     # We choose a larger (functor) rank than most ConstructionFunctors
     #   since this should be applied after all of the module functors
     rank = 20
@@ -677,9 +709,11 @@ class TensorAlgebraFunctor(ConstructionFunctor):
         DB = f.domain()
         D = self(DB)
         C = self(f.codomain())
-        phi = lambda m: C._tensor_constructor_([f(DB.monomial(k))
-                                                for k in m.to_word_list()])
+        phi = lambda m: C._tensor_constructor_(
+            [f(DB.monomial(k)) for k in m.to_word_list()]
+        )
         return D.module_morphism(phi, codomain=C)
+
 
 #####################################################################
 # Lift map from the base ring
@@ -690,6 +724,7 @@ class BaseRingLift(Morphism):
     Morphism `R \to T(M)` which identifies the base ring `R` of a tensor
     algebra `T(M)` with the `0`-th graded part of `T(M)`.
     """
+
     def _call_(self, x):
         """
         Construct the image of ``x``.

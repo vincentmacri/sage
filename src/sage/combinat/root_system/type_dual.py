@@ -17,7 +17,9 @@ from sage.combinat.root_system.root_lattice_realizations import RootLatticeReali
 from sage.combinat.root_system import ambient_space
 
 
-class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crystallographic):
+class CartanType(
+    cartan_type.CartanType_decorator, cartan_type.CartanType_crystallographic
+):
     r"""
     A class for dual Cartan types.
 
@@ -142,7 +144,9 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
             False
         """
         if not type.is_crystallographic():
-            raise NotImplementedError("only implemented for crystallographic Cartan types")
+            raise NotImplementedError(
+                "only implemented for crystallographic Cartan types"
+            )
         cartan_type.CartanType_decorator.__init__(self, type)
         # TODO: design an appropriate infrastructure to handle this
         # automatically? Maybe using categories and axioms?
@@ -151,17 +155,16 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
             self.__class__ = CartanType_finite
         elif type.is_affine():
             self.__class__ = CartanType_affine
-        abstract_classes = tuple(cls
-                                 for cls in self._stable_abstract_classes
-                                 if isinstance(type, cls))
+        abstract_classes = tuple(
+            cls for cls in self._stable_abstract_classes if isinstance(type, cls)
+        )
         if abstract_classes:
             self._add_abstract_superclass(abstract_classes)
 
     # For each class cls in _stable_abstract_classes, if ct is an
     # instance of A then ct.relabel(...) is put in this class as well.
     # The order is relevant to avoid MRO issues!
-    _stable_abstract_classes = [
-        cartan_type.CartanType_simple]
+    _stable_abstract_classes = [cartan_type.CartanType_simple]
 
     def _repr_(self, compact=False):
         """
@@ -177,8 +180,8 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
         if self.is_affine() and self.options.notation == "Kac":
             if self._type.type() == 'B':
                 if compact:
-                    return 'A%s^2' % (self.classical().rank()*2-1)
-                return "['A', %s, 2]" % (self.classical().rank()*2-1)
+                    return 'A%s^2' % (self.classical().rank() * 2 - 1)
+                return "['A', %s, 2]" % (self.classical().rank() * 2 - 1)
             if self._type.type() == 'BC':
                 dual_str = '+'
             elif self._type.type() == 'C':
@@ -189,7 +192,7 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
                 if compact:
                     return 'E6^2'
                 return "['E', 6, 2]"
-        return self.dual()._repr_(compact)+(dual_str if compact else "^"+dual_str)
+        return self.dual()._repr_(compact) + (dual_str if compact else "^" + dual_str)
 
     def _latex_(self):
         r"""
@@ -198,7 +201,7 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
             sage: latex(CartanType(['F', 4, 1]).dual())
             F_4^{(1)\vee}
         """
-        return self._type._latex_()+"^"+self.options.dual_latex
+        return self._type._latex_() + "^" + self.options.dual_latex
 
     def __reduce__(self):
         """
@@ -349,6 +352,7 @@ class CartanType(cartan_type.CartanType_decorator, cartan_type.CartanType_crysta
         """
         return self._type.dynkin_diagram().dual()
 
+
 ###########################################################################
 
 
@@ -408,7 +412,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         K = self.base_ring()
         return self.cartan_type().dual().root_system().ambient_space(K)
-        #return self.root_system.dual.ambient_space()
+        # return self.root_system.dual.ambient_space()
 
     def dimension(self):
         """
@@ -512,7 +516,9 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: L._plot_projection == L._plot_projection_barycentric
             True
         """
-        dual_space = self.cartan_type().dual().root_system().ambient_space(self.base_ring())
+        dual_space = (
+            self.cartan_type().dual().root_system().ambient_space(self.base_ring())
+        )
         if dual_space._plot_projection == dual_space._plot_projection_barycentric:
             return self._plot_projection_barycentric
         RootLatticeRealizations.ParentMethods.__dict__["_plot_projection"]
@@ -520,6 +526,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
 
 class CartanType_finite(CartanType, cartan_type.CartanType_finite):
     AmbientSpace = AmbientSpace
+
 
 ###########################################################################
 
@@ -562,12 +569,13 @@ class CartanType_affine(CartanType, cartan_type.CartanType_affine):
             ['D', 4]
         """
         from . import cartan_type
+
         if self.dual().type() == 'B':
-            return cartan_type.CartanType(['A', self.classical().rank()*2-1])
+            return cartan_type.CartanType(['A', self.classical().rank() * 2 - 1])
         if self.dual().type() == 'BC':
-            return cartan_type.CartanType(['A', self.classical().rank()*2])
+            return cartan_type.CartanType(['A', self.classical().rank() * 2])
         if self.dual().type() == 'C':
-            return cartan_type.CartanType(['D', self.classical().rank()+1])
+            return cartan_type.CartanType(['D', self.classical().rank() + 1])
         if self.dual().type() == 'F':
             return cartan_type.CartanType(['E', 6])
         if self.dual().type() == 'G':
@@ -606,8 +614,8 @@ class CartanType_affine(CartanType, cartan_type.CartanType_affine):
         if self.options.notation == "Kac":
             if self._type.type() == 'B':
                 if compact:
-                    return 'A%s^2' % (self.classical().rank()*2-1)
-                return "['A', %s, 2]" % (self.classical().rank()*2-1)
+                    return 'A%s^2' % (self.classical().rank() * 2 - 1)
+                return "['A', %s, 2]" % (self.classical().rank() * 2 - 1)
             if self._type.type() == 'BC':
                 pass
             elif self._type.type() == 'C':
@@ -650,15 +658,16 @@ class CartanType_affine(CartanType, cartan_type.CartanType_affine):
         """
         if self.options('notation') == "Kac":
             if self._type.type() == 'B':
-                return "A_{%s}^{(2)}" % (self.classical().rank()*2-1)
+                return "A_{%s}^{(2)}" % (self.classical().rank() * 2 - 1)
             if self._type.type() == 'BC':
-                return "A_{%s}^{(2)\\dagger}" % (2*self.classical().rank())
+                return "A_{%s}^{(2)\\dagger}" % (2 * self.classical().rank())
             if self._type.type() == 'C':
                 return "D_{%s}^{(2)}" % (self.rank)()
             if self._type.type() == 'F':
                 return "E_6^{(2)}"
         result = self._type._latex_()
         import re
+
         if re.match(r".*\^{\(\d\)}$", result):
             return "%s%s}" % (result[:-1], self.options('dual_latex'))
         return "{%s}^%s" % (result, self.options('dual_latex'))
@@ -681,19 +690,27 @@ class CartanType_affine(CartanType, cartan_type.CartanType_affine):
             ['G', 2, 1]^* as a folding of ['D', 4, 1]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         letter = self._type.type()
         if letter == 'BC':  # A_{2n}^{(2)\dagger}
             n = self._type.classical().rank()
-            return CartanTypeFolded(self, ['A', 2*n - 1, 1],
-                [[0]] + [[i, 2*n-i] for i in range(1, n)] + [[n]])
+            return CartanTypeFolded(
+                self,
+                ['A', 2 * n - 1, 1],
+                [[0]] + [[i, 2 * n - i] for i in range(1, n)] + [[n]],
+            )
         if letter == 'B':  # A_{2n-1}^{(2)}
             n = self._type.classical().rank()
-            return CartanTypeFolded(self, ['D', n + 1, 1],
-                [[i] for i in range(n)] + [[n, n+1]])
+            return CartanTypeFolded(
+                self, ['D', n + 1, 1], [[i] for i in range(n)] + [[n, n + 1]]
+            )
         if letter == 'C':  # D_{n+1}^{(2)}
             n = self._type.classical().rank()
-            return CartanTypeFolded(self, ['A', 2*n-1, 1],
-                [[0]] + [[i, 2*n-i] for i in range(1, n)] + [[n]])
+            return CartanTypeFolded(
+                self,
+                ['A', 2 * n - 1, 1],
+                [[0]] + [[i, 2 * n - i] for i in range(1, n)] + [[n]],
+            )
         if letter == 'F':  # E_6^{(2)}
             return CartanTypeFolded(self, ['E', 6, 1], [[0], [2], [4], [3, 5], [1, 6]])
         if letter == 'G':  # D_4^{(3)}

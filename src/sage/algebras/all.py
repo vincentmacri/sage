@@ -1,6 +1,7 @@
 """
 Algebras
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -38,11 +39,9 @@ from sage.algebras.finite_dimensional_algebras.all import FiniteDimensionalAlgeb
 lazy_import('sage.algebras.group_algebra', 'GroupAlgebra')
 
 lazy_import('sage.algebras.iwahori_hecke_algebra', 'IwahoriHeckeAlgebra')
-lazy_import('sage.algebras.affine_nil_temperley_lieb',
-            'AffineNilTemperleyLiebTypeA')
+lazy_import('sage.algebras.affine_nil_temperley_lieb', 'AffineNilTemperleyLiebTypeA')
 lazy_import('sage.algebras.nil_coxeter_algebra', 'NilCoxeterAlgebra')
-lazy_import('sage.algebras.schur_algebra', ['SchurAlgebra',
-                                            'SchurTensorModule'])
+lazy_import('sage.algebras.schur_algebra', ['SchurAlgebra', 'SchurTensorModule'])
 
 lazy_import('sage.algebras.hall_algebra', 'HallAlgebra')
 
@@ -57,8 +56,7 @@ from sage.algebras.weyl_algebra import DifferentialWeylAlgebra
 
 lazy_import('sage.algebras.commutative_dga', 'GradedCommutativeAlgebra')
 
-lazy_import('sage.algebras.rational_cherednik_algebra',
-            'RationalCherednikAlgebra')
+lazy_import('sage.algebras.rational_cherednik_algebra', 'RationalCherednikAlgebra')
 
 lazy_import('sage.algebras.tensor_algebra', 'TensorAlgebra')
 

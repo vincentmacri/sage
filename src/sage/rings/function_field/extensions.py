@@ -69,6 +69,7 @@ class FunctionFieldExtension(RingExtension_generic):
     """
     Abstract base class of function field extensions.
     """
+
     pass
 
 
@@ -82,6 +83,7 @@ class ConstantFieldExtension(FunctionFieldExtension):
 
     - ``k_ext`` -- an extension of `k`
     """
+
     def __init__(self, F, k_ext) -> None:
         """
         Initialize.

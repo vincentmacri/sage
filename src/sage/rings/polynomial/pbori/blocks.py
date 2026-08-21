@@ -15,6 +15,7 @@ class Block:
     <var_name>(start_index,...,start_index+size-1), it is the preferred
     block type for simple one-dimensional variable sets
     """
+
     def __init__(self, var_name, size, start_index=0, reverse=False):
         indices = range(start_index, start_index + size)
         if reverse:
@@ -40,8 +41,7 @@ class Block:
             ring_context = ring_context.wrapped
         ring = ring_context['r']
 
-        var_func = VariableBlock(self.size, self.start_index, start, self.
-                                 reverse, ring)
+        var_func = VariableBlock(self.size, self.start_index, start, self.reverse, ring)
         var_func.__name__ = self.var_name
         context[self.var_name] = var_func
 
@@ -52,8 +52,8 @@ class AlternatingBlock:
     schemes,where base names vary, e.g.
     a(0),b(0),a(1),b(1),a(2),b(2)
     """
-    def __init__(self, var_names, size_per_variable, start_index=0,
-                 reverse=False):
+
+    def __init__(self, var_names, size_per_variable, start_index=0, reverse=False):
         self.var_names = var_names
         self.size_per_variable = size_per_variable
         self.reverse = reverse
@@ -85,8 +85,10 @@ class AlternatingBlock:
                     self.size = size
 
                 def __call__(self, idx):
-                    return self.ring.variable(self.index2pos[idx] * self.size +
-                                              var_pos + start)
+                    return self.ring.variable(
+                        self.index2pos[idx] * self.size + var_pos + start
+                    )
+
             ring_context = context
             while isinstance(ring_context, PrefixedDictProxy):
                 ring_context = ring_context.wrapped
@@ -94,7 +96,7 @@ class AlternatingBlock:
 
             return var_factory(ring, self.index2pos, len(self.var_names))
 
-        for (var_pos, n) in enumerate(self.var_names):
+        for var_pos, n in enumerate(self.var_names):
             var_func = gen_var_func(var_pos)
             var_func.__name__ = n
             context[n] = var_func
@@ -103,16 +105,22 @@ class AlternatingBlock:
 def shift(f, i):
     def g(j):
         return f(i + j)
+
     g.__name__ = f.__name__
     return g
 
 
 class AdderBlock(AlternatingBlock):
-    def __init__(self, adder_bits, sums='s', carries='c', input1='a',
-                 input2='b', start_index=0):
-        AlternatingBlock.__init__(self, (sums, carries, input1, input2),
-                                  adder_bits, start_index=start_index,
-                                  reverse=True)
+    def __init__(
+        self, adder_bits, sums='s', carries='c', input1='a', input2='b', start_index=0
+    ):
+        AlternatingBlock.__init__(
+            self,
+            (sums, carries, input1, input2),
+            adder_bits,
+            start_index=start_index,
+            reverse=True,
+        )
         self.input1 = input1
         self.input2 = input2
         self.sums = sums
@@ -135,8 +143,7 @@ class AdderBlock(AlternatingBlock):
             carries.append(c)
             last = c
 
-        self.add_results = [a(i) + b(i) + carries[i]
-                            for i in range(self.adder_bits)]
+        self.add_results = [a(i) + b(i) + carries[i] for i in range(self.adder_bits)]
         self.carries_polys = carries[1:]
 
     # def s(i):
@@ -167,17 +174,17 @@ class HigherOrderBlock:
     start_index_tuple : the multi-indices will be of the form
     start_index_tuple + a, where a is a multi-index with nonnegative components
     """
-    def __init__(self, var_name, size_tuple, start_index_tuple=None,
-                 reverse=False):
+
+    def __init__(self, var_name, size_tuple, start_index_tuple=None, reverse=False):
         if start_index_tuple is None:
-            start_index_tuple = len(size_tuple) * (0, )
+            start_index_tuple = len(size_tuple) * (0,)
         cart = [()]
         assert len(size_tuple) == len(start_index_tuple)
         outer_indices = reversed(range(len(size_tuple)))
         for i in outer_indices:
             s_i = start_index_tuple[i]
             s = size_tuple[i]
-            cart = [(j, ) + c for j in range(s_i, s_i + s) for c in cart]
+            cart = [(j,) + c for j in range(s_i, s_i + s) for c in cart]
         if reverse:
             cart.reverse()
         self.cart = cart
@@ -197,18 +204,32 @@ class HigherOrderBlock:
     def register(self, start, context):
         def var_func(*indices):
             return Variable(self.cart2index[indices] + start)
+
         var_func.__name__ = self.var_name
         context[self.var_name] = var_func
 
 
 class InOutBlock:
-    def __init__(self, out_size, in_size, output='out', input='in',
-                 in_start_index=0, out_start_index=0,
-                 out_reverse=False, in_reverse=False):
-        self.output = Block(var_name=output, start_index=out_start_index,
-                            size=out_size, reverse=out_reverse)
-        self.input = Block(var_name=input, start_index=in_start_index,
-                           size=in_size, reverse=in_reverse)
+    def __init__(
+        self,
+        out_size,
+        in_size,
+        output='out',
+        input='in',
+        in_start_index=0,
+        out_start_index=0,
+        out_reverse=False,
+        in_reverse=False,
+    ):
+        self.output = Block(
+            var_name=output,
+            start_index=out_start_index,
+            size=out_size,
+            reverse=out_reverse,
+        )
+        self.input = Block(
+            var_name=input, start_index=in_start_index, size=in_size, reverse=in_reverse
+        )
         self.out_start_index = out_start_index
 
         self.in_start_index = in_start_index
@@ -227,27 +248,29 @@ class InOutBlock:
     def register(self, start, context):
         self.output.register(start, context)
         self.input.register(start + len(self.output), context)
-        self.out_vars = shift(context[self.output.var_name], self.
-                              out_start_index)
+        self.out_vars = shift(context[self.output.var_name], self.out_start_index)
         self.in_vars = shift(context[self.input.var_name], self.in_start_index)
 
 
 class MultiBlock:
-    def __init__(self, sizes=None, var_names=["v"],
-                 start_indices=[], reverses=None):
+    def __init__(self, sizes=None, var_names=["v"], start_indices=[], reverses=None):
         if reverses is None:
             reverses = []
         if sizes is None:
             sizes = []
-        self.start_indices = start_indices + [0] * (len(var_names) -
-                                                    len(start_indices))
+        self.start_indices = start_indices + [0] * (len(var_names) - len(start_indices))
         reverses += [False] * (len(var_names) - len(reverses))
         sizes += [1] * (len(var_names) - len(sizes))
 
-        self.blocks = [Block(var_name=var_names[idx], size=sizes[idx],
-                             start_index=self.start_indices[idx],
-                             reverse=reverses[idx])
-                       for idx in range(len(var_names))]
+        self.blocks = [
+            Block(
+                var_name=var_names[idx],
+                size=sizes[idx],
+                start_index=self.start_indices[idx],
+                reverse=reverses[idx],
+            )
+            for idx in range(len(var_names))
+        ]
 
     def __iter__(self):
         return chain(*self.blocks)
@@ -265,9 +288,10 @@ class MultiBlock:
             bl.register(start + offset, context)
             offset += len(bl)
 
-        self.vars = [shift(context[self.blocks[idx].var_name],
-                           self.start_indices[idx])
-                     for idx in range(len(self.blocks))]
+        self.vars = [
+            shift(context[self.blocks[idx].var_name], self.start_indices[idx])
+            for idx in range(len(self.blocks))
+        ]
 
 
 class PrefixedDictProxy:
@@ -322,10 +346,11 @@ class MacroBlock:
             bl.register(start + offset, context)
             offset += len(bl)
 
-        for ((con1, indices1), (con2, indices2)) in self.combinations:
+        for (con1, indices1), (con2, indices2) in self.combinations:
             for idx in range(min(len(indices1), len(indices2))):
-                self.connections += [context[con1](indices1[idx]) + context[
-                    con2](indices2[idx])]
+                self.connections += [
+                    context[con1](indices1[idx]) + context[con2](indices2[idx])
+                ]
 
     def implement(self, equations):
         for bl in self.blocks:
@@ -342,8 +367,12 @@ class IfThen:
         self.supposedToBeValid = supposed_to_be_valid
 
     def __str__(self):
-        return ("If(AND(" + ", ".join(f"{p} == 0" for p in self.ifpart) +
-                ")), THEN " + ", ".join(f"{p} == 0" for p in self.thenpart))
+        return (
+            "If(AND("
+            + ", ".join(f"{p} == 0" for p in self.ifpart)
+            + ")), THEN "
+            + ", ".join(f"{p} == 0" for p in self.thenpart)
+        )
 
 
 def if_then(i, t, supposed_to_be_valid=True):
@@ -369,6 +398,7 @@ def declare_ring(blocks, context=None):
     the variable blocks x and y in the context dictionary ``globals()``,
     which consists of the global variables of the python module
     """
+
     def canonicalize(blocks):
         for elt in blocks:
             if isinstance(elt, str):
@@ -385,7 +415,7 @@ def declare_ring(blocks, context=None):
     r = Ring(n, names=canonicalize(blocks))
 
     context["internalVariable"] = VariableFactory(r)
-#  context["Monomial"] = MonomialFactory(r)
+    #  context["Monomial"] = MonomialFactory(r)
     context["r"] = r
     declare_block_scheme(blocks, context)
     return r
@@ -460,10 +490,14 @@ def main_test():
     print(list(ablock))
 
     # second test
-    declare_block_scheme([Block(var_name="x", size=100),
-                          HigherOrderBlock("y", (3, 4, 11, 2)),
-                          AlternatingBlock(["a", "b", "c"], 100)],
-                         dic)
+    declare_block_scheme(
+        [
+            Block(var_name="x", size=100),
+            HigherOrderBlock("y", (3, 4, 11, 2)),
+            AlternatingBlock(["a", "b", "c"], 100),
+        ],
+        dic,
+    )
     x = dic['x']
     a, b, c = dic['a'], dic['b'], dic['c']
     for i in range(10):
@@ -476,10 +510,14 @@ def main_test():
     print(a(0), a(1), a(2), b(0), b(1), c(0))
 
     # third test
-    declare_block_scheme([Block(var_name="x", size=100, reverse=True),
-                          HigherOrderBlock("y", (3, 4, 11, 2), reverse=True),
-                          AlternatingBlock(["a", "b", "c"], 100, reverse=True)],
-                         dic)
+    declare_block_scheme(
+        [
+            Block(var_name="x", size=100, reverse=True),
+            HigherOrderBlock("y", (3, 4, 11, 2), reverse=True),
+            AlternatingBlock(["a", "b", "c"], 100, reverse=True),
+        ],
+        dic,
+    )
     x = dic['x']
     a, b, c = dic['a'], dic['b'], dic['c']
     for i in range(10):

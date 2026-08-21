@@ -104,11 +104,14 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
             num_rows = len(p)
             for i in range(num_rows):
                 if p._list[i] == width_n:
-                    j = i+1
-                    while j < num_rows and p._list[j] == width_n \
-                      and p.vacancy_numbers[j] == p.rigging[j]:
+                    j = i + 1
+                    while (
+                        j < num_rows
+                        and p._list[j] == width_n
+                        and p.vacancy_numbers[j] == p.rigging[j]
+                    ):
                         j += 1
-                    p.rigging[j-1] -= 1
+                    p.rigging[j - 1] -= 1
                     break
             return
 
@@ -156,9 +159,9 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
                     j = len(P._list) - 1
                     while j >= 0 and P._list[j] <= 2:
                         j -= 1
-                    P._list.insert(j+1, 2)
-                    P.vacancy_numbers.insert(j+1, None)
-                    P.rigging.insert(j+1, None)
+                    P._list.insert(j + 1, 2)
+                    P.vacancy_numbers.insert(j + 1, None)
+                    P.rigging.insert(j + 1, None)
                 break
             elif P._list[i] <= max_width:
                 if P.vacancy_numbers[i] == P.rigging[i]:
@@ -170,11 +173,11 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
                     else:
                         j = i - 1
                         while j >= 0 and P._list[j] <= max_width + 2:
-                            P.rigging[j+1] = P.rigging[j]  # Shuffle it along
+                            P.rigging[j + 1] = P.rigging[j]  # Shuffle it along
                             j -= 1
                         P._list.pop(i)
-                        P._list.insert(j+1, max_width + 2)
-                        P.rigging[j+1] = None
+                        P._list.insert(j + 1, max_width + 2)
+                        P.rigging[j + 1] = None
                     break
                 elif P.vacancy_numbers[i] - 1 == P.rigging[i] and not case_QS:
                     case_QS = True
@@ -194,10 +197,10 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
                     if P.rigging[i] is None:
                         j = i - 1
                         while j >= 0 and P._list[j] == P._list[i]:
-                            P.rigging[j+1] = P.rigging[j]  # Shuffle it along
+                            P.rigging[j + 1] = P.rigging[j]  # Shuffle it along
                             j -= 1
-                        P._list[j+1] += 1
-                        P.rigging[j+1] = None
+                        P._list[j + 1] += 1
+                        P.rigging[j + 1] = None
                         break
         else:
             max_width = self.ret_rig_con[1].insert_cell(max_width)
@@ -211,10 +214,10 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
                     if P.rigging[i] is None:
                         j = i - 1
                         while j >= 0 and P._list[j] == P._list[i]:
-                            P.rigging[j+1] = P.rigging[j]  # Shuffle it along
+                            P.rigging[j + 1] = P.rigging[j]  # Shuffle it along
                             j -= 1
-                        P._list[j+1] += 1
-                        P.rigging[j+1] = None
+                        P._list[j + 1] += 1
+                        P.rigging[j + 1] = None
                         break
             else:
                 max_width = self.ret_rig_con[0].insert_cell(max_width)
@@ -229,11 +232,14 @@ class KRTToRCBijectionTypeDTri(KRTToRCBijectionTypeA):
             num_rows = len(P)
             for i in range(num_rows):
                 if P._list[i] == width_n:
-                    j = i+1
-                    while j < num_rows and P._list[j] == width_n \
-                      and P.vacancy_numbers[j] == P.rigging[j]:
+                    j = i + 1
+                    while (
+                        j < num_rows
+                        and P._list[j] == width_n
+                        and P.vacancy_numbers[j] == P.rigging[j]
+                    ):
                         j += 1
-                    P.rigging[j-1] -= 1
+                    P.rigging[j - 1] -= 1
                     break
 
 
@@ -278,7 +284,10 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
             # Modified version of _find_singular_string()
             for i in reversed(range(len(partition))):
                 if partition[i] >= last_size:
-                    if partition.vacancy_numbers[i] == partition.rigging[i] and i != ell[0]:
+                    if (
+                        partition.vacancy_numbers[i] == partition.rigging[i]
+                        and i != ell[0]
+                    ):
                         if partition[i] == 1:
                             b = 'E'
                         else:
@@ -286,14 +295,20 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
                         case_S[2] = True
                         ell[3] = i
                         break
-                    elif partition.vacancy_numbers[i] - 1 == partition.rigging[i] and not case_Q:
+                    elif (
+                        partition.vacancy_numbers[i] - 1 == partition.rigging[i]
+                        and not case_Q
+                    ):
                         case_Q = True
                         # Check if the block is singular
                         block_size = partition[i]
                         for j in reversed(range(i)):
                             if partition[j] != block_size:
                                 break
-                            elif partition.vacancy_numbers[j] == partition.rigging[j] and j != ell[0]:
+                            elif (
+                                partition.vacancy_numbers[j] == partition.rigging[j]
+                                and j != ell[0]
+                            ):
                                 case_Q = False
                                 break
                         if case_Q:
@@ -342,8 +357,10 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
         if case_S[1]:
             row1 = [self.cur_partitions[1].remove_cell(ell[4], 2)]
         else:
-            row1 = [self.cur_partitions[1].remove_cell(ell[1]),
-                    self.cur_partitions[1].remove_cell(ell[4])]
+            row1 = [
+                self.cur_partitions[1].remove_cell(ell[1]),
+                self.cur_partitions[1].remove_cell(ell[4]),
+            ]
 
         if case_S[0]:
             row0 = [self.cur_partitions[0].remove_cell(ell[5], 2)]
@@ -351,11 +368,15 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
         else:
             if case_Q:
                 if ell[0] is None or ell[0] < ell[2]:
-                    row0 = [self.cur_partitions[0].remove_cell(ell[2]),
-                            self.cur_partitions[0].remove_cell(ell[0])]
+                    row0 = [
+                        self.cur_partitions[0].remove_cell(ell[2]),
+                        self.cur_partitions[0].remove_cell(ell[0]),
+                    ]
                 else:
-                    row0 = [self.cur_partitions[0].remove_cell(ell[0]),
-                            self.cur_partitions[0].remove_cell(ell[2])]
+                    row0 = [
+                        self.cur_partitions[0].remove_cell(ell[0]),
+                        self.cur_partitions[0].remove_cell(ell[2]),
+                    ]
                 if case_S[2]:
                     quasi = self.cur_partitions[0].remove_cell(ell[3])
             else:
@@ -370,10 +391,14 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
 
         for l in row1:
             if l is not None:
-                self.cur_partitions[1].rigging[l] = self.cur_partitions[1].vacancy_numbers[l]
+                self.cur_partitions[1].rigging[l] = self.cur_partitions[
+                    1
+                ].vacancy_numbers[l]
         for l in row0:
             if l is not None:
-                self.cur_partitions[0].rigging[l] = self.cur_partitions[0].vacancy_numbers[l]
+                self.cur_partitions[0].rigging[l] = self.cur_partitions[
+                    0
+                ].vacancy_numbers[l]
 
         # If case (Q,S) holds, then we must make the larger string quasisingular
         if case_Q and case_S[2]:
@@ -386,6 +411,6 @@ class RCToKRTBijectionTypeDTri(RCToKRTBijectionTypeA):
             # Find the place for the quasisingular rigging
             while j < length and P[j] == block_len and P.rigging[j] == vac_num:
                 j += 1
-            P.rigging[j-1] = vac_num - 1
+            P.rigging[j - 1] = vac_num - 1
 
         return b

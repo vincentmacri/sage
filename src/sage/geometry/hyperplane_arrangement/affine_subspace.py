@@ -57,7 +57,7 @@ TESTS::
     []
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 David Perkinson <davidp@reed.edu>
 #                          Volker Braun <vbraun.name@gmail.com>
 #
@@ -65,7 +65,7 @@ TESTS::
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.sage_object import SageObject
 from sage.matrix.constructor import vector
@@ -93,6 +93,7 @@ class AffineSubspace(SageObject):
           p = (1, 0, 0, 0)
           W = Vector space of dimension 4 over Rational Field
     """
+
     def __init__(self, p, V):
         r"""
         Construct an :class:`AffineSubspace`.
@@ -107,6 +108,7 @@ class AffineSubspace(SageObject):
         """
         R = V.base_ring()
         from sage.categories.fields import Fields
+
         if R not in Fields():
             R = R.fraction_field()
             V = V.change_ring(R)
@@ -145,7 +147,12 @@ class AffineSubspace(SageObject):
               p = (1, 0, 0, 0)
               W = Vector space of dimension 4 over Rational Field
         """
-        return "Affine space p + W where:\n  p = "+str(self._point)+"\n  W = "+str(self._linear_part)
+        return (
+            "Affine space p + W where:\n  p = "
+            + str(self._point)
+            + "\n  W = "
+            + str(self._linear_part)
+        )
 
     def __eq__(self, other):
         r"""
@@ -223,7 +230,7 @@ class AffineSubspace(SageObject):
         """
         V = self._linear_part
         W = other._linear_part
-        return V.is_subspace(W) and self._point-other._point in W
+        return V.is_subspace(W) and self._point - other._point in W
 
     def __lt__(self, other):
         r"""
@@ -371,8 +378,10 @@ class AffineSubspace(SageObject):
               p = (3, 4, 0)
               W = Vector space of dimension 3 over Finite Field of size 5
         """
-        if self.linear_part().ambient_vector_space() != \
-           other.linear_part().ambient_vector_space():
+        if (
+            self.linear_part().ambient_vector_space()
+            != other.linear_part().ambient_vector_space()
+        ):
             raise ValueError('incompatible ambient vector spaces')
         m = self.linear_part().matrix()
         n = other.linear_part().matrix()
@@ -384,6 +393,6 @@ class AffineSubspace(SageObject):
             t = M.solve_left(v)
         except ValueError:
             return None  # empty intersection
-        new_p = p + t[:m.nrows()]*m
+        new_p = p + t[: m.nrows()] * m
         new_V = self.linear_part().intersection(other._linear_part)
         return AffineSubspace(new_p, new_V)

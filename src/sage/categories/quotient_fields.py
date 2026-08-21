@@ -1,12 +1,12 @@
 r"""
 Quotient fields
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_singleton import Category_singleton
 from sage.misc.abstract_method import abstract_method
@@ -44,7 +44,6 @@ class QuotientFields(Category_singleton):
         pass
 
     class ElementMethods:
-
         @abstract_method
         def numerator(self):
             pass
@@ -129,7 +128,7 @@ class QuotientFields(Category_singleton):
                 selfD = selfD // selfGCD
                 otherN = otherN // otherGCD
                 otherD = otherD // otherGCD
-                tmp = P(selfN.gcd(otherN))/P(selfD.lcm(otherD))
+                tmp = P(selfN.gcd(otherN)) / P(selfD.lcm(otherD))
                 return tmp
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 zero = P.zero()
@@ -241,7 +240,7 @@ class QuotientFields(Category_singleton):
                 selfD = selfD // selfGCD
                 otherN = otherN // otherGCD
                 otherD = otherD // otherGCD
-                return P(selfN.lcm(otherN))/P(selfD.gcd(otherD))
+                return P(selfN.lcm(otherN)) / P(selfD.gcd(otherD))
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 zero = P.zero()
                 if self == zero or other == zero:
@@ -324,8 +323,8 @@ class QuotientFields(Category_singleton):
                 otherD = otherD // otherGCD
 
                 lcmD = selfD.lcm(otherD)
-                g,s,t = selfN.xgcd(otherN)
-                return (P(g)/P(lcmD), P(s*selfD)/P(lcmD),P(t*otherD)/P(lcmD))
+                g, s, t = selfN.xgcd(otherN)
+                return (P(g) / P(lcmD), P(s * selfD) / P(lcmD), P(t * otherD) / P(lcmD))
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 zero = self.parent().zero()
                 one = self.parent().one()
@@ -360,8 +359,9 @@ class QuotientFields(Category_singleton):
                 sage: f.factor()                                                        # needs sage.rings.finite_rings
                 (x + y)^-1 * y * x
             """
-            return (self.numerator().factor(*args, **kwds) /
-                    self.denominator().factor(*args, **kwds))
+            return self.numerator().factor(*args, **kwds) / self.denominator().factor(
+                *args, **kwds
+            )
 
         def partial_fraction_decomposition(self, decompose_powers=True):
             """
@@ -559,8 +559,13 @@ class QuotientFields(Category_singleton):
                 factors = sorted(all.items())
 
             # TODO(robertwb): Should there be a category of univariate polynomials?
-            from sage.rings.fraction_field_element import FractionFieldElement_1poly_field
-            is_polynomial_over_field = isinstance(self, FractionFieldElement_1poly_field)
+            from sage.rings.fraction_field_element import (
+                FractionFieldElement_1poly_field,
+            )
+
+            is_polynomial_over_field = isinstance(
+                self, FractionFieldElement_1poly_field
+            )
 
             running_total = 0
             parts = []
@@ -580,10 +585,10 @@ class QuotientFields(Category_singleton):
                     for ee in range(e, 0, -1):
                         n, n_part = n.quo_rem(r)
                         if n_part:
-                            r_parts.append(n_part/powers[ee])
+                            r_parts.append(n_part / powers[ee])
                     parts.extend(reversed(r_parts))
                 else:
-                    parts.append(n/powers[e])
+                    parts.append(n / powers[e])
 
             if not is_polynomial_over_field:
                 # remainders not unique, need to re-compute whole to take into
@@ -622,6 +627,7 @@ class QuotientFields(Category_singleton):
                 2/(x^3 + 3*x^2*y + 3*x*y^2 + y^3)
             """
             from sage.misc.derivative import multi_derivative
+
             return multi_derivative(self, args)
 
         def _derivative(self, var=None):
@@ -687,7 +693,7 @@ class QuotientFields(Category_singleton):
             num = self.numerator()
             den = self.denominator()
 
-            if (num.is_zero()):
+            if num.is_zero():
                 return R.zero()
 
             if R.is_exact():
@@ -707,8 +713,7 @@ class QuotientFields(Category_singleton):
                             pass
                         except NotImplementedError:
                             pass
-                    return self.__class__(R, tnum, tden,
-                        coerce=False, reduce=False)
+                    return self.__class__(R, tnum, tden, coerce=False, reduce=False)
                 except AttributeError:
                     pass
                 except NotImplementedError:
@@ -721,5 +726,4 @@ class QuotientFields(Category_singleton):
             num = num._derivative(var) * den - num * den._derivative(var)
             den = den**2
 
-            return self.__class__(R, num, den,
-                coerce=False, reduce=False)
+            return self.__class__(R, num, den, coerce=False, reduce=False)

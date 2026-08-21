@@ -28,7 +28,7 @@ EXAMPLES::
      (0.181232444469876? + 1.083954101317711?*I, 1)]
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 Carl Witty
 #
 # This program is free software: you can redistribute it and/or modify
@@ -36,8 +36,7 @@ EXAMPLES::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from copy import copy
 
@@ -126,12 +125,12 @@ def intervals_disjoint(intvs):
 
         def row_disjoint():
             for a in range(len(row)):
-                for b in range(a+1, len(row)):
+                for b in range(a + 1, len(row)):
                     if row[a].overlaps(row[b]):
                         return False
             return True
 
-        for (y_imag, y) in column:
+        for y_imag, y in column:
             if prev_imag is not None and y_imag > prev_imag:
                 if not row_disjoint():
                     return False
@@ -270,7 +269,7 @@ def complex_roots(p, skip_squarefree=False, retval='interval', min_prec=0):
         all_rts = []
         ok = True
 
-        for (factor, exp) in factors:
+        for factor, exp in factors:
             cfac = CCX(factor)
             rts = cfac.roots(multiplicities=False)
             # Make sure the number of roots we found is the degree. If
@@ -294,10 +293,13 @@ def complex_roots(p, skip_squarefree=False, retval='interval', min_prec=0):
             if retval == 'interval':
                 return [(rt, mult) for (rt, fac, mult) in all_rts]
             if retval == 'algebraic':
-                return [(QQbar.polynomial_root(fac, rt), mult) for (rt, fac, mult) in all_rts]
+                return [
+                    (QQbar.polynomial_root(fac, rt), mult)
+                    for (rt, fac, mult) in all_rts
+                ]
             if retval == 'algebraic_real':
                 rts = []
-                for (rt, fac, mult) in all_rts:
+                for rt, fac, mult in all_rts:
                     qqbar_rt = QQbar.polynomial_root(fac, rt)
                     if qqbar_rt.imag().is_zero():
                         rts.append((AA(qqbar_rt), mult))

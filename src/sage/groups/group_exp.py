@@ -90,6 +90,7 @@ class GroupExp(Functor):
         sage: y.parent()
         Multiplicative form of Ambient space of the Root system of type ['A', 2]
     """
+
     def __init__(self):
         r"""
         Initialize the :class:`GroupExp` functor.
@@ -198,6 +199,7 @@ class GroupExpElement(ElementWrapper, MultiplicativeGroupElement):
         sage: EG(vector(QQ, (1, -3))) == z
         True
     """
+
     def __init__(self, parent, x):
         r"""
         EXAMPLES::
@@ -258,6 +260,7 @@ class GroupExp_Class(UniqueRepresentation, Parent):
         sage: GroupExp()(QQ)
         Multiplicative form of Rational Field
     """
+
     def __init__(self, G) -> None:
         r"""
 

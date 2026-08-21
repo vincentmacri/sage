@@ -154,6 +154,7 @@ class EuclideanGroup(AffineGroup):
 
     - :wikipedia:`Euclidean_group`
     """
+
     def _element_constructor_check(self, A, b):
         """
         Verify that ``A``, ``b`` define an affine group element.
@@ -212,7 +213,10 @@ class EuclideanGroup(AffineGroup):
             sage: EuclideanGroup(6, GF(5))
             Euclidean Group of degree 6 over Finite Field of size 5
         """
-        return "Euclidean Group of degree %s over %s" % (self.degree(), self.base_ring())
+        return "Euclidean Group of degree %s over %s" % (
+            self.degree(),
+            self.base_ring(),
+        )
 
     def random_element(self):
         """
@@ -239,7 +243,7 @@ class EuclideanGroup(AffineGroup):
             try:
                 g1 = self.reflection(v)
                 break
-            except ValueError: # v has norm zero
+            except ValueError:  # v has norm zero
                 pass
         g2 = self.translation(self.vector_space().random_element())
         return g1 * g2

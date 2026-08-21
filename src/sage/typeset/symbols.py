@@ -51,16 +51,24 @@ EXAMPLES::
         ⎛ ⎞ ⎜ ⎟ ⎜ ⎟     ⎡ ⎤ ⎢ ⎥ ⎢ ⎥     ⎰ ⎱ ⎨ ⎬ ⎫ ⎧
     ( ) ⎝ ⎠ ⎝ ⎠ ⎝ ⎠ [ ] ⎣ ⎦ ⎣ ⎦ ⎣ ⎦ { } ⎱ ⎰ ⎩ ⎭ ⎩ ⎭
 """
+
 import unicodedata
 from sage.structure.sage_object import SageObject
 
 
 class CompoundSymbol(SageObject):
-
-    def __init__(self, character, top, extension, bottom,
-                 middle=None,
-                 middle_top=None, middle_bottom=None,
-                 top_2=None, bottom_2=None):
+    def __init__(
+        self,
+        character,
+        top,
+        extension,
+        bottom,
+        middle=None,
+        middle_top=None,
+        middle_bottom=None,
+        top_2=None,
+        bottom_2=None,
+    ):
         """
         A multi-character (ascii/unicode art) symbol.
 
@@ -152,7 +160,13 @@ class CompoundSymbol(SageObject):
             return [self.top, self.middle, self.bottom]
         elif num_lines % 2 == 0:
             ext = [self.extension] * ((num_lines - 4) // 2)
-            return [self.top] + ext + [self.middle_top, self.middle_bottom] + ext + [self.bottom]
+            return (
+                [self.top]
+                + ext
+                + [self.middle_top, self.middle_bottom]
+                + ext
+                + [self.bottom]
+            )
         else:  # num_lines %2 == 1
             ext = [self.extension] * ((num_lines - 3) // 2)
             return [self.top] + ext + [self.middle] + ext + [self.bottom]
@@ -189,7 +203,6 @@ class CompoundSymbol(SageObject):
 
 
 class CompoundAsciiSymbol(CompoundSymbol):
-
     def character_art(self, num_lines):
         """
         Return the ASCII art of the symbol.
@@ -203,11 +216,11 @@ class CompoundAsciiSymbol(CompoundSymbol):
             {
         """
         from sage.typeset.ascii_art import AsciiArt
+
         return AsciiArt(self(num_lines))
 
 
 class CompoundUnicodeSymbol(CompoundSymbol):
-
     def character_art(self, num_lines):
         """
         Return the unicode art of the symbol.
@@ -221,6 +234,7 @@ class CompoundUnicodeSymbol(CompoundSymbol):
             ⎩
         """
         from sage.typeset.unicode_art import UnicodeArt
+
         return UnicodeArt(self(num_lines))
 
 

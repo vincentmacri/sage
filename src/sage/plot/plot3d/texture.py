@@ -32,6 +32,7 @@ AUTHOR:
 
 - Robert Bradshaw (2007-07-07) Initial version.
 """
+
 from textwrap import dedent
 
 from sage.misc.classcall_metaclass import ClasscallMetaclass, typecall
@@ -155,6 +156,7 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
         sage: hash(Texture()) # random
         42
     """
+
     @staticmethod
     def __classcall__(cls, id=None, **kwds):
         r"""
@@ -257,8 +259,18 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
             id = _new_global_texture_id()
         return typecall(cls, id, **kwds)
 
-    def __init__(self, id, color=(.4, .4, 1), opacity=1, ambient=0.5,
-                 diffuse=1, specular=0, shininess=1, name=None, **kwds) -> None:
+    def __init__(
+        self,
+        id,
+        color=(0.4, 0.4, 1),
+        opacity=1,
+        ambient=0.5,
+        diffuse=1,
+        specular=0,
+        shininess=1,
+        name=None,
+        **kwds,
+    ) -> None:
         r"""
         Construction of a texture.
 
@@ -281,8 +293,7 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
         else:
             if len(color) == 4:
                 opacity = color[3]
-            color = tuple(float(1) if c == 1 else float(c) % 1
-                          for c in color[0: 3])
+            color = tuple(float(1) if c == 1 else float(c) % 1 for c in color[0:3])
 
         self.color = color
         self.opacity = float(opacity)
@@ -357,9 +368,14 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
             Texdef {id}
               Ambient {ambient!r} Diffuse {diffuse!r} Specular {specular!r} Opacity {opacity!r}
               Color {color[0]!r} {color[1]!r} {color[2]!r}
-              TexFunc 0""").format(id=self.id, ambient=ambient,
-                                   diffuse=diffuse, specular=specular,
-                                   opacity=self.opacity, color=self.color)
+              TexFunc 0""").format(
+            id=self.id,
+            ambient=ambient,
+            diffuse=diffuse,
+            specular=specular,
+            opacity=self.opacity,
+            color=self.color,
+        )
 
     def x3d_str(self) -> str:
         r"""
@@ -377,8 +393,8 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
             "<Material diffuseColor='{color[0]!r} {color[1]!r} {color[2]!r}' "
             "shininess='{shininess!r}' "
             "specularColor='{specular!r} {specular!r} {specular!r}'/>"
-            "</Appearance>").format(color=self.color, shininess=self.shininess,
-                                    specular=self.specular[0])
+            "</Appearance>"
+        ).format(color=self.color, shininess=self.shininess, specular=self.specular[0])
 
     def mtl_str(self) -> str:
         r"""
@@ -398,11 +414,15 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
             Ks {specular[0]!r} {specular[1]!r} {specular[2]!r}
             illum {illumination}
             Ns {shininess!r}
-            d {opacity!r}"""
-                      ).format(id=self.id, ambient=self.ambient, diffuse=self.diffuse,
-                               specular=self.specular,
-                               illumination=(2 if sum(self.specular) > 0 else 1),
-                               shininess=self.shininess, opacity=self.opacity)
+            d {opacity!r}""").format(
+            id=self.id,
+            ambient=self.ambient,
+            diffuse=self.diffuse,
+            specular=self.specular,
+            illumination=(2 if sum(self.specular) > 0 else 1),
+            shininess=self.shininess,
+            opacity=self.opacity,
+        )
 
     def jmol_str(self, obj) -> str:
         r"""
@@ -423,8 +443,13 @@ class Texture(WithEqualityById, SageObject, metaclass=ClasscallMetaclass):
 
             sage: sum([dodecahedron(center=[2.5*x, 0, 0], color=(1, 0, 0, x/10)) for x in range(11)]).show(aspect_ratio=[1,1,1], frame=False, zoom=2)
         """
-        translucent = "translucent %s" % float(1 - self.opacity) if self.opacity < 1 else ""
-        return "color {} {} [{},{},{}]".format(obj, translucent,
-                                               int(255 * self.color[0]),
-                                               int(255 * self.color[1]),
-                                               int(255 * self.color[2]))
+        translucent = (
+            "translucent %s" % float(1 - self.opacity) if self.opacity < 1 else ""
+        )
+        return "color {} {} [{},{},{}]".format(
+            obj,
+            translucent,
+            int(255 * self.color[0]),
+            int(255 * self.color[1]),
+            int(255 * self.color[2]),
+        )

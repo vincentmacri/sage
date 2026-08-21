@@ -73,14 +73,18 @@ def trace(code, preparse=True):
         sage: gc.enable()
     """
     from IPython.core.debugger import Pdb
+
     pdb = Pdb()
 
     try:
         ipython = get_ipython()
     except NameError:
-        raise NotImplementedError("the trace command can only be run from the Sage command-line")
+        raise NotImplementedError(
+            "the trace command can only be run from the Sage command-line"
+        )
 
     from sage.repl.preparse import preparse
+
     code = preparse(code)
     return pdb.run(code, ipython.user_ns)
 

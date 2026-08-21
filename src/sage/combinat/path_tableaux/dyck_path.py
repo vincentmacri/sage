@@ -17,7 +17,7 @@ AUTHORS:
 - Bruce Westbury (2018): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Bruce Westbury <bruce.westbury@gmail.com>,
 #
 # This program is free software: you can redistribute it and/or modify
@@ -89,6 +89,7 @@ class DyckPath(PathTableau):
         sage: t.to_perfect_matching()
         [(0, 5), (1, 4), (2, 3)]
     """
+
     @staticmethod
     def __classcall_private__(cls, ot):
         r"""
@@ -151,9 +152,9 @@ class DyckPath(PathTableau):
 
         elif isinstance(ot, PerfectMatching):
             if ot.is_noncrossing():
-                u = [1]*ot.size()
+                u = [1] * ot.size()
                 for a in ot.arcs():
-                    u[a[1]-1] = 0
+                    u[a[1] - 1] = 0
                 w = DyckWord(u).heights()
             else:
                 raise ValueError("the perfect matching must be non crossing")
@@ -164,7 +165,7 @@ class DyckPath(PathTableau):
             if ot.is_standard():
                 u = [1] * ot.size()
                 for i in ot[1]:
-                    u[i-1] = 0
+                    u[i - 1] = 0
                 w = DyckWord(u).heights()
             else:
                 raise ValueError("the tableau must be standard")
@@ -174,8 +175,8 @@ class DyckPath(PathTableau):
                 raise ValueError("the skew tableau must have at most two rows")
             # The check that ot is standard is not implemented
             c = ot.to_chain()
-            w = [0]*len(c)
-            for i,a in enumerate(c):
+            w = [0] * len(c)
+            for i, a in enumerate(c):
                 if len(a) == 1:
                     w[i] = a[0]
                 else:
@@ -241,17 +242,18 @@ class DyckPath(PathTableau):
             ...
             ValueError: 6 is not a valid integer
         """
+
         def _rule(x):
             """
             This is the rule on a sequence of three letters.
             """
-            return abs(x[0]-x[1]+x[2])
+            return abs(x[0] - x[1] + x[2])
 
-        if not (i > 0 and i < len(self)-1):
+        if not (i > 0 and i < len(self) - 1):
             raise ValueError("%d is not a valid integer" % i)
 
         with self.clone() as result:
-            result[i] = _rule(self[i-1:i+2])
+            result[i] = _rule(self[i - 1 : i + 2])
 
         return result
 
@@ -293,8 +295,8 @@ class DyckPath(PathTableau):
         """
         result = set()
 
-        for i in range(1,len(self)-1):
-            if self[i] < self[i-1] and self[i] < self[i+1]:
+        for i in range(1, len(self) - 1):
+            if self[i] < self[i - 1] and self[i] < self[i + 1]:
                 result.add(i)
 
         return result
@@ -308,7 +310,7 @@ class DyckPath(PathTableau):
             sage: path_tableaux.DyckPath([1,0,1,2,1]).to_word()
             [0, 1, 1, 0]
         """
-        return [(self[i+1] - self[i] + 1) // 2 for i in range(self.size()-1)]
+        return [(self[i + 1] - self[i] + 1) // 2 for i in range(self.size() - 1)]
 
     def to_perfect_matching(self):
         r"""
@@ -355,7 +357,7 @@ class DyckPath(PathTableau):
         top = [i + 1 for i, a in enumerate(w) if a == 1]
         bot = [i + 1 for i, a in enumerate(w) if a == 0]
         if self.is_skew():
-            return SkewTableau([[None]*self[0]+top, bot])
+            return SkewTableau([[None] * self[0] + top, bot])
         return StandardTableau([top, bot])
 
 
@@ -373,6 +375,6 @@ class DyckPaths(PathTableaux):
             sage: path_tableaux.DyckPaths()._an_element_()
             [0, 1, 2, 1, 0]
         """
-        return DyckPath([0,1,2,1,0])
+        return DyckPath([0, 1, 2, 1, 0])
 
     Element = DyckPath

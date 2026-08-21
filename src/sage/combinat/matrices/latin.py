@@ -135,7 +135,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.integer import Integer
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
-from sage.groups.perm_gps.constructor import PermutationGroupElement as PermutationConstructor
+from sage.groups.perm_gps.constructor import (
+    PermutationGroupElement as PermutationConstructor,
+)
 from sage.libs.gap.libgap import libgap
 from sage.libs.gap.element import GapElement
 from sage.combinat.permutation import Permutation
@@ -181,8 +183,7 @@ class LatinSquare:
         if len(args) == 1 and isinstance(args[0], (Integer, int)):
             self.square = matrix(ZZ, args[0], args[0])
             self.clear_cells()
-        elif len(args) == 2 and all(isinstance(a, (Integer, int))
-                                    for a in args):
+        elif len(args) == 2 and all(isinstance(a, (Integer, int)) for a in args):
             self.square = matrix(ZZ, args[0], args[1])
             self.clear_cells()
         elif len(args) == 1 and isinstance(args[0], Matrix_integer_dense):
@@ -202,6 +203,7 @@ class LatinSquare:
             True
         """
         from sage.misc.persist import dumps
+
         return dumps(self.square)
 
     def __str__(self) -> str:
@@ -318,6 +320,7 @@ class LatinSquare:
         """
         C = LatinSquare(self.square.nrows(), self.square.ncols())
         from copy import copy
+
         C.square = copy(self.square)
         return C
 
@@ -406,8 +409,12 @@ class LatinSquare:
             sage: LatinSquare(matrix([[0, -1], [-1, 0]])).n_filled_cells()
             2
         """
-        return sum(1 for r in range(self.nrows()) for c in range(self.ncols())
-                   if self[r, c] >= 0)
+        return sum(
+            1
+            for r in range(self.nrows())
+            for c in range(self.ncols())
+            if self[r, c] >= 0
+        )
 
     nr_filled_cells = n_filled_cells
 
@@ -440,9 +447,9 @@ class LatinSquare:
         col_max = self.ncols()
         sym_max = self.n_distinct_symbols()
 
-        while self.is_empty_row(row_max-1):
+        while self.is_empty_row(row_max - 1):
             row_max -= 1
-        while self.is_empty_column(col_max-1):
+        while self.is_empty_column(col_max - 1):
             col_max -= 1
 
         return row_max, col_max, sym_max
@@ -540,7 +547,7 @@ class LatinSquare:
                 except IndexError:
                     s2 = self[r, c]  # we must be leaving the symbol fixed?
 
-                Q[row_perm[r]-1, col_perm[c]-1] = s2
+                Q[row_perm[r] - 1, col_perm[c] - 1] = s2
 
         return Q
 
@@ -907,10 +914,11 @@ class LatinSquare:
         n = self.nrows()
 
         from copy import copy
+
         G = copy(self)
 
-        for r in range(n-1, -1, -1):
-            for c in range(n-1, -1, -1):
+        for r in range(n - 1, -1, -1):
+            for c in range(n - 1, -1, -1):
                 e = G[r, c]
                 G[r, c] = -1
 
@@ -996,7 +1004,7 @@ class LatinSquare:
         """
 
         a = ""
-        a += r"\begin{array}{" + self.ncols()*"|c" + "|}"
+        a += r"\begin{array}{" + self.ncols() * "|c" + "|}"
         for r in range(self.nrows()):
             a += r"\hline "
             for c in range(self.ncols()):
@@ -1006,7 +1014,7 @@ class LatinSquare:
                 else:
                     a += str(s)
 
-                if c < self.ncols()-1:
+                if c < self.ncols() - 1:
                     a += " & "
                 else:
                     a += "\\\\"
@@ -1179,9 +1187,9 @@ class LatinSquare:
 
                 for e in sorted(set(list(valsrow) + list(valscol))):
                     # These should be constants
-                    c_OFFSET = e + c*n
-                    r_OFFSET = e + r*n + n*n
-                    xy_OFFSET = 2*n*n + r*n + c
+                    c_OFFSET = e + c * n
+                    r_OFFSET = e + r * n + n * n
+                    xy_OFFSET = 2 * n * n + r * n + c
 
                     cmap[(c_OFFSET, r_OFFSET, xy_OFFSET)] = (r, c, e)
 
@@ -1197,8 +1205,7 @@ class LatinSquare:
 
                     dlx_rows.append([c_OFFSET, r_OFFSET, xy_OFFSET])
 
-                    max_column_nr = max(max_column_nr, c_OFFSET,
-                                        r_OFFSET, xy_OFFSET)
+                    max_column_nr = max(max_column_nr, c_OFFSET, r_OFFSET, xy_OFFSET)
 
         # We will have missed some columns. We
         # have to add 'dummy' rows so that the C++ DLX solver will find
@@ -1248,6 +1255,7 @@ class LatinSquare:
             n_found += 1
 
             from copy import deepcopy
+
             Q = deepcopy(self)
 
             for y in x:
@@ -1312,7 +1320,13 @@ def genus(T1, T2):
         3
     """
     cells_map, t1, t2, t3 = tau123(T1, T2)
-    return (len(t1.to_cycles()) + len(t2.to_cycles()) + len(t3.to_cycles()) - T1.n_filled_cells() - 2) // (-2)
+    return (
+        len(t1.to_cycles())
+        + len(t2.to_cycles())
+        + len(t3.to_cycles())
+        - T1.n_filled_cells()
+        - 2
+    ) // (-2)
 
 
 def tau123(T1, T2):
@@ -1511,12 +1525,12 @@ def isotopism(p):
     if isinstance(p, list):
         # We expect a list like [0,3,2,1] which means
         # that 0 goes to 0, 1 goes to 3, etc.
-        return Permutation([x+1 for x in p])
+        return Permutation([x + 1 for x in p])
 
     if isinstance(p, tuple):
         # We have a single cycle:
         if isinstance(p[0], Integer):
-            return Permutation(tuple(x+1 for x in p))
+            return Permutation(tuple(x + 1 for x in p))
 
         # We have a tuple of cycles:
         if isinstance(p[0], tuple):
@@ -1728,7 +1742,7 @@ def tau1(T1, T2, cells_map):
     # The cells_map has both directions, i.e. integer to
     # cell and cell to integer, so the size of T1 is
     # just half of len(cells_map).
-    x = (int(len(cells_map)/2) + 1) * [-1]
+    x = (int(len(cells_map) / 2) + 1) * [-1]
 
     for r in range(T1.nrows()):
         for c in range(T1.ncols()):
@@ -1782,7 +1796,7 @@ def tau2(T1, T2, cells_map):
     # The cells_map has both directions, i.e. integer to
     # cell and cell to integer, so the size of T1 is
     # just half of len(cells_map).
-    x = (int(len(cells_map)/2) + 1) * [-1]
+    x = (int(len(cells_map) / 2) + 1) * [-1]
 
     for r in range(T1.nrows()):
         for c in range(T1.ncols()):
@@ -1836,7 +1850,7 @@ def tau3(T1, T2, cells_map):
     # The cells_map has both directions, i.e. integer to
     # cell and cell to integer, so the size of T1 is
     # just half of len(cells_map).
-    x = (int(len(cells_map)/2) + 1) * [-1]
+    x = (int(len(cells_map) / 2) + 1) * [-1]
 
     for r in range(T1.nrows()):
         for c in range(T1.ncols()):
@@ -1912,7 +1926,7 @@ def forward_circulant(n):
 
     for r in range(n):
         for c in range(n):
-            L[r, c] = (n-c+r) % n
+            L[r, c] = (n - c + r) % n
 
     return L
 
@@ -1951,14 +1965,14 @@ def direct_product(L1, L2, L3, L4):
 
     n = L1.nrows()
 
-    D = LatinSquare(2*n, 2*n)
+    D = LatinSquare(2 * n, 2 * n)
 
     for r in range(n):
         for c in range(n):
             D[r, c] = L1[r, c]
-            D[r, c+n] = L2[r, c] + n
-            D[r+n, c] = L3[r, c] + n
-            D[r+n, c+n] = L4[r, c]
+            D[r, c + n] = L2[r, c] + n
+            D[r + n, c] = L3[r, c] + n
+            D[r + n, c + n] = L4[r, c]
 
     return D
 
@@ -1995,7 +2009,7 @@ def elementary_abelian_2group(s):
         L[1, 1] = 0
 
         return L
-    L_prev = elementary_abelian_2group(s-1)
+    L_prev = elementary_abelian_2group(s - 1)
     L = LatinSquare(2**s, 2**s)
 
     offset = L.nrows() // 2
@@ -2003,9 +2017,9 @@ def elementary_abelian_2group(s):
     for r in range(L_prev.nrows()):
         for c in range(L_prev.ncols()):
             L[r, c] = L_prev[r, c]
-            L[r+offset, c] = L_prev[r, c] + offset
-            L[r, c+offset] = L_prev[r, c] + offset
-            L[r+offset, c+offset] = L_prev[r, c]
+            L[r + offset, c] = L_prev[r, c] + offset
+            L[r, c + offset] = L_prev[r, c] + offset
+            L[r + offset, c + offset] = L_prev[r, c]
     return L
 
 
@@ -2184,6 +2198,7 @@ def LatinSquare_generator(L_start, check_assertions=False):
     proper = True
 
     from copy import copy
+
     L = copy(L_start)
 
     L_cer = LatinSquare(n, n)
@@ -2356,13 +2371,13 @@ def alternating_group_bitrade_generators(m):
     """
     assert m >= 1
 
-    a = tuple(range(1, 2*m+1 + 1))
+    a = tuple(range(1, 2 * m + 1 + 1))
 
-    b = tuple(range(m + 1, 0, -1)) + tuple(range(2*m+2, 3*m+1 + 1))
+    b = tuple(range(m + 1, 0, -1)) + tuple(range(2 * m + 2, 3 * m + 1 + 1))
 
     a = PermutationConstructor(a)
     b = PermutationConstructor(b)
-    c = PermutationConstructor((a*b)**(-1))
+    c = PermutationConstructor((a * b) ** (-1))
 
     G = PermutationGroup([a, b])
 
@@ -2388,12 +2403,12 @@ def pq_group_bitrade_generators(p, q):
     # congruence x^p = 1 mod q
     F = FiniteField(q)
     fgen = F.multiplicative_generator()
-    beta = fgen**((q-1)/p)
+    beta = fgen ** ((q - 1) / p)
 
     assert beta != 1
     assert (beta**p % q) == 1
 
-    Q = tuple(range(1, q+1))
+    Q = tuple(range(1, q + 1))
 
     P = []
     seenValues = {}
@@ -2403,7 +2418,7 @@ def pq_group_bitrade_generators(p, q):
 
         cycle = []
         for k in range(p):
-            x = (1 + (i-1)*beta**k) % q
+            x = (1 + (i - 1) * beta**k) % q
             if x == 0:
                 x = q
 
@@ -2412,12 +2427,12 @@ def pq_group_bitrade_generators(p, q):
         P.append(tuple(map(Integer, cycle)))
 
     G = PermutationGroup([P, Q])
-    assert G.order() == p*q
+    assert G.order() == p * q
     assert not G.is_abelian()
 
     a = PermutationConstructor(P)
     b = PermutationConstructor(Q)
-    c = PermutationConstructor((a*b)**(-1))
+    c = PermutationConstructor((a * b) ** (-1))
 
     return (a, b, c, PermutationGroup([P, Q]))
 
@@ -2444,9 +2459,9 @@ def p3_group_bitrade_generators(p):
     rels.append(a**p)
     rels.append(b**p)
     rels.append(c**p)
-    rels.append(a*b*((b*a*c)**(-1)))
-    rels.append(c*a*((a*c)**(-1)))
-    rels.append(c*b*((b*c)**(-1)))
+    rels.append(a * b * ((b * a * c) ** (-1)))
+    rels.append(c * a * ((a * c) ** (-1)))
+    rels.append(c * b * ((b * c) ** (-1)))
 
     G = F.FactorGroupFpGroupByRels(rels)
     u, v, _ = G.GeneratorsOfGroup()
@@ -2456,7 +2471,7 @@ def p3_group_bitrade_generators(p):
     x = PermutationConstructor(libgap.Image(iso, u))
     y = PermutationConstructor(libgap.Image(iso, v))
 
-    return (x, y, (x*y)**(-1), PermutationGroup([x, y]))
+    return (x, y, (x * y) ** (-1), PermutationGroup([x, y]))
 
 
 def check_bitrade_generators(a, b, c) -> bool:
@@ -2478,7 +2493,7 @@ def check_bitrade_generators(a, b, c) -> bool:
     B = PermutationGroup([b])
     C = PermutationGroup([c])
 
-    if a*b != c**(-1):
+    if a * b != c ** (-1):
         return False
 
     X = libgap.Intersection(libgap.Intersection(A, B), C)
@@ -2503,8 +2518,11 @@ def is_bitrade(T1, T2) -> bool:
         sage: is_bitrade(T1, T2)
         True
     """
-    return (is_disjoint(T1, T2) and is_same_shape(T1, T2) and
-            is_row_and_col_balanced(T1, T2))
+    return (
+        is_disjoint(T1, T2)
+        and is_same_shape(T1, T2)
+        and is_row_and_col_balanced(T1, T2)
+    )
 
 
 def is_primary_bitrade(a, b, c, G) -> bool:
@@ -2580,8 +2598,9 @@ def tau_to_bitrade(t1, t2, t3):
     for r in range(len(c1)):
         for c in range(len(c2)):
             for s in range(len(c3)):
-                n_common = len(reduce(set.intersection,
-                                       [set(c1[r]), set(c2[c]), set(c3[s])]))
+                n_common = len(
+                    reduce(set.intersection, [set(c1[r]), set(c2[c]), set(c3[s])])
+                )
                 assert n_common in [0, 1]
 
                 if n_common == 1:
@@ -2625,7 +2644,9 @@ def bitrade_from_group(a, b, c, G):
         [ 2  1  3 -1]
         [ 0  3 -1  2]
     """
-    hom = libgap.ActionHomomorphism(G, libgap.RightCosets(G, libgap.TrivialSubgroup(G)), libgap.OnRight)
+    hom = libgap.ActionHomomorphism(
+        G, libgap.RightCosets(G, libgap.TrivialSubgroup(G)), libgap.OnRight
+    )
 
     t1 = libgap.Image(hom, a)
     t2 = libgap.Image(hom, b)
@@ -2778,9 +2799,9 @@ def dlxcpp_rows_and_map(P):
 
             for e in range(n):
                 # These should be constants
-                c_OFFSET = e + c*n
-                r_OFFSET = e + r*n + n*n
-                xy_OFFSET = 2*n*n + r*n + c
+                c_OFFSET = e + c * n
+                r_OFFSET = e + r * n + n * n
+                xy_OFFSET = 2 * n * n + r * n + c
 
                 cmap[(c_OFFSET, r_OFFSET, xy_OFFSET)] = (r, c, e)
 
@@ -2835,6 +2856,7 @@ def dlxcpp_find_completions(P, nr_to_find=None):
         soln = list(i)
 
         from copy import deepcopy
+
         Q = deepcopy(P)
 
         for x in soln:
@@ -2884,6 +2906,7 @@ def bitrade(T1, T2):
     n = T1.nrows()
 
     from copy import copy
+
     Q1 = copy(T1)
     Q2 = copy(T2)
 

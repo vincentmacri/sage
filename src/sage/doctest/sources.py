@@ -67,7 +67,7 @@ sagestart = re.compile(r"^(\s*(>>> |sage: ))\s*[^#\s]")
 untested = re.compile("(not implemented|not tested)")
 
 # For parsing a PEP 0263 encoding declaration
-pep_0263 = re.compile(br'^[ \t\v]*#.*?coding[:=]\s*([-\w.]+)')
+pep_0263 = re.compile(rb'^[ \t\v]*#.*?coding[:=]\s*([-\w.]+)')
 
 # Source line number in warning output
 doctest_line_number = re.compile(r"^\s*doctest:[0-9]")
@@ -115,13 +115,13 @@ def get_basename(path):
             return path
         root = path[:i]
     elif path.startswith(sp):
-        root = path[:len(sp)]
+        root = path[: len(sp)]
     else:
         # If this file is in some python package we can see how deep
         # it goes.
         while is_package_or_sage_namespace_package_dir(root):
             root = os.path.dirname(root)
-    fully_qualified_path, ext = os.path.splitext(path[len(root) + 1:])
+    fully_qualified_path, ext = os.path.splitext(path[len(root) + 1 :])
     if os.path.split(path)[1] == '__init__.py':
         fully_qualified_path = fully_qualified_path[:-9]
     basename = fully_qualified_path.replace(os.path.sep, '.')
@@ -142,6 +142,7 @@ class DocTestSource:
 
     .. automethod:: _process_doc
     """
+
     def __init__(self, options):
         """
         Initialization.
@@ -234,12 +235,18 @@ class DocTestSource:
         """
         docstring = "".join(doc)
         new_doctests = self.parse_docstring(docstring, namespace, start)
-        sig_on_count_doc_doctest = "sig_on_count() # check sig_on/off pairings (virtual doctest)\n"
+        sig_on_count_doc_doctest = (
+            "sig_on_count() # check sig_on/off pairings (virtual doctest)\n"
+        )
         for dt in new_doctests:
-            if len(dt.examples) > 0 and not (hasattr(dt.examples[-1], 'sage_source')
-                                             and dt.examples[-1].sage_source == sig_on_count_doc_doctest):
+            if len(dt.examples) > 0 and not (
+                hasattr(dt.examples[-1], 'sage_source')
+                and dt.examples[-1].sage_source == sig_on_count_doc_doctest
+            ):
                 # Line number refers to the end of the docstring
-                sigon = doctest.Example(sig_on_count_doc_doctest, "0\n", lineno=docstring.count("\n"))
+                sigon = doctest.Example(
+                    sig_on_count_doc_doctest, "0\n", lineno=docstring.count("\n")
+                )
                 sigon.sage_source = sig_on_count_doc_doctest
                 sigon.optional_tags = frozenset(self.file_optional_tags)
                 sigon.probed_tags = frozenset()
@@ -266,7 +273,9 @@ class DocTestSource:
         """
         return set()
 
-    def _create_doctests(self, namespace, tab_okay=None) -> tuple[list[doctest.DocTest], dict]:
+    def _create_doctests(
+        self, namespace, tab_okay=None
+    ) -> tuple[list[doctest.DocTest], dict]:
         """
         Create a list of doctests defined in this source.
 
@@ -309,10 +318,12 @@ class DocTestSource:
             tab_okay = isinstance(self, TexSource)
         self._init()
         self.line_shift = 0
-        self.parser = SageDocTestParser(self.options.optional,
-                                        self.options.long,
-                                        probed_tags=self.options.probe,
-                                        file_optional_tags=self.file_optional_tags)
+        self.parser = SageDocTestParser(
+            self.options.optional,
+            self.options.long,
+            probed_tags=self.options.probe,
+            file_optional_tags=self.file_optional_tags,
+        )
         self.linking = False
         doctests: list[doctest.DocTest] = []
         in_docstring = False
@@ -325,7 +336,7 @@ class DocTestSource:
             if doctest_line_number.search(line) is not None:
                 contains_line_number = True
             if "\t" in line:
-                tab_locations.append(str(lineno+1))
+                tab_locations.append(str(lineno + 1))
             if "SAGE_DOCTEST_ALLOW_TABS" in line:
                 tab_okay = True
             just_finished = False
@@ -339,12 +350,19 @@ class DocTestSource:
                     if self.line_shift and (m := sagestart.match(line)):
                         # We insert empty doctest lines to make up for the removed lines
                         indent_and_prompt = m.group(1)
-                        doc.extend([indent_and_prompt + "# inserted to compensate for removed conditional doctest output\n"]
-                                   * self.line_shift)
+                        doc.extend(
+                            [
+                                indent_and_prompt
+                                + "# inserted to compensate for removed conditional doctest output\n"
+                            ]
+                            * self.line_shift
+                        )
                         self.line_shift = 0
                     doc.append(line)
                     unparsed_doc = True
-            if not in_docstring and (not just_finished or self.start_finish_can_overlap):
+            if not in_docstring and (
+                not just_finished or self.start_finish_can_overlap
+            ):
                 # to get line numbers in linked docstrings correct we
                 # append a blank line to the doc list.
                 doc.append("\n")
@@ -367,9 +385,11 @@ class DocTestSource:
         if unparsed_doc:
             self._process_doc(doctests, doc, namespace, start)
 
-        extras = {"tab": not tab_okay and tab_locations,
-                  "line_number": contains_line_number,
-                  "optionals": self.parser.optionals}
+        extras = {
+            "tab": not tab_okay and tab_locations,
+            "line_number": contains_line_number,
+            "optionals": self.parser.optionals,
+        }
         if self.options.randorder is not None and self.options.randorder is not False:
             # we want to randomize even when self.randorder = 0
             random.seed(self.options.randorder)
@@ -430,6 +450,7 @@ class StringDocTestSource(DocTestSource):
         sage: extras['line_number']
         True
     """
+
     def __init__(self, basename, source, options, printpath, lineno_shift=0):
         r"""
         Initialization.
@@ -540,6 +561,7 @@ class FileDocTestSource(DocTestSource):
         ValueError: unknown extension for the file to test (=...txtt),
         valid extensions are: .py, .pyx, .pxd, .pxi, .sage, .spyx, .tex, .rst, .rst.txt
     """
+
     def __init__(self, path, options):
         """
         Initialization.
@@ -561,18 +583,26 @@ class FileDocTestSource(DocTestSource):
             base, ext = os.path.splitext(path)
         valid_code_ext = ('.py', '.pyx', '.pxd', '.pxi', '.sage', '.spyx')
         if ext in valid_code_ext:
-            self.__class__ = dynamic_class('PythonFileSource', (FileDocTestSource, PythonSource))
+            self.__class__ = dynamic_class(
+                'PythonFileSource', (FileDocTestSource, PythonSource)
+            )
             self.encoding = "utf-8"
         elif ext == '.tex':
-            self.__class__ = dynamic_class('TexFileSource', (FileDocTestSource, TexSource))
+            self.__class__ = dynamic_class(
+                'TexFileSource', (FileDocTestSource, TexSource)
+            )
             self.encoding = "utf-8"
         elif ext == '.rst' or ext == '.rst.txt':
-            self.__class__ = dynamic_class('RestFileSource', (FileDocTestSource, RestSource))
+            self.__class__ = dynamic_class(
+                'RestFileSource', (FileDocTestSource, RestSource)
+            )
             self.encoding = "utf-8"
         else:
             valid_ext = ", ".join(valid_code_ext + ('.tex', '.rst', '.rst.txt'))
-            raise ValueError("unknown extension for the file to test (={}),"
-                    " valid extensions are: {}".format(path, valid_ext))
+            raise ValueError(
+                "unknown extension for the file to test (={}),"
+                " valid extensions are: {}".format(path, valid_ext)
+            )
 
     def __iter__(self):
         r"""
@@ -708,8 +738,9 @@ class FileDocTestSource(DocTestSource):
             sage: FDS.in_lib
             True
         """
-        return (self.options.force_lib
-                or is_package_or_sage_namespace_package_dir(os.path.dirname(self.path)))
+        return self.options.force_lib or is_package_or_sage_namespace_package_dir(
+            os.path.dirname(self.path)
+        )
 
     @lazy_attribute
     def file_optional_tags(self):
@@ -727,6 +758,7 @@ class FileDocTestSource(DocTestSource):
             {'numpy': None}
         """
         from .parsing import parse_file_optional_tags
+
         return parse_file_optional_tags(self)
 
     def create_doctests(self, namespace) -> tuple[list[doctest.DocTest], dict]:
@@ -770,6 +802,7 @@ class FileDocTestSource(DocTestSource):
         """
         if not os.path.exists(self.path):
             import errno
+
             raise OSError(errno.ENOENT, "File does not exist", self.path)
         base, filename = os.path.split(self.path)
         _, ext = os.path.splitext(filename)
@@ -778,7 +811,9 @@ class FileDocTestSource(DocTestSource):
             if base:
                 os.chdir(base)
             try:
-                load(filename, namespace) # errors raised here will be caught in DocTestTask
+                load(
+                    filename, namespace
+                )  # errors raised here will be caught in DocTestTask
             finally:
                 os.chdir(cwd)
         self.qualified_name = NestedName(self.basename)
@@ -852,13 +887,17 @@ class FileDocTestSource(DocTestSource):
                         in_block = True
                         starting_indent = whitespace.match(line).end()
                 last_line = line
-            if (not rest or in_block) and sagestart.match(line) and not ((rest and skipping) or untested.search(line.lower())):
-                expected.append(lineno+1)
+            if (
+                (not rest or in_block)
+                and sagestart.match(line)
+                and not ((rest and skipping) or untested.search(line.lower()))
+            ):
+                expected.append(lineno + 1)
         actual = []
         tests, _ = self.create_doctests({})
         for dt in tests:
             if dt.examples:
-                for ex in dt.examples[:-1]: # the last entry is a sig_on_count()
+                for ex in dt.examples[:-1]:  # the last entry is a sig_on_count()
                     actual.append(dt.lineno + ex.lineno + 1)
         shortfall = sorted(set(expected).difference(set(actual)))
         extras = sorted(set(actual).difference(set(expected)))
@@ -866,23 +905,41 @@ class FileDocTestSource(DocTestSource):
             if not shortfall:
                 return
             dif = extras[0] - shortfall[0]
-            for e, s in zip(extras[1:],shortfall[1:]):
+            for e, s in zip(extras[1:], shortfall[1:]):
                 if dif != e - s:
                     break
             else:
-                print("There are %s tests in %s that are shifted by %s" % (len(shortfall), self.path, dif))
+                print(
+                    "There are %s tests in %s that are shifted by %s"
+                    % (len(shortfall), self.path, dif)
+                )
                 if verbose:
-                    print("    The correct line numbers are %s" % (", ".join(str(n) for n in shortfall)))
+                    print(
+                        "    The correct line numbers are %s"
+                        % (", ".join(str(n) for n in shortfall))
+                    )
                 return
         elif len(actual) < len(expected):
-            print("There are %s tests in %s that are not being run" % (len(expected) - len(actual), self.path))
+            print(
+                "There are %s tests in %s that are not being run"
+                % (len(expected) - len(actual), self.path)
+            )
         elif check_extras:
-            print("There are %s unexpected tests being run in %s" % (len(actual) - len(expected), self.path))
+            print(
+                "There are %s unexpected tests being run in %s"
+                % (len(actual) - len(expected), self.path)
+            )
         if verbose:
             if shortfall:
-                print("    Tests on lines %s are not run" % (", ".join(str(n) for n in shortfall)))
+                print(
+                    "    Tests on lines %s are not run"
+                    % (", ".join(str(n) for n in shortfall))
+                )
             if check_extras and extras:
-                print("    Tests on lines %s seem extraneous" % (", ".join(str(n) for n in extras)))
+                print(
+                    "    Tests on lines %s seem extraneous"
+                    % (", ".join(str(n) for n in extras))
+                )
 
 
 class SourceLanguage:
@@ -891,6 +948,7 @@ class SourceLanguage:
 
     Currently supported languages include Python, ReST and LaTeX.
     """
+
     def parse_docstring(self, docstring, namespace, start) -> list[doctest.DocTest]:
         """
         Return a list of doctest defined in this docstring.
@@ -924,8 +982,15 @@ class SourceLanguage:
             ....:     dt.examples = dt.examples[:-1] # strip off the sig_on() test
             ....:     assert(FDS.parse_docstring(dt.docstring,{},dt.lineno-1)[0] == dt)
         """
-        return [self.parser.get_doctest(docstring, namespace, str(self.qualified_name),
-                                        self.printpath, start + 1)]
+        return [
+            self.parser.get_doctest(
+                docstring,
+                namespace,
+                str(self.qualified_name),
+                self.printpath,
+                start + 1,
+            )
+        ]
 
 
 class PythonSource(SourceLanguage):
@@ -941,6 +1006,7 @@ class PythonSource(SourceLanguage):
         sage: type(FDS)
         <class 'sage.doctest.sources.PythonFileSource'>
     """
+
     # The same line can't both start and end a docstring
     start_finish_can_overlap = False
 
@@ -1006,21 +1072,29 @@ class PythonSource(SourceLanguage):
             sage: print(FDS.quotetype)
             None
         """
+
         def _update_parens(start, end=None):
-            self.paren_count += line.count("(",start,end) - line.count(")",start,end)
-            self.bracket_count += line.count("[",start,end) - line.count("]",start,end)
-            self.curly_count += line.count("{",start,end) - line.count("}",start,end)
+            self.paren_count += line.count("(", start, end) - line.count(
+                ")", start, end
+            )
+            self.bracket_count += line.count("[", start, end) - line.count(
+                "]", start, end
+            )
+            self.curly_count += line.count("{", start, end) - line.count(
+                "}", start, end
+            )
+
         pos = 0
         while pos < len(line):
             if self.quotetype is None:
-                next_single = line.find("'",pos)
-                next_double = line.find('"',pos)
+                next_single = line.find("'", pos)
+                next_double = line.find('"', pos)
                 if next_single == -1 and next_double == -1:
-                    next_comment = line.find("#",pos)
+                    next_comment = line.find("#", pos)
                     if next_comment == -1:
                         _update_parens(pos)
                     else:
-                        _update_parens(pos,next_comment)
+                        _update_parens(pos, next_comment)
                     break
                 elif next_single == -1:
                     m = next_double
@@ -1028,22 +1102,22 @@ class PythonSource(SourceLanguage):
                     m = next_single
                 else:
                     m = min(next_single, next_double)
-                next_comment = line.find('#',pos,m)
+                next_comment = line.find('#', pos, m)
                 if next_comment != -1:
-                    _update_parens(pos,next_comment)
+                    _update_parens(pos, next_comment)
                     break
-                _update_parens(pos,m)
-                if m+2 < len(line) and line[m] == line[m+1] == line[m+2]:
-                    self.quotetype = line[m:m+3]
-                    pos = m+3
+                _update_parens(pos, m)
+                if m + 2 < len(line) and line[m] == line[m + 1] == line[m + 2]:
+                    self.quotetype = line[m : m + 3]
+                    pos = m + 3
                 else:
                     self.quotetype = line[m]
-                    pos = m+1
+                    pos = m + 1
             else:
-                next = line.find(self.quotetype,pos)
+                next = line.find(self.quotetype, pos)
                 if next == -1:
                     break
-                elif next == 0 or line[next-1] != '\\':
+                elif next == 0 or line[next - 1] != '\\':
                     pos = next + len(self.quotetype)
                     self.quotetype = None
                 else:
@@ -1123,7 +1197,11 @@ class PythonSource(SourceLanguage):
                 # It would be nice to only run the name_regex when
                 # quotematch wasn't None, but then we mishandle classes
                 # that don't have a docstring.
-                if not self.code_wrapping and self.last_indent >= 0 and indent > self.last_indent:
+                if (
+                    not self.code_wrapping
+                    and self.last_indent >= 0
+                    and indent > self.last_indent
+                ):
                     name = name_regex.match(self.last_line)
                     if name:
                         name = name.groups()[0]
@@ -1133,7 +1211,9 @@ class PythonSource(SourceLanguage):
         self._update_quotetype(line)
         if line[indent] != '#' and not self.code_wrapping:
             self.last_line, self.last_indent = line, indent
-        self.code_wrapping = not (self.paren_count == self.bracket_count == self.curly_count == 0)
+        self.code_wrapping = not (
+            self.paren_count == self.bracket_count == self.curly_count == 0
+        )
         return quotematch
 
     def ending_docstring(self, line):
@@ -1205,11 +1285,11 @@ class PythonSource(SourceLanguage):
             elif in_docstring:
                 if self.ending_docstring(line):
                     in_docstring = False
-                neutralized.append(" "*reindent + find_prompt.sub(r"\1safe:\3",line))
+                neutralized.append(" " * reindent + find_prompt.sub(r"\1safe:\3", line))
             else:
                 if self.starting_docstring(line):
                     in_docstring = True
-                neutralized.append(" "*reindent + line)
+                neutralized.append(" " * reindent + line)
         return "".join(neutralized)
 
 
@@ -1227,6 +1307,7 @@ class TexSource(SourceLanguage):
         sage: type(FDS)
         <class 'sage.doctest.sources.TexFileSource'>
     """
+
     # The same line can't both start and end a docstring
     start_finish_can_overlap = False
 
@@ -1402,6 +1483,7 @@ class RestSource(SourceLanguage):
         sage: type(FDS)
         <class 'sage.doctest.sources.RestFileSource'>
     """
+
     # The same line can both start and end a docstring
     start_finish_can_overlap = True
 
@@ -1567,19 +1649,28 @@ class RestSource(SourceLanguage):
             test2()
             sig_on_count() # check sig_on/off pairings (virtual doctest)
         """
-        PythonStringSource = dynamic_class("sage.doctest.sources.PythonStringSource",
-                                           (StringDocTestSource, PythonSource))
+        PythonStringSource = dynamic_class(
+            "sage.doctest.sources.PythonStringSource",
+            (StringDocTestSource, PythonSource),
+        )
         min_indent = self.parser._min_indent(docstring)
         pysource = '\n'.join(l[min_indent:] for l in docstring.split('\n'))
-        inner_source = PythonStringSource(self.basename, pysource,
-                                          self.options,
-                                          self.printpath,
-                                          lineno_shift=start + 1)
+        inner_source = PythonStringSource(
+            self.basename,
+            pysource,
+            self.options,
+            self.printpath,
+            lineno_shift=start + 1,
+        )
         inner_doctests, _ = inner_source._create_doctests(namespace, True)
         safe_docstring = inner_source._neutralize_doctests(min_indent)
-        outer_doctest = self.parser.get_doctest(safe_docstring, namespace,
-                                                str(self.qualified_name),
-                                                self.printpath, start + 1)
+        outer_doctest = self.parser.get_doctest(
+            safe_docstring,
+            namespace,
+            str(self.qualified_name),
+            self.printpath,
+            start + 1,
+        )
         return [outer_doctest] + inner_doctests
 
 
@@ -1594,6 +1685,7 @@ class DictAsObject(dict):
         sage: D.a
         2
     """
+
     def __init__(self, attrs):
         """
         Initialization.

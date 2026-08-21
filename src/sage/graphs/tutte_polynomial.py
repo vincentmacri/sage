@@ -189,6 +189,7 @@ def underlying_graph(G):
         [(0, 1, None)]
     """
     from sage.graphs.graph import Graph
+
     g = Graph()
     g.allow_loops(True)
     for edge in set(G.edges(sort=False, labels=False)):
@@ -213,6 +214,7 @@ def edge_multiplicities(G):
         d[edge] = d.setdefault(edge, 0) + 1
     return d
 
+
 ########
 # Ears #
 ########
@@ -233,6 +235,7 @@ class Ear:
 
     INPUT:
     """
+
     def __init__(self, graph, end_points, interior, is_cycle):
         """
         EXAMPLES::
@@ -313,9 +316,9 @@ class Ear:
             sage: E.vertices
             [0, 1, 2, 3]
         """
-        degree_two_vertices = [v for v, degree
-                               in g.degree_iterator(labels=True)
-                               if degree == 2]
+        degree_two_vertices = [
+            v for v, degree in g.degree_iterator(labels=True) if degree == 2
+        ]
         subgraph = g.subgraph(degree_two_vertices)
         for component in subgraph.connected_components(sort=False):
             edges = g.edges_incident(vertices=component, labels=True)
@@ -367,6 +370,7 @@ class Ear:
             for edge in deleted_edges:
                 G.add_edge(edge)
 
+
 ##################
 # Edge Selection #
 ##################
@@ -404,7 +408,9 @@ class VertexOrder(EdgeSelection):
         for v in self.order:
             edges = graph.edges_incident([v])
             if edges:
-                edges.sort(key=lambda x: self.inverse_order[x[0] if x[0] != v else x[1]])
+                edges.sort(
+                    key=lambda x: self.inverse_order[x[0] if x[0] != v else x[1]]
+                )
                 return edges[0]
         raise RuntimeError("no edges left to select")
 
@@ -496,6 +502,7 @@ def _cached(func):
         sage: tutte_polynomial(G)(1,1)  #indirect doctest
         2000
     """
+
     @sage_wraps(func)
     def wrapper(G, *args, **kwds):
         cache = kwds.setdefault('cache', {})
@@ -505,6 +512,7 @@ def _cached(func):
         result = func(G, *args, **kwds)
         cache[key] = result
         return result
+
     wrapper.original_func = func
     return wrapper
 
@@ -512,6 +520,7 @@ def _cached(func):
 ####################
 # Tutte Polynomial #
 ####################
+
 
 @_cached
 def tutte_polynomial(G, edge_selector=None, cache=None):
@@ -587,7 +596,9 @@ def tutte_polynomial(G, edge_selector=None, cache=None):
     if not G.n_edges():
         return R.one()
 
-    G = G.relabel(inplace=False, immutable=False)  # making sure the vertices are integers
+    G = G.relabel(
+        inplace=False, immutable=False
+    )  # making sure the vertices are integers
     G.allow_loops(True)
     G.allow_multiple_edges(True)
 
@@ -630,18 +641,18 @@ def _tutte_polynomial_internal(G, x, y, edge_selector, cache=None):
     # Remove loops
     with removed_loops(G) as loops:
         if loops:
-            return y**len(loops) * recursive_tp()
+            return y ** len(loops) * recursive_tp()
 
     uG = underlying_graph(G)
     em = edge_multiplicities(G)
     d = list(em.values())
 
     def yy(start, end):
-        return sum(y**i for i in range(start, end+1))
+        return sum(y**i for i in range(start, end + 1))
 
     # Lemma 1
     if G.is_forest():
-        return prod(x + yy(1, d_i-1) for d_i in d)
+        return prod(x + yy(1, d_i - 1) for d_i in d)
 
     # Theorem 1: from Haggard, Pearce, Royle 2008
     blocks, cut_vertices = G.blocks_and_cut_vertices()
@@ -655,7 +666,7 @@ def _tutte_polynomial_internal(G, x, y, edge_selector, cache=None):
     with removed_edge(G, edge):
         if G.number_of_connected_components() > components:
             with contracted_edge(G, unlabeled_edge):
-                return x*recursive_tp()
+                return x * recursive_tp()
 
     ##################################
     # We are in the biconnected case #
@@ -671,32 +682,38 @@ def _tutte_polynomial_internal(G, x, y, edge_selector, cache=None):
         n = len(d)
         result = 0
         for i in range(n - 2):
-            term = (prod((x + yy(1, d_j-1)) for d_j in d[i+1:]) *
-                    prod((yy(0, d_k-1)) for d_k in d[:i]))
+            term = prod((x + yy(1, d_j - 1)) for d_j in d[i + 1 :]) * prod(
+                (yy(0, d_k - 1)) for d_k in d[:i]
+            )
             result += term
         # The last part of the recursion
-        result += (x + yy(1, d[-1] + d[-2] - 1))*prod(yy(0, d_i-1)
-                                                      for d_i in d[:-2])
+        result += (x + yy(1, d[-1] + d[-2] - 1)) * prod(
+            yy(0, d_i - 1) for d_i in d[:-2]
+        )
         return result
 
     # Theorem 3 from Haggard, Pearce, and Royle, adapted to multi-ears
     ear = Ear.find_ear(uG)
     if ear is not None:
-        if (ear.is_cycle and ear.vertices == G.vertices(sort=True)):
+        if ear.is_cycle and ear.vertices == G.vertices(sort=True):
             # The graph is an ear (cycle) We should never be in this
             # case since we check for multi-cycles above
             return y + sum(x**i for i in range(1, ear.s))
         with ear.removed_from(G):
             # result = sum(x^i for i in range(ear.s)) #single ear case
-            result = sum((prod(x + yy(1, em[e]-1) for e in ear.unlabeled_edges[i+1:])
-                          * prod(yy(0, em[e]-1) for e in ear.unlabeled_edges[:i]))
-                         for i in range(len(ear.unlabeled_edges)))
+            result = sum(
+                (
+                    prod(x + yy(1, em[e] - 1) for e in ear.unlabeled_edges[i + 1 :])
+                    * prod(yy(0, em[e] - 1) for e in ear.unlabeled_edges[:i])
+                )
+                for i in range(len(ear.unlabeled_edges))
+            )
             result *= recursive_tp()
 
-            with contracted_edge(G, [ear.end_points[0],
-                                     ear.end_points[-1]]):
-                result += prod(yy(0, em[e]-1)
-                               for e in ear.unlabeled_edges)*recursive_tp()
+            with contracted_edge(G, [ear.end_points[0], ear.end_points[-1]]):
+                result += (
+                    prod(yy(0, em[e] - 1) for e in ear.unlabeled_edges) * recursive_tp()
+                )
 
         return result
 
@@ -706,5 +723,5 @@ def _tutte_polynomial_internal(G, x, y, edge_selector, cache=None):
     with removed_multiedge(G, unlabeled_edge):
         result = recursive_tp()
         with contracted_edge(G, unlabeled_edge):
-            result += sum(y**i for i in range(em[unlabeled_edge]))*recursive_tp()
+            result += sum(y**i for i in range(em[unlabeled_edge])) * recursive_tp()
     return result

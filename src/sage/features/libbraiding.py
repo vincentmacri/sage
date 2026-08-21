@@ -29,6 +29,7 @@ class Libbraiding(BuildModule):
         FeatureTestResult('libbraiding', True)
 
     """
+
     _enabled_in_build = libbraiding_enabled
 
     def __init__(self):
@@ -41,9 +42,7 @@ class Libbraiding(BuildModule):
 
         """
         module_name = "sage.libs.braiding"
-        super().__init__('libbraiding',
-                         module_name,
-                         type='standard')
+        super().__init__('libbraiding', module_name, type='standard')
 
 
 def all_features():

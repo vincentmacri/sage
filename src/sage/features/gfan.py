@@ -18,6 +18,7 @@ class GfanExecutable(Executable):
     r"""
     A :class:`~sage.features.Feature` for the :ref:`gfan <spkg_gfan>` executables.
     """
+
     def __init__(self, cmd=None):
         r"""
         TESTS::

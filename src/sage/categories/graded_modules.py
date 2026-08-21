@@ -11,10 +11,14 @@ Graded modules
 
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 
 
-class GradedModulesCategory(RegressiveCovariantConstructionCategory, Category_over_base_ring):
+class GradedModulesCategory(
+    RegressiveCovariantConstructionCategory, Category_over_base_ring
+):
     def __init__(self, base_category):
         """
         EXAMPLES::
@@ -125,6 +129,7 @@ class GradedModules(GradedModulesCategory):
 
         sage: TestSuite(GradedModules(ZZ)).run()
     """
+
     class ParentMethods:
         pass
 

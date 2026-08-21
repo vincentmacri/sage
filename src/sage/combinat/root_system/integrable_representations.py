@@ -2,6 +2,7 @@
 """
 Integrable representations of affine Lie algebras
 """
+
 # ***************************************************************************
 #  Copyright (C) 2014, 2105 Daniel Bump <bump at match.stanford.edu>
 #                           Travis Scrimshaw <tscrim at ucdavis.edu>
@@ -211,20 +212,21 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         self._mdict = {tuple(0 for i in self._index_set): 1}
         # Coerce a classical root into the root lattice Q
         from_cl_root = lambda h: self._Q._from_dict(h._monomial_coefficients)
-        self._classical_roots = [from_cl_root(al)
-                                 for al in self._Q.classical().roots()]
-        self._classical_positive_roots = [from_cl_root(al)
-                                          for al in self._Q.classical().positive_roots()]
-        self._a = self._cartan_type.a() # This is not cached
-        self._ac = self._cartan_type.dual().a() # This is not cached
+        self._classical_roots = [from_cl_root(al) for al in self._Q.classical().roots()]
+        self._classical_positive_roots = [
+            from_cl_root(al) for al in self._Q.classical().positive_roots()
+        ]
+        self._a = self._cartan_type.a()  # This is not cached
+        self._ac = self._cartan_type.dual().a()  # This is not cached
         self._eps = {i: self._a[i] / self._ac[i] for i in self._index_set}
         E = Matrix.diagonal([self._eps[i] for i in self._index_set_classical])
-        self._ip = (self._cartan_type.classical().cartan_matrix()*E).inverse()
+        self._ip = (self._cartan_type.classical().cartan_matrix() * E).inverse()
 
         # Extra data for the twisted cases
         if not self._cartan_type.is_untwisted_affine():
-            self._classical_short_roots = frozenset(al for al in self._classical_roots
-                                                    if self._inner_qq(al,al) == 2)
+            self._classical_short_roots = frozenset(
+                al for al in self._classical_roots if self._inner_qq(al, al) == 2
+            )
 
     def highest_weight(self):
         """
@@ -322,7 +324,10 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             sage: IntegrableRepresentation(Lambda[0])
             Integrable representation of ['F', 4, 1] with highest weight Lambda[0]
         """
-        return "Integrable representation of %s with highest weight %s" % (self._cartan_type, self._Lam)
+        return "Integrable representation of %s with highest weight %s" % (
+            self._cartan_type,
+            self._Lam,
+        )
 
     def _latex_(self):
         r"""
@@ -380,9 +385,14 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         mc1 = qelt1.monomial_coefficients()
         mc2 = qelt2.monomial_coefficients()
         zero = ZZ.zero()
-        return sum(mc1.get(i, zero) * mc2.get(j, zero)
-                   * self._cartan_matrix[i,j] / self._eps[i]
-                   for i in self._index_set for j in self._index_set)
+        return sum(
+            mc1.get(i, zero)
+            * mc2.get(j, zero)
+            * self._cartan_matrix[i, j]
+            / self._eps[i]
+            for i in self._index_set
+            for j in self._index_set
+        )
 
     def _inner_pq(self, pelt, qelt):
         """
@@ -449,12 +459,15 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         zero = ZZ.zero()
         mc1d = mc1.get('delta', zero)
         mc2d = mc2.get('delta', zero)
-        return sum(mc1.get(i,zero) * self._ac[i] * mc2d
-                   + mc2.get(i,zero) * self._ac[i] * mc1d
-                   for i in self._index_set) \
-               + sum(mc1.get(i,zero) * mc2.get(j,zero) * self._ip[ii,ij]
-                     for ii, i in enumerate(self._index_set_classical)
-                     for ij, j in enumerate(self._index_set_classical))
+        return sum(
+            mc1.get(i, zero) * self._ac[i] * mc2d
+            + mc2.get(i, zero) * self._ac[i] * mc1d
+            for i in self._index_set
+        ) + sum(
+            mc1.get(i, zero) * mc2.get(j, zero) * self._ip[ii, ij]
+            for ii, i in enumerate(self._index_set_classical)
+            for ij, j in enumerate(self._index_set_classical)
+        )
 
     def to_weight(self, n):
         r"""
@@ -477,8 +490,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         """
         alpha = self._P.simple_roots()
         I = self._index_set
-        return self._Lam - self._P.sum(val * alpha[I[i]]
-                                       for i,val in enumerate(n))
+        return self._Lam - self._P.sum(val * alpha[I[i]] for i, val in enumerate(n))
 
     def _from_weight_helper(self, mu, check=False):
         r"""
@@ -511,12 +523,16 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         zero = ZZ.zero()
         n0 = mu.monomial_coefficients().get('delta', zero)
         mu0 = mu - n0 * self._P.simple_root(self._cartan_type.special_node())
-        ret = [n0] # This should be in ZZ because it is in the weight lattice
+        ret = [n0]  # This should be in ZZ because it is in the weight lattice
         mc_mu0 = mu0.monomial_coefficients()
         for ii, i in enumerate(self._index_set_classical):
             # -1 for indexing
-            ret.append( sum(self._cminv[ii,ij] * mc_mu0.get(j, zero)
-                               for ij, j in enumerate(self._index_set_classical)) )
+            ret.append(
+                sum(
+                    self._cminv[ii, ij] * mc_mu0.get(j, zero)
+                    for ij, j in enumerate(self._index_set_classical)
+                )
+            )
         if check:
             return all(x in ZZ for x in ret)
         return tuple(ZZ(x) for x in ret)
@@ -550,9 +566,9 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             sage: [V.s((0,0,0),i) for i in V._index_set]
             [(1, 0, 0), (0, 0, 0), (0, 0, 0)]
         """
-        ret = list(n) # This makes a copy
+        ret = list(n)  # This makes a copy
         ret[i] += self._Lam._monomial_coefficients.get(i, ZZ.zero())
-        ret[i] -= sum(val * self._cartan_matrix[i,j] for j,val in enumerate(n))
+        ret[i] -= sum(val * self._cartan_matrix[i, j] for j, val in enumerate(n))
         return tuple(ret)
 
     def to_dominant(self, n):
@@ -579,7 +595,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
 
         while next:
             if path[-1] in self._ddict:
-                path.append( self._ddict[path[-1]] )
+                path.append(self._ddict[path[-1]])
                 break
 
             next = False
@@ -624,7 +640,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         l = self._from_weight_helper(nu)
         kp = min(l[i] // self._a[i] for i in self._index_set)
         delta = self._Q.null_root()
-        for u in range(1, kp+1):
+        for u in range(1, kp + 1):
             yield u * delta
 
     def _freudenthal_roots_real(self, nu):
@@ -653,36 +669,38 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
              alpha[3]]
         """
         for al in self._classical_positive_roots:
-            if min(self._from_weight_helper(nu-al)) >= 0:
+            if min(self._from_weight_helper(nu - al)) >= 0:
                 yield al
 
         if self._cartan_type.is_untwisted_affine():
             # untwisted case
             for al in self._classical_roots:
-                for ir in self._freudenthal_roots_imaginary(nu-al):
+                for ir in self._freudenthal_roots_imaginary(nu - al):
                     yield al + ir
 
         elif self._cartan_type.type() == 'BC':
-            #case A^2_{2l}
+            # case A^2_{2l}
             # We have to keep track of the roots we have visited for this case
             ret = set(self._classical_positive_roots)
             for al in self._classical_roots:
                 if al in self._classical_short_roots:
-                    for ir in self._freudenthal_roots_imaginary(nu-al):
+                    for ir in self._freudenthal_roots_imaginary(nu - al):
                         ret.add(al + ir)
                         yield al + ir
                 else:
-                    fri = list(self._freudenthal_roots_imaginary(nu-al))
+                    fri = list(self._freudenthal_roots_imaginary(nu - al))
                     friset = set(fri)
                     for ir in fri:
-                        if 2*ir in friset:
-                            ret.add(al + 2*ir)
-                            yield al + 2*ir
+                        if 2 * ir in friset:
+                            ret.add(al + 2 * ir)
+                            yield al + 2 * ir
                     alpha = self._Q.simple_roots()
-                    fri = list(self._freudenthal_roots_imaginary(2*nu-al))
+                    fri = list(self._freudenthal_roots_imaginary(2 * nu - al))
                     for ir in fri[::2]:
-                        rt = sum( val // 2 * alpha[i] for i,val in
-                                  enumerate(self._from_weight_helper(al+ir)) )
+                        rt = sum(
+                            val // 2 * alpha[i]
+                            for i, val in enumerate(self._from_weight_helper(al + ir))
+                        )
                         if rt not in ret:
                             ret.add(rt)
                             yield rt
@@ -691,27 +709,27 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             # case D^3_4 in the Kac notation
             for al in self._classical_roots:
                 if al in self._classical_short_roots:
-                    for ir in self._freudenthal_roots_imaginary(nu-al):
+                    for ir in self._freudenthal_roots_imaginary(nu - al):
                         yield al + ir
                 else:
-                    fri = list(self._freudenthal_roots_imaginary(nu-al))
+                    fri = list(self._freudenthal_roots_imaginary(nu - al))
                     friset = set(fri)
                     for ir in fri:
-                        if 3*ir in friset:
-                            yield al + 3*ir
+                        if 3 * ir in friset:
+                            yield al + 3 * ir
 
-        elif self._cartan_type.dual().type() in ['B','C','F']:
-            #case A^2_{2l-1} or case D^2_{l+1} or case E^2_6:
+        elif self._cartan_type.dual().type() in ['B', 'C', 'F']:
+            # case A^2_{2l-1} or case D^2_{l+1} or case E^2_6:
             for al in self._classical_roots:
                 if al in self._classical_short_roots:
-                    for ir in self._freudenthal_roots_imaginary(nu-al):
+                    for ir in self._freudenthal_roots_imaginary(nu - al):
                         yield al + ir
                 else:
-                    fri = list(self._freudenthal_roots_imaginary(nu-al))
+                    fri = list(self._freudenthal_roots_imaginary(nu - al))
                     friset = set(fri)
                     for ir in fri:
-                        if 2*ir in friset:
-                            yield al + 2*ir
+                        if 2 * ir in friset:
+                            yield al + 2 * ir
 
     def _freudenthal_accum(self, nu, al):
         """
@@ -735,7 +753,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         while min(n) >= 0:
             # Change in data by adding ``al`` to our current weight
             ip += ip_shift
-            for i,val in enumerate(n_shift):
+            for i, val in enumerate(n_shift):
                 n[i] -= val
             # Compute the multiplicity
             ret += 2 * self.m(tuple(n)) * ip
@@ -764,50 +782,57 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             return 0
         mu = self.to_weight(n)
         I = self._index_set
-        al = self._Q._from_dict({I[i]: val for i,val in enumerate(n) if val},
-                                remove_zeros=False)
+        al = self._Q._from_dict(
+            {I[i]: val for i, val in enumerate(n) if val}, remove_zeros=False
+        )
         cr = self._classical_rank
-        num = sum(self._freudenthal_accum(mu, alr)
-                  for alr in self._freudenthal_roots_real(self._Lam - mu))
+        num = sum(
+            self._freudenthal_accum(mu, alr)
+            for alr in self._freudenthal_roots_real(self._Lam - mu)
+        )
 
         if self._cartan_type.is_untwisted_affine():
-            num += sum(cr * self._freudenthal_accum(mu, alr)
-                       for alr in self._freudenthal_roots_imaginary(self._Lam - mu))
+            num += sum(
+                cr * self._freudenthal_accum(mu, alr)
+                for alr in self._freudenthal_roots_imaginary(self._Lam - mu)
+            )
 
-        elif self._cartan_type.dual().type() == 'B': # A_{2n-1}^{(2)}
+        elif self._cartan_type.dual().type() == 'B':  # A_{2n-1}^{(2)}
             val = 1
             for rt in self._freudenthal_roots_imaginary(self._Lam - mu):
                 # k-th element (starting from 1) is k*delta
                 num += (cr - val) * self._freudenthal_accum(mu, rt)
                 val = 1 - val
 
-        elif self._cartan_type.type() == 'BC': # A_{2n}^{(2)}
-            num += sum(cr * self._freudenthal_accum(mu, alr)
-                       for alr in self._freudenthal_roots_imaginary(self._Lam - mu))
+        elif self._cartan_type.type() == 'BC':  # A_{2n}^{(2)}
+            num += sum(
+                cr * self._freudenthal_accum(mu, alr)
+                for alr in self._freudenthal_roots_imaginary(self._Lam - mu)
+            )
 
-        elif self._cartan_type.dual() == 'C': # D_{n+1}^{(2)}
+        elif self._cartan_type.dual() == 'C':  # D_{n+1}^{(2)}
             val = 1
             for rt in self._freudenthal_roots_imaginary(self._Lam - mu):
                 # k-th element (starting from 1) is k*delta
-                num += (cr - (cr - 1)*val) * self._freudenthal_accum(mu, rt)
+                num += (cr - (cr - 1) * val) * self._freudenthal_accum(mu, rt)
                 val = 1 - val
 
-        elif self._cartan_type.dual().type() == 'F': # E_6^{(2)}
+        elif self._cartan_type.dual().type() == 'F':  # E_6^{(2)}
             val = 1
             for rt in self._freudenthal_roots_imaginary(self._Lam - mu):
                 # k-th element (starting from 1) is k*delta
-                num += (4 - 2*val) * self._freudenthal_accum(mu, rt)
+                num += (4 - 2 * val) * self._freudenthal_accum(mu, rt)
                 val = 1 - val
 
-        elif self._cartan_type.dual().type() == 'G': # D_4^{(3)} (or dual of G_2^{(1)})
-            for k,rt in enumerate(self._freudenthal_roots_imaginary(self._Lam - mu)):
+        elif self._cartan_type.dual().type() == 'G':  # D_4^{(3)} (or dual of G_2^{(1)})
+            for k, rt in enumerate(self._freudenthal_roots_imaginary(self._Lam - mu)):
                 # k-th element (starting from 1) is k*delta
-                if (k+1) % 3 == 0:
+                if (k + 1) % 3 == 0:
                     num += 2 * self._freudenthal_accum(mu, rt)
                 else:
                     num += self._freudenthal_accum(mu, rt)
 
-        den = 2*self._inner_pq(self._Lam_rho, al) - self._inner_qq(al, al)
+        den = 2 * self._inner_pq(self._Lam_rho, al) - self._inner_qq(al, al)
         try:
             return ZZ(num / den)
         except TypeError:
@@ -922,18 +947,22 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         Lambda = self._P.fundamental_weights()
 
         def next_level(wt):
-            return [wt + Lambda[i] for i in self._index_set_classical
-                    if (wt + Lambda[i]).level() <= k]
+            return [
+                wt + Lambda[i]
+                for i in self._index_set_classical
+                if (wt + Lambda[i]).level() <= k
+            ]
+
         R = RecursivelyEnumeratedSet([self._P.zero()], next_level)
-        candidates = [x + (k - x.level())*Lambda[0] for x in list(R)]
+        candidates = [x + (k - x.level()) * Lambda[0] for x in list(R)]
         ret = []
         delta = self._Q.null_root()
         for x in candidates:
-            if self._from_weight_helper(self._Lam-x, check=True):
+            if self._from_weight_helper(self._Lam - x, check=True):
                 t = 0
-                while self.m(self.from_weight(x - t*delta)) == 0:
+                while self.m(self.from_weight(x - t * delta)) == 0:
                     t += 1
-                ret.append(x - t*delta)
+                ret.append(x - t * delta)
         return tuple(ret)
 
     def string(self, max_weight, depth=12):
@@ -960,7 +989,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         delta = self._Q.null_root()
         cur_weight = max_weight
         for k in range(depth):
-            ret.append(self.m( self.from_weight(cur_weight) ))
+            ret.append(self.m(self.from_weight(cur_weight)))
             cur_weight -= delta
         return ret
 
@@ -984,8 +1013,10 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             2*Lambda[0]: 1 1 3 5 10 16 28 43 70 105 161 236 350 501 722 1016 1431 1981 2741 3740 5096 6868 9233 12306 16357
             2*Lambda[1] - delta: 1 2 4 7 13 21 35 55 86 130 196 287 420 602 858 1206 1687 2331 3206 4368 5922 7967 10670 14193 18803
         """
-        return {max_weight: self.string(max_weight, depth)
-                for max_weight in self.dominant_maximal_weights()}
+        return {
+            max_weight: self.string(max_weight, depth)
+            for max_weight in self.dominant_maximal_weights()
+        }
 
     def print_strings(self, depth=12):
         """
@@ -1005,7 +1036,7 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         """
         S = self.strings(depth=depth)
         for mw in self.dominant_maximal_weights():
-            print("{}: {}".format(mw, ' '.join(str(x) for x in S[mw])) )
+            print("{}: {}".format(mw, ' '.join(str(x) for x in S[mw])))
 
     def modular_characteristic(self, mu=None):
         r"""
@@ -1055,13 +1086,14 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
         k = self.level()
         hd = self.dual_coxeter_number()
         rho = self._P.rho()
-        m_Lambda = self._inner_pp(self._Lam_rho, self._Lam_rho) / (2*(k+hd)) \
-                   - self._inner_pp(rho, rho) / (2*hd)
+        m_Lambda = self._inner_pp(self._Lam_rho, self._Lam_rho) / (
+            2 * (k + hd)
+        ) - self._inner_pp(rho, rho) / (2 * hd)
         if mu is None:
             return m_Lambda
         if isinstance(mu, tuple):
             mu = self.to_weight(mu)
-        return m_Lambda - self._inner_pp(mu,mu) / (2*k)
+        return m_Lambda - self._inner_pp(mu, mu) / (2 * k)
 
     def branch(self, i=None, weyl_character_ring=None, sequence=None, depth=5):
         r"""
@@ -1184,16 +1216,23 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
             i = self._cartan_type.special_node()
         if i == self._cartan_type.special_node() or self._cartan_type.type() == 'A':
             if weyl_character_ring is None:
-                weyl_character_ring = WeylCharacterRing(self._cartan_type.classical(), style='coroots')
+                weyl_character_ring = WeylCharacterRing(
+                    self._cartan_type.classical(), style='coroots'
+                )
             if weyl_character_ring.cartan_type() != self._cartan_type.classical():
-                raise ValueError("Cartan type of WeylCharacterRing must be %s" % self.cartan_type().classical())
+                raise ValueError(
+                    "Cartan type of WeylCharacterRing must be %s"
+                    % self.cartan_type().classical()
+                )
         elif weyl_character_ring is None:
-            raise ValueError("the argument weyl_character_ring cannot be omitted if i != 0")
+            raise ValueError(
+                "the argument weyl_character_ring cannot be omitted if i != 0"
+            )
         if sequence is None:
             sequence = {}
             for j in self._index_set:
                 if j < i:
-                    sequence[j] = j+1
+                    sequence[j] = j + 1
                 elif j > i:
                     sequence[j] = j
 
@@ -1205,20 +1244,22 @@ class IntegrableRepresentation(UniqueRepresentation, CategoryObject):
                 t = tuple(t)
                 m = self.m(t)
                 if m > 0 and t[i] <= depth:
-                    ret.append((t,m))
+                    ret.append((t, m))
             return ret
+
         hwv = (tuple([0 for j in self._index_set]), 1)
         terms = RecursivelyEnumeratedSet([hwv], next_level)
         fw = weyl_character_ring.fundamental_weights()
         P = self.weight_lattice()
         ret = []
-        for l in range(depth+1):
+        for l in range(depth + 1):
             lterms = [x for x in terms if x[0][i] == l]
             ldict = {}
             for x in lterms:
                 mc = P(self.to_weight(x[0])).monomial_coefficients()
-                contr = sum(fw[sequence[j]]*mc.get(j,0)
-                            for j in self._index_set if j != i).coerce_to_sl()
+                contr = sum(
+                    fw[sequence[j]] * mc.get(j, 0) for j in self._index_set if j != i
+                ).coerce_to_sl()
                 if contr in ldict:
                     ldict[contr] += x[1]
                 else:

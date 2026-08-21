@@ -104,6 +104,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
     - [BS2010]_
     - [Ter2021]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R=None, q=None):
         """
@@ -128,6 +129,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             if R is None:
                 raise ValueError("either base ring or q must be specified")
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             q = PolynomialRing(R, 'q').fraction_field().gen()
             R = q.parent()
         else:
@@ -146,14 +148,21 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: A = algebras.AlternatingCentralExtensionQuantumOnsager(QQ)
             sage: TestSuite(A).run()  # long time
         """
-        I = DisjointUnionEnumeratedSets([PositiveIntegers(), ZZ, PositiveIntegers()],
-                                        keepkey=True, facade=True)
+        I = DisjointUnionEnumeratedSets(
+            [PositiveIntegers(), ZZ, PositiveIntegers()], keepkey=True, facade=True
+        )
         monomials = IndexedFreeAbelianMonoid(I, prefix='A', bracket=False)
         self._q = q
-        CombinatorialFreeModule.__init__(self, R, monomials,
-                                         prefix='', bracket=False, latex_bracket=False,
-                                         sorting_key=self._monomial_key,
-                                         category=Algebras(R).WithBasis().Filtered())
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            monomials,
+            prefix='',
+            bracket=False,
+            latex_bracket=False,
+            sorting_key=self._monomial_key,
+            category=Algebras(R).WithBasis().Filtered(),
+        )
 
     def _monomial_key(self, x):
         r"""
@@ -183,7 +192,8 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
              Field of Univariate Polynomial Ring in q over Rational Field
         """
         return "Alternating Central Extension of {}-Onsager algebra over {}".format(
-                                                     self._q, self.base_ring())
+            self._q, self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -196,8 +206,10 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             \mathcal{A}_{q,\mathrm{Frac}(\Bold{Q}[q])}
         """
         from sage.misc.latex import latex
-        return "\\mathcal{{A}}_{{{},{}}}".format(latex(self._q),
-                                                   latex(self.base_ring()))
+
+        return "\\mathcal{{A}}_{{{},{}}}".format(
+            latex(self._q), latex(self.base_ring())
+        )
 
     def _repr_term(self, m):
         r"""
@@ -218,6 +230,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: A._repr_term(I[0,1]^2 * I[1,0] * I[1,3]^13 * I[2,3])
             'G[1]^2*W[0]*W[3]^13*Gt[3]'
         """
+
         def to_str(x):
             k, e = x
             if k[0] == 0:
@@ -229,6 +242,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             if e > 1:
                 ret = ret + "^{}".format(e)
             return ret
+
         return '*'.join(to_str(x) for x in m._sorted_items())
 
     def _latex_term(self, m):
@@ -250,6 +264,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: A._latex_term(I[0,1]^2 * I[1,0] * I[1,3]^13 * I[2,3])
             '\\mathcal{G}_{1}^{2} \\mathcal{W}_{0} \\mathcal{W}_{3}^{13} \\widetilde{\\mathcal{G}}_{3}'
         """
+
         def to_str(x):
             k, e = x
             if k[0] == 0:
@@ -261,6 +276,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             if e > 1:
                 ret = ret + '^{{{}}}'.format(e)
             return ret
+
         return ' '.join(to_str(x) for x in m._sorted_items())
 
     @cached_method
@@ -280,10 +296,10 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
 
         def monomial_map(x):
             if x[0] != 1 and x[1] == 0:
-                return self.term(self.one_basis(), -(q-~q)*(q+~q)**2)
+                return self.term(self.one_basis(), -(q - ~q) * (q + ~q) ** 2)
             return self.monomial(G[x])
-        return Family(self._indices._indices, monomial_map,
-                      name="generator map")
+
+        return Family(self._indices._indices, monomial_map, name="generator map")
 
     gens = algebra_generators
 
@@ -326,7 +342,9 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             q*G[2] - 2*W[-3] + W[2] - q*Gt[1]
         """
         G = self.algebra_generators()
-        return G[1,2] - 2*G[1,-3] + self.base_ring().an_element()*(G[0,2] - G[2,1])
+        return (
+            G[1, 2] - 2 * G[1, -3] + self.base_ring().an_element() * (G[0, 2] - G[2, 1])
+        )
 
     def some_elements(self):
         r"""
@@ -339,7 +357,17 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             [W[0], W[3], W[-1], W[1], W[-2], G[1], G[2], Gt[1], Gt[2]]
         """
         G = self.algebra_generators()
-        return [G[1,0], G[1,3], G[1,-1], G[1,1], G[1,-2], G[0,1], G[0,2], G[2,1], G[2,2]]
+        return [
+            G[1, 0],
+            G[1, 3],
+            G[1, -1],
+            G[1, 1],
+            G[1, -2],
+            G[0, 1],
+            G[0, 2],
+            G[2, 1],
+            G[2, 2],
+        ]
 
     def degree_on_basis(self, m):
         r"""
@@ -366,10 +394,12 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: [x.degree() for x in A.some_elements()]
             [1, 5, 3, 1, 5, 2, 4, 2, 4]
         """
+
         def deg(k):
             if k[0] != 1:
-                return 2*k[1]
-            return -2*k[1]+1 if k[1] <= 0 else 2*k[1] - 1
+                return 2 * k[1]
+            return -2 * k[1] + 1 if k[1] <= 0 else 2 * k[1] - 1
+
         return ZZ.sum(deg(k) * c for k, c in m._monomial.items())
 
     @cached_method
@@ -412,23 +442,23 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
              + ((-q^4+1)/q^2)*W[0]*W[2] + ((q^2-1)/q^4)*W[1]^2
              - (1/(q^6+q^4-q^2-1))*Gt[1]^2 + 1/q^3*G[2] - 1/q^3*Gt[2]
         """
-        W0 = self.algebra_generators()[1,0]
-        W1 = self.algebra_generators()[1,1]
+        W0 = self.algebra_generators()[1, 0]
+        W1 = self.algebra_generators()[1, 1]
         q = self._q
         if i[0] == 0:
             if i[1] < 0:
                 if i[1] == -1:
                     return W0
                 Bd = self.quantum_onsager_pbw_generator((1, 1))
-                Bm1 = self.quantum_onsager_pbw_generator((0, i[1]+1))
-                Bm2 = self.quantum_onsager_pbw_generator((0, i[1]+2))
-                return Bm2 + q/(q**-3-~q-q+q**3) * (Bd * Bm1 - Bm1 * Bd)
+                Bm1 = self.quantum_onsager_pbw_generator((0, i[1] + 1))
+                Bm2 = self.quantum_onsager_pbw_generator((0, i[1] + 2))
+                return Bm2 + q / (q**-3 - ~q - q + q**3) * (Bd * Bm1 - Bm1 * Bd)
             if i[1] == 0:
                 return W1
             Bd = self.quantum_onsager_pbw_generator((1, 1))
-            Bm1 = self.quantum_onsager_pbw_generator((0, i[1]-1))
-            Bm2 = self.quantum_onsager_pbw_generator((0, i[1]-2))
-            return Bm2 - q/(q**-3-~q-q+q**3) * (Bd * Bm1 - Bm1 * Bd)
+            Bm1 = self.quantum_onsager_pbw_generator((0, i[1] - 1))
+            Bm2 = self.quantum_onsager_pbw_generator((0, i[1] - 2))
+            return Bm2 - q / (q**-3 - ~q - q + q**3) * (Bd * Bm1 - Bm1 * Bd)
         if i[0] == 1:
             if i[1] == 1:
                 return q**-2 * W1 * W0 - W0 * W1
@@ -436,10 +466,13 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
                 raise ValueError("not an index of a PBW basis element")
             B = self.quantum_onsager_pbw_generator
             n = i[1]
-            Bm1 = self.quantum_onsager_pbw_generator((0, n-1))
-            return (q**-2 * Bm1 * W0 - W0 * Bm1
-                    + (q**-2 - 1) * sum(B((0,ell)) * B((0,n-ell-2))
-                                        for ell in range(n-1)))
+            Bm1 = self.quantum_onsager_pbw_generator((0, n - 1))
+            return (
+                q**-2 * Bm1 * W0
+                - W0 * Bm1
+                + (q**-2 - 1)
+                * sum(B((0, ell)) * B((0, n - ell - 2)) for ell in range(n - 1))
+            )
         raise ValueError("not an index of a PBW basis element")
 
     @cached_method
@@ -538,50 +571,130 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             # relation (ii)
             i = kl[1] - 1
             j = -kr[1]
-            denom = (q**2 - q**-2) * (q + q**-1)**2
-            terms = A[1,-j]*A[1,i+1] + self.sum(A[0,ell]*A[2,i+j+1-ell] - A[0,i+j+1-ell]*A[2,ell] for ell in range(min(i,j)+1)) / denom
+            denom = (q**2 - q**-2) * (q + q**-1) ** 2
+            terms = (
+                A[1, -j] * A[1, i + 1]
+                + self.sum(
+                    A[0, ell] * A[2, i + j + 1 - ell]
+                    - A[0, i + j + 1 - ell] * A[2, ell]
+                    for ell in range(min(i, j) + 1)
+                )
+                / denom
+            )
         elif kl[0] == 2 and kr[0] == 0:
             # relation (iii)
             i = kl[1] - 1
             j = kr[1] - 1
-            coeff = (q**2 - q**-2)**3
-            terms = (A[0,j+1]*A[2,i+1] - coeff * A[1,-i]*A[1,-j] + coeff * A[1,i+1]*A[1,j+1]
-                                       + coeff * sum(A[1,-ell]*A[1,i+j+2-ell] - A[1,ell-1-i-j]*A[1,ell+1] for ell in range(min(i,j)+1))
-                                       - coeff * sum(A[1,1-ell]*A[1,i+j+1-ell] - A[1,ell-i-j]*A[1,ell] for ell in range(1, min(i,j)+1)))
+            coeff = (q**2 - q**-2) ** 3
+            terms = (
+                A[0, j + 1] * A[2, i + 1]
+                - coeff * A[1, -i] * A[1, -j]
+                + coeff * A[1, i + 1] * A[1, j + 1]
+                + coeff
+                * sum(
+                    A[1, -ell] * A[1, i + j + 2 - ell]
+                    - A[1, ell - 1 - i - j] * A[1, ell + 1]
+                    for ell in range(min(i, j) + 1)
+                )
+                - coeff
+                * sum(
+                    A[1, 1 - ell] * A[1, i + j + 1 - ell]
+                    - A[1, ell - i - j] * A[1, ell]
+                    for ell in range(1, min(i, j) + 1)
+                )
+            )
         elif kl[0] == 1 and kr[0] == 0:
             if kl[1] > 0:
                 # relation (vi)
                 i = kl[1] - 1
                 j = kr[1] - 1
                 coeff = q * (q - ~q)
-                terms = (A[0,j+1]*A[1,i+1] + coeff * sum(A[0,ell]*A[1,ell-i-j] for ell in range(min(i,j)+1))
-                                           + coeff * sum(A[0,i+j+1-ell]*A[1,ell+1] - A[0,ell]*A[1,i+j+2-ell] for ell in range(min(i,j)+1))
-                                           - coeff * sum(A[0,i+j+1-ell]*A[1,1-ell] for ell in range(1, min(i,j)+1)))
+                terms = (
+                    A[0, j + 1] * A[1, i + 1]
+                    + coeff
+                    * sum(A[0, ell] * A[1, ell - i - j] for ell in range(min(i, j) + 1))
+                    + coeff
+                    * sum(
+                        A[0, i + j + 1 - ell] * A[1, ell + 1]
+                        - A[0, ell] * A[1, i + j + 2 - ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    - coeff
+                    * sum(
+                        A[0, i + j + 1 - ell] * A[1, 1 - ell]
+                        for ell in range(1, min(i, j) + 1)
+                    )
+                )
             else:
                 # relation (v)
                 i = -kl[1]
                 j = kr[1] - 1
                 coeff = ~q * (q - ~q)
-                terms = (A[0,j+1]*A[1,-i] - coeff * sum(A[0,ell]*A[1,i+j+1-ell] for ell in range(min(i,j)+1))
-                                          + coeff * sum(A[0,ell]*A[1,ell-1-i-j] - A[0,i+j+1-ell]*A[1,-ell] for ell in range(min(i,j)+1))
-                                          + coeff * sum(A[0,i+j+1-ell]*A[1,ell] for ell in range(1, min(i,j)+1)))
+                terms = (
+                    A[0, j + 1] * A[1, -i]
+                    - coeff
+                    * sum(
+                        A[0, ell] * A[1, i + j + 1 - ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    + coeff
+                    * sum(
+                        A[0, ell] * A[1, ell - 1 - i - j]
+                        - A[0, i + j + 1 - ell] * A[1, -ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    + coeff
+                    * sum(
+                        A[0, i + j + 1 - ell] * A[1, ell]
+                        for ell in range(1, min(i, j) + 1)
+                    )
+                )
         elif kl[0] == 2 and kr[0] == 1:
             if kr[1] > 0:
                 # relation (vi)
                 i = kl[1] - 1
                 j = kr[1] - 1
                 coeff = q * (q - ~q)
-                terms = (A[1,j+1]*A[2,i+1] + coeff * sum(A[1,ell-i-j]*A[2,ell] for ell in range(min(i,j)+1))
-                                           + coeff * sum(A[1,ell+1]*A[2,i+j+1-ell] - A[1,i+j+2-ell]*A[2,ell] for ell in range(min(i,j)+1))
-                                           - coeff * sum(A[1,1-ell]*A[2,i+j+1-ell] for ell in range(1, min(i,j)+1)))
+                terms = (
+                    A[1, j + 1] * A[2, i + 1]
+                    + coeff
+                    * sum(A[1, ell - i - j] * A[2, ell] for ell in range(min(i, j) + 1))
+                    + coeff
+                    * sum(
+                        A[1, ell + 1] * A[2, i + j + 1 - ell]
+                        - A[1, i + j + 2 - ell] * A[2, ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    - coeff
+                    * sum(
+                        A[1, 1 - ell] * A[2, i + j + 1 - ell]
+                        for ell in range(1, min(i, j) + 1)
+                    )
+                )
             else:
                 # relation (vii)
                 i = kl[1] - 1
                 j = -kr[1]
                 coeff = ~q * (q - ~q)
-                terms = (A[1,-j]*A[2,i+1] - coeff * sum(A[1,i+j+1-ell]*A[2,ell] for ell in range(min(i,j)+1))
-                                          + coeff * sum(A[1,ell-1-i-j]*A[2,ell] - A[1,-ell]*A[2,i+j+1-ell] for ell in range(min(i,j)+1))
-                                          + coeff * sum(A[1,ell]*A[2,i+j+1-ell] for ell in range(1, min(i,j)+1)))
+                terms = (
+                    A[1, -j] * A[2, i + 1]
+                    - coeff
+                    * sum(
+                        A[1, i + j + 1 - ell] * A[2, ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    + coeff
+                    * sum(
+                        A[1, ell - 1 - i - j] * A[2, ell]
+                        - A[1, -ell] * A[2, i + j + 1 - ell]
+                        for ell in range(min(i, j) + 1)
+                    )
+                    + coeff
+                    * sum(
+                        A[1, ell] * A[2, i + j + 1 - ell]
+                        for ell in range(1, min(i, j) + 1)
+                    )
+                )
 
         return self.monomial(lhs // B[kl]) * terms * self.monomial(rhs // B[kr])
 
@@ -606,15 +719,17 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
              (W[-2], W[3]), (G[1], Gt[1]), (G[2], Gt[2]), (Gt[1], G[1]),
              (Gt[2], G[2])]
         """
+
         def tw(m):
             if m[0] == 0:
                 return (2, m[1])
             if m[0] == 1:
-                return (1, -m[1]+1)
+                return (1, -m[1] + 1)
             if m[0] == 2:
                 return (0, m[1])
+
         A = self.algebra_generators()
-        return self.prod(A[tw(m)]**e for m,e in x._sorted_items())
+        return self.prod(A[tw(m)] ** e for m, e in x._sorted_items())
 
     def _dagger_on_basis(self, x):
         r"""
@@ -639,6 +754,7 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
              (W[-2], W[-2]), (G[1], Gt[1]), (G[2], Gt[2]), (Gt[1], G[1]),
              (Gt[2], G[2])]
         """
+
         def tw(m):
             if m[0] == 0:
                 return (2, m[1])
@@ -646,8 +762,9 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
                 return (1, m[1])
             if m[0] == 2:
                 return (0, m[1])
+
         A = self.algebra_generators()
-        return self.prod(A[tw(m)]**e for m,e in reversed(x._sorted_items()))
+        return self.prod(A[tw(m)] ** e for m, e in reversed(x._sorted_items()))
 
     @lazy_attribute
     def sigma(self):
@@ -666,7 +783,9 @@ class ACEQuantumOnsagerAlgebra(CombinatorialFreeModule):
             sage: A.sigma(G[0,2] * G[1,3]) == A.sigma(G[0,2]) * A.sigma(G[1,3])
             True
         """
-        return self.module_morphism(self._sigma_on_basis, codomain=self, category=self.category())
+        return self.module_morphism(
+            self._sigma_on_basis, codomain=self, category=self.category()
+        )
 
     @lazy_attribute
     def dagger(self):

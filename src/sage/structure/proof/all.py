@@ -37,6 +37,7 @@ def arithmetic(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     return _proof_prefs.arithmetic(t)
 
 
@@ -75,6 +76,7 @@ def elliptic_curve(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     return _proof_prefs.elliptic_curve(t)
 
 
@@ -113,6 +115,7 @@ def linear_algebra(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     return _proof_prefs.linear_algebra(t)
 
 
@@ -150,6 +153,7 @@ def number_field(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     return _proof_prefs.number_field(t)
 
 
@@ -187,6 +191,7 @@ def polynomial(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     return _proof_prefs.polynomial(t)
 
 
@@ -236,6 +241,7 @@ def all(t=None):
         True
     """
     from sage.structure.proof.proof import _proof_prefs
+
     if t is None:
         return _proof_prefs._require_proof.copy()
     for s in _proof_prefs._require_proof:

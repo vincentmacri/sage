@@ -217,12 +217,14 @@ from sage.structure.parent import Parent
 from sage.rings.laurent_series_ring import LaurentSeriesRing
 from sage.categories.commutative_rings import CommutativeRings
 from sage.categories.integral_domains import IntegralDomains
+
 _CommutativeRings = CommutativeRings()
 _IntegralDomains = IntegralDomains()
 
 
-lazy_import('sage.rings.lazy_series_ring', ('LazyPowerSeriesRing',
-                                            'LazyLaurentSeriesRing'))
+lazy_import(
+    'sage.rings.lazy_series_ring', ('LazyPowerSeriesRing', 'LazyLaurentSeriesRing')
+)
 
 
 class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
@@ -240,6 +242,7 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
 
     For usage and examples, see above, and :meth:`PowerSeriesRing`.
     """
+
     # ## methods from PowerSeriesRing_generic that we *don't* override:
     #
     # variable_names_recursive : works just fine
@@ -265,8 +268,15 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
     Element = MPowerSeries
 
     @staticmethod
-    def __classcall__(cls, base_ring, num_gens, name_list,
-                      order='negdeglex', default_prec=10, sparse=False):
+    def __classcall__(
+        cls,
+        base_ring,
+        num_gens,
+        name_list,
+        order='negdeglex',
+        default_prec=10,
+        sparse=False,
+    ):
         """
         Preprocessing of arguments: The term order can be given as string
         or as a :class:`~sage.rings.polynomial.term_order.TermOrder` instance.
@@ -279,11 +289,19 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             True
         """
         order = TermOrder(order, num_gens)
-        return super().__classcall__(cls, base_ring, num_gens, name_list,
-                                     order, default_prec, sparse)
+        return super().__classcall__(
+            cls, base_ring, num_gens, name_list, order, default_prec, sparse
+        )
 
-    def __init__(self, base_ring, num_gens, name_list,
-                 order='negdeglex', default_prec=10, sparse=False) -> None:
+    def __init__(
+        self,
+        base_ring,
+        num_gens,
+        name_list,
+        order='negdeglex',
+        default_prec=10,
+        sparse=False,
+    ) -> None:
         """
         Initialize a multivariate power series ring.  See PowerSeriesRing
         for complete documentation.
@@ -345,15 +363,22 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             raise TypeError("Base ring must be a commutative ring.")
         n = int(num_gens)
         if n < 0:
-            raise ValueError("Multivariate Polynomial Rings must have more than 0 variables.")
+            raise ValueError(
+                "Multivariate Polynomial Rings must have more than 0 variables."
+            )
         self._ngens = n
         self._has_singular = False  # cannot convert to Singular by default
         # Multivariate power series rings inherit from power series rings. But
         # apparently we can not call their initialisation. Instead, initialise
         # Parent and Nonexact:
-        Parent.__init__(self, base=base_ring, names=name_list,
-                        category=_IntegralDomains if base_ring in
-                        _IntegralDomains else _CommutativeRings)
+        Parent.__init__(
+            self,
+            base=base_ring,
+            names=name_list,
+            category=_IntegralDomains
+            if base_ring in _IntegralDomains
+            else _CommutativeRings,
+        )
         Nonexact.__init__(self, default_prec)
 
         # underlying polynomial ring in which to represent elements
@@ -362,12 +387,13 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
         self._PowerSeriesRing_generic__poly_ring = self._poly_ring()
 
         # background univariate power series ring
-        self._bg_power_series_ring = PowerSeriesRing(self._poly_ring_, 'Tbg', sparse=sparse, default_prec=default_prec)
+        self._bg_power_series_ring = PowerSeriesRing(
+            self._poly_ring_, 'Tbg', sparse=sparse, default_prec=default_prec
+        )
         self._bg_indeterminate = self._bg_power_series_ring.gen()
 
         self._is_sparse = sparse
-        self._params = (base_ring, num_gens, name_list,
-                        order, default_prec, sparse)
+        self._params = (base_ring, num_gens, name_list, order, default_prec, sparse)
         self._populate_coercion_lists_()
 
     def _repr_(self) -> str:
@@ -388,7 +414,10 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
         else:
             generators_rep = ", ".join(self.variable_names())
 
-        s = "Multivariate Power Series Ring in %s over %s" % (generators_rep, self.base_ring())
+        s = "Multivariate Power Series Ring in %s over %s" % (
+            generators_rep,
+            self.base_ring(),
+        )
         if self.is_sparse():
             s = 'Sparse ' + s
         return s
@@ -496,12 +525,14 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             True
         """
         from sage.categories.pushout import CompletionFunctor
+
         extras = {'order': self.term_order(), 'num_gens': self.ngens()}
         if self.is_sparse():
             extras['sparse'] = True
-        return (CompletionFunctor(self._names, self.default_prec(),
-                                  extras=extras),
-                self._poly_ring())
+        return (
+            CompletionFunctor(self._names, self.default_prec(), extras=extras),
+            self._poly_ring(),
+        )
 
     def change_ring(self, R):
         """
@@ -533,7 +564,9 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             sage: S.change_ring(GF(5))                                                  # needs sage.rings.finite_rings
             Multivariate Power Series Ring in x, y over Finite Field of size 5
         """
-        return PowerSeriesRing(R, names=self.variable_names(), default_prec=self.default_prec())
+        return PowerSeriesRing(
+            R, names=self.variable_names(), default_prec=self.default_prec()
+        )
 
     def remove_var(self, *var):
         """
@@ -637,9 +670,16 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
         if all(v == 0 for v in im_gens):
             return True
 
-        if isinstance(codomain, (PowerSeriesRing_generic,
-                                 MPowerSeriesRing_generic, LazyPowerSeriesRing,
-                                 LaurentSeriesRing, LazyLaurentSeriesRing)):
+        if isinstance(
+            codomain,
+            (
+                PowerSeriesRing_generic,
+                MPowerSeriesRing_generic,
+                LazyPowerSeriesRing,
+                LaurentSeriesRing,
+                LazyLaurentSeriesRing,
+            ),
+        ):
             try:
                 B = all(v.valuation() > 0 or v.is_nilpotent() for v in im_gens)
             except NotImplementedError:
@@ -723,8 +763,16 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             sage: R.has_coerce_map_from(L)
             True
         """
-        if isinstance(P, (MPolynomialRing_base, MPowerSeriesRing_generic, LazyPowerSeriesRing,
-                          PolynomialRing_generic, PowerSeriesRing_generic)):
+        if isinstance(
+            P,
+            (
+                MPolynomialRing_base,
+                MPowerSeriesRing_generic,
+                LazyPowerSeriesRing,
+                PolynomialRing_generic,
+                PowerSeriesRing_generic,
+            ),
+        ):
             if set(P.variable_names()).issubset(set(self.variable_names())):
                 if self.has_coerce_map_from(P.base_ring()):
                     return True
@@ -804,6 +852,7 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             except AttributeError:
                 prec = infinity
         from sage.rings.lazy_series import LazyPowerSeries
+
         if isinstance(f, LazyPowerSeries):
             if prec is infinity:
                 try:
@@ -827,7 +876,9 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
             NotImplementedError: Laurent series not implemented for
             multivariate power series
         """
-        raise NotImplementedError("Laurent series not implemented for multivariate power series")
+        raise NotImplementedError(
+            "Laurent series not implemented for multivariate power series"
+        )
 
     def _poly_ring(self, x=None):
         """
@@ -926,7 +977,9 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
         if n < 0 or n >= self._ngens:
             raise IndexError("generator not defined")
         # return self(self._poly_ring().gens()[int(n)])
-        return self.element_class(parent=self, x=self._poly_ring().gens()[int(n)], is_gen=True)
+        return self.element_class(
+            parent=self, x=self._poly_ring().gens()[int(n)], is_gen=True
+        )
 
     def ngens(self):
         """
@@ -1051,7 +1104,9 @@ class MPowerSeriesRing_generic(PowerSeriesRing_generic, Nonexact):
         return self._poly_ring_.sum(f.polynomial().coefficients())
 
 
-def unpickle_multi_power_series_ring_v0(base_ring, num_gens, names, order, default_prec, sparse):
+def unpickle_multi_power_series_ring_v0(
+    base_ring, num_gens, names, order, default_prec, sparse
+):
     """
     Unpickle (deserialize) a multivariate power series ring according
     to the given inputs.
@@ -1062,5 +1117,11 @@ def unpickle_multi_power_series_ring_v0(base_ring, num_gens, names, order, defau
         sage: loads(dumps(P)) == P # indirect doctest
         True
     """
-    return PowerSeriesRing(base_ring, num_gens=num_gens, names=names,
-                           order=order, default_prec=default_prec, sparse=sparse)
+    return PowerSeriesRing(
+        base_ring,
+        num_gens=num_gens,
+        names=names,
+        order=order,
+        default_prec=default_prec,
+        sparse=sparse,
+    )

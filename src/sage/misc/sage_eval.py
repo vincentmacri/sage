@@ -1,6 +1,7 @@
 r"""
 Evaluating a String in Sage
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #
@@ -172,6 +173,7 @@ def sage_eval(source, locals=None, cmds='', preparse=True):
         locals = {}
 
     import sage.all
+
     if cmds:
         cmd_seq = cmds + '\n_sage_eval_returnval_ = ' + source
         if preparse:

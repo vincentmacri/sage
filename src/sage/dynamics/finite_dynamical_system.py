@@ -71,6 +71,7 @@ dynamical systems:
     - Interact with sage.dynamics. This requires someone who
       knows the latter part of the Sage library well.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2018 Darij Grinberg <darijgrinberg@gmail.com>,
 #                     2018 Tom Roby <tomrobyuconn@gmail.com>
@@ -288,8 +289,17 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
         sage: D.inverse_evolution()((0, 1, 1, 0, 1, 0, 0, 1))
         (1, 0, 1, 1, 0, 1, 0, 0)
     """
+
     @staticmethod
-    def __classcall_private__(cls, X, phi, cache_orbits=False, create_tuple=False, inverse=None, is_finite=None):
+    def __classcall_private__(
+        cls,
+        X,
+        phi,
+        cache_orbits=False,
+        create_tuple=False,
+        inverse=None,
+        is_finite=None,
+    ):
         """
         Return the correct object based on input.
 
@@ -345,19 +355,32 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
             <class 'sage.dynamics.finite_dynamical_system.FiniteDynamicalSystem'>
         """
         if is_finite is None:
-            is_finite = (X in Sets().Finite() or isinstance(X, (list,tuple,set,frozenset)))
+            is_finite = X in Sets().Finite() or isinstance(
+                X, (list, tuple, set, frozenset)
+            )
         if inverse:
-            if inverse is True: # invertibility claimed, but inverse not provided
+            if inverse is True:  # invertibility claimed, but inverse not provided
                 # This is how the input for these subclasses work
                 inverse = None
-            ret_cls = (InvertibleFiniteDynamicalSystem if is_finite
-                   else InvertibleDiscreteDynamicalSystem)
-            return ret_cls(X, phi, cache_orbits=cache_orbits,
-                           create_tuple=create_tuple, inverse=inverse)
+            ret_cls = (
+                InvertibleFiniteDynamicalSystem
+                if is_finite
+                else InvertibleDiscreteDynamicalSystem
+            )
+            return ret_cls(
+                X,
+                phi,
+                cache_orbits=cache_orbits,
+                create_tuple=create_tuple,
+                inverse=inverse,
+            )
         if is_finite:
-            return FiniteDynamicalSystem(X, phi, cache_orbits=cache_orbits,
-                                         create_tuple=create_tuple)
-        return typecall(cls, X, phi, cache_orbits=cache_orbits, create_tuple=create_tuple)
+            return FiniteDynamicalSystem(
+                X, phi, cache_orbits=cache_orbits, create_tuple=create_tuple
+            )
+        return typecall(
+            cls, X, phi, cache_orbits=cache_orbits, create_tuple=create_tuple
+        )
 
     def __init__(self, X, phi, cache_orbits=False, create_tuple=False):
         r"""
@@ -448,8 +471,11 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
             ValueError: the n-th power of evolution is only defined for nonnegative integers n
         """
         from sage.rings.semirings.non_negative_integer_semiring import NN
+
         if n not in NN:
-            raise ValueError("the n-th power of evolution is only defined for nonnegative integers n")
+            raise ValueError(
+                "the n-th power of evolution is only defined for nonnegative integers n"
+            )
         ev = self.evolution()
 
         def evn(x):
@@ -457,6 +483,7 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
             for _ in range(n):
                 y = ev(y)
             return y
+
         return evn
 
     def __iter__(self):
@@ -507,8 +534,7 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
         """
         if self._X is None:
             return "A discrete dynamical system with unspecified ground set"
-        return "A discrete dynamical system with ground set " \
-               + repr(self._X)
+        return "A discrete dynamical system with ground set " + repr(self._X)
 
     def orbit(self, x, preperiod=False):
         r"""
@@ -647,7 +673,8 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
             True
         """
         from sage.rings.rational_field import QQ
-        orbavgs = [] # This will be the list of all averages on cycles.
+
+        orbavgs = []  # This will be the list of all averages on cycles.
         if elements is None:
             # The user has not provided elements, so we need to
             # check all cycles of the DDS.
@@ -663,7 +690,7 @@ class DiscreteDynamicalSystem(SageObject, metaclass=ClasscallMetaclass):
             # by the user.
             for element in elements:
                 (orb, ix) = self.orbit(element, preperiod=True)
-                cyc = orb[ix:] # the cycle in the orbit of element
+                cyc = orb[ix:]  # the cycle in the orbit of element
                 l = len(cyc)
                 avg = ~(QQ(l)) * sum(h(i) for i in cyc)
                 if avg not in orbavgs:
@@ -750,6 +777,7 @@ class InvertibleDiscreteDynamicalSystem(DiscreteDynamicalSystem):
         sage: D_right.ground_set()
         (0, 1, 2, 3, 4)
     """
+
     def __init__(self, X, phi, inverse=None, cache_orbits=False, create_tuple=False):
         r"""
         Initialize ``self``.
@@ -807,8 +835,11 @@ class InvertibleDiscreteDynamicalSystem(DiscreteDynamicalSystem):
             6
         """
         from sage.rings.integer_ring import ZZ
+
         if n not in ZZ:
-            raise ValueError("the n-th power of evolution is only defined for integers n")
+            raise ValueError(
+                "the n-th power of evolution is only defined for integers n"
+            )
         if n >= 0:
             ev = self.evolution()
         else:
@@ -820,6 +851,7 @@ class InvertibleDiscreteDynamicalSystem(DiscreteDynamicalSystem):
             for _ in range(n):
                 y = ev(y)
             return y
+
         return evn
 
     def _repr_(self):
@@ -838,8 +870,9 @@ class InvertibleDiscreteDynamicalSystem(DiscreteDynamicalSystem):
         """
         if self._X is None:
             return "An invertible discrete dynamical system with unspecified ground set"
-        return "An invertible discrete dynamical system with ground set " \
-               + repr(self._X)
+        return "An invertible discrete dynamical system with ground set " + repr(
+            self._X
+        )
 
     def inverse_evolution(self):
         r"""
@@ -1005,6 +1038,7 @@ class FiniteDynamicalSystem(DiscreteDynamicalSystem):
         sage: D.evolution()((1, 1, 1, 0, 1, 0, 0, 1))
         (1, 1, 0, 1, 0, 0, 1, 0)
     """
+
     def _repr_(self):
         r"""
         String representation of ``self``.
@@ -1016,8 +1050,7 @@ class FiniteDynamicalSystem(DiscreteDynamicalSystem):
             A finite discrete dynamical system with ground set
             (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         """
-        return "A finite discrete dynamical system with ground set " \
-               + repr(self._X)
+        return "A finite discrete dynamical system with ground set " + repr(self._X)
 
     def is_invariant(self, f):
         r"""
@@ -1124,7 +1157,9 @@ class FiniteDynamicalSystem(DiscreteDynamicalSystem):
         return cycs
 
 
-class InvertibleFiniteDynamicalSystem(InvertibleDiscreteDynamicalSystem, FiniteDynamicalSystem):
+class InvertibleFiniteDynamicalSystem(
+    InvertibleDiscreteDynamicalSystem, FiniteDynamicalSystem
+):
     r"""
     An invertible finite discrete dynamical system.
 
@@ -1169,6 +1204,7 @@ class InvertibleFiniteDynamicalSystem(InvertibleDiscreteDynamicalSystem, FiniteD
         sage: sorted(D.orbit_lengths())
         [2, 4, 8, 8, 8, 8, 8, 8, 8, 8]
     """
+
     def _repr_(self):
         r"""
         String representation of ``self``.
@@ -1180,8 +1216,9 @@ class InvertibleFiniteDynamicalSystem(InvertibleDiscreteDynamicalSystem, FiniteD
             An invertible finite discrete dynamical system with ground set
             (0, 1, 2, 3, 4)
         """
-        return "An invertible finite discrete dynamical system with ground set " \
-               + repr(self._X)
+        return "An invertible finite discrete dynamical system with ground set " + repr(
+            self._X
+        )
 
     def orbits(self):
         r"""

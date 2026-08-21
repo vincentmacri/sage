@@ -21,9 +21,7 @@ def function_factory(
     series_func: Callable | None = None,
     print_func: Callable | None = None,
     print_latex_func: Callable | None = None,
-) -> SymbolicFunction:
-    ...
-
+) -> SymbolicFunction: ...
 def unpickle_function(
     name: str,
     nargs: int,
@@ -31,11 +29,5 @@ def unpickle_function(
     conversions: dict[str, Any] | None,
     evalf_params_first: bool,
     pickled_funcs: list[Any],
-) -> SymbolicFunction:
-    ...
-
-def function(
-    s: str,
-    **kwds: Any
-) -> SymbolicFunction | list[SymbolicFunction]:
-    ...
+) -> SymbolicFunction: ...
+def function(s: str, **kwds: Any) -> SymbolicFunction | list[SymbolicFunction]: ...

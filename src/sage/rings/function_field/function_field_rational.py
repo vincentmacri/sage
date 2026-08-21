@@ -132,6 +132,7 @@ class RationalFunctionField(FunctionField):
          + Place (x, y + 1)
          - Place (x + i, y)
     """
+
     Element = FunctionFieldElement_rational
 
     def __init__(self, constant_field, names, category=None) -> None:
@@ -158,15 +159,18 @@ class RationalFunctionField(FunctionField):
         if names is None:
             raise ValueError("variable name must be specified")
         elif not isinstance(names, tuple):
-            names = (names, )
+            names = (names,)
         if not constant_field.is_field():
             raise TypeError("constant_field must be a field")
 
         self._constant_field = constant_field
 
-        FunctionField.__init__(self, self, names=names, category=FunctionFields().or_subcategory(category))
+        FunctionField.__init__(
+            self, self, names=names, category=FunctionFields().or_subcategory(category)
+        )
 
         from .place_rational import FunctionFieldPlace_rational
+
         self._place_class = FunctionFieldPlace_rational
 
         R = constant_field[names[0]]
@@ -176,11 +180,19 @@ class RationalFunctionField(FunctionField):
 
         hom = Hom(self._field, self)
         from .maps import FractionFieldToFunctionField
-        self.register_coercion(hom.__make_element_class__(FractionFieldToFunctionField)(hom.domain(), hom.codomain()))
+
+        self.register_coercion(
+            hom.__make_element_class__(FractionFieldToFunctionField)(
+                hom.domain(), hom.codomain()
+            )
+        )
 
         from sage.categories.morphism import SetMorphism
         from sage.categories.sets_with_partial_maps import SetsWithPartialMaps
-        R.register_conversion(SetMorphism(self.Hom(R, SetsWithPartialMaps()), self._to_polynomial))
+
+        R.register_conversion(
+            SetMorphism(self.Hom(R, SetsWithPartialMaps()), self._to_polynomial)
+        )
 
         self._gen = self(R.gen())
 
@@ -198,6 +210,7 @@ class RationalFunctionField(FunctionField):
             Rational function field in x over Rational Field
         """
         from .constructor import FunctionField
+
         return FunctionField, (self._constant_field, self._names)
 
     def __hash__(self) -> int:
@@ -225,7 +238,9 @@ class RationalFunctionField(FunctionField):
             'Rational function field in t over Rational Field'
         """
         return "Rational function field in %s over %s" % (
-            self.variable_name(), self._constant_field)
+            self.variable_name(),
+            self._constant_field,
+        )
 
     def _element_constructor_(self, x) -> FunctionFieldElement_rational:
         r"""
@@ -306,7 +321,10 @@ class RationalFunctionField(FunctionField):
             # When K is not exact, f.denominator() might not be an exact 1, so
             # we need to divide explicitly to get the correct precision
             return K(f.numerator()) / K(f.denominator())
-        raise ValueError("only constants can be converted into the constant base field but %r is not a constant" % (f,))
+        raise ValueError(
+            "only constants can be converted into the constant base field but %r is not a constant"
+            % (f,)
+        )
 
     def _to_polynomial(self, f):
         """
@@ -326,7 +344,9 @@ class RationalFunctionField(FunctionField):
         K = f.parent().constant_base_field()
         if f.denominator() in K:
             return f.numerator() / K(f.denominator())
-        raise ValueError("only polynomials can be converted to the underlying polynomial ring")
+        raise ValueError(
+            "only polynomials can be converted to the underlying polynomial ring"
+        )
 
     def _to_bivariate_polynomial(self, f):
         """
@@ -350,10 +370,13 @@ class RationalFunctionField(FunctionField):
         v = f.list()
         denom = lcm([a.denominator() for a in v])
         S = denom.parent()
-        x, t = S.base_ring()['%s,%s' % (f.parent().variable_name(),
-                                        self.variable_name())].gens()
+        x, t = S.base_ring()[
+            '%s,%s' % (f.parent().variable_name(), self.variable_name())
+        ].gens()
         phi = S.hom([t])
-        return sum([phi((denom * v[i]).numerator()) * x**i for i in range(len(v))]), denom
+        return sum(
+            [phi((denom * v[i]).numerator()) * x**i for i in range(len(v))]
+        ), denom
 
     def _factor_univariate_polynomial(self, f, proof=None):
         """
@@ -427,12 +450,13 @@ class RationalFunctionField(FunctionField):
             # undo any variable substitution that we introduced for the bivariate polynomial
             if old_variable_name != a.variable_name():
                 a = a.change_variable_name(old_variable_name)
-            unit *= (c**e)
+            unit *= c**e
             if a.is_unit():
                 unit *= a**e
             else:
                 w.append((a, e))
         from sage.structure.factorization import Factorization
+
         return Factorization(w, unit=unit)
 
     @cached_method
@@ -509,6 +533,7 @@ class RationalFunctionField(FunctionField):
         if basis is not None:
             raise NotImplementedError
         from .maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
+
         if base is None:
             base = self
         elif base is not self:
@@ -556,6 +581,7 @@ class RationalFunctionField(FunctionField):
         elif base is not self:
             raise ValueError("base must be the rational function field itself")
         from sage.rings.integer_ring import ZZ
+
         return ZZ(1)
 
     def gen(self, n=0):
@@ -653,6 +679,7 @@ class RationalFunctionField(FunctionField):
         if base_morphism is None and not R.has_coerce_map_from(self.constant_field()):
             raise ValueError("you must specify a morphism on the base field")
         from .maps import FunctionFieldMorphism_rational
+
         return FunctionFieldMorphism_rational(self.Hom(R), x, base_morphism)
 
     def field(self):
@@ -689,6 +716,7 @@ class RationalFunctionField(FunctionField):
             Maximal order of Rational function field in t over Rational Field
         """
         from .order_rational import FunctionFieldMaximalOrder_rational
+
         return FunctionFieldMaximalOrder_rational(self)
 
     equation_order = maximal_order
@@ -710,6 +738,7 @@ class RationalFunctionField(FunctionField):
             Maximal infinite order of Rational function field in t over Rational Field
         """
         from .order_rational import FunctionFieldMaximalOrderInfinite_rational
+
         return FunctionFieldMaximalOrderInfinite_rational(self)
 
     equation_order_infinite = maximal_order_infinite
@@ -796,6 +825,7 @@ class RationalFunctionField(FunctionField):
             id = Hom(self, self).identity()
             return self, id, id
         from .constructor import FunctionField
+
         ret = FunctionField(self.constant_base_field(), name)
         return ret, ret.hom(self.gen()), self.hom(ret.gen())
 
@@ -827,6 +857,7 @@ class RationalFunctionField_char_zero(RationalFunctionField):
     """
     Rational function fields of characteristic zero.
     """
+
     @cached_method
     def higher_derivation(self):
         """
@@ -844,6 +875,7 @@ class RationalFunctionField_char_zero(RationalFunctionField):
             [x^9, 9*x^8, 36*x^7, 84*x^6, 126*x^5, 126*x^4, 84*x^3, 36*x^2, 9*x, 1]
         """
         from .derivations_polymod import FunctionFieldHigherDerivation_char_zero
+
         return FunctionFieldHigherDerivation_char_zero(self)
 
 
@@ -851,7 +883,10 @@ class RationalFunctionField_global(RationalFunctionField):
     """
     Rational function field over finite fields.
     """
-    _differentials_space = LazyImport('sage.rings.function_field.differential', 'DifferentialsSpace_global')
+
+    _differentials_space = LazyImport(
+        'sage.rings.function_field.differential', 'DifferentialsSpace_global'
+    )
 
     def places(self, degree=1):
         """
@@ -974,4 +1009,5 @@ class RationalFunctionField_global(RationalFunctionField):
             [x^7, 2*x^6, x^5, 0, 0, x^2, 2*x, 1, 0, 0]
         """
         from .derivations_polymod import RationalFunctionFieldHigherDerivation_global
+
         return RationalFunctionFieldHigherDerivation_global(self)

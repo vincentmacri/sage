@@ -90,9 +90,20 @@ class OverconvergentDistributions_factory(UniqueFactory):
         sage: v.act_right([2,1,0,1])
         (5 + 11 + O(11^5), 8 + O(11^4), 4 + O(11^3), 2 + O(11^2), 1 + O(11))
     """
-    def create_key(self, k, p=None, prec_cap=None, base=None, character=None,
-                   adjuster=None, act_on_left=False, dettwist=None,
-                   act_padic=False, implementation=None):
+
+    def create_key(
+        self,
+        k,
+        p=None,
+        prec_cap=None,
+        base=None,
+        character=None,
+        adjuster=None,
+        act_on_left=False,
+        dettwist=None,
+        act_padic=False,
+        implementation=None,
+    ):
         """
         EXAMPLES::
 
@@ -131,8 +142,18 @@ class OverconvergentDistributions_factory(UniqueFactory):
             if dettwist == 0:
                 dettwist = None
 
-        return (k, p, prec_cap, base, character, adjuster, act_on_left,
-                dettwist, act_padic, implementation)
+        return (
+            k,
+            p,
+            prec_cap,
+            base,
+            character,
+            adjuster,
+            act_on_left,
+            dettwist,
+            act_padic,
+            implementation,
+        )
 
     def create_object(self, version, key):
         """
@@ -191,9 +212,18 @@ class Symk_factory(UniqueFactory):
         sage: v.act_right([2,1,0,1])
         (32, 16, 8, 4, 2, 1, 1/2)
     """
-    def create_key(self, k, base=None, character=None, adjuster=None,
-                   act_on_left=False, dettwist=None, act_padic=False,
-                   implementation=None):
+
+    def create_key(
+        self,
+        k,
+        base=None,
+        character=None,
+        adjuster=None,
+        act_on_left=False,
+        dettwist=None,
+        act_padic=False,
+        implementation=None,
+    ):
         r"""
         Sanitize input.
 
@@ -211,8 +241,16 @@ class Symk_factory(UniqueFactory):
             adjuster = _default_adjuster()
         if base is None:
             base = QQ
-        return (k, base, character, adjuster, act_on_left, dettwist,
-                act_padic, implementation)
+        return (
+            k,
+            base,
+            character,
+            adjuster,
+            act_on_left,
+            dettwist,
+            act_padic,
+            implementation,
+        )
 
     def create_object(self, version, key):
         r"""
@@ -225,7 +263,9 @@ class Symk_factory(UniqueFactory):
         return Symk_class(*key)
 
 
-OverconvergentDistributions = OverconvergentDistributions_factory('OverconvergentDistributions')
+OverconvergentDistributions = OverconvergentDistributions_factory(
+    'OverconvergentDistributions'
+)
 Symk = Symk_factory('Symk')
 
 
@@ -260,9 +300,20 @@ class OverconvergentDistributions_abstract(Module):
         sage: type(D)
         <class 'sage.modular.pollack_stevens.distributions.OverconvergentDistributions_class_with_category'>
     """
-    def __init__(self, k, p=None, prec_cap=None, base=None, character=None,
-                 adjuster=None, act_on_left=False, dettwist=None,
-                 act_padic=False, implementation=None):
+
+    def __init__(
+        self,
+        k,
+        p=None,
+        prec_cap=None,
+        base=None,
+        character=None,
+        adjuster=None,
+        act_on_left=False,
+        dettwist=None,
+        act_padic=False,
+        implementation=None,
+    ):
         """
         See ``OverconvergentDistributions_abstract`` for full documentation.
 
@@ -285,8 +336,9 @@ class OverconvergentDistributions_abstract(Module):
             raise TypeError("base must be a commutative ring")
         # from sage.rings.padics.pow_computer import PowComputer
         # should eventually be the PowComputer on ZpCA once that uses longs.
-        Dist, WeightKAction = get_dist_classes(p, prec_cap, base,
-                                               self.is_symk(), implementation)
+        Dist, WeightKAction = get_dist_classes(
+            p, prec_cap, base, self.is_symk(), implementation
+        )
         self.Element = Dist
         # if Dist is Dist_long:
         #     self.prime_pow = PowComputer(p, prec_cap, prec_cap, prec_cap)
@@ -299,11 +351,13 @@ class OverconvergentDistributions_abstract(Module):
         self._dettwist = dettwist
 
         if self.is_symk() or character is not None:
-            self._act = WeightKAction(self, character, adjuster, act_on_left,
-                                      dettwist, padic=act_padic)
+            self._act = WeightKAction(
+                self, character, adjuster, act_on_left, dettwist, padic=act_padic
+            )
         else:
-            self._act = WeightKAction(self, character, adjuster, act_on_left,
-                                      dettwist, padic=True)
+            self._act = WeightKAction(
+                self, character, adjuster, act_on_left, dettwist, padic=True
+            )
 
         self._populate_coercion_lists_(action_list=[self._act])
 
@@ -342,11 +396,13 @@ class OverconvergentDistributions_abstract(Module):
             sage: v == w
             True
         """
-        return (isinstance(other, OverconvergentDistributions_abstract)
-                and other._k == self._k
-                and self._character == other._character
-                and self.base_ring().has_coerce_map_from(other.base_ring())
-                and (self.is_symk() or not other.is_symk()))
+        return (
+            isinstance(other, OverconvergentDistributions_abstract)
+            and other._k == self._k
+            and self._character == other._character
+            and self.base_ring().has_coerce_map_from(other.base_ring())
+            and (self.is_symk() or not other.is_symk())
+        )
 
     def acting_matrix(self, g, M):
         r"""
@@ -490,7 +546,15 @@ class OverconvergentDistributions_abstract(Module):
             p = pp
         elif p != pp:
             raise ValueError("Inconsistent primes")
-        return OverconvergentDistributions(k=self._k, p=p, prec_cap=M, base=new_base_ring, character=self._character, adjuster=self._adjuster, act_on_left=self._act.is_left())
+        return OverconvergentDistributions(
+            k=self._k,
+            p=p,
+            prec_cap=M,
+            base=new_base_ring,
+            character=self._character,
+            adjuster=self._adjuster,
+            act_on_left=self._act.is_left(),
+        )
 
     @cached_method
     def approx_module(self, M=None):
@@ -530,10 +594,12 @@ class OverconvergentDistributions_abstract(Module):
         if M is None:
             M = self._prec_cap
         elif M > self._prec_cap:
-            raise ValueError("M (=%s) must be less than or equal to the precision cap (=%s)" % (M, self._prec_cap))
+            raise ValueError(
+                "M (=%s) must be less than or equal to the precision cap (=%s)"
+                % (M, self._prec_cap)
+            )
         elif M < self._prec_cap and self.is_symk():
-            raise ValueError("Sym^k objects do not support approximation "
-                             "modules")
+            raise ValueError("Sym^k objects do not support approximation modules")
         return self.base_ring() ** M
 
     def random_element(self, M=None, **args):
@@ -567,7 +633,8 @@ class OverconvergentDistributions_abstract(Module):
         if M is None:
             M = self.precision_cap()
         R = self.base_ring()
-        return self((R ** M).random_element(**args))
+        return self((R**M).random_element(**args))
+
     #        return self(self.approx_module(M).random_element())
 
     def clear_cache(self):
@@ -635,9 +702,17 @@ class OverconvergentDistributions_abstract(Module):
 
 
 class Symk_class(OverconvergentDistributions_abstract):
-
-    def __init__(self, k, base, character, adjuster, act_on_left, dettwist,
-                 act_padic, implementation):
+    def __init__(
+        self,
+        k,
+        base,
+        character,
+        adjuster,
+        act_on_left,
+        dettwist,
+        act_padic,
+        implementation,
+    ):
         r"""
         EXAMPLES::
 
@@ -649,12 +724,19 @@ class Symk_class(OverconvergentDistributions_abstract):
             p = base.prime()
         else:
             p = ZZ.zero()
-        OverconvergentDistributions_abstract.__init__(self, k, p, k + 1,
-                                                      base, character,
-                                                      adjuster, act_on_left,
-                                                      dettwist,
-                                                      act_padic,
-                                                      implementation)
+        OverconvergentDistributions_abstract.__init__(
+            self,
+            k,
+            p,
+            k + 1,
+            base,
+            character,
+            adjuster,
+            act_on_left,
+            dettwist,
+            act_padic,
+            implementation,
+        )
 
     def _an_element_(self):
         r"""
@@ -687,7 +769,10 @@ class Symk_class(OverconvergentDistributions_abstract):
             V = 'Q^2'
         elif self.base_ring() is ZZ:
             V = 'Z^2'
-        elif isinstance(self.base_ring(), pAdicGeneric) and self.base_ring().degree() == 1:
+        elif (
+            isinstance(self.base_ring(), pAdicGeneric)
+            and self.base_ring().degree() == 1
+        ):
             if self.base_ring() in Fields():
                 V = 'Q_%s^2' % self._p
             else:
@@ -739,7 +824,13 @@ class Symk_class(OverconvergentDistributions_abstract):
             sage: D2.base_ring()
             7-adic Field with capped relative precision 20
         """
-        return Symk(k=self._k, base=new_base_ring, character=self._character, adjuster=self._adjuster, act_on_left=self._act.is_left())
+        return Symk(
+            k=self._k,
+            base=new_base_ring,
+            character=self._character,
+            adjuster=self._adjuster,
+            act_on_left=self._act.is_left(),
+        )
 
     def base_extend(self, new_base_ring):
         r"""
@@ -751,7 +842,10 @@ class Symk_class(OverconvergentDistributions_abstract):
             Sym^3 Q_3^2
         """
         if not new_base_ring.has_coerce_map_from(self.base_ring()):
-            raise ValueError("New base ring (%s) does not have a coercion from %s" % (new_base_ring, self.base_ring()))
+            raise ValueError(
+                "New base ring (%s) does not have a coercion from %s"
+                % (new_base_ring, self.base_ring())
+            )
         return self.change_ring(new_base_ring)
 
 
@@ -791,7 +885,11 @@ class OverconvergentDistributions_class(OverconvergentDistributions_abstract):
             sage: OverconvergentDistributions(0,3,4,character=DirichletGroup(3).0,dettwist=-1)
             Space of 3-adic distributions with k=0 action and precision cap 4 twistted by det^-1 * (Dirichlet character modulo 3 of conductor 3 mapping 2 |--> -1)
         """
-        s = "Space of %s-adic distributions with k=%s action and precision cap %s" % (self._p, self._k, self._prec_cap)
+        s = "Space of %s-adic distributions with k=%s action and precision cap %s" % (
+            self._p,
+            self._k,
+            self._prec_cap,
+        )
         twiststuff = []
         if self._dettwist is not None:
             twiststuff.append("det^%s" % self._dettwist)
@@ -843,7 +941,15 @@ class OverconvergentDistributions_class(OverconvergentDistributions_abstract):
             sage: D2.base_ring()
             7-adic Field with capped relative precision 20
         """
-        return OverconvergentDistributions(k=self._k, p=self._p, prec_cap=self._prec_cap, base=new_base_ring, character=self._character, adjuster=self._adjuster, act_on_left=self._act.is_left())
+        return OverconvergentDistributions(
+            k=self._k,
+            p=self._p,
+            prec_cap=self._prec_cap,
+            base=new_base_ring,
+            character=self._character,
+            adjuster=self._adjuster,
+            act_on_left=self._act.is_left(),
+        )
 
     def specialize(self, new_base_ring=None):
         """
@@ -869,4 +975,9 @@ class OverconvergentDistributions_class(OverconvergentDistributions_abstract):
             raise NotImplementedError
         if new_base_ring is None:
             new_base_ring = self.base_ring()
-        return Symk(k=self._k, base=new_base_ring, adjuster=self._adjuster, act_on_left=self._act.is_left())
+        return Symk(
+            k=self._k,
+            base=new_base_ring,
+            adjuster=self._adjuster,
+            act_on_left=self._act.is_left(),
+        )

@@ -47,7 +47,7 @@ Because we do this, NumPy's ``isscalar()`` recognizes Sage types::
     True
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -55,4 +55,4 @@ Because we do this, NumPy's ``isscalar()`` recognizes Sage types::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************

@@ -1115,9 +1115,7 @@ class ChartFunction(AlgebraElement, ModuleElementWithMutability):
                 method = list(self._express)[0]  # pick a random method
             # other.expr(method)
             if method == 'sympy':
-                return bool(
-                    sympy.simplify(other.expr(method) - self.expr(method)) == 0
-                )
+                return bool(sympy.simplify(other.expr(method) - self.expr(method)) == 0)
             return bool(other.expr(method) == self.expr(method))
         return bool(self.expr(self._calc_method._current) == other)
 

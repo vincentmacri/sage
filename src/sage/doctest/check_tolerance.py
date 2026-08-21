@@ -91,36 +91,44 @@ def check_tolerance_real_domain(want: MarkedOutput, got: str) -> tuple[str, str]
 
 
 # match 1.0 or 1.0 + I or 1.0 + 2.0*I
-real_plus_optional_imag = ''.join([
-    r'\s*(?P<real>[+-]?\s*',
-    float_without_sign,
-    r')(\s*(?P<real_imag_coeff>[+-]\s*',
-    float_without_sign,
-    r')\*I|\s*(?P<real_imag_unit>[+-])\s*I)?',
-])
+real_plus_optional_imag = ''.join(
+    [
+        r'\s*(?P<real>[+-]?\s*',
+        float_without_sign,
+        r')(\s*(?P<real_imag_coeff>[+-]\s*',
+        float_without_sign,
+        r')\*I|\s*(?P<real_imag_unit>[+-])\s*I)?',
+    ]
+)
 
 
 # match - 2.0*I
-only_imag = ''.join([
-    r'\s*(?P<only_imag>[+-]?\s*',
-    float_without_sign,
-    r')\*I',
-])
+only_imag = ''.join(
+    [
+        r'\s*(?P<only_imag>[+-]?\s*',
+        float_without_sign,
+        r')\*I',
+    ]
+)
 
 
 # match I or -I (no digits), require a non-word part before and after for specificity
 imaginary_unit = r'(?P<unit_imag_pre>^|\W)(?P<unit_imag>[+-]?)I(?P<unit_imag_post>$|\W)'
 
 
-complex_regex = re.compile(''.join([
-    '(',
-    only_imag,
-    '|',
-    imaginary_unit,
-    '|',
-    real_plus_optional_imag,
-    ')',
-]))
+complex_regex = re.compile(
+    ''.join(
+        [
+            '(',
+            only_imag,
+            '|',
+            imaginary_unit,
+            '|',
+            real_plus_optional_imag,
+            ')',
+        ]
+    )
+)
 
 
 def complex_match_to_real_and_imag(m: re.Match) -> tuple[str, str]:
@@ -189,11 +197,13 @@ def complex_star_repl(m: re.Match):
     """
     if m.group('unit_imag') is not None:
         # preserve the matched non-word part
-        return ''.join([
-            (m.group('unit_imag_pre') or '').strip(),
-            '*',
-            (m.group('unit_imag_post') or '').strip(),
-        ])
+        return ''.join(
+            [
+                (m.group('unit_imag_pre') or '').strip(),
+                '*',
+                (m.group('unit_imag_post') or '').strip(),
+            ]
+        )
     return '*'
 
 

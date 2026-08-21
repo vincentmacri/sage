@@ -58,10 +58,11 @@ def frequency_distribution(S, n=1, field=None):
          't ': 0.0370370370370370}
     """
     from sage.probability.random_variable import DiscreteProbabilitySpace
+
     if isinstance(S, tuple):
         S = list(S)
     elif isinstance(S, (str, StringMonoidElement)):
-        S = [S[i:i+n] for i in range(len(S)-n+1)]
+        S = [S[i : i + n] for i in range(len(S) - n + 1)]
     if field is None:
         field = RealField()
     if isinstance(S, list):
@@ -94,16 +95,16 @@ def coincidence_index(S, n=1):
         except AttributeError:
             raise TypeError("Argument S (= %s) must be a string.")
     S = strip_encoding(S)
-    N = len(S)-n+1
+    N = len(S) - n + 1
     X: dict[str, int] = {}
     for i in range(N):
-        c = S[i:i+n]
+        c = S[i : i + n]
         if c in X:
             X[c] += 1
         else:
             X[c] = 1
     RR = RealField()
-    return RR(sum([m*(m-1) for m in X.values()]))/RR(N*(N-1))
+    return RR(sum([m * (m - 1) for m in X.values()])) / RR(N * (N - 1))
 
 
 def coincidence_discriminant(S, n=2):
@@ -137,6 +138,18 @@ def coincidence_discriminant(S, n=2):
     if isinstance(S[0], StringMonoidElement):
         M = S[0].parent()
         n = M.ngens()
-        return sum([(XX(M([i, j]))-X1[0](M([i]))*X1[1](M([j])))**2 for i in range(n) for j in range(n)])
+        return sum(
+            [
+                (XX(M([i, j])) - X1[0](M([i])) * X1[1](M([j]))) ** 2
+                for i in range(n)
+                for j in range(n)
+            ]
+        )
     AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    return sum([(XX(AZ[i]+AZ[j])-X1[0](AZ[i])*X1[1](AZ[j]))**2 for i in range(26) for j in range(26)])
+    return sum(
+        [
+            (XX(AZ[i] + AZ[j]) - X1[0](AZ[i]) * X1[1](AZ[j])) ** 2
+            for i in range(26)
+            for j in range(26)
+        ]
+    )

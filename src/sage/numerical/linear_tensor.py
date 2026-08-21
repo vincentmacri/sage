@@ -94,7 +94,6 @@ become symbolic inequalities. See
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from copy import copy
 
 from sage.structure.parent import Parent
@@ -154,6 +153,7 @@ def LinearTensorParent(free_module_parent, linear_functions_parent):
 #
 # ****************************************************************************
 
+
 class LinearTensorParent_class(Parent):
     r"""
     The parent for all linear functions over a fixed base ring.
@@ -171,6 +171,7 @@ class LinearTensorParent_class(Parent):
         sage: LinearTensorParent_class
         <class 'sage.numerical.linear_tensor.LinearTensorParent_class'>
     """
+
     Element = LinearTensor
 
     def __init__(self, free_module, linear_functions):
@@ -190,6 +191,7 @@ class LinearTensorParent_class(Parent):
         self._linear_functions = linear_functions
         base_ring = linear_functions.base_ring()
         from sage.categories.modules_with_basis import ModulesWithBasis
+
         Parent.__init__(self, base=base_ring, category=ModulesWithBasis(base_ring))
 
     def free_module(self):
@@ -231,6 +233,7 @@ class LinearTensorParent_class(Parent):
             False
         """
         from sage.modules.free_module import FreeModule_generic
+
         return isinstance(self.free_module(), FreeModule_generic)
 
     def is_matrix_space(self):
@@ -250,6 +253,7 @@ class LinearTensorParent_class(Parent):
             True
         """
         from sage.matrix.matrix_space import MatrixSpace
+
         return isinstance(self.free_module(), MatrixSpace)
 
     def linear_functions(self):
@@ -285,7 +289,9 @@ class LinearTensorParent_class(Parent):
             sage: MixedIntegerLinearProgram().linear_functions_parent()
             Linear functions over Real Double Field
         """
-        return 'Tensor product of {0} and {1}'.format(self.free_module(), self.linear_functions())
+        return 'Tensor product of {0} and {1}'.format(
+            self.free_module(), self.linear_functions()
+        )
 
     def _convert_constant(self, m):
         """
@@ -370,7 +376,9 @@ class LinearTensorParent_class(Parent):
         if isinstance(x, LinearTensor):
             x = x.dict()
         elif isinstance(x, LinearFunction):
-            x = dict([key, self._convert_constant(value)] for key, value in x.dict().items())
+            x = dict(
+                [key, self._convert_constant(value)] for key, value in x.dict().items()
+            )
         elif isinstance(x, dict):
             x = dict([int(key), M(value)] for key, value in x.items())
         else:

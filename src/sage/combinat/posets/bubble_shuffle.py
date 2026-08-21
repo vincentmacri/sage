@@ -14,6 +14,7 @@ two words `X = (x_1,x_2,\ldots,x_{m})` and `Y = (y_1,y_2,\ldots,y_n)`.
     In the implementation here, the underlying set is the set of all shuffles
     of subsets of `\{-m,\ldots,-1\}` with subsets of `\{1,\ldots,n\}`.
 """
+
 from collections.abc import Iterator
 
 from sage.categories.finite_lattice_posets import FiniteLatticePosets
@@ -49,8 +50,11 @@ def bubble_cardinality(m, n) -> Integer:
         sage: bubble_cardinality(2,1)
         12
     """
-    return ZZ.sum(ZZ(i + j).binomial(j) * ZZ(m).binomial(i) * ZZ(n).binomial(j)
-                  for i in range(m + 1) for j in range(n + 1))
+    return ZZ.sum(
+        ZZ(i + j).binomial(j) * ZZ(m).binomial(i) * ZZ(n).binomial(j)
+        for i in range(m + 1)
+        for j in range(n + 1)
+    )
 
 
 def bubble_set(m, n) -> Iterator[tuple[int, ...]]:
@@ -120,7 +124,7 @@ def bubble_coverings(m, n, mot, transpose=True) -> Iterator[tuple[int, ...]]:
     # removal of one x
     for j, letter in enumerate(mot):
         if letter < 0:
-            yield tuple(mot[:j] + mot[j + 1:])
+            yield tuple(mot[:j] + mot[j + 1 :])
 
     # insertion of one y
     for j in range(len(mot) + 1):
@@ -199,8 +203,9 @@ def ShufflePoset(m, n) -> FiniteLatticePoset:
     """
     bubbles = list(bubble_set(m, n))
 
-    dg = DiGraph([(x, y) for x in bubbles
-                  for y in bubble_coverings(m, n, x, transpose=False)])
+    dg = DiGraph(
+        [(x, y) for x in bubbles for y in bubble_coverings(m, n, x, transpose=False)]
+    )
     # here we just have the cover relations
     cat = FiniteLatticePosets().ChainGraded()
     return LatticePoset(dg, cover_relations=True, check=False, category=cat)
@@ -225,8 +230,7 @@ def noncrossing_bipartite_complex(m, n):
     """
     vertices: list[tuple] = [("x", i) for i in range(1, m + 1)]
     vertices.extend(("y", i) for i in range(1, n + 1))
-    vertices.extend(("xy", i, j) for i in range(m + 1) for j in range(n + 1)
-                    if i or j)
+    vertices.extend(("xy", i, j) for i in range(m + 1) for j in range(n + 1) if i or j)
 
     def compatible(v: tuple, w: tuple) -> bool:
         if v == w:
@@ -234,8 +238,7 @@ def noncrossing_bipartite_complex(m, n):
         if v[0] != "xy" and w[0] != "xy":
             return True
         if v[0] == "xy" and w[0] == "xy":
-            return not ((w[1] < v[1] and w[2] > v[2])
-                        or (v[1] < w[1] and v[2] > w[2]))
+            return not ((w[1] < v[1] and w[2] > v[2]) or (v[1] < w[1] and v[2] > w[2]))
         if v[0] == "xy":
             if w[0] == "x":
                 return v[1] != w[1]

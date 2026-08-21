@@ -49,8 +49,12 @@ from sage.rings.fraction_field import FractionField
 from sage.rings.fraction_field import FractionField_generic
 from sage.rings.quotient_ring import QuotientRing_nc
 from sage.schemes.affine.affine_morphism import SchemeMorphism_polynomial_affine_space
-from sage.schemes.affine.affine_morphism import SchemeMorphism_polynomial_affine_space_field
-from sage.schemes.affine.affine_morphism import SchemeMorphism_polynomial_affine_space_finite_field
+from sage.schemes.affine.affine_morphism import (
+    SchemeMorphism_polynomial_affine_space_field,
+)
+from sage.schemes.affine.affine_morphism import (
+    SchemeMorphism_polynomial_affine_space_finite_field,
+)
 from sage.schemes.affine.affine_space import AffineSpace_generic
 from sage.schemes.affine.affine_space import AffineSpace
 from sage.schemes.affine.affine_subscheme import AlgebraicScheme_subscheme_affine
@@ -60,8 +64,7 @@ from sage.structure.element import get_coercion_model
 lazy_import('sage.symbolic.ring', 'SymbolicRing')
 
 
-class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
-                             DynamicalSystem):
+class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space, DynamicalSystem):
     r"""
     An endomorphism of affine schemes determined by rational functions.
 
@@ -247,7 +250,9 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
             R = morphism.base_ring()
             polys = list(morphism)
             domain = morphism.domain()
-            if not isinstance(domain, AffineSpace_generic) and not isinstance(domain, AlgebraicScheme_subscheme_affine):
+            if not isinstance(domain, AffineSpace_generic) and not isinstance(
+                domain, AlgebraicScheme_subscheme_affine
+            ):
                 raise ValueError('"domain" must be an affine scheme')
             if domain != morphism_or_polys.codomain():
                 raise ValueError('domain and codomain do not agree')
@@ -262,14 +267,18 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
             polys = [morphism_or_polys]
 
         PR = get_coercion_model().common_parent(*polys)
-        fraction_field = any(isinstance(poly.parent(), FractionField_generic) for poly in polys)
+        fraction_field = any(
+            isinstance(poly.parent(), FractionField_generic) for poly in polys
+        )
         if fraction_field:
             K = PR.base_ring().fraction_field()
             # Replace base ring with its fraction field
             PR = PR.ring().change_ring(K).fraction_field()
             polys = [PR(poly) for poly in polys]
         else:
-            quotient_ring = any(isinstance(poly.parent(), QuotientRing_nc) for poly in polys)
+            quotient_ring = any(
+                isinstance(poly.parent(), QuotientRing_nc) for poly in polys
+            )
             # If any of the list entries lies in a quotient ring, we try
             # to lift all entries to a common polynomial ring.
             if quotient_ring:
@@ -290,13 +299,17 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
                     PR = PR.fraction_field()
                 polys = [PR(poly) for poly in polys]
             except TypeError:
-                raise TypeError('coefficients of polynomial not in {}'.format(domain.base_ring()))
+                raise TypeError(
+                    'coefficients of polynomial not in {}'.format(domain.base_ring())
+                )
         if len(polys) != domain.ambient_space().coordinate_ring().ngens():
             raise ValueError(f'number of polys does not match dimension of {domain}')
         R = domain.base_ring()
         if isinstance(R, SymbolicRing):
             raise TypeError("symbolic ring cannot be the base ring")
-        if not isinstance(domain, AffineSpace_generic) and not isinstance(domain, AlgebraicScheme_subscheme_affine):
+        if not isinstance(domain, AffineSpace_generic) and not isinstance(
+            domain, AlgebraicScheme_subscheme_affine
+        ):
             raise ValueError('"domain" must be an affine scheme')
 
         if R not in Fields():
@@ -525,6 +538,7 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
             (1/4*c + 1/4)*x^2 + (-c - 1/2)*x + c + 1
         """
         from sage.schemes.affine.affine_space import AffineSpace_generic
+
         if not isinstance(self.domain(), AffineSpace_generic):
             raise NotImplementedError("not implemented for subschemes")
         if self.domain().dimension_relative() > 1:
@@ -535,6 +549,7 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
         S = self.domain().coordinate_ring()
         if isinstance(F.parent(), SymbolicRing):
             from sage.symbolic.ring import var
+
             u = var(self.domain().coordinate_ring().variable_name())
             return F.subs({F.variables()[0]: u, F.variables()[1]: 1})
         if T(F.denominator()).degree() == 0:
@@ -885,8 +900,9 @@ class DynamicalSystem_affine(SchemeMorphism_polynomial_affine_space,
         return self.as_scheme_morphism().degree()
 
 
-class DynamicalSystem_affine_field(DynamicalSystem_affine,
-                                   SchemeMorphism_polynomial_affine_space_field):
+class DynamicalSystem_affine_field(
+    DynamicalSystem_affine, SchemeMorphism_polynomial_affine_space_field
+):
     @cached_method
     def weil_restriction(self):
         r"""
@@ -987,9 +1003,9 @@ class DynamicalSystem_affine_field(DynamicalSystem_affine,
         return self.as_scheme_morphism().reduce_base_field().as_dynamical_system()
 
 
-class DynamicalSystem_affine_finite_field(DynamicalSystem_affine_field,
-                                    SchemeMorphism_polynomial_affine_space_finite_field):
-
+class DynamicalSystem_affine_finite_field(
+    DynamicalSystem_affine_field, SchemeMorphism_polynomial_affine_space_finite_field
+):
     def orbit_structure(self, P):
         r"""
         Every point is preperiodic over a finite field.
@@ -1063,6 +1079,7 @@ class DynamicalSystem_affine_finite_field(DynamicalSystem_affine_field,
         V = []
         E = []
         from sage.schemes.affine.affine_space import AffineSpace_generic
+
         if isinstance(self.domain(), AffineSpace_generic):
             for P in self.domain():
                 V.append(str(P))
@@ -1079,4 +1096,5 @@ class DynamicalSystem_affine_finite_field(DynamicalSystem_affine_field,
                 except TypeError:  # not on the scheme
                     pass
         from sage.graphs.digraph import DiGraph
+
         return DiGraph(dict(zip(V, E)), loops=True)

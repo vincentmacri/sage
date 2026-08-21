@@ -1,12 +1,12 @@
 """
 Root system data for (untwisted) type A affine
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_untwisted_affine, CartanType_simply_laced
 
@@ -98,6 +98,7 @@ class CartanType(CartanType_standard_untwisted_affine):
             [(0, 1, 2), (1, 0, 2)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         n = self.n
         g = DynkinDiagram_class(self)
 
@@ -106,7 +107,7 @@ class CartanType(CartanType_standard_untwisted_affine):
             g.add_edge(1, 0, 2)
         else:
             for i in range(1, n):
-                g.add_edge(i, i+1)
+                g.add_edge(i, i + 1)
             g.add_edge(0, 1)
             g.add_edge(0, n)
         return g
@@ -135,18 +136,18 @@ class CartanType(CartanType_standard_untwisted_affine):
         if self.n == 1:
             ret = "\\draw (0, 0.1 cm) -- +(%s cm,0);\n" % node_dist
             ret += "\\draw (0, -0.1 cm) -- +(%s cm,0);\n" % node_dist
-            ret += self._latex_draw_arrow_tip(0.33*node_dist-0.2, 0, 180)
-            ret += self._latex_draw_arrow_tip(0.66*node_dist+0.2, 0, 0)
+            ret += self._latex_draw_arrow_tip(0.33 * node_dist - 0.2, 0, 180)
+            ret += self._latex_draw_arrow_tip(0.66 * node_dist + 0.2, 0, 0)
             ret += node(0, 0, label(0))
             ret += node(node_dist, 0, label(1))
             return ret
-        rt_most = (self.n-1)*node_dist
+        rt_most = (self.n - 1) * node_dist
         mid = 0.5 * rt_most
         ret = "\\draw (0 cm,0) -- (%s cm,0);\n" % rt_most
         ret += "\\draw (0 cm,0) -- (%s cm, 1.2 cm);\n" % mid
         ret += "\\draw (%s cm, 1.2 cm) -- (%s cm, 0);\n" % (mid, rt_most)
         for i in range(self.n):
-            ret += node(i*node_dist, 0, label(i+1))
+            ret += node(i * node_dist, 0, label(i + 1))
         ret += node(mid, 1.2, label(0), 'anchor=south east')
         return ret
 
@@ -190,9 +191,16 @@ class CartanType(CartanType_standard_untwisted_affine):
             l1 = label(1)
             return "{}<=>{}\n{!s:4}{}".format(node(l0), node(l1), l0, l1)
         ret = "{}\n{}".format(label(0), node(label(0)))
-        ret += "----"*(n-2) + "---+\n|" + "    "*(n-2) + "   |\n|" + "    "*(n-2) + "   |\n"
-        ret += "---".join(node(label(i)) for i in range(1,n+1)) + "\n"
-        ret += "".join("{!s:4}".format(label(i)) for i in range(1,n+1))
+        ret += (
+            "----" * (n - 2)
+            + "---+\n|"
+            + "    " * (n - 2)
+            + "   |\n|"
+            + "    " * (n - 2)
+            + "   |\n"
+        )
+        ret += "---".join(node(label(i)) for i in range(1, n + 1)) + "\n"
+        ret += "".join("{!s:4}".format(label(i)) for i in range(1, n + 1))
         return ret
 
     def dual(self):
@@ -221,6 +229,7 @@ class CartanType(CartanType_standard_untwisted_affine):
             ['A', 3, 1] as a folding of ['A', 3, 1]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         if self.n == 1:
-            return CartanTypeFolded(self, ['A', 3, 1], [[0,2], [1,3]])
+            return CartanTypeFolded(self, ['A', 3, 1], [[0, 2], [1, 3]])
         return CartanTypeFolded(self, self, [[i] for i in self.index_set()])

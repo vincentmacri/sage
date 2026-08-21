@@ -13,13 +13,14 @@ AUTHORS:
 - Travis Scrimshaw (2020-08): Added support for ascii/unicode art
 """
 
-
 from string import Template
 from sage.combinat.tableau import Tableaux
 
 # The tex macro used to latex individual cells in an array (as a template).
 # When using bar should be replaced by '|' or ''.
-lr_macro = Template(r'\def\lr#1{\multicolumn{1}{$bar@{\hspace{.6ex}}c@{\hspace{.6ex}}$bar}{\raisebox{-.3ex}{$$#1$$}}}')
+lr_macro = Template(
+    r'\def\lr#1{\multicolumn{1}{$bar@{\hspace{.6ex}}c@{\hspace{.6ex}}$bar}{\raisebox{-.3ex}{$$#1$$}}}'
+)
 
 
 def tex_from_array(array, with_lines=True) -> str:
@@ -238,8 +239,7 @@ def tex_from_array(array, with_lines=True) -> str:
     lr = lr_macro.substitute(bar='|' if with_lines else '')
     if Tableaux.options.convention == "English":
         return '{%s\n%s\n}' % (lr, tex_from_skew_array(array, with_lines))
-    return '{%s\n%s\n}' % (lr, tex_from_skew_array(array[::-1], with_lines,
-                                                   align='t'))
+    return '{%s\n%s\n}' % (lr, tex_from_skew_array(array[::-1], with_lines, align='t'))
 
 
 def svg_from_array(array, with_lines=True) -> str:
@@ -346,10 +346,22 @@ def tex_from_array_tuple(a_tuple, with_lines=True) -> str:
     """
     lr = lr_macro.substitute(bar='|' if with_lines else '')
     if Tableaux.options.convention == "English":
-        return '{%s\n%s\n}' % (lr, ','.join(
-            r'\emptyset' if not comp else tex_from_skew_array(comp, with_lines) for comp in a_tuple))
-    return '{%s\n%s\n}' % (lr, ','.join(
-        r'\emptyset' if not comp else tex_from_skew_array(comp[::-1], with_lines, align='t') for comp in a_tuple))
+        return '{%s\n%s\n}' % (
+            lr,
+            ','.join(
+                r'\emptyset' if not comp else tex_from_skew_array(comp, with_lines)
+                for comp in a_tuple
+            ),
+        )
+    return '{%s\n%s\n}' % (
+        lr,
+        ','.join(
+            r'\emptyset'
+            if not comp
+            else tex_from_skew_array(comp[::-1], with_lines, align='t')
+            for comp in a_tuple
+        ),
+    )
 
 
 def tex_from_skew_array(array, with_lines=False, align='b') -> str:
@@ -393,21 +405,24 @@ def tex_from_skew_array(array, with_lines=False, align='b') -> str:
     # function end_line which puts in the required \cline's.
     if with_lines:
         # last position of None in each row
-        nones = [1 if None not in row else 1 + len(row) - row[::-1].index(None)
-                 for row in array]
+        nones = [
+            1 if None not in row else 1 + len(row) - row[::-1].index(None)
+            for row in array
+        ]
 
         def end_line(r):
             # in a slightly unpythonic way, we label the lines as 0, 1, ..., len(array)
             if r == 0:
                 return r'\cline{%s-%s}' % (nones[0], len(array[0]))
             if r == len(array):
-                start = nones[r-1]
-                finish = len(array[r-1])
+                start = nones[r - 1]
+                finish = len(array[r - 1])
             else:
-                start = min(nones[r], nones[r-1])
-                finish = max(len(array[r]), len(array[r-1]))
+                start = min(nones[r], nones[r - 1])
+                finish = max(len(array[r]), len(array[r - 1]))
             return r'\\' if start > finish else r'\\\cline{%s-%s}' % (start, finish)
     else:
+
         def end_line(r):
             return r'\\'
 
@@ -422,12 +437,17 @@ def tex_from_skew_array(array, with_lines=False, align='b') -> str:
         lr_start += r'\rotatebox{-45}{'
         lr_end += r'}'
 
-    tex = r'%s$\begin{array}[%s]{*{%s}c}' % (raisebox_start, align, max(map(len, array)))
-    tex += end_line(0)+'\n'
+    tex = r'%s$\begin{array}[%s]{*{%s}c}' % (
+        raisebox_start,
+        align,
+        max(map(len, array)),
+    )
+    tex += end_line(0) + '\n'
     for r in range(len(array)):
-        tex += '&'.join('' if c is None else r'%s%s%s' % (lr_start, c, lr_end)
-                        for c in array[r])
-        tex += end_line(r+1)+'\n'
+        tex += '&'.join(
+            '' if c is None else r'%s%s%s' % (lr_start, c, lr_end) for c in array[r]
+        )
+        tex += end_line(r + 1) + '\n'
     return tex + r'\end{array}$' + raisebox_end
 
 
@@ -441,19 +461,18 @@ def svg_from_skew_array(array, with_lines=False, align='b') -> str:
         sage: sage.combinat.output.svg_from_skew_array(array)
         '<?xml version="1.0" ...</svg>'
     """
-    resu = '<?xml version=\"1.0\" standalone=\"no\"?>'
-    resu += '<svg xmlns=\"http://www.w3.org/2000/svg\" '
-    resu += 'xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"300\" viewBox='
+    resu = '<?xml version="1.0" standalone="no"?>'
+    resu += '<svg xmlns="http://www.w3.org/2000/svg" '
+    resu += 'xmlns:xlink="http://www.w3.org/1999/xlink" width="300" viewBox='
 
-    resu1 = '<defs><polygon points=\"0, 0 10, 0 10, 10 0, 10\" '
-    resu1 += 'id=\"square\" style=\"stroke-width:0.1;stroke:black;fill:white\"/></defs>'
-    resu1 += '<g style=\"stroke-width:0.1;fill:steelblue;font-size:6;dominant-baseline:middle;text-anchor:middle\">'
+    resu1 = '<defs><polygon points="0, 0 10, 0 10, 10 0, 10" '
+    resu1 += 'id="square" style="stroke-width:0.1;stroke:black;fill:white"/></defs>'
+    resu1 += '<g style="stroke-width:0.1;fill:steelblue;font-size:6;dominant-baseline:middle;text-anchor:middle">'
 
     Nx = max((len(line) for line in array), default=0)
     Ny = len(array)
     # viewBox
-    resu += '\"%.3f %.3f %.3f %.3f \">' % (-5, -5,
-                                           10 * Nx + 10, 10 * Ny + 10)
+    resu += '"%.3f %.3f %.3f %.3f ">' % (-5, -5, 10 * Nx + 10, 10 * Ny + 10)
     resu += resu1
 
     for i, line in enumerate(array):
@@ -461,9 +480,9 @@ def svg_from_skew_array(array, with_lines=False, align='b') -> str:
         for j, content in enumerate(line):
             cj = 10 * j
             if content is not None:
-                resu += '<use transform=\"translate(%.3f, %.3f)' % (cj, ci)
-                resu += '\" xlink:href=\"#square\" />'
-                resu += f'<text x=\"{cj + 5}\" y=\"{ci + 5}\">{content}</text>'
+                resu += '<use transform="translate(%.3f, %.3f)' % (cj, ci)
+                resu += '" xlink:href="#square" />'
+                resu += f'<text x="{cj + 5}" y="{ci + 5}">{content}</text>'
     return resu + '</g></svg>'
 
 
@@ -524,6 +543,7 @@ def ascii_art_table(data, use_unicode=False, convention='English'):
 
     if use_unicode:
         import unicodedata
+
         v = unicodedata.lookup('BOX DRAWINGS LIGHT VERTICAL')
         h = unicodedata.lookup('BOX DRAWINGS LIGHT HORIZONTAL')
         dl = unicodedata.lookup('BOX DRAWINGS LIGHT DOWN AND LEFT')
@@ -549,11 +569,14 @@ def ascii_art_table(data, use_unicode=False, convention='English'):
     # Convert the input into a rectangular array with the top and bottom row
     #   being all None's for ease later on.
     ncols = max(len(row) for row in data)
-    str_tab = [[None]*ncols] + [[art(val) if val is not None else None for val in row] + [None]*(ncols-len(row))
-                                for row in data]
-    str_tab.append([None]*ncols)
+    str_tab = [[None] * ncols] + [
+        [art(val) if val is not None else None for val in row]
+        + [None] * (ncols - len(row))
+        for row in data
+    ]
+    str_tab.append([None] * ncols)
     # Get the widths of the columns
-    col_widths = [1]*len(str_tab[0])
+    col_widths = [1] * len(str_tab[0])
     if use_unicode:
         # Special handling of overline not adding to printed length
         def get_len(e):
@@ -561,10 +584,12 @@ def ascii_art_table(data, use_unicode=False, convention='English'):
                 return 0
             return len(e) - list(str(e)).count("\u0304")
     else:
+
         def get_len(e):
             if e is None:
                 return 0
             return len(e)
+
     for row in str_tab:
         for i, e in enumerate(row):
             col_widths[i] = max(col_widths[i], get_len(e))
@@ -577,60 +602,60 @@ def ascii_art_table(data, use_unicode=False, convention='English'):
         l1 = ""
         l2 = ""
         for i, (e, w) in enumerate(zip(row, col_widths)):
-            prev_row = str_tab[nrow-1]
+            prev_row = str_tab[nrow - 1]
             if i == 0:
                 if e is None:
                     if prev_row[i] is None:
-                        l1 += " "*(3+w)
+                        l1 += " " * (3 + w)
                     else:
-                        l1 += ur + h*(2+w)
-                    l2 += " "*(3+w)
+                        l1 += ur + h * (2 + w)
+                    l2 += " " * (3 + w)
                 else:
                     if prev_row[i] is None:
-                        l1 += dr + h*(2+w)
+                        l1 += dr + h * (2 + w)
                     else:
-                        l1 += vr + h*(2+w)
+                        l1 += vr + h * (2 + w)
                     l2 += "{} {:^{width}} ".format(v, e, width=w)
             else:
                 if e is None:
-                    if row[i-1] is None:
-                        if prev_row[i-1] is None:
+                    if row[i - 1] is None:
+                        if prev_row[i - 1] is None:
                             if prev_row[i] is None:
-                                l1 += " "*(3+w)
+                                l1 += " " * (3 + w)
                             else:
-                                l1 += ur + h*(2+w)
+                                l1 += ur + h * (2 + w)
                         else:
                             if prev_row[i] is None:
-                                l1 += ul + " "*(2+w)
+                                l1 += ul + " " * (2 + w)
                             else:
-                                l1 += uh + h*(2+w)
-                        l2 += " "*(3+w)
+                                l1 += uh + h * (2 + w)
+                        l2 += " " * (3 + w)
                     else:
-                        if prev_row[i-1] is None:
+                        if prev_row[i - 1] is None:
                             if prev_row[i] is None:
-                                l1 += dl + " "*(2+w)
+                                l1 += dl + " " * (2 + w)
                             else:
-                                l1 += vh + h*(2+w)
+                                l1 += vh + h * (2 + w)
                         else:
                             if prev_row[i] is None:
-                                l1 += vl + " "*(2+w)
+                                l1 += vl + " " * (2 + w)
                             else:
-                                l1 += vh + h*(2+w)
-                        l2 += v + " "*(2+w)
+                                l1 += vh + h * (2 + w)
+                        l2 += v + " " * (2 + w)
                 else:
-                    if row[i-1] is None:
-                        if prev_row[i-1] is None:
+                    if row[i - 1] is None:
+                        if prev_row[i - 1] is None:
                             if prev_row[i] is None:
-                                l1 += dr + h*(2+w)
+                                l1 += dr + h * (2 + w)
                             else:
-                                l1 += vr + h*(2+w)
+                                l1 += vr + h * (2 + w)
                         else:
-                            l1 += vh + h*(2+w)
+                            l1 += vh + h * (2 + w)
                     else:
-                        if prev_row[i-1] is None and prev_row[i] is None:
-                            l1 += dh + h*(2+w)
+                        if prev_row[i - 1] is None and prev_row[i] is None:
+                            l1 += dh + h * (2 + w)
                         else:
-                            l1 += vh + h*(2+w)
+                            l1 += vh + h * (2 + w)
                     l2 += "{} {:^{width}} ".format(v, e, width=w)
 
         if row[-1] is None:
@@ -656,9 +681,13 @@ def ascii_art_table(data, use_unicode=False, convention='English'):
     output = "\n".join(reversed(matr))
     if use_unicode:
         tr = {
-            ord(dl): ul, ord(dr): ur,
-            ord(ul): dl, ord(ur): dr,
-            ord(dh): uh, ord(uh): dh}
+            ord(dl): ul,
+            ord(dr): ur,
+            ord(ul): dl,
+            ord(ur): dr,
+            ord(dh): uh,
+            ord(uh): dh,
+        }
         return output.translate(tr)
     return output
 
@@ -727,8 +756,13 @@ def ascii_art_table_russian(data, use_unicode=False, compact=False):
     """
     if use_unicode:
         import unicodedata
-        urdl = unicodedata.lookup('BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT')
-        uldr = unicodedata.lookup('BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT')
+
+        urdl = unicodedata.lookup(
+            'BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT'
+        )
+        uldr = unicodedata.lookup(
+            'BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT'
+        )
         x = unicodedata.lookup('BOX DRAWINGS LIGHT DIAGONAL CROSS')
     else:
         urdl = '/'
@@ -746,6 +780,7 @@ def ascii_art_table_russian(data, use_unicode=False, compact=False):
                 return 0
             return len(e) - list(str(e)).count("\u0304")
     else:
+
         def get_len(e):
             if e is None:
                 return 0
@@ -770,11 +805,11 @@ def ascii_art_table_russian(data, use_unicode=False, compact=False):
                 continue
             st = ' ' * ((max_height - k) * row_height)
             for j in range(k + 1):
-                N_box = box_exists(str_tab, k-j+1, j)
-                S_box = box_exists(str_tab, k-j, j-1)
-                SE_box = box_exists(str_tab, k-j-1, j)
-                E_box = box_exists(str_tab, k-j, j)
-                W_box = box_exists(str_tab, k-j+1, j-1)
+                N_box = box_exists(str_tab, k - j + 1, j)
+                S_box = box_exists(str_tab, k - j, j - 1)
+                SE_box = box_exists(str_tab, k - j - 1, j)
+                E_box = box_exists(str_tab, k - j, j)
+                W_box = box_exists(str_tab, k - j + 1, j - 1)
                 if i == 0:
                     if (N_box and S_box) or (W_box and E_box):
                         st += x
@@ -789,9 +824,11 @@ def ascii_art_table_russian(data, use_unicode=False, compact=False):
                     else:
                         st += ' '
                     if E_box:
-                        st_num = str_tab[k-j][j]
+                        st_num = str_tab[k - j][j]
                         ln_left = len(st_num) // 2
-                        st += st_num.rjust(row_height - 1 - ln_left + len(st_num), ' ').ljust(diag_length, ' ')
+                        st += st_num.rjust(
+                            row_height - 1 - ln_left + len(st_num), ' '
+                        ).ljust(diag_length, ' ')
                     else:
                         st += ' ' * diag_length
                     if j == k and E_box:
@@ -807,10 +844,11 @@ def ascii_art_table_russian(data, use_unicode=False, compact=False):
                     st += lstr
                     st += ' ' * (2 * (row_height - i) - 1)
                     st += rstr
-                    st += ' ' * (i-1)
+                    st += ' ' * (i - 1)
             str_list.append(st)
 
     import re
+
     mm = min(len(re.search('^ +', ell)[0]) for ell in str_list) - 1
     str_list = [ell[mm:].rstrip() for ell in str_list]
     while not str_list[-1]:

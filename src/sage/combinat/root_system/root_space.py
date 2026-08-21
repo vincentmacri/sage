@@ -1,6 +1,7 @@
 """
 Root lattices and root spaces
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
@@ -59,19 +60,23 @@ class RootSpace(CombinatorialFreeModule):
         from sage.categories.morphism import SetMorphism
         from sage.categories.homset import Hom
         from sage.categories.sets_with_partial_maps import SetsWithPartialMaps
+
         self.root_system = root_system
-        CombinatorialFreeModule.__init__(self, base_ring,
-                                         root_system.index_set(),
-                                         prefix="alphacheck" if root_system.dual_side else "alpha",
-                                         latex_prefix="\\alpha^\\vee" if root_system.dual_side else "\\alpha",
-                                         category=RootLatticeRealizations(base_ring))
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            root_system.index_set(),
+            prefix="alphacheck" if root_system.dual_side else "alpha",
+            latex_prefix="\\alpha^\\vee" if root_system.dual_side else "\\alpha",
+            category=RootLatticeRealizations(base_ring),
+        )
         if base_ring is not ZZ:
             # Register the partial conversion back from ``self`` to the root lattice
             # See :meth:`_to_root_lattice` for tests
             root_lattice = self.root_system.root_lattice()
-            SetMorphism(Hom(self, root_lattice, SetsWithPartialMaps()),
-                        self._to_root_lattice
-                        ).register_as_conversion()
+            SetMorphism(
+                Hom(self, root_lattice, SetsWithPartialMaps()), self._to_root_lattice
+            ).register_as_conversion()
 
     def _repr_(self):
         """
@@ -95,7 +100,9 @@ class RootSpace(CombinatorialFreeModule):
             sage: RootSystem(['A',4]).root_space()._name_string()
             "Root space over the Rational Field of the Root system of type ['A', 4]"
         """
-        return self._name_string_helper("root", capitalize=capitalize, base_ring=base_ring, type=type)
+        return self._name_string_helper(
+            "root", capitalize=capitalize, base_ring=base_ring, type=type
+        )
 
     def simple_root(self, i):
         r"""
@@ -146,8 +153,9 @@ class RootSpace(CombinatorialFreeModule):
         """
         R = self.base_ring()
         C = self.cartan_type().symmetrizer().map(R)
-        return self.module_morphism(diagonal=C.__getitem__,
-                                    codomain=self.coroot_space(R))
+        return self.module_morphism(
+            diagonal=C.__getitem__, codomain=self.coroot_space(R)
+        )
 
     def _to_root_lattice(self, x):
         """
@@ -189,7 +197,9 @@ class RootSpace(CombinatorialFreeModule):
         .. TODO:: generalize diagonal module morphisms to implement this
         """
         try:
-            return self.root_system.root_lattice().sum_of_terms((i, ZZ(c)) for i, c in x)
+            return self.root_system.root_lattice().sum_of_terms(
+                (i, ZZ(c)) for i, c in x
+            )
         except TypeError:
             raise ValueError("%s does not have integral coefficients" % x)
 
@@ -233,7 +243,10 @@ class RootSpace(CombinatorialFreeModule):
 
         def basis_value(basis, i):
             return basis[i]
-        return self.module_morphism(on_basis=functools.partial(basis_value, basis) , codomain=L)
+
+        return self.module_morphism(
+            on_basis=functools.partial(basis_value, basis), codomain=L
+        )
 
 
 class RootSpaceElement(CombinatorialFreeModule.Element):
@@ -285,11 +298,21 @@ class RootSpaceElement(CombinatorialFreeModule.Element):
             sage: lat.simple_root(2).scalar(lat.simple_coroot(3))
             -2
         """
-        if lambdacheck in self.parent().coroot_lattice() or lambdacheck in self.parent().coroot_space():
+        if (
+            lambdacheck in self.parent().coroot_lattice()
+            or lambdacheck in self.parent().coroot_space()
+        ):
             # This is the mathematically canonical case, where we use the Cartan matrix to find the scalar product
             zero = self.parent().base_ring().zero()
             cartan_matrix = self.parent().dynkin_diagram()
-            return sum( (sum( (lambdacheck[i]*s for i,s in cartan_matrix.column(j)), zero) * c for j,c in self), zero)
+            return sum(
+                (
+                    sum((lambdacheck[i] * s for i, s in cartan_matrix.column(j)), zero)
+                    * c
+                    for j, c in self
+                ),
+                zero,
+            )
 
         if lambdacheck in self.parent().root_system.ambient_space():
             # lambdacheck lives in the ambient space of the root space, so we take the usual dot product in the ambient space
@@ -380,7 +403,9 @@ class RootSpaceElement(CombinatorialFreeModule.Element):
             2*alpha[1] + alpha[2] True
             alpha[2] True
         """
-        return len(self.associated_reflection()) == -1 + (self.parent().nonparabolic_positive_root_sum(())).scalar(self.associated_coroot())
+        return len(self.associated_reflection()) == -1 + (
+            self.parent().nonparabolic_positive_root_sum(())
+        ).scalar(self.associated_coroot())
 
     def max_coroot_le(self):
         r"""
@@ -429,7 +454,9 @@ class RootSpaceElement(CombinatorialFreeModule.Element):
             raise NotImplementedError("Only implemented for finite Cartan type")
         if not self.is_positive_root():
             raise ValueError(f"{self} is not in the positive cone of roots")
-        coroots = self.parent().coroot_lattice().positive_roots_by_height(increasing=False)
+        coroots = (
+            self.parent().coroot_lattice().positive_roots_by_height(increasing=False)
+        )
         for beta in coroots:
             if beta.quantum_root():
                 gamma = self - beta.associated_coroot()

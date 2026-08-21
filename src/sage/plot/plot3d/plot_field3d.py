@@ -23,8 +23,16 @@ from sage.modules.free_module_element import vector
 from sage.plot.plot import plot
 
 
-def plot_vector_field3d(functions, xrange, yrange, zrange,
-                        plot_points=5, colors='jet', center_arrows=False, **kwds):
+def plot_vector_field3d(
+    functions,
+    xrange,
+    yrange,
+    zrange,
+    plot_points=5,
+    colors='jet',
+    center_arrows=False,
+    **kwds,
+):
     r"""
     Plot a 3d vector field.
 
@@ -128,21 +136,26 @@ def plot_vector_field3d(functions, xrange, yrange, zrange,
         sage: plot_vector_field3d((x*cos(z),-y*cos(z),sin(z)), (x,0,pi), (y,0,pi), (z,0,pi),center_arrows=True,aspect_ratio=(1,2,1))
         Graphics3d Object
     """
-    (ff, gg, hh), ranges = setup_for_eval_on_grid(functions, [xrange, yrange, zrange], plot_points)
+    (ff, gg, hh), ranges = setup_for_eval_on_grid(
+        functions, [xrange, yrange, zrange], plot_points
+    )
     xpoints, ypoints, zpoints = (srange(*r, include_endpoint=True) for r in ranges)
     points = [vector((i, j, k)) for i in xpoints for j in ypoints for k in zpoints]
     vectors = [vector((ff(*point), gg(*point), hh(*point))) for point in points]
 
     try:
         import matplotlib as mpl
+
         cm = mpl.colormaps[colors]
     except (TypeError, KeyError):
         cm = None
     if cm is None:
         if isinstance(colors, (list, tuple)):
             from matplotlib.colors import LinearSegmentedColormap
+
             cm = LinearSegmentedColormap.from_list('mymap', colors)
         else:
+
             def cm(x):
                 return colors
 
@@ -150,11 +163,15 @@ def plot_vector_field3d(functions, xrange, yrange, zrange,
     scaled_vectors = [v / max_len for v in vectors]
 
     if center_arrows:
-        G = sum(plot(v, color=cm(v.norm()), **kwds).translate(p - v / 2)
-                for v, p in zip(scaled_vectors, points))
+        G = sum(
+            plot(v, color=cm(v.norm()), **kwds).translate(p - v / 2)
+            for v, p in zip(scaled_vectors, points)
+        )
         G._set_extra_kwds(kwds)
         return G
-    G = sum(plot(v, color=cm(v.norm()), **kwds).translate(p)
-            for v, p in zip(scaled_vectors, points))
+    G = sum(
+        plot(v, color=cm(v.norm()), **kwds).translate(p)
+        for v, p in zip(scaled_vectors, points)
+    )
     G._set_extra_kwds(kwds)
     return G

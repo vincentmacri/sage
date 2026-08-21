@@ -270,7 +270,9 @@ class SchubertPolynomial_class(CombinatorialFreeModule.Element):
         if i in ZZ:
             if algorithm == "sage":
                 if i <= 0:
-                    raise ValueError(r"cannot apply \delta_{%s} to a (= %s)" % (i, self))
+                    raise ValueError(
+                        r"cannot apply \delta_{%s} to a (= %s)" % (i, self)
+                    )
                 # The operator `\delta_i` sends the Schubert
                 # polynomial `X_\pi` (where `\pi` is a finitely supported
                 # permutation of `\{1, 2, 3, \ldots\}`) to:
@@ -374,7 +376,6 @@ class SchubertPolynomial_class(CombinatorialFreeModule.Element):
 
 
 class SchubertPolynomialRing_xbasis(CombinatorialFreeModule):
-
     Element = SchubertPolynomial_class
 
     def __init__(self, R):
@@ -387,9 +388,9 @@ class SchubertPolynomialRing_xbasis(CombinatorialFreeModule):
         """
         self._name = "Schubert polynomial ring with X basis"
         self._repr_option_bracket = False
-        CombinatorialFreeModule.__init__(self, R, Permutations(),
-                                         category=GradedAlgebrasWithBasis(R),
-                                         prefix='X')
+        CombinatorialFreeModule.__init__(
+            self, R, Permutations(), category=GradedAlgebrasWithBasis(R), prefix='X'
+        )
 
     @cached_method
     def one_basis(self):
@@ -479,8 +480,7 @@ class SchubertPolynomialRing_xbasis(CombinatorialFreeModule):
         if isinstance(x, InfinitePolynomial):
             R = x.polynomial().parent()
             # massage the term order to be what symmetrica expects
-            S = PolynomialRing(R.base_ring(),
-                               names=list(map(repr, reversed(R.gens()))))
+            S = PolynomialRing(R.base_ring(), names=list(map(repr, reversed(R.gens()))))
             return symmetrica.t_POLYNOM_SCHUBERT(S(x.polynomial()))
         if isinstance(x, OperatorPolynomial):
             return self(x.expand())
@@ -496,8 +496,11 @@ class SchubertPolynomialRing_xbasis(CombinatorialFreeModule):
             sage: X.some_elements()
             [X[1], X[1] + 2*X[2, 1], -X[3, 2, 1] + X[4, 2, 1, 3]]
         """
-        return [self.one(), self([1]) + 2 * self([2, 1]),
-                self([4, 2, 1, 3]) - self([3, 2, 1])]
+        return [
+            self.one(),
+            self([1]) + 2 * self([2, 1]),
+            self([4, 2, 1, 3]) - self([3, 2, 1]),
+        ]
 
     def product_on_basis(self, left, right):
         """

@@ -587,9 +587,17 @@ class MatchingCoveredGraph(Graph):
         TypeError: input data is of unknown type
     """
 
-    def __init__(self, data=None, matching=None, algorithm='Edmonds',
-                 solver=None, verbose=0, integrality_tolerance=0.001,
-                 *args, **kwds):
+    def __init__(
+        self,
+        data=None,
+        matching=None,
+        algorithm='Edmonds',
+        solver=None,
+        verbose=0,
+        integrality_tolerance=0.001,
+        *args,
+        **kwds,
+    ):
         r"""
         Create a matching covered graph, that is a connected nontrivial graph
         wherein each edge participates in some perfect matching.
@@ -602,8 +610,7 @@ class MatchingCoveredGraph(Graph):
             kwds = {'loops': False}
         else:
             if 'loops' in kwds and kwds['loops']:
-                raise ValueError('loops are not allowed in '
-                                 'matching covered graphs')
+                raise ValueError('loops are not allowed in matching covered graphs')
             kwds['loops'] = False
 
         if data is None:
@@ -615,11 +622,16 @@ class MatchingCoveredGraph(Graph):
 
         elif isinstance(data, Graph):
             try:
-                self._upgrade_from_graph(data=data, matching=matching,
-                                         algorithm=algorithm,
-                                         solver=solver, verbose=verbose,
-                                         integrality_tolerance=integrality_tolerance,
-                                         *args, **kwds)
+                self._upgrade_from_graph(
+                    data=data,
+                    matching=matching,
+                    algorithm=algorithm,
+                    solver=solver,
+                    verbose=verbose,
+                    integrality_tolerance=integrality_tolerance,
+                    *args,
+                    **kwds,
+                )
                 success = True
 
             except Exception as exception:
@@ -679,7 +691,9 @@ class MatchingCoveredGraph(Graph):
             return s.capitalize()
         return "".join(["Matching covered ", s])
 
-    def _subgraph_by_adding(self, vertices=None, edges=None, edge_property=None, immutable=None):
+    def _subgraph_by_adding(
+        self, vertices=None, edges=None, edge_property=None, immutable=None
+    ):
         r"""
         Return the matching covered subgraph containing the given vertices and edges.
 
@@ -845,12 +859,16 @@ class MatchingCoveredGraph(Graph):
 
                 return G
 
-        G = Graph(self, weighted=self._weighted, loops=self.allows_loops(),
-                  multiedges=self.allows_multiple_edges())
+        G = Graph(
+            self,
+            weighted=self._weighted,
+            loops=self.allows_loops(),
+            multiedges=self.allows_multiple_edges(),
+        )
 
-        H = G._subgraph_by_adding(vertices=vertices, edges=edges,
-                                  edge_property=edge_property,
-                                  immutable=False)
+        H = G._subgraph_by_adding(
+            vertices=vertices, edges=edges, edge_property=edge_property, immutable=False
+        )
 
         try:
             H = MatchingCoveredGraph(H)
@@ -863,20 +881,32 @@ class MatchingCoveredGraph(Graph):
         except Exception as exception:
             raise exception
 
-    def _upgrade_from_graph(self, data=None, matching=None, algorithm='Edmonds',
-                            solver=None, verbose=0, integrality_tolerance=0.001,
-                            *args, **kwds):
+    def _upgrade_from_graph(
+        self,
+        data=None,
+        matching=None,
+        algorithm='Edmonds',
+        solver=None,
+        verbose=0,
+        integrality_tolerance=0.001,
+        *args,
+        **kwds,
+    ):
         r"""
         Upgrade the given graph to a matching covered graph if eligible.
 
         See documentation ``MatchingCoveredGraph?`` for detailed information.
         """
         try:
-            check = Graph.is_matching_covered(G=data, matching=matching,
-                                              algorithm=algorithm,
-                                              coNP_certificate=False,
-                                              solver=solver, verbose=verbose,
-                                              integrality_tolerance=integrality_tolerance)
+            check = Graph.is_matching_covered(
+                G=data,
+                matching=matching,
+                algorithm=algorithm,
+                coNP_certificate=False,
+                solver=solver,
+                verbose=verbose,
+                integrality_tolerance=integrality_tolerance,
+            )
 
             if check:
                 Graph.__init__(self, data, *args, **kwds)
@@ -1126,8 +1156,7 @@ class MatchingCoveredGraph(Graph):
 
         if u in self and v in self:
             if u == v:
-                raise ValueError('loops are not allowed in '
-                                 'matching covered graphs')
+                raise ValueError('loops are not allowed in matching covered graphs')
 
             # If (u, v, label) is a multiple edge/ an existing edge
             if self.has_edge(u, v):
@@ -1137,15 +1166,20 @@ class MatchingCoveredGraph(Graph):
             # Check if there exists an M-alternating odd uv path starting and
             # ending with edges in self._matching
             from sage.graphs.matching import M_alternating_even_mark
-            w = next((b if a == u else a) for a, b, *_ in self.get_matching() if u in (a, b))
+
+            w = next(
+                (b if a == u else a) for a, b, *_ in self.get_matching() if u in (a, b)
+            )
 
             if v in M_alternating_even_mark(self, w, self.get_matching()):
                 # There exists a perfect matching containing the edge (u, v, label)
                 self._backend.add_edge(u, v, label, self._directed)
                 return
 
-        raise ValueError('the graph obtained after the addition of edge '
-                         '(%s) is not matching covered' % str((u, v, label)))
+        raise ValueError(
+            'the graph obtained after the addition of edge '
+            '(%s) is not matching covered' % str((u, v, label))
+        )
 
     @doc_index('Overwritten methods')
     def add_edges(self, edges, loops=False):
@@ -1371,27 +1405,30 @@ class MatchingCoveredGraph(Graph):
             TypeError: input edge None is of unknown type
         """
         if loops:
-            raise ValueError('loops are not allowed in '
-                             'matching covered graphs')
+            raise ValueError('loops are not allowed in matching covered graphs')
 
         if not edges:  # do nothing
             return
 
         from collections.abc import Iterable
+
         if not isinstance(edges, Iterable):
-            raise ValueError('expected an iterable of edges, '
-                             'but got a non-iterable object')
+            raise ValueError(
+                'expected an iterable of edges, but got a non-iterable object'
+            )
 
         links = []  # to extract the nonloop input edges
         for edge in edges:
             if hasattr(edge, '__len__'):
                 if len(edge) <= 1:
-                    raise ValueError('need more than 1 value to unpack '
-                                     f'for edge: {edge}')
+                    raise ValueError(
+                        f'need more than 1 value to unpack for edge: {edge}'
+                    )
 
                 elif len(edge) > 3:
-                    raise ValueError('too many values to unpack (expected 2) '
-                                     f'for edge: {edge}')
+                    raise ValueError(
+                        f'too many values to unpack (expected 2) for edge: {edge}'
+                    )
 
             else:
                 raise TypeError(f'input edge {edge} is of unknown type')
@@ -1407,19 +1444,16 @@ class MatchingCoveredGraph(Graph):
                 links.append((u, v, l))
 
         # If each of the input edges is existent
-        if (self.allows_multiple_edges()
-            and all(self.has_edge(*edge) for edge in links)):
+        if self.allows_multiple_edges() and all(self.has_edge(*edge) for edge in links):
             self._backend.add_edges(links, self._directed)
             return
 
         # Check if all the incident vertices of the input edges are existent
-        new_vertices = {x for u, v, _ in links for x in (u, v)
-                        if x not in self}
+        new_vertices = {x for u, v, _ in links for x in (u, v) if x not in self}
 
         # Throw error if the no. of new vertices is odd
         if len(new_vertices) % 2:
-            raise ValueError('odd order is not allowed for '
-                             'matching covered graphs')
+            raise ValueError('odd order is not allowed for matching covered graphs')
 
         try:
             G = Graph(self, multiedges=self.allows_multiple_edges())
@@ -1427,8 +1461,10 @@ class MatchingCoveredGraph(Graph):
 
             # Check if G has a vertex with at most 1 neighbor
             if any(len(G.neighbors(v)) <= 1 for v in G):
-                raise ValueError('the resulting graph after the addition of'
-                                 'the edges is not matching covered')
+                raise ValueError(
+                    'the resulting graph after the addition of'
+                    'the edges is not matching covered'
+                )
 
             # If all the vertices are existent, the existing perfect matching
             # can be used.
@@ -1448,14 +1484,16 @@ class MatchingCoveredGraph(Graph):
                 M.add_edges(self.get_matching())
 
                 # Check if M is a perfect matching of the resulting graph
-                if (G.order() != 2 * M.size()):
+                if G.order() != 2 * M.size():
                     M = None
 
                 self.__init__(data=G, matching=M)
 
         except Exception:
-            raise ValueError('the resulting graph after the addition of'
-                             'the edges is not matching covered')
+            raise ValueError(
+                'the resulting graph after the addition of'
+                'the edges is not matching covered'
+            )
 
     @doc_index('Overwritten methods')
     def add_vertex(self, name=None):
@@ -1511,8 +1549,9 @@ class MatchingCoveredGraph(Graph):
             ValueError: isolated vertices are not allowed in matching covered graphs
         """
         if name not in self:
-            raise ValueError('isolated vertices are not allowed in '
-                             'matching covered graphs')
+            raise ValueError(
+                'isolated vertices are not allowed in matching covered graphs'
+            )
 
     @doc_index('Overwritten methods')
     def add_vertices(self, vertices):
@@ -1581,8 +1620,9 @@ class MatchingCoveredGraph(Graph):
             ValueError: isolated vertices are not allowed in matching covered graphs
         """
         if any(vertex not in self for vertex in vertices):
-            raise ValueError('isolated vertices are not allowed in '
-                             'matching covered graphs')
+            raise ValueError(
+                'isolated vertices are not allowed in matching covered graphs'
+            )
 
     @doc_index('Overwritten methods')
     def allow_loops(self, new, check=True):
@@ -1636,8 +1676,7 @@ class MatchingCoveredGraph(Graph):
             - :meth:`~sage.graphs.matching_covered_graph.MatchingCoveredGraph.remove_loops`
         """
         if new:
-            raise ValueError('loops are not allowed in '
-                             'matching covered graphs')
+            raise ValueError('loops are not allowed in matching covered graphs')
 
     @doc_index('Overwritten methods')
     def allows_loops(self):
@@ -1820,8 +1859,7 @@ class MatchingCoveredGraph(Graph):
         if in_order:
             vertex = self.vertices(sort=True)[vertex]
 
-        raise ValueError('odd order is not allowed for '
-                         'matching covered graphs')
+        raise ValueError('odd order is not allowed for matching covered graphs')
 
     @doc_index('Overwritten methods')
     def delete_vertices(self, vertices):
@@ -1936,24 +1974,28 @@ class MatchingCoveredGraph(Graph):
             sage: G  # Matching covered graph on 6 vertices
             Matching covered staircase graph: graph on 6 vertices
         """
-        if not vertices:   # do nothing
+        if not vertices:  # do nothing
             return
 
         # Remove potentially duplicated vertices
         vertices = set(vertices)
 
         if len(vertices) % 2:  # try to remove an odd number of vertices
-            raise ValueError('an odd no. of distinct vertices can not be '
-                             'removed from a matching covered graph')
+            raise ValueError(
+                'an odd no. of distinct vertices can not be '
+                'removed from a matching covered graph'
+            )
 
         for vertex in vertices:
             if vertex not in self:
                 raise ValueError('vertex (%s) not in the graph' % str(vertex))
 
         if self.order() == len(vertices):
-            raise ValueError('the resulting graph after the removal of the '
-                             'vertices is trivial, therefore is not '
-                             'matching covered')
+            raise ValueError(
+                'the resulting graph after the removal of the '
+                'vertices is trivial, therefore is not '
+                'matching covered'
+            )
 
         try:
             G = Graph(self, multiedges=self.allows_multiple_edges())
@@ -1966,14 +2008,16 @@ class MatchingCoveredGraph(Graph):
             # must be a valid perfect matching of the resulting graph obtained
             # after the removal of the vertices
 
-            if (G.order() != 2 * M.size()):
+            if G.order() != 2 * M.size():
                 M = None
 
             self.__init__(data=G, matching=M)
 
         except Exception:
-            raise ValueError('the resulting graph after the removal of '
-                             'the vertices is not matching covered')
+            raise ValueError(
+                'the resulting graph after the removal of '
+                'the vertices is not matching covered'
+            )
 
     @doc_index('Miscellaneous methods')
     def get_matching(self):
@@ -2192,8 +2236,8 @@ class MatchingCoveredGraph(Graph):
 
         # even: The set of all such vertex w
         from sage.graphs.matching import M_alternating_even_mark
-        even = M_alternating_even_mark(G=self, matching=matching,
-                                       vertex=u)
+
+        even = M_alternating_even_mark(G=self, matching=matching, vertex=u)
 
         B = set([vertex])
         B.update(v for v in self if v not in even)
@@ -2272,8 +2316,9 @@ class MatchingCoveredGraph(Graph):
         return False
 
     @doc_index('Overwritten methods')
-    def has_perfect_matching(G, algorithm='Edmonds', solver=None, verbose=0,
-                             *, integrality_tolerance=1e-3):
+    def has_perfect_matching(
+        G, algorithm='Edmonds', solver=None, verbose=0, *, integrality_tolerance=1e-3
+    ):
         r"""
         Check whether the graph has a perfect matching.
 
@@ -2353,8 +2398,9 @@ class MatchingCoveredGraph(Graph):
         if algorithm in ['Edmonds', 'LP_matching', 'LP']:
             return True
 
-        raise ValueError('algorithm must be set to \'Edmonds\', '
-                         '\'LP_matching\' or \'LP\'')
+        raise ValueError(
+            'algorithm must be set to \'Edmonds\', \'LP_matching\' or \'LP\''
+        )
 
     @doc_index('Overwritten methods')
     def is_biconnected(self):
@@ -2750,18 +2796,20 @@ class MatchingCoveredGraph(Graph):
             H = Graph(self, multiedges=False)
             H.delete_vertices([u, v])
 
-            if not H.is_connected() or not H.is_matching_covered(list(matching - set([e]))):
+            if not H.is_connected() or not H.is_matching_covered(
+                list(matching - set([e]))
+            ):
                 if not coNP_certificate:
                     return False
 
                 # Construct the digraph D(e)(A ∪ B, F) defined as follows:
                 from sage.graphs.digraph import DiGraph
+
                 D = DiGraph()
 
                 # For each edge (a, b) in E(H(e)) ∩ M with a in A, b —> a in D(e).
                 # For each edge (a, b) in E(H(e)) with a in A, a —> b in D(e).
                 for a, b in H.edge_iterator(labels=False, sort_vertices=True):
-
                     if a in B:
                         a, b = b, a
 
@@ -2811,12 +2859,20 @@ class MatchingCoveredGraph(Graph):
 
                 # Obtain the color class Z ∈ {A, B} such that X ∩ Z is a vertex cover for T(e)
                 # Thus, obtain Y := X + v
-                X.add(u if (not color_class and u in A) or (color_class and u in B) or (color_class is None) else v)
+                X.add(
+                    u
+                    if (not color_class and u in A)
+                    or (color_class and u in B)
+                    or (color_class is None)
+                    else v
+                )
 
                 # Compute the nontrivial tight cut C := ∂(Y)
-                C = [(x, y, w) if x in X else (y, x, w)
-                     for x, y, w in self.edge_iterator(sort_vertices=True)
-                     if (x in X) ^ (y in X)]
+                C = [
+                    (x, y, w) if x in X else (y, x, w)
+                    for x, y, w in self.edge_iterator(sort_vertices=True)
+                    if (x in X) ^ (y in X)
+                ]
 
                 # Obtain the barrier Z
                 Z = None
@@ -3142,15 +3198,20 @@ class MatchingCoveredGraph(Graph):
             # Let K be a nontrivial odd component of H := G - B. Note that
             # there exists at least one such K since G is nonbipartite
             nontrivial_odd_components = [
-                set(component) for component in H.connected_components(sort=True)
+                set(component)
+                for component in H.connected_components(sort=True)
                 if len(component) % 2 and len(component) > 1
             ]
 
             # Find a laminar set of nontrivial barrier cuts
-            C = [[(u, v, w) if u in nontrivial_odd_component else (v, u, w)
-                  for u, v, w in self.edge_iterator()
-                  if (u in nontrivial_odd_component) ^ (v in nontrivial_odd_component)]
-                 for nontrivial_odd_component in nontrivial_odd_components]
+            C = [
+                [
+                    (u, v, w) if u in nontrivial_odd_component else (v, u, w)
+                    for u, v, w in self.edge_iterator()
+                    if (u in nontrivial_odd_component) ^ (v in nontrivial_odd_component)
+                ]
+                for nontrivial_odd_component in nontrivial_odd_components
+            ]
 
             return (False, C, nontrivial_odd_components, 'nontrivial barrier cut', B)
 
@@ -3176,6 +3237,7 @@ class MatchingCoveredGraph(Graph):
         # If no 2-vertex cut found, look for R nodes
         if not two_vertex_cut:
             from collections import Counter
+
             R_frequency = Counter()
 
             for t, g in spqr_tree:
@@ -3201,19 +3263,35 @@ class MatchingCoveredGraph(Graph):
             if index == len(components) - 1:
                 continue
             elif not index:
-                nontrivial_odd_components.append(set(components[0] + [two_vertex_cut[0]]))
+                nontrivial_odd_components.append(
+                    set(components[0] + [two_vertex_cut[0]])
+                )
             else:
                 nontrivial_odd_component = nontrivial_odd_components[-1].copy()
                 nontrivial_odd_component.update(component)
                 nontrivial_odd_components.append(nontrivial_odd_component)
 
-        C = [[(u, v, w) if u in nontrivial_odd_component else (v, u, w)
-              for u, v, w in self.edge_iterator()
-              if (u in nontrivial_odd_component) ^ (v in nontrivial_odd_component)]
-             for nontrivial_odd_component in nontrivial_odd_components]
+        C = [
+            [
+                (u, v, w) if u in nontrivial_odd_component else (v, u, w)
+                for u, v, w in self.edge_iterator()
+                if (u in nontrivial_odd_component) ^ (v in nontrivial_odd_component)
+            ]
+            for nontrivial_odd_component in nontrivial_odd_components
+        ]
 
         # Edge (u, v, w) in C are formatted so that u is in a nontrivial odd component
-        return (False, C, nontrivial_odd_components, nontrivial_tight_cut_variation, set(two_vertex_cut)) if coNP_certificate else False
+        return (
+            (
+                False,
+                C,
+                nontrivial_odd_components,
+                nontrivial_tight_cut_variation,
+                set(two_vertex_cut),
+            )
+            if coNP_certificate
+            else False
+        )
 
     @doc_index('Overwritten methods')
     def loop_edges(self, labels=True):
@@ -3527,8 +3605,7 @@ class MatchingCoveredGraph(Graph):
         from collections.abc import Iterable
 
         if vertices is not None and not isinstance(vertices, Iterable):
-            raise TypeError(f'\'{vertices.__class__.__name__}\' '
-                            'object is not iterable')
+            raise TypeError(f'\'{vertices.__class__.__name__}\' object is not iterable')
 
     @doc_index('Overwritten methods')
     def subdivide_edge(self, *args):
@@ -3712,8 +3789,10 @@ class MatchingCoveredGraph(Graph):
                 u, v, l = edge
 
             else:
-                raise ValueError('for two input arguments, the first one must be '
-                                 f'of the form (u, v) or (u, v, l), but found: {edge}')
+                raise ValueError(
+                    'for two input arguments, the first one must be '
+                    f'of the form (u, v) or (u, v, l), but found: {edge}'
+                )
 
         elif len(args) == 3:
             u, v, k = args
@@ -3735,8 +3814,10 @@ class MatchingCoveredGraph(Graph):
             raise ValueError(f'the given edge {(u, v, l)} does not exist')
 
         if k < 0 or k % 2:
-            raise ValueError('the number of subdivisions must be a '
-                             f'nonnegative even integer, but found {k}')
+            raise ValueError(
+                'the number of subdivisions must be a '
+                f'nonnegative even integer, but found {k}'
+            )
 
         if not k:
             return
@@ -3752,17 +3833,23 @@ class MatchingCoveredGraph(Graph):
         self._backend.add_edge(new_vertices[-1], v, l, self._directed)
 
         from itertools import pairwise
-        self._backend.add_edges([(x, y, l) for x, y in pairwise(new_vertices)],
-                                self._directed, remove_loops=True)
+
+        self._backend.add_edges(
+            [(x, y, l) for x, y in pairwise(new_vertices)],
+            self._directed,
+            remove_loops=True,
+        )
 
         if M.degree(u):
-            M.add_edges([(x, y, l)
-                for x, y in zip(new_vertices[::2], new_vertices[1::2])])
+            M.add_edges(
+                [(x, y, l) for x, y in zip(new_vertices[::2], new_vertices[1::2])]
+            )
         else:
             M.add_edge(u, new_vertices[0], l)
             M.add_edge(new_vertices[-1], v, l)
-            M.add_edges([(x, y, l)
-                for x, y in zip(new_vertices[1::2], new_vertices[2::2])])
+            M.add_edges(
+                [(x, y, l) for x, y in zip(new_vertices[1::2], new_vertices[2::2])]
+            )
 
         self.update_matching(M)
 
@@ -3955,12 +4042,17 @@ class MatchingCoveredGraph(Graph):
             - :meth:`~sage.graphs.matching_covered_graph.MatchingCoveredGraph.subdivide_edge`
         """
         from collections.abc import Iterable
+
         if not isinstance(edges, Iterable):
-            raise ValueError('expected an iterable of edges, but got a non-iterable object')
+            raise ValueError(
+                'expected an iterable of edges, but got a non-iterable object'
+            )
 
         if k < 0 or k % 2:
-            raise ValueError('the number of subdivisions must be a '
-                             f'nonnegative even integer, but found {k}')
+            raise ValueError(
+                'the number of subdivisions must be a '
+                f'nonnegative even integer, but found {k}'
+            )
 
         if not k:
             return
@@ -3968,12 +4060,14 @@ class MatchingCoveredGraph(Graph):
         for i, edge in enumerate(edges):
             if hasattr(edge, '__len__'):
                 if len(edge) <= 1:
-                    raise ValueError('need more than 1 value to unpack '
-                                     f'for edge: {edge}')
+                    raise ValueError(
+                        f'need more than 1 value to unpack for edge: {edge}'
+                    )
 
                 elif len(edge) > 3:
-                    raise ValueError('too many values to unpack (expected 2) '
-                                     f'for edge: {edge}')
+                    raise ValueError(
+                        f'too many values to unpack (expected 2) for edge: {edge}'
+                    )
 
             else:
                 raise TypeError(f'input edge {edge} is of unknown type')
@@ -3995,21 +4089,29 @@ class MatchingCoveredGraph(Graph):
             edges[i] = (u, v, l)
 
         from collections import Counter
+
         edge_frequency = Counter(edges)
 
         for edge, n in edge_frequency.items():
             u, v, l = edge
 
             labels = self.edge_label(u, v)
-            c = labels.count(l) if self.allows_multiple_edges() and isinstance(labels, list) else 1
+            c = (
+                labels.count(l)
+                if self.allows_multiple_edges() and isinstance(labels, list)
+                else 1
+            )
 
             if c < n:
-                raise ValueError(f'input contains {n} copies of the edge '
-                                 f'{edge}, but the graph contains {c}')
+                raise ValueError(
+                    f'input contains {n} copies of the edge '
+                    f'{edge}, but the graph contains {c}'
+                )
 
         M = Graph(self.get_matching())
 
         from itertools import pairwise
+
         for i, edge in enumerate(edges):
             u, v, l = edge
             self._backend.del_edge(u, v, l, self._directed)
@@ -4018,20 +4120,25 @@ class MatchingCoveredGraph(Graph):
 
             self._backend.add_edge(u, new_vertices[0], l, self._directed)
             self._backend.add_edge(new_vertices[-1], v, l, self._directed)
-            self._backend.add_edges([(x, y, l) for x, y in pairwise(new_vertices)],
-                                    self._directed, remove_loops=True)
+            self._backend.add_edges(
+                [(x, y, l) for x, y in pairwise(new_vertices)],
+                self._directed,
+                remove_loops=True,
+            )
 
             if M.has_edge(u, v, l):
                 M.delete_edge(u, v, l)
 
             if M.degree(u):
-                M.add_edges([(x, y, l)
-                    for x, y in zip(new_vertices[::2], new_vertices[1::2])])
+                M.add_edges(
+                    [(x, y, l) for x, y in zip(new_vertices[::2], new_vertices[1::2])]
+                )
             else:
                 M.add_edge(u, new_vertices[0], l)
                 M.add_edge(new_vertices[-1], v, l)
-                M.add_edges([(x, y, l)
-                    for x, y in zip(new_vertices[1::2], new_vertices[2::2])])
+                M.add_edges(
+                    [(x, y, l) for x, y in zip(new_vertices[1::2], new_vertices[2::2])]
+                )
 
         self.update_matching(M)
 
@@ -4113,7 +4220,7 @@ class MatchingCoveredGraph(Graph):
             if any(not self.has_edge(edge) for edge in M.edge_iterator()):
                 raise ValueError("the input is not a matching of the graph")
 
-            if (self.order() != M.order()):
+            if self.order() != M.order():
                 raise ValueError("the input is not a perfect matching of the graph")
 
             self._matching = M.edges()
@@ -4122,4 +4229,7 @@ class MatchingCoveredGraph(Graph):
             raise exception
 
 
-__doc__ = __doc__.replace('{INDEX_OF_METHODS}', gen_thematic_rest_table_index(MatchingCoveredGraph, only_local_functions=False))
+__doc__ = __doc__.replace(
+    '{INDEX_OF_METHODS}',
+    gen_thematic_rest_table_index(MatchingCoveredGraph, only_local_functions=False),
+)

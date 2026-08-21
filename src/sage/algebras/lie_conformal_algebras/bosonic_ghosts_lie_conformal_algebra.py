@@ -90,36 +90,46 @@ class BosonicGhostsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: TestSuite(V).run()
         """
         from sage.rings.integer_ring import ZZ
+
         try:
-            assert (ngens in ZZ and ngens > 0 and not ngens % 2)
+            assert ngens in ZZ and ngens > 0 and not ngens % 2
         except AssertionError:
-            raise ValueError("ngens should be an even positive integer, " +
-                             "got {}".format(ngens))
+            raise ValueError(
+                "ngens should be an even positive integer, " + "got {}".format(ngens)
+            )
         latex_names = None
         half = ngens // 2
         if (names is None) and (index_set is None):
             from sage.misc.defaults import latex_variable_names as laxnames
             from sage.misc.defaults import variable_names as varnames
-            names = varnames(half, 'beta') + varnames(half, 'gamma')
-            latex_names = tuple(laxnames(half, r'\beta') +
-                                laxnames(half, r'\gamma')) + ('K',)
 
-        names, index_set = standardize_names_index_set(names=names,
-                                                       index_set=index_set,
-                                                       ngens=ngens)
+            names = varnames(half, 'beta') + varnames(half, 'gamma')
+            latex_names = tuple(
+                laxnames(half, r'\beta') + laxnames(half, r'\gamma')
+            ) + ('K',)
+
+        names, index_set = standardize_names_index_set(
+            names=names, index_set=index_set, ngens=ngens
+        )
         A = identity_matrix(R, half)
         from sage.matrix.special import block_matrix
+
         gram_matrix = block_matrix([[R.zero(), A], [-A, R.zero()]])
-        ghostsdict = {(i, j): {0: {('K', 0): gram_matrix[index_set.rank(i),
-                                                         index_set.rank(j)]}}
-                      for i in index_set for j in index_set}
+        ghostsdict = {
+            (i, j): {0: {('K', 0): gram_matrix[index_set.rank(i), index_set.rank(j)]}}
+            for i in index_set
+            for j in index_set
+        }
         weights = (1,) * half + (0,) * half
-        super().__init__(R,
-                         ghostsdict, names=names,
-                         latex_names=latex_names,
-                         index_set=index_set,
-                         weights=weights,
-                         central_elements=('K',))
+        super().__init__(
+            R,
+            ghostsdict,
+            names=names,
+            latex_names=latex_names,
+            index_set=index_set,
+            weights=weights,
+            central_elements=('K',),
+        )
 
     def _repr_(self) -> str:
         """
@@ -130,5 +140,7 @@ class BosonicGhostsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: lie_conformal_algebras.BosonicGhosts(QQbar)
             The Bosonic ghosts Lie conformal algebra with generators (beta, gamma, K) over Algebraic Field
         """
-        return "The Bosonic ghosts Lie conformal algebra with generators {} "\
+        return (
+            "The Bosonic ghosts Lie conformal algebra with generators {} "
             "over {}".format(self.gens(), self.base_ring())
+        )

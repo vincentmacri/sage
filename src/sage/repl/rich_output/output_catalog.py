@@ -13,7 +13,6 @@ If you define another output type then you must add it to the imports here.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from .output_basic import (
     OutputPlainText,
     OutputAsciiArt,

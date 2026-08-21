@@ -93,7 +93,9 @@ class FiniteSemigroups(CategoryWithAxiom):
                 [['a'], ['ab', 'ba'], ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'],
                  ['ac', 'ca'], ['b'], ['bc', 'cb'], ['c']]
             """
-            return self.cayley_graph(side='twosided', simple=True).strongly_connected_components()
+            return self.cayley_graph(
+                side='twosided', simple=True
+            ).strongly_connected_components()
 
         @cached_method
         def j_classes_of_idempotents(self) -> list[list]:
@@ -109,8 +111,10 @@ class FiniteSemigroups(CategoryWithAxiom):
                 [['a'], ['ab', 'ba'], ['abc', 'acb', 'bac', 'bca', 'cab', 'cba'],
                  ['ac', 'ca'], ['b'], ['bc', 'cb'], ['c']]
             """
-            it = ([x for x in cl if attrcall('is_idempotent')(x)]
-                  for cl in self.j_classes())
+            it = (
+                [x for x in cl if attrcall('is_idempotent')(x)]
+                for cl in self.j_classes()
+            )
             return [ell for ell in it if ell]
 
         @cached_method
@@ -128,12 +132,18 @@ class FiniteSemigroups(CategoryWithAxiom):
                 sage: sorted(S.j_transversal_of_idempotents())  # random                # needs sage.graphs
                 ['a', 'ab', 'abc', 'ac', 'b', 'c', 'cb']
             """
+
             def first_idempotent(l):
                 for x in l:
                     if x.is_idempotent():
                         return x
                 return None
-            return [x for x in (first_idempotent(_) for _ in self.j_classes()) if x is not None]
+
+            return [
+                x
+                for x in (first_idempotent(_) for _ in self.j_classes())
+                if x is not None
+            ]
 
         # TODO: compute eJe, where J is the J-class of e
         # TODO: construct the action of self on it, as a permutation group

@@ -30,6 +30,7 @@ def prime_finite_field():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     return GF(ZZ.random_element(x=2, y=10**20 - 12).next_prime())
 
 
@@ -51,6 +52,7 @@ def finite_field():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     p = ZZ.random_element(x=2, y=10**6 - 18).next_prime()
     d = ZZ.random_element(x=1, y=20)
     return GF(p**d, 'a')
@@ -75,6 +77,7 @@ def small_finite_field():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     while True:
         q = ZZ.random_element(x=2, y=2**16)
         if q.is_prime_power():
@@ -95,6 +98,7 @@ def integer_mod_ring():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+
     n = ZZ.random_element(x=2, y=50000)
     return IntegerModRing(n)
 
@@ -112,6 +116,7 @@ def padic_field():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.padics.factory import Qp
+
     prec = ZZ.random_element(x=10, y=100)
     p = ZZ.random_element(x=2, y=10**4 - 30).next_prime()
     return Qp(p, prec)
@@ -129,8 +134,9 @@ def quadratic_number_field():
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.number_field.number_field import QuadraticField
+
     while True:
-        d = ZZ.random_element(x=-10**5, y=10**5)
+        d = ZZ.random_element(x=-(10**5), y=10**5)
         if not d.is_square():
             return QuadraticField(d, 'a')
 
@@ -149,13 +155,13 @@ def absolute_number_field(maxdeg=10):
     """
     from sage.rings.integer_ring import ZZ
     from sage.rings.number_field.number_field import NumberField
+
     R = ZZ['x']
     while True:
-        f = R.random_element(degree=ZZ.random_element(x=1, y=maxdeg),
-                             x=-100, y=100)
+        f = R.random_element(degree=ZZ.random_element(x=1, y=maxdeg), x=-100, y=100)
         if f.degree() <= 0:
             continue
-        f = f + R.gen()**(f.degree() + 1)  # make monic
+        f = f + R.gen() ** (f.degree() + 1)  # make monic
         if f.is_irreducible():
             return NumberField(f, 'a')
 
@@ -189,6 +195,7 @@ def relative_number_field(n=2, maxdeg=2):
         sage: _ = relative_number_field(3)                                              # needs sage.rings.number_field
     """
     from sage.rings.integer_ring import ZZ
+
     K = absolute_number_field(maxdeg)
     n -= 1
     var = 'aa'
@@ -196,12 +203,11 @@ def relative_number_field(n=2, maxdeg=2):
     R1 = K['x']
     while n >= 1:
         while True:
-            f = R.random_element(degree=ZZ.random_element(x=1, y=maxdeg),
-                                 x=-100, y=100)
+            f = R.random_element(degree=ZZ.random_element(x=1, y=maxdeg), x=-100, y=100)
             if f.degree() <= 0:
                 continue
             f = f * f.denominator()  # bug trac #4781
-            f = f + R.gen()**maxdeg  # make monic
+            f = f + R.gen() ** maxdeg  # make monic
             if R1(f).is_irreducible():
                 break
         K = K.extension(f, var)
@@ -238,13 +244,20 @@ def rings0():
     from sage.rings.integer_ring import IntegerRing
     from sage.rings.rational_field import RationalField
 
-    v = [(IntegerRing, 'ring of integers'),
-         (RationalField, 'field of rational numbers'),
-         (integer_mod_ring, 'integers modulo n for n at most 50000')]
+    v = [
+        (IntegerRing, 'ring of integers'),
+        (RationalField, 'field of rational numbers'),
+        (integer_mod_ring, 'integers modulo n for n at most 50000'),
+    ]
     try:
-        v += [(prime_finite_field, 'a prime finite field with cardinality at most 10^20'),
-              (finite_field, 'finite field with degree at most 20 and prime at most 10^6'),
-              (small_finite_field, 'finite field with cardinality at most 2^16')]
+        v += [
+            (prime_finite_field, 'a prime finite field with cardinality at most 10^20'),
+            (
+                finite_field,
+                'finite field with degree at most 20 and prime at most 10^6',
+            ),
+            (small_finite_field, 'finite field with cardinality at most 2^16'),
+        ]
     except ImportError:
         pass
 
@@ -254,9 +267,14 @@ def rings0():
         pass
 
     try:
-        v += [(quadratic_number_field, 'a quadratic number field'),
-              (absolute_number_field, 'an absolute number field of degree at most 10'),
-              (relative_number_field, 'a tower of at most 2 extensions each of degree at most 2')]
+        v += [
+            (quadratic_number_field, 'a quadratic number field'),
+            (absolute_number_field, 'an absolute number field of degree at most 10'),
+            (
+                relative_number_field,
+                'a tower of at most 2 extensions each of degree at most 2',
+            ),
+        ]
     except ImportError:
         pass
 
@@ -290,22 +308,37 @@ def rings1():
     from sage.rings.power_series_ring import PowerSeriesRing
     from sage.rings.integer_ring import ZZ
 
-    v = [(lambda: PolynomialRing(next(X), names='x'),
-          'univariate polynomial ring over level 0 ring'),
-         (lambda: PowerSeriesRing(next(X), names='x'),
-          'univariate power series ring over level 0 ring')]
+    v = [
+        (
+            lambda: PolynomialRing(next(X), names='x'),
+            'univariate polynomial ring over level 0 ring',
+        ),
+        (
+            lambda: PowerSeriesRing(next(X), names='x'),
+            'univariate power series ring over level 0 ring',
+        ),
+    ]
 
     try:
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
     except ImportError:
         pass
     else:
-        v += [(lambda: LaurentPolynomialRing(next(X), names='x'),
-               'univariate Laurent polynomial ring over level 0 ring')]
+        v += [
+            (
+                lambda: LaurentPolynomialRing(next(X), names='x'),
+                'univariate Laurent polynomial ring over level 0 ring',
+            )
+        ]
 
-    v += [(lambda: PolynomialRing(next(X), abs(ZZ.random_element(x=2, y=10)),
-                                  names='x'),
-           'multivariate polynomial ring in between 2 and 10 variables over a level 0 ring')]
+    v += [
+        (
+            lambda: PolynomialRing(
+                next(X), abs(ZZ.random_element(x=2, y=10)), names='x'
+            ),
+            'multivariate polynomial ring in between 2 and 10 variables over a level 0 ring',
+        )
+    ]
 
     return v
 
@@ -426,10 +459,15 @@ def check_random_arith(level=MAX_LEVEL, trials=1):
 
 
 @random_testing
-def check_karatsuba_multiplication(base_ring, maxdeg1, maxdeg2,
-                                  ref_mul=lambda f, g: f._mul_generic(g),
-                                  base_ring_random_elt_args=[],
-                                  numtests=10, verbose=False):
+def check_karatsuba_multiplication(
+    base_ring,
+    maxdeg1,
+    maxdeg2,
+    ref_mul=lambda f, g: f._mul_generic(g),
+    base_ring_random_elt_args=[],
+    numtests=10,
+    verbose=False,
+):
     """
     Test univariate Karatsuba multiplication against other multiplication algorithms.
 
@@ -482,6 +520,7 @@ def check_karatsuba_multiplication(base_ring, maxdeg1, maxdeg2,
     from sage.misc.prandom import randint
     from sage.misc.sage_input import sage_input
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
     threshold = randint(0, min(maxdeg1, maxdeg2))
     R = PolynomialRing(base_ring, 'x')
     if verbose:

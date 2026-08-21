@@ -62,7 +62,9 @@ class QuasiMeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation)
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -73,8 +75,12 @@ class QuasiMeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation)
             sage: QuasiMeromorphicModularFormsRing(4, ZZ, 1) == QuasiMeromorphicModularFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -112,7 +118,9 @@ class QuasiMeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation)
             sage: QuasiMeromorphicModularFormsRing(n=infinity)
             QuasiMeromorphicModularFormsRing(n=+Infinity) over Integer Ring
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["quasi", "mero"])
@@ -125,7 +133,9 @@ class QuasiWeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -136,8 +146,12 @@ class QuasiWeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: QuasiWeakModularFormsRing(5, CC, 0) == QuasiWeakModularFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -172,7 +186,9 @@ class QuasiWeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["quasi", "weak"])
@@ -185,7 +201,9 @@ class QuasiModularFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -196,8 +214,12 @@ class QuasiModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: QuasiModularFormsRing(6, ZZ, True) == QuasiModularFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -232,7 +254,9 @@ class QuasiModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["quasi", "holo"])
@@ -245,7 +269,9 @@ class QuasiCuspFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -256,8 +282,12 @@ class QuasiCuspFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: QuasiCuspFormsRing(7, ZZ, 1) == QuasiCuspFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -292,7 +322,9 @@ class QuasiCuspFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["quasi", "cusp"])
@@ -305,7 +337,9 @@ class MeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -316,8 +350,12 @@ class MeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MeromorphicModularFormsRing(4, ZZ, 1) == MeromorphicModularFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -352,7 +390,9 @@ class MeromorphicModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["mero"])
@@ -365,7 +405,9 @@ class WeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -376,8 +418,12 @@ class WeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: WeakModularFormsRing(5, ZZ, 0) == WeakModularFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -412,7 +458,9 @@ class WeakModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["weak"])
@@ -425,7 +473,9 @@ class ModularFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -435,8 +485,12 @@ class ModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: ModularFormsRing(3, ZZ, 0) == ModularFormsRing()
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -471,7 +525,9 @@ class ModularFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: MR in MR.category()
             True
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["holo"])
@@ -484,7 +540,9 @@ class CuspFormsRing(FormsRing_abstract, UniqueRepresentation):
     """
 
     @staticmethod
-    def __classcall__(cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None):
+    def __classcall__(
+        cls, group=HeckeTriangleGroup(3), base_ring=ZZ, red_hom=False, n=None
+    ):
         r"""
         Return a (cached) instance with canonical parameters.
 
@@ -495,8 +553,12 @@ class CuspFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: CuspFormsRing(5, CC, True) == CuspFormsRing(group, base_ring, red_hom, n)
             True
         """
-        (group, base_ring, red_hom, n) = canonical_parameters(group, base_ring, red_hom, n)
-        return super().__classcall__(cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        (group, base_ring, red_hom, n) = canonical_parameters(
+            group, base_ring, red_hom, n
+        )
+        return super().__classcall__(
+            cls, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
 
     def __init__(self, group, base_ring, red_hom, n):
         r"""
@@ -534,7 +596,9 @@ class CuspFormsRing(FormsRing_abstract, UniqueRepresentation):
             sage: CuspFormsRing(n=infinity, base_ring=CC, red_hom=True)
             CuspFormsRing(n=+Infinity) over Complex Field with 53 bits of precision
         """
-        FormsRing_abstract.__init__(self, group=group, base_ring=base_ring, red_hom=red_hom, n=n)
+        FormsRing_abstract.__init__(
+            self, group=group, base_ring=base_ring, red_hom=red_hom, n=n
+        )
         cat = Algebras(base_ring).Commutative()
         Parent.__init__(self, category=cat)
         self._analytic_type = self.AT(["cusp"])

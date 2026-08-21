@@ -29,6 +29,7 @@ class GradedLieAlgebras(GradedModulesCategory):
         sage: C = LieAlgebras(QQ).Graded()
         sage: TestSuite(C).run()
     """
+
     class SubcategoryMethods:
         def Stratified(self):
             r"""
@@ -57,6 +58,7 @@ class GradedLieAlgebras(GradedModulesCategory):
             sage: C = LieAlgebras(QQ).Graded().Stratified()
             sage: TestSuite(C).run()
         """
+
         class FiniteDimensional(CategoryWithAxiom_over_base_ring):
             r"""
             Category of finite dimensional stratified Lie algebras.
@@ -71,6 +73,7 @@ class GradedLieAlgebras(GradedModulesCategory):
                 sage: C = LieAlgebras(QQ).Graded().Stratified().FiniteDimensional()
                 sage: TestSuite(C).run()
             """
+
             def extra_super_categories(self):
                 """
                 Implement the fact that a finite dimensional stratified Lie
@@ -87,4 +90,5 @@ class GradedLieAlgebras(GradedModulesCategory):
                     True
                 """
                 from sage.categories.lie_algebras import LieAlgebras
+
                 return [LieAlgebras(self.base_ring()).Nilpotent()]

@@ -158,8 +158,13 @@ def _is_a_splitting(S1, S2, n, return_automorphism=False):
     S2 = {R(x) for x in S2}
 
     # we first check whether (S1,S2) is a partition of R - {0}
-    if (len(S1) + len(S2) != n-1 or len(S1) != len(S2) or
-        R.zero() in S1 or R.zero() in S2 or not S1.isdisjoint(S2)):
+    if (
+        len(S1) + len(S2) != n - 1
+        or len(S1) != len(S2)
+        or R.zero() in S1
+        or R.zero() in S2
+        or not S1.isdisjoint(S2)
+    ):
         if return_automorphism:
             return False, None
         return False
@@ -317,11 +322,14 @@ def walsh_matrix(m0):
     """
     m = int(m0)
     if m == 1:
-        return matrix(GF(2), 1, 2, [ 0, 1])
+        return matrix(GF(2), 1, 2, [0, 1])
     if m > 1:
-        row2 = [x.list() for x in walsh_matrix(m-1).augment(walsh_matrix(m-1)).rows()]
-        return matrix(GF(2), m, 2**m, [[0]*2**(m-1) + [1]*2**(m-1)] + row2)
+        row2 = [
+            x.list() for x in walsh_matrix(m - 1).augment(walsh_matrix(m - 1)).rows()
+        ]
+        return matrix(GF(2), m, 2**m, [[0] * 2 ** (m - 1) + [1] * 2 ** (m - 1)] + row2)
     raise ValueError("%s must be an integer > 0." % m0)
+
 
 ##################### main constructions #####################
 
@@ -352,28 +360,33 @@ def DuadicCodeEvenPair(F, S1, S2):
          [11, 5] Cyclic Code over GF(3))
     """
     from sage.misc.stopgap import stopgap
-    stopgap("The function DuadicCodeEvenPair has several issues which may cause wrong results", 25896)
+
+    stopgap(
+        "The function DuadicCodeEvenPair has several issues which may cause wrong results",
+        25896,
+    )
 
     from .cyclic_code import CyclicCode
+
     n = len(S1) + len(S2) + 1
-    if not _is_a_splitting(S1,S2,n):
-        raise TypeError("%s, %s must be a splitting of %s." % (S1,S2,n))
+    if not _is_a_splitting(S1, S2, n):
+        raise TypeError("%s, %s must be a splitting of %s." % (S1, S2, n))
     q = F.order()
-    k = Mod(q,n).multiplicative_order()
-    FF = GF(q**k,"z")
+    k = Mod(q, n).multiplicative_order()
+    FF = GF(q**k, "z")
     z = FF.gen()
-    zeta = z**((q**k-1)/n)
-    P1 = PolynomialRing(FF,"x")
+    zeta = z ** ((q**k - 1) / n)
+    P1 = PolynomialRing(FF, "x")
     x = P1.gen()
-    g1 = prod([x-zeta**i for i in S1+[0]])
-    g2 = prod([x-zeta**i for i in S2+[0]])
-    P2 = PolynomialRing(F,"x")
+    g1 = prod([x - zeta**i for i in S1 + [0]])
+    g2 = prod([x - zeta**i for i in S2 + [0]])
+    P2 = PolynomialRing(F, "x")
     x = P2.gen()
     gg1 = P2([_lift2smallest_field(c)[0] for c in g1.coefficients(sparse=False)])
     gg2 = P2([_lift2smallest_field(c)[0] for c in g2.coefficients(sparse=False)])
     C1 = CyclicCode(length=n, generator_pol=gg1)
     C2 = CyclicCode(length=n, generator_pol=gg2)
-    return C1,C2
+    return C1, C2
 
 
 def DuadicCodeOddPair(F, S1, S2):
@@ -403,33 +416,38 @@ def DuadicCodeOddPair(F, S1, S2):
     This is consistent with Theorem 6.1.3 in [HP2003]_.
     """
     from sage.misc.stopgap import stopgap
-    stopgap("The function DuadicCodeOddPair has several issues which may cause wrong results", 25896)
+
+    stopgap(
+        "The function DuadicCodeOddPair has several issues which may cause wrong results",
+        25896,
+    )
 
     from .cyclic_code import CyclicCode
+
     n = len(S1) + len(S2) + 1
-    if not _is_a_splitting(S1,S2,n):
-        raise TypeError("%s, %s must be a splitting of %s." % (S1,S2,n))
+    if not _is_a_splitting(S1, S2, n):
+        raise TypeError("%s, %s must be a splitting of %s." % (S1, S2, n))
     q = F.order()
-    k = Mod(q,n).multiplicative_order()
-    FF = GF(q**k,"z")
+    k = Mod(q, n).multiplicative_order()
+    FF = GF(q**k, "z")
     z = FF.gen()
-    zeta = z**((q**k-1)/n)
-    P1 = PolynomialRing(FF,"x")
+    zeta = z ** ((q**k - 1) / n)
+    P1 = PolynomialRing(FF, "x")
     x = P1.gen()
-    g1 = prod([x-zeta**i for i in S1+[0]])
-    g2 = prod([x-zeta**i for i in S2+[0]])
-    j = sum([x**i/n for i in range(n)])
-    P2 = PolynomialRing(F,"x")
+    g1 = prod([x - zeta**i for i in S1 + [0]])
+    g2 = prod([x - zeta**i for i in S2 + [0]])
+    j = sum([x**i / n for i in range(n)])
+    P2 = PolynomialRing(F, "x")
     x = P2.gen()
-    coeffs1 = [_lift2smallest_field(c)[0] for c in (g1+j).coefficients(sparse=False)]
-    coeffs2 = [_lift2smallest_field(c)[0] for c in (g2+j).coefficients(sparse=False)]
+    coeffs1 = [_lift2smallest_field(c)[0] for c in (g1 + j).coefficients(sparse=False)]
+    coeffs2 = [_lift2smallest_field(c)[0] for c in (g2 + j).coefficients(sparse=False)]
     gg1 = P2(coeffs1)
     gg2 = P2(coeffs2)
     gg1 = gcd(gg1, x**n - 1)
     gg2 = gcd(gg2, x**n - 1)
     C1 = CyclicCode(length=n, generator_pol=gg1)
     C2 = CyclicCode(length=n, generator_pol=gg2)
-    return C1,C2
+    return C1, C2
 
 
 def ExtendedQuadraticResidueCode(n, F):
@@ -469,7 +487,7 @@ def ExtendedQuadraticResidueCode(n, F):
 
     - David Joyner (07-2006)
     """
-    C = QuadraticResidueCodeOddPair(n,F)[0]
+    C = QuadraticResidueCodeOddPair(n, F)[0]
     return C.extended_code()
 
 
@@ -538,7 +556,7 @@ def QuadraticResidueCode(n, F):
 
     - David Joyner (11-2005)
     """
-    return QuadraticResidueCodeOddPair(n,F)[0]
+    return QuadraticResidueCodeOddPair(n, F)[0]
 
 
 def QuadraticResidueCodeEvenPair(n, F):
@@ -593,6 +611,7 @@ def QuadraticResidueCodeEvenPair(n, F):
     """
     from sage.arith.srange import srange
     from sage.categories.finite_fields import FiniteFields
+
     if F not in FiniteFields():
         raise ValueError("the argument F must be a finite field")
     q = F.order()
@@ -600,11 +619,13 @@ def QuadraticResidueCodeEvenPair(n, F):
     if n <= 2 or not n.is_prime():
         raise ValueError("the argument n must be an odd prime")
     Q = quadratic_residues(n)
-    Q.remove(0)       # nonzero quad residues
-    N = [x for x in srange(1, n) if x not in Q]   # nonzero quad non-residues
+    Q.remove(0)  # nonzero quad residues
+    N = [x for x in srange(1, n) if x not in Q]  # nonzero quad non-residues
     if q not in Q:
-        raise ValueError("the order of the finite field must be a quadratic residue modulo n")
-    return DuadicCodeEvenPair(F,Q,N)
+        raise ValueError(
+            "the order of the finite field must be a quadratic residue modulo n"
+        )
+    return DuadicCodeEvenPair(F, Q, N)
 
 
 def QuadraticResidueCodeOddPair(n, F):
@@ -653,6 +674,7 @@ def QuadraticResidueCodeOddPair(n, F):
     """
     from sage.arith.srange import srange
     from sage.categories.finite_fields import FiniteFields
+
     if F not in FiniteFields():
         raise ValueError("the argument F must be a finite field")
     q = F.order()
@@ -660,11 +682,13 @@ def QuadraticResidueCodeOddPair(n, F):
     if n <= 2 or not n.is_prime():
         raise ValueError("the argument n must be an odd prime")
     Q = quadratic_residues(n)
-    Q.remove(0)       # nonzero quad residues
-    N = [x for x in srange(1, n) if x not in Q]   # nonzero quad non-residues
+    Q.remove(0)  # nonzero quad residues
+    N = [x for x in srange(1, n) if x not in Q]  # nonzero quad non-residues
     if q not in Q:
-        raise ValueError("the order of the finite field must be a quadratic residue modulo n")
-    return DuadicCodeOddPair(F,Q,N)
+        raise ValueError(
+            "the order of the finite field must be a quadratic residue modulo n"
+        )
+    return DuadicCodeOddPair(F, Q, N)
 
 
 def random_linear_code(F, length, dimension):
@@ -755,6 +779,7 @@ def ToricCode(P, F):
     - David Joyner (07-2006)
     """
     from sage.combinat.tuple import Tuples
+
     mset = [x for x in F if x != 0]
     d = len(P[0])
     pts = Tuples(mset, d).list()
@@ -763,7 +788,7 @@ def ToricCode(P, F):
     e = P[0]
     B = []
     for e in P:
-        tmpvar = [prod([t[i]**e[i] for i in range(d)]) for t in pts]
+        tmpvar = [prod([t[i] ** e[i] for i in range(d)]) for t in pts]
         B.append(tmpvar)
     # now B0 *should* be a full rank matrix
     MS = MatrixSpace(F, k, n)
@@ -797,4 +822,4 @@ def WalshCode(m):
 
     - :wikipedia:`Walsh_code`
     """
-    return LinearCode(walsh_matrix(m), d=2**(m - 1))
+    return LinearCode(walsh_matrix(m), d=2 ** (m - 1))

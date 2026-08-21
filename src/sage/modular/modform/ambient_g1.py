@@ -54,6 +54,7 @@ class ModularFormsAmbient_gH_Q(ambient.ModularFormsAmbient):
     r"""
     A space of modular forms for the group `\Gamma_H(N)` over the rational numbers.
     """
+
     def __init__(self, group, weight, eis_only):
         r"""
         Create a space of modular forms for `\Gamma_H(N)` of integral weight over the
@@ -119,8 +120,11 @@ class ModularFormsAmbient_gH_Q(ambient.ModularFormsAmbient):
             [ 0  0  0  0  0  0 -1  0]
             [ 0  0  0  0  0  0  0 -1]
         """
-        return self.cuspidal_submodule().diamond_bracket_matrix(d).block_sum(
-            self.eisenstein_submodule().diamond_bracket_matrix(d))
+        return (
+            self.cuspidal_submodule()
+            .diamond_bracket_matrix(d)
+            .block_sum(self.eisenstein_submodule().diamond_bracket_matrix(d))
+        )
 
     def _compute_hecke_matrix(self, n):
         r"""
@@ -139,13 +143,18 @@ class ModularFormsAmbient_gH_Q(ambient.ModularFormsAmbient):
             [           0            0            0      729/259            0      -189/37     -1404/37     -2366/37     -3348/37]
             [           0            0            0      255/259            0  -18280/4329  -51947/4329   -10192/333 -190855/4329]
         """
-        return self.cuspidal_submodule().hecke_matrix(n).block_sum(self.eisenstein_submodule().hecke_matrix(n))
+        return (
+            self.cuspidal_submodule()
+            .hecke_matrix(n)
+            .block_sum(self.eisenstein_submodule().hecke_matrix(n))
+        )
 
 
 class ModularFormsAmbient_g1_Q(ModularFormsAmbient_gH_Q):
     r"""
     A space of modular forms for the group `\Gamma_1(N)` over the rational numbers.
     """
+
     def __init__(self, level, weight, eis_only):
         r"""
         Create a space of modular forms for `\Gamma_1(N)` of integral weight over the
@@ -158,7 +167,9 @@ class ModularFormsAmbient_g1_Q(ModularFormsAmbient_gH_Q):
             sage: type(m)
             <class 'sage.modular.modform.ambient_g1.ModularFormsAmbient_g1_Q_with_category'>
         """
-        ambient.ModularFormsAmbient.__init__(self, Gamma1_constructor(level), weight, QQ, eis_only=eis_only)
+        ambient.ModularFormsAmbient.__init__(
+            self, Gamma1_constructor(level), weight, QQ, eis_only=eis_only
+        )
 
     ####################################################################
     # Computation of Special Submodules

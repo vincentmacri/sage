@@ -23,7 +23,11 @@ AUTHORS:
 from sage.misc.inherit_comparison import InheritComparisonClasscallMetaclass
 from sage.structure.parent import Parent
 from sage.categories.sets_cat import Sets
-from sage.combinat.path_tableaux.path_tableau import PathTableau, PathTableaux, CylindricalDiagram
+from sage.combinat.path_tableaux.path_tableau import (
+    PathTableau,
+    PathTableaux,
+    CylindricalDiagram,
+)
 from sage.categories.fields import Fields
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -117,6 +121,7 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
         [       ,        ,        ,        ,        ,        ,        ,        ,        ,        ,       0,       1,   sqrt2,       1,   sqrt2,       3, 2*sqrt2,       5, 3*sqrt2,       1,       0]
         sage: TestSuite(t).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, fp, field=QQ):
         r"""
@@ -208,6 +213,7 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
             ...
             ValueError: 0 is not a valid integer
         """
+
         def _rule(x):
             """
             This is the rule on a sequence of three scalars.
@@ -218,7 +224,7 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
             raise ValueError(f"{i} is not a valid integer")
 
         with self.clone() as result:
-            result[i] = _rule(self[i-1:i+2])
+            result[i] = _rule(self[i - 1 : i + 2])
 
         return result
 
@@ -298,8 +304,7 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
         """
         n = len(self)
         cd = CylindricalDiagram(self).diagram
-        return all(k in ZZ for i, a in enumerate(cd)
-                   for k in a[i + 1:n + i - 2])
+        return all(k in ZZ for i, a in enumerate(cd) for k in a[i + 1 : n + i - 2])
 
     def triangulation(self):
         r"""
@@ -328,20 +333,23 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
             ....:                             field=K).triangulation()
             Graphics object consisting of 24 graphics primitives
         """
-        n = len(self)-1
+        n = len(self) - 1
         cd = CylindricalDiagram(self).diagram
         from sage.plot.plot import Graphics
         from sage.plot.line import line
         from sage.plot.text import text
         from sage.functions.trig import sin, cos
         from sage.symbolic.constants import pi
+
         G = Graphics()
         G.set_aspect_ratio(1.0)
 
-        vt = [(cos(2*theta*pi/(n)), sin(2*theta*pi/(n)))
-              for theta in range(n+1)]
+        vt = [
+            (cos(2 * theta * pi / (n)), sin(2 * theta * pi / (n)))
+            for theta in range(n + 1)
+        ]
         for i, p in enumerate(vt):
-            G += text(str(i), [1.05*p[0], 1.05*p[1]])
+            G += text(str(i), [1.05 * p[0], 1.05 * p[1]])
 
         for i, r in enumerate(cd):
             for j, a in enumerate(r[:n]):
@@ -392,11 +400,12 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
         """
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
         from sage.plot.plot import Graphics
+
         models = {
-                'UHP': HyperbolicPlane().UHP(),
-                'PD': HyperbolicPlane().PD(),
-                'KM': HyperbolicPlane().KM(),
-                }
+            'UHP': HyperbolicPlane().UHP(),
+            'PD': HyperbolicPlane().PD(),
+            'KM': HyperbolicPlane().KM(),
+        }
         if model not in models:
             raise ValueError(f"{model} must be one of ``UHP``, ``PD``, ``KM``")
         M = models[model]
@@ -405,8 +414,8 @@ class FriezePattern(PathTableau, metaclass=InheritComparisonClasscallMetaclass):
         cd = CylindricalDiagram(self).diagram
         num = cd[0][:-1]
         den = cd[1][2:]
-        vt = [M(U.get_point(x / (x+y))) for x, y in zip(num, den)]
-        gd = [M.get_geodesic(vt[i-1], vt[i]) for i in range(len(vt))]
+        vt = [M(U.get_point(x / (x + y))) for x, y in zip(num, den)]
+        gd = [M.get_geodesic(vt[i - 1], vt[i]) for i in range(len(vt))]
         return sum([a.plot() for a in gd], Graphics()).plot()
 
     def change_ring(self, R):

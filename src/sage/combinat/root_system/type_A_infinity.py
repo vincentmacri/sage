@@ -1,6 +1,7 @@
 """
 Root system data for type A infinity
 """
+
 # ***************************************************************************
 # Copyright (C) 2016 Andrew Mathas <Andrew dot Mathas at Sydney dot edu dot au>
 #
@@ -20,6 +21,7 @@ class CartanType(CartanType_standard, CartanType_simple):
     While ``oo`` is the same as ``+Infinity`` in Sage, it is used as
     an alias for ``ZZ``.
     """
+
     # We do not inherit from CartanType_crystallographic because it provides
     # methods that are not implemented for A_oo.
 

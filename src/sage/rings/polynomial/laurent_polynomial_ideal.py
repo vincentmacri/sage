@@ -22,12 +22,14 @@ AUTHORS:
 # ****************************************************************************
 
 from sage.rings.ideal import Ideal_generic
-from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing_univariate
+from sage.rings.polynomial.laurent_polynomial_ring import (
+    LaurentPolynomialRing_univariate,
+)
 from sage.structure.richcmp import op_EQ, op_NE, op_LT, op_LE, op_GT, op_GE
 from sage.arith.misc import GCD
 
 
-class LaurentPolynomialIdeal( Ideal_generic ):
+class LaurentPolynomialIdeal(Ideal_generic):
     def __init__(self, ring, gens, coerce=True, hint=None) -> None:
         r"""
         Create an ideal in a Laurent polynomial ring.
@@ -169,8 +171,10 @@ class LaurentPolynomialIdeal( Ideal_generic ):
         """
         if op in (op_EQ, op_NE):
             if set(self.gens()) == set(other.gens()):  # Early abort
-                return (op == op_EQ)
-            return ((self.polynomial_ideal() == other.polynomial_ideal()) == (op == op_EQ))
+                return op == op_EQ
+            return (self.polynomial_ideal() == other.polynomial_ideal()) == (
+                op == op_EQ
+            )
         if op == op_LE:
             if all(f in other.gens() for f in self.gens()):  # Early abort
                 return True
@@ -208,7 +212,7 @@ class LaurentPolynomialIdeal( Ideal_generic ):
             g = f.__reduce__()[1][1]
         else:
             g = f.__reduce__()[1][0]
-        return (g in self.polynomial_ideal())
+        return g in self.polynomial_ideal()
 
     def gens_reduced(self) -> tuple:
         """
@@ -322,12 +326,14 @@ class LaurentPolynomialIdeal( Ideal_generic ):
         else:
             R = ring.change_ring(new_base_ring)
         if forward_hint:
-            apply_to_hint = lambda x,f=f: x.map_coefficients(f)
+            apply_to_hint = lambda x, f=f: x.map_coefficients(f)
         else:
             apply_to_hint = None
-        return self.apply_map(lambda x,f=f:
-                              x.map_coefficients(f, new_base_ring=new_base_ring),
-                              new_ring=R, apply_to_hint=apply_to_hint)
+        return self.apply_map(
+            lambda x, f=f: x.map_coefficients(f, new_base_ring=new_base_ring),
+            new_ring=R,
+            apply_to_hint=apply_to_hint,
+        )
 
     def toric_coordinate_change(self, M, forward_hint=True):
         """
@@ -347,11 +353,14 @@ class LaurentPolynomialIdeal( Ideal_generic ):
         """
         if forward_hint:
             R = self.ring()
-            apply_to_hint = lambda x, M=M, R=R: R(x).toric_coordinate_change(M).monomial_reduction()[0]
+            apply_to_hint = lambda x, M=M, R=R: (
+                R(x).toric_coordinate_change(M).monomial_reduction()[0]
+            )
         else:
             apply_to_hint = None
-        return self.apply_map(lambda x, M=M: x.toric_coordinate_change(M),
-                              apply_to_hint=apply_to_hint)
+        return self.apply_map(
+            lambda x, M=M: x.toric_coordinate_change(M), apply_to_hint=apply_to_hint
+        )
 
     def __add__(self, other):
         """

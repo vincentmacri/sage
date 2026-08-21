@@ -48,11 +48,12 @@ class FiniteFieldHomset(RingHomset_generic):
     """
     Set of homomorphisms with domain a given finite field.
     """
-#     def __init__(self, R, S, category=None):
-#         if category is None:
-#             from sage.categories.finite_fields import FiniteFields
-#             category = FiniteFields()
-#         RingHomset_generic.__init__(self, R, S, category)
+
+    #     def __init__(self, R, S, category=None):
+    #         if category is None:
+    #             from sage.categories.finite_fields import FiniteFields
+    #             category = FiniteFields()
+    #         RingHomset_generic.__init__(self, R, S, category)
 
     def __call__(self, im_gens, base_map=None, check=True):
         """
@@ -114,18 +115,22 @@ class FiniteFieldHomset(RingHomset_generic):
                 return FiniteFieldHomomorphism_generic(self, phi.im_gens())
 
         if self.domain().degree() == 1:
-            from sage.rings.finite_rings.hom_prime_finite_field import FiniteFieldHomomorphism_prime
-            return FiniteFieldHomomorphism_prime(self, im_gens,
-                                                 base_map=base_map, check=check)
+            from sage.rings.finite_rings.hom_prime_finite_field import (
+                FiniteFieldHomomorphism_prime,
+            )
+
+            return FiniteFieldHomomorphism_prime(
+                self, im_gens, base_map=base_map, check=check
+            )
         if isinstance(self.codomain(), FiniteField):
-            return FiniteFieldHomomorphism_generic(self, im_gens,
-                                                   base_map=base_map, check=check)
+            return FiniteFieldHomomorphism_generic(
+                self, im_gens, base_map=base_map, check=check
+            )
         # Currently, FiniteFieldHomomorphism_generic does not work if
         # the codomain is not derived from the finite field base class;
         # in that case, we have to fall back to the generic
         # implementation for rings
-        return RingHomomorphism_im_gens(self, im_gens,
-                                        base_map=base_map, check=check)
+        return RingHomomorphism_im_gens(self, im_gens, base_map=base_map, check=check)
 
     def _repr_(self):
         """
@@ -263,7 +268,9 @@ class FiniteFieldHomset(RingHomset_generic):
             pass
         D = self.domain()
         C = self.codomain()
-        if D.characteristic() == C.characteristic() and Integer(D.degree()).divides(Integer(C.degree())):
+        if D.characteristic() == C.characteristic() and Integer(D.degree()).divides(
+            Integer(C.degree())
+        ):
             f = D.modulus()
             g = C['x'](f)
             r = g.roots()
@@ -336,9 +343,13 @@ class FiniteFieldHomset(RingHomset_generic):
             return L.coerce_map_from(K)
         if not K.degree().divides(L.degree()):
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError('no homomorphisms from %s to %s' % (K, L))
         return K.hom([K.modulus().any_root(L)])
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.rings.finite_field_morphism', 'FiniteFieldHomset', FiniteFieldHomset)
+
+register_unpickle_override(
+    'sage.rings.finite_field_morphism', 'FiniteFieldHomset', FiniteFieldHomset
+)

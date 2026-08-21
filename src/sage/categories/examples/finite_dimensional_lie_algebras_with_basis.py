@@ -15,7 +15,9 @@ from sage.categories.lie_algebras import LieAlgebras
 from sage.modules.free_module import FreeModule
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.categories.examples.lie_algebras import LieAlgebraFromAssociative as BaseExample
+from sage.categories.examples.lie_algebras import (
+    LieAlgebraFromAssociative as BaseExample,
+)
 
 
 class AbelianLieAlgebra(Parent, UniqueRepresentation):
@@ -48,6 +50,7 @@ class AbelianLieAlgebra(Parent, UniqueRepresentation):
 
     The abelian Lie algebra on `M`.
     """
+
     @staticmethod
     def __classcall_private__(cls, R, n=None, M=None, ambient=None):
         """
@@ -96,6 +99,7 @@ class AbelianLieAlgebra(Parent, UniqueRepresentation):
         Parent.__init__(self, base=R, category=cat)
 
         from sage.categories.lie_algebras import LiftMorphism
+
         self._lift_uea = LiftMorphism(self, self._construct_UEA())
         self._lift_uea.register_as_coercion()
 
@@ -107,9 +111,12 @@ class AbelianLieAlgebra(Parent, UniqueRepresentation):
             An example of a finite dimensional Lie algebra with basis:
              the 3-dimensional abelian Lie algebra over Rational Field
         """
-        ret = "An example of a finite dimensional Lie algebra with basis:" \
-              " the {}-dimensional abelian Lie algebra over {}".format(
-                         self.dimension(), self.base_ring())
+        ret = (
+            "An example of a finite dimensional Lie algebra with basis:"
+            " the {}-dimensional abelian Lie algebra over {}".format(
+                self.dimension(), self.base_ring()
+            )
+        )
         B = self._M.basis_matrix()
         if not B.is_one():
             ret += " with basis matrix:\n{!r}".format(B)
@@ -293,8 +300,7 @@ class AbelianLieAlgebra(Parent, UniqueRepresentation):
             sage: L.basis()
             Finite family {0: (1, 0, 0), 1: (0, 1, 0), 2: (0, 0, 1)}
         """
-        d = {i: self.element_class(self, b)
-             for i,b in enumerate(self._M.basis())}
+        d = {i: self.element_class(self, b) for i, b in enumerate(self._M.basis())}
         return Family(d)
 
     lie_algebra_generators = basis
@@ -372,8 +378,9 @@ class AbelianLieAlgebra(Parent, UniqueRepresentation):
             ((1, 0, 0), (0, 1, 0))
         """
         # for free modules, the leading monomial is actually the trailing monomial
-        return tuple([self._ambient._M(b.value).trailing_monomial()
-                      for b in self.basis()])
+        return tuple(
+            [self._ambient._M(b.value).trailing_monomial() for b in self.basis()]
+        )
 
     class Element(BaseExample.Element):
         def __init__(self, parent, value):

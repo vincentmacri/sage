@@ -17,7 +17,7 @@ _constants_funcs = {
     'glaisher': glaisher_fixed,
     'khinchin': khinchin_fixed,
     'twinprime': twinprime_fixed,
-    'mertens': mertens_fixed
+    'mertens': mertens_fixed,
 }
 
 

@@ -1,6 +1,7 @@
 """
 Symbolic Integration
 """
+
 # ****************************************************************************
 #       Copyright (C) 2009 Golam Mortuza Hossain <gmhossain@gmail.com>
 #       Copyright (C) 2010 Burcin Erocal <burcin@erocal.org>
@@ -88,12 +89,18 @@ class IndefiniteIntegral(BuiltinFunction):
         # The libgiac integrator may immediately return a symbolic
         # (unevaluated) answer if libgiac is unavailable. This essentially
         # causes it to be skipped.
-        self.integrators = [external.maxima_integrator,
-                            external.libgiac_integrator,
-                            external.sympy_integrator]
+        self.integrators = [
+            external.maxima_integrator,
+            external.libgiac_integrator,
+            external.sympy_integrator,
+        ]
 
-        BuiltinFunction.__init__(self, "integrate", nargs=2, conversions={'sympy': 'Integral',
-                                                                          'giac': 'integrate'})
+        BuiltinFunction.__init__(
+            self,
+            "integrate",
+            nargs=2,
+            conversions={'sympy': 'Integral', 'giac': 'integrate'},
+        )
 
     def _eval_(self, f, x):
         """
@@ -135,8 +142,7 @@ class IndefiniteIntegral(BuiltinFunction):
         for integrator in self.integrators:
             try:
                 A = integrator(f, x)
-            except (NotImplementedError, TypeError,
-                    AttributeError, RuntimeError):
+            except (NotImplementedError, TypeError, AttributeError, RuntimeError):
                 pass
             except ValueError:
                 # maxima is telling us something
@@ -180,6 +186,7 @@ class IndefiniteIntegral(BuiltinFunction):
             \int \frac{\tan\left(x\right)}{x}\,{d x}
         """
         from sage.misc.latex import latex
+
         if not (isinstance(x, Expression) and x.is_symbol()):
             dx_str = "{d \\left(%s\\right)}" % latex(x)
         else:
@@ -219,12 +226,18 @@ class DefiniteIntegral(BuiltinFunction):
         # in the given order. This is an attribute of the class instead of
         # a global variable in this module to enable customization by
         # creating a subclasses which define a different set of integrators
-        self.integrators = [external.maxima_integrator,
-                            external.libgiac_integrator,
-                            external.sympy_integrator]
+        self.integrators = [
+            external.maxima_integrator,
+            external.libgiac_integrator,
+            external.sympy_integrator,
+        ]
 
-        BuiltinFunction.__init__(self, "integrate", nargs=4, conversions={'sympy': 'Integral',
-                                                                          'giac': 'integrate'})
+        BuiltinFunction.__init__(
+            self,
+            "integrate",
+            nargs=4,
+            conversions={'sympy': 'Integral', 'giac': 'integrate'},
+        )
 
     def _eval_(self, f, x, a, b):
         """
@@ -261,8 +274,7 @@ class DefiniteIntegral(BuiltinFunction):
         for integrator in self.integrators:
             try:
                 A = integrator(*args)
-            except (NotImplementedError, TypeError,
-                    AttributeError, RuntimeError):
+            except (NotImplementedError, TypeError, AttributeError, RuntimeError):
                 pass
             except ValueError:
                 # maxima is telling us something
@@ -296,6 +308,7 @@ class DefiniteIntegral(BuiltinFunction):
             0.154572952320790
         """
         from sage.calculus.integration import numerical_integral
+
         # The gsl routine returns a tuple, which also contains the error.
         # We only return the result.
         return numerical_integral(f, a, b)[0]
@@ -356,12 +369,12 @@ class DefiniteIntegral(BuiltinFunction):
             \int_{0}^{1} \frac{\tan\left(x\right)}{x}\,{d x}
         """
         from sage.misc.latex import latex
+
         if not (isinstance(x, Expression) and x.is_symbol()):
             dx_str = "{d \\left(%s\\right)}" % latex(x)
         else:
             dx_str = "{d %s}" % latex(x)
-        return "\\int_{%s}^{%s} %s\\,%s" % (latex(a), latex(b),
-                                            latex(f), dx_str)
+        return "\\int_{%s}^{%s} %s\\,%s" % (latex(a), latex(b), latex(f), dx_str)
 
     def _sympy_(self, f, x, a, b):
         """
@@ -377,6 +390,7 @@ class DefiniteIntegral(BuiltinFunction):
             1/2
         """
         from sympy.integrals import Integral
+
         return Integral(f, (x, a, b))
 
 
@@ -432,8 +446,10 @@ def _normalize_integral_input(f, v, a=None, b=None):
         elif len(v) == 3:  # variable and two endpoints
             v, a, b = v
         else:
-            raise TypeError("invalid input %s - please use variable, "
-                            "with or without two endpoints" % repr(v))
+            raise TypeError(
+                "invalid input %s - please use variable, "
+                "with or without two endpoints" % repr(v)
+            )
 
     if (a is None) ^ (b is None):
         raise TypeError('only one endpoint was given!')

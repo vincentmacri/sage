@@ -26,7 +26,9 @@ from sage.schemes.curves.projective_curve import ProjectivePlaneCurve_finite_fie
 from .con_field import ProjectiveConic_field
 
 
-class ProjectiveConic_finite_field(ProjectiveConic_field, ProjectivePlaneCurve_finite_field):
+class ProjectiveConic_finite_field(
+    ProjectiveConic_field, ProjectivePlaneCurve_finite_field
+):
     r"""
     Create a projective plane conic curve over a finite field.
 
@@ -46,6 +48,7 @@ class ProjectiveConic_finite_field(ProjectiveConic_field, ProjectivePlaneCurve_f
         sage: Conic(X^2 + Y^2 - 2*Z^2)
         Projective Conic Curve over Finite Field of size 5 defined by X^2 + Y^2 - 2*Z^2
     """
+
     def __init__(self, A, f):
         r"""
         See ``Conic`` for full documentation.
@@ -75,8 +78,7 @@ class ProjectiveConic_finite_field(ProjectiveConic_field, ProjectivePlaneCurve_f
         q = F.cardinality()
         return [q**i + 1 for i in range(1, n + 1)]
 
-    def has_rational_point(self, point=False, read_cache=True,
-                           algorithm='default'):
+    def has_rational_point(self, point=False, read_cache=True, algorithm='default'):
         r"""
         Always returns ``True`` because ``self`` has a point defined over
         its finite base field `B`.

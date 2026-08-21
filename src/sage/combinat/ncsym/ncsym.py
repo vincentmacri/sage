@@ -6,6 +6,7 @@ AUTHORS:
 
 - Travis Scrimshaw (08-04-2013): initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -23,7 +24,11 @@ from sage.categories.fields import Fields
 
 from sage.arith.misc import factorial
 from sage.combinat.free_module import CombinatorialFreeModule
-from sage.combinat.ncsym.bases import NCSymBases, MultiplicativeNCSymBases, NCSymBasis_abstract
+from sage.combinat.ncsym.bases import (
+    NCSymBases,
+    MultiplicativeNCSymBases,
+    NCSymBasis_abstract,
+)
 from sage.combinat.set_partition import SetPartitions
 from sage.combinat.set_partition_ordered import OrderedSetPartitions
 from sage.combinat.posets.posets import Poset
@@ -138,15 +143,15 @@ def nesting(la, nu):
     arcs = []
     for p in nu:
         p = sorted(p)
-        arcs += [(p[i], p[i+1]) for i in range(len(p)-1)]
+        arcs += [(p[i], p[i + 1]) for i in range(len(p) - 1)]
     nst = 0
     for p in la:
         p = sorted(p)
         for a in arcs:
             if p[-1] < a[0]:
                 continue
-            for i in range(len(p)-1):
-                if a[1] <= p[i+1]:
+            for i in range(len(p) - 1):
+                if a[1] <= p[i + 1]:
                     break
                 if a[0] < p[i]:
                     nst += 1
@@ -304,7 +309,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             sage: TestSuite(SymmetricFunctionsNonCommutingVariables(QQ)).run()
         """
         # change the line below to assert R in Rings() once MRO issues from #15536, #15475 are resolved
-        assert R in Fields() or R in Rings()  # side effect of this statement assures MRO exists for R
+        assert (
+            R in Fields() or R in Rings()
+        )  # side effect of this statement assures MRO exists for R
         self._base = R  # Won't be needed once CategoryObject won't override base_ring
         category = GradedHopfAlgebras(R).Cocommutative()
         Parent.__init__(self, category=category.WithRealizations())
@@ -316,7 +323,10 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             sage: SymmetricFunctionsNonCommutingVariables(ZZ)
             Symmetric functions in non-commuting variables over the Integer Ring
         """
-        return "Symmetric functions in non-commuting variables over the %s" % self.base_ring()
+        return (
+            "Symmetric functions in non-commuting variables over the %s"
+            % self.base_ring()
+        )
 
     def a_realization(self):
         r"""
@@ -344,6 +354,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             Dual symmetric functions in non-commuting variables over the Rational Field
         """
         from sage.combinat.ncsym.dual import SymmetricFunctionsNonCommutingVariablesDual
+
         return SymmetricFunctionsNonCommutingVariablesDual(self.base_ring())
 
     class monomial(NCSymBasis_abstract):
@@ -373,9 +384,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             category = GradedHopfAlgebras(R).Cocommutative()
             category &= NCSymBases(NCSym)
 
-            CombinatorialFreeModule.__init__(self, R, SetPartitions(),
-                                             prefix='m', bracket=False,
-                                             category=category)
+            CombinatorialFreeModule.__init__(
+                self, R, SetPartitions(), prefix='m', bracket=False, category=category
+            )
 
         @cached_method
         def _m_to_p_on_basis(self, A):
@@ -396,11 +407,11 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 ....:     for A in SetPartitions(i))
                 True
             """
+
             def lt(s, t):
                 if s == t:
                     return False
-                return all(len([1 for z in t if z.intersection(p)]) == 1
-                           for p in s)
+                return all(len([1 for z in t if z.intersection(p)]) == 1 for p in s)
 
             p = self.realization_of().p()
             P = Poset((A.coarsenings(), lt))
@@ -429,9 +440,14 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             cp = self.realization_of().cp()
             arcs = set(A.arcs())
             R = self.base_ring()
-            return cp._from_dict({B: R((-1)**len(set(B.arcs()).difference(A.arcs())))
-                                  for B in A.coarsenings() if arcs.issubset(B.arcs())},
-                                 remove_zeros=False)
+            return cp._from_dict(
+                {
+                    B: R((-1) ** len(set(B.arcs()).difference(A.arcs())))
+                    for B in A.coarsenings()
+                    if arcs.issubset(B.arcs())
+                },
+                remove_zeros=False,
+            )
 
         def from_symmetric_function(self, f):
             r"""
@@ -488,7 +504,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             m = SymmetricFunctions(self.base_ring()).m()
-            return self.sum([c * self.sum_of_partitions(i) for i,c in m(f)])
+            return self.sum([c * self.sum_of_partitions(i) for i, c in m(f)])
 
         def dual_basis(self):
             r"""
@@ -597,11 +613,12 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
 
             P = SetPartitions()
             n = A.size()
-            B = [Set([y+n for y in b]) for b in B] # Shift B by n
-            unions = lambda m: [reduce(lambda a,b: a.union(b), x) for x in m]
+            B = [Set([y + n for y in b]) for b in B]  # Shift B by n
+            unions = lambda m: [reduce(lambda a, b: a.union(b), x) for x in m]
             one = self.base_ring().one()
-            return self._from_dict({P(unions(m)): one for m in matchings(A, B)},
-                                   remove_zeros=False)
+            return self._from_dict(
+                {P(unions(m)): one for m in matchings(A, B)}, remove_zeros=False
+            )
 
         def coproduct_on_basis(self, A):
             r"""
@@ -637,7 +654,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             P = SetPartitions()
             # Handle corner cases
             if not A:
-                return self.tensor_square().monomial(( P([]), P([]) ))
+                return self.tensor_square().monomial((P([]), P([])))
             if len(A) == 1:
                 return self.tensor_square().sum_of_monomials([(P([]), A), (A, P([]))])
 
@@ -647,7 +664,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             def to_basis(S):
                 if not S:
                     return P([])
-                sub_parts = [list(A[i-1]) for i in S] # -1 for indexing
+                sub_parts = [list(A[i - 1]) for i in S]  # -1 for indexing
                 mins = [min(p) for p in sub_parts]
                 over_max = max([max(p) for p in sub_parts]) + 1
                 ret = [[] for _ in repeat(None, len(S))]
@@ -663,8 +680,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                     else:
                         mins[i] = over_max
                 return P(ret)
-            L1 = [(to_basis(S), to_basis(C)) for S,C in L]
-            L2 = [(M, N) for N,M in L1]
+
+            L1 = [(to_basis(S), to_basis(C)) for S, C in L]
+            L2 = [(M, N) for N, M in L1]
             return self.tensor_square().sum_of_monomials(L1 + L2)
 
         def internal_coproduct_on_basis(self, A):
@@ -695,15 +713,15 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             P = SetPartitions()
             SP = SetPartitions(A.size())
-            ret = [[A,A]]
+            ret = [[A, A]]
             for i, B in enumerate(SP):
-                for C in SP[i+1:]:
+                for C in SP[i + 1 :]:
                     if B.inf(C) == A:
                         B_std = P(list(B.standardization()))
                         C_std = P(list(C.standardization()))
                         ret.append([B_std, C_std])
                         ret.append([C_std, B_std])
-            return self.tensor_square().sum_of_monomials((B, C) for B,C in ret)
+            return self.tensor_square().sum_of_monomials((B, C) for B, C in ret)
 
         def sum_of_partitions(self, la):
             r"""
@@ -754,12 +772,14 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             from sage.combinat.partition import Partition
-            la = Partition(la) # Make sure it is a partition
+
+            la = Partition(la)  # Make sure it is a partition
             R = self.base_ring()
             P = SetPartitions()
-            c = R( prod(factorial(i) for i in la) / ZZ(factorial(la.size())) )
-            return self._from_dict({P(m): c for m in SetPartitions(sum(la), la)},
-                                   remove_zeros=False)
+            c = R(prod(factorial(i) for i in la) / ZZ(factorial(la.size())))
+            return self._from_dict(
+                {P(m): c for m in SetPartitions(sum(la), la)}, remove_zeros=False
+            )
 
         class Element(CombinatorialFreeModule.Element):
             """
@@ -796,6 +816,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 """
                 from sage.algebras.free_algebra import FreeAlgebra
                 from sage.combinat.permutation import Permutations
+
                 m = self.parent()
                 F = FreeAlgebra(m.base_ring(), n, alphabet)
 
@@ -805,9 +826,12 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                     basic_term = [0] * A.size()
                     for index, part in enumerate(A):
                         for i in part:
-                            basic_term[i-1] = index # -1 for indexing
-                    return sum( prod(x[p[i]-1] for i in basic_term) # -1 for indexing
-                                for p in Permutations(n, len(A)) )
+                            basic_term[i - 1] = index  # -1 for indexing
+                    return sum(
+                        prod(x[p[i] - 1] for i in basic_term)  # -1 for indexing
+                        for p in Permutations(n, len(A))
+                    )
+
                 return m._apply_module_morphism(self, on_basis, codomain=F)
 
             def to_symmetric_function(self):
@@ -841,8 +865,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 """
                 m = SymmetricFunctions(self.parent().base_ring()).monomial()
                 c = lambda la: prod(factorial(i) for i in la.to_exp())
-                return m.sum_of_terms((i.shape(), coeff*c(i.shape()))
-                                      for (i, coeff) in self)
+                return m.sum_of_terms(
+                    (i.shape(), coeff * c(i.shape())) for (i, coeff) in self
+                )
 
     m = monomial
 
@@ -864,27 +889,38 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 sage: NCSym = SymmetricFunctionsNonCommutingVariables(QQ)
                 sage: TestSuite(NCSym.e()).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSym.base_ring(), SetPartitions(),
-                                             prefix='e', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSym.base_ring(),
+                SetPartitions(),
+                prefix='e',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             ## Register coercions
             # monomials
             m = NCSym.m()
-            self.module_morphism(self._e_to_m_on_basis, codomain=m).register_as_coercion()
+            self.module_morphism(
+                self._e_to_m_on_basis, codomain=m
+            ).register_as_coercion()
             # powersum
             # NOTE: Keep this ahead of creating the homogeneous basis to
             #   get the coercion path m -> p -> e
             p = NCSym.p()
-            self.module_morphism(self._e_to_p_on_basis, codomain=p,
-                                 triangular='upper').register_as_coercion()
-            p.module_morphism(p._p_to_e_on_basis, codomain=self,
-                              triangular='upper').register_as_coercion()
+            self.module_morphism(
+                self._e_to_p_on_basis, codomain=p, triangular='upper'
+            ).register_as_coercion()
+            p.module_morphism(
+                p._p_to_e_on_basis, codomain=self, triangular='upper'
+            ).register_as_coercion()
             # homogeneous
             h = NCSym.h()
-            self.module_morphism(self._e_to_h_on_basis, codomain=h,
-                                 triangular='upper').register_as_coercion()
-            h.module_morphism(h._h_to_e_on_basis, codomain=self,
-                              triangular='upper').register_as_coercion()
+            self.module_morphism(
+                self._e_to_h_on_basis, codomain=h, triangular='upper'
+            ).register_as_coercion()
+            h.module_morphism(
+                h._h_to_e_on_basis, codomain=self, triangular='upper'
+            ).register_as_coercion()
 
         @cached_method
         def _e_to_m_on_basis(self, A):
@@ -908,10 +944,11 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             m = self.realization_of().m()
             n = A.size()
             P = SetPartitions(n)
-            min_elt = P([[i] for i in range(1, n+1)])
+            min_elt = P([[i] for i in range(1, n + 1)])
             one = self.base_ring().one()
-            return m._from_dict({B: one for B in P if A.inf(B) == min_elt},
-                                remove_zeros=False)
+            return m._from_dict(
+                {B: one for B in P if A.inf(B) == min_elt}, remove_zeros=False
+            )
 
         @cached_method
         def _e_to_h_on_basis(self, A):
@@ -933,11 +970,17 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             h = self.realization_of().h()
-            sign = lambda B: (-1)**(B.size() - len(B))
-            coeff = lambda B: sign(B) * prod(factorial(sum( 1 for part in B if part.issubset(big) )) for big in A)
+            sign = lambda B: (-1) ** (B.size() - len(B))
+            coeff = lambda B: (
+                sign(B)
+                * prod(
+                    factorial(sum(1 for part in B if part.issubset(big))) for big in A
+                )
+            )
             R = self.base_ring()
-            return h._from_dict({B: R(coeff(B)) for B in A.refinements()},
-                                remove_zeros=False)
+            return h._from_dict(
+                {B: R(coeff(B)) for B in A.refinements()}, remove_zeros=False
+            )
 
         @cached_method
         def _e_to_p_on_basis(self, A):
@@ -959,10 +1002,13 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             p = self.realization_of().p()
-            coeff = lambda B: prod([(-1)**(i-1) * factorial(i-1) for i in B.shape()])
+            coeff = lambda B: prod(
+                [(-1) ** (i - 1) * factorial(i - 1) for i in B.shape()]
+            )
             R = self.base_ring()
-            return p._from_dict({B: R(coeff(B)) for B in A.refinements()},
-                                remove_zeros=False)
+            return p._from_dict(
+                {B: R(coeff(B)) for B in A.refinements()}, remove_zeros=False
+            )
 
         class Element(CombinatorialFreeModule.Element):
             """
@@ -1024,8 +1070,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 """
                 e = SymmetricFunctions(self.parent().base_ring()).e()
                 c = lambda la: prod(factorial(i) for i in la)
-                return e.sum_of_terms((i.shape(), coeff*c(i.shape()))
-                                      for (i, coeff) in self)
+                return e.sum_of_terms(
+                    (i.shape(), coeff * c(i.shape())) for (i, coeff) in self
+                )
 
     e = elementary
 
@@ -1051,14 +1098,23 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 sage: NCSym = SymmetricFunctionsNonCommutingVariables(QQ)
                 sage: TestSuite(NCSym.h()).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSym.base_ring(), SetPartitions(),
-                                             prefix='h', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSym.base_ring(),
+                SetPartitions(),
+                prefix='h',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             # Register coercions
             m = NCSym.m()
-            self.module_morphism(self._h_to_m_on_basis, codomain=m).register_as_coercion()
+            self.module_morphism(
+                self._h_to_m_on_basis, codomain=m
+            ).register_as_coercion()
             p = NCSym.p()
-            self.module_morphism(self._h_to_p_on_basis, codomain=p).register_as_coercion()
+            self.module_morphism(
+                self._h_to_p_on_basis, codomain=p
+            ).register_as_coercion()
             p.module_morphism(p._p_to_h_on_basis, codomain=self).register_as_coercion()
 
         @cached_method
@@ -1084,8 +1140,10 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             m = self.realization_of().m()
             coeff = lambda B: prod(factorial(i) for i in B.shape())
             R = self.base_ring()
-            return m._from_dict({P(B): R( coeff(A.inf(B)) )
-                                 for B in SetPartitions(A.size())}, remove_zeros=False)
+            return m._from_dict(
+                {P(B): R(coeff(A.inf(B))) for B in SetPartitions(A.size())},
+                remove_zeros=False,
+            )
 
         @cached_method
         def _h_to_e_on_basis(self, A):
@@ -1107,12 +1165,17 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             e = self.realization_of().e()
-            sign = lambda B: (-1)**(B.size() - len(B))
-            coeff = lambda B: (sign(B) * prod(factorial(sum( 1 for part in B if part.issubset(big) ))
-                                              for big in A))
+            sign = lambda B: (-1) ** (B.size() - len(B))
+            coeff = lambda B: (
+                sign(B)
+                * prod(
+                    factorial(sum(1 for part in B if part.issubset(big))) for big in A
+                )
+            )
             R = self.base_ring()
-            return e._from_dict({B: R(coeff(B)) for B in A.refinements()},
-                                remove_zeros=False)
+            return e._from_dict(
+                {B: R(coeff(B)) for B in A.refinements()}, remove_zeros=False
+            )
 
         @cached_method
         def _h_to_p_on_basis(self, A):
@@ -1134,10 +1197,13 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 True
             """
             p = self.realization_of().p()
-            coeff = lambda B: abs( prod([(-1)**(i-1) * factorial(i-1) for i in B.shape()]) )
+            coeff = lambda B: abs(
+                prod([(-1) ** (i - 1) * factorial(i - 1) for i in B.shape()])
+            )
             R = self.base_ring()
-            return p._from_dict({B: R(coeff(B)) for B in A.refinements()},
-                                remove_zeros=False)
+            return p._from_dict(
+                {B: R(coeff(B)) for B in A.refinements()}, remove_zeros=False
+            )
 
         class Element(CombinatorialFreeModule.Element):
             """
@@ -1199,8 +1265,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 """
                 h = SymmetricFunctions(self.parent().base_ring()).h()
                 c = lambda la: prod(factorial(i) for i in la)
-                return h.sum_of_terms((i.shape(), coeff*c(i.shape()))
-                                      for (i, coeff) in self)
+                return h.sum_of_terms(
+                    (i.shape(), coeff * c(i.shape())) for (i, coeff) in self
+                )
 
     h = homogeneous
 
@@ -1239,20 +1306,29 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 sage: NCSym = SymmetricFunctionsNonCommutingVariables(QQ)
                 sage: TestSuite(NCSym.p()).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSym.base_ring(), SetPartitions(),
-                                             prefix='p', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSym.base_ring(),
+                SetPartitions(),
+                prefix='p',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             # Register coercions
             m = NCSym.m()
-            self.module_morphism(self._p_to_m_on_basis, codomain=m,
-                                 unitriangular='lower').register_as_coercion()
-            m.module_morphism(m._m_to_p_on_basis, codomain=self,
-                              unitriangular='lower').register_as_coercion()
+            self.module_morphism(
+                self._p_to_m_on_basis, codomain=m, unitriangular='lower'
+            ).register_as_coercion()
+            m.module_morphism(
+                m._m_to_p_on_basis, codomain=self, unitriangular='lower'
+            ).register_as_coercion()
             x = NCSym.x()
-            self.module_morphism(self._p_to_x_on_basis, codomain=x,
-                                 unitriangular='upper').register_as_coercion()
-            x.module_morphism(x._x_to_p_on_basis, codomain=self,
-                              unitriangular='upper').register_as_coercion()
+            self.module_morphism(
+                self._p_to_x_on_basis, codomain=x, unitriangular='upper'
+            ).register_as_coercion()
+            x.module_morphism(
+                x._x_to_p_on_basis, codomain=self, unitriangular='upper'
+            ).register_as_coercion()
 
         @cached_method
         def _p_to_m_on_basis(self, A):
@@ -1298,10 +1374,12 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             e = self.realization_of().e()
             P_refine = Poset((A.refinements(), A.parent().lt))
-            c = prod((-1)**(i-1) * factorial(i-1) for i in A.shape())
+            c = prod((-1) ** (i - 1) * factorial(i - 1) for i in A.shape())
             R = self.base_ring()
-            return e._from_dict({B: R(P_refine.moebius_function(B, A) / ZZ(c))
-                                 for B in P_refine}, remove_zeros=False)
+            return e._from_dict(
+                {B: R(P_refine.moebius_function(B, A) / ZZ(c)) for B in P_refine},
+                remove_zeros=False,
+            )
 
         @cached_method
         def _p_to_h_on_basis(self, A):
@@ -1324,10 +1402,12 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             h = self.realization_of().h()
             P_refine = Poset((A.refinements(), A.parent().lt))
-            c = abs(prod((-1)**(i-1) * factorial(i-1) for i in A.shape()))
+            c = abs(prod((-1) ** (i - 1) * factorial(i - 1) for i in A.shape()))
             R = self.base_ring()
-            return h._from_dict({B: R(P_refine.moebius_function(B, A) / ZZ(c))
-                                 for B in P_refine}, remove_zeros=False)
+            return h._from_dict(
+                {B: R(P_refine.moebius_function(B, A) / ZZ(c)) for B in P_refine},
+                remove_zeros=False,
+            )
 
         @cached_method
         def _p_to_x_on_basis(self, A):
@@ -1380,7 +1460,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             P = SetPartitions()
             # Handle corner cases
             if not A:
-                return self.tensor_square().monomial(( P([]), P([]) ))
+                return self.tensor_square().monomial((P([]), P([])))
             if len(A) == 1:
                 return self.tensor_square().sum_of_monomials([(P([]), A), (A, P([]))])
 
@@ -1390,7 +1470,7 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             def to_basis(S):
                 if not S:
                     return P([])
-                sub_parts = [list(A[i-1]) for i in S] # -1 for indexing
+                sub_parts = [list(A[i - 1]) for i in S]  # -1 for indexing
                 mins = [min(p) for p in sub_parts]
                 over_max = max([max(p) for p in sub_parts]) + 1
                 ret = [[] for _ in repeat(None, len(S))]
@@ -1406,8 +1486,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                     else:
                         mins[i] = over_max
                 return P(ret)
-            L1 = [(to_basis(S), to_basis(C)) for S,C in L]
-            L2 = [(M, N) for N,M in L1]
+
+            L1 = [(to_basis(S), to_basis(C)) for S, C in L]
+            L2 = [(M, N) for N, M in L1]
             return self.tensor_square().sum_of_monomials(L1 + L2)
 
         def internal_coproduct_on_basis(self, A):
@@ -1496,8 +1577,11 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                             mins[i] = over_max
                     ret += temp
                 return P(ret)
-            return self.sum_of_terms( (A.ordered_set_partition_action(gamma), (-1)**len(gamma))
-                                      for gamma in OrderedSetPartitions(len(A)) )
+
+            return self.sum_of_terms(
+                (A.ordered_set_partition_action(gamma), (-1) ** len(gamma))
+                for gamma in OrderedSetPartitions(len(A))
+            )
 
         def primitive(self, A, i=1):
             r"""
@@ -1541,11 +1625,14 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             if not A:
                 return self.one()
-            A = SetPartitions()(A) # Make sure it's a set partition
+            A = SetPartitions()(A)  # Make sure it's a set partition
             if not A.is_atomic():
                 return self.zero()
-            return self.sum_of_terms( (A.ordered_set_partition_action(gamma), (-1)**(len(gamma)-1))
-                                      for gamma in OrderedSetPartitions(len(A)) if i in gamma[0] )
+            return self.sum_of_terms(
+                (A.ordered_set_partition_action(gamma), (-1) ** (len(gamma) - 1))
+                for gamma in OrderedSetPartitions(len(A))
+                if i in gamma[0]
+            )
 
         class Element(CombinatorialFreeModule.Element):
             """
@@ -1636,15 +1723,22 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 sage: NCSym = SymmetricFunctionsNonCommutingVariables(QQ)
                 sage: TestSuite(NCSym.cp()).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSym.base_ring(), SetPartitions(),
-                                             prefix='cp', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSym.base_ring(),
+                SetPartitions(),
+                prefix='cp',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             # Register coercions
             m = NCSym.m()
-            self.module_morphism(self._cp_to_m_on_basis, codomain=m,
-                                 unitriangular='lower').register_as_coercion()
-            m.module_morphism(m._m_to_cp_on_basis, codomain=self,
-                              unitriangular='lower').register_as_coercion()
+            self.module_morphism(
+                self._cp_to_m_on_basis, codomain=m, unitriangular='lower'
+            ).register_as_coercion()
+            m.module_morphism(
+                m._m_to_cp_on_basis, codomain=self, unitriangular='lower'
+            ).register_as_coercion()
 
         @cached_method
         def _cp_to_m_on_basis(self, A):
@@ -1667,8 +1761,9 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             m = self.realization_of().m()
             one = self.base_ring().one()
-            return m._from_dict({B: one for B in A.strict_coarsenings()},
-                                remove_zeros=False)
+            return m._from_dict(
+                {B: one for B in A.strict_coarsenings()}, remove_zeros=False
+            )
 
     cp = coarse_powersum
 
@@ -1709,9 +1804,14 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 sage: NCSym = SymmetricFunctionsNonCommutingVariables(QQ)
                 sage: TestSuite(NCSym.x()).run()
             """
-            CombinatorialFreeModule.__init__(self, NCSym.base_ring(), SetPartitions(),
-                                             prefix='x', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                NCSym.base_ring(),
+                SetPartitions(),
+                prefix='x',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
 
         @cached_method
         def _x_to_p_on_basis(self, A):
@@ -1732,17 +1832,18 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 ....:     for A in SetPartitions(i))
                 True
             """
+
             def lt(s, t):
                 if s == t:
                     return False
-                return all(len([1 for z in t if z.intersection(p)]) == 1
-                           for p in s)
+                return all(len([1 for z in t if z.intersection(p)]) == 1 for p in s)
 
             p = self.realization_of().p()
             P_refine = Poset((A.refinements(), lt))
             R = self.base_ring()
-            return p._from_dict({B: R(P_refine.moebius_function(B, A))
-                                 for B in P_refine})
+            return p._from_dict(
+                {B: R(P_refine.moebius_function(B, A)) for B in P_refine}
+            )
 
     x = x_basis
 
@@ -1809,13 +1910,22 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             R = NCSym.base_ring()
             self._q = R(q)
-            CombinatorialFreeModule.__init__(self, R, SetPartitions(),
-                                             prefix='rho', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                R,
+                SetPartitions(),
+                prefix='rho',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             # Register coercions
             m = NCSym.m()
-            self.module_morphism(self._rho_to_m_on_basis, codomain=m).register_as_coercion()
-            m.module_morphism(self._m_to_rho_on_basis, codomain=self).register_as_coercion()
+            self.module_morphism(
+                self._rho_to_m_on_basis, codomain=m
+            ).register_as_coercion()
+            m.module_morphism(
+                self._m_to_rho_on_basis, codomain=self
+            ).register_as_coercion()
 
         def q(self):
             """
@@ -1860,9 +1970,14 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             m = self.realization_of().m()
             arcs = set(A.arcs())
-            return m._from_dict({B: self._q**-nesting(set(B).difference(A), A)
-                                 for B in A.coarsenings() if arcs.issubset(B.arcs())},
-                                remove_zeros=False)
+            return m._from_dict(
+                {
+                    B: self._q ** -nesting(set(B).difference(A), A)
+                    for B in A.coarsenings()
+                    if arcs.issubset(B.arcs())
+                },
+                remove_zeros=False,
+            )
 
         @cached_method
         def _m_to_rho_on_basis(self, A):
@@ -1886,12 +2001,15 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
                 ....:     for A in SetPartitions(i))
                 True
             """
-            coeff = lambda A,B: ((-1)**len(set(B.arcs()).difference(A.arcs()))
-                                 / self._q**nesting(set(B).difference(A), B))
+            coeff = lambda A, B: (
+                (-1) ** len(set(B.arcs()).difference(A.arcs()))
+                / self._q ** nesting(set(B).difference(A), B)
+            )
             arcs = set(A.arcs())
-            return self._from_dict({B: coeff(A,B) for B in A.coarsenings()
-                                    if arcs.issubset(B.arcs())},
-                                   remove_zeros=False)
+            return self._from_dict(
+                {B: coeff(A, B) for B in A.coarsenings() if arcs.issubset(B.arcs())},
+                remove_zeros=False,
+            )
 
     rho = deformed_coarse_powersum
 
@@ -1951,13 +2069,22 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             """
             R = NCSym.base_ring()
             self._q = R(q)
-            CombinatorialFreeModule.__init__(self, R, SetPartitions(),
-                                             prefix='chi', bracket=False,
-                                             category=MultiplicativeNCSymBases(NCSym))
+            CombinatorialFreeModule.__init__(
+                self,
+                R,
+                SetPartitions(),
+                prefix='chi',
+                bracket=False,
+                category=MultiplicativeNCSymBases(NCSym),
+            )
             # Register coercions
             m = NCSym.m()
-            self.module_morphism(self._chi_to_m_on_basis, codomain=m).register_as_coercion()
-            m.module_morphism(self._m_to_chi_on_basis, codomain=self).register_as_coercion()
+            self.module_morphism(
+                self._chi_to_m_on_basis, codomain=m
+            ).register_as_coercion()
+            m.module_morphism(
+                self._m_to_chi_on_basis, codomain=self
+            ).register_as_coercion()
 
         def q(self):
             """
@@ -2006,14 +2133,18 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             ret = {}
             for B in SetPartitions(A.size()):
                 Barcs = B.arcs()
-                if any((a[0] == b[0] and b[1] < a[1])
-                       or (b[0] > a[0] and a[1] == b[1])
-                       for a in arcs for b in Barcs):
+                if any(
+                    (a[0] == b[0] and b[1] < a[1]) or (b[0] > a[0] and a[1] == b[1])
+                    for a in arcs
+                    for b in Barcs
+                ):
                     continue
-                ret[B] = ((-1)**len(arcs.intersection(Barcs))
-                          * (q - 1)**(len(arcs) - len(arcs.intersection(Barcs)))
-                          * q**(sum(a[1] - a[0] for a in arcs) - len(arcs))
-                          / q**nesting(B, A))
+                ret[B] = (
+                    (-1) ** len(arcs.intersection(Barcs))
+                    * (q - 1) ** (len(arcs) - len(arcs.intersection(Barcs)))
+                    * q ** (sum(a[1] - a[0] for a in arcs) - len(arcs))
+                    / q ** nesting(B, A)
+                )
             return m._from_dict(ret, remove_zeros=False)
 
         @cached_method
@@ -2070,6 +2201,6 @@ class SymmetricFunctionsNonCommutingVariables(UniqueRepresentation, Parent):
             lst = list(SetPartitions(n))
             m = self._graded_inverse_matrix(n)
             i = lst.index(A)
-            return self._from_dict({B: m[j,i] for j,B in enumerate(lst)})
+            return self._from_dict({B: m[j, i] for j, B in enumerate(lst)})
 
     chi = supercharacter

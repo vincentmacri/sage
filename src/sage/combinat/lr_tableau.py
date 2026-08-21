@@ -12,7 +12,7 @@ AUTHORS:
 - Maria Gillespie, Jake Levinson, Anne Schilling (2016): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2016 Maria Gillespie
 #                          Anne Schilling <anne at math.ucdavis.edu>
 #
@@ -26,7 +26,7 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  https://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from itertools import zip_longest, accumulate
 
@@ -53,6 +53,7 @@ class LittlewoodRichardsonTableau(SemistandardTableau):
         sage: LittlewoodRichardsonTableau([[1,1,3],[2,3],[4]], [[2,1],[2,1]])
         [[1, 1, 3], [2, 3], [4]]
     """
+
     @staticmethod
     def __classcall_private__(cls, t, weight):
         r"""
@@ -130,11 +131,13 @@ class LittlewoodRichardsonTableau(SemistandardTableau):
         """
         super().check()
         if not [i for a in self.parent()._weight for i in a] == self.weight():
-            raise ValueError("weight of the parent does not agree "
-                             "with the weight of the tableau")
+            raise ValueError(
+                "weight of the parent does not agree with the weight of the tableau"
+            )
         if not self.shape() == self.parent()._shape:
-            raise ValueError("shape of the parent does not agree "
-                             "with the shape of the tableau")
+            raise ValueError(
+                "shape of the parent does not agree with the shape of the tableau"
+            )
 
 
 class LittlewoodRichardsonTableaux(SemistandardTableaux):
@@ -157,6 +160,7 @@ class LittlewoodRichardsonTableaux(SemistandardTableaux):
         sage: LittlewoodRichardsonTableaux([3,2,1],[[2,1],[2,1]])
         Littlewood-Richardson Tableaux of shape [3, 2, 1] and weight ([2, 1], [2, 1])
     """
+
     @staticmethod
     def __classcall_private__(cls, shape, weight):
         r"""
@@ -203,7 +207,10 @@ class LittlewoodRichardsonTableaux(SemistandardTableaux):
             sage: LittlewoodRichardsonTableaux([3,2,1],[[2,1],[2,1]])
             Littlewood-Richardson Tableaux of shape [3, 2, 1] and weight ([2, 1], [2, 1])
         """
-        return "Littlewood-Richardson Tableaux of shape %s and weight %s" % (self._shape, self._weight)
+        return "Littlewood-Richardson Tableaux of shape %s and weight %s" % (
+            self._shape,
+            self._weight,
+        )
 
     def __iter__(self):
         r"""
@@ -214,12 +221,14 @@ class LittlewoodRichardsonTableaux(SemistandardTableaux):
             [[[1, 1, 3], [2, 3], [4]], [[1, 1, 3], [2, 4], [3]]]
         """
         from sage.libs.lrcalc.lrcalc import lrskew
+
         if not self._weight:
             yield self.element_class(self, [])
             return
 
-        for nu in Partitions(self._shape.size() - self._weight[-1].size(),
-                             outer=self._shape):
+        for nu in Partitions(
+            self._shape.size() - self._weight[-1].size(), outer=self._shape
+        ):
             for s in lrskew(self._shape, nu, weight=self._weight[-1]):
                 for t in LittlewoodRichardsonTableaux(nu, self._weight[:-1]):
                     shift = sum(a.length() for a in self._weight[:-1])
@@ -243,10 +252,12 @@ class LittlewoodRichardsonTableaux(SemistandardTableaux):
             sage: T in LR
             True
         """
-        return (SemistandardTableaux.__contains__(self, t)
-                and is_littlewood_richardson(t, self._heights))
+        return SemistandardTableaux.__contains__(self, t) and is_littlewood_richardson(
+            t, self._heights
+        )
 
     Element = LittlewoodRichardsonTableau
+
 
 #### common or global functions related to LR tableaux
 
@@ -277,6 +288,7 @@ def is_littlewood_richardson(t, heights):
         False
     """
     from sage.combinat.words.word import Word
+
     try:
         w = t.to_word()
     except AttributeError:  # Not an instance of Tableau
@@ -284,8 +296,10 @@ def is_littlewood_richardson(t, heights):
 
     partial = list(accumulate(heights, initial=0))
     for i in range(len(heights)):
-        subword = Word([j for j in w if partial[i]+1 <= j <= partial[i+1]],
-                       alphabet=list(range(partial[i]+1, partial[i+1]+1)))
+        subword = Word(
+            [j for j in w if partial[i] + 1 <= j <= partial[i + 1]],
+            alphabet=list(range(partial[i] + 1, partial[i + 1] + 1)),
+        )
         if not subword.is_yamanouchi():
             return False
     return True
@@ -306,5 +320,7 @@ def _tableau_join(t1, t2, shift=0):
         sage: _tableau_join([[1,2]],[[None,None,2],[3]],shift=5)
         [[1, 2, 7], [8]]
     """
-    return [list(row1) + [e2 + shift for e2 in row2 if e2 is not None]
-            for row1, row2 in zip_longest(t1, t2, fillvalue=[])]
+    return [
+        list(row1) + [e2 + shift for e2 in row2 if e2 is not None]
+        for row1, row2 in zip_longest(t1, t2, fillvalue=[])
+    ]

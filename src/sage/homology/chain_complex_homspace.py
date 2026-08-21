@@ -119,6 +119,7 @@ class ChainComplexHomspace(sage.categories.homset.Homset):
            to Chain complex with at most 5 nonzero terms over Integer Ring
            in Category of chain complexes over Integer Ring
     """
+
     def __call__(self, f):
         """
         `f` is a dictionary of matrices in the basis of the chain complex.

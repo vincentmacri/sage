@@ -59,9 +59,7 @@ def test_format_columns():
     ],
 )
 def test_command_line_args(monkeypatch, options, expected):
-    monkeypatch.setattr(
-        sys, 'argv', ['sage-docbuild', 'reference', 'html']
-    )
+    monkeypatch.setattr(sys, 'argv', ['sage-docbuild', 'reference', 'html'])
     monkeypatch.setenv('SAGE_DOCBUILD_OPTS', options)
     assert command_line_args() == expected
 
@@ -69,9 +67,7 @@ def test_command_line_args(monkeypatch, options, expected):
 def test_command_line_args_rejects_malformed_environment(monkeypatch):
     monkeypatch.setattr(sys, 'argv', ['sage-docbuild'])
     monkeypatch.setenv('SAGE_DOCBUILD_OPTS', "--source 'unterminated")
-    with pytest.raises(
-        SystemExit, match='error: could not parse SAGE_DOCBUILD_OPTS:'
-    ):
+    with pytest.raises(SystemExit, match='error: could not parse SAGE_DOCBUILD_OPTS:'):
         command_line_args()
 
 
@@ -131,14 +127,13 @@ def test_source_dir_for_help_honors_end_of_options(monkeypatch, tmp_path):
     source = tmp_path / 'default'
     source.mkdir()
     monkeypatch.setenv('SAGE_DOC_SRC', str(source))
-    assert source_dir_for_help(
-        ['-D', '--', '--source', str(tmp_path / 'missing')]
-    ) == source.absolute()
+    assert (
+        source_dir_for_help(['-D', '--', '--source', str(tmp_path / 'missing')])
+        == source.absolute()
+    )
 
 
-def test_source_dir_for_help_treats_negative_value_as_path(
-    monkeypatch, tmp_path
-):
+def test_source_dir_for_help_treats_negative_value_as_path(monkeypatch, tmp_path):
     source = tmp_path / '-3'
     source.mkdir()
     monkeypatch.chdir(tmp_path)
@@ -154,6 +149,7 @@ def test_single_file_builder_creates_default_output_root(monkeypatch, tmp_path):
     monkeypatch.setattr(sage.env, 'DOT_SAGE', str(dot_sage))
     monkeypatch.setattr(builders, 'DOT_SAGE', str(dot_sage), raising=False)
     from sage.env import DOT_SAGE as resolved
+
     assert resolved == str(dot_sage)
     options = BuildOptions(
         source_dir=tmp_path,
@@ -234,6 +230,7 @@ def test_needs_options_page_reads_files_instead_of_consulting_umask(
 # The lock around the generated options page only keeps parallel builds from
 # repeating the same atomic write, so no way of failing to hold it may fail a
 # build.  Each test below breaks one step and asks that the body still run.
+
 
 def _manifest(tmp_path):
     return tmp_path / 'sub' / 'sage-cli-options-manifest.json'

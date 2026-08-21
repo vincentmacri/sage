@@ -287,8 +287,9 @@ rpy2_feature = PythonModule('rpy2', spkg='rpy2', type='standard')
 
 lazy_import("rpy2", "robjects", feature=rpy2_feature)
 lazy_import("rpy2.robjects", "packages", "rpy2_packages", feature=rpy2_feature)
-lazy_import("rpy2.robjects.conversion", ["localconverter", "Converter"],
-            feature=rpy2_feature)
+lazy_import(
+    "rpy2.robjects.conversion", ["localconverter", "Converter"], feature=rpy2_feature
+)
 
 # for help page fetching
 lazy_import("rpy2.robjects.help", "Package", feature=rpy2_feature)
@@ -400,6 +401,7 @@ def _setup_r_to_sage_converter():
         # Preserve the behaviour of the old r parser, e.g. return 1 instead of 1.0
         float_or_int = int(f) if isinstance(f, int) or f.is_integer() else f
         return float_or_int
+
     rpy2py.register(float, float_to_int_if_possible)
 
     def list_to_singleton_if_possible(l):
@@ -424,15 +426,19 @@ def _setup_r_to_sage_converter():
             }
         # if no names are present, convert to a normal list or a single value
         return data
+
     rpy2py.register(SexpVector, _vector)
 
     def _matrix(mat):
         if 'dim' in mat.list_attrs():
             try:
                 from sage.matrix.constructor import matrix
+
                 dimensions = mat.do_slot("dim")
                 if len(dimensions) != 2:
-                    raise NotImplementedError("Higher-dimension matrices are currently not supported")
+                    raise NotImplementedError(
+                        "Higher-dimension matrices are currently not supported"
+                    )
                 (nrow, ncol) = dimensions
                 # Since R does it the other way round, we assign transposed and
                 # then transpose the matrix :)
@@ -442,6 +448,7 @@ def _setup_r_to_sage_converter():
                 pass
         else:
             return _vector(mat)
+
     rpy2py.register(FloatSexpVector, _matrix)
 
     def _list_vector(vec):
@@ -455,17 +462,14 @@ def _setup_r_to_sage_converter():
             # We don't give the rclass here because the old expect interface
             # didn't do that either and we want to maintain compatibility.
         }
+
     rpy2py.register(ListSexpVector, _list_vector)
 
     return cv
 
 
 class R(ExtraTabCompletion, Interface):
-    def __init__(self,
-                 maxread=None,
-                 logfile=None,
-                 init_list_length=1024,
-                 seed=None):
+    def __init__(self, maxread=None, logfile=None, init_list_length=1024, seed=None):
         """
         An interface to the R interpreter.
 
@@ -687,7 +691,10 @@ class R(ExtraTabCompletion, Interface):
             ...
             Please restart Sage in order to use 'aaMI'.
         """
-        cmd = """options(repos="%s"); install.packages("%s")""" % (RRepositoryURL, package_name)
+        cmd = """options(repos="%s"); install.packages("%s")""" % (
+            RRepositoryURL,
+            package_name,
+        )
         os.system("time echo '%s' | R --vanilla" % cmd)
         print("Please restart Sage in order to use '%s'." % package_name)
 
@@ -736,7 +743,11 @@ class R(ExtraTabCompletion, Interface):
         except AttributeError:
             # if there is no such attribute, get the r attribute
             if attrname[:1] == "_":
-                raise AttributeError("Attribute {} is not allowed to start with an underscore.".format(attrname))
+                raise AttributeError(
+                    "Attribute {} is not allowed to start with an underscore.".format(
+                        attrname
+                    )
+                )
             return RFunction(self, attrname)
 
     def _read_in_file_command(self, filename):
@@ -963,6 +974,7 @@ class R(ExtraTabCompletion, Interface):
     def _loaded_package_pages(self, topic):
         # for some reason `except` doesn't work with lazy import, so import this here
         from rpy2.robjects.help import HelpNotFoundError
+
         self._lazy_init()
         res = list()
 
@@ -1076,8 +1088,19 @@ class R(ExtraTabCompletion, Interface):
         """
         args, kwds = self._convert_args_kwds(args, kwds)
         self._check_valid_function_name(function)
-        return self.new("%s(%s)" % (function, ",".join([s.name() for s in args] +
-                                                       [self._sage_to_r_name(key) + '=' + kwds[key].name() for key in kwds])))
+        return self.new(
+            "%s(%s)"
+            % (
+                function,
+                ",".join(
+                    [s.name() for s in args]
+                    + [
+                        self._sage_to_r_name(key) + '=' + kwds[key].name()
+                        for key in kwds
+                    ]
+                ),
+            )
+        )
 
     def call(self, function_name, *args, **kwds):
         r"""
@@ -1171,7 +1194,7 @@ class R(ExtraTabCompletion, Interface):
             sage: 'testInheritedMethods' in r.completions('tes')
             True
         """
-        return [name for name in self._tab_completion() if name[:len(s)] == s]
+        return [name for name in self._tab_completion() if name[: len(s)] == s]
 
     def _commands(self):
         """
@@ -1240,6 +1263,7 @@ class R(ExtraTabCompletion, Interface):
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(COMMANDS_CACHE)
@@ -1366,6 +1390,7 @@ class R(ExtraTabCompletion, Interface):
             'class_'
         """
         from keyword import iskeyword
+
         s = s.replace('.', '_')
         s = s.replace('<-', '__')
         if iskeyword(s):
@@ -1444,7 +1469,6 @@ class R(ExtraTabCompletion, Interface):
 
 @instancedoc
 class RElement(ExtraTabCompletion, InterfaceElement):
-
     def _tab_completion(self):
         """
         Return a list of all methods of this object.
@@ -1537,7 +1561,11 @@ class RElement(ExtraTabCompletion, InterfaceElement):
         except AttributeError:
             self._check_valid()
             if attrname[:1] == "_":
-                raise AttributeError("Attribute {} is not allowed to start with an underscore.".format(attrname))
+                raise AttributeError(
+                    "Attribute {} is not allowed to start with an underscore.".format(
+                        attrname
+                    )
+                )
             return RFunctionElement(self, attrname)
 
     def __getitem__(self, n):
@@ -1830,13 +1858,16 @@ class RElement(ExtraTabCompletion, InterfaceElement):
             2
         """
         from sage.misc.latex import LatexExpr
+
         self._check_valid()
         P = self.parent()
         # latex is in Hmisc, this is currently not part of Sage's R!!!
         try:
             P.library('Hmisc')
         except ImportError:
-            raise RuntimeError("The R package 'Hmisc' is required for R to LaTeX conversion, but it is not available.")
+            raise RuntimeError(
+                "The R package 'Hmisc' is required for R to LaTeX conversion, but it is not available."
+            )
         return LatexExpr(P.eval('latex(%s, file="");' % self.name()))
 
 
@@ -1902,7 +1933,9 @@ class RFunctionElement(InterfaceFunctionElement):
             sage: length()
             [1] 3
         """
-        return self._obj.parent().function_call(self._name, args=[self._obj] + list(args), kwds=kwds)
+        return self._obj.parent().function_call(
+            self._name, args=[self._obj] + list(args), kwds=kwds
+        )
 
 
 @instancedoc
@@ -1940,8 +1973,7 @@ class RFunction(InterfaceFunction):
             sage: r.mean == r.lr
             False
         """
-        return (isinstance(other, RFunction) and
-            self._name == other._name)
+        return isinstance(other, RFunction) and self._name == other._name
 
     def __ne__(self, other):
         """
@@ -2030,8 +2062,11 @@ def r_console():
             ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%r magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%r magics instead.'
+        )
     # This will only spawn local processes
     os.system('R --vanilla')
 
@@ -2057,6 +2092,7 @@ class HelpExpression(str):
     """
     Used to improve printing of output of r.help.
     """
+
     def __repr__(self):
         r"""
         Return string representation of ``self``.

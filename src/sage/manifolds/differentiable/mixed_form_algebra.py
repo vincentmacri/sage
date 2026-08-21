@@ -19,14 +19,14 @@ AUTHORS:
 - Michael Jung (2019) : initial version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019-2021 Michael Jung <m.jung@vu.nl>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.chain_complexes import ChainComplexes
 from sage.categories.graded_algebras import GradedAlgebras
@@ -142,6 +142,7 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
         sage: OmegaU.has_coerce_map_from(Omega)
         True
     """
+
     Element = MixedForm
 
     def __init__(self, vector_field_module):
@@ -225,8 +226,9 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
         res = self.element_class(self, name=name, latex_name=latex_name)
         if isinstance(comp, (tuple, list)):
             if len(comp) != self._max_deg + 1:
-                raise IndexError("input list must have "
-                                 "length {}".format(self._max_deg + 1))
+                raise IndexError(
+                    "input list must have length {}".format(self._max_deg + 1)
+                )
             if isinstance(comp, tuple):
                 comp = list(comp)
             res[:] = comp[:]
@@ -238,8 +240,9 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
                     deg = d
                     break
             else:
-                raise TypeError("cannot convert {} into an element of "
-                                "the {}".format(comp, self))
+                raise TypeError(
+                    "cannot convert {} into an element of the {}".format(comp, self)
+                )
             # fill up with zeroes:
             res[:] = [0] * (self._max_deg + 1)
             # set comp where it belongs:
@@ -270,8 +273,10 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
         """
         res = self.element_class(self)
         dom = self._domain
-        res._comp = [dom.diff_form_module(j, self._dest_map)._an_element_()
-                     for j in self.irange()]
+        res._comp = [
+            dom.diff_form_module(j, self._dest_map)._an_element_()
+            for j in self.irange()
+        ]
         return res
 
     def _coerce_map_from_(self, S):
@@ -301,8 +306,9 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
         """
         if isinstance(S, type(self)):
             # coercion by domain restriction
-            if (self._domain.is_subset(S._domain) and
-                            self._ambient_domain.is_subset(S._ambient_domain)):
+            if self._domain.is_subset(S._domain) and self._ambient_domain.is_subset(
+                S._ambient_domain
+            ):
                 return True
             # Still, there could be a coerce map
             if self.irange() != S.irange():
@@ -317,8 +323,10 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
             return True
         # Let us check for each degree consecutively:
         dom = self._domain
-        return any(dom.diff_form_module(deg, self._dest_map).has_coerce_map_from(S)
-                   for deg in self.irange())
+        return any(
+            dom.diff_form_module(deg, self._dest_map).has_coerce_map_from(S)
+            for deg in self.irange()
+        )
 
     @cached_method
     def zero(self):
@@ -334,8 +342,10 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
              manifold M
         """
         res = self.element_class(self, name='zero', latex_name='0')
-        res._comp = [self._domain.diff_form_module(j, dest_map=self._dest_map).zero()
-                     for j in self.irange()]
+        res._comp = [
+            self._domain.diff_form_module(j, dest_map=self._dest_map).zero()
+            for j in self.irange()
+        ]
         res._is_zero = True  # This element is certainly zero
         res.set_immutable()
         return res
@@ -354,9 +364,13 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
              manifold M
         """
         res = self.element_class(self, name='one', latex_name='1')
-        res._comp = [self._domain.one_scalar_field(),
-                     *(self._domain.diff_form_module(j, dest_map=self._dest_map).zero()
-                       for j in self.irange(1))]
+        res._comp = [
+            self._domain.one_scalar_field(),
+            *(
+                self._domain.diff_form_module(j, dest_map=self._dest_map).zero()
+                for j in self.irange(1)
+            ),
+        ]
         res.set_immutable()
         return res
 
@@ -497,6 +511,7 @@ class MixedFormAlgebra(Parent, UniqueRepresentation):
         from sage.manifolds.differentiable.de_rham_cohomology import (
             DeRhamCohomologyRing,
         )
+
         return DeRhamCohomologyRing(self)
 
     homology = cohomology

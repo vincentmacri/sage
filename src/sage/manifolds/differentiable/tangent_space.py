@@ -14,7 +14,7 @@ REFERENCES:
 - Chap. 3 of [Lee2013]_
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #
@@ -22,7 +22,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -230,6 +230,7 @@ class TangentSpace(FiniteRankFreeModule):
         :class:`~sage.tensor.modules.finite_rank_free_module.FiniteRankFreeModule`
         for more documentation.
     """
+
     Element = TangentVector
 
     def __init__(self, point: ManifoldPoint, base_ring=None):
@@ -254,9 +255,14 @@ class TangentSpace(FiniteRankFreeModule):
         self._manif = manif
         if base_ring is None:
             base_ring = SR
-        FiniteRankFreeModule.__init__(self, base_ring, manif._dim, name=name,
-                                      latex_name=latex_name,
-                                      start_index=manif._sindex)
+        FiniteRankFreeModule.__init__(
+            self,
+            base_ring,
+            manif._dim,
+            name=name,
+            latex_name=latex_name,
+            start_index=manif._sindex,
+        )
         # Initialization of bases of the tangent space from existing vector
         # frames around the point:
 
@@ -269,12 +275,14 @@ class TangentSpace(FiniteRankFreeModule):
             if frame.destination_map().is_identity():
                 if point in frame._domain:
                     coframe = frame.coframe()
-                    basis = self.basis(frame._symbol,
-                                       latex_symbol=frame._latex_symbol,
-                                       indices=frame._indices,
-                                       latex_indices=frame._latex_indices,
-                                       symbol_dual=coframe._symbol,
-                                       latex_symbol_dual=coframe._latex_symbol)
+                    basis = self.basis(
+                        frame._symbol,
+                        latex_symbol=frame._latex_symbol,
+                        indices=frame._indices,
+                        latex_indices=frame._latex_indices,
+                        symbol_dual=coframe._symbol,
+                        latex_symbol_dual=coframe._latex_symbol,
+                    )
                     self._frame_bases[frame] = basis
         # The basis induced by the default frame of the manifold subset
         # in which the point has been created is declared the default
@@ -362,7 +370,7 @@ class TangentSpace(FiniteRankFreeModule):
         """
         resu = self.element_class(self)
         if self._def_basis is not None:
-            resu.set_comp()[:] = range(1, self._rank+1)
+            resu.set_comp()[:] = range(1, self._rank + 1)
         return resu
 
     def dimension(self):

@@ -13,7 +13,7 @@ TESTS::
     sage: TestSuite(k).run()
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #       Copyright (C) 2008 Martin Albrecht <malb@informatik.uni-bremen.de>
 #
@@ -22,10 +22,11 @@ TESTS::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************`
+# *****************************************************************************`
 
 from sage.rings.finite_rings.finite_field_base import FiniteField as FiniteField_generic
 from sage.categories.finite_fields import FiniteFields
+
 _FiniteFields = FiniteFields()
 
 from sage.rings.finite_rings import integer_mod_ring
@@ -38,7 +39,9 @@ from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.misc.persist import register_unpickle_override
 
 
-class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRing_generic):
+class FiniteField_prime_modn(
+    FiniteField_generic, integer_mod_ring.IntegerModRing_generic
+):
     r"""
     Finite field of order `p` where `p` is prime.
 
@@ -50,6 +53,7 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
         sage: FiniteField(next_prime(1000))                                             # needs sage.rings.finite_rings
         Finite Field of size 1009
     """
+
     def __init__(self, p, check=True, modulus=None):
         """
         Return a new finite field of order `p` where `p` is prime.
@@ -72,7 +76,9 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
         self.__char = p
         # FiniteField_generic does nothing more than IntegerModRing_generic, and
         # it saves a non trivial overhead
-        integer_mod_ring.IntegerModRing_generic.__init__(self, p, category=_FiniteFields)
+        integer_mod_ring.IntegerModRing_generic.__init__(
+            self, p, category=_FiniteFields
+        )
 
         # If modulus is None, it will be created on demand as x-1
         # by the modulus() method.
@@ -140,9 +146,10 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
             return integer_mod.Integer_to_IntegerMod(self)
         if isinstance(S, IntegerModRing_generic):
             from .residue_field import ResidueField_generic
-            if (S.characteristic() % self.characteristic() == 0 and
-                    (not isinstance(S, ResidueField_generic) or
-                     S.degree() == 1)):
+
+            if S.characteristic() % self.characteristic() == 0 and (
+                not isinstance(S, ResidueField_generic) or S.degree() == 1
+            ):
                 try:
                     return integer_mod.IntegerMod_to_IntegerMod(S, self)
                 except TypeError:
@@ -167,6 +174,7 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
               To:   Finite Field of size 3
         """
         from sage.rings.padics.padic_generic import pAdicGeneric, ResidueReductionMap
+
         if isinstance(R, pAdicGeneric) and R.residue_field() is self:
             return ResidueReductionMap._create_(R, self)
 
@@ -366,5 +374,7 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
 
 
 register_unpickle_override(
-    'sage.rings.finite_field_prime_modn', 'FiniteField_prime_modn',
-    FiniteField_prime_modn)
+    'sage.rings.finite_field_prime_modn',
+    'FiniteField_prime_modn',
+    FiniteField_prime_modn,
+)

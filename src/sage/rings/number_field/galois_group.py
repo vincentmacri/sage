@@ -109,7 +109,10 @@ class GaloisGroup_v2(GaloisGroup_perm):
         """
         if not number_field.is_absolute():
             # We eventually want to support relative Galois groups, which currently just create the Galois group of the absolute field
-            deprecation(28782, "Use .absolute_field().galois_group() if you want the Galois group of the absolute field")
+            deprecation(
+                28782,
+                "Use .absolute_field().galois_group() if you want the Galois group of the absolute field",
+            )
         if gc_numbering is None:
             gc_numbering = algorithm != 'magma'
         super().__init__(number_field, algorithm, names, gc_numbering)
@@ -218,7 +221,11 @@ class GaloisGroup_v2(GaloisGroup_perm):
         if K.absolute_degree() < 12 or algorithm != "pari":
             return self._pol_galgp(algorithm=algorithm).transitive_number()
         if self._gc_numbering:
-            G = self._field.galois_group(algorithm=self._default_algorithm, names=self._gc_names, gc_numbering=False)
+            G = self._field.galois_group(
+                algorithm=self._default_algorithm,
+                names=self._gc_names,
+                gc_numbering=False,
+            )
         else:
             G = self
         return ZZ(G.gap().TransitiveIdentification())
@@ -255,7 +262,8 @@ class GaloisGroup_v2(GaloisGroup_perm):
         """
         if self._field.absolute_degree() > 11:
             raise NotImplementedError(
-                "PARI only supports Galois group computations through degree 11")
+                "PARI only supports Galois group computations through degree 11"
+            )
         return self._pol_galgp(algorithm='pari').label()
 
     @cached_method
@@ -397,17 +405,23 @@ class GaloisGroup_v2(GaloisGroup_perm):
              (1,7,17,11,6)(2,8,5,9,18)(3,12,16,13,19)(4,14,20,15,10)]
         """
         if self._gc_numbering:
-            gens = [standardize_generator(x, as_cycles=True) for x in self._pari_data[6]]
+            gens = [
+                standardize_generator(x, as_cycles=True) for x in self._pari_data[6]
+            ]
             if not gens:
                 gens = [()]
             gens = [self.element_class(x, self, check=False) for x in gens]
             return sorted(set(gens))
-        G = self._field.galois_group(algorithm=self._default_algorithm, names=self._gc_names, gc_numbering=True)
+        G = self._field.galois_group(
+            algorithm=self._default_algorithm, names=self._gc_names, gc_numbering=True
+        )
         self._galois_closure = L = G._galois_closure
         gens = [g.as_hom() for g in G._gens]
         if gens:
             # We add None so that we're 1-indexed
-            roots = [None] + self._field.absolute_polynomial().roots(L, multiplicities=False)
+            roots = [None] + self._field.absolute_polynomial().roots(
+                L, multiplicities=False
+            )
             new_gens = []
             for g in gens:
                 seen = set()
@@ -464,7 +478,9 @@ class GaloisGroup_v2(GaloisGroup_perm):
         if x == 1:
             return self.identity()
 
-        if isinstance(x, NumberFieldHomomorphism_im_gens) and x.parent() == self.number_field().Hom(self.number_field()):
+        if isinstance(
+            x, NumberFieldHomomorphism_im_gens
+        ) and x.parent() == self.number_field().Hom(self.number_field()):
             l = [g for g in self if g.as_hom() == x]
             if len(l) != 1:
                 raise ArithmeticError
@@ -508,7 +524,12 @@ class GaloisGroup_v2(GaloisGroup_perm):
         d = K.absolute_degree()
         if d < 12:
             plabel = self.pari_label().split('=')[-1].strip()
-            tlabel = "%sT%s (%s) with order %s " % (d, self.transitive_number(), plabel, self.order())
+            tlabel = "%sT%s (%s) with order %s " % (
+                d,
+                self.transitive_number(),
+                plabel,
+                self.order(),
+            )
         else:
             tlabel = ""
         if d < 12 or self.is_galois():
@@ -773,8 +794,11 @@ class GaloisGroup_v2(GaloisGroup_perm):
         ramdata = self._ramgroups(P)
         n = len(ramdata)
         from sage.sets.set import Set
-        return Set([i - 1 for i in range(n - 1)
-                    if ramdata[i][1] != ramdata[i + 1][1]] + [n - 2])
+
+        return Set(
+            [i - 1 for i in range(n - 1) if ramdata[i][1] != ramdata[i + 1][1]]
+            + [n - 2]
+        )
 
     def artin_symbol(self, P):
         r"""
@@ -883,6 +907,7 @@ class GaloisGroup_subgroup(GaloisSubgroup_perm):
         sage: G.artin_symbol(P)
         ()
     """
+
     @lazy_attribute
     def _pari_data(self):
         """
@@ -973,7 +998,7 @@ class GaloisGroup_subgroup(GaloisSubgroup_perm):
         x = v[1]
         if polred is None:
             index = G.order() // self.order()
-            polred = (index <= 8)
+            polred = index <= 8
         if polred:
             f = x.minpoly()
             bitsize = ZZ(QQ(f[0]).numerator().nbits() + QQ(f[0]).denominator().nbits())
@@ -1012,6 +1037,7 @@ class GaloisGroupElement(PermutationGroupElement):
         sage: G[4](G[4](G[4](v)))
         1/18*y^4
     """
+
     @cached_method
     def as_hom(self):
         r"""

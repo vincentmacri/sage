@@ -16,6 +16,7 @@ REFERENCES:
 .. [Kauf1999] Louis H. Kauffman, *Virtual Knot Theory*, Europ. J. Combinatorics
    (1999) 20, 663-691 ; http://homepages.math.uic.edu/~kauffman/VKT.pdf
 """
+
 # ****************************************************************************
 #       Copyright (C) 2019 Frédéric Chapoton <fchapoton2@gmail.com>
 #
@@ -118,8 +119,8 @@ def recover_orientations(gauss):
     changed = list(gauss)
     for i in range(1, n + 1):
         id0 = changed.index(i)
-        start = changed[:id0 + 1]
-        after0 = changed[id0 + 1:]
+        start = changed[: id0 + 1]
+        after0 = changed[id0 + 1 :]
         id1 = after0.index(i)
         middle = list(reversed(after0[:id1]))
         end = after0[id1:]

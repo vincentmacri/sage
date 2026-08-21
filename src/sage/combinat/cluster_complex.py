@@ -107,8 +107,7 @@ class ClusterComplexFacet(SubwordComplexFacet):
             [1, 2]
         """
         W = self.parent().group()
-        return W.prod(W.reflections()[beta]
-                      for beta in reversed(self.upper_cluster()))
+        return W.prod(W.reflections()[beta] for beta in reversed(self.upper_cluster()))
 
 
 class ClusterComplex(SubwordComplex):
@@ -189,8 +188,7 @@ class ClusterComplex(SubwordComplex):
             True
         """
         if k not in NN:
-            raise ValueError("the additional parameter must be a "
-                             "nonnegative integer")
+            raise ValueError("the additional parameter must be a nonnegative integer")
 
         if W not in CoxeterGroups:
             W = CoxeterGroup(W)
@@ -204,9 +202,9 @@ class ClusterComplex(SubwordComplex):
             coxeter_element = coxeter_element.reduced_word()
         coxeter_element = tuple(coxeter_element)
 
-        return super(SubwordComplex, cls).__classcall__(cls, W=W, k=k,
-                                                        coxeter_element=coxeter_element,
-                                                        algorithm=algorithm)
+        return super(SubwordComplex, cls).__classcall__(
+            cls, W=W, k=k, coxeter_element=coxeter_element, algorithm=algorithm
+        )
 
     def __init__(self, W, k, coxeter_element, algorithm):
         """
@@ -272,9 +270,11 @@ class ClusterComplex(SubwordComplex):
             name = 'Cluster complex'
         else:
             name = 'Multi-cluster complex'
-        name += (' of type %s with %s vertices and %s facets'
-                 % (self.cartan_type(), len(self.vertices()),
-                    len(self._facets)))
+        name += ' of type %s with %s vertices and %s facets' % (
+            self.cartan_type(),
+            len(self.vertices()),
+            len(self._facets),
+        )
         return name
 
     def k(self):
@@ -298,8 +298,12 @@ class ClusterComplex(SubwordComplex):
             [[0, 2], [0, 3], [1, 3], [1, 4], [2, 4]]
         """
         from sage.combinat.combination import Combinations
-        return [X for X in Combinations(self.vertices(), self.k() + 1)
-                if not any(set(X).issubset(F) for F in self.facets())]
+
+        return [
+            X
+            for X in Combinations(self.vertices(), self.k() + 1)
+            if not any(set(X).issubset(F) for F in self.facets())
+        ]
 
     def cyclic_rotation(self):
         """
@@ -318,8 +322,9 @@ class ClusterComplex(SubwordComplex):
         S = W.simple_reflections()
         S_inv = {S[j]: j for j in W.index_set()}
         Q = Q + tuple(S_inv[w * S[k] * w] for k in Q)
-        D = {i: (Q[i + 1:].index(Q[i]) + i + 1) % l for i in range(l)}
+        D = {i: (Q[i + 1 :].index(Q[i]) + i + 1) % l for i in range(l)}
 
         def act(F):
             return self.parent().element_class(sorted([D[i] for i in F]))
+
         return act

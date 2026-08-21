@@ -53,7 +53,6 @@ from sage.structure.sage_object import SageObject
 
 
 class BackendBase(SageObject):
-
     def _repr_(self):
         """
         Return string representation of the backend.
@@ -94,6 +93,7 @@ class BackendBase(SageObject):
             The Sage display manager using the doctest backend
         """
         from sage.repl.rich_output import get_display_manager
+
         return get_display_manager()
 
     def install(self, **kwds):
@@ -156,6 +156,7 @@ class BackendBase(SageObject):
             * text is not specified
         """
         from sage.repl.rich_output.preferences import DisplayPreferences
+
         return DisplayPreferences()
 
     def supported_output(self):
@@ -257,8 +258,7 @@ class BackendBase(SageObject):
             '1/2'
         """
         stream = StringIO()
-        printer = pretty_printer_class(
-            stream, self.max_width(), self.newline())
+        printer = pretty_printer_class(stream, self.max_width(), self.newline())
         printer.pretty(obj)
         printer.flush()
         return stream.getvalue()
@@ -310,12 +310,15 @@ class BackendBase(SageObject):
             '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19'
         """
         from sage.repl.display.pretty_print import SagePrettyPrinter
+
         if kwds.get('concatenate', False):
             plain_text = ' '.join(
-                self._apply_pretty_printer(SagePrettyPrinter, o) for o in obj)
+                self._apply_pretty_printer(SagePrettyPrinter, o) for o in obj
+            )
         else:
             plain_text = self._apply_pretty_printer(SagePrettyPrinter, obj)
         from sage.repl.rich_output.output_basic import OutputPlainText
+
         return OutputPlainText(plain_text)
 
     def ascii_art_formatter(self, obj, **kwds):
@@ -359,11 +362,13 @@ class BackendBase(SageObject):
             '1 2 3'
         """
         from sage.typeset.ascii_art import ascii_art
+
         if kwds.get('concatenate', False):
             result = ascii_art(*obj, sep=' ')
         else:
             result = ascii_art(obj)
         from sage.repl.rich_output.output_basic import OutputAsciiArt
+
         return OutputAsciiArt(str(result))
 
     def unicode_art_formatter(self, obj, **kwds):
@@ -408,11 +413,13 @@ class BackendBase(SageObject):
             '1 2 3'
         """
         from sage.typeset.unicode_art import unicode_art
+
         if kwds.get('concatenate', False):
             result = unicode_art(*obj, sep=' ')
         else:
             result = unicode_art(obj)
         from sage.repl.rich_output.output_basic import OutputUnicodeArt
+
         return OutputUnicodeArt(str(result))
 
     def latex_formatter(self, obj, **kwds):
@@ -465,6 +472,7 @@ class BackendBase(SageObject):
         concatenate = kwds.get('concatenate', False)
         from sage.misc.html import html
         from sage.repl.rich_output.output_browser import OutputHtml
+
         return OutputHtml(html(obj, concatenate=concatenate, strict=True))
 
     def set_underscore_variable(self, obj):
@@ -622,6 +630,7 @@ class BackendSimple(BackendBase):
             {<class 'sage.repl.rich_output.output_basic.OutputPlainText'>}
         """
         from sage.repl.rich_output.output_basic import OutputPlainText
+
         return set([OutputPlainText])
 
     def display_immediately(self, plain_text, rich_output):

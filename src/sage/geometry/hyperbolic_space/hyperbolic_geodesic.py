@@ -103,8 +103,7 @@ lazy_import("sage.plot.arc", "arc")
 lazy_import("sage.plot.line", "line")
 lazy_import("sage.plot.arc", "arc")
 lazy_import("sage.plot.bezier_path", "bezier_path")
-lazy_import('sage.geometry.hyperbolic_space.hyperbolic_isometry',
-            'moebius_transform')
+lazy_import('sage.geometry.hyperbolic_space.hyperbolic_isometry', 'moebius_transform')
 
 
 class HyperbolicGeodesic(SageObject):
@@ -189,7 +188,7 @@ class HyperbolicGeodesic(SageObject):
         """
 
         if self._model.is_bounded():
-            return (self._start.is_boundary() and self._end.is_boundary())
+            return self._start.is_boundary() and self._end.is_boundary()
         return False  # All non-bounded geodesics start life incomplete.
 
     def _repr_(self):
@@ -216,9 +215,9 @@ class HyperbolicGeodesic(SageObject):
         """
 
         msg = "Geodesic in {0} from {1} to {2}"
-        return msg.format(self._model.short_name(),
-                          self._start.coordinates(),
-                          self._end.coordinates())
+        return msg.format(
+            self._model.short_name(), self._start.coordinates(), self._end.coordinates()
+        )
 
     def __eq__(self, other):
         r"""
@@ -235,9 +234,11 @@ class HyperbolicGeodesic(SageObject):
         """
         if not isinstance(other, HyperbolicGeodesic):
             return False
-        return (self._model is other._model and
-                self._start == other._start and
-                self._end == other._end)
+        return (
+            self._model is other._model
+            and self._start == other._start
+            and self._end == other._end
+        )
 
     def __ne__(self, other):
         """
@@ -486,8 +487,11 @@ class HyperbolicGeodesic(SageObject):
 
         p1, p2 = self.complete().endpoints()
         q1, q2 = other.complete().endpoints()
-        return ((self != other) and ((p1 in [q1, q2]) or (p2 in [q1, q2])) and
-                self.model() is other.model())
+        return (
+            (self != other)
+            and ((p1 in [q1, q2]) or (p2 in [q1, q2]))
+            and self.model() is other.model()
+        )
 
     def is_ultra_parallel(self, other):
         r"""
@@ -632,13 +636,13 @@ class HyperbolicGeodesic(SageObject):
         """
 
         if not self._model.is_bounded():
-            errtxt = "boundary points are not implemented in the " + \
-                     "{0} model".format(self._model.short_name())
+            errtxt = "boundary points are not implemented in the " + "{0} model".format(
+                self._model.short_name()
+            )
             raise NotImplementedError(errtxt)
         if self.is_complete():
             return self.endpoints()
-        return [self._model(k)
-                for k in self._cached_geodesic.ideal_endpoints()]
+        return [self._model(k) for k in self._cached_geodesic.ideal_endpoints()]
 
     def complete(self):
         r"""
@@ -735,6 +739,7 @@ class HyperbolicGeodesic(SageObject):
             return self._model.get_geodesic(*self.ideal_endpoints())
 
         from copy import copy
+
         g = copy(self)
         g._complete = True
         return g
@@ -835,8 +840,7 @@ class HyperbolicGeodesic(SageObject):
         """
 
         if not self.is_parallel(other):
-            raise ValueError('geodesics intersect; ' +
-                             'no common perpendicular exists')
+            raise ValueError('geodesics intersect; ' + 'no common perpendicular exists')
         cp = self._cached_geodesic.common_perpendicular(other)
         return cp.to_model(self._model)
 
@@ -1018,8 +1022,10 @@ class HyperbolicGeodesic(SageObject):
             arccosh(9/4)
         """
 
-        return self._model._dist_points(self._start.coordinates(),
-                                        self._end.coordinates())
+        return self._model._dist_points(
+            self._start.coordinates(), self._end.coordinates()
+        )
+
 
 # ***********************************************************************
 #                       UHP geodesics
@@ -1076,11 +1082,16 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         """
         x, y = (real(k.coordinates()) for k in self.ideal_endpoints())
         if x == infinity:
-            M = matrix([[1, -2*y], [0, -1]])
+            M = matrix([[1, -2 * y], [0, -1]])
         elif y == infinity:
-            M = matrix([[1, -2*x], [0, -1]])
+            M = matrix([[1, -2 * x], [0, -1]])
         else:
-            M = matrix([[(x+y)/(y-x), -2*x*y/(y-x)], [2/(y-x), -(x+y)/(y-x)]])
+            M = matrix(
+                [
+                    [(x + y) / (y - x), -2 * x * y / (y - x)],
+                    [2 / (y - x), -(x + y) / (y - x)],
+                ]
+            )
         return self._model.get_isometry(M)
 
     def plot(self, boundary=True, **options):
@@ -1153,8 +1164,10 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         opts.update(options)
         end_1, end_2 = (CC(k.coordinates()) for k in self.endpoints())
         bd_1, bd_2 = (CC(k.coordinates()) for k in self.ideal_endpoints())
-        if (abs(real(end_1) - real(end_2)) < EPSILON) \
-                or CC(infinity) in [end_1, end_2]:  # on same vertical line
+        if (abs(real(end_1) - real(end_2)) < EPSILON) or CC(infinity) in [
+            end_1,
+            end_2,
+        ]:  # on same vertical line
             # If one of the endpoints is infinity, we replace it with a
             # large finite  point
             if end_1 == CC(infinity):
@@ -1179,18 +1192,16 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         theta2 = CC(end_2 - center).arg()
         if abs(theta1 - theta2) < EPSILON:
             theta2 += pi
-        pic = arc((real(center), imag(center)), radius,
-                  sector=(theta1, theta2), **opts)
+        pic = arc((real(center), imag(center)), radius, sector=(theta1, theta2), **opts)
         if boundary:
             # We want to draw a segment of the real line.  The
             # computations below compute the projection of the
             # geodesic to the real line, and then draw a little
             # to the left and right of the projection.
             shadow_1, shadow_2 = (real(k) for k in [end_1, end_2])
-            midpoint = (shadow_1 + shadow_2)/2
+            midpoint = (shadow_1 + shadow_2) / 2
             length = abs(shadow_1 - shadow_2)
-            bd_dict = {'bd_min': midpoint - length, 'bd_max': midpoint +
-                       length}
+            bd_dict = {'bd_min': midpoint - length, 'bd_max': midpoint + length}
             bd_pic = self._model.get_background_graphic(**bd_dict)
             pic += bd_pic
         return pic
@@ -1239,8 +1250,8 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         if abs(x1 - x2) < EPSILON:
             return [M.get_point(x1), M.get_point(infinity)]
         # Otherwise, we have a semicircular arc in the UHP
-        c = ((x1+x2)*(x2-x1) + (y1+y2)*(y2-y1)) / (2*(x2-x1))
-        r = sqrt((c - x1)**2 + y1**2)
+        c = ((x1 + x2) * (x2 - x1) + (y1 + y2) * (y2 - y1)) / (2 * (x2 - x1))
+        r = sqrt((c - x1) ** 2 + y1**2)
         return [M.get_point(c - r), M.get_point(c + r)]
 
     def common_perpendicular(self, other):
@@ -1290,8 +1301,7 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         B = other.reflection_involution()
         C = A * B
         if C.classification() != 'hyperbolic':
-            raise ValueError("geodesics intersect; " +
-                             "no common perpendicular exists")
+            raise ValueError("geodesics intersect; " + "no common perpendicular exists")
         return C.fixed_point_set()
 
     def intersection(self, other):
@@ -1506,7 +1516,10 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         if end_1 == start_2:
             return [UHP().get_point(end_1)]
         P = CC(C.fixed_point_set()[0].coordinates())
-        if start_1.real() <= P.real() <= end_1.real() and start_2.real() <= P.real() <= end_2.real():
+        if (
+            start_1.real() <= P.real() <= end_1.real()
+            and start_2.real() <= P.real() <= end_2.real()
+        ):
             return C.fixed_point_set()
         return []
 
@@ -1567,13 +1580,13 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         end = self._end.coordinates()
         # The complete geodesic p1 -> p2 always returns p1 < p2,
         #   so we might need to swap start and end
-        if ((real(start - end) > EPSILON) or
-            (abs(real(start - end)) < EPSILON and
-                imag(start - end) > 0)):
+        if (real(start - end) > EPSILON) or (
+            abs(real(start - end)) < EPSILON and imag(start - end) > 0
+        ):
             start, end = end, start
         S = self.complete()._to_std_geod(start)
         d = self._model._dist_points(start, end) / 2
-        T1 = matrix([[exp(d/2), 0], [0, exp(-d/2)]])
+        T1 = matrix([[exp(d / 2), 0], [0, exp(-d / 2)]])
         s2 = sqrt(2) / 2
         T2 = matrix([[s2, -s2], [s2, s2]])
         isom_mtrx = S.inverse() * (T1 * T2) * S
@@ -1640,6 +1653,7 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
             True
         """
         from sage.matrix.matrix_symbolic_dense import Matrix_symbolic_dense
+
         if self.length() == infinity:
             raise ValueError("the length must be finite")
 
@@ -1648,9 +1662,9 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         d = self._model._dist_points(start, end) / 2
         # The complete geodesic p1 -> p2 always returns p1 < p2,
         #   so we might need to swap start and end
-        if ((real(start - end) > EPSILON) or
-            (abs(real(start - end)) < EPSILON and
-                imag(start - end) > 0)):
+        if (real(start - end) > EPSILON) or (
+            abs(real(start - end)) < EPSILON and imag(start - end) > 0
+        ):
             start, end = end, start
         S = self.complete()._to_std_geod(start)
 
@@ -1895,8 +1909,8 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
 
         # Check if the geodesics are approximately equal. This must be
         # done to prevent addition of ``infinity`` and ``-infinity``.
-        v = (abs(p1 - q1) < EPSILON and abs(p2 - q2) < EPSILON)
-        w = (abs(p1 - q2) < EPSILON and abs(p2 - q1) < EPSILON)
+        v = abs(p1 - q1) < EPSILON and abs(p2 - q2) < EPSILON
+        w = abs(p1 - q2) < EPSILON and abs(p2 - q1) < EPSILON
         if v or w:
             return 0
 
@@ -1992,17 +2006,17 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
         if isinstance(a, (int, float, complex)):  # Python number
             a = CDF(a)
 
-        if isinstance(a, Expression):           # symbolic
+        if isinstance(a, Expression):  # symbolic
             P = SR
             zero = SR.zero()
             one = SR.one()
             I = SR("I")
-        elif isinstance(a, Element):            # Sage number
+        elif isinstance(a, Element):  # Sage number
             P = a.parent()
             zero = P.zero()
             one = P.one()
             I = P.gen()
-            if I.is_one() or (I*I).is_one() or not (-I*I).is_one():
+            if I.is_one() or (I * I).is_one() or not (-I * I).is_one():
                 raise ValueError("invalid number")
         else:
             raise ValueError("not a complex number")
@@ -2100,8 +2114,8 @@ class HyperbolicGeodesicUHP(HyperbolicGeodesic):
             return matrix([[1, -p0], [1, -p2]])
         if p2 == infinity:
             return matrix([[1, -p0], [0, p1 - p0]])
-        return matrix([[p1 - p2, (p1 - p2)*(-p0)],
-                       [p1 - p0, (p1 - p0)*(-p2)]])
+        return matrix([[p1 - p2, (p1 - p2) * (-p0)], [p1 - p0, (p1 - p0) * (-p2)]])
+
 
 # ***********************************************************************
 #                       Other geodesics
@@ -2195,11 +2209,13 @@ class HyperbolicGeodesicPD(HyperbolicGeodesic):
         bd_1, bd_2 = (CC(k.coordinates()) for k in self.ideal_endpoints())
         # Check to see if it's a line
         if abs(bd_1 + bd_2) < EPSILON:
-            pic = bezier_path([[(real(end_1), imag(end_1)), (real(end_2), imag(end_2))]], **opts)
+            pic = bezier_path(
+                [[(real(end_1), imag(end_1)), (real(end_2), imag(end_2))]], **opts
+            )
         else:
             # If we are here, we know it's not a line
             # So we compute the center and radius of the circle
-            invdet = RR.one() / (real(bd_1)*imag(bd_2) - real(bd_2)*imag(bd_1))
+            invdet = RR.one() / (real(bd_1) * imag(bd_2) - real(bd_2) * imag(bd_1))
             centerx = (imag(bd_2) - imag(bd_1)) * invdet
             centery = (real(bd_1) - real(bd_2)) * invdet
             center = centerx + I * centery
@@ -2211,8 +2227,7 @@ class HyperbolicGeodesicPD(HyperbolicGeodesic):
             # Make sure the sector is inside the disk
             if theta2 - theta1 > pi:
                 theta1 += 2 * pi
-            pic = arc((centerx, centery), radius,
-                      sector=(theta1, theta2), **opts)
+            pic = arc((centerx, centery), radius, sector=(theta1, theta2), **opts)
         if boundary:
             pic += self._model.get_background_graphic()
         return pic
@@ -2273,9 +2288,11 @@ class HyperbolicGeodesicKM(HyperbolicGeodesic):
             if pt in CC:
                 return CC(pt)
             return CC(*pt)
+
         end_1, end_2 = (map_pt(k.coordinates()) for k in self.endpoints())
-        pic = bezier_path([[(real(end_1), imag(end_1)),
-                            (real(end_2), imag(end_2))]], **opts)
+        pic = bezier_path(
+            [[(real(end_1), imag(end_1)), (real(end_2), imag(end_2))]], **opts
+        )
         if boundary:
             pic += self._model.get_background_graphic()
         return pic
@@ -2311,6 +2328,7 @@ class HyperbolicGeodesicHM(HyperbolicGeodesic):
         g = HM.get_geodesic(p1, p2)
         sphinx_plot(g.plot(color='blue'))
     """
+
     def _plot_vertices(self, points=75):
         r"""
         Return ``self`` plotting vertices in `\RR^3`.
@@ -2340,15 +2358,15 @@ class HyperbolicGeodesicHM(HyperbolicGeodesic):
         # v1 = u1, and I don't want to declare another variable,
         # hence the odd naming convention above.
         # We need the Lorentz dot product of v1 and u2.
-        v1_ldot_u2 = u2[0]*v1[0] + u2[1]*v1[1] - u2[2]*v1[2]
+        v1_ldot_u2 = u2[0] * v1[0] + u2[1] * v1[1] - u2[2] * v1[2]
         v2 = u2 + v1_ldot_u2 * v1
-        v2_norm = sqrt(v2[0]**2 + v2[1]**2 - v2[2]**2)
+        v2_norm = sqrt(v2[0] ** 2 + v2[1] ** 2 - v2[2] ** 2)
         v2 = v2 / v2_norm
-        v2_ldot_u2 = u2[0]*v2[0] + u2[1]*v2[1] - u2[2]*v2[2]
+        v2_ldot_u2 = u2[0] * v2[0] + u2[1] * v2[1] - u2[2] * v2[2]
         # Now v1 and v2 are Lorentz orthogonal, and |v1| = -1, |v2|=1
         # That is, v1 is unit timelike and v2 is unit spacelike.
         # This means that cosh(x)*v1 + sinh(x)*v2 is unit timelike.
-        hyperbola = tuple(cosh(x)*v1 + sinh(x)*v2)
+        hyperbola = tuple(cosh(x) * v1 + sinh(x) * v2)
         endtime = arcsinh(v2_ldot_u2)
         # mimic the function _parametric_plot3d_curve using a bezier3d
         # instead of a line3d
@@ -2356,8 +2374,9 @@ class HyperbolicGeodesicHM(HyperbolicGeodesic):
         # polygons within the plot library
         g, ranges = setup_for_eval_on_grid(hyperbola, [(x, 0, endtime)], points)
         f_x, f_y, f_z = g
-        return [(f_x(u), f_y(u), f_z(u))
-                for u in xsrange(*ranges[0], include_endpoint=True)]
+        return [
+            (f_x(u), f_y(u), f_z(u)) for u in xsrange(*ranges[0], include_endpoint=True)
+        ]
 
     def plot(self, show_hyperboloid=True, **graphics_options):
         r"""
@@ -2385,17 +2404,18 @@ class HyperbolicGeodesicHM(HyperbolicGeodesic):
         # v1 = u1, and I don't want to declare another variable,
         # hence the odd naming convention above.
         # We need the Lorentz dot product of v1 and u2.
-        v1_ldot_u2 = u2[0]*v1[0] + u2[1]*v1[1] - u2[2]*v1[2]
+        v1_ldot_u2 = u2[0] * v1[0] + u2[1] * v1[1] - u2[2] * v1[2]
         v2 = u2 + v1_ldot_u2 * v1
-        v2_norm = sqrt(v2[0]**2 + v2[1]**2 - v2[2]**2)
+        v2_norm = sqrt(v2[0] ** 2 + v2[1] ** 2 - v2[2] ** 2)
         v2 = v2 / v2_norm
-        v2_ldot_u2 = u2[0]*v2[0] + u2[1]*v2[1] - u2[2]*v2[2]
+        v2_ldot_u2 = u2[0] * v2[0] + u2[1] * v2[1] - u2[2] * v2[2]
         # Now v1 and v2 are Lorentz orthogonal, and |v1| = -1, |v2|=1
         # That is, v1 is unit timelike and v2 is unit spacelike.
         # This means that cosh(x)*v1 + sinh(x)*v2 is unit timelike.
-        hyperbola = cosh(x)*v1 + sinh(x)*v2
+        hyperbola = cosh(x) * v1 + sinh(x) * v2
         endtime = arcsinh(v2_ldot_u2)
         from sage.plot.plot3d.all import parametric_plot3d
+
         pic = parametric_plot3d(hyperbola, (x, 0, endtime), **graphics_options)
         if show_hyperboloid:
             pic += self._model.get_background_graphic()

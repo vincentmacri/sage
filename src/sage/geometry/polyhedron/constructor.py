@@ -302,10 +302,19 @@ from .misc import _make_listlist, _common_length_of
 
 
 #########################################################################
-def Polyhedron(vertices=None, rays=None, lines=None,
-               ieqs=None, eqns=None,
-               ambient_dim=None, base_ring=None, minimize=True, verbose=False,
-               backend=None, mutable=False):
+def Polyhedron(
+    vertices=None,
+    rays=None,
+    lines=None,
+    ieqs=None,
+    eqns=None,
+    ambient_dim=None,
+    base_ring=None,
+    minimize=True,
+    verbose=False,
+    backend=None,
+    mutable=False,
+):
     r"""
     Construct a polyhedron object.
 
@@ -637,7 +646,9 @@ def Polyhedron(vertices=None, rays=None, lines=None,
             pass
     if constructor:
         if not all(x is None for x in (rays, lines, ieqs, eqns, ambient_dim)):
-            raise ValueError('if a polyhedron is given, cannot provide H- and V-representations objects')
+            raise ValueError(
+                'if a polyhedron is given, cannot provide H- and V-representations objects'
+            )
         # Only pass non-default arguments
         kwds = {}
         if base_ring is not None:
@@ -690,7 +701,9 @@ def Polyhedron(vertices=None, rays=None, lines=None,
 
     # set ambient_dim
     if ambient_dim is not None and deduced_ambient_dim != ambient_dim:
-        raise ValueError('ambient space dimension mismatch. Try removing the "ambient_dim" parameter.')
+        raise ValueError(
+            'ambient space dimension mismatch. Try removing the "ambient_dim" parameter.'
+        )
     ambient_dim = deduced_ambient_dim
 
     # figure out base_ring
@@ -709,12 +722,14 @@ def Polyhedron(vertices=None, rays=None, lines=None,
         P = parent(values[0])
         if any(parent(x) is not P for x in values):
             from sage.structure.sequence import Sequence
+
             P = Sequence(values).universe()
             convert = True
         else:
             convert = False
 
         from sage.structure.coerce import py_scalar_parent
+
         if isinstance(P, type):
             base_ring = py_scalar_parent(P)
             convert = convert or P is not base_ring
@@ -723,8 +738,7 @@ def Polyhedron(vertices=None, rays=None, lines=None,
 
         if base_ring not in Fields():
             got_compact_Vrep = got_Vrep and not rays and not lines
-            got_cone_Vrep = got_Vrep and all(x == 0
-                                             for v in vertices for x in v)
+            got_cone_Vrep = got_Vrep and all(x == 0 for v in vertices for x in v)
             if not got_compact_Vrep and not got_cone_Vrep:
                 base_ring = base_ring.fraction_field()
                 convert = True
@@ -750,7 +764,9 @@ def Polyhedron(vertices=None, rays=None, lines=None,
                 base_ring = RDF
                 convert = True
             elif base_ring is not RDF:
-                raise ValueError("the only allowed inexact ring is 'RDF' with backend 'cdd'")
+                raise ValueError(
+                    "the only allowed inexact ring is 'RDF' with backend 'cdd'"
+                )
 
     # Add the origin if necessary
     if got_Vrep and len(vertices) == 0 and bool(rays + lines):
@@ -758,6 +774,7 @@ def Polyhedron(vertices=None, rays=None, lines=None,
 
     # Specific backends can override the base_ring
     from sage.geometry.polyhedron.parent import Polyhedra
+
     parent = Polyhedra(base_ring, ambient_dim, backend=backend)
     base_ring = parent.base_ring()
 

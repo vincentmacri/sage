@@ -66,17 +66,22 @@ class BraidMoveCalculator:
         current_first_letter = k
         output_word_list = [current_last_word]
         for counter in range(1, coxeter_matrix_entry):
-            current_word_list = self.put_in_front(current_first_letter, current_last_word[1:])
-            output_word_list += [partial_braid_word(counter) + word
-                                 for word in current_word_list[1:]]
+            current_word_list = self.put_in_front(
+                current_first_letter, current_last_word[1:]
+            )
+            output_word_list += [
+                partial_braid_word(counter) + word for word in current_word_list[1:]
+            ]
             if current_first_letter == k:
                 current_first_letter = i
             else:
                 current_first_letter = k
             current_last_word = current_word_list[-1]
         if i != k:
-            output_word_list += [partial_braid_word(coxeter_matrix_entry, swap=True) +
-                                 current_last_word[1:]]
+            output_word_list += [
+                partial_braid_word(coxeter_matrix_entry, swap=True)
+                + current_last_word[1:]
+            ]
         return tuple(output_word_list)
 
     def put_in_front(self, k, input_word):
@@ -136,7 +141,11 @@ class BraidMoveCalculator:
         k = end_word[0]
         first_word_list = self.put_in_front(k, start_word)
         first_last_word = first_word_list[-1]
-        return (first_word_list[:-1] +
-                tuple([(k,) + word for word in
-                       self.chain_of_reduced_words(first_last_word[1:],
-                                                   end_word[1:])]))
+        return first_word_list[:-1] + tuple(
+            [
+                (k,) + word
+                for word in self.chain_of_reduced_words(
+                    first_last_word[1:], end_word[1:]
+                )
+            ]
+        )

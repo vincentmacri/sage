@@ -253,6 +253,7 @@ def construct_from_dim_degree(dim, max_degree, base_ring, check):
         raise ValueError('dimension must be an integer')
     dim = ZZ(dim)
     from sage.matrix.constructor import identity_matrix
+
     generators = identity_matrix(base_ring, dim).columns()
     filtration = {}
     if max_degree is None:
@@ -281,6 +282,7 @@ def construct_from_generators(filtration, base_ring, check):
         sage: construct_from_generators({1:[r]}, QQ, True)
         QQ^1 >= 0 in QQ^2
     """
+
     def normalize_gen(v):
         return tuple(map(base_ring, v))
 
@@ -365,11 +367,12 @@ def construct_from_generators_indices(generators, filtration, base_ring, check):
         pass
     filtration = normalized
 
-    return FilteredVectorSpace_class(base_ring, dim, generators, filtration, check=check)
+    return FilteredVectorSpace_class(
+        base_ring, dim, generators, filtration, check=check
+    )
 
 
 class FilteredVectorSpace_class(FreeModule_ambient_field):
-
     def __init__(self, base_ring, dim, generators, filtration, check=True):
         r"""
         A descending filtration of a vector space.
@@ -439,7 +442,7 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             next_V = V
             indices.update(filtration[deg])
             V = make_subspace(indices)
-            if V == next_V:   # skip trivial filtrations
+            if V == next_V:  # skip trivial filtrations
                 continue
             filtered_subspaces.append((deg, V))
         filtered_subspaces.append((minus_infinity, V))
@@ -533,8 +536,10 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             sage: G.is_exhaustive()
             True
         """
-        return self.get_degree(minus_infinity).dimension() == \
-            self.ambient_vector_space().dimension()
+        return (
+            self.get_degree(minus_infinity).dimension()
+            == self.ambient_vector_space().dimension()
+        )
 
     def is_separating(self) -> bool:
         r"""
@@ -763,6 +768,7 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
         if self.base_ring() == RR:
             return 'RR'
         from sage.categories.finite_fields import FiniteFields
+
         if self.base_ring() in FiniteFields():
             return 'GF({})'.format(len(self.base_ring()))
         raise NotImplementedError()
@@ -900,8 +906,10 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             if self_filt[0] != other_filt[0]:
                 # compare degree
                 return False
-            if (self_filt[1].echelonized_basis_matrix() !=
-                    other_filt[1].echelonized_basis_matrix()):
+            if (
+                self_filt[1].echelonized_basis_matrix()
+                != other_filt[1].echelonized_basis_matrix()
+            ):
                 # compare vector subspace
                 return False
         return True
@@ -957,19 +965,23 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             RDF^4 >= RDF^2 >= 0
         """
         from sage.structure.element import get_coercion_model
-        base_ring = get_coercion_model().common_parent(self.base_ring(), other.base_ring())
+
+        base_ring = get_coercion_model().common_parent(
+            self.base_ring(), other.base_ring()
+        )
         # construct the generators
         self_gens, self_filt = self.presentation()
         other_gens, other_filt = other.presentation()
-        generators = \
-            [list(v) + [base_ring.zero()] * other.dimension() for v in self_gens] + \
-            [[base_ring.zero()] * self.dimension() + list(v) for v in other_gens]
+        generators = [
+            list(v) + [base_ring.zero()] * other.dimension() for v in self_gens
+        ] + [[base_ring.zero()] * self.dimension() + list(v) for v in other_gens]
 
         # construct the filtration dictionary
         def join_indices(self_indices, other_indices):
             self_indices = tuple(self_indices)
             other_indices = tuple(i + len(self_gens) for i in other_indices)
             return self_indices + other_indices
+
         filtration = {}
         self_indices = set()
         other_indices = set()
@@ -1024,8 +1036,10 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
         V = self
         W = other
         from sage.structure.element import get_coercion_model
+
         base_ring = get_coercion_model().common_parent(V.base_ring(), W.base_ring())
         from sage.modules.tensor_operations import VectorCollection, TensorOperation
+
         V_generators, V_indices = V.presentation()
         W_generators, W_indices = W.presentation()
         V_coll = VectorCollection(V_generators, base_ring, V.dimension())
@@ -1068,6 +1082,7 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             QQ^1 >= 0
         """
         from sage.modules.tensor_operations import VectorCollection, TensorOperation
+
         generators, indices = self.presentation()
         V = VectorCollection(generators, self.base_ring(), self.dimension())
         T = TensorOperation([V] * n, operation)
@@ -1225,12 +1240,15 @@ class FilteredVectorSpace_class(FreeModule_ambient_field):
             ....:     pass
         """
         from sage.modules.free_module_element import random_vector
+
         R = self.base_ring()
         if epsilon is None:
             epsilon = R.one()
         filtration = {}
         for deg, filt in self._filt[1:]:
-            generators = [v + epsilon * random_vector(R, self.rank())
-                          for v in filt.echelonized_basis()]
+            generators = [
+                v + epsilon * random_vector(R, self.rank())
+                for v in filt.echelonized_basis()
+            ]
             filtration[deg] = generators
         return FilteredVectorSpace(filtration, base_ring=R, check=True)

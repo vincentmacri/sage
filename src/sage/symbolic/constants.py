@@ -232,12 +232,8 @@ register_symbol(infinity, {'maxima': 'inf'}, 0)
 register_symbol(minus_infinity, {'maxima': 'minf'}, 0)
 register_symbol(unsigned_infinity, {'maxima': 'infinity'}, 0)
 register_symbol(I, {'mathematica': 'I'}, 0)
-register_symbol(True, {'giac': 'true',
-                       'mathematica': 'True',
-                       'maxima': 'true'}, 0)
-register_symbol(False, {'giac': 'false',
-                        'mathematica': 'False',
-                        'maxima': 'false'}, 0)
+register_symbol(True, {'giac': 'true', 'mathematica': 'True', 'maxima': 'true'}, 0)
+register_symbol(False, {'giac': 'false', 'mathematica': 'False', 'maxima': 'false'}, 0)
 
 
 def unpickle_Constant(class_name, name, conversions, latex, mathml, domain):
@@ -262,16 +258,16 @@ def unpickle_Constant(class_name, name, conversions, latex, mathml, domain):
     if name in constants_name_table:
         return constants_name_table[name]
     if class_name == "Constant":
-        return Constant(name, conversions=conversions, latex=latex,
-                        mathml=mathml, domain=domain)
+        return Constant(
+            name, conversions=conversions, latex=latex, mathml=mathml, domain=domain
+        )
     cls = globals()[class_name]
     return cls(name=name)
 
 
 @richcmp_method
 class Constant:
-    def __init__(self, name, conversions=None, latex=None, mathml='',
-                 domain='complex'):
+    def __init__(self, name, conversions=None, latex=None, mathml='', domain='complex'):
         """
         EXAMPLES::
 
@@ -288,9 +284,12 @@ class Constant:
 
         for system, value in self._conversions.items():
             setattr(self, "_%s_" % system, partial(self._generic_interface, value))
-            setattr(self, "_%s_init_" % system, partial(self._generic_interface_init, value))
+            setattr(
+                self, "_%s_init_" % system, partial(self._generic_interface_init, value)
+            )
 
         from sage.symbolic.expression import PynacConstant
+
         self._pynac = PynacConstant(self._name, self._latex, self._domain)
         self._serial = self._pynac.serial()
         constants_table[self._serial] = self
@@ -341,9 +340,17 @@ class Constant:
             sage: loads(dumps(pi.pyobject()))
             pi
         """
-        return (unpickle_Constant, (self.__class__.__name__, self._name,
-                                    self._conversions, self._latex,
-                                    self._mathml, self._domain))
+        return (
+            unpickle_Constant,
+            (
+                self.__class__.__name__,
+                self._name,
+                self._conversions,
+                self._latex,
+                self._mathml,
+                self._domain,
+            ),
+        )
 
     def domain(self):
         """
@@ -554,13 +561,28 @@ class Pi(Constant):
             sage: mathml(pi)
             <mi>&pi;</mi>
         """
-        conversions = dict(axiom='%pi', fricas='%pi', maxima='%pi', giac='pi',
-                           gp='Pi', kash='PI',
-                           mathematica='Pi', matlab='pi', maple='Pi',
-                           octave='pi', pari='Pi', pynac='Pi')
-        Constant.__init__(self, name, conversions=conversions,
-                          latex=r"\pi", mathml="<mi>&pi;</mi>",
-                          domain='positive')
+        conversions = dict(
+            axiom='%pi',
+            fricas='%pi',
+            maxima='%pi',
+            giac='pi',
+            gp='Pi',
+            kash='PI',
+            mathematica='Pi',
+            matlab='pi',
+            maple='Pi',
+            octave='pi',
+            pari='Pi',
+            pynac='Pi',
+        )
+        Constant.__init__(
+            self,
+            name,
+            conversions=conversions,
+            latex=r"\pi",
+            mathml="<mi>&pi;</mi>",
+            domain='positive',
+        )
 
     def __float__(self):
         """
@@ -600,6 +622,7 @@ class Pi(Constant):
             True
         """
         import sympy
+
         return sympy.pi
 
 
@@ -690,6 +713,7 @@ class NotANumber(Constant):
     """
     Not a Number
     """
+
     def __init__(self, name="NaN"):
         """
         EXAMPLES::
@@ -742,6 +766,7 @@ class NotANumber(Constant):
             False
         """
         import sympy
+
         return sympy.nan
 
 
@@ -767,6 +792,7 @@ class GoldenRatio(Constant):
         sage: float(grm + grm)
         3.23606797749979
     """
+
     def __init__(self, name='golden_ratio'):
         """
         EXAMPLES::
@@ -774,12 +800,19 @@ class GoldenRatio(Constant):
             sage: loads(dumps(golden_ratio))
             golden_ratio
         """
-        conversions = dict(mathematica='(1+Sqrt[5])/2', gp='(1+sqrt(5))/2',
-                           maple='(1+sqrt(5))/2', maxima='(1+sqrt(5))/2',
-                           pari='(1+sqrt(5))/2', octave='(1+sqrt(5))/2',
-                           kash='(1+Sqrt(5))/2', giac='(1+sqrt(5))/2')
-        Constant.__init__(self, name, conversions=conversions,
-                          latex=r'\phi', domain='positive')
+        conversions = dict(
+            mathematica='(1+Sqrt[5])/2',
+            gp='(1+sqrt(5))/2',
+            maple='(1+sqrt(5))/2',
+            maxima='(1+sqrt(5))/2',
+            pari='(1+sqrt(5))/2',
+            octave='(1+sqrt(5))/2',
+            kash='(1+Sqrt(5))/2',
+            giac='(1+sqrt(5))/2',
+        )
+        Constant.__init__(
+            self, name, conversions=conversions, latex=r'\phi', domain='positive'
+        )
 
     def minpoly(self, bits=None, degree=None, epsilon=0):
         """
@@ -789,6 +822,7 @@ class GoldenRatio(Constant):
             x^2 - x - 1
         """
         from sage.rings.rational_field import QQ
+
         x = QQ['x'].gen(0)
         return x**2 - x - 1
 
@@ -833,6 +867,7 @@ class GoldenRatio(Constant):
             1.618033988749895?
         """
         import sage.rings.qqbar
+
         return field(sage.rings.qqbar.get_AA_golden_ratio())
 
     def _sympy_(self):
@@ -846,6 +881,7 @@ class GoldenRatio(Constant):
             True
         """
         import sympy
+
         return sympy.GoldenRatio
 
 
@@ -883,6 +919,7 @@ class Log2(Constant):
         sage: giac(log2)  # optional - giac
         ln(2)
     """
+
     def __init__(self, name='log2'):
         """
         EXAMPLES::
@@ -890,11 +927,19 @@ class Log2(Constant):
             sage: loads(dumps(log2))
             log2
         """
-        conversions = dict(mathematica='Log[2]', kash='Log(2)',
-                           maple='log(2)', maxima='log(2)', gp='log(2)',
-                           pari='log(2)', octave='log(2)', giac='log(2)')
-        Constant.__init__(self, name, conversions=conversions,
-                          latex=r'\log(2)', domain='positive')
+        conversions = dict(
+            mathematica='Log[2]',
+            kash='Log(2)',
+            maple='log(2)',
+            maxima='log(2)',
+            gp='log(2)',
+            pari='log(2)',
+            octave='log(2)',
+            giac='log(2)',
+        )
+        Constant.__init__(
+            self, name, conversions=conversions, latex=r'\log(2)', domain='positive'
+        )
 
     def __float__(self):
         """
@@ -950,6 +995,7 @@ class EulerGamma(Constant):
         sage: R(eg)
         1.1544313298030657212130241801648048620843186718798471976115
     """
+
     def __init__(self, name='euler_gamma'):
         """
         EXAMPLES::
@@ -957,12 +1003,19 @@ class EulerGamma(Constant):
             sage: loads(dumps(euler_gamma))
             euler_gamma
         """
-        conversions = dict(kash='EulerGamma(R)', maple='gamma',
-                           mathematica='EulerGamma', pari='Euler',
-                           maxima='%gamma', pynac='Euler', giac='euler_gamma',
-                           fricas='-digamma(1)')
-        Constant.__init__(self, name, conversions=conversions,
-                          latex=r'\gamma', domain='positive')
+        conversions = dict(
+            kash='EulerGamma(R)',
+            maple='gamma',
+            mathematica='EulerGamma',
+            pari='Euler',
+            maxima='%gamma',
+            pynac='Euler',
+            giac='euler_gamma',
+            fricas='-digamma(1)',
+        )
+        Constant.__init__(
+            self, name, conversions=conversions, latex=r'\gamma', domain='positive'
+        )
 
     def _mpfr_(self, R):
         """
@@ -1004,6 +1057,7 @@ class EulerGamma(Constant):
             True
         """
         import sympy
+
         return sympy.EulerGamma
 
 
@@ -1020,6 +1074,7 @@ class Catalan(Constant):
         sage: catalan^2 + mertens
         mertens + catalan^2
     """
+
     def __init__(self, name='catalan'):
         """
         EXAMPLES::
@@ -1028,11 +1083,14 @@ class Catalan(Constant):
             catalan
         """
         # kash: R is default prec
-        conversions = dict(mathematica='Catalan', kash='Catalan(R)',
-                           maple='Catalan', maxima='catalan',
-                           pynac='Catalan')
-        Constant.__init__(self, name, conversions=conversions,
-                          domain='positive')
+        conversions = dict(
+            mathematica='Catalan',
+            kash='Catalan(R)',
+            maple='Catalan',
+            maxima='catalan',
+            pynac='Catalan',
+        )
+        Constant.__init__(self, name, conversions=conversions, domain='positive')
 
     def _mpfr_(self, R):
         """
@@ -1074,6 +1132,7 @@ class Catalan(Constant):
             True
         """
         import sympy
+
         return sympy.Catalan
 
 
@@ -1096,6 +1155,7 @@ class Khinchin(Constant):
         sage: m.N(200)                                 # optional - mathematica
         2.685452001065306445309714835481795693820382293...32852204481940961807
     """
+
     def __init__(self, name='khinchin'):
         """
         EXAMPLES::
@@ -1103,10 +1163,8 @@ class Khinchin(Constant):
             sage: loads(dumps(khinchin))
             khinchin
         """
-        conversions = dict(maxima='khinchin', mathematica='Khinchin',
-            pynac='Khinchin')
-        Constant.__init__(self, name, conversions=conversions,
-                          domain='positive')
+        conversions = dict(maxima='khinchin', mathematica='Khinchin', pynac='Khinchin')
+        Constant.__init__(self, name, conversions=conversions, domain='positive')
 
     def _mpfr_(self, R):
         """
@@ -1118,6 +1176,7 @@ class Khinchin(Constant):
             2.6854520010653064453097148355
         """
         import sage.libs.mpmath.all as a
+
         return a.eval_constant('khinchin', R)
 
     def __float__(self):
@@ -1145,6 +1204,7 @@ class TwinPrime(Constant):
         sage: twinprime.n(digits=60)
         0.660161815846869573927812110014555778432623360284733413319448
     """
+
     def __init__(self, name='twinprime'):
         """
         EXAMPLES::
@@ -1153,8 +1213,7 @@ class TwinPrime(Constant):
             twinprime
         """
         conversions = dict(maxima='twinprime', pynac='TwinPrime')
-        Constant.__init__(self, name, conversions=conversions,
-                          domain='positive')
+        Constant.__init__(self, name, conversions=conversions, domain='positive')
 
     def _mpfr_(self, R):
         """
@@ -1166,6 +1225,7 @@ class TwinPrime(Constant):
             0.66016181584686957392781211001
         """
         import sage.libs.mpmath.all as a
+
         return a.eval_constant('twinprime', R)
 
     def __float__(self):
@@ -1193,6 +1253,7 @@ class Mertens(Constant):
         sage: mertens.n(digits=60)
         0.261497212847642783755426838608695859051566648261199206192064
     """
+
     def __init__(self, name='mertens'):
         """
         EXAMPLES::
@@ -1201,8 +1262,7 @@ class Mertens(Constant):
             mertens
         """
         conversions = dict(maxima='mertens', pynac='Mertens')
-        Constant.__init__(self, name, conversions=conversions,
-                          domain='positive')
+        Constant.__init__(self, name, conversions=conversions, domain='positive')
 
     def _mpfr_(self, R):
         """
@@ -1214,6 +1274,7 @@ class Mertens(Constant):
             0.26149721284764278375542683861
         """
         import sage.libs.mpmath.all as a
+
         return a.eval_constant('mertens', R)
 
     def __float__(self):
@@ -1245,6 +1306,7 @@ class Glaisher(Constant):
         sage: parent(a)
         Symbolic Ring
     """
+
     def __init__(self, name='glaisher'):
         """
         EXAMPLES::
@@ -1252,10 +1314,8 @@ class Glaisher(Constant):
             sage: loads(dumps(glaisher))
             glaisher
         """
-        conversions = dict(maxima='glaisher', pynac='Glaisher',
-            mathematica='Glaisher')
-        Constant.__init__(self, name, conversions=conversions,
-                          domain='positive')
+        conversions = dict(maxima='glaisher', pynac='Glaisher', mathematica='Glaisher')
+        Constant.__init__(self, name, conversions=conversions, domain='positive')
 
     def _mpfr_(self, R):
         """
@@ -1267,6 +1327,7 @@ class Glaisher(Constant):
             1.2824271291006226368753425689
         """
         import sage.libs.mpmath.all as a
+
         return a.eval_constant('glaisher', R)
 
     def __float__(self):

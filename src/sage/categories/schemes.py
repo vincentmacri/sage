@@ -65,6 +65,7 @@ class Schemes(Category):
         sage: Schemes().Homsets().super_categories()
         [Category of homsets]
     """
+
     @staticmethod
     def __classcall_private__(cls, X=None):
         """
@@ -147,13 +148,16 @@ class Schemes(Category):
             return x
         from sage.categories.commutative_rings import CommutativeRings
         from sage.schemes.generic.spec import Spec
+
         if x in CommutativeRings():
             return Spec(x)
         if isinstance(x, Map) and x.category_for().is_subcategory(Rings()):
             # x is a morphism of Rings
             A = Spec(x.codomain())
             return A.hom(x)
-        raise TypeError("No way to create an object or morphism in %s from %s" % (self, x))
+        raise TypeError(
+            "No way to create an object or morphism in %s from %s" % (self, x)
+        )
 
 
 class Schemes_over_base(Category_over_base):
@@ -170,6 +174,7 @@ class Schemes_over_base(Category_over_base):
         sage: C = Schemes(ZZ)
         sage: TestSuite(C).run()
     """
+
     def base_scheme(self):
         """
         EXAMPLES::
@@ -196,6 +201,7 @@ class Schemes_over_base(Category_over_base):
             Category of schemes over Integer Ring
         """
         from sage.schemes.generic.scheme import AffineScheme
+
         base = self.base()
         if isinstance(base, AffineScheme):
             base = base.coordinate_ring()
@@ -215,6 +221,7 @@ class AbelianVarieties(Schemes_over_base):
         ...
         ValueError: category of abelian varieties is only defined over fields
     """
+
     def __init__(self, base):
         r"""
         Constructor for the ``AbelianVarieties`` category.
@@ -227,10 +234,13 @@ class AbelianVarieties(Schemes_over_base):
             Category of abelian varieties over Rational Field
         """
         from sage.schemes.generic.scheme import AffineScheme
+
         if isinstance(base, AffineScheme):
             base = base.coordinate_ring()
         if base not in Fields():
-            raise ValueError('category of abelian varieties is only defined over fields')
+            raise ValueError(
+                'category of abelian varieties is only defined over fields'
+            )
         super().__init__(base)
 
     def base_scheme(self):
@@ -274,6 +284,7 @@ class AbelianVarieties(Schemes_over_base):
             sage: AbelianVarieties(QQ).Homsets().is_subcategory(CommutativeAdditiveGroups())
             True
         """
+
         def extra_super_categories(self):
             r"""
             Register the homset as an additive abelian group.
@@ -293,6 +304,7 @@ class AbelianVarieties(Schemes_over_base):
             sage: AbelianVarieties(QQ).Endsets().is_subcategory(Rings())
             True
             """
+
             def extra_super_categories(self):
                 r"""
                 Register the endset as a ring.
@@ -318,6 +330,7 @@ class Jacobians(Schemes_over_base):
 
         sage: TestSuite(Jacobians(QQ)).run()
     """
+
     def __init__(self, base):
         r"""
         Constructor of this category.
@@ -330,6 +343,7 @@ class Jacobians(Schemes_over_base):
             Category of Jacobians over Rational Field
         """
         from sage.schemes.generic.scheme import AffineScheme
+
         if isinstance(base, AffineScheme):
             base = base.coordinate_ring()
         if base not in Fields():
@@ -373,7 +387,6 @@ class Jacobians(Schemes_over_base):
         return "Jacobians over %s" % self.base()
 
     class ParentMethods:
-
         @abstract_method
         def base_curve(self):
             """

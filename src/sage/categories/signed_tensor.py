@@ -12,7 +12,10 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.categories.covariant_functorial_construction import CovariantFunctorialConstruction, CovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    CovariantFunctorialConstruction,
+    CovariantConstructionCategory,
+)
 from sage.typeset.unicode_characters import unicode_otimes
 
 
@@ -52,6 +55,7 @@ class SignedTensorProductFunctor(CovariantFunctorialConstruction):
 
         sage: TestSuite(tensor_signed).run()
     """
+
     _functor_name = "tensor"
     _functor_category = "SignedTensorProducts"
     symbol = " # "
@@ -88,6 +92,7 @@ class SignedTensorProductsCategory(CovariantConstructionCategory):
         \mathbf{SignedTensorProducts}(\mathbf{GradedAlgebrasWithBasis}(\mathbf{AlgebrasWithBasis}_{\Bold{Q}}))
         sage: TestSuite(C).run()
     """
+
     _functor_category = "SignedTensorProducts"
 
     def SignedTensorProducts(self):

@@ -26,6 +26,7 @@ class MultiplexFunction:
     A simple wrapper object for functions that are called on a list of
     objects.
     """
+
     def __init__(self, multiplexer, name):
         """
         EXAMPLES::
@@ -49,8 +50,10 @@ class MultiplexFunction:
             sage: f()
             ('1', '1/2')
         """
-        l = [getattr(child, self.name)(*args, **kwds)
-             for child in self.multiplexer.children]
+        l = [
+            getattr(child, self.name)(*args, **kwds)
+            for child in self.multiplexer.children
+        ]
         if all(e is None for e in l):
             return None
         return tuple(l)
@@ -62,6 +65,7 @@ class Multiplex:
     new object implies that the same function is called on all
     children.
     """
+
     def __init__(self, *args):
         """
         EXAMPLES::

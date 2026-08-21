@@ -22,6 +22,7 @@ class WordDatatype_callable(WordDatatype):
     r"""
     Datatype for a word defined by a callable.
     """
+
     def __init__(self, parent, callable, length=None):
         r"""
         INPUT:
@@ -237,21 +238,32 @@ class WordDatatype_callable(WordDatatype):
         if isinstance(key, slice):
             # Infinite words
             if self._len is Infinity or self._len is None:
-                if key.start is not None and key.start < 0 or \
-                        key.stop is not None and key.stop < 0:
-                    raise ValueError("for infinite words, start and stop values cannot be negative")
+                if (
+                    key.start is not None
+                    and key.start < 0
+                    or key.stop is not None
+                    and key.stop < 0
+                ):
+                    raise ValueError(
+                        "for infinite words, start and stop values cannot be negative"
+                    )
                 step = 1 if key.step is None else key.step
                 if step > 0:
                     start = 0 if key.start is None else key.start
-                    length = self._len if key.stop is None else \
-                                int(max(0, ceil((key.stop-start)/float(step))))
+                    length = (
+                        self._len
+                        if key.stop is None
+                        else int(max(0, ceil((key.stop - start) / float(step))))
+                    )
                 else:
                     if key.start is None or key.start < 0:
-                        raise ValueError("start value must be nonnegative for negative step values")
+                        raise ValueError(
+                            "start value must be nonnegative for negative step values"
+                        )
                     start = key.start
                     stop = 0 if key.stop is None else key.stop
-                    length = int(max(0, ceil((key.stop-start)/float(step))))
-                fcn = lambda x: self._func(start + x*step)
+                    length = int(max(0, ceil((key.stop - start) / float(step))))
+                fcn = lambda x: self._func(start + x * step)
                 if length is None:
                     return self._parent(fcn, length=length)
                 if length is Infinity:
@@ -259,17 +271,15 @@ class WordDatatype_callable(WordDatatype):
                 return self._parent.factors()(fcn, length=length)
             # Finite words
             ## For testing: expand as a list and slice it
-            #return self._parent(map(self._func, range(self._len))[key])
+            # return self._parent(map(self._func, range(self._len))[key])
             step = 1 if key.step is None else key.step
             if step > 0:
-                start, stop, step = slice(key.start, key.stop,
-                        step).indices(self._len)
-                length = int((stop-start)/float(step))
+                start, stop, step = slice(key.start, key.stop, step).indices(self._len)
+                length = int((stop - start) / float(step))
             else:
-                start, stop, step = slice(key.start, key.stop,
-                        step).indices(self._len)
-                length = int(max(0, ceil((stop-start)/float(step))))
-            fcn = lambda x: self._func(start + x*step)
+                start, stop, step = slice(key.start, key.stop, step).indices(self._len)
+                length = int(max(0, ceil((stop - start) / float(step))))
+            fcn = lambda x: self._func(start + x * step)
             return self._parent(fcn, length=length)
         if key < 0:
             if self._len is Infinity:
@@ -297,6 +307,7 @@ class WordDatatype_callable(WordDatatype):
              (...sage.misc.fpickle...<lambda>..., 8, 'pickled_function', False))
         """
         from sage.misc.fpickle import pickle_function
+
         try:
             s = pickle_function(self._func)
         except Exception:
@@ -313,6 +324,7 @@ class WordDatatype_callable_with_caching(WordDatatype_callable):
     r"""
     Datatype for a word defined by a callable.
     """
+
     def __init__(self, parent, callable, length=None):
         r"""
         INPUT:
@@ -513,8 +525,7 @@ class WordDatatype_callable_with_caching(WordDatatype_callable):
         if isinstance(key, slice):
             return super().__getitem__(key)
         if key not in self._letter_cache:
-            self._letter_cache[key] = \
-                super().__getitem__(key)
+            self._letter_cache[key] = super().__getitem__(key)
         return self._letter_cache[key]
 
     def __reduce__(self):
@@ -541,6 +552,7 @@ class WordDatatype_callable_with_caching(WordDatatype_callable):
             (Finite words over Set of Python objects of class 'object', ([0, 1, 2, 3, 4, 'a', 'b', 'c', 'd', 'e'],))
         """
         from sage.misc.fpickle import pickle_function
+
         try:
             s = pickle_function(self._func)
         except Exception:
@@ -824,9 +836,15 @@ class WordDatatype_iter(WordDatatype):
         """
         if isinstance(key, slice):
             if self._len is Infinity or self._len is None:
-                if key.start is not None and key.start < 0 or \
-                        key.stop is not None and key.stop < 0:
-                    raise ValueError("for infinite words, start and stop values cannot be negative")
+                if (
+                    key.start is not None
+                    and key.start < 0
+                    or key.stop is not None
+                    and key.stop < 0
+                ):
+                    raise ValueError(
+                        "for infinite words, start and stop values cannot be negative"
+                    )
                 step = 1 if key.step is None else int(key.step)
                 if step >= 0:
                     start = 0 if key.start is None else int(key.start)
@@ -834,16 +852,18 @@ class WordDatatype_iter(WordDatatype):
                         length = Infinity
                         stop = None
                     else:  # key.stop > 0
-                        length = int(max(0, ceil((key.stop-start)/float(step))))
+                        length = int(max(0, ceil((key.stop - start) / float(step))))
                         stop = int(key.stop)
                     data = itertools.islice(self, start, stop, step)
                 else:
                     if key.start is None or key.start < 0:
-                        raise ValueError("start value must be nonnegative for negative step values")
+                        raise ValueError(
+                            "start value must be nonnegative for negative step values"
+                        )
                     start = int(key.start)
                     stop = 0 if key.stop is None else int(key.stop)
-                    length = int(max(0, ceil((stop-start)/float(step))))
-                    data = list(itertools.islice(self, start+1))[key]
+                    length = int(max(0, ceil((stop - start) / float(step))))
+                    data = list(itertools.islice(self, start + 1))[key]
 
                 if length is None or length is Infinity:
                     return self._parent(data)
@@ -861,18 +881,24 @@ class WordDatatype_iter(WordDatatype):
                 if key.start is None:
                     data = list(self)[key]
                 else:
-                    data = list(itertools.islice(self, int(start+1)))[start:stop:step]
+                    data = list(itertools.islice(self, int(start + 1)))[start:stop:step]
                 length = None
-            else: # start >= 0, step >= 1, stop >= 0 or None
+            else:  # start >= 0, step >= 1, stop >= 0 or None
                 data = itertools.islice(self, start, stop, step)
-                length = "unknown" if stop is None else int(max(0, ((stop-start)/float(step))))
+                length = (
+                    "unknown"
+                    if stop is None
+                    else int(max(0, ((stop - start) / float(step))))
+                )
 
             return self._parent.factors()(data, length=length)
         if key < 0:
             if self._len is Infinity:
                 raise IndexError("cannot use negative indices with infinite words")
             elif self._len is None:
-                raise IndexError("cannot use negative indices with words of unknown length")
+                raise IndexError(
+                    "cannot use negative indices with words of unknown length"
+                )
             else:
                 key = self.length() + key
         it = iter(self)

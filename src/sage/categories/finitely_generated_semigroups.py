@@ -71,7 +71,6 @@ class FinitelyGeneratedSemigroups(CategoryWithAxiom):
         return Semigroups().example("free")
 
     class ParentMethods:
-
         @abstract_method
         def semigroup_generators(self):
             r"""
@@ -120,10 +119,13 @@ class FinitelyGeneratedSemigroups(CategoryWithAxiom):
                 sage: S.succ_generators("twosided" )(S('ca'))
                 ('ac', 'bca', 'ca', 'dca', 'ca', 'cab', 'ca', 'cad')
             """
-            left = (side == "left" or side == "twosided")
-            right = (side == "right" or side == "twosided")
+            left = side == "left" or side == "twosided"
+            right = side == "right" or side == "twosided"
             generators = self.semigroup_generators()
-            return lambda x: (tuple(g * x for g in generators) if left else ()) + (tuple(x * g for g in generators) if right else ())
+            return lambda x: (
+                (tuple(g * x for g in generators) if left else ())
+                + (tuple(x * g for g in generators) if right else ())
+            )
 
         def __iter__(self):
             r"""
@@ -142,9 +144,14 @@ class FinitelyGeneratedSemigroups(CategoryWithAxiom):
                 ['x', 'xy', 'y', 'yx']
             """
             from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet
-            return iter(RecursivelyEnumeratedSet(self.semigroup_generators(),
-                                                 self.succ_generators(side='right'),
-                                                 enumeration='breadth'))
+
+            return iter(
+                RecursivelyEnumeratedSet(
+                    self.semigroup_generators(),
+                    self.succ_generators(side='right'),
+                    enumeration='breadth',
+                )
+            )
 
         def ideal(self, gens, side='twosided'):
             r"""
@@ -186,11 +193,10 @@ class FinitelyGeneratedSemigroups(CategoryWithAxiom):
                  'dcab', 'dcba']
             """
             from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet
-            return RecursivelyEnumeratedSet(gens,
-                                            self.succ_generators(side=side))
+
+            return RecursivelyEnumeratedSet(gens, self.succ_generators(side=side))
 
     class Finite(CategoryWithAxiom):
-
         class ParentMethods:
             def some_elements(self):
                 r"""

@@ -46,6 +46,7 @@ class AlgebraicConverter(Converter):
         self.field = field
 
         from sage.functions.all import reciprocal_trig_functions
+
         self.reciprocal_trig_functions = reciprocal_trig_functions
 
     def pyobject(self, ex, obj):
@@ -104,6 +105,7 @@ class AlgebraicConverter(Converter):
         try:
             if operator is pow:
                 from sage.rings.rational import Rational
+
                 base, expt = ex.operands()
                 base = self.field(base)
                 expt = Rational(expt)
@@ -214,12 +216,13 @@ class AlgebraicConverter(Converter):
                 raise ValueError("unable to represent as an algebraic number")
             # Coerce (not convert, see #22571) arg to a rational
             from sage.rings.rational_field import QQ
-            arg = operand.imag()/(2*ex.parent().pi())
+
+            arg = operand.imag() / (2 * ex.parent().pi())
             try:
                 rat_arg = QQ.coerce(arg.pyobject())
             except TypeError:
                 raise TypeError("unable to convert %r to %s" % (ex, self.field))
-            res = zeta(rat_arg.denom())**rat_arg.numer()
+            res = zeta(rat_arg.denom()) ** rat_arg.numer()
             return self.field(res)
         if func_name in ['sin', 'cos', 'tan']:
             exp_ia = exp(SR(-1).sqrt() * operand, hold=hold)._algebraic_(QQbar)
@@ -231,7 +234,7 @@ class AlgebraicConverter(Converter):
                 res = -zeta(4) * (exp_ia - ~exp_ia) / (exp_ia + ~exp_ia)
             return self.field(res)
         if func_name in ['sinh', 'cosh', 'tanh']:
-            if not (SR(-1).sqrt()*operand).is_real():
+            if not (SR(-1).sqrt() * operand).is_real():
                 raise ValueError("unable to represent as an algebraic number")
             exp_a = exp(operand, hold=hold)._algebraic_(QQbar)
             if func_name == 'sinh':

@@ -30,6 +30,7 @@ class LibSingularGBDefaultContext:
             [84*c^4 - 40*c^3 + c^2 + c, 7*b + 210*c^3 - 79*c^2 + 3*c, 7*a - 420*c^3 + 158*c^2 + 8*c - 7]
         """
         from sage.libs.singular.option import opt_ctx
+
         self.libsingular_option_context = opt_ctx
 
     def __enter__(self):
@@ -141,4 +142,5 @@ def libsingular_gb_standard_options(func):
         """
         with LibSingularGBDefaultContext():
             return func(*args, **kwds)
+
     return wrapper

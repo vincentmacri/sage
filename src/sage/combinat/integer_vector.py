@@ -109,6 +109,7 @@ def is_gale_ryser(r, s):
     # builds the corresponding partitions, i.e.
     # removes the 0 and sorts the sequences
     from sage.combinat.partition import Partition
+
     r2 = Partition(sorted([x for x in r if x > 0], reverse=True))
     s2 = Partition(sorted([x for x in s if x > 0], reverse=True))
 
@@ -122,8 +123,9 @@ def is_gale_ryser(r, s):
     return len(rstar) <= len(s2) and sum(r2) == sum(s2) and rstar.dominates(s)
 
 
-def gale_ryser_theorem(p1, p2, algorithm='gale',
-                       *, solver=None, integrality_tolerance=1e-3):
+def gale_ryser_theorem(
+    p1, p2, algorithm='gale', *, solver=None, integrality_tolerance=1e-3
+):
     r"""
     Return the binary matrix given by the Gale-Ryser theorem.
 
@@ -320,12 +322,12 @@ def gale_ryser_theorem(p1, p2, algorithm='gale',
         # applied
         tmp = sorted(enumerate(p1), reverse=True, key=lambda x: x[1])
         r = [x[1] for x in tmp]
-        r_permutation = [x-1 for x in Permutation([x[0]+1 for x in tmp]).inverse()]
+        r_permutation = [x - 1 for x in Permutation([x[0] + 1 for x in tmp]).inverse()]
         m = len(r)
 
         tmp = sorted(enumerate(p2), reverse=True, key=lambda x: x[1])
         s = [x[1] for x in tmp]
-        s_permutation = [x-1 for x in Permutation([x[0]+1 for x in tmp]).inverse()]
+        s_permutation = [x - 1 for x in Permutation([x[0] + 1 for x in tmp]).inverse()]
 
         # This is the partition equivalent to the sliding algorithm
         cols = []
@@ -342,7 +344,7 @@ def gale_ryser_theorem(p1, p2, algorithm='gale',
                         c[j] = 1
                     t -= k - i
                 else:  # Remove the t last rows of that length
-                    for j in range(k-t, k):
+                    for j in range(k - t, k):
                         r[j] -= 1
                         c[j] = 1
                     t = 0
@@ -359,6 +361,7 @@ def gale_ryser_theorem(p1, p2, algorithm='gale',
 
     if algorithm == "gale":
         from sage.numerical.mip import MixedIntegerLinearProgram
+
         k1, k2 = len(p1), len(p2)
         p = MixedIntegerLinearProgram(solver=solver)
         b = p.new_variable(binary=True)
@@ -435,6 +438,7 @@ def list2func(l, default=None):
     if default is None:
         return lambda i: l[i]
     from functools import partial
+
     return partial(_default_function, l, default)
 
 
@@ -521,8 +525,10 @@ class IntegerVector(ClonableArray):
         """
         from sage.combinat.specht_module import SpechtModule
         from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
+
         if base_ring is None:
             from sage.rings.rational_field import QQ
+
             base_ring = QQ
         R = SymmetricGroupAlgebra(base_ring, sum(self))
         return SpechtModule(R, self)
@@ -543,6 +549,7 @@ class IntegerVector(ClonableArray):
             5
         """
         from sage.combinat.specht_module import specht_module_rank
+
         return specht_module_rank(self, base_ring)
 
 
@@ -671,6 +678,7 @@ class IntegerVectors(Parent, metaclass=ClasscallMetaclass):
 
         :class:`sage.combinat.integer_lists.invlex.IntegerListsLex`
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None, k=None, **kwargs):
         """
@@ -715,7 +723,9 @@ class IntegerVectors(Parent, metaclass=ClasscallMetaclass):
             return IntegerVectors_nk(n, k)
         if isinstance(k, (tuple, list)):
             return IntegerVectors_nnondescents(n, tuple(k))
-        raise TypeError("'k' must be an integer or a tuple, got {}".format(type(k).__name__))
+        raise TypeError(
+            "'k' must be an integer or a tuple, got {}".format(type(k).__name__)
+        )
 
     def __init__(self, category=None):
         """
@@ -800,12 +810,12 @@ class IntegerVectors(Parent, metaclass=ClasscallMetaclass):
         while True:
             current_rank = self.rank(rtn)
             if current_rank < x:
-                rtn[ptr+1] = rtn[ptr]
+                rtn[ptr + 1] = rtn[ptr]
                 rtn[ptr] = 0
                 ptr += 1
             elif current_rank > x:
                 rtn[ptr] -= 1
-                rtn[ptr-1] += 1
+                rtn[ptr - 1] += 1
             else:
                 return self._element_constructor_(rtn)
 
@@ -825,6 +835,7 @@ class IntegerVectors(Parent, metaclass=ClasscallMetaclass):
             True
         """
         from sage.rings.infinity import Infinity
+
         return self.cardinality() < Infinity
 
 
@@ -964,7 +975,9 @@ class IntegerVectors_n(UniqueRepresentation, IntegerVectors):
             3
         """
         if sum(x) != self.n:
-            raise ValueError("argument is not a member of IntegerVectors({},{})".format(self.n, None))
+            raise ValueError(
+                "argument is not a member of IntegerVectors({},{})".format(self.n, None)
+            )
 
         n, k, s = self.n, len(x), 0
         r = binomial(k + n - 1, n + 1)
@@ -1110,7 +1123,9 @@ class IntegerVectors_k(UniqueRepresentation, IntegerVectors):
             7
         """
         if len(x) != self.k:
-            raise ValueError("argument is not a member of IntegerVectors({},{})".format(None, self.k))
+            raise ValueError(
+                "argument is not a member of IntegerVectors({},{})".format(None, self.k)
+            )
 
         n, k, s = sum(x), self.k, 0
         r = binomial(n + k - 1, k)
@@ -1138,7 +1153,7 @@ class IntegerVectors_k(UniqueRepresentation, IntegerVectors):
         """
         if self.k == 0 and x != 0:
             raise IndexError(f"Index {x} is out of range for the IntegerVector.")
-        rtn = [0]*self.k
+        rtn = [0] * self.k
         if self.k == 0 and x == 0:
             return rtn
 
@@ -1254,7 +1269,7 @@ class IntegerVectors_nk(UniqueRepresentation, IntegerVectors):
             yield self.element_class(self, [self.n], check=False)
             return
 
-        for nbar in range(self.n+1):
+        for nbar in range(self.n + 1):
             n = self.n - nbar
             for rest in integer_vectors_nk_fast_iter(nbar, self.k - 1):
                 yield self.element_class(self, [n] + rest, check=False)
@@ -1267,8 +1282,7 @@ class IntegerVectors_nk(UniqueRepresentation, IntegerVectors):
             sage: IV
             Integer vectors of length 3 that sum to 2
         """
-        return "Integer vectors of length {} that sum to {}".format(self.k,
-                                                                    self.n)
+        return "Integer vectors of length {} that sum to {}".format(self.k, self.n)
 
     def __contains__(self, x):
         """
@@ -1341,7 +1355,11 @@ class IntegerVectors_nk(UniqueRepresentation, IntegerVectors):
             True
         """
         if x not in self:
-            raise ValueError("argument is not a member of IntegerVectors({},{})".format(self.n, self.k))
+            raise ValueError(
+                "argument is not a member of IntegerVectors({},{})".format(
+                    self.n, self.k
+                )
+            )
 
         k, s, r = self.k, 0, 0
         for i in range(k - 1):
@@ -1366,7 +1384,7 @@ class IntegerVectors_nk(UniqueRepresentation, IntegerVectors):
         """
         if x >= self.cardinality():
             raise IndexError(f"Index {x} is out of range for the IntegerVector.")
-        rtn = [0]*self.k
+        rtn = [0] * self.k
         rtn[0] = self.n
         return IntegerVectors._unrank_helper(self, x, rtn)
 
@@ -1426,6 +1444,7 @@ class IntegerVectors_nnondescents(UniqueRepresentation, IntegerVectors):
     they form a set of orbit representative of integer vectors with
     respect to this Young subgroup.
     """
+
     @staticmethod
     def __classcall_private__(cls, n, comp):
         """
@@ -1456,7 +1475,9 @@ class IntegerVectors_nnondescents(UniqueRepresentation, IntegerVectors):
             sage: IntegerVectors(4, [2])
             Integer vectors of 4 with non-descents composition [2]
         """
-        return "Integer vectors of {} with non-descents composition {}".format(self.n, list(self.comp))
+        return "Integer vectors of {} with non-descents composition {}".format(
+            self.n, list(self.comp)
+        )
 
     def __iter__(self):
         """
@@ -1513,8 +1534,10 @@ class IntegerVectors_nnondescents(UniqueRepresentation, IntegerVectors):
             [[0, 0, 0, 0, 0]]
         """
         for iv in IntegerVectors(self.n, len(self.comp)):
-            blocks = [IntegerVectors(iv[i], val, max_slope=0).list()
-                      for i, val in enumerate(self.comp)]
+            blocks = [
+                IntegerVectors(iv[i], val, max_slope=0).list()
+                for i, val in enumerate(self.comp)
+            ]
             for parts in product(*blocks):
                 res = []
                 for part in parts:
@@ -1582,8 +1605,10 @@ class IntegerVectorsConstraints(IntegerVectors):
             base = "Integer vectors that sum to {} with constraints: ".format(self.n)
         else:
             base = "Integer vectors with constraints: "
-        return base + ", ".join("{}={}".format(key, self.constraints[key])
-                                for key in sorted(self.constraints))
+        return base + ", ".join(
+            "{}={}".format(key, self.constraints[key])
+            for key in sorted(self.constraints)
+        )
 
     def __eq__(self, rhs):
         """
@@ -1597,7 +1622,11 @@ class IntegerVectorsConstraints(IntegerVectors):
             True
         """
         if isinstance(rhs, IntegerVectorsConstraints):
-            return self.n == rhs.n and self.k == rhs.k and self.constraints == rhs.constraints
+            return (
+                self.n == rhs.n
+                and self.k == rhs.k
+                and self.constraints == rhs.constraints
+            )
         return False
 
     def __ne__(self, rhs):
@@ -1651,6 +1680,7 @@ class IntegerVectorsConstraints(IntegerVectors):
             return False
 
         from sage.combinat.misc import check_integer_list_constraints
+
         return check_integer_list_constraints(x, singleton=True, **self.constraints)
 
     def cardinality(self):
@@ -1675,16 +1705,23 @@ class IntegerVectorsConstraints(IntegerVectors):
         if self.k is None:
             if self.n is None:
                 return PlusInfinity()
-            if ('max_length' not in self.constraints
-                    and self.constraints.get('min_part', 0) <= 0):
+            if (
+                'max_length' not in self.constraints
+                and self.constraints.get('min_part', 0) <= 0
+            ):
                 return PlusInfinity()
-        elif ('max_part' in self.constraints
-                and self.constraints['max_part'] != PlusInfinity()):
-            if (self.n is None and len(self.constraints) == 2
-                    and 'min_part' in self.constraints
-                    and self.constraints['min_part'] >= 0):
+        elif (
+            'max_part' in self.constraints
+            and self.constraints['max_part'] != PlusInfinity()
+        ):
+            if (
+                self.n is None
+                and len(self.constraints) == 2
+                and 'min_part' in self.constraints
+                and self.constraints['min_part'] >= 0
+            ):
                 num = self.constraints['max_part'] - self.constraints['min_part'] + 1
-                return Integer(num ** self.k)
+                return Integer(num**self.k)
             if len(self.constraints) == 1:
                 m = self.constraints['max_part']
                 if self.n is None:
@@ -1694,9 +1731,14 @@ class IntegerVectorsConstraints(IntegerVectors):
                 # do by inclusion / exclusion on the number
                 # i of parts greater than m
                 n, k = self.n, self.k
-                return Integer(sum(
-                    (-1)**i * binomial(n + k - 1 - i * (m + 1), k - 1)
-                    * binomial(k, i) for i in range(self.n // (m + 1) + 1)))
+                return Integer(
+                    sum(
+                        (-1) ** i
+                        * binomial(n + k - 1 - i * (m + 1), k - 1)
+                        * binomial(k, i)
+                        for i in range(self.n // (m + 1) + 1)
+                    )
+                )
         return ZZ.sum(ZZ.one() for x in self)
 
     def __iter__(self):

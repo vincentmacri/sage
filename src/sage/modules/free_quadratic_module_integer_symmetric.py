@@ -57,7 +57,10 @@ from copy import copy
 from sage.rings.integer_ring import ZZ
 from sage.rings.integer import Integer
 from sage.rings.rational_field import QQ
-from sage.modules.free_quadratic_module import FreeQuadraticModule_submodule_with_basis_pid, FreeQuadraticModule
+from sage.modules.free_quadratic_module import (
+    FreeQuadraticModule_submodule_with_basis_pid,
+    FreeQuadraticModule,
+)
 from sage.matrix.constructor import matrix
 from sage.structure.element import Matrix
 from sage.arith.misc import gcd
@@ -243,20 +246,24 @@ def IntegralLattice(data, basis=None):
         inner_product_matrix = matrix([[0, 1], [1, 0]])
     else:
         from sage.combinat.root_system.cartan_matrix import CartanMatrix
+
         inner_product_matrix = CartanMatrix(data)
     if basis is None:
         basis = matrix.identity(ZZ, inner_product_matrix.ncols())
     if inner_product_matrix != inner_product_matrix.transpose():
-        raise ValueError("the inner product matrix must be symmetric\n%s"
-                         % inner_product_matrix)
+        raise ValueError(
+            "the inner product matrix must be symmetric\n%s" % inner_product_matrix
+        )
 
-    A = FreeQuadraticModule(ZZ,
-                            inner_product_matrix.ncols(),
-                            inner_product_matrix=inner_product_matrix)
-    return FreeQuadraticModule_integer_symmetric(ambient=A,
-                                                 basis=basis,
-                                                 inner_product_matrix=A.inner_product_matrix(),
-                                                 already_echelonized=False)
+    A = FreeQuadraticModule(
+        ZZ, inner_product_matrix.ncols(), inner_product_matrix=inner_product_matrix
+    )
+    return FreeQuadraticModule_integer_symmetric(
+        ambient=A,
+        basis=basis,
+        inner_product_matrix=A.inner_product_matrix(),
+        already_echelonized=False,
+    )
 
 
 def IntegralLatticeDirectSum(Lattices, return_embeddings=False):
@@ -348,24 +355,34 @@ def IntegralLatticeDirectSum(Lattices, return_embeddings=False):
     sum_degree = [sum(degrees[:i]) for i in range(N + 1)]
     inner_product_list = [copy(L_i.inner_product_matrix()) for L_i in Lattices]
     IM = matrix.block_diagonal(inner_product_list)
-    ambient = FreeQuadraticModule(ZZ,
-                                  degree_tot,
-                                  inner_product_matrix=IM)
-    basis = [matrix.block(1, 3, [matrix.zero(dims[i], sum_degree[i]),
-                                 Lattices[i].basis_matrix(),
-                                 matrix.zero(dims[i], sum_degree[-1] - sum_degree[i+1])
-                                 ]) for i in range(N)]
+    ambient = FreeQuadraticModule(ZZ, degree_tot, inner_product_matrix=IM)
+    basis = [
+        matrix.block(
+            1,
+            3,
+            [
+                matrix.zero(dims[i], sum_degree[i]),
+                Lattices[i].basis_matrix(),
+                matrix.zero(dims[i], sum_degree[-1] - sum_degree[i + 1]),
+            ],
+        )
+        for i in range(N)
+    ]
     basis_matrix = matrix.block(N, 1, basis)
     ipm = ambient.inner_product_matrix()
-    direct_sum = FreeQuadraticModule_integer_symmetric(ambient=ambient,
-                                                       basis=basis_matrix,
-                                                       inner_product_matrix=ipm,
-                                                       already_echelonized=False)
+    direct_sum = FreeQuadraticModule_integer_symmetric(
+        ambient=ambient,
+        basis=basis_matrix,
+        inner_product_matrix=ipm,
+        already_echelonized=False,
+    )
     if not return_embeddings:
         return direct_sum
-    sum_dims = [sum(dims[:i]) for i in range(N+1)]
-    phi = [Lattices[i].hom(direct_sum.basis()[sum_dims[i]:sum_dims[i+1]])
-           for i in range(N)]
+    sum_dims = [sum(dims[:i]) for i in range(N + 1)]
+    phi = [
+        Lattices[i].hom(direct_sum.basis()[sum_dims[i] : sum_dims[i + 1]])
+        for i in range(N)
+    ]
     return [direct_sum, phi]
 
 
@@ -604,9 +621,10 @@ def IntegralLatticeGluing(Lattices, glue, return_embeddings=False):
             # Check that the gluing vectors are in the
             # corresponding discriminant groups
             ALi(g[i])
-    generators = [sum(phi[i](g[i].lift()*g[i].order())/g[i].order()
-                      for i in range(N))
-                  for g in glue]
+    generators = [
+        sum(phi[i](g[i].lift() * g[i].order()) / g[i].order() for i in range(N))
+        for g in glue
+    ]
     glued_lattice = direct_sum.overlattice(generators)
     if not return_embeddings:
         return glued_lattice
@@ -615,6 +633,7 @@ def IntegralLatticeGluing(Lattices, glue, return_embeddings=False):
     f = [HomSpaces[i](phi[i].matrix() * G) for i in range(N)]
     return [glued_lattice, f]
 
+
 ###############################################################################
 #
 # Base class for Lattices
@@ -622,7 +641,9 @@ def IntegralLatticeGluing(Lattices, glue, return_embeddings=False):
 ###############################################################################
 
 
-class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_basis_pid):
+class FreeQuadraticModule_integer_symmetric(
+    FreeQuadraticModule_submodule_with_basis_pid
+):
     r"""
     This class represents non-degenerate, integral,
     symmetric free quadratic `\ZZ`-modules.
@@ -643,8 +664,15 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         [0 1]
         [1 0]
     """
-    def __init__(self, ambient, basis, inner_product_matrix,
-                 check=True, already_echelonized=False):
+
+    def __init__(
+        self,
+        ambient,
+        basis,
+        inner_product_matrix,
+        check=True,
+        already_echelonized=False,
+    ):
         r"""
         Create the integral lattice spanned by ``basis`` in the ambient space.
 
@@ -659,14 +687,17 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             basis,
             inner_product_matrix,
             check=check,
-            already_echelonized=already_echelonized)
+            already_echelonized=already_echelonized,
+        )
         if self.determinant() == 0:
-            raise ValueError("lattices must be nondegenerate; "
-                             "use FreeQuadraticModule instead")
+            raise ValueError(
+                "lattices must be nondegenerate; use FreeQuadraticModule instead"
+            )
         if self.gram_matrix().base_ring() is not ZZ:
             if self.gram_matrix().denominator() != 1:
-                raise ValueError("lattices must be integral; "
-                                 "use FreeQuadraticModule instead")
+                raise ValueError(
+                    "lattices must be integral; use FreeQuadraticModule instead"
+                )
 
     def _mul_(self, other, switch_sides=False):
         r"""
@@ -720,7 +751,10 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         else:
             s += "Lattice "
         s += "of degree %s and rank %s over %s\n" % (
-            self.degree(), self.rank(), self.base_ring())
+            self.degree(),
+            self.rank(),
+            self.base_ring(),
+        )
         if self.basis_matrix().is_one():
             s += "Standard basis \n"
         else:
@@ -773,7 +807,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             sage: L.is_submodule(Ldual)                                                 # needs sage.graphs
             True
         """
-        return self.span(self.gram_matrix().inverse()*self.basis_matrix())
+        return self.span(self.gram_matrix().inverse() * self.basis_matrix())
 
     def discriminant_group(self, s=0):
         r"""
@@ -829,10 +863,11 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             sage: gc.unfreeze()
         """
         from sage.modules.torsion_quadratic_module import TorsionQuadraticModule
+
         D = TorsionQuadraticModule(self.dual_lattice(), self)
         d = D.annihilator().gen()
         a = d.prime_to_m_part(s)
-        Dp_gens = [a*g for g in D.gens()]
+        Dp_gens = [a * g for g in D.gens()]
         return D.submodule(Dp_gens)
 
     def signature(self):
@@ -865,6 +900,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             (2, 0)
         """
         from sage.quadratic_forms.quadratic_form import QuadraticForm
+
         return QuadraticForm(QQ, self.gram_matrix()).signature_vector()[:2]
 
     def direct_sum(self, M):
@@ -883,19 +919,22 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             Standard basis
             Standard scalar product
         """
-        IM = matrix.block_diagonal([self.inner_product_matrix(),
-                                    M.inner_product_matrix()])
-        ambient = FreeQuadraticModule(ZZ,
-                                      self.degree() + M.degree(), IM)
+        IM = matrix.block_diagonal(
+            [self.inner_product_matrix(), M.inner_product_matrix()]
+        )
+        ambient = FreeQuadraticModule(ZZ, self.degree() + M.degree(), IM)
         smzero = matrix.zero(self.rank(), M.degree())
         mszero = matrix.zero(M.rank(), self.degree())
-        basis = self.basis_matrix().augment(smzero).stack(
-            mszero.augment(M.basis_matrix()))
+        basis = (
+            self.basis_matrix().augment(smzero).stack(mszero.augment(M.basis_matrix()))
+        )
         ipm = ambient.inner_product_matrix()
-        return FreeQuadraticModule_integer_symmetric(ambient=ambient,
-                                                     basis=basis,
-                                                     inner_product_matrix=ipm,
-                                                     already_echelonized=False)
+        return FreeQuadraticModule_integer_symmetric(
+            ambient=ambient,
+            basis=basis,
+            inner_product_matrix=ipm,
+            already_echelonized=False,
+        )
 
     def is_primitive(self, M) -> bool:
         r"""
@@ -925,7 +964,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             sage: (L1 + L2).index_in(U)
             2
         """
-        return gcd((self/M).invariants()) == 0
+        return gcd((self / M).invariants()) == 0
 
     def orthogonal_complement(self, M):
         r"""
@@ -957,11 +996,13 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             Standard scalar product
         """
         from sage.modules.free_module import FreeModule_generic
+
         if not isinstance(M, FreeModule_generic):
             M = self.span(M)
         elif M.ambient_vector_space() != self.ambient_vector_space():
-            raise ValueError("M must have the same "
-                             "ambient vector space as this lattice")
+            raise ValueError(
+                "M must have the same ambient vector space as this lattice"
+            )
 
         K = (self.inner_product_matrix() * M.basis_matrix().transpose()).kernel()
         K = self.span(K.basis())
@@ -996,12 +1037,13 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             ValueError: the basis (= [(1, -1)]) does not span a submodule
         """
         M = FreeQuadraticModule_integer_symmetric(
-            ambient=self.ambient_module(), basis=basis,
+            ambient=self.ambient_module(),
+            basis=basis,
             inner_product_matrix=self.inner_product_matrix(),
-            already_echelonized=False)
+            already_echelonized=False,
+        )
         if not M.is_submodule(self):
-            raise ValueError("the basis (= %s) does not span "
-                             "a submodule" % basis)
+            raise ValueError("the basis (= %s) does not span a submodule" % basis)
         return M
 
     def overlattice(self, gens):
@@ -1022,9 +1064,11 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         """
         basis = (self + self.span(gens)).basis()
         return FreeQuadraticModule_integer_symmetric(
-            ambient=self.ambient_module(), basis=basis,
+            ambient=self.ambient_module(),
+            basis=basis,
             inner_product_matrix=self.inner_product_matrix(),
-            already_echelonized=False)
+            already_echelonized=False,
+        )
 
     def maximal_overlattice(self, p=None):
         r"""
@@ -1063,6 +1107,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         if not self.is_even() and (p is None or p == 2):
             raise ValueError("this lattice must be even to admit an even overlattice")
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         L = self
         if p is None:
             P = ZZ(self.determinant()).prime_factors()
@@ -1078,8 +1123,8 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
                 e = b.additive_order()
                 v = e.valuation(2)
                 q = b.q().lift()
-                delta = (q*e) % 2
-                b = 2**(((e.valuation(2)+1)//2) + delta) * b.lift()
+                delta = (q * e) % 2
+                b = 2 ** (((e.valuation(2) + 1) // 2) + delta) * b.lift()
                 isotropic.append(b)
             L = L.overlattice(isotropic)
             D = L.discriminant_group()
@@ -1114,7 +1159,10 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
                 continue
             # go squarefree
             D = L.discriminant_group(p).normal_form()
-            isotropic = [p**((-b.q().lift().valuation(p)+1)//2) * b.lift() for b in D.gens()]
+            isotropic = [
+                p ** ((-b.q().lift().valuation(p) + 1) // 2) * b.lift()
+                for b in D.gens()
+            ]
             L = L.overlattice(isotropic)
             # now the p-discriminant_group is a vector space
             while True:
@@ -1131,11 +1179,11 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
                 k = GF(p)
                 a = k(G[0].numerator())
                 b = k(G[1].numerator())
-                if (-b/a).is_square():
+                if (-b / a).is_square():
                     # solve:  a*x^2 + b *y^2  = 0
-                    x = (-b/a).sqrt()
+                    x = (-b / a).sqrt()
                     y = 1
-                    t = ZZ(x)*gen[0] + ZZ(y)*gen[1]
+                    t = ZZ(x) * gen[0] + ZZ(y) * gen[1]
                 else:
                     # or solve a*x^2 + b*y^2 + c = 0
                     # we know the rank is at least 3
@@ -1143,11 +1191,11 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
                     # brute force to find a suitable y
                     # very fast
                     for y in GF(p):
-                        x = (-c - b*y**2)/a
+                        x = (-c - b * y**2) / a
                         if x.is_square():
                             x = x.sqrt()
                             break
-                    t = ZZ(x)*gen[0] + ZZ(y)*gen[1] + ZZ(1)*gen[2]
+                    t = ZZ(x) * gen[0] + ZZ(y) * gen[1] + ZZ(1) * gen[2]
                 L = L.overlattice([t.lift()])
         return L
 
@@ -1275,7 +1323,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         from sage.categories.groups import Groups
         from sage.groups.matrix_gps.isometries import GroupOfIsometries
 
-        if gens is None and self.rank() == 0: # trivial lattice
+        if gens is None and self.rank() == 0:  # trivial lattice
             gens = []
             is_finite = True
         if gens is None:
@@ -1283,25 +1331,27 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             if not (sig[1] == 0 or sig[0] == 0):  # indefinite
                 raise NotImplementedError(
                     "currently, we can only compute generators "
-                    "for orthogonal groups over definite lattices.")
+                    "for orthogonal groups over definite lattices."
+                )
 
             # definite
             from sage.quadratic_forms.quadratic_form import QuadraticForm
+
             is_finite = True
             # Compute transformation matrix to the ambient module.
             L = self.overlattice(self.ambient_module().gens())
             Orthogonal = L.orthogonal_complement(self)
             direct_sum_basis = self.basis_matrix().stack(Orthogonal.basis_matrix())
             if sig[0] == 0:  # negative definite
-                q = QuadraticForm(ZZ, -2*self.gram_matrix())
+                q = QuadraticForm(ZZ, -2 * self.gram_matrix())
             else:  # positive definite
-                q = QuadraticForm(ZZ, 2*self.gram_matrix())
+                q = QuadraticForm(ZZ, 2 * self.gram_matrix())
             identity = matrix.identity(Orthogonal.rank())
             gens = []
             for g in q.automorphism_group().gens():
                 # We lift the automorphism by living the orthogonal complement invariant
                 g_directsum = matrix.block_diagonal([g.matrix().T, identity])
-                g_on_L = direct_sum_basis.inverse()*g_directsum*direct_sum_basis
+                g_on_L = direct_sum_basis.inverse() * g_directsum * direct_sum_basis
                 gens.append(g_on_L)
         deg = self.degree()
         base = self.ambient_vector_space().base_ring()
@@ -1311,13 +1361,15 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         else:
             cat = Groups()
         D = self.discriminant_group()
-        G = GroupOfIsometries(deg,
-                              base,
-                              gens,
-                              inv_bil,
-                              category=cat,
-                              invariant_submodule=self,
-                              invariant_quotient_module=D)
+        G = GroupOfIsometries(
+            deg,
+            base,
+            gens,
+            inv_bil,
+            category=cat,
+            invariant_submodule=self,
+            invariant_quotient_module=D,
+        )
         return G
 
     automorphisms = orthogonal_group
@@ -1337,6 +1389,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             Genus symbol at 2:    1^2
         """
         from sage.quadratic_forms.genera.genus import Genus
+
         return Genus(self.gram_matrix())
 
     def tensor_product(self, other, discard_basis=False):
@@ -1389,14 +1442,18 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         if discard_basis:
             gram_matrix = self.gram_matrix().tensor_product(other.gram_matrix())
             return IntegralLattice(gram_matrix)
-        inner_product_matrix = self.inner_product_matrix().tensor_product(other.inner_product_matrix())
+        inner_product_matrix = self.inner_product_matrix().tensor_product(
+            other.inner_product_matrix()
+        )
         basis_matrix = self.basis_matrix().tensor_product(other.basis_matrix())
         n = self.degree()
         m = other.degree()
         ambient = FreeQuadraticModule(self.base_ring(), m * n, inner_product_matrix)
-        return FreeQuadraticModule_integer_symmetric(ambient=ambient,
-                                                     basis=basis_matrix,
-                                                     inner_product_matrix=ambient.inner_product_matrix())
+        return FreeQuadraticModule_integer_symmetric(
+            ambient=ambient,
+            basis=basis_matrix,
+            inner_product_matrix=ambient.inner_product_matrix(),
+        )
 
     @cached_method
     def quadratic_form(self):
@@ -1412,6 +1469,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             [ * 2 ]
         """
         from sage.quadratic_forms.quadratic_form import QuadraticForm
+
         return QuadraticForm(2 * self.gram_matrix())
 
     @cached_method
@@ -1436,6 +1494,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
             raise ValueError("the empty set does not have a minimum")
         if n != 0:
             from sage.rings.infinity import MinusInfinity
+
             return MinusInfinity()
         mpari = self.gram_matrix().__pari__().qfminim(None, 0)[1]
         return mpari
@@ -1462,6 +1521,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         p, n = self.signature_pair()
         if p != 0:
             from sage.rings.infinity import PlusInfinity
+
             return PlusInfinity()
         mpari = (-self.gram_matrix()).__pari__().qfminim(None, 0)[1]
         return -mpari
@@ -1491,6 +1551,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         if p * n != 0:
             from sage.env import SAGE_EXTCODE
             from sage.libs.pari import pari
+
             m = self.gram_matrix()
             pari.read(Path(SAGE_EXTCODE) / "pari" / "simon" / "qfsolve.gp")
             m = pari('qflllgram_indefgoon')(m)
@@ -1542,10 +1603,14 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         if m != 0:
             e = -2
         from sage.quadratic_forms.quadratic_form import QuadraticForm
+
         q = QuadraticForm(e * self.gram_matrix())
         short = q.short_vector_list_up_to_length(n, **kwargs)
         # (matrix(L)* B ).rows() is faster than [v * B for v in L]
-        return [[self(r, check=False) for r in matrix(L) * self.basis_matrix()] if L else [] for L in short]
+        return [
+            [self(r, check=False) for r in matrix(L) * self.basis_matrix()] if L else []
+            for L in short
+        ]
 
     def _fplll_enumerate(self, target=None):
         r"""
@@ -1571,6 +1636,7 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         basis = L.basis_matrix()
 
         import fpylll
+
         gmat = fpylll.IntegerMatrix.from_matrix(L.gram_matrix())
         gso = fpylll.GSO.Mat(gmat, gram=True)
         ok = gso.update_gso()
@@ -1579,15 +1645,16 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         coord = None
         if target is not None:
             coord = basis.solve_left(target)
-            Mu = 1 + matrix([gso.get_mu(i, j) for j in range(dim)]
-                            for i in range(dim))
+            Mu = 1 + matrix([gso.get_mu(i, j) for j in range(dim)] for i in range(dim))
             coord *= Mu
 
         count = 8
         bound = gso.get_r(dim - 1, dim - 1)
         seen = set()
         while True:
-            enum = fpylll.Enumeration(gso, count, fpylll.EvaluatorStrategy.BEST_N_SOLUTIONS)
+            enum = fpylll.Enumeration(
+                gso, count, fpylll.EvaluatorStrategy.BEST_N_SOLUTIONS
+            )
             try:
                 combs = enum.enumerate(0, dim, bound, 0, coord)
             except fpylll.EnumerationError:
@@ -1710,7 +1777,11 @@ class FreeQuadraticModule_integer_symmetric(FreeQuadraticModule_submodule_with_b
         n = self.degree()
         inner_product_matrix = s * self.inner_product_matrix()
         ambient = FreeQuadraticModule(self.base_ring(), n, inner_product_matrix)
-        return FreeQuadraticModule_integer_symmetric(ambient=ambient, basis=self.basis(), inner_product_matrix=inner_product_matrix)
+        return FreeQuadraticModule_integer_symmetric(
+            ambient=ambient,
+            basis=self.basis(),
+            inner_product_matrix=inner_product_matrix,
+        )
 
 
 def local_modification(M, G, p, check=True):
@@ -1756,7 +1827,10 @@ def local_modification(M, G, p, check=True):
         [  0 -12   0  24]
     """
     from sage.quadratic_forms.genera.normal_form import p_adic_normal_form
-    from sage.quadratic_forms.genera.genus import Genus_Symbol_p_adic_ring, p_adic_symbol
+    from sage.quadratic_forms.genera.genus import (
+        Genus_Symbol_p_adic_ring,
+        p_adic_symbol,
+    )
 
     # notation
     d = G.inverse().denominator()
@@ -1767,10 +1841,10 @@ def local_modification(M, G, p, check=True):
     L_max = L.maximal_overlattice(p=p)
 
     # invert the gerstein operations
-    _, U = p_adic_normal_form(L_max.gram_matrix(), p, precision=scale+3)
-    B = (~L_max.basis_matrix()).change_ring(ZZ)*~U.change_ring(ZZ)
+    _, U = p_adic_normal_form(L_max.gram_matrix(), p, precision=scale + 3)
+    B = (~L_max.basis_matrix()).change_ring(ZZ) * ~U.change_ring(ZZ)
 
-    _, UM = p_adic_normal_form(M.gram_matrix(), p, precision=scale+3)
+    _, UM = p_adic_normal_form(M.gram_matrix(), p, precision=scale + 3)
     B = B * UM.change_ring(ZZ) * M.basis_matrix()
 
     # the local modification

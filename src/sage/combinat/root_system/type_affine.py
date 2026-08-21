@@ -1,12 +1,12 @@
 """
 Root system data for affine Cartan types
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.combinat.free_module import CombinatorialFreeModule
@@ -111,6 +111,7 @@ class AmbientSpace(CombinatorialFreeModule):
         sage: Lambda[1]                                                                 # needs sage.graphs
         e[0] + e['deltacheck']
     """
+
     @classmethod
     def smallest_base_ring(cls, cartan_type):
         r"""
@@ -131,7 +132,12 @@ class AmbientSpace(CombinatorialFreeModule):
             Rational Field
         """
         classical = cartan_type.classical()
-        return cartan_type.classical().root_system().ambient_space().smallest_base_ring(classical)
+        return (
+            cartan_type.classical()
+            .root_system()
+            .ambient_space()
+            .smallest_base_ring(classical)
+        )
 
     def __init__(self, root_system, base_ring):
         r"""
@@ -151,22 +157,34 @@ class AmbientSpace(CombinatorialFreeModule):
             e[0] - e[1]
         """
         self.root_system = root_system
-        classical = root_system.cartan_type().classical().root_system().ambient_space(base_ring)
+        classical = (
+            root_system.cartan_type().classical().root_system().ambient_space(base_ring)
+        )
         basis_keys = tuple(classical.basis().keys()) + ("delta", "deltacheck")
 
         def sortkey(x):
             return (1 if isinstance(x, str) else 0, x)
-        CombinatorialFreeModule.__init__(self, base_ring,
-                                         basis_keys,
-                                         prefix='e',
-                                         latex_prefix='e',
-                                         sorting_key=sortkey,
-                                         category=WeightLatticeRealizations(base_ring))
-        self._weight_space = self.root_system.weight_space(base_ring=base_ring,extended=True)
-        self.classical().module_morphism(self.monomial, codomain=self).register_as_coercion()
+
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            basis_keys,
+            prefix='e',
+            latex_prefix='e',
+            sorting_key=sortkey,
+            category=WeightLatticeRealizations(base_ring),
+        )
+        self._weight_space = self.root_system.weight_space(
+            base_ring=base_ring, extended=True
+        )
+        self.classical().module_morphism(
+            self.monomial, codomain=self
+        ).register_as_coercion()
         # Duplicated from ambient_space.AmbientSpace
         coroot_lattice = self.root_system.coroot_lattice()
-        coroot_lattice.module_morphism(self.simple_coroot, codomain=self).register_as_coercion()
+        coroot_lattice.module_morphism(
+            self.simple_coroot, codomain=self
+        ).register_as_coercion()
 
     def _name_string(self, capitalize=True, base_ring=False, type=True):
         r"""
@@ -186,7 +204,9 @@ class AmbientSpace(CombinatorialFreeModule):
             sage: RootSystem(['A',4,1]).ambient_lattice()._name_string()
             "Ambient lattice of the Root system of type ['A', 4, 1]"
         """
-        return self._name_string_helper("ambient", capitalize=capitalize, base_ring=base_ring, type=type)
+        return self._name_string_helper(
+            "ambient", capitalize=capitalize, base_ring=base_ring, type=type
+        )
 
     _repr_ = _name_string
 
@@ -295,7 +315,11 @@ class AmbientSpace(CombinatorialFreeModule):
         if i == "delta":
             return self.monomial("delta")
         deltacheck = self.monomial("deltacheck")
-        result = deltacheck * self._weight_space.fundamental_weight(i).level() / deltacheck.level()
+        result = (
+            deltacheck
+            * self._weight_space.fundamental_weight(i).level()
+            / deltacheck.level()
+        )
         if i != self.cartan_type().special_node():
             result += self(self.classical().fundamental_weight(i))
         return result
@@ -439,13 +463,14 @@ class AmbientSpace(CombinatorialFreeModule):
             (0, 0, 1)
         """
         from sage.modules.free_module_element import vector
+
         classical = self.classical()
         # Any better way to concatenate two vectors?
-        return vector(list(vector(classical._plot_projection(classical(x)))) +
-                      [x["deltacheck"]])
+        return vector(
+            list(vector(classical._plot_projection(classical(x)))) + [x["deltacheck"]]
+        )
 
     class Element(CombinatorialFreeModule.Element):
-
         def inner_product(self, other):
             r"""
             Implement the canonical inner product of ``self`` with ``other``.
@@ -474,7 +499,7 @@ class AmbientSpace(CombinatorialFreeModule):
             """
             if self.parent() is not other.parent():
                 raise TypeError("the parents must be the same")
-            return self.base_ring().sum( self[i] * c for (i,c) in other )
+            return self.base_ring().sum(self[i] * c for (i, c) in other)
 
         scalar = inner_product
 
@@ -503,4 +528,4 @@ class AmbientSpace(CombinatorialFreeModule):
             L = self.parent()
             c = self["delta"]
             self = self - L.term("delta", c)
-            return (2*self) / self.inner_product(self) + L.term("deltacheck", c)
+            return (2 * self) / self.inner_product(self) + L.term("deltacheck", c)

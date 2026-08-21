@@ -102,6 +102,7 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
         [[], [0], [1], [0, 1]]
     """
     from sage.data_structures.bitset import Bitset
+
     # About the implementation:
     #
     # 1) We work on X={0,...,n-1} but remember X to return correctly
@@ -122,8 +123,8 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
         max_obstruction_size = n
 
     bs = [Bitset([], 1) for _ in range(n)]  # collection of no-set
-    nforb = 1                              # number of no-sets stored
-    current_layer = [[]]                  # all yes-sets of size 'current_size'
+    nforb = 1  # number of no-sets stored
+    current_layer = [[]]  # all yes-sets of size 'current_size'
     current_size = 0
 
     def explore_neighbors(s):
@@ -135,8 +136,8 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
         """
         new_yes_sets = []
         new_no_sets = []
-        for i in range((s[-1] + 1 if s else 0), n):        # all ways to extend it
-            s_plus_i = s + [i]                             # the extended set
+        for i in range((s[-1] + 1 if s else 0), n):  # all ways to extend it
+            s_plus_i = s + [i]  # the extended set
             s_plus_i_c = Bitset(s_plus_i, n).complement()  # .. and its complement
 
             # Filter a no-set using the data collected so far.
@@ -146,7 +147,9 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
 
             # If we cannot decide yet we must call f(S)
             if not inter:
-                if set_size >= max_obstruction_size or f([X_labels[xx] for xx in s_plus_i]):
+                if set_size >= max_obstruction_size or f(
+                    [X_labels[xx] for xx in s_plus_i]
+                ):
                     new_yes_sets.append(s_plus_i)
                 else:
                     new_no_sets.append(s_plus_i)
@@ -160,6 +163,7 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
 
     if ncpus != 1:
         from sage.parallel.decorate import parallel
+
         explore_neighbors_paral = parallel(ncpus=ncpus)(explore_neighbors)
 
     # All sets of size 0, then size 1, then ...
@@ -172,7 +176,9 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
         if ncpus == 1:
             yes_no_iter = (explore_neighbors(s) for s in current_layer)
         else:
-            yes_no_iter = ((yes, no) for (_, (yes, no)) in explore_neighbors_paral(current_layer))
+            yes_no_iter = (
+                (yes, no) for (_, (yes, no)) in explore_neighbors_paral(current_layer)
+            )
 
         for yes, no in yes_no_iter:
             new_yes_sets.extend(yes)
@@ -197,5 +203,5 @@ def subsets_with_hereditary_property(f, X, max_obstruction_size=None, ncpus=1):
     #
     # If we did, this was probably the worst choice of algorithm for we computed
     # f(X) for all 2^n sets X, but well...
-    if (current_size == len(X) and nforb == 1 and f(X_labels)):
+    if current_size == len(X) and nforb == 1 and f(X_labels):
         yield X_labels

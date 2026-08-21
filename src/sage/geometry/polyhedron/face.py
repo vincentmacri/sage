@@ -153,8 +153,12 @@ class PolyhedronFace(ConvexSet_closed):
         self._polyhedron = polyhedron
         self._ambient_Vrepresentation_indices = tuple(V_indices)
         self._ambient_Hrepresentation_indices = tuple(H_indices)
-        self._ambient_Vrepresentation = tuple(polyhedron.Vrepresentation(i) for i in V_indices)
-        self._ambient_Hrepresentation = tuple(polyhedron.Hrepresentation(i) for i in H_indices)
+        self._ambient_Vrepresentation = tuple(
+            polyhedron.Vrepresentation(i) for i in V_indices
+        )
+        self._ambient_Hrepresentation = tuple(
+            polyhedron.Hrepresentation(i) for i in H_indices
+        )
         if polyhedron.is_mutable():
             polyhedron._add_dependent_object(self)
 
@@ -362,11 +366,18 @@ class PolyhedronFace(ConvexSet_closed):
         if not isinstance(other, PolyhedronFace):
             return NotImplemented
         if self._polyhedron is not other._polyhedron:
-            if (self._polyhedron.Vrepresentation() != other._polyhedron.Vrepresentation()
-                    or self._polyhedron.Hrepresentation() != other._polyhedron.Hrepresentation()):
+            if (
+                self._polyhedron.Vrepresentation()
+                != other._polyhedron.Vrepresentation()
+                or self._polyhedron.Hrepresentation()
+                != other._polyhedron.Hrepresentation()
+            ):
                 return NotImplemented
-        return richcmp(self._ambient_Vrepresentation_indices,
-                       other._ambient_Vrepresentation_indices, op)
+        return richcmp(
+            self._ambient_Vrepresentation_indices,
+            other._ambient_Vrepresentation_indices,
+            op,
+        )
 
     def ambient_Hrepresentation(self, index=None):
         r"""
@@ -582,10 +593,14 @@ class PolyhedronFace(ConvexSet_closed):
         if self.n_ambient_Vrepresentation() == 0:
             return -1
         origin = self.vertices()[0].vector()
-        v_list = [vector(v) - origin for v in
-                 self.ambient_Vrepresentation() if v.is_vertex()]
-        v_list += [vector(v) for v in self.ambient_Vrepresentation()
-                  if v.is_ray() or v.is_line()]
+        v_list = [
+            vector(v) - origin for v in self.ambient_Vrepresentation() if v.is_vertex()
+        ]
+        v_list += [
+            vector(v)
+            for v in self.ambient_Vrepresentation()
+            if v.is_ray() or v.is_line()
+        ]
         return matrix(v_list).rank()
 
     def _repr_(self):
@@ -711,8 +726,9 @@ class PolyhedronFace(ConvexSet_closed):
             sage: line.is_compact()
             False
         """
-        return not any(V.is_ray() or V.is_line()
-                       for V in self.ambient_Vrepresentation())
+        return not any(
+            V.is_ray() or V.is_line() for V in self.ambient_Vrepresentation()
+        )
 
     @cached_method
     def as_polyhedron(self, **kwds):
@@ -738,9 +754,9 @@ class PolyhedronFace(ConvexSet_closed):
         parent = P.parent()
         Vrep = (self.vertices(), self.rays(), self.lines())
         result = P.__class__(parent, Vrep, None)
-        if any(kwds.get(kwd) is not None
-               for kwd in ('base_ring', 'backend')):
+        if any(kwds.get(kwd) is not None for kwd in ('base_ring', 'backend')):
             from .constructor import Polyhedron
+
             return Polyhedron(result, **kwds)
         return result
 
@@ -930,10 +946,8 @@ class PolyhedronFace(ConvexSet_closed):
         if self.dim() == -1:
             raise ValueError("affine tangent cone of the empty face not defined")
         parent = self.polyhedron().parent()
-        new_ieqs = [H for H in self.ambient_Hrepresentation()
-                    if H.is_inequality()]
-        new_eqns = [H for H in self.ambient_Hrepresentation()
-                    if H.is_equation()]
+        new_ieqs = [H for H in self.ambient_Hrepresentation() if H.is_inequality()]
+        new_eqns = [H for H in self.ambient_Hrepresentation() if H.is_equation()]
         return parent.element_class(parent, None, [new_ieqs, new_eqns])
 
     @cached_method
@@ -967,8 +981,12 @@ class PolyhedronFace(ConvexSet_closed):
         if self.dim() == self.polyhedron().dim() - 1:
             face_star = set([self.ambient_Hrepresentation()[-1]])
         else:
-            face_star = set(facet for facet in self.ambient_Hrepresentation() if facet.is_inequality()
-                            if all(not facet.interior_contains(x) for x in self.vertices()))
+            face_star = set(
+                facet
+                for facet in self.ambient_Hrepresentation()
+                if facet.is_inequality()
+                if all(not facet.interior_contains(x) for x in self.vertices())
+            )
 
         neighboring_facets = set()
         for facet in face_star:
@@ -980,7 +998,11 @@ class PolyhedronFace(ConvexSet_closed):
         locus_ieqs = [facet.vector() for facet in neighboring_facets]
         locus_ieqs += [-facet.vector() for facet in face_star]
         locus_eqns = self.polyhedron().equations_list()
-        parent = self.polyhedron().parent().change_ring(self.polyhedron().base_ring().fraction_field())
+        parent = (
+            self.polyhedron()
+            .parent()
+            .change_ring(self.polyhedron().base_ring().fraction_field())
+        )
 
         return parent.element_class(parent, None, [locus_ieqs, locus_eqns])
 
@@ -1029,8 +1051,17 @@ def combinatorial_face_to_polyhedral_face(polyhedron, combinatorial_face):
     if polyhedron.backend() in ('ppl',):
         # Equations before inequalities in Hrep.
         H_indices = tuple(range(n_equations))
-        H_indices += tuple(x+n_equations for x in combinatorial_face.ambient_H_indices(add_equations=False))
-    elif polyhedron.backend() in ('normaliz', 'cdd', 'field', 'number_field', 'polymake'):
+        H_indices += tuple(
+            x + n_equations
+            for x in combinatorial_face.ambient_H_indices(add_equations=False)
+        )
+    elif polyhedron.backend() in (
+        'normaliz',
+        'cdd',
+        'field',
+        'number_field',
+        'polymake',
+    ):
         # Equations after the inequalities in Hrep.
         n_ieqs = polyhedron.n_inequalities()
         H_indices = tuple(combinatorial_face.ambient_H_indices(add_equations=False))

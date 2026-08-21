@@ -28,6 +28,7 @@ class OreModule_homspace(UniqueRepresentation, HomsetWithBase):
     r"""
     Class for hom spaces between Ore modules.
     """
+
     Element = OreModuleMorphism
 
     def __init__(self, domain, codomain, category=None):
@@ -73,7 +74,9 @@ class OreModule_homspace(UniqueRepresentation, HomsetWithBase):
         if not isinstance(codomain, OreModule):
             raise ValueError("codomain must be a Ore module")
         if domain.ore_ring(action=False) is not codomain.ore_ring(action=False):
-            raise ValueError("domain and codomain must be defined over the same ring with same twisting maps")
+            raise ValueError(
+                "domain and codomain must be defined over the same ring with same twisting maps"
+            )
         super().__init__(domain, codomain, category)
         base = domain.base_ring()
         self._matrix_space = MatrixSpace(base, domain.dimension(), codomain.dimension())

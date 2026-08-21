@@ -56,11 +56,14 @@ class PSage(Sage):
             raise NotImplementedError("PSage doesn't work on remote server yet.")
         Sage.__init__(self, **kwds)
         import sage.misc.misc
+
         T = sage.misc.temporary_file.tmp_dir('sage_smp')
         self.__tmp_dir = T
         self.__tmp = '%s/lock' % T
         self._unlock()
-        self._unlock_code = "with open('%s', 'w') as f: f.write('__unlocked__')" % self.__tmp
+        self._unlock_code = (
+            "with open('%s', 'w') as f: f.write('__unlocked__')" % self.__tmp
+        )
 
         global number
         self._number = number
@@ -74,7 +77,9 @@ class PSage(Sage):
             sage: PSage()                                   # indirect doctest
             A running non-blocking (parallel) instance of Sage (number ...)
         """
-        return 'A running non-blocking (parallel) instance of Sage (number %s)' % (self._number)
+        return 'A running non-blocking (parallel) instance of Sage (number %s)' % (
+            self._number
+        )
 
     def _unlock(self):
         self._locked = False

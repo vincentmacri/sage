@@ -80,7 +80,7 @@ def group_law(G) -> tuple:
     from sage.categories.groups import Groups
     from sage.categories.additive_groups import AdditiveGroups
 
-    if G in Groups():          # multiplicative groups
+    if G in Groups():  # multiplicative groups
         return (G.one(), operator.mul, operator.inv)
     if G in AdditiveGroups():  # additive groups
         return (G.zero(), operator.add, operator.neg)
@@ -254,19 +254,27 @@ def is_difference_family(G, D, v=None, k=None, l=None, verbose=False) -> bool:
     nb_diff = 0
     stab = []
     for d in D:
-        s = block_stabilizer(G,d)
+        s = block_stabilizer(G, d)
         stab.append(s)
-        nb_diff += k*(k-1) // len(s)
+        nb_diff += k * (k - 1) // len(s)
     if l is None:
-        if nb_diff % (v-1) != 0:
+        if nb_diff % (v - 1) != 0:
             if verbose:
-                print("the number of differences (={}) must be a multiple of v-1={}".format(nb_diff, v-1))
+                print(
+                    "the number of differences (={}) must be a multiple of v-1={}".format(
+                        nb_diff, v - 1
+                    )
+                )
             return False
-        l = nb_diff // (v-1)
+        l = nb_diff // (v - 1)
     else:
-        if nb_diff != l*(v-1):
+        if nb_diff != l * (v - 1):
             if verbose:
-                print("the number of differences (={}) is not equal to l*(v-1) = {}".format(nb_diff, l*(v-1)))
+                print(
+                    "the number of differences (={}) is not equal to l*(v-1) = {}".format(
+                        nb_diff, l * (v - 1)
+                    )
+                )
             return False
 
     # Check that every x \in G-{0},occurs exactly l times as a difference
@@ -274,7 +282,7 @@ def is_difference_family(G, D, v=None, k=None, l=None, verbose=False) -> bool:
     where = {g: set() for g in Glist}
     del counter[identity]
 
-    for i,d in enumerate(D):
+    for i, d in enumerate(D):
         tmp_counter = {}
         for b in d:
             for c in d:
@@ -316,13 +324,19 @@ def is_difference_family(G, D, v=None, k=None, l=None, verbose=False) -> bool:
     if too_few:
         print("Too few:")
         for g in too_few:
-            print("  {} is obtained {} times in blocks {}".format(
-                        g, counter[g], sorted(where[g])))
+            print(
+                "  {} is obtained {} times in blocks {}".format(
+                    g, counter[g], sorted(where[g])
+                )
+            )
     if too_much:
         print("Too much:")
         for g in too_much:
-            print("  {} is obtained {} times in blocks {}".format(
-                        g, counter[g], sorted(where[g])))
+            print(
+                "  {} is obtained {} times in blocks {}".format(
+                    g, counter[g], sorted(where[g])
+                )
+            )
     if too_few or too_much:
         return False
 
@@ -388,12 +402,12 @@ def singer_difference_set(q, d) -> tuple:
 
     # build a polynomial c over GF(q) such that GF(q)[x] / (c(x)) is a
     # GF(q**(d+1)) and such that x is a multiplicative generator.
-    p,e = q.factor()[0]
-    c = conway_polynomial(p, e*(d+1))
+    p, e = q.factor()[0]
+    c = conway_polynomial(p, e * (d + 1))
     if e != 1:
         # i.e. q is not a prime, so we factorize c over GF(q) and pick
         # one of its factor
-        K = GF(q,'z')
+        K = GF(q, 'z')
         c = c.change_ring(K).factor()[0][0]
     else:
         K = GF(q)
@@ -406,14 +420,14 @@ def singer_difference_set(q, d) -> tuple:
     powers = [0]
     i = 1
     x = z
-    k = (q**d-1)//(q-1)
+    k = (q**d - 1) // (q - 1)
     while len(powers) < k:
-        if x.degree() <= (d-1):
+        if x.degree() <= (d - 1):
             powers.append(i)
-        x = (x*z).mod(c)
+        x = (x * z).mod(c)
         i += 1
 
-    return Zmod((q**(d+1)-1)//(q-1)), [powers]
+    return Zmod((q ** (d + 1) - 1) // (q - 1)), [powers]
 
 
 def df_q_6_1(K, existence=False, check=True):
@@ -447,22 +461,30 @@ def df_q_6_1(K, existence=False, check=True):
         if existence:
             return False
         raise EmptySetError("k(k-1)=30 should divide (v-1)")
-    t = (v-1) // 30  # number of blocks
+    t = (v - 1) // 30  # number of blocks
 
-    r = x**((v-1)//3)  # primitive cube root of unity
-    r2 = r*r           # the other primitive cube root
+    r = x ** ((v - 1) // 3)  # primitive cube root of unity
+    r2 = r * r  # the other primitive cube root
 
     # we now compute the cosets of x**i
     xx = x**5
-    to_coset = {x**i * xx**j: i for i in range(5) for j in range((v-1)/5)}
+    to_coset = {x**i * xx**j: i for i in range(5) for j in range((v - 1) / 5)}
 
     for c in to_coset:  # the loop runs through all nonzero elements of K
         if c == one or c == r or c == r2:
             continue
-        if len(set(to_coset[elt] for elt in (r-one, c*(r-one), c-one, c-r, c-r**2))) == 5:
+        if (
+            len(
+                set(
+                    to_coset[elt]
+                    for elt in (r - one, c * (r - one), c - one, c - r, c - r**2)
+                )
+            )
+            == 5
+        ):
             if existence:
                 return True
-            B = [one,r,r2,c,c*r,c*r2]
+            B = [one, r, r2, c, c * r, c * r2]
             D = [[xx**i * b for b in B] for i in range(t)]
             break
     else:
@@ -471,7 +493,9 @@ def df_q_6_1(K, existence=False, check=True):
         raise NotImplementedError("Wilson construction failed for v={}".format(v))
 
     if check and not is_difference_family(K, D, v, 6, 1):
-        raise RuntimeError("Wilson 1972 construction failed! Please e-mail sage-devel@googlegroups.com")
+        raise RuntimeError(
+            "Wilson 1972 construction failed! Please e-mail sage-devel@googlegroups.com"
+        )
 
     return D
 
@@ -549,49 +573,49 @@ def radical_difference_set(K, k, l=1, existence=False, check=True):
     """
     v = K.cardinality()
 
-    if l*(v-1) != k*(k-1):
+    if l * (v - 1) != k * (k - 1):
         if existence:
             return False
         raise EmptySetError("l*(v-1) is not equal to k*(k-1)")
 
     # trivial case
-    if (v-1) == k:
+    if (v - 1) == k:
         if existence:
             return True
         add_zero = False
 
     # q = 3 mod 4
-    elif v % 4 == 3 and k == (v-1)//2:
+    elif v % 4 == 3 and k == (v - 1) // 2:
         if existence:
             return True
         add_zero = False
 
     # q = 3 mod 4
-    elif v % 4 == 3 and k == (v+1)//2:
+    elif v % 4 == 3 and k == (v + 1) // 2:
         if existence:
             return True
         add_zero = True
 
     # q = 4t^2 + 1, t odd
-    elif v % 8 == 5 and k == (v-1)//4 and is_square((v-1)//4):
+    elif v % 8 == 5 and k == (v - 1) // 4 and is_square((v - 1) // 4):
         if existence:
             return True
         add_zero = False
 
     # q = 4t^2 + 9, t odd
-    elif v % 8 == 5 and k == (v+3)//4 and is_square((v-9)//4):
+    elif v % 8 == 5 and k == (v + 3) // 4 and is_square((v - 9) // 4):
         if existence:
             return True
         add_zero = True
 
     # exceptional case 1
-    elif (v,k,l) == (16,6,2):
+    elif (v, k, l) == (16, 6, 2):
         if existence:
             return True
         add_zero = True
 
     # exceptional case 2
-    elif (v,k,l) == (73,9,1):
+    elif (v, k, l) == (73, 9, 1):
         if existence:
             return True
         add_zero = False
@@ -599,22 +623,30 @@ def radical_difference_set(K, k, l=1, existence=False, check=True):
     # are there more ??
     else:
         x = K.multiplicative_generator()
-        D = K.cyclotomic_cosets(x**((v-1)//k), [K.one()])
+        D = K.cyclotomic_cosets(x ** ((v - 1) // k), [K.one()])
         if is_difference_family(K, D, v, k, l):
-            print("**  You found a new example of radical difference set **\n"
-                  "**  for the parameters (v,k,l)=({},{},{}).            **\n"
-                  "**  Please contact sage-devel@googlegroups.com        **\n".format(v, k, l))
+            print(
+                "**  You found a new example of radical difference set **\n"
+                "**  for the parameters (v,k,l)=({},{},{}).            **\n"
+                "**  Please contact sage-devel@googlegroups.com        **\n".format(
+                    v, k, l
+                )
+            )
             if existence:
                 return True
             add_zero = False
 
         else:
-            D = K.cyclotomic_cosets(x**((v-1)//(k-1)), [K.one()])
-            D[0].insert(0,K.zero())
+            D = K.cyclotomic_cosets(x ** ((v - 1) // (k - 1)), [K.one()])
+            D[0].insert(0, K.zero())
             if is_difference_family(K, D, v, k, l):
-                print("**  You found a new example of radical difference set **\n"
-                      "**  for the parameters (v,k,l)=({},{},{}).            **\n"
-                      "**  Please contact sage-devel@googlegroups.com        **\n".format(v, k, l))
+                print(
+                    "**  You found a new example of radical difference set **\n"
+                    "**  for the parameters (v,k,l)=({},{},{}).            **\n"
+                    "**  Please contact sage-devel@googlegroups.com        **\n".format(
+                        v, k, l
+                    )
+                )
                 if existence:
                     return True
                 add_zero = True
@@ -622,22 +654,26 @@ def radical_difference_set(K, k, l=1, existence=False, check=True):
             elif existence:
                 return False
             else:
-                raise EmptySetError("no radical difference set exist "
-                        "for the parameters (v,k,l) = ({},{},{}".format(v,k,l))
+                raise EmptySetError(
+                    "no radical difference set exist "
+                    "for the parameters (v,k,l) = ({},{},{}".format(v, k, l)
+                )
 
     x = K.multiplicative_generator()
     if add_zero:
-        r = x**((v-1)//(k-1))
+        r = x ** ((v - 1) // (k - 1))
         D = K.cyclotomic_cosets(r, [K.one()])
         D[0].insert(0, K.zero())
     else:
-        r = x**((v-1)//k)
+        r = x ** ((v - 1) // k)
         D = K.cyclotomic_cosets(r, [K.one()])
 
     if check and not is_difference_family(K, D, v, k, l):
-        raise RuntimeError("Sage tried to build a radical difference set with "
-                "parameters ({},{},{}) but it seems that it failed! Please "
-                "e-mail sage-devel@googlegroups.com".format(v,k,l))
+        raise RuntimeError(
+            "Sage tried to build a radical difference set with "
+            "parameters ({},{},{}) but it seems that it failed! Please "
+            "e-mail sage-devel@googlegroups.com".format(v, k, l)
+        )
 
     return D
 
@@ -693,17 +729,17 @@ def one_cyclic_tiling(A, n):
     n = int(n)
     d = len(A)
     if len(set(a % d for a in A)) == d:
-        return [i*d for i in range(n//d)]
+        return [i * d for i in range(n // d)]
 
     # next, we consider an exhaustive search
     from sage.combinat.dlx import DLXMatrix
 
     rows = []
     for i in range(n):
-        rows.append([i+1, [(i+a) % n+1 for a in A]])
+        rows.append([i + 1, [(i + a) % n + 1 for a in A]])
     M = DLXMatrix(rows)
     for c in M:
-        return [i-1 for i in c]
+        return [i - 1 for i in c]
 
 
 def one_radical_difference_family(K, k):
@@ -786,25 +822,25 @@ def one_radical_difference_family(K, k):
     q = K.cardinality()
     x = K.multiplicative_generator()
 
-    e = k*(k-1)
+    e = k * (k - 1)
     if q % e != 1:
         raise ValueError("q%e is not 1")
 
     # We define A by (see the function's documentation):
     # ΔB = C.A
     if k % 2 == 1:
-        m = (k-1) // 2
-        r = x ** ((q-1) // k)     # k-th root of unity
-        A = [r**i - 1 for i in range(1,m+1)]
+        m = (k - 1) // 2
+        r = x ** ((q - 1) // k)  # k-th root of unity
+        A = [r**i - 1 for i in range(1, m + 1)]
     else:
         m = k // 2
-        r = x ** ((q-1) // (k-1))  # (k-1)-th root of unity
-        A = [r**i - 1 for i in range(1,m)]
+        r = x ** ((q - 1) // (k - 1))  # (k-1)-th root of unity
+        A = [r**i - 1 for i in range(1, m)]
         A.append(K.one())
 
     # instead of the complicated multiplicative group K^*/(±C) we use the
     # discrete logarithm to convert everything into the additive group Z/cZ
-    c = m * (q-1) // e  # cardinal of ±C
+    c = m * (q - 1) // e  # cardinal of ±C
     logA = [a.log(x) % c for a in A]
 
     # if two elements of A are equal modulo c then no tiling is possible
@@ -819,7 +855,7 @@ def one_radical_difference_family(K, k):
     D = K.cyclotomic_cosets(r, [x**i for i in tiling])
     if k % 2 == 0:
         for d in D:
-            d.insert(K.zero(),0)
+            d.insert(K.zero(), 0)
     return D
 
 
@@ -895,19 +931,22 @@ def radical_difference_family(K, k, l=1, existence=False, check=True):
     """
     v = K.cardinality()
     x = K.multiplicative_generator()
-    e = k*(k-1)
-    if (l*(v-1)) % e:
-        raise ValueError("k (k-1) = {} should be a multiple of l (v-1) ={}".format(
-                         k*(k-1), l*(v-1)))
-    t = l*(v-1) // e  # number of blocks
+    e = k * (k - 1)
+    if (l * (v - 1)) % e:
+        raise ValueError(
+            "k (k-1) = {} should be a multiple of l (v-1) ={}".format(
+                k * (k - 1), l * (v - 1)
+            )
+        )
+    t = l * (v - 1) // e  # number of blocks
 
     if t == 1:
         return radical_difference_set(K, k, l, existence=existence, check=check)
 
-    if l == (k-1):
+    if l == (k - 1):
         if existence:
             return True
-        return K.cyclotomic_cosets(x**((v-1)//k))[1:]
+        return K.cyclotomic_cosets(x ** ((v - 1) // k))[1:]
 
     # all the other cases below concern the case l == 1
     if l != 1:
@@ -916,7 +955,7 @@ def radical_difference_family(K, k, l=1, existence=False, check=True):
         raise NotImplementedError("No radical families implemented for l > 2")
 
     else:
-        D = one_radical_difference_family(K,k)
+        D = one_radical_difference_family(K, k)
         if D is None:
             if existence:
                 return False
@@ -925,10 +964,12 @@ def radical_difference_family(K, k, l=1, existence=False, check=True):
             return True
 
     if check and not is_difference_family(K, D, v, k, l):
-        raise RuntimeError("radical_difference_family produced a wrong "
-                           "difference family with parameters v={}, "
-                           "k={}, l={}. Please contact "
-                           "sage-devel@googlegroups.com".format(v,k,l))
+        raise RuntimeError(
+            "radical_difference_family produced a wrong "
+            "difference family with parameters v={}, "
+            "k={}, l={}. Please contact "
+            "sage-devel@googlegroups.com".format(v, k, l)
+        )
 
     return D
 
@@ -964,8 +1005,9 @@ def twin_prime_powers_difference_set(p, check=True):
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
     from sage.categories.cartesian_product import cartesian_product
     from itertools import product
-    Fp = FiniteField(p,'x')
-    Fq = FiniteField(p+2,'x')
+
+    Fp = FiniteField(p, 'x')
+    Fq = FiniteField(p + 2, 'x')
     Fpset = set(Fp)
     Fqset = set(Fq)
     Fp_squares = set(x**2 for x in Fpset)
@@ -973,18 +1015,20 @@ def twin_prime_powers_difference_set(p, check=True):
 
     # Pairs of squares, pairs of non-squares
     d = []
-    d.extend(product(Fp_squares.difference([0]),Fq_squares.difference([0])))
-    d.extend(product(Fpset.difference(Fp_squares),Fqset.difference(Fq_squares)))
+    d.extend(product(Fp_squares.difference([0]), Fq_squares.difference([0])))
+    d.extend(product(Fpset.difference(Fp_squares), Fqset.difference(Fq_squares)))
 
     # All (x,0)
-    d.extend((x,0) for x in Fpset)
+    d.extend((x, 0) for x in Fpset)
 
-    G = cartesian_product([Fp,Fq])
+    G = cartesian_product([Fp, Fq])
 
     if check and not is_difference_family(G, [d]):
-        raise RuntimeError("twin_prime_powers_difference_set produced a wrong "
-                           "difference set with p={}. Please contact "
-                           "sage-devel@googlegroups.com".format(p))
+        raise RuntimeError(
+            "twin_prime_powers_difference_set produced a wrong "
+            "difference set with p={}. Please contact "
+            "sage-devel@googlegroups.com".format(p)
+        )
 
     return G, [d]
 
@@ -1040,26 +1084,28 @@ def are_mcfarland_1973_parameters(v, k, lmbda, return_parameters=False):
     k = ZZ(k)
     lmbda = ZZ(lmbda)
     qs, r = (k - lmbda).sqrtrem()  # sqrt(k-l) should be q^s
-    if r or (qs*(qs-1)) % lmbda:
+    if r or (qs * (qs - 1)) % lmbda:
         return (False, None) if return_parameters else False
 
-    q = qs*(qs-1) // lmbda + 1
-    if (q <= 1 or
-        v * (q-1) != qs*q * (qs*q+q-2) or
-        k * (q-1) != qs * (qs*q-1)):
+    q = qs * (qs - 1) // lmbda + 1
+    if (
+        q <= 1
+        or v * (q - 1) != qs * q * (qs * q + q - 2)
+        or k * (q - 1) != qs * (qs * q - 1)
+    ):
         return (False, None) if return_parameters else False
 
     # NOTE: below we compute the value of s so that qs = q^s. If the method
     # is_power_of of integers would be able to return the exponent, we could use
     # that... but currently this is not the case
     # see github issue #19792
-    p1,a1 = qs.is_prime_power(get_data=True)
-    p2,a2 = q.is_prime_power(get_data=True)
+    p1, a1 = qs.is_prime_power(get_data=True)
+    p2, a2 = q.is_prime_power(get_data=True)
 
     if a1 == 0 or a2 == 0 or p1 != p2 or a1 % a2:
         return (False, None) if return_parameters else False
 
-    return (True, (q, a1//a2)) if return_parameters else True
+    return (True, (q, a1 // a2)) if return_parameters else True
 
 
 def mcfarland_1973_construction(q, s):
@@ -1111,19 +1157,19 @@ def mcfarland_1973_construction(q, s):
     from sage.rings.finite_rings.integer_mod_ring import Zmod
     from sage.categories.cartesian_product import cartesian_product
 
-    r = (q**(s+1)-1) // (q-1)
-    F = GF(q,'a')
-    V = VectorSpace(F, s+1)
-    K = Zmod(r+1)
+    r = (q ** (s + 1) - 1) // (q - 1)
+    F = GF(q, 'a')
+    V = VectorSpace(F, s + 1)
+    K = Zmod(r + 1)
 
-    G = cartesian_product([F]*(s+1) + [K])
+    G = cartesian_product([F] * (s + 1) + [K])
 
     D = []
     for k, H in zip(K, V.subspaces(s)):
         for v in H:
             D.append(G(tuple(v) + (k,)))
 
-    return G,[D]
+    return G, [D]
 
 
 def are_hadamard_difference_set_parameters(v, k, lmbda):
@@ -1142,9 +1188,9 @@ def are_hadamard_difference_set_parameters(v, k, lmbda):
         sage: are_hadamard_difference_set_parameters(60, 13, 5)
         False
     """
-    N = k - 2*lmbda
-    N2 = N*N
-    return v == 4*N2 and k == 2*N2 - N and lmbda == N2 - N
+    N = k - 2 * lmbda
+    N2 = N * N
+    return v == 4 * N2 and k == 2 * N2 - N and lmbda == N2 - N
 
 
 @cached_function
@@ -1171,22 +1217,22 @@ def hadamard_difference_set_product_parameters(N):
     if N % 2:
         return False
 
-    for N1 in (N//2).divisors()[1:]:
-        if 4*N1 > N:
+    for N1 in (N // 2).divisors()[1:]:
+        if 4 * N1 > N:
             break
-        v1 = 4*N1*N1
-        k1 = 2*N1*N1 - N1
-        l1 = N1*N1 - N1
+        v1 = 4 * N1 * N1
+        k1 = 2 * N1 * N1 - N1
+        l1 = N1 * N1 - N1
         if not difference_family(v1, k1, l1, existence=True):
             continue
-        N2 = N // (2*N1)
-        v2 = 4*N2*N2
-        k2 = 2*N2*N2 - N2
-        l2 = N2*N2 - N2
+        N2 = N // (2 * N1)
+        v2 = 4 * N2 * N2
+        k2 = 2 * N2 * N2 - N2
+        l2 = N2 * N2 - N2
         if not difference_family(v2, k2, l2, existence=True):
             continue
 
-        return (N1,N2)
+        return (N1, N2)
 
     return None
 
@@ -1219,14 +1265,16 @@ def hadamard_difference_set_product(G1, D1, G2, D2):
     """
     from sage.categories.cartesian_product import cartesian_product
 
-    G = cartesian_product([G1,G2])
+    G = cartesian_product([G1, G2])
     D1 = set(D1[0])
     D1c = set(s for s in G1 if s not in D1)
     D2 = set(D2[0])
     D2c = set(s for s in G2 if s not in D2)
 
-    D = set().union((G((s1,s2)) for s1 in D1 for s2 in D2),
-                    (G((s1,s2)) for s1 in D1c for s2 in D2c))
+    D = set().union(
+        (G((s1, s2)) for s1 in D1 for s2 in D2),
+        (G((s1, s2)) for s1 in D1c for s2 in D2c),
+    )
 
     return G, [[s for s in G if s not in D]]
 
@@ -1258,17 +1306,19 @@ def turyn_1965_3x3xK(k=4):
 
     if k == 2:
         G = cartesian_product([Zmod(3), Zmod(3), Zmod(2), Zmod(2)])
-        K = [(0,0), (0,1), (1,0), (1,1)]
+        K = [(0, 0), (0, 1), (1, 0), (1, 1)]
     elif k == 4:
         G = cartesian_product([Zmod(3), Zmod(3), Zmod(4)])
         K = [(0,), (1,), (2,), (3,)]
     else:
         raise ValueError("k must be 2 or 4")
 
-    L = [[(0,1),(1,1),(2,1),(0,2),(1,2),(2,2)],  # complement of y=0
-         [(0,0),(1,1),(2,2)],                    # x-y=0
-         [(0,0),(1,2),(2,1)],                    # x+y=0
-         [(0,0),(0,1),(0,2)]]                    # x=0
+    L = [
+        [(0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)],  # complement of y=0
+        [(0, 0), (1, 1), (2, 2)],  # x-y=0
+        [(0, 0), (1, 2), (2, 1)],  # x+y=0
+        [(0, 0), (0, 1), (0, 2)],
+    ]  # x=0
 
     return G, [[G(v + k) for l, k in zip(L, K) for v in l]]
 
@@ -1295,18 +1345,18 @@ def _is_periodic_sequence(seq, period):
         sage: _is_periodic_sequence([0, 1, 1, 1, 0, 1, 2, 1], 4)
         False
     """
-    assert len(seq) >= 2*period
+    assert len(seq) >= 2 * period
 
     for per in range(1, period):
         first = seq[:per]
         periodic = True
-        for j in range(1, len(seq)//per):
-            if seq[j*per : (j+1)*per] != first:
+        for j in range(1, len(seq) // per):
+            if seq[j * per : (j + 1) * per] != first:
                 periodic = False
                 break
         if periodic:
             return False
-    return seq[:period] == seq[period:2 * period]
+    return seq[:period] == seq[period : 2 * period]
 
 
 def _create_m_sequence(q, n, check=True):
@@ -1358,8 +1408,8 @@ def _create_m_sequence(q, n, check=True):
     exps = primitive.exponents()
 
     period = q**n - 1
-    seq_len = period*2 if check else period
-    seq = [1] + [0]*(n-1)
+    seq_len = period * 2 if check else period
+    seq = [1] + [0] * (n - 1)
 
     while len(seq) < seq_len:
         nxt = 0
@@ -1470,8 +1520,10 @@ def relative_difference_set_from_m_sequence(q, N, check=True, return_group=False
     set1 = [i for i in G if m_seq[i[0]] == 1]
 
     if check:
-        H = _get_submodule_of_order(G, q-1)
-        assert is_relative_difference_set(set1, G, H, (period // (q-1), q - 1, q**(N-1), q**(N-2)))
+        H = _get_submodule_of_order(G, q - 1)
+        assert is_relative_difference_set(
+            set1, G, H, (period // (q - 1), q - 1, q ** (N - 1), q ** (N - 2))
+        )
 
     if return_group:
         return G, set1
@@ -1538,22 +1590,27 @@ def relative_difference_set_from_homomorphism(q, N, d, check=True, return_group=
         raise ValueError('q must be a prime power')
     if N < 2:
         raise ValueError('N must be at least 2')
-    if (q-1) % d != 0:
+    if (q - 1) % d != 0:
         raise ValueError('q-1 must be a multiple of d')
 
     G = AdditiveAbelianGroup([q**N - 1])
     K = _get_submodule_of_order(G, d)
     assert K is not None, 'Could not find kernel'
 
-    G2 = G/K
+    G2 = G / K
 
     theta = G.hom([G2.gen(0)], G2)
     diff_set = relative_difference_set_from_m_sequence(q, N, check=False)
     second_diff_set = [theta(x) for x in diff_set]
 
     if check:
-        H = _get_submodule_of_order(G2, (q-1) // d)
-        assert is_relative_difference_set(second_diff_set, G2, H, ((q**N-1) // (q-1), (q-1) // d, q**(N-1), q**(N-2) * d))
+        H = _get_submodule_of_order(G2, (q - 1) // d)
+        assert is_relative_difference_set(
+            second_diff_set,
+            G2,
+            H,
+            ((q**N - 1) // (q - 1), (q - 1) // d, q ** (N - 1), q ** (N - 2) * d),
+        )
 
     if return_group:
         return G2, second_diff_set
@@ -1621,7 +1678,9 @@ def is_relative_difference_set(R, G, H, params, verbose=False):
     values = [diff_set[x] for x in diff_set]
     if max(values) != d or min(values) != d:
         if verbose:
-            print('There is a value in the difference set which is not repeated d times')
+            print(
+                'There is a value in the difference set which is not repeated d times'
+            )
         return False
 
     for el in G:
@@ -1631,7 +1690,9 @@ def is_relative_difference_set(R, G, H, params, verbose=False):
             return False
         if el not in H and el not in diff_set:
             if verbose:
-                print('An element of G is not present in either one of H or the difference set')
+                print(
+                    'An element of G is not present in either one of H or the difference set'
+                )
             return False
 
     return True
@@ -1702,7 +1763,10 @@ def is_supplementary_difference_set(Ks, v=None, lmbda=None, G=None, verbose=Fals
         raise ValueError('one of G or v must be specified')
 
     if G is None:
-        from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+        from sage.groups.additive_abelian.additive_abelian_group import (
+            AdditiveAbelianGroup,
+        )
+
         G = AdditiveAbelianGroup([v])
 
     if v is not None and G.order() != v:
@@ -1724,7 +1788,9 @@ def is_supplementary_difference_set(Ks, v=None, lmbda=None, G=None, verbose=Fals
             lmbda = diff
         if diff != lmbda:
             if verbose:
-                print(f'Number of pairs with difference {key} is {diff}, but lambda is {lmbda}')
+                print(
+                    f'Number of pairs with difference {key} is {diff}, but lambda is {lmbda}'
+                )
             return False
 
     return True
@@ -1813,10 +1879,10 @@ def supplementary_difference_set_from_rel_diff_set(q, existence=False, check=Tru
     s = 0
     m = -1
 
-    while q > 2**(s+1) and (q-1) % 2**(s+1) == 0:
-        prime_pow = (q-1)//2**(s+1) - 1
+    while q > 2 ** (s + 1) and (q - 1) % 2 ** (s + 1) == 0:
+        prime_pow = (q - 1) // 2 ** (s + 1) - 1
         if is_prime_power(prime_pow) and prime_pow % 2 == 1:
-            m = (q - (2**(s+1) + 1)) // 2**(s+1) + 1
+            m = (q - (2 ** (s + 1) + 1)) // 2 ** (s + 1) + 1
             break
         s += 1
 
@@ -1828,9 +1894,12 @@ def supplementary_difference_set_from_rel_diff_set(q, existence=False, check=Tru
     if m == -1:
         raise ValueError('There is no s for which m-1 is an odd prime power')
 
-    set1 = relative_difference_set_from_homomorphism(m - 1, 2, (m-2) // 2, check=False)
+    set1 = relative_difference_set_from_homomorphism(
+        m - 1, 2, (m - 2) // 2, check=False
+    )
 
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
     P = PolynomialRing(ZZ, 'x')
 
     # Compute psi3, psi4
@@ -1844,57 +1913,68 @@ def supplementary_difference_set_from_rel_diff_set(q, existence=False, check=Tru
             T += P.monomial(i)
         return T
 
-    modulo = P.monomial(2*m) - 1
+    modulo = P.monomial(2 * m) - 1
 
-    diff = get_T(2*m) - (1+P.monomial(m))*hall
+    diff = get_T(2 * m) - (1 + P.monomial(m)) * hall
     diff = diff.mod(modulo)
     exp1, exp2 = diff.exponents()
-    a = (exp1+exp2-m) // 2
+    a = (exp1 + exp2 - m) // 2
 
     psi3 = (P.monomial(a) + hall).mod(modulo)
-    psi4 = (P.monomial(a+m) + hall).mod(modulo)
+    psi4 = (P.monomial(a + m) + hall).mod(modulo)
 
     for i in range(s):
         m_start = 2**i * m
-        psi3, psi4 = (psi3(P.monomial(2)) + P.monomial(1)*psi4(P.monomial(2))).mod(P.monomial(4*m_start)-1), \
-                 (psi3(P.monomial(2)) + P.monomial(1)*(get_T(2*m_start)(P.monomial(2)) - psi4(P.monomial(2)))).mod(P.monomial(4*m_start)-1)
+        psi3, psi4 = (
+            (psi3(P.monomial(2)) + P.monomial(1) * psi4(P.monomial(2))).mod(
+                P.monomial(4 * m_start) - 1
+            ),
+            (
+                psi3(P.monomial(2))
+                + P.monomial(1)
+                * (get_T(2 * m_start)(P.monomial(2)) - psi4(P.monomial(2)))
+            ).mod(P.monomial(4 * m_start) - 1),
+        )
 
     # Construction of psi1, psi2
-    G2, set2 = relative_difference_set_from_m_sequence(q, 2, check=False, return_group=True)
+    G2, set2 = relative_difference_set_from_m_sequence(
+        q, 2, check=False, return_group=True
+    )
     s3 = get_fixed_relative_difference_set(G2, set2)
 
     phi_exps = []
     for i in range(len(s3)):
-        for j in range(i+1, len(s3)):
+        for j in range(i + 1, len(s3)):
             diff = s3[i] - s3[j]
-            if diff % (q-1) == 0 and diff % (q**2-1) != 0:
+            if diff % (q - 1) == 0 and diff % (q**2 - 1) != 0:
                 phi_exps.append(s3[i])
 
-    exps1 = [(x+1)//2 for x in phi_exps if x % 2 == 1]
-    exps2 = [x//2 for x in phi_exps if x % 2 == 0]
+    exps1 = [(x + 1) // 2 for x in phi_exps if x % 2 == 1]
+    exps2 = [x // 2 for x in phi_exps if x % 2 == 0]
 
     theta1 = 0
     for exp in exps1:
         theta1 += P.monomial(exp)
-    theta1 = theta1.mod(P.monomial(q-1)-1)
+    theta1 = theta1.mod(P.monomial(q - 1) - 1)
 
     theta2 = 0
     for exp in exps2:
         theta2 += P.monomial(exp)
-    theta2 = theta2.mod(P.monomial(q-1) - 1)
+    theta2 = theta2.mod(P.monomial(q - 1) - 1)
 
-    psi1 = ((1 + P.monomial((q-1)//2)) * theta1).mod(P.monomial(q-1) - 1)
-    psi2 = (1 + (1 + P.monomial((q-1)//2)) * theta2).mod(P.monomial(q-1) - 1)
+    psi1 = ((1 + P.monomial((q - 1) // 2)) * theta1).mod(P.monomial(q - 1) - 1)
+    psi2 = (1 + (1 + P.monomial((q - 1) // 2)) * theta2).mod(P.monomial(q - 1) - 1)
 
     from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
-    G = AdditiveAbelianGroup([q-1])
+
+    G = AdditiveAbelianGroup([q - 1])
     K1 = [G[x] for x in psi1.exponents()]
     K2 = [G[x] for x in psi2.exponents()]
     K3 = [G[x] for x in psi3.exponents()]
     K4 = [G[x] for x in psi4.exponents()]
 
     if check:
-        assert is_supplementary_difference_set([K1, K2, K3, K4], lmbda=q-1, G=G)
+        assert is_supplementary_difference_set([K1, K2, K3, K4], lmbda=q - 1, G=G)
 
     return G, [K1, K2, K3, K4]
 
@@ -1959,7 +2039,7 @@ def get_fixed_relative_difference_set(G, rel_diff_set, as_elements=False):
 
     s2 = None
     for el in G:
-        fixed_set = [el+x for x in rel_diff_set]
+        fixed_set = [el + x for x in rel_diff_set]
         if is_fixed_relative_difference_set(fixed_set, q):
             s2 = fixed_set
             break
@@ -1967,7 +2047,7 @@ def get_fixed_relative_difference_set(G, rel_diff_set, as_elements=False):
 
     s3 = None
     for i in range(G.order()):
-        temp = [((q+1)*i+x[0]) % G.order() for x in s2]
+        temp = [((q + 1) * i + x[0]) % G.order() for x in s2]
         if 0 in temp:
             s3 = temp
             break
@@ -2013,7 +2093,9 @@ def is_fixed_relative_difference_set(R, q):
     return all(q * el in R for el in R)
 
 
-def skew_supplementary_difference_set_over_polynomial_ring(n, existence=False, check=True):
+def skew_supplementary_difference_set_over_polynomial_ring(
+    n, existence=False, check=True
+):
     r"""
     Construct skew supplementary difference sets over a polynomial ring of order ``n``.
 
@@ -2056,12 +2138,26 @@ def skew_supplementary_difference_set_over_polynomial_ring(n, existence=False, c
         NotImplementedError: skew SDS of order 7 not yet implemented
     """
     data = {
-        81: (3, lambda x: x**4 - x**3 - 1, 16, 5,
-             [1, 2, 4, 6, 8, 10, 12, 14], [1, 2, 3, 4, 10, 11, 13],
-             [4, 5, 6, 8, 12, 13, 14], [2, 4, 5, 6, 7, 11, 12, 13, 15]),
-        169: (13, lambda x: x**2 - 4*x + 6, 24, 7,
-              [0, 2, 5, 7, 9, 10, 12, 15, 16, 18, 21, 22], [0, 1, 2, 7, 8, 9, 13, 14, 18, 20, 23],
-              [1, 4, 6, 7, 9, 14, 16, 17, 20, 21, 23], [3, 5, 6, 9, 10, 12, 13, 14, 15, 17, 20])
+        81: (
+            3,
+            lambda x: x**4 - x**3 - 1,
+            16,
+            5,
+            [1, 2, 4, 6, 8, 10, 12, 14],
+            [1, 2, 3, 4, 10, 11, 13],
+            [4, 5, 6, 8, 12, 13, 14],
+            [2, 4, 5, 6, 7, 11, 12, 13, 15],
+        ),
+        169: (
+            13,
+            lambda x: x**2 - 4 * x + 6,
+            24,
+            7,
+            [0, 2, 5, 7, 9, 10, 12, 15, 16, 18, 21, 22],
+            [0, 1, 2, 7, 8, 9, 13, 14, 18, 20, 23],
+            [1, 4, 6, 7, 9, 14, 16, 17, 20, 21, 23],
+            [3, 5, 6, 9, 10, 12, 13, 14, 15, 17, 20],
+        ),
     }
 
     if existence:
@@ -2083,8 +2179,8 @@ def skew_supplementary_difference_set_over_polynomial_ring(n, existence=False, c
 
     cosets = []
     for i in range((n - 1) // (2 * order)):
-        cosets.append([F.gen()**i * el for el in H])
-        cosets.append([-F.gen()**i * el for el in H])
+        cosets.append([F.gen() ** i * el for el in H])
+        cosets.append([-(F.gen() ** i) * el for el in H])
 
     def generate_set(index_set, cosets):
         return sum((cosets[idx] for idx in index_set), [])
@@ -2155,9 +2251,11 @@ def skew_supplementary_difference_set_with_paley_todd(n, existence=False, check=
     }
 
     indices = {
-        239: [[1, 3, 5, 6, 15, 17, 19, 28, 34, 38, 39, 57, 58, 63, 85, 95, 107],
-              [1, 3, 4, 5, 15, 16, 17, 18, 19, 21, 23, 29, 35, 45, 58, 63],
-              [0, 1, 4, 6, 7, 8, 13, 16, 18, 34, 35, 45, 47, 58, 63, 95]],
+        239: [
+            [1, 3, 5, 6, 15, 17, 19, 28, 34, 38, 39, 57, 58, 63, 85, 95, 107],
+            [1, 3, 4, 5, 15, 16, 17, 18, 19, 21, 23, 29, 35, 45, 58, 63],
+            [0, 1, 4, 6, 7, 8, 13, 16, 18, 34, 35, 45, 47, 58, 63, 95],
+        ],
     }
 
     if existence:
@@ -2329,49 +2427,132 @@ def spin_goethals_seidel_difference_family(n, existence=False, check=True):
     full_data = {
         7: ([0], [0, 1, 6], 2),
         9: ([0, 3, 6], [0, 1, 8], 4),
-        13: ([0, 1, 4, 6],  [0, 4, 6, 7, 9], 3),
+        13: ([0, 1, 4, 6], [0, 4, 6, 7, 9], 3),
         19: ([4, 6, 9, 10, 13, 15], [0, 1, 5, 8, 9, 10, 11, 13], 7),
         21: ([1, 4, 5, 8, 10, 11, 12, 17, 19], [1, 3, 8, 9, 12, 13, 18, 20], 4),
-        31: ([2, 4, 6, 12, 14, 16, 17, 19, 25, 26, 28, 29],
-             [0, 3, 9, 11, 13, 14, 15, 16, 17, 18, 20, 22, 28], 5),
-        37: ([0, 3, 4, 5, 7, 13, 18, 19, 24, 30, 32, 33, 34],
-             [0, 1, 2, 3, 4, 6, 12, 13, 18, 19, 24, 25, 31, 33, 34, 35, 36], 10),
-        39: ([1, 4, 6, 10, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 29, 33, 35, 38],
-             [0, 2, 4, 6, 7, 10, 11, 14, 16, 19, 20, 22, 26, 32, 33, 38], 16),
-        57: ([0, 4, 11, 12, 18, 19, 20, 25, 26, 27, 28, 29, 30, 31, 32, 37, 38, 39, 45, 46, 53],
-             [1, 2, 5, 6, 7, 8, 9, 10, 12, 17, 19, 21, 22, 24, 25, 28, 30, 31, 34, 37, 39, 41, 42, 43, 44, 46, 53, 54],
-             7)
+        31: (
+            [2, 4, 6, 12, 14, 16, 17, 19, 25, 26, 28, 29],
+            [0, 3, 9, 11, 13, 14, 15, 16, 17, 18, 20, 22, 28],
+            5,
+        ),
+        37: (
+            [0, 3, 4, 5, 7, 13, 18, 19, 24, 30, 32, 33, 34],
+            [0, 1, 2, 3, 4, 6, 12, 13, 18, 19, 24, 25, 31, 33, 34, 35, 36],
+            10,
+        ),
+        39: (
+            [1, 4, 6, 10, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 29, 33, 35, 38],
+            [0, 2, 4, 6, 7, 10, 11, 14, 16, 19, 20, 22, 26, 32, 33, 38],
+            16,
+        ),
+        57: (
+            [
+                0,
+                4,
+                11,
+                12,
+                18,
+                19,
+                20,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                37,
+                38,
+                39,
+                45,
+                46,
+                53,
+            ],
+            [
+                1,
+                2,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                12,
+                17,
+                19,
+                21,
+                22,
+                24,
+                25,
+                28,
+                30,
+                31,
+                34,
+                37,
+                39,
+                41,
+                42,
+                43,
+                44,
+                46,
+                53,
+                54,
+            ],
+            7,
+        ),
     }
     compact_data = {
-        73: ([1, 8, 64],
-             [0, 9, 13, 18, 25, 26, 27, 35, 36, 43],
-             [1, 2, 4, 9, 11, 14, 18, 21, 26, 34, 36, 43], 4),
-        91: ([1, 16, 74],
-             [0, 3, 4, 5, 8, 11, 19, 25, 27, 43, 45, 50, 55],
-             [0, 1, 4, 5, 13, 14, 15, 25, 28, 33, 38, 43, 44, 49, 55], 9),
-        93: ([1, 4, 16, 64, 70],
-             [3, 10, 11, 14, 21, 23, 33, 34, 46],
-             [3, 9, 11, 17, 23, 33, 34, 46, 62], 25),
-        129: ([1, 4, 16, 64, 97, 121, 127],
-              [1, 9, 10, 14, 19, 21, 23, 26, 27],
-              [2, 5, 9, 10, 13, 18, 22, 27, 43, 86], 13),
-        397: ([1, 16, 31, 99, 126, 167, 256, 273, 290, 333, 393],
-              [3, 5, 9, 10, 11, 12, 18, 20, 21, 23, 29, 33, 36, 40, 44, 47, 61, 72],
-              [2, 3, 6, 10, 17, 22, 24, 33, 34, 36, 40, 46, 47, 53, 58, 71, 72],
-              34)
+        73: (
+            [1, 8, 64],
+            [0, 9, 13, 18, 25, 26, 27, 35, 36, 43],
+            [1, 2, 4, 9, 11, 14, 18, 21, 26, 34, 36, 43],
+            4,
+        ),
+        91: (
+            [1, 16, 74],
+            [0, 3, 4, 5, 8, 11, 19, 25, 27, 43, 45, 50, 55],
+            [0, 1, 4, 5, 13, 14, 15, 25, 28, 33, 38, 43, 44, 49, 55],
+            9,
+        ),
+        93: (
+            [1, 4, 16, 64, 70],
+            [3, 10, 11, 14, 21, 23, 33, 34, 46],
+            [3, 9, 11, 17, 23, 33, 34, 46, 62],
+            25,
+        ),
+        129: (
+            [1, 4, 16, 64, 97, 121, 127],
+            [1, 9, 10, 14, 19, 21, 23, 26, 27],
+            [2, 5, 9, 10, 13, 18, 22, 27, 43, 86],
+            13,
+        ),
+        397: (
+            [1, 16, 31, 99, 126, 167, 256, 273, 290, 333, 393],
+            [3, 5, 9, 10, 11, 12, 18, 20, 21, 23, 29, 33, 36, 40, 44, 47, 61, 72],
+            [2, 3, 6, 10, 17, 22, 24, 33, 34, 36, 40, 46, 47, 53, 58, 71, 72],
+            34,
+        ),
     }
 
-    exist = n in full_data or n in compact_data or \
-        skew_spin_goethals_seidel_difference_family(n, existence=True)
+    exist = (
+        n in full_data
+        or n in compact_data
+        or skew_spin_goethals_seidel_difference_family(n, existence=True)
+    )
     if existence:
         return exist
 
     if not exist:
-        raise NotImplementedError(f'Data for spin type Goethals Seidel family of order {n} not yet implemented')
+        raise NotImplementedError(
+            f'Data for spin type Goethals Seidel family of order {n} not yet implemented'
+        )
 
     G = Zmod(n)
     if skew_spin_goethals_seidel_difference_family(n, existence=True):
-        G, [S1, S2, S3, S4] = skew_spin_goethals_seidel_difference_family(n, check=False)
+        G, [S1, S2, S3, S4] = skew_spin_goethals_seidel_difference_family(
+            n, check=False
+        )
     elif n in full_data:
         S1, S2, mu = full_data[n]
         S1 = list(map(G, S1))
@@ -2449,40 +2630,146 @@ def skew_spin_goethals_seidel_difference_family(n, existence=False, check=True):
     full_data = {
         7: ([1, 2, 4], [1, 6], 2),
         19: ([1, 4, 5, 6, 7, 9, 11, 16, 17], [0, 1, 7, 8, 11, 12, 18], -2),
-        37: ([2, 3, 4, 6, 8, 11, 15, 18, 20, 21, 23, 24, 25, 27, 28, 30, 32, 36],
-             [0, 1, 2, 5, 9, 13, 14, 15, 22, 23, 24, 28, 32, 35, 36],
-             10)
+        37: (
+            [2, 3, 4, 6, 8, 11, 15, 18, 20, 21, 23, 24, 25, 27, 28, 30, 32, 36],
+            [0, 1, 2, 5, 9, 13, 14, 15, 22, 23, 24, 28, 32, 35, 36],
+            10,
+        ),
     }
     compact_data = {
-        61: ([1, 9, 20, 34, 58],  [3, 4, 5, 6, 8, 10],  [0, 8, 10, 13, 23, 26], 13),
-        127: ([1, 2, 4, 8, 16, 32, 64],
-              [1, 3, 7, 9, 11, 19, 21, 23, 47],
-              [0, 3, 7, 9, 11, 15, 29, 31, 55], 19),
-        271: ([1, 28, 106, 125, 169, 178, 242, 248, 258],
-              [1, 4, 5, 7, 8, 11, 14, 16, 19, 21, 22, 25, 31, 43, 44],
-              [1, 2, 3, 5, 7, 8, 12, 19, 22, 27, 38, 42, 44, 51], 5),
-        331: ([1, 74, 80, 85, 111, 120, 167, 180, 270, 274, 293],
-              [5, 10, 11, 13, 16, 19, 20, 22, 32, 38, 53, 56, 64, 76, 101],
-              [0, 4, 11, 16, 20, 28, 31, 37, 41, 49, 53, 56, 73, 88, 101], 31),
-        397: ([1, 16, 31, 99, 126, 167, 256, 273, 290, 333, 393],
-              [1, 6, 7, 8, 9, 10, 11, 12, 17, 18, 20, 21, 29, 34, 46, 47, 53, 106],
-              [2, 11, 12, 17, 18, 20, 24, 27, 33, 34, 36, 40, 46, 47, 53, 58, 71],
-              34),
-        547: ([1, 46, 237, 261, 293, 350, 353, 375, 440, 475, 509, 517, 519],
-              [1, 4, 5, 6, 10, 11, 13, 14, 17, 25, 29, 34, 35, 40, 49, 52, 55, 64, 69, 110, 123],
-              [1, 4, 5, 11, 16, 17, 20, 26, 32, 33, 34, 41, 49, 52, 55, 64, 70, 80, 123, 207],
-              40),
-        631: ([1, 8, 43, 64, 79, 188, 228, 242, 279, 310, 339, 344, 512, 562, 587],
-              [1, 2, 3, 4, 6, 7, 12, 13, 14, 17, 19, 21, 26, 27, 31, 38, 42, 52, 62, 76, 124],
-              [0, 11, 13, 14, 18, 19, 21, 22, 29, 35, 39, 46, 62, 63, 65, 66, 67, 92, 117, 124, 187],
-              2)
+        61: ([1, 9, 20, 34, 58], [3, 4, 5, 6, 8, 10], [0, 8, 10, 13, 23, 26], 13),
+        127: (
+            [1, 2, 4, 8, 16, 32, 64],
+            [1, 3, 7, 9, 11, 19, 21, 23, 47],
+            [0, 3, 7, 9, 11, 15, 29, 31, 55],
+            19,
+        ),
+        271: (
+            [1, 28, 106, 125, 169, 178, 242, 248, 258],
+            [1, 4, 5, 7, 8, 11, 14, 16, 19, 21, 22, 25, 31, 43, 44],
+            [1, 2, 3, 5, 7, 8, 12, 19, 22, 27, 38, 42, 44, 51],
+            5,
+        ),
+        331: (
+            [1, 74, 80, 85, 111, 120, 167, 180, 270, 274, 293],
+            [5, 10, 11, 13, 16, 19, 20, 22, 32, 38, 53, 56, 64, 76, 101],
+            [0, 4, 11, 16, 20, 28, 31, 37, 41, 49, 53, 56, 73, 88, 101],
+            31,
+        ),
+        397: (
+            [1, 16, 31, 99, 126, 167, 256, 273, 290, 333, 393],
+            [1, 6, 7, 8, 9, 10, 11, 12, 17, 18, 20, 21, 29, 34, 46, 47, 53, 106],
+            [2, 11, 12, 17, 18, 20, 24, 27, 33, 34, 36, 40, 46, 47, 53, 58, 71],
+            34,
+        ),
+        547: (
+            [1, 46, 237, 261, 293, 350, 353, 375, 440, 475, 509, 517, 519],
+            [
+                1,
+                4,
+                5,
+                6,
+                10,
+                11,
+                13,
+                14,
+                17,
+                25,
+                29,
+                34,
+                35,
+                40,
+                49,
+                52,
+                55,
+                64,
+                69,
+                110,
+                123,
+            ],
+            [
+                1,
+                4,
+                5,
+                11,
+                16,
+                17,
+                20,
+                26,
+                32,
+                33,
+                34,
+                41,
+                49,
+                52,
+                55,
+                64,
+                70,
+                80,
+                123,
+                207,
+            ],
+            40,
+        ),
+        631: (
+            [1, 8, 43, 64, 79, 188, 228, 242, 279, 310, 339, 344, 512, 562, 587],
+            [
+                1,
+                2,
+                3,
+                4,
+                6,
+                7,
+                12,
+                13,
+                14,
+                17,
+                19,
+                21,
+                26,
+                27,
+                31,
+                38,
+                42,
+                52,
+                62,
+                76,
+                124,
+            ],
+            [
+                0,
+                11,
+                13,
+                14,
+                18,
+                19,
+                21,
+                22,
+                29,
+                35,
+                39,
+                46,
+                62,
+                63,
+                65,
+                66,
+                67,
+                92,
+                117,
+                124,
+                187,
+            ],
+            2,
+        ),
     }
 
     if existence:
         return n in full_data or n in compact_data
 
     if n not in full_data and n not in compact_data:
-        raise NotImplementedError(f'Data for skew spin type Goethals Seidel family of order {n} not yet implemented')
+        raise NotImplementedError(
+            f'Data for skew spin type Goethals Seidel family of order {n} not yet implemented'
+        )
 
     G = Zmod(n)
     if n in full_data:
@@ -2502,7 +2789,9 @@ def skew_spin_goethals_seidel_difference_family(n, existence=False, check=True):
     return G, [S1, S2, S3, S4]
 
 
-def skew_supplementary_difference_set(n, existence=False, check=True, return_group=False):
+def skew_supplementary_difference_set(
+    n, existence=False, check=True, return_group=False
+):
     r"""
     Construct `4-\{n; n_1, n_2, n_3, n_4; \lambda\}` supplementary difference sets,
     where `S_1` is skew and `n_1 + n_2 + n_3 + n_4 = n+\lambda`.
@@ -2594,104 +2883,256 @@ def skew_supplementary_difference_set(n, existence=False, check=True, return_gro
 
     # If -1 is present in an index set, it means that {0} should be added to that set
     indices = {
-        37: [[0, 3, 5, 7, 9, 10], [0, 5, 6, 7, 8],
-             [1, 2, 6, 7, 9], [2, 6, 8, 9, 10]],
-        39: [[1, 3, 5, 6, 8, 10, 12], [0, 1, 5, 8, 12, 13],
-             [1, 3, 4, 7, 9, 12, 13], [0, 1, 2, 3, 7, 8]],
+        37: [[0, 3, 5, 7, 9, 10], [0, 5, 6, 7, 8], [1, 2, 6, 7, 9], [2, 6, 8, 9, 10]],
+        39: [
+            [1, 3, 5, 6, 8, 10, 12],
+            [0, 1, 5, 8, 12, 13],
+            [1, 3, 4, 7, 9, 12, 13],
+            [0, 1, 2, 3, 7, 8],
+        ],
         43: [[1, 2, 4], [1, 2, 4], [0, 2, 3], [3, 4, -1]],
-        49: [[1, 2, 5, 7, 8, 10, 13, 14], [4, 5, 6, 7, 10, 11],
-             [0, 1, 2, 4, 6, 7, 12, 14], [1, 2, 3, 5, 6, 10, 12, 13, 14]],
-        65: [[1, 3, 5, 6, 8, 10, 13, 14, 17, 18, 20, 22],
-             [0, 3, 7, 10, 16, 17, 18, 20, 21],
-             [2, 4, 6, 8, 9, 10, 14, 15, 16, 17, 18, 20],
-             [5, 7, 8, 9, 11, 12, 13, 14, 16, 18, 19, 20, 21]],
-        67:  [[0, 3, 5, 6, 9, 10, 13, 14, 17, 18, 20],
-              [0, 2, 4, 9, 11, 12, 13, 16, 19, 21],
-              [1, 3, 6, 10, 11, 13, 14, 16, 20, 21],
-              [2, 4, 6, 8, 9, 11, 14, 17, 19]],
+        49: [
+            [1, 2, 5, 7, 8, 10, 13, 14],
+            [4, 5, 6, 7, 10, 11],
+            [0, 1, 2, 4, 6, 7, 12, 14],
+            [1, 2, 3, 5, 6, 10, 12, 13, 14],
+        ],
+        65: [
+            [1, 3, 5, 6, 8, 10, 13, 14, 17, 18, 20, 22],
+            [0, 3, 7, 10, 16, 17, 18, 20, 21],
+            [2, 4, 6, 8, 9, 10, 14, 15, 16, 17, 18, 20],
+            [5, 7, 8, 9, 11, 12, 13, 14, 16, 18, 19, 20, 21],
+        ],
+        67: [
+            [0, 3, 5, 6, 9, 10, 13, 14, 17, 18, 20],
+            [0, 2, 4, 9, 11, 12, 13, 16, 19, 21],
+            [1, 3, 6, 10, 11, 13, 14, 16, 20, 21],
+            [2, 4, 6, 8, 9, 11, 14, 17, 19],
+        ],
         73: [[4, 6, 8, 14], [8, 10, 12, 14], [4, 6, 10, 12], [-1, 0, 2, 10]],
-        93: [[0, 3, 4, 6, 9, 10, 12, 14, 17, 18],
-             [2, 3, 4, 5, 9, 13, 15, 18, 19],
-             [1, 2, 3, 4, 5, 6, 7, 8, 16],
-             [1, 4, 6, 11, 12, 13, 15, 16, 17, 18]],
-        97: [[1, 2, 4, 6, 9, 11, 13, 14, 17, 18, 21, 23, 25, 27, 29, 30],
-             [1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 23, 27, 29],
-             [0, 1, 2, 5, 6, 12, 13, 15, 16, 20, 24, 25, 26, 29, 30, 31],
-             [0, 2, 3, 4, 7, 8, 9, 11, 12, 13, 15, 16, 17, 18, 23, 28, 29]],
-        103: [[1, 3, 4, 6, 8, 11, 12, 14, 17, 18, 20, 22, 25, 27, 28, 30, 32],
-              [2, 9, 10, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 26, 28, 29, 30],
-              [0, 1, 2, 3, 4, 11, 12, 13, 16, 17, 19, 20, 21, 24, 25, 26, 28, 30, 31],
-              [0, 1, 2, 3, 4, 5, 6, 13, 15, 18, 19, 20, 23, 24, 25, 26, 27, 28, 29, 31]],
-        109: [[0, 2, 5, 7, 8, 10, 12, 15, 16, 19, 20, 23, 24, 26, 29, 30, 33, 34],
-              [4, 5, 6, 7, 11, 15, 18, 19, 20, 22, 25, 30, 32, 33, 35],
-              [0, 1, 5, 6, 9, 10, 11, 14, 17, 20, 24, 26, 27, 28, 29, 31, 32],
-              [0, 3, 4, 6, 7, 9, 10, 12, 13, 22, 24, 25, 26, 27, 28, 29, 31, 33, 35]],
-        113: [[0, 3, 4, 6, 8, 10, 13, 14],
-              [1, 3, 8, 9, 10, 11, 12, 13],
-              [0, 2, 3, 5, 6, 7, 12],
-              [1, 2, 3, 5, 8, 9, 15]],
-        121: [[0, 2, 4, 7, 8, 11, 13, 14, 16, 19, 20, 22],
-              [0, 1, 4, 5, 8, 9, 10, 15, 17, 20, 23],
-              [1, 2, 3, 7, 9, 16, 18, 19, 20, 21, 22, 23],
-              [0, 2, 9, 10, 11, 12, 13, 14, 15, 17, 18, 21, 22, 23]],
-        127: [[0, 3, 5, 7, 8, 10, 12, 14, 16],
-              [0, 1, 3, 6, 7, 9, 10, 12, 14, 15],
-              [0, 1, 3, 4, 5, 7, 8, 9, 15, 16],
-              [1, 4, 5, 6, 9, 10, 13, 14, 15, 16]],
-        129: [[1, 2, 4, 7, 9, 11, 12, 14, 16, 18],
-              [0, 1, 2, 3, 9, 11, 14, 15, 19],
-              [0, 1, 3, 6, 8, 10, 12, 16, 18, 19],
-              [0, 3, 7, 8, 9, 10, 12, 14, 15, 17]],
-        133: [[1, 2, 5, 6, 9, 11, 12, 14], [1, 4, 7, 9, 10, 12, 13, 15],
-              [0, 5, 6, 8, 11, 12, 13, 15], [0, 1, 2, 5, 7, 8, 9, 13, 14, 15]],
-        145: [[1, 2, 4, 7, 9, 10, 13, 14, 16, 19, 20, 22], [0, 2, 4, 7, 10, 11, 14, 18, 19, 20, 21, 22],
-              [1, 3, 6, 9, 12, 13, 14, 17, 19, 20, 21, 22, 23], [2, 3, 5, 6, 7, 9, 12, 13, 15, 16, 19, 20, 21, 22, 23]],
-        151: [[0, 3, 5, 6, 8, 11, 13, 14, 16, 19, 21, 23, 25, 27, 28],
-              [2, 3, 6, 13, 16, 17, 20, 23, 25, 26, 27, 28, 29],
-              [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 23, 24, 27, 28],
-              [1, 4, 5, 10, 11, 12, 13, 14, 16, 18, 19, 22, 25, 26, 27, 28]],
-        157: [[0, 2, 5, 7, 8, 11],
-              [0, 4, 5, 6, 9, 11],
-              [6, 7, 8, 9, 10, 11],
-              [0, 5, 6, 7, 8, 10, 11]],
-        163: [[0, 2, 5, 6, 9, 10, 13, 14, 17],
-              [0, 1, 7, 10, 12, 15, 16, 17],
-              [0, 1, 3, 5, 8, 13, 15, 16, 17],
-              [3, 6, 7, 8, 11, 12, 13, 14, 16, 17]],
-        181: [[0, 3, 5, 6, 8, 10, 13, 15, 16, 19],
-              [4, 5, 7, 8, 11, 14, 15, 16, 18, 19],
-              [0, 4, 10, 11, 13, 15, 16, 18, 19],
-              [2, 4, 5, 7, 11, 13, 15, 17, 19]],
-        213: [[1, 2, 5, 6, 9, 11, 12, 14, 16, 19, 20, 23, 24, 26, 29, 30],
-              [3, 6, 8, 12, 13, 14, 15, 17, 20, 22, 23, 25, 26, 27, 28, 31],
-              [2, 3, 5, 7, 9, 13, 16, 17, 19, 21, 23, 24, 27, 28, 29],
-              [0, 5, 6, 9, 11, 13, 14, 17, 20, 22, 23, 26, 29, 31]],
-        217: [[0, 3, 5, 7, 8, 11, 12, 14], [1, 3, 4, 7, 9, 11, 12, 15],
-              [3, 4, 5, 6, 7, 9, 10, 14, 15], [1, 3, 4, 5, 7, 8, 11, 13, 14]],
-        219: [[1, 3, 5, 6, 8, 11, 12, 15, 17, 18, 21, 22, 24],
-              [2, 6, 8, 10, 11, 12, 13, 16, 19, 22, 23, 24],
-              [0, 1, 5, 6, 10, 11, 13, 14, 17, 20, 21, 24, 25],
-              [0, 2, 3, 4, 5, 6, 7, 11, 12, 13, 16, 20, 23]],
-        241: [[0, 2, 4, 6, 8, 11, 12, 14],
-              [1, 3, 4, 6, 7, 13, 14, 15],
-              [6, 8, 9, 10, 12, 13, 14, 15],
-              [3, 4, 5, 9, 10, 13, 14]],
-        247: [[0, 2, 4, 7, 8, 10, 12, 15, 16, 18, 20, 23, 25, 27, 29],
-              [0, 2, 7, 9, 11, 12, 14, 15, 16, 18, 20, 22, 26],
-              [2, 3, 4, 12, 13, 14, 15, 16, 18, 20, 23, 24, 26, 27, 29],
-              [0, 3, 4, 6, 10, 11, 12, 14, 18, 19, 20, 22, 25, 29]],
-        267: [[0, 3, 4, 7, 8, 11, 13, 15, 16, 19, 21, 22, 25],
-              [0, 1, 4, 5, 6, 8, 14, 15, 18, 21, 23],
-              [0, 2, 4, 5, 7, 9, 10, 11, 14, 15, 16, 17, 25],
-              [0, 1, 3, 4, 6, 14, 15, 16, 17, 18, 20, 22, 23, 25]],
-        331: [[1, 2, 4, 7, 9, 10, 12, 15, 16, 18, 21, 22, 24, 26, 28],
-              [-1, 0, 2, 6, 9, 11, 12, 14, 15, 17, 20, 21, 24, 25, 28],
-              [-1, 0, 1, 5, 6, 7, 8, 9, 10, 12, 15, 18, 23, 28, 29],
-              [-1, 0, 3, 7, 8, 10, 11, 12, 14, 16, 19, 20, 21, 26, 29]],
-        631: [[0, 2, 4, 6, 9, 10, 12, 15, 16, 18, 20, 23, 24, 26, 29, 30, 32, 35, 36, 38, 40],
-              [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 16, 20, 23, 28, 29, 30, 32, 36, 38, 41],
-              [0, 2, 3, 4, 6, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 24, 25, 26, 29, 34, 40],
-              [0, 2, 4, 5, 6, 7, 8, 10, 15, 16, 18, 22, 23, 24, 26, 30, 31, 33, 35, 36, 37, 38]],
+        93: [
+            [0, 3, 4, 6, 9, 10, 12, 14, 17, 18],
+            [2, 3, 4, 5, 9, 13, 15, 18, 19],
+            [1, 2, 3, 4, 5, 6, 7, 8, 16],
+            [1, 4, 6, 11, 12, 13, 15, 16, 17, 18],
+        ],
+        97: [
+            [1, 2, 4, 6, 9, 11, 13, 14, 17, 18, 21, 23, 25, 27, 29, 30],
+            [1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 23, 27, 29],
+            [0, 1, 2, 5, 6, 12, 13, 15, 16, 20, 24, 25, 26, 29, 30, 31],
+            [0, 2, 3, 4, 7, 8, 9, 11, 12, 13, 15, 16, 17, 18, 23, 28, 29],
+        ],
+        103: [
+            [1, 3, 4, 6, 8, 11, 12, 14, 17, 18, 20, 22, 25, 27, 28, 30, 32],
+            [2, 9, 10, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 26, 28, 29, 30],
+            [0, 1, 2, 3, 4, 11, 12, 13, 16, 17, 19, 20, 21, 24, 25, 26, 28, 30, 31],
+            [0, 1, 2, 3, 4, 5, 6, 13, 15, 18, 19, 20, 23, 24, 25, 26, 27, 28, 29, 31],
+        ],
+        109: [
+            [0, 2, 5, 7, 8, 10, 12, 15, 16, 19, 20, 23, 24, 26, 29, 30, 33, 34],
+            [4, 5, 6, 7, 11, 15, 18, 19, 20, 22, 25, 30, 32, 33, 35],
+            [0, 1, 5, 6, 9, 10, 11, 14, 17, 20, 24, 26, 27, 28, 29, 31, 32],
+            [0, 3, 4, 6, 7, 9, 10, 12, 13, 22, 24, 25, 26, 27, 28, 29, 31, 33, 35],
+        ],
+        113: [
+            [0, 3, 4, 6, 8, 10, 13, 14],
+            [1, 3, 8, 9, 10, 11, 12, 13],
+            [0, 2, 3, 5, 6, 7, 12],
+            [1, 2, 3, 5, 8, 9, 15],
+        ],
+        121: [
+            [0, 2, 4, 7, 8, 11, 13, 14, 16, 19, 20, 22],
+            [0, 1, 4, 5, 8, 9, 10, 15, 17, 20, 23],
+            [1, 2, 3, 7, 9, 16, 18, 19, 20, 21, 22, 23],
+            [0, 2, 9, 10, 11, 12, 13, 14, 15, 17, 18, 21, 22, 23],
+        ],
+        127: [
+            [0, 3, 5, 7, 8, 10, 12, 14, 16],
+            [0, 1, 3, 6, 7, 9, 10, 12, 14, 15],
+            [0, 1, 3, 4, 5, 7, 8, 9, 15, 16],
+            [1, 4, 5, 6, 9, 10, 13, 14, 15, 16],
+        ],
+        129: [
+            [1, 2, 4, 7, 9, 11, 12, 14, 16, 18],
+            [0, 1, 2, 3, 9, 11, 14, 15, 19],
+            [0, 1, 3, 6, 8, 10, 12, 16, 18, 19],
+            [0, 3, 7, 8, 9, 10, 12, 14, 15, 17],
+        ],
+        133: [
+            [1, 2, 5, 6, 9, 11, 12, 14],
+            [1, 4, 7, 9, 10, 12, 13, 15],
+            [0, 5, 6, 8, 11, 12, 13, 15],
+            [0, 1, 2, 5, 7, 8, 9, 13, 14, 15],
+        ],
+        145: [
+            [1, 2, 4, 7, 9, 10, 13, 14, 16, 19, 20, 22],
+            [0, 2, 4, 7, 10, 11, 14, 18, 19, 20, 21, 22],
+            [1, 3, 6, 9, 12, 13, 14, 17, 19, 20, 21, 22, 23],
+            [2, 3, 5, 6, 7, 9, 12, 13, 15, 16, 19, 20, 21, 22, 23],
+        ],
+        151: [
+            [0, 3, 5, 6, 8, 11, 13, 14, 16, 19, 21, 23, 25, 27, 28],
+            [2, 3, 6, 13, 16, 17, 20, 23, 25, 26, 27, 28, 29],
+            [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 23, 24, 27, 28],
+            [1, 4, 5, 10, 11, 12, 13, 14, 16, 18, 19, 22, 25, 26, 27, 28],
+        ],
+        157: [
+            [0, 2, 5, 7, 8, 11],
+            [0, 4, 5, 6, 9, 11],
+            [6, 7, 8, 9, 10, 11],
+            [0, 5, 6, 7, 8, 10, 11],
+        ],
+        163: [
+            [0, 2, 5, 6, 9, 10, 13, 14, 17],
+            [0, 1, 7, 10, 12, 15, 16, 17],
+            [0, 1, 3, 5, 8, 13, 15, 16, 17],
+            [3, 6, 7, 8, 11, 12, 13, 14, 16, 17],
+        ],
+        181: [
+            [0, 3, 5, 6, 8, 10, 13, 15, 16, 19],
+            [4, 5, 7, 8, 11, 14, 15, 16, 18, 19],
+            [0, 4, 10, 11, 13, 15, 16, 18, 19],
+            [2, 4, 5, 7, 11, 13, 15, 17, 19],
+        ],
+        213: [
+            [1, 2, 5, 6, 9, 11, 12, 14, 16, 19, 20, 23, 24, 26, 29, 30],
+            [3, 6, 8, 12, 13, 14, 15, 17, 20, 22, 23, 25, 26, 27, 28, 31],
+            [2, 3, 5, 7, 9, 13, 16, 17, 19, 21, 23, 24, 27, 28, 29],
+            [0, 5, 6, 9, 11, 13, 14, 17, 20, 22, 23, 26, 29, 31],
+        ],
+        217: [
+            [0, 3, 5, 7, 8, 11, 12, 14],
+            [1, 3, 4, 7, 9, 11, 12, 15],
+            [3, 4, 5, 6, 7, 9, 10, 14, 15],
+            [1, 3, 4, 5, 7, 8, 11, 13, 14],
+        ],
+        219: [
+            [1, 3, 5, 6, 8, 11, 12, 15, 17, 18, 21, 22, 24],
+            [2, 6, 8, 10, 11, 12, 13, 16, 19, 22, 23, 24],
+            [0, 1, 5, 6, 10, 11, 13, 14, 17, 20, 21, 24, 25],
+            [0, 2, 3, 4, 5, 6, 7, 11, 12, 13, 16, 20, 23],
+        ],
+        241: [
+            [0, 2, 4, 6, 8, 11, 12, 14],
+            [1, 3, 4, 6, 7, 13, 14, 15],
+            [6, 8, 9, 10, 12, 13, 14, 15],
+            [3, 4, 5, 9, 10, 13, 14],
+        ],
+        247: [
+            [0, 2, 4, 7, 8, 10, 12, 15, 16, 18, 20, 23, 25, 27, 29],
+            [0, 2, 7, 9, 11, 12, 14, 15, 16, 18, 20, 22, 26],
+            [2, 3, 4, 12, 13, 14, 15, 16, 18, 20, 23, 24, 26, 27, 29],
+            [0, 3, 4, 6, 10, 11, 12, 14, 18, 19, 20, 22, 25, 29],
+        ],
+        267: [
+            [0, 3, 4, 7, 8, 11, 13, 15, 16, 19, 21, 22, 25],
+            [0, 1, 4, 5, 6, 8, 14, 15, 18, 21, 23],
+            [0, 2, 4, 5, 7, 9, 10, 11, 14, 15, 16, 17, 25],
+            [0, 1, 3, 4, 6, 14, 15, 16, 17, 18, 20, 22, 23, 25],
+        ],
+        331: [
+            [1, 2, 4, 7, 9, 10, 12, 15, 16, 18, 21, 22, 24, 26, 28],
+            [-1, 0, 2, 6, 9, 11, 12, 14, 15, 17, 20, 21, 24, 25, 28],
+            [-1, 0, 1, 5, 6, 7, 8, 9, 10, 12, 15, 18, 23, 28, 29],
+            [-1, 0, 3, 7, 8, 10, 11, 12, 14, 16, 19, 20, 21, 26, 29],
+        ],
+        631: [
+            [
+                0,
+                2,
+                4,
+                6,
+                9,
+                10,
+                12,
+                15,
+                16,
+                18,
+                20,
+                23,
+                24,
+                26,
+                29,
+                30,
+                32,
+                35,
+                36,
+                38,
+                40,
+            ],
+            [
+                0,
+                1,
+                2,
+                4,
+                6,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                16,
+                20,
+                23,
+                28,
+                29,
+                30,
+                32,
+                36,
+                38,
+                41,
+            ],
+            [
+                0,
+                2,
+                3,
+                4,
+                6,
+                9,
+                10,
+                12,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                22,
+                24,
+                25,
+                26,
+                29,
+                34,
+                40,
+            ],
+            [
+                0,
+                2,
+                4,
+                5,
+                6,
+                7,
+                8,
+                10,
+                15,
+                16,
+                18,
+                22,
+                23,
+                24,
+                26,
+                30,
+                31,
+                33,
+                35,
+                36,
+                37,
+                38,
+            ],
+        ],
     }
 
     # If the element is a list, that is the coset.
@@ -2712,10 +3153,20 @@ def skew_supplementary_difference_set(n, existence=False, check=True, return_gro
         127: [1, 3, 5, 7, 9, 11, 13, 19, 21],
         129: [1, 3, 5, 7, 9, 11, 13, 19, 21, [43]],
         133: [1, 2, 3, 6, 7, 9, 18, [19, 38, 76]],
-        145: [1, [2, 17, 32, 72, 77, 127, 137], [3, 43, 48, 98, 108, 118, 133], [6, 51, 71, 86, 91, 96, 121],
-              [7, 52, 82, 107, 112, 117, 132], [11, 21, 31, 46, 61, 101, 106], [14, 19, 69, 79, 89, 104, 119],
-              [22, 42, 57, 62, 67, 92, 122], [5, 35, 80, 100, 115, 120, 125], [10, 15, 55, 70, 85, 95, 105],
-              [29], [58]],
+        145: [
+            1,
+            [2, 17, 32, 72, 77, 127, 137],
+            [3, 43, 48, 98, 108, 118, 133],
+            [6, 51, 71, 86, 91, 96, 121],
+            [7, 52, 82, 107, 112, 117, 132],
+            [11, 21, 31, 46, 61, 101, 106],
+            [14, 19, 69, 79, 89, 104, 119],
+            [22, 42, 57, 62, 67, 92, 122],
+            [5, 35, 80, 100, 115, 120, 125],
+            [10, 15, 55, 70, 85, 95, 105],
+            [29],
+            [58],
+        ],
         151: [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 15, 22, 27, 29, 30],
         157: [1, 2, 3, 5, 9, 15],
         163: [1, 2, 3, 5, 6, 9, 10, 15, 18],
@@ -2724,14 +3175,48 @@ def skew_supplementary_difference_set(n, existence=False, check=True, return_gro
         217: [1, 2, 4, 5, 7, 10, 19, [31, 62, 124]],
         219: [1, 2, 3, 5, 7, 9, 11, 15, 19, 22, 23, 33, [73]],
         241: [1, 2, 4, 5, 7, 13, 19, 35],
-        247: [1, [2, 18, 31, 32, 41, 110, 122, 162, 223], [3, 27, 48, 165, 170, 183, 185, 211, 243],
-              [5, 28, 45, 58, 80, 158, 187, 201, 226], [6, 54, 83, 93, 96, 119, 123, 175, 239], [7, 20, 63, 73, 112, 138, 163, 180, 232],
-              [10, 56, 69, 90, 116, 127, 155, 160, 205], [11, 47, 99, 102, 111, 115, 150, 176, 177], [13, 52, 65, 78, 91, 117, 143, 208, 221],
-              [14, 29, 40, 79, 113, 126, 146, 217, 224], [17, 25, 43, 49, 140, 142, 153, 194, 225], [19, 57, 171],
-              [33, 34, 37, 50, 59, 86, 98, 141, 203], [35, 66, 68, 74, 100, 118, 159, 172, 196], [38, 95, 114]],
+        247: [
+            1,
+            [2, 18, 31, 32, 41, 110, 122, 162, 223],
+            [3, 27, 48, 165, 170, 183, 185, 211, 243],
+            [5, 28, 45, 58, 80, 158, 187, 201, 226],
+            [6, 54, 83, 93, 96, 119, 123, 175, 239],
+            [7, 20, 63, 73, 112, 138, 163, 180, 232],
+            [10, 56, 69, 90, 116, 127, 155, 160, 205],
+            [11, 47, 99, 102, 111, 115, 150, 176, 177],
+            [13, 52, 65, 78, 91, 117, 143, 208, 221],
+            [14, 29, 40, 79, 113, 126, 146, 217, 224],
+            [17, 25, 43, 49, 140, 142, 153, 194, 225],
+            [19, 57, 171],
+            [33, 34, 37, 50, 59, 86, 98, 141, 203],
+            [35, 66, 68, 74, 100, 118, 159, 172, 196],
+            [38, 95, 114],
+        ],
         267: [1, 2, 3, 5, 7, 9, 10, 13, 14, 15, 19, 39, [89]],
         331: [1, 2, 4, 5, 7, 8, 10, 13, 14, 16, 19, 20, 28, 32, 56],
-        631: [1, 2, 3, 4, 5, 6, 7, 9, 12, 14, 17, 18, 19, 21, 23, 27, 31, 35, 38, 42, 62],
+        631: [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9,
+            12,
+            14,
+            17,
+            18,
+            19,
+            21,
+            23,
+            27,
+            31,
+            35,
+            38,
+            42,
+            62,
+        ],
     }
 
     H_db = {
@@ -2771,19 +3256,27 @@ def skew_supplementary_difference_set(n, existence=False, check=True, return_gro
     if n in indices:
         if existence:
             return True
-        G, [S1, S2, S3, S4] = _construction_supplementary_difference_set(n, H_db[n], indices[n], cosets_gens[n], check=False)
+        G, [S1, S2, S3, S4] = _construction_supplementary_difference_set(
+            n, H_db[n], indices[n], cosets_gens[n], check=False
+        )
     elif skew_supplementary_difference_set_over_polynomial_ring(n, existence=True):
         if existence:
             return True
-        G, [S1, S2, S3, S4] = skew_supplementary_difference_set_over_polynomial_ring(n, check=False)
+        G, [S1, S2, S3, S4] = skew_supplementary_difference_set_over_polynomial_ring(
+            n, check=False
+        )
     elif skew_supplementary_difference_set_with_paley_todd(n, existence=True):
         if existence:
             return True
-        G, [S1, S2, S3, S4] = skew_supplementary_difference_set_with_paley_todd(n, check=False)
+        G, [S1, S2, S3, S4] = skew_supplementary_difference_set_with_paley_todd(
+            n, check=False
+        )
     elif skew_spin_goethals_seidel_difference_family(n, existence=True):
         if existence:
             return True
-        G, [S1, S2, S3, S4] = skew_spin_goethals_seidel_difference_family(n, check=False)
+        G, [S1, S2, S3, S4] = skew_spin_goethals_seidel_difference_family(
+            n, check=False
+        )
 
     if existence:
         return False
@@ -2868,6 +3361,7 @@ def _construction_supplementary_difference_set(n, H, indices, cosets_gen, check=
 
         :func:`skew_supplementary_difference_set`
     """
+
     def generate_set(index_set, cosets):
         S = set()
         for idx in index_set:
@@ -2885,7 +3379,7 @@ def _construction_supplementary_difference_set(n, H, indices, cosets_gen, check=
         if isinstance(el, list):
             even_coset = {Z(x) for x in el}
         else:
-            even_coset = {x*el for x in H}
+            even_coset = {x * el for x in H}
         odd_coset = {-x for x in even_coset}
         cosets.append(even_coset)
         cosets.append(odd_coset)
@@ -2965,24 +3459,155 @@ def supplementary_difference_set_hadamard(n, existence=False, check=True):
     """
 
     indices = {
-        191: [[1, 7, 9, 10, 11, 13, 17, 18, 25, 26, 30, 31, 33, 34, 35, 36, 37],
-              [1, 4, 7, 9, 11, 12, 13, 14, 19, 21, 22, 23, 24, 25, 26, 29, 36, 37],
-              [0, 3, 4, 5, 7, 8, 9, 16, 17, 19, 24, 25, 29, 30, 31, 33, 35, 37],
-              [1, 3, 4, 5, 8, 11, 14, 18, 19, 20, 21, 23, 24, 25, 28, 29, 30, 32, 34, 35]],
-        239: [[0, 1, 2, 3, 4, 5, 6, 7, 14, 18, 19, 21, 24, 25, 29, 30],
-              [0, 1, 3, 7, 9, 12, 15, 18, 20, 22, 26, 28, 29, 30, 31, 32, 33],
-              [2, 3, 4, 5, 8, 9, 10, 11, 13, 17, 19, 21, 22, 24, 27, 31, 32],
-              [0, 1, 2, 3, 6, 7, 8, 11, 13, 15, 17, 18, 19, 22, 25, 26, 27, 32, 33]],
-        251: [[2, 6, 8, 10, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 27, 28, 35, 36, 39, 41, 43, 44, 47, 48],
-              [2, 5, 10, 11, 17, 18, 21, 23, 24, 25, 26, 28, 29, 30, 34, 35, 38, 39, 40, 41, 42, 43, 44, 49],
-              [0, 2, 6, 7, 10, 11, 14, 15, 16, 18, 21, 22, 24, 26, 30, 35, 37, 38, 45, 46, 47, 48, 49],
-              [1, 2, 3, 4, 8, 9, 12, 17, 21, 22, 27, 28, 29, 30, 33, 34, 39, 41, 42, 43, 46, 47, 48]],
+        191: [
+            [1, 7, 9, 10, 11, 13, 17, 18, 25, 26, 30, 31, 33, 34, 35, 36, 37],
+            [1, 4, 7, 9, 11, 12, 13, 14, 19, 21, 22, 23, 24, 25, 26, 29, 36, 37],
+            [0, 3, 4, 5, 7, 8, 9, 16, 17, 19, 24, 25, 29, 30, 31, 33, 35, 37],
+            [1, 3, 4, 5, 8, 11, 14, 18, 19, 20, 21, 23, 24, 25, 28, 29, 30, 32, 34, 35],
+        ],
+        239: [
+            [0, 1, 2, 3, 4, 5, 6, 7, 14, 18, 19, 21, 24, 25, 29, 30],
+            [0, 1, 3, 7, 9, 12, 15, 18, 20, 22, 26, 28, 29, 30, 31, 32, 33],
+            [2, 3, 4, 5, 8, 9, 10, 11, 13, 17, 19, 21, 22, 24, 27, 31, 32],
+            [0, 1, 2, 3, 6, 7, 8, 11, 13, 15, 17, 18, 19, 22, 25, 26, 27, 32, 33],
+        ],
+        251: [
+            [
+                2,
+                6,
+                8,
+                10,
+                12,
+                13,
+                14,
+                15,
+                16,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                27,
+                28,
+                35,
+                36,
+                39,
+                41,
+                43,
+                44,
+                47,
+                48,
+            ],
+            [
+                2,
+                5,
+                10,
+                11,
+                17,
+                18,
+                21,
+                23,
+                24,
+                25,
+                26,
+                28,
+                29,
+                30,
+                34,
+                35,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                49,
+            ],
+            [
+                0,
+                2,
+                6,
+                7,
+                10,
+                11,
+                14,
+                15,
+                16,
+                18,
+                21,
+                22,
+                24,
+                26,
+                30,
+                35,
+                37,
+                38,
+                45,
+                46,
+                47,
+                48,
+                49,
+            ],
+            [
+                1,
+                2,
+                3,
+                4,
+                8,
+                9,
+                12,
+                17,
+                21,
+                22,
+                27,
+                28,
+                29,
+                30,
+                33,
+                34,
+                39,
+                41,
+                42,
+                43,
+                46,
+                47,
+                48,
+            ],
+        ],
     }
 
     cosets_gens = {
         191: [1, 2, 3, 4, 6, 8, 9, 11, 12, 13, 16, 17, 18, 19, 22, 32, 36, 38, 41],
         239: [1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 18, 21, 28, 35, 42],
-        251: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 14, 15, 17, 18, 19, 21, 28, 30, 33, 34, 35, 41, 43, 45, 68],
+        251: [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9,
+            10,
+            11,
+            14,
+            15,
+            17,
+            18,
+            19,
+            21,
+            28,
+            30,
+            33,
+            34,
+            35,
+            41,
+            43,
+            45,
+            68,
+        ],
     }
 
     H_db = {
@@ -2997,7 +3622,9 @@ def supplementary_difference_set_hadamard(n, existence=False, check=True):
     sets = None
     G = None
     if n in indices:
-        G, sets = _construction_supplementary_difference_set(n, H_db[n], indices[n], cosets_gens[n], check=False)
+        G, sets = _construction_supplementary_difference_set(
+            n, H_db[n], indices[n], cosets_gens[n], check=False
+        )
     elif skew_supplementary_difference_set(n, existence=True):
         G, sets = skew_supplementary_difference_set(n, check=False, return_group=True)
     elif spin_goethals_seidel_difference_family(n, existence=True):
@@ -3107,9 +3734,11 @@ def are_complementary_difference_sets(G, A, B, verbose=False):
             print(f'A and B must have size {m}')
         return False
 
-    if not is_supplementary_difference_set([A, B], lmbda=m-1, G=G):
+    if not is_supplementary_difference_set([A, B], lmbda=m - 1, G=G):
         if verbose:
-            print(f'The sets are not supplementary difference sets with lambda = {m-1}')
+            print(
+                f'The sets are not supplementary difference sets with lambda = {m - 1}'
+            )
         return False
 
     if not _is_skew_set(G, A):
@@ -3247,6 +3876,7 @@ def complementary_difference_setsII(n, check=True):
         raise ValueError(f'the parameter {n} is not valid')
 
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     G = GF(n, 'a')
     A, B = None, None
 
@@ -3323,19 +3953,20 @@ def complementary_difference_setsIII(n, check=True):
         :func:`complementary_difference_sets`
     """
     m = (n - 1) // 2
-    q = 4*m + 3
+    q = 4 * m + 3
     if n % 2 != 1 or not is_prime_power(q):
         raise ValueError(f'the parameter {n} is not valid')
 
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     G = Zmod(n)
     G2 = GF(q)
     rho = G2.primitive_element()
 
-    Q = [rho ** (2*b) for b in range(1, n+1)]
+    Q = [rho ** (2 * b) for b in range(1, n + 1)]
 
-    A = [G(a) for a in range(n) if rho**(2*a) - 1 in Q]
-    B = [G(b) for b in range(n) if -rho**(2*b) - 1 not in Q]
+    A = [G(a) for a in range(n) if rho ** (2 * a) - 1 in Q]
+    B = [G(b) for b in range(n) if -(rho ** (2 * b)) - 1 not in Q]
 
     if check:
         assert are_complementary_difference_sets(G, A, B)
@@ -3424,7 +4055,7 @@ def complementary_difference_sets(n, existence=False, check=True):
         if existence:
             return True
         G, A, B = complementary_difference_setsII(n, check=False)
-    elif is_prime_power(2*n + 1):
+    elif is_prime_power(2 * n + 1):
         if existence:
             return True
         G, A, B = complementary_difference_setsIII(n, check=False)
@@ -3433,14 +4064,18 @@ def complementary_difference_sets(n, existence=False, check=True):
         return False
 
     if G is None:
-        raise NotImplementedError(f'complementary difference sets of order {n} are not implemented yet')
+        raise NotImplementedError(
+            f'complementary difference sets of order {n} are not implemented yet'
+        )
 
     if check:
         assert are_complementary_difference_sets(G, A, B)
     return G, A, B
 
 
-def difference_family(v, k, l=1, existence=False, explain_construction=False, check=True):
+def difference_family(
+    v, k, l=1, existence=False, explain_construction=False, check=True
+):
     r"""
     Return a (``k``, ``l``)-difference family on an Abelian group of cardinality ``v``.
 
@@ -3732,146 +4367,167 @@ def difference_family(v, k, l=1, existence=False, explain_construction=False, ch
             return False
         raise EmptySetError("No difference family eixsts with negative parameters")
 
-    if (v,k,l) in DF:
+    if (v, k, l) in DF:
         if existence:
             return True
         if explain_construction:
-            return "The database contains a ({},{},{})-difference family".format(v,k,l)
+            return "The database contains a ({},{},{})-difference family".format(
+                v, k, l
+            )
 
-        vv, blocks = next(iter(DF[v,k,l].items()))
+        vv, blocks = next(iter(DF[v, k, l].items()))
 
         # Build the group
         from sage.rings.finite_rings.integer_mod_ring import Zmod
+
         if len(vv) == 1:
             G = Zmod(vv[0])
         else:
             from sage.categories.cartesian_product import cartesian_product
+
             G = cartesian_product([Zmod(i) for i in vv])
 
         df = [[G(i) for i in b] for b in blocks]
 
         if check and not is_difference_family(G, df, v=v, k=k, l=l):
-            raise RuntimeError("There is an invalid ({},{},{})-difference "
-                    "family in the database... Please contact "
-                    "sage-devel@googlegroups.com".format(v,k,l))
+            raise RuntimeError(
+                "There is an invalid ({},{},{})-difference "
+                "family in the database... Please contact "
+                "sage-devel@googlegroups.com".format(v, k, l)
+            )
 
-        return G,df
+        return G, df
 
     if l == 1 and k in EDS and v in EDS[k]:
         if existence:
             return True
         if explain_construction:
-            return "The database contains a ({},{})-evenly distributed set".format(v,k)
+            return "The database contains a ({},{})-evenly distributed set".format(v, k)
 
         from sage.rings.finite_rings.finite_field_constructor import GF
-        poly,B = EDS[k][v]
+
+        poly, B = EDS[k][v]
         if poly is None:  # q is prime
             K = G = GF(v)
         else:
-            K = G = GF(v,'a',modulus=poly)
+            K = G = GF(v, 'a', modulus=poly)
 
         B = [K(b) for b in B]
-        e = k*(k-1)//2
-        xe = G.multiplicative_generator()**e
-        df = [[xe**j*b for b in B] for j in range((v-1)//(2*e))]
+        e = k * (k - 1) // 2
+        xe = G.multiplicative_generator() ** e
+        df = [[xe**j * b for b in B] for j in range((v - 1) // (2 * e))]
         if check and not is_difference_family(G, df, v=v, k=k, l=l):
-            raise RuntimeError("There is an invalid ({},{})-evenly distributed "
-                               "set in the database... Please contact "
-                               "sage-devel@googlegroups.com".format(v, k))
+            raise RuntimeError(
+                "There is an invalid ({},{})-evenly distributed "
+                "set in the database... Please contact "
+                "sage-devel@googlegroups.com".format(v, k)
+            )
         return G, df
 
-    if k in [0,1]:
+    if k in [0, 1]:
         # Then \Delta D_i is empty
         # So if G\{0} is empty is good, otherwise not
         if v == 1:
             if existence:
                 return True
             from sage.rings.finite_rings.integer_mod_ring import Zmod
+
             l = [0] if k == 1 else []
-            return Zmod(1),[l]
+            return Zmod(1), [l]
 
         if existence:
             return False
         raise EmptySetError("No difference family exists with k=1 and v!=1")
 
-    e = k*(k-1)
-    if (l*(v-1)) % e:
+    e = k * (k - 1)
+    if (l * (v - 1)) % e:
         if existence:
             return Unknown
-        raise NotImplementedError("No construction available for ({},{},{})-difference family".format(v,k,l))
+        raise NotImplementedError(
+            "No construction available for ({},{},{})-difference family".format(v, k, l)
+        )
 
     # trivial construction
-    if k == (v-1) and l == (v-2):
+    if k == (v - 1) and l == (v - 2):
         if existence:
             return True
         if explain_construction:
             return "Trivial difference family"
 
         from sage.rings.finite_rings.integer_mod_ring import Zmod
+
         G = Zmod(v)
         return G, [list(range(1, v))]
 
     factorization = factor(v)
     if len(factorization) == 1:
         from sage.rings.finite_rings.finite_field_constructor import GF
-        K = GF(v,'z')
 
-    if are_mcfarland_1973_parameters(v,k,l):
+        K = GF(v, 'z')
+
+    if are_mcfarland_1973_parameters(v, k, l):
         if existence:
             return True
         if explain_construction:
             return "McFarland 1973 construction"
-        _, (q,s) = are_mcfarland_1973_parameters(v,k,l,True)
-        G,D = mcfarland_1973_construction(q,s)
+        _, (q, s) = are_mcfarland_1973_parameters(v, k, l, True)
+        G, D = mcfarland_1973_construction(q, s)
 
-    elif are_hyperplanes_in_projective_geometry_parameters(v,k,l):
+    elif are_hyperplanes_in_projective_geometry_parameters(v, k, l):
         if existence:
             return True
         if explain_construction:
             return "Singer difference set"
-        _, (q,d) = are_hyperplanes_in_projective_geometry_parameters(v,k,l,True)
-        G,D = singer_difference_set(q,d)
+        _, (q, d) = are_hyperplanes_in_projective_geometry_parameters(v, k, l, True)
+        G, D = singer_difference_set(q, d)
 
-    elif are_hadamard_difference_set_parameters(v,k,l) and k-2*l == 3:
+    elif are_hadamard_difference_set_parameters(v, k, l) and k - 2 * l == 3:
         if existence:
             return True
         if explain_construction:
             return "Turyn 1965 construction"
-        G,D = turyn_1965_3x3xK(4)
+        G, D = turyn_1965_3x3xK(4)
 
-    elif are_hadamard_difference_set_parameters(v,k,l) and hadamard_difference_set_product_parameters(k-2*l):
-        N1,N2 = hadamard_difference_set_product_parameters(k-2*l)
+    elif are_hadamard_difference_set_parameters(
+        v, k, l
+    ) and hadamard_difference_set_product_parameters(k - 2 * l):
+        N1, N2 = hadamard_difference_set_product_parameters(k - 2 * l)
         if existence:
             return True
         if explain_construction:
-            return "Hadamard difference set product from N1={} and N2={}".format(N1,N2)
-        v1 = 4*N1*N1
-        v2 = 4*N2*N2
-        k1 = 2*N1*N1 - N1
-        k2 = 2*N2*N2 - N2
-        l1 = N1*N1 - N1
-        l2 = N2*N2 - N2
-        G1, D1 = difference_family(v1,k1,l1)
-        G2, D2 = difference_family(v2,k2,l2)
-        G, D = hadamard_difference_set_product(G1,D1,G2,D2)
+            return "Hadamard difference set product from N1={} and N2={}".format(N1, N2)
+        v1 = 4 * N1 * N1
+        v2 = 4 * N2 * N2
+        k1 = 2 * N1 * N1 - N1
+        k2 = 2 * N2 * N2 - N2
+        l1 = N1 * N1 - N1
+        l2 = N2 * N2 - N2
+        G1, D1 = difference_family(v1, k1, l1)
+        G2, D2 = difference_family(v2, k2, l2)
+        G, D = hadamard_difference_set_product(G1, D1, G2, D2)
 
-    elif are_hadamard_difference_set_parameters(v,k,l) and (k-2*l).is_prime():
+    elif are_hadamard_difference_set_parameters(v, k, l) and (k - 2 * l).is_prime():
         if existence:
             return False
         raise EmptySetError("by McFarland 1989 such difference family does not exist")
 
-    elif len(factorization) == 1 and radical_difference_family(K, k, l, existence=True) is True:
+    elif (
+        len(factorization) == 1
+        and radical_difference_family(K, k, l, existence=True) is True
+    ):
         if existence:
             return True
         if explain_construction:
             return "Radical difference family on a finite field"
-        D = radical_difference_family(K,k,l)
+        D = radical_difference_family(K, k, l)
         G = K
 
-    elif (len(factorization) == 1
+    elif (
+        len(factorization) == 1
         and l == 1
         and k == 6
-        and df_q_6_1(K, existence=True) is True):
+        and df_q_6_1(K, existence=True) is True
+    ):
         if existence:
             return True
         if explain_construction:
@@ -3879,10 +4535,12 @@ def difference_family(v, k, l=1, existence=False, explain_construction=False, ch
         D = df_q_6_1(K)
         G = K
 
-    elif (k == (v-1)//2 and
-          l == (k-1)//2 and
-          len(factorization) == 2 and
-          abs(pow(*factorization[0]) - pow(*factorization[1])) == 2):
+    elif (
+        k == (v - 1) // 2
+        and l == (k - 1) // 2
+        and len(factorization) == 2
+        and abs(pow(*factorization[0]) - pow(*factorization[1])) == 2
+    ):
         # Twin prime powers construction
         # i.e. v = p(p+2) where p and p+2 are prime powers
         #      k = (v-1)/2
@@ -3894,10 +4552,14 @@ def difference_family(v, k, l=1, existence=False, explain_construction=False, ch
         p = pow(*factorization[0])
         q = pow(*factorization[1])
         if p > q:
-            p,q = q,p
-        G,D = twin_prime_powers_difference_set(p,check=False)
+            p, q = q, p
+        G, D = twin_prime_powers_difference_set(p, check=False)
 
-    elif (v-1)//2 == k and (v-1)//2-1 == l and complementary_difference_sets(v, existence=True):
+    elif (
+        (v - 1) // 2 == k
+        and (v - 1) // 2 - 1 == l
+        and complementary_difference_sets(v, existence=True)
+    ):
         if existence:
             return True
         if explain_construction:
@@ -3910,15 +4572,18 @@ def difference_family(v, k, l=1, existence=False, explain_construction=False, ch
             return Unknown
         raise NotImplementedError("No constructions for these parameters")
 
-    if check and not is_difference_family(G,D,v=v,k=k,l=l,verbose=False):
-        raise RuntimeError("There is a problem. Sage built the following "
-                "difference family on G='{}' with parameters ({},{},{}):\n "
-                "{}\nwhich seems to not be a difference family... "
-                "Please contact sage-devel@googlegroups.com".format(G,v,k,l,D))
+    if check and not is_difference_family(G, D, v=v, k=k, l=l, verbose=False):
+        raise RuntimeError(
+            "There is a problem. Sage built the following "
+            "difference family on G='{}' with parameters ({},{},{}):\n "
+            "{}\nwhich seems to not be a difference family... "
+            "Please contact sage-devel@googlegroups.com".format(G, v, k, l, D)
+        )
 
     return G, D
 
 
 from sage.misc.rest_index_of_methods import gen_rest_table_index
 import sys
+
 __doc__ = __doc__.format(INDEX_OF_FUNCTIONS=gen_rest_table_index(sys.modules[__name__]))

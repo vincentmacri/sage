@@ -78,6 +78,7 @@ class FiniteFields(CategoryWithAxiom):
             False
         """
         from sage.categories.fields import Fields
+
         return x in Fields() and x.is_finite()
 
     # As is, this does no more than the usual __call__ of Category, but for the error message
@@ -181,6 +182,7 @@ class FiniteFields(CategoryWithAxiom):
                 return self.multiplicative_generator()
 
             from sage.rings.integer import Integer
+
             n = Integer(n)
             grouporder = self.order() - 1
             co_order = grouporder // n
@@ -237,10 +239,10 @@ class FiniteFields(CategoryWithAxiom):
                 # this allows to handle the ring Integers(prime)
                 g = self.multiplicative_generator()
             for x in self:
-                a = (g + x)**c
+                a = (g + x) ** c
                 if not a:
                     continue
-                if all(a**(n // p) != 1 for p in primes):
+                if all(a ** (n // p) != 1 for p in primes):
                     return a
             raise AssertionError("no element found")
 
@@ -269,7 +271,9 @@ class FiniteFields(CategoryWithAxiom):
             # if the order is an even power of two
             # then every element is a square
             if self.characteristic() == 2:
-                raise ValueError("there are no non-squares in finite fields of even order")
+                raise ValueError(
+                    "there are no non-squares in finite fields of even order"
+                )
             for element in self:
                 if not element.is_square():
                     return element
@@ -300,7 +304,7 @@ class FiniteFields(CategoryWithAxiom):
             if self.parent().characteristic() == 2:
                 return True
             q = self.parent().order()
-            character = self**((q-1)//2)
+            character = self ** ((q - 1) // 2)
             is_square = character == self.parent().one()
             return is_square
 
@@ -332,14 +336,14 @@ class FiniteFields(CategoryWithAxiom):
             g = self.parent().quadratic_nonresidue()
             even_exp, odd_order = (q - Integer(1)).val_unit(2)
             e = 0
-            for i in range(2, even_exp+1):
+            for i in range(2, even_exp + 1):
                 tmp = self * (pow(g, -e))
 
-                condition = tmp**((q-1)//(2**i)) != self.parent().one()
+                condition = tmp ** ((q - 1) // (2**i)) != self.parent().one()
                 if condition:
-                    e = 2**(i-1) + e
-            h = self * (g**(-e))
-            b = g**(e//2) * h**((odd_order+1)//2)
+                    e = 2 ** (i - 1) + e
+            h = self * (g ** (-e))
+            b = g ** (e // 2) * h ** ((odd_order + 1) // 2)
             return b
 
         def _cipolla(self):
@@ -375,9 +379,10 @@ class FiniteFields(CategoryWithAxiom):
                 t = parent.random_element()
                 root = t**2 - 4 * self
             from sage.rings.polynomial.polynomial_ring import polygen
+
             X = polygen(parent)
-            f = X**2 - t*X + self
-            b = pow(X, (q+1)//2, f)
+            f = X**2 - t * X + self
+            b = pow(X, (q + 1) // 2, f)
             return b
 
         def sqrt(self, all: bool = False, algorithm: str = 'tonelli'):
@@ -464,7 +469,7 @@ class FiniteFields(CategoryWithAxiom):
                     return ()
                 raise ValueError("element is not a square")
             if cardinality % 4 == 3:
-                square_root = self**((cardinality+1)//4)
+                square_root = self ** ((cardinality + 1) // 4)
             elif algorithm == 'tonelli':
                 square_root = self._tonelli()
             else:

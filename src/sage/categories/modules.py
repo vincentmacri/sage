@@ -153,9 +153,11 @@ class Modules(Category_module):
             sage: TestSuite(C).run()
         """
         if dispatch:
-            if base_ring in _Fields or (isinstance(base_ring, Category)
-                                        and base_ring.is_subcategory(_Fields)):
+            if base_ring in _Fields or (
+                isinstance(base_ring, Category) and base_ring.is_subcategory(_Fields)
+            ):
                 from .vector_spaces import VectorSpaces
+
                 return VectorSpaces(base_ring, check=False)
         result = super().__classcall__(cls, base_ring)
         result._reduction[2]['dispatch'] = False
@@ -197,7 +199,6 @@ class Modules(Category_module):
         return None
 
     class SubcategoryMethods:
-
         @cached_method
         def base_ring(self):
             r"""
@@ -241,7 +242,11 @@ class Modules(Category_module):
                 # Is there a better way to ask if C is a subcategory of Modules?
                 if hasattr(C, "base_ring"):
                     return C.base_ring()
-            assert False, "some super category of {} should be a category over base ring".format(self)
+            assert False, (
+                "some super category of {} should be a category over base ring".format(
+                    self
+                )
+            )
 
         def TensorProducts(self):
             r"""
@@ -415,6 +420,7 @@ class Modules(Category_module):
             """
             assert base_ring is None or base_ring is self.base_ring()
             from sage.categories.filtered_modules import FilteredModulesCategory
+
             return FilteredModulesCategory.category_of(self)
 
         @cached_method
@@ -451,6 +457,7 @@ class Modules(Category_module):
             """
             assert base_ring is None or base_ring is self.base_ring()
             from sage.categories.graded_modules import GradedModulesCategory
+
             return GradedModulesCategory.category_of(self)
 
         @cached_method
@@ -487,6 +494,7 @@ class Modules(Category_module):
             """
             assert base_ring is None or base_ring is self.base_ring()
             from sage.categories.super_modules import SuperModulesCategory
+
             return SuperModulesCategory.category_of(self)
 
         @cached_method
@@ -513,7 +521,6 @@ class Modules(Category_module):
             return self._with_axiom("WithBasis")
 
     class FiniteDimensional(CategoryWithAxiom_over_base_ring):
-
         def extra_super_categories(self):
             """
             Implement the fact that a finite dimensional module over a finite
@@ -537,14 +544,13 @@ class Modules(Category_module):
             """
             base_ring = self.base_ring()
             FiniteSets = Sets().Finite()
-            if (isinstance(base_ring, Category) and
-                    base_ring.is_subcategory(FiniteSets)) or \
-                base_ring in FiniteSets:
+            if (
+                isinstance(base_ring, Category) and base_ring.is_subcategory(FiniteSets)
+            ) or base_ring in FiniteSets:
                 return [FiniteSets]
             return []
 
         class TensorProducts(TensorProductsCategory):
-
             def extra_super_categories(self):
                 """
                 Implement the fact that a (finite) tensor product of
@@ -561,7 +567,6 @@ class Modules(Category_module):
                 return [self.base_category()]
 
     class FinitelyPresented(CategoryWithAxiom_over_base_ring):
-
         def extra_super_categories(self):
             """
             Implement the fact that a finitely presented module over a finite
@@ -585,9 +590,9 @@ class Modules(Category_module):
             """
             base_ring = self.base_ring()
             FiniteSets = Sets().Finite()
-            if (isinstance(base_ring, Category) and
-                    base_ring.is_subcategory(FiniteSets)) or \
-                base_ring in FiniteSets:
+            if (
+                isinstance(base_ring, Category) and base_ring.is_subcategory(FiniteSets)
+            ) or base_ring in FiniteSets:
                 return [FiniteSets]
             return []
 
@@ -595,11 +600,11 @@ class Modules(Category_module):
     Graded = LazyImport('sage.categories.graded_modules', 'GradedModules')
     Super = LazyImport('sage.categories.super_modules', 'SuperModules')
     # at_startup currently needed for MatrixSpace, see #22955 (e.g., comment:20)
-    WithBasis = LazyImport('sage.categories.modules_with_basis', 'ModulesWithBasis',
-                           at_startup=True)
+    WithBasis = LazyImport(
+        'sage.categories.modules_with_basis', 'ModulesWithBasis', at_startup=True
+    )
 
     class ParentMethods:
-
         def linear_combination(self, iter_of_elements_coeff, factor_on_left=True):
             r"""
             Return the linear combination `\lambda_1 v_1 + \cdots +
@@ -625,10 +630,12 @@ class Modules(Category_module):
                 1 + (3, -1)
             """
             if factor_on_left:
-                return self.sum(coeff * element
-                                for element, coeff in iter_of_elements_coeff)
-            return self.sum(element * coeff
-                            for element, coeff in iter_of_elements_coeff)
+                return self.sum(
+                    coeff * element for element, coeff in iter_of_elements_coeff
+                )
+            return self.sum(
+                element * coeff for element, coeff in iter_of_elements_coeff
+            )
 
         @cached_method
         def tensor_square(self):
@@ -749,7 +756,6 @@ class Modules(Category_module):
             return self.base_category().base_ring()
 
         class ParentMethods:
-
             @cached_method
             def base_ring(self):
                 """
@@ -807,6 +813,7 @@ class Modules(Category_module):
                       To:   Free module generated by {2, 3, 4} over Integer Ring
                 """
                 from sage.misc.constant_function import ConstantFunction
+
                 return self(ConstantFunction(self.codomain().zero()))
 
         class Endset(CategoryWithAxiom_over_base_ring):
@@ -814,6 +821,7 @@ class Modules(Category_module):
             The category of endomorphism sets `End(X)` for `X`
             a module (this is not used yet)
             """
+
             def extra_super_categories(self):
                 """
                 Implement the fact that the endomorphism set of a module is an algebra.
@@ -830,6 +838,7 @@ class Modules(Category_module):
                     True
                 """
                 from .magmatic_algebras import MagmaticAlgebras
+
                 return [MagmaticAlgebras(self.base_category().base_ring())]
 
     class CartesianProducts(CartesianProductsCategory):
@@ -842,6 +851,7 @@ class Modules(Category_module):
         - http://groups.google.fr/group/sage-devel/browse_thread/thread/35a72b1d0a2fc77a/348f42ae77a66d16#348f42ae77a66d16
         - :wikipedia:`Direct_product`
         """
+
         def extra_super_categories(self):
             """
             A Cartesian product of modules is endowed with a natural
@@ -858,7 +868,6 @@ class Modules(Category_module):
             return [self.base_category()]
 
         class ParentMethods:
-
             def __init_extra__(self):
                 """
                 Initialise the base ring of this Cartesian product.
@@ -916,7 +925,6 @@ class Modules(Category_module):
                         self._base = R
 
         class ElementMethods:
-
             def _lmul_(self, x):
                 """
                 Return the product of `x` with ``self``.
@@ -930,12 +938,14 @@ class Modules(Category_module):
                     ((5, 10), (15, 20))
                 """
                 return self.parent()._cartesian_product_of_elements(
-                    x * y for y in self.cartesian_factors())
+                    x * y for y in self.cartesian_factors()
+                )
 
     class TensorProducts(TensorProductsCategory):
         """
         The category of modules constructed by tensor product of modules.
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -952,6 +962,7 @@ class Modules(Category_module):
             """
             Implement operations on tensor products of modules.
             """
+
             def construction(self):
                 """
                 Return the construction of ``self``.

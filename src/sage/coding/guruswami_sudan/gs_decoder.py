@@ -28,10 +28,15 @@ AUTHORS:
 from sage.coding.grs_code import GeneralizedReedSolomonCode
 from sage.rings.integer_ring import ZZ
 from sage.coding.decoder import Decoder
-from sage.coding.guruswami_sudan.interpolation import gs_interpolation_linalg, gs_interpolation_lee_osullivan
-from sage.coding.guruswami_sudan.utils import (johnson_radius,
-                                               gilt,
-                                               solve_degree2_to_integer_range)
+from sage.coding.guruswami_sudan.interpolation import (
+    gs_interpolation_linalg,
+    gs_interpolation_lee_osullivan,
+)
+from sage.coding.guruswami_sudan.utils import (
+    johnson_radius,
+    gilt,
+    solve_degree2_to_integer_range,
+)
 from sage.functions.other import floor
 from sage.misc.functional import sqrt
 
@@ -103,7 +108,9 @@ def roth_ruckenstein_root_finder(p, maxd=None, precision=None):
     gens = p.parent().gens()
     if len(gens) == 2:
         p = p.polynomial(gens[1])
-    return p.roots(multiplicities=False, degree_bound=maxd, algorithm='Roth-Ruckenstein')
+    return p.roots(
+        multiplicities=False, degree_bound=maxd, algorithm='Roth-Ruckenstein'
+    )
 
 
 def alekhnovich_root_finder(p, maxd=None, precision=None):
@@ -295,22 +302,27 @@ class GRSGuruswamiSudanDecoder(Decoder):
             ValueError: The decoding radius must be less than
             the Johnson radius (which is 118.66)
         """
-        n,k = n_k_params(C, n_k)
+        n, k = n_k_params(C, n_k)
 
         johnson = johnson_radius(n, n - k + 1)
         if tau >= johnson:
-            raise ValueError("The decoding radius must be less than the Johnson radius (which is %.2f)"
-                             % float(johnson))
+            raise ValueError(
+                "The decoding radius must be less than the Johnson radius (which is %.2f)"
+                % float(johnson)
+            )
 
         # We start with l=1 and check if a satisfiable s can be chosen. We keep
         # increasing l by 1 until this is the case. The governing equation is
         #   s*(s+1)/2 * n < (l+1)*s*(n-tau) - l*(l+1)/2*(k-1)
         # See [GS1999]_
         def try_l(l):
-            (mins,maxs) = solve_degree2_to_integer_range(n, n-2*(l+1)*(n-tau), (k-1)*l*(l+1))
+            (mins, maxs) = solve_degree2_to_integer_range(
+                n, n - 2 * (l + 1) * (n - tau), (k - 1) * l * (l + 1)
+            )
             if maxs > 0 and maxs >= mins:
                 return max(1, mins)
             return None
+
         s, l = None, 0
         while s is None:
             l += 1
@@ -371,18 +383,19 @@ class GRSGuruswamiSudanDecoder(Decoder):
             sage: GSD.guruswami_sudan_decoding_radius(n_k=(n, k), s=2, l=6)
             (92, (2, 6))
         """
-        n,k = n_k_params(C, n_k)
+        n, k = n_k_params(C, n_k)
 
         def get_tau(s, l):
             "Return the decoding radius given this s and l"
             if s <= 0 or l <= 0:
                 return -1
-            return gilt(n - n/2*(s+1)/(l+1) - (k-1)/2*l/s)
+            return gilt(n - n / 2 * (s + 1) / (l + 1) - (k - 1) / 2 * l / s)
+
         if l is None and s is None:
             tau = gilt(johnson_radius(n, n - k + 1))
             return (tau, GRSGuruswamiSudanDecoder.parameters_given_tau(tau, n_k=(n, k)))
         if l is not None and s is not None:
-            return (get_tau(s,l), (s,l))
+            return (get_tau(s, l), (s, l))
 
         # Either s or l is set, but not both. First a shared local function
         def find_integral_max(real_max, f):
@@ -403,17 +416,17 @@ class GRSGuruswamiSudanDecoder(Decoder):
             # knowing n and s, we can just minimise
             # ( n*(s+1 choose 2) + (ell+1 choose 2)*(k-1) )/(ell+1)
             # Differentiating and setting to zero yields ell best choice:
-            lmax = sqrt(n*s*(s+1.)/(k-1.)) - 1.
-            #the best integral value will be
-            (l,tau) = find_integral_max(lmax, lambda l: get_tau(s,l))
-            #Note that we have not proven that this ell is minimal in integral
-            #sense! It just seems that this most often happens
-            return (tau,(s,l))
+            lmax = sqrt(n * s * (s + 1.0) / (k - 1.0)) - 1.0
+            # the best integral value will be
+            (l, tau) = find_integral_max(lmax, lambda l: get_tau(s, l))
+            # Note that we have not proven that this ell is minimal in integral
+            # sense! It just seems that this most often happens
+            return (tau, (s, l))
         if l is not None:
             # Acquired similarly to when restricting s
-            smax = sqrt((k-1.)/n*l*(l+1.))
-            (s,tau) = find_integral_max(smax, lambda s: get_tau(s,l))
-            return (tau, (s,l))
+            smax = sqrt((k - 1.0) / n * l * (l + 1.0))
+            (s, tau) = find_integral_max(smax, lambda s: get_tau(s, l))
+            return (tau, (s, l))
 
     @staticmethod
     def _suitable_parameters_given_tau(tau, C=None, n_k=None):
@@ -480,13 +493,13 @@ class GRSGuruswamiSudanDecoder(Decoder):
             sage: GSD._suitable_parameters_given_tau(118, C=C)
             (47, 89)
         """
-        n,k = n_k_params(C, n_k)
+        n, k = n_k_params(C, n_k)
         w = k - 1
         atau = n - tau
-        smin = tau * w / (atau ** 2 - n * w)
+        smin = tau * w / (atau**2 - n * w)
         s = floor(1 + smin)
-        D = (s - smin) * (atau ** 2 - n * w) * s + (w**2) / 4
-        l = floor(atau / w * s + 0.5 - sqrt(D)/w)
+        D = (s - smin) * (atau**2 - n * w) * s + (w**2) / 4
+        l = floor(atau / w * s + 0.5 - sqrt(D) / w)
         return (s, l)
 
     @staticmethod
@@ -549,11 +562,17 @@ class GRSGuruswamiSudanDecoder(Decoder):
             ...
             ValueError: Please provide either the code or its length and dimension
         """
-        n,k = n_k_params(C, n_k)
-        return l > 0 and s > 0 and n * s * (s+1) < (l+1) * (2*s*(n-tau) - (k-1) * l)
+        n, k = n_k_params(C, n_k)
+        return (
+            l > 0
+            and s > 0
+            and n * s * (s + 1) < (l + 1) * (2 * s * (n - tau) - (k - 1) * l)
+        )
 
     ####################### decoder itself ###############################
-    def __init__(self, code, tau=None, parameters=None, interpolation_alg=None, root_finder=None):
+    def __init__(
+        self, code, tau=None, parameters=None, interpolation_alg=None, root_finder=None
+    ):
         r"""
         TESTS:
 
@@ -604,16 +623,24 @@ class GRSGuruswamiSudanDecoder(Decoder):
             raise ValueError("code has to be a generalized Reed-Solomon code")
         n, k = code.length(), code.dimension()
         if tau and parameters:
-            if not GRSGuruswamiSudanDecoder.gs_satisfactory(tau, parameters[0], parameters[1], C=code):
-                raise ValueError("Impossible parameters for the Guruswami-Sudan algorithm")
+            if not GRSGuruswamiSudanDecoder.gs_satisfactory(
+                tau, parameters[0], parameters[1], C=code
+            ):
+                raise ValueError(
+                    "Impossible parameters for the Guruswami-Sudan algorithm"
+                )
             self._tau, self._s, self._ell = tau, parameters[0], parameters[1]
         elif tau:
             self._tau = tau
-            self._s, self._ell = GRSGuruswamiSudanDecoder.parameters_given_tau(tau, n_k=(n, k))
+            self._s, self._ell = GRSGuruswamiSudanDecoder.parameters_given_tau(
+                tau, n_k=(n, k)
+            )
         elif parameters:
             self._s = parameters[0]
             self._ell = parameters[1]
-            (self._tau,_) = GRSGuruswamiSudanDecoder.guruswami_sudan_decoding_radius(C=code, s=self._s, l=self._ell)
+            (self._tau, _) = GRSGuruswamiSudanDecoder.guruswami_sudan_decoding_radius(
+                C=code, s=self._s, l=self._ell
+            )
         else:
             raise ValueError("Specify either tau or parameters")
         if callable(interpolation_alg):
@@ -623,7 +650,9 @@ class GRSGuruswamiSudanDecoder(Decoder):
         elif interpolation_alg == "LinearAlgebra":
             self._interpolation_alg = gs_interpolation_linalg
         else:
-            raise ValueError("Please provide a method or one of the allowed strings for interpolation_alg")
+            raise ValueError(
+                "Please provide a method or one of the allowed strings for interpolation_alg"
+            )
         if callable(root_finder):
             self._root_finder = root_finder
         elif root_finder == "RothRuckenstein":
@@ -631,7 +660,9 @@ class GRSGuruswamiSudanDecoder(Decoder):
         elif root_finder is None or root_finder == "Alekhnovich":
             self._root_finder = alekhnovich_root_finder
         else:
-            raise ValueError("Please provide a method or one of the allowed strings for root_finder")
+            raise ValueError(
+                "Please provide a method or one of the allowed strings for root_finder"
+            )
         super().__init__(code, code.ambient_space(), "EvaluationPolynomial")
 
     def _repr_(self):
@@ -645,7 +676,14 @@ class GRSGuruswamiSudanDecoder(Decoder):
             sage: D
             Guruswami-Sudan decoder for [250, 70, 181] Reed-Solomon Code over GF(251) decoding 97 errors with parameters (1, 2)
         """
-        return "Guruswami-Sudan decoder for %s decoding %s errors with parameters %s" % (self.code(), self.decoding_radius(), (self.multiplicity(), self.list_size()))
+        return (
+            "Guruswami-Sudan decoder for %s decoding %s errors with parameters %s"
+            % (
+                self.code(),
+                self.decoding_radius(),
+                (self.multiplicity(), self.list_size()),
+            )
+        )
 
     def _latex_(self):
         r"""
@@ -658,7 +696,14 @@ class GRSGuruswamiSudanDecoder(Decoder):
             sage: latex(D)
             \textnormal{Guruswami-Sudan decoder for } [250, 70, 181] \textnormal{ Reed-Solomon Code over } \Bold{F}_{251}\textnormal{ decoding }97\textnormal{ errors with parameters }(1, 2)
         """
-        return "\\textnormal{Guruswami-Sudan decoder for } %s\\textnormal{ decoding }%s\\textnormal{ errors with parameters }%s" % (self.code()._latex_(), self.decoding_radius(), (self.multiplicity(), self.list_size()))
+        return (
+            "\\textnormal{Guruswami-Sudan decoder for } %s\\textnormal{ decoding }%s\\textnormal{ errors with parameters }%s"
+            % (
+                self.code()._latex_(),
+                self.decoding_radius(),
+                (self.multiplicity(), self.list_size()),
+            )
+        )
 
     def __eq__(self, other):
         r"""
@@ -672,13 +717,15 @@ class GRSGuruswamiSudanDecoder(Decoder):
             sage: D1.__eq__(D2)
             True
         """
-        return isinstance(other, GRSGuruswamiSudanDecoder)\
-                and self.code() == other.code()\
-                and self.decoding_radius() == other.decoding_radius()\
-                and self.multiplicity() == other.multiplicity()\
-                and self.list_size() == other.list_size()\
-                and self.interpolation_algorithm() == other.interpolation_algorithm()\
-                and self.rootfinding_algorithm() == other.rootfinding_algorithm()
+        return (
+            isinstance(other, GRSGuruswamiSudanDecoder)
+            and self.code() == other.code()
+            and self.decoding_radius() == other.decoding_radius()
+            and self.multiplicity() == other.multiplicity()
+            and self.list_size() == other.list_size()
+            and self.interpolation_algorithm() == other.interpolation_algorithm()
+            and self.rootfinding_algorithm() == other.rootfinding_algorithm()
+        )
 
     def interpolation_algorithm(self):
         r"""
@@ -851,25 +898,29 @@ class GRSGuruswamiSudanDecoder(Decoder):
         l = self.list_size()
         tau = self.decoding_radius()
         # SETUP INTERPOLATION PROBLEM
-        wy = k-1
-        points = [(alphas[i], r[i]/colmults[i]) for i in range(len(alphas))]
+        wy = k - 1
+        points = [(alphas[i], r[i] / colmults[i]) for i in range(len(alphas))]
         # SOLVE INTERPOLATION
         try:
-            Q = self.interpolation_algorithm()(points, tau, (s,l), wy)
+            Q = self.interpolation_algorithm()(points, tau, (s, l), wy)
         except TypeError:
-            raise ValueError("The provided interpolation algorithm has a wrong signature. See the documentation of `codes.decoders.GRSGuruswamiSudanDecoder.interpolation_algorithm()` for details")
+            raise ValueError(
+                "The provided interpolation algorithm has a wrong signature. See the documentation of `codes.decoders.GRSGuruswamiSudanDecoder.interpolation_algorithm()` for details"
+            )
         # EXAMINE THE FACTORS AND CONVERT TO CODEWORDS
         try:
             polynomials = self.rootfinding_algorithm()(Q, maxd=wy)
         except TypeError:
-            raise ValueError("The provided root-finding algorithm has a wrong signature. See the documentation of `codes.decoders.GRSGuruswamiSudanDecoder.rootfinding_algorithm()` for details")
+            raise ValueError(
+                "The provided root-finding algorithm has a wrong signature. See the documentation of `codes.decoders.GRSGuruswamiSudanDecoder.rootfinding_algorithm()` for details"
+            )
         if not polynomials:
             return []
 
         E = self.connected_encoder()
-        codewords = [ E.encode(f) for f in polynomials]
+        codewords = [E.encode(f) for f in polynomials]
         # Root-finding might find spurious roots. Return only the ones which give nearby codewords
-        return [ c for c in codewords if (r - c).hamming_weight() <= tau ]
+        return [c for c in codewords if (r - c).hamming_weight() <= tau]
 
     def decoding_radius(self):
         r"""
@@ -894,5 +945,11 @@ class GRSGuruswamiSudanDecoder(Decoder):
 
 ####################### types ###############################
 
-GeneralizedReedSolomonCode._registered_decoders["GuruswamiSudan"] = GRSGuruswamiSudanDecoder
-GRSGuruswamiSudanDecoder._decoder_type = {"list-decoder", "always-succeed", "hard-decision"}
+GeneralizedReedSolomonCode._registered_decoders["GuruswamiSudan"] = (
+    GRSGuruswamiSudanDecoder
+)
+GRSGuruswamiSudanDecoder._decoder_type = {
+    "list-decoder",
+    "always-succeed",
+    "hard-decision",
+}

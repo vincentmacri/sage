@@ -5,6 +5,7 @@ Sphinx build script
 This is Sage's version of the ``sphinx-build`` script. We redirect ``stdout`` and
 ``stderr`` to our own logger, and remove some unwanted chatter.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013-2014 Volker Braun <vbraun.name@gmail.com>
 #                     2013-2017 J. H. Palmieri <<palmieri@math.washington.edu>
@@ -45,13 +46,16 @@ sphinx.util.console.term_width_line = term_width_line
 
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code
-ANSI_ESCAPE_SEQUENCE = re.compile(r'''
+ANSI_ESCAPE_SEQUENCE = re.compile(
+    r'''
     \x1b    # ESC
     \[      # CSI sequence starts
     [0-?]*  # parameter bytes
     [ -/]*  # intermediate bytes
     [@-~]   # final byte
-    ''', re.VERBOSE)
+    ''',
+    re.VERBOSE,
+)
 
 
 # Warnings that do not indicate a problem with Sage's documentation.  Sphinx
@@ -68,9 +72,7 @@ IGNORED_WARNINGS = (
 
 # A first pass runs before the inventories of the other documents exist, so
 # references into them cannot be resolved yet.
-FIRST_PASS_IGNORED_WARNINGS = (
-    re.compile('WARNING: undefined label'),
-)
+FIRST_PASS_IGNORED_WARNINGS = (re.compile('WARNING: undefined label'),)
 
 # An inventory build writes no output: it resolves no citation and keeps no
 # search index.
@@ -86,11 +88,13 @@ INVENTORY_IGNORED_WARNINGS = (
 CITATION_CANDIDATE = re.compile(rb'(?<!\.)\.\.[ \t]+\[')
 CITATION_CANDIDATE_TEXT = re.compile(r'^[ \t]*\.\.[ \t]+\[', re.M)
 INCLUDE_CANDIDATE = re.compile(
-    rb'^[ \t]*\.\.[ \t]+include::', re.IGNORECASE | re.MULTILINE)
+    rb'^[ \t]*\.\.[ \t]+include::', re.IGNORECASE | re.MULTILINE
+)
 
 
-def _citation_names(text: str, source: str = '<citation scan>', *,
-                    follow_includes: bool = False) -> set[str]:
+def _citation_names(
+    text: str, source: str = '<citation scan>', *, follow_includes: bool = False
+) -> set[str]:
     r"""
     Return the citation names that *text* actually defines.
 
@@ -125,9 +129,11 @@ def _citation_names(text: str, source: str = '<citation scan>', *,
         # that a warning is known.  Leaving its label out reports the warning;
         # guessing with a regex would hide it.
         return set()
-    return {citation[0].astext()
-            for citation in document.findall(nodes.citation)
-            if citation.children}
+    return {
+        citation[0].astext()
+        for citation in document.findall(nodes.citation)
+        if citation.children
+    }
 
 
 def _python_docstrings(text: str, filename: str):
@@ -136,15 +142,16 @@ def _python_docstrings(text: str, filename: str):
         tree = ast.parse(text, filename=filename)
     except (SyntaxError, ValueError):
         return
-    documented = (ast.Module, ast.ClassDef, ast.FunctionDef,
-                  ast.AsyncFunctionDef)
+    documented = (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
     for node in ast.walk(tree):
         if not isinstance(node, documented) or not node.body:
             continue
         first = node.body[0]
-        if (isinstance(first, ast.Expr)
-                and isinstance(first.value, ast.Constant)
-                and isinstance(first.value.value, str)):
+        if (
+            isinstance(first, ast.Expr)
+            and isinstance(first.value, ast.Constant)
+            and isinstance(first.value.value, str)
+        ):
             yield first.value.value
 
 
@@ -160,14 +167,16 @@ def _cython_docstrings(text: str):
 
     def docstring_suite(tokens):
         words = [token.string for token in tokens]
-        if ('def' in words or 'class' in words or 'cppclass' in words
-                or words[:1] == ['property']):
+        if (
+            'def' in words
+            or 'class' in words
+            or 'cppclass' in words
+            or words[:1] == ['property']
+        ):
             return True
         if words[:1] == ['cpdef']:
             return '(' in words
-        return (words[:1] == ['cdef']
-                and 'extern' not in words
-                and '(' in words)
+        return words[:1] == ['cdef'] and 'extern' not in words and '(' in words
 
     try:
         tokens = tokenize.generate_tokens(io.StringIO(text).readline)
@@ -204,9 +213,11 @@ def _cython_docstrings(text: str):
                     value = None
                 if isinstance(value, str):
                     docstring_parts.append(value)
-            elif (docstring_parts and token.type == tokenize.STRING
-                  and all(part.type == tokenize.STRING
-                          for part in statement[:-1])):
+            elif (
+                docstring_parts
+                and token.type == tokenize.STRING
+                and all(part.type == tokenize.STRING for part in statement[:-1])
+            ):
                 try:
                     value = ast.literal_eval(token.string)
                 except (SyntaxError, ValueError):
@@ -224,10 +235,8 @@ def _walk_citation_tree(root: Path):
     def raise_error(error):
         raise error
 
-    for directory, subdirectories, filenames in os.walk(
-            root, onerror=raise_error):
-        subdirectories[:] = [name for name in subdirectories
-                             if name != '__pycache__']
+    for directory, subdirectories, filenames in os.walk(root, onerror=raise_error):
+        subdirectories[:] = [name for name in subdirectories if name != '__pycache__']
         base = Path(directory)
         yield from (base / name for name in filenames)
 
@@ -265,10 +274,16 @@ def _module_citation_labels(source_roots, source_files=()) -> set[str]:
             return
         except (SyntaxError, UnicodeError):
             return
-        strings = (_python_docstrings(text, str(path))
-                   if path.suffix == '.py' else _cython_docstrings(text))
-        docstrings.extend(docstring for docstring in strings
-                          if CITATION_CANDIDATE_TEXT.search(docstring))
+        strings = (
+            _python_docstrings(text, str(path))
+            if path.suffix == '.py'
+            else _cython_docstrings(text)
+        )
+        docstrings.extend(
+            docstring
+            for docstring in strings
+            if CITATION_CANDIDATE_TEXT.search(docstring)
+        )
 
     for path in source_files:
         collect(path)
@@ -291,8 +306,8 @@ def _documentation_citation_labels(doc_roots) -> tuple[set[str], bool]:
         if bibliography_info is not None:
             if not stat.S_ISREG(bibliography_info.st_mode):
                 raise OSError(
-                    f'citation bibliography is not a regular file: '
-                    f'{bibliography}')
+                    f'citation bibliography is not a regular file: {bibliography}'
+                )
             have_bibliography = True
         root_info = _citation_path_status(root)
         if root_info is None:
@@ -309,15 +324,16 @@ def _documentation_citation_labels(doc_roots) -> tuple[set[str], bool]:
             # An include may carry definitions even when this file has no
             # citation-looking line of its own.  literalinclude is deliberately
             # not special-cased: docutils keeps its contents literal.
-            if (CITATION_CANDIDATE.search(encoded) is None
-                    and INCLUDE_CANDIDATE.search(encoded) is None):
+            if (
+                CITATION_CANDIDATE.search(encoded) is None
+                and INCLUDE_CANDIDATE.search(encoded) is None
+            ):
                 continue
             try:
                 text = encoded.decode('utf-8')
             except UnicodeDecodeError:
                 text = encoded.decode('utf-8', 'replace')
-            labels.update(_citation_names(
-                text, str(path), follow_includes=True))
+            labels.update(_citation_names(text, str(path), follow_includes=True))
     return labels, have_bibliography
 
 
@@ -341,6 +357,7 @@ def citation_labels(single_file_path=None, single_file_source_root=None):
         sage: labels is None or 'AB2007' in labels
         True
     """
+
     def distinct(paths):
         answer = []
         seen = set()
@@ -379,21 +396,28 @@ def citation_labels(single_file_path=None, single_file_source_root=None):
             try:
                 target_in_known_root = any(
                     file.resolve().is_relative_to(known.resolve())
-                    for known in source_roots)
+                    for known in source_roots
+                )
             except OSError:
                 target_in_known_root = any(
-                    file.is_relative_to(known) for known in source_roots)
+                    file.is_relative_to(known) for known in source_roots
+                )
             if not target_in_known_root:
                 source_roots.append(root / relative.parts[0])
             sage_info = _citation_path_status(root / 'sage')
             docbuild_info = _citation_path_status(root / 'sage_docbuild')
-            configure_info = _citation_path_status(
-                root.parent / 'configure.ac')
-            if (sage_info is not None and stat.S_ISDIR(sage_info.st_mode)
-                    and ((docbuild_info is not None
-                          and stat.S_ISDIR(docbuild_info.st_mode))
-                         or (configure_info is not None
-                             and stat.S_ISREG(configure_info.st_mode)))):
+            configure_info = _citation_path_status(root.parent / 'configure.ac')
+            if (
+                sage_info is not None
+                and stat.S_ISDIR(sage_info.st_mode)
+                and (
+                    (docbuild_info is not None and stat.S_ISDIR(docbuild_info.st_mode))
+                    or (
+                        configure_info is not None
+                        and stat.S_ISREG(configure_info.st_mode)
+                    )
+                )
+            ):
                 doc_roots.append(root / 'doc')
         else:
             source_files.append(file)
@@ -446,6 +470,7 @@ class KnownCitation:
         ....:     '\x1b[91mWARNING: citation not found: Cohen1996\x1b[39;49;00m'))
         True
     """
+
     _pattern = re.compile(r'WARNING: citation not found: (\S+)')
 
     def __init__(self, labels):
@@ -464,8 +489,7 @@ class KnownCitation:
         return None
 
 
-def single_file_ignored_warnings(single_file_path=None,
-                                 single_file_source_root=None):
+def single_file_ignored_warnings(single_file_path=None, single_file_source_root=None):
     r"""
     Return the warning patterns that a file documented on its own is built with.
 
@@ -486,31 +510,36 @@ def single_file_ignored_warnings(single_file_path=None,
     return (KnownCitation(labels),)
 
 
-class SageSphinxLogger():
+class SageSphinxLogger:
     r"""
     This implements the file object interface to serve as
     ``sys.stdout``/``sys.stderr`` replacement.
     """
+
     ansi_escape_sequence = ANSI_ESCAPE_SEQUENCE
-    ansi_escape_sequence_color = re.compile(r'''
+    ansi_escape_sequence_color = re.compile(
+        r'''
         \x1b    # ESC
         \[      # CSI sequence starts
         [0-9;]* # parameter bytes
                 # intermediate bytes
         m       # final byte
-        ''', re.VERBOSE)
+        ''',
+        re.VERBOSE,
+    )
 
     prefix_len = 9
 
-    def __init__(self, stream, prefix, *, warnings_are_errors=False,
-                 ignored_warnings=()):
+    def __init__(
+        self, stream, prefix, *, warnings_are_errors=False, ignored_warnings=()
+    ):
         self._init_chatter(warnings_are_errors, ignored_warnings)
         self._stream = stream
         self._color = stream.isatty()
-        prefix = prefix[0:self.prefix_len]
+        prefix = prefix[0 : self.prefix_len]
         prefix = ('[{0:' + str(self.prefix_len) + '}]').format(prefix)
-        self._is_stdout = (stream.fileno() == 1)
-        self._is_stderr = (stream.fileno() == 2)
+        self._is_stdout = stream.fileno() == 1
+        self._is_stderr = stream.fileno() == 2
         if self._is_stdout:
             color = 'darkgreen'
         elif self._is_stderr:
@@ -531,13 +560,21 @@ class SageSphinxLogger():
             re.compile(r'^$'),
             re.compile(r'^Running Sphinx'),
             re.compile(r'^updating environment: 0 added, 0 changed, 0 removed'),
-            re.compile(r'^building \[.*\]: targets for 0 source files that are out of date'),
-            re.compile(r'^building \[.*\]: targets for 0 po files that are out of date'),
-            re.compile(r'^building \[.*\]: targets for 0 mo files that are out of date'),
+            re.compile(
+                r'^building \[.*\]: targets for 0 source files that are out of date'
+            ),
+            re.compile(
+                r'^building \[.*\]: targets for 0 po files that are out of date'
+            ),
+            re.compile(
+                r'^building \[.*\]: targets for 0 mo files that are out of date'
+            ),
             re.compile(r'^build succeeded'),  # We still have "Build finished."
             re.compile(r'^Saved pickle file: citations\.pickle'),
             re.compile(r'^Compiling|Copying|Merging|Writing'),
-            re.compile(r'^compiling|copying|checking|dumping|executing|generating|linking|loading|looking|pickling|preparing|reading|writing'),
+            re.compile(
+                r'^compiling|copying|checking|dumping|executing|generating|linking|loading|looking|pickling|preparing|reading|writing'
+            ),
             re.compile(r'done'),
             re.compile(r'^WARNING:$'),
         )
@@ -547,8 +584,9 @@ class SageSphinxLogger():
 
         # replacements: pairs of regular expressions and their replacements,
         # to be applied to Sphinx output.
-        self.replacements = [(re.compile('build succeeded, [0-9]+ warning[s]?.'),
-                              'build succeeded.')]
+        self.replacements = [
+            (re.compile('build succeeded, [0-9]+ warning[s]?.'), 'build succeeded.')
+        ]
 
         # Diagnostics that make the build fail. Sphinx reports a failed build
         # through its exit status, which :func:`runsphinx` checks; these
@@ -651,7 +689,7 @@ class SageSphinxLogger():
         """
         skip_this_line = self._filter_out(line)
         self._check_errors(line)
-        for (old, new) in self.replacements:
+        for old, new in self.replacements:
             line = old.sub(new, line)
         line = self._prefix + ' ' + line.rstrip() + '\n'
         if not self._color:
@@ -690,7 +728,7 @@ class SageSphinxLogger():
         self._line_buffer += string
         lines = self._line_buffer.splitlines()
         for i, line in enumerate(lines):
-            last = (i == len(lines) - 1)
+            last = i == len(lines) - 1
             if last and not self._line_buffer.endswith('\n'):
                 self._line_buffer = line
                 return
@@ -724,6 +762,7 @@ class SageSphinxLogger():
             raise
         except Exception:
             import traceback
+
             traceback.print_exc(file=self._stream)
 
     def writelines(self, sequence):
@@ -731,9 +770,17 @@ class SageSphinxLogger():
             self.write(line)
 
 
-def runsphinx(argv, *, prefix=None, warnings_are_errors=True,
-              first_pass=False, is_inventory=False, single_file=False,
-              single_file_path=None, single_file_source_root=None):
+def runsphinx(
+    argv,
+    *,
+    prefix=None,
+    warnings_are_errors=True,
+    first_pass=False,
+    is_inventory=False,
+    single_file=False,
+    single_file_path=None,
+    single_file_source_root=None,
+):
     r"""
     Run ``sphinx-build`` with the arguments ``argv``, logging its output.
 
@@ -771,7 +818,8 @@ def runsphinx(argv, *, prefix=None, warnings_are_errors=True,
         ignored_warnings += FIRST_PASS_IGNORED_WARNINGS
     if single_file:
         ignored_warnings += single_file_ignored_warnings(
-            single_file_path, single_file_source_root)
+            single_file_path, single_file_source_root
+        )
     if is_inventory:
         ignored_warnings += INVENTORY_IGNORED_WARNINGS
 
@@ -784,16 +832,25 @@ def runsphinx(argv, *, prefix=None, warnings_are_errors=True,
     original_filters = None
     if not sys.warnoptions:
         import warnings
+
         original_filters = warnings.filters[:]
-        warnings.filterwarnings("ignore", category=DeprecationWarning, module='sphinx.util.inspect')
+        warnings.filterwarnings(
+            "ignore", category=DeprecationWarning, module='sphinx.util.inspect'
+        )
 
     try:
-        sys.stdout = SageSphinxLogger(sys.stdout, prefix,
-                                      warnings_are_errors=warnings_are_errors,
-                                      ignored_warnings=ignored_warnings)
-        sys.stderr = SageSphinxLogger(sys.stderr, prefix,
-                                      warnings_are_errors=warnings_are_errors,
-                                      ignored_warnings=ignored_warnings)
+        sys.stdout = SageSphinxLogger(
+            sys.stdout,
+            prefix,
+            warnings_are_errors=warnings_are_errors,
+            ignored_warnings=ignored_warnings,
+        )
+        sys.stderr = SageSphinxLogger(
+            sys.stderr,
+            prefix,
+            warnings_are_errors=warnings_are_errors,
+            ignored_warnings=ignored_warnings,
+        )
         # Note that this call as of early 2018 leaks memory. So make sure that
         # you don't call runsphinx() several times in a row. (i.e., you want to
         # fork() somewhere before this call.)

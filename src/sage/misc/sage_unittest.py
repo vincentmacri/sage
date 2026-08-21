@@ -155,6 +155,7 @@ class TestSuite:
             Test suite for Integer Ring
         """
         from sage.structure.sage_object import SageObject
+
         if not isinstance(instance, (SageObject, PythonObjectWithTests)):
             instance = PythonObjectWithTests(instance)
         self._instance = instance
@@ -168,8 +169,9 @@ class TestSuite:
         """
         return "Test suite for %s" % self._instance
 
-    def run(self, category=None, skip=[], catch=True, raise_on_failure=False,
-            **options):
+    def run(
+        self, category=None, skip=[], catch=True, raise_on_failure=False, **options
+    ):
         """
         Run all the tests from this test suite:
 
@@ -290,7 +292,9 @@ class TestSuite:
             if method_name[0:6] == "_test_" and method_name not in skip:
                 # TODO: improve pretty printing
                 # could use the doc string of the test method?
-                tester.info(tester._prefix + "running .%s() . . ." % method_name, newline=False)
+                tester.info(
+                    tester._prefix + "running .%s() . . ." % method_name, newline=False
+                )
                 test_method = getattr(self._instance, method_name)
                 try:
                     test_method(tester=tester)
@@ -309,10 +313,16 @@ class TestSuite:
                         else:
                             print(tester._prefix + "Failure in {}:".format(method_name))
                         s = traceback.format_exc()
-                        print(tester._prefix + s.strip().replace("\n", "\n" + tester._prefix))
+                        print(
+                            tester._prefix
+                            + s.strip().replace("\n", "\n" + tester._prefix)
+                        )
                         print(tester._prefix + "-" * 60)
         if failed:
-            print(tester._prefix + "The following tests failed: {}".format(", ".join(failed)))
+            print(
+                tester._prefix
+                + "The following tests failed: {}".format(", ".join(failed))
+            )
             if raise_on_failure:
                 raise TestSuiteFailure
 
@@ -385,8 +395,16 @@ class InstanceTester(unittest.TestCase):
     # all that much anyways)
     longMessage = False
 
-    def __init__(self, instance, elements=None, verbose=False, prefix='',
-                 max_runs=4096, max_samples=None, **options):
+    def __init__(
+        self,
+        instance,
+        elements=None,
+        verbose=False,
+        prefix='',
+        max_runs=4096,
+        max_samples=None,
+        **options,
+    ):
         """
         A gadget attached to an instance providing it with testing utilities.
 
@@ -570,6 +588,7 @@ class InstanceTester(unittest.TestCase):
         """
         S = S or self._elements or self._instance.some_elements()
         from sage.misc.misc import some_tuples
+
         return list(some_tuples(S, repeat, self._max_runs, self._max_samples))
 
 
@@ -582,6 +601,7 @@ class PythonObjectWithTests:
 
         sage: TestSuite("bla").run()
     """
+
     def __init__(self, instance):
         """
         EXAMPLES::
@@ -608,6 +628,7 @@ class PythonObjectWithTests:
         """
         tester = instance_tester(self, **options)
         from sage.misc.persist import loads, dumps
+
         tester.assertEqual(loads(dumps(self._instance)), self._instance)
 
     def _test_new(self, **options):

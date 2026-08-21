@@ -9,14 +9,14 @@ AUTHORS:
 - Travis Scrimshaw (2014): initial version
 """
 
-#***********************************************************************
+# ***********************************************************************
 #       Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#***********************************************************************
+# ***********************************************************************
 
 from sage.categories.morphism import Morphism
 from sage.symbolic.constants import I
@@ -28,6 +28,7 @@ from sage.functions.other import real, imag
 from sage.misc.functional import sqrt
 from sage.geometry.hyperbolic_space.hyperbolic_constants import EPSILON
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.misc.call', 'attrcall')
 
 
@@ -35,6 +36,7 @@ class HyperbolicModelCoercion(Morphism):
     """
     Abstract base class for morphisms between the hyperbolic models.
     """
+
     def _repr_type(self):
         """
         Return the type of morphism.
@@ -107,8 +109,9 @@ class HyperbolicModelCoercion(Morphism):
             sage: phi.convert_geodesic(PD.get_geodesic(0.5+0.5*I, -I))
             Geodesic in UHP from 2.00000000000000 + 1.00000000000000*I to 0
         """
-        return self.codomain().get_geodesic(self(x.start()), self(x.end()),
-                                            **x.graphics_options())
+        return self.codomain().get_geodesic(
+            self(x.start()), self(x.end()), **x.graphics_options()
+        )
 
     def convert_isometry(self, x):
         """
@@ -146,6 +149,7 @@ class HyperbolicModelCoercion(Morphism):
         """
         return self.domain().coerce_map_from(self.codomain())
 
+
 ############
 # From UHP #
 ############
@@ -155,6 +159,7 @@ class CoercionUHPtoPD(HyperbolicModelCoercion):
     """
     Coercion from the UHP to PD model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -170,7 +175,7 @@ class CoercionUHPtoPD(HyperbolicModelCoercion):
         """
         if x == infinity:
             return I
-        return (x - I) / (Integer(1) - I*x)
+        return (x - I) / (Integer(1) - I * x)
 
     def image_isometry_matrix(self, x):
         """
@@ -188,14 +193,20 @@ class CoercionUHPtoPD(HyperbolicModelCoercion):
         """
         if x.det() < 0:
             # x = I * x
-            return matrix([[1,-I],[-I,1]]) * x * matrix([[1,I],[I,1]]).conjugate()/Integer(2)
-        return matrix([[1,-I],[-I,1]]) * x * matrix([[1,I],[I,1]])/Integer(2)
+            return (
+                matrix([[1, -I], [-I, 1]])
+                * x
+                * matrix([[1, I], [I, 1]]).conjugate()
+                / Integer(2)
+            )
+        return matrix([[1, -I], [-I, 1]]) * x * matrix([[1, I], [I, 1]]) / Integer(2)
 
 
 class CoercionUHPtoKM(HyperbolicModelCoercion):
     """
     Coercion from the UHP to KM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -211,8 +222,10 @@ class CoercionUHPtoKM(HyperbolicModelCoercion):
         """
         if x == infinity:
             return (0, 1)
-        return ((2*real(x))/(real(x)**2 + imag(x)**2 + 1),
-                (real(x)**2 + imag(x)**2 - 1)/(real(x)**2 + imag(x)**2 + 1))
+        return (
+            (2 * real(x)) / (real(x) ** 2 + imag(x) ** 2 + 1),
+            (real(x) ** 2 + imag(x) ** 2 - 1) / (real(x) ** 2 + imag(x) ** 2 + 1),
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -236,6 +249,7 @@ class CoercionUHPtoHM(HyperbolicModelCoercion):
     """
     Coercion from the UHP to HM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -249,9 +263,13 @@ class CoercionUHPtoHM(HyperbolicModelCoercion):
             sage: phi.image_coordinates(3 + I)
             (3, 9/2, 11/2)
         """
-        return vector((real(x)/imag(x),
-                      (real(x)**2 + imag(x)**2 - 1)/(2*imag(x)),
-                      (real(x)**2 + imag(x)**2 + 1)/(2*imag(x))))
+        return vector(
+            (
+                real(x) / imag(x),
+                (real(x) ** 2 + imag(x) ** 2 - 1) / (2 * imag(x)),
+                (real(x) ** 2 + imag(x) ** 2 + 1) / (2 * imag(x)),
+            )
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -270,6 +288,7 @@ class CoercionUHPtoHM(HyperbolicModelCoercion):
         """
         return SL2R_to_SO21(x)
 
+
 ###########
 # From PD #
 ###########
@@ -279,6 +298,7 @@ class CoercionPDtoUHP(HyperbolicModelCoercion):
     """
     Coercion from the PD to UHP model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -311,7 +331,7 @@ class CoercionPDtoUHP(HyperbolicModelCoercion):
         """
         if abs(x - I) < EPSILON:
             return infinity
-        return (x + I)/(Integer(1) + I*x)
+        return (x + I) / (Integer(1) + I * x)
 
     def image_isometry_matrix(self, x):
         """
@@ -330,16 +350,25 @@ class CoercionPDtoUHP(HyperbolicModelCoercion):
             [-1  0]
             [ 0 -1]
         """
-        from sage.geometry.hyperbolic_space.hyperbolic_isometry import HyperbolicIsometryPD
+        from sage.geometry.hyperbolic_space.hyperbolic_isometry import (
+            HyperbolicIsometryPD,
+        )
+
         if not HyperbolicIsometryPD._orientation_preserving(x):
-            return matrix([[1,I],[I,1]]) * x * matrix([[1,-I],[-I,1]]).conjugate() / Integer(2)
-        return matrix([[1,I],[I,1]]) * x * matrix([[1,-I],[-I,1]]) / Integer(2)
+            return (
+                matrix([[1, I], [I, 1]])
+                * x
+                * matrix([[1, -I], [-I, 1]]).conjugate()
+                / Integer(2)
+            )
+        return matrix([[1, I], [I, 1]]) * x * matrix([[1, -I], [-I, 1]]) / Integer(2)
 
 
 class CoercionPDtoKM(HyperbolicModelCoercion):
     """
     Coercion from the PD to KM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -353,8 +382,10 @@ class CoercionPDtoKM(HyperbolicModelCoercion):
             sage: phi.image_coordinates(0.5+0.5*I)
             (0.666666666666667, 0.666666666666667)
         """
-        return (2*real(x)/(Integer(1) + real(x)**2 + imag(x)**2),
-                2*imag(x)/(Integer(1) + real(x)**2 + imag(x)**2))
+        return (
+            2 * real(x) / (Integer(1) + real(x) ** 2 + imag(x) ** 2),
+            2 * imag(x) / (Integer(1) + real(x) ** 2 + imag(x) ** 2),
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -371,14 +402,16 @@ class CoercionPDtoKM(HyperbolicModelCoercion):
             [ 0  1  0]
             [ 0  0 -1]
         """
-        return SL2R_to_SO21(matrix(2, [1, I, I, 1]) * x *
-                            matrix(2, [1, -I, -I, 1]) / Integer(2))
+        return SL2R_to_SO21(
+            matrix(2, [1, I, I, 1]) * x * matrix(2, [1, -I, -I, 1]) / Integer(2)
+        )
 
 
 class CoercionPDtoHM(HyperbolicModelCoercion):
     """
     Coercion from the PD to HM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -392,10 +425,13 @@ class CoercionPDtoHM(HyperbolicModelCoercion):
             sage: phi.image_coordinates(0.5+0.5*I)
             (2.00000000000000, 2.00000000000000, 3.00000000000000)
         """
-        return vector((2*real(x)/(1 - real(x)**2 - imag(x)**2),
-                       2*imag(x)/(1 - real(x)**2 - imag(x)**2),
-                       (real(x)**2 + imag(x)**2 + 1) /
-                       (1 - real(x)**2 - imag(x)**2)))
+        return vector(
+            (
+                2 * real(x) / (1 - real(x) ** 2 - imag(x) ** 2),
+                2 * imag(x) / (1 - real(x) ** 2 - imag(x) ** 2),
+                (real(x) ** 2 + imag(x) ** 2 + 1) / (1 - real(x) ** 2 - imag(x) ** 2),
+            )
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -412,8 +448,10 @@ class CoercionPDtoHM(HyperbolicModelCoercion):
             [ 0  1  0]
             [ 0  0 -1]
         """
-        return SL2R_to_SO21(matrix(2, [1, I, I, 1]) * x *
-                            matrix(2, [1, -I, -I, 1]) / Integer(2))
+        return SL2R_to_SO21(
+            matrix(2, [1, I, I, 1]) * x * matrix(2, [1, -I, -I, 1]) / Integer(2)
+        )
+
 
 ###########
 # From KM #
@@ -424,6 +462,7 @@ class CoercionKMtoUHP(HyperbolicModelCoercion):
     """
     Coercion from the KM to UHP model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -441,9 +480,10 @@ class CoercionKMtoUHP(HyperbolicModelCoercion):
         """
         if tuple(x) == (0, 1):
             return infinity
-        return (-x[0]/(x[1] - 1)
-                + I*(-(sqrt(-x[0]**2 - x[1]**2 + 1) - x[0]**2 - x[1]**2 + 1)
-                     / ((x[1] - 1)*sqrt(-x[0]**2 - x[1]**2 + 1) + x[1] - 1)))
+        return -x[0] / (x[1] - 1) + I * (
+            -(sqrt(-(x[0] ** 2) - x[1] ** 2 + 1) - x[0] ** 2 - x[1] ** 2 + 1)
+            / ((x[1] - 1) * sqrt(-(x[0] ** 2) - x[1] ** 2 + 1) + x[1] - 1)
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -467,6 +507,7 @@ class CoercionKMtoPD(HyperbolicModelCoercion):
     """
     Coercion from the KM to PD model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -480,8 +521,9 @@ class CoercionKMtoPD(HyperbolicModelCoercion):
             sage: phi.image_coordinates((0, 0))
             0
         """
-        return (x[0]/(1 + (1 - x[0]**2 - x[1]**2).sqrt())
-                + I*x[1]/(1 + (1 - x[0]**2 - x[1]**2).sqrt()))
+        return x[0] / (1 + (1 - x[0] ** 2 - x[1] ** 2).sqrt()) + I * x[1] / (
+            1 + (1 - x[0] ** 2 - x[1] ** 2).sqrt()
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -498,14 +540,19 @@ class CoercionKMtoPD(HyperbolicModelCoercion):
             [2*sqrt(1/3)   sqrt(1/3)]
             [  sqrt(1/3) 2*sqrt(1/3)]
         """
-        return (matrix(2,[1,-I,-I,1]) * SO21_to_SL2R(x) *
-                matrix(2,[1,I,I,1])/Integer(2))
+        return (
+            matrix(2, [1, -I, -I, 1])
+            * SO21_to_SL2R(x)
+            * matrix(2, [1, I, I, 1])
+            / Integer(2)
+        )
 
 
 class CoercionKMtoHM(HyperbolicModelCoercion):
     """
     Coercion from the KM to HM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -519,8 +566,9 @@ class CoercionKMtoHM(HyperbolicModelCoercion):
             sage: phi.image_coordinates((0, 0))
             (0, 0, 1)
         """
-        return (vector((2*x[0], 2*x[1], 1 + x[0]**2 + x[1]**2))
-                / (1 - x[0]**2 - x[1]**2))
+        return vector((2 * x[0], 2 * x[1], 1 + x[0] ** 2 + x[1] ** 2)) / (
+            1 - x[0] ** 2 - x[1] ** 2
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -540,6 +588,7 @@ class CoercionKMtoHM(HyperbolicModelCoercion):
         """
         return x
 
+
 ###########
 # From HM #
 ###########
@@ -549,6 +598,7 @@ class CoercionHMtoUHP(HyperbolicModelCoercion):
     """
     Coercion from the HM to UHP model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -562,8 +612,9 @@ class CoercionHMtoUHP(HyperbolicModelCoercion):
             sage: phi.image_coordinates( vector((0,0,1)) )
             I
         """
-        return -((x[0]*x[2] + x[0]) + I*(x[2] + 1)) / ((x[1] - 1)*x[2]
-                                        - x[0]**2 - x[1]**2 + x[1] - 1)
+        return -((x[0] * x[2] + x[0]) + I * (x[2] + 1)) / (
+            (x[1] - 1) * x[2] - x[0] ** 2 - x[1] ** 2 + x[1] - 1
+        )
 
     def image_isometry_matrix(self, x):
         """
@@ -586,6 +637,7 @@ class CoercionHMtoPD(HyperbolicModelCoercion):
     """
     Coercion from the HM to PD model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -599,7 +651,7 @@ class CoercionHMtoPD(HyperbolicModelCoercion):
             sage: phi.image_coordinates( vector((0,0,1)) )
             0
         """
-        return x[0]/(1 + x[2]) + I*(x[1]/(1 + x[2]))
+        return x[0] / (1 + x[2]) + I * (x[1] / (1 + x[2]))
 
     def image_isometry_matrix(self, x):
         """
@@ -615,14 +667,19 @@ class CoercionHMtoPD(HyperbolicModelCoercion):
             [1 0]
             [0 1]
         """
-        return (matrix(2,[1,-I,-I,1]) * SO21_to_SL2R(x) *
-                matrix(2,[1,I,I,1])/Integer(2))
+        return (
+            matrix(2, [1, -I, -I, 1])
+            * SO21_to_SL2R(x)
+            * matrix(2, [1, I, I, 1])
+            / Integer(2)
+        )
 
 
 class CoercionHMtoKM(HyperbolicModelCoercion):
     """
     Coercion from the HM to KM model.
     """
+
     def image_coordinates(self, x):
         """
         Return the image of the coordinates of the hyperbolic point ``x``
@@ -636,7 +693,7 @@ class CoercionHMtoKM(HyperbolicModelCoercion):
             sage: phi.image_coordinates( vector((0,0,1)) )
             (0, 0)
         """
-        return (x[0]/(1 + x[2]), x[1]/(1 + x[2]))
+        return (x[0] / (1 + x[2]), x[1] / (1 + x[2]))
 
     def image_isometry_matrix(self, x):
         """
@@ -654,6 +711,7 @@ class CoercionHMtoKM(HyperbolicModelCoercion):
             [0 0 1]
         """
         return x
+
 
 #####################################################################
 ## Helper functions
@@ -676,24 +734,35 @@ def SL2R_to_SO21(A):
         sage: norm(A.transpose()*J*A - J) < 10**-4                                      # needs scipy
         True
     """
-    a, b, c, d = (A/A.det().sqrt()).list()
+    a, b, c, d = (A / A.det().sqrt()).list()
 
     # Kill ~0 imaginary parts
     components = [
-        a*d + b*c, a*c - b*d, a*c + b*d, a*b - c*d,
-        Integer(1)/Integer(2)*a**2 - Integer(1)/Integer(2)*b**2 -
-                Integer(1)/Integer(2)*c**2 + Integer(1)/Integer(2)*d**2,
-        Integer(1)/Integer(2)*a**2 + Integer(1)/Integer(2)*b**2 -
-                Integer(1)/Integer(2)*c**2 - Integer(1)/Integer(2)*d**2,
-        a*b + c*d, Integer(1)/Integer(2)*a**2 -
-                Integer(1)/Integer(2)*b**2 + Integer(1)/Integer(2)*c**2 -
-        Integer(1)/Integer(2)*d**2, Integer(1)/Integer(2)*a**2 +
-                Integer(1)/Integer(2)*b**2 + Integer(1)/Integer(2)*c**2 +
-        Integer(1)/Integer(2)*d**2
+        a * d + b * c,
+        a * c - b * d,
+        a * c + b * d,
+        a * b - c * d,
+        Integer(1) / Integer(2) * a**2
+        - Integer(1) / Integer(2) * b**2
+        - Integer(1) / Integer(2) * c**2
+        + Integer(1) / Integer(2) * d**2,
+        Integer(1) / Integer(2) * a**2
+        + Integer(1) / Integer(2) * b**2
+        - Integer(1) / Integer(2) * c**2
+        - Integer(1) / Integer(2) * d**2,
+        a * b + c * d,
+        Integer(1) / Integer(2) * a**2
+        - Integer(1) / Integer(2) * b**2
+        + Integer(1) / Integer(2) * c**2
+        - Integer(1) / Integer(2) * d**2,
+        Integer(1) / Integer(2) * a**2
+        + Integer(1) / Integer(2) * b**2
+        + Integer(1) / Integer(2) * c**2
+        + Integer(1) / Integer(2) * d**2,
     ]
     B = matrix(3, [real(comp) for comp in components])
 
-    #B = B.apply_map(attrcall('real'))
+    # B = B.apply_map(attrcall('real'))
     if A.det() > 0:
         return B
     # Orientation-reversing isometries swap the nappes of
@@ -730,24 +799,32 @@ def SO21_to_SL2R(M):
     # algebra).  These corresponds to AXA^-1 etc and give formulas     #
     # for the entries of A.                                            #
     ####################################################################
-    (m_1,m_2,m_3,m_4,m_5,m_6,m_7,m_8,m_9) = M.list()
-    d = sqrt(Integer(1)/Integer(2)*m_5 - Integer(1)/Integer(2)*m_6 -
-             Integer(1)/Integer(2)*m_8 + Integer(1)/Integer(2)*m_9)
+    (m_1, m_2, m_3, m_4, m_5, m_6, m_7, m_8, m_9) = M.list()
+    d = sqrt(
+        Integer(1) / Integer(2) * m_5
+        - Integer(1) / Integer(2) * m_6
+        - Integer(1) / Integer(2) * m_8
+        + Integer(1) / Integer(2) * m_9
+    )
     if M.det() > 0:  # EPSILON?
         det_sign = 1
     elif M.det() < 0:  # EPSILON?
         det_sign = -1
     if d > 0:  # EPSILON?
-        c = (-Integer(1)/Integer(2)*m_4 + Integer(1)/Integer(2)*m_7)/d
-        b = (-Integer(1)/Integer(2)*m_2 + Integer(1)/Integer(2)*m_3)/d
-        ad = det_sign*1 + b*c  # ad - bc = pm 1
-        a = ad/d
+        c = (-Integer(1) / Integer(2) * m_4 + Integer(1) / Integer(2) * m_7) / d
+        b = (-Integer(1) / Integer(2) * m_2 + Integer(1) / Integer(2) * m_3) / d
+        ad = det_sign * 1 + b * c  # ad - bc = pm 1
+        a = ad / d
     else:  # d is 0, so we make c > 0
-        c = sqrt(-Integer(1)/Integer(2)*m_5 - Integer(1)/Integer(2)*m_6 +
-                 Integer(1)/Integer(2)*m_8 + Integer(1)/Integer(2)*m_9)
-        d = (-Integer(1)/Integer(2)*m_4 + Integer(1)/Integer(2)*m_7)/c
-            # d = 0, so ad - bc = -bc = pm 1.
-        b = - (det_sign*1)/c
-        a = (Integer(1)/Integer(2)*m_4 + Integer(1)/Integer(2)*m_7)/b
+        c = sqrt(
+            -Integer(1) / Integer(2) * m_5
+            - Integer(1) / Integer(2) * m_6
+            + Integer(1) / Integer(2) * m_8
+            + Integer(1) / Integer(2) * m_9
+        )
+        d = (-Integer(1) / Integer(2) * m_4 + Integer(1) / Integer(2) * m_7) / c
+        # d = 0, so ad - bc = -bc = pm 1.
+        b = -(det_sign * 1) / c
+        a = (Integer(1) / Integer(2) * m_4 + Integer(1) / Integer(2) * m_7) / b
     A = matrix(2, [a, b, c, d])
     return A

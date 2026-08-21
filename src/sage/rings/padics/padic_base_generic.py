@@ -8,7 +8,7 @@ AUTHORS:
 - David Roe
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007-2013 David Roe <roed.math@gmail.com>
 #                               William Stein <wstein@gmail.com>
 #
@@ -17,7 +17,7 @@ AUTHORS:
 #  the License, or (at your option) any later version.
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -25,10 +25,24 @@ from sage.rings.rational_field import QQ
 from .padic_generic import pAdicGeneric
 from .misc import precprint
 from sage.rings.padics.pow_computer import PowComputer
-from sage.rings.padics.padic_capped_relative_element import pAdicCoercion_ZZ_CR, pAdicCoercion_QQ_CR, pAdicConvert_QQ_CR
-from sage.rings.padics.padic_capped_absolute_element import pAdicCoercion_ZZ_CA, pAdicConvert_QQ_CA
-from sage.rings.padics.padic_fixed_mod_element import pAdicCoercion_ZZ_FM, pAdicConvert_QQ_FM
-from sage.rings.padics.padic_floating_point_element import pAdicCoercion_ZZ_FP, pAdicCoercion_QQ_FP, pAdicConvert_QQ_FP
+from sage.rings.padics.padic_capped_relative_element import (
+    pAdicCoercion_ZZ_CR,
+    pAdicCoercion_QQ_CR,
+    pAdicConvert_QQ_CR,
+)
+from sage.rings.padics.padic_capped_absolute_element import (
+    pAdicCoercion_ZZ_CA,
+    pAdicConvert_QQ_CA,
+)
+from sage.rings.padics.padic_fixed_mod_element import (
+    pAdicCoercion_ZZ_FM,
+    pAdicConvert_QQ_FM,
+)
+from sage.rings.padics.padic_floating_point_element import (
+    pAdicCoercion_ZZ_FP,
+    pAdicCoercion_QQ_FP,
+    pAdicConvert_QQ_FP,
+)
 
 
 class pAdicBaseGeneric(pAdicGeneric):
@@ -44,10 +58,15 @@ class pAdicBaseGeneric(pAdicGeneric):
         """
         if self.is_relaxed():
             from sage.rings.padics.pow_computer_flint import PowComputer_flint
+
             self.prime_pow = PowComputer_flint(p, 1, 1, 1, self.is_field())
         else:
-            self.prime_pow = PowComputer(p, max(min(prec - 1, 30), 1), prec, self.is_field(), self._prec_type())
-        pAdicGeneric.__init__(self, self, p, prec, print_mode, names, element_class, category=category)
+            self.prime_pow = PowComputer(
+                p, max(min(prec - 1, 30), 1), prec, self.is_field(), self._prec_type()
+            )
+        pAdicGeneric.__init__(
+            self, self, p, prec, print_mode, names, element_class, category=category
+        )
         if self.is_field():
             if self.is_capped_relative():
                 coerce_list = [pAdicCoercion_ZZ_CR(self), pAdicCoercion_QQ_CR(self)]
@@ -84,7 +103,9 @@ class pAdicBaseGeneric(pAdicGeneric):
         else:
             raise RuntimeError
         self.Element = element_class
-        self._populate_coercion_lists_(coerce_list=coerce_list, convert_list=convert_list)
+        self._populate_coercion_lists_(
+            coerce_list=coerce_list, convert_list=convert_list
+        )
 
     def _repr_(self, do_latex=False):
         r"""
@@ -136,7 +157,11 @@ class pAdicBaseGeneric(pAdicGeneric):
                 s = r"\verb'%s' (\simeq %s)" % (self._label, s)
         else:
             s = "Field " if self.is_field() else "Ring "
-            s = "%s-adic " % self.prime() + s + precprint(self._prec_type(), self.precision_cap(), self.prime())
+            s = (
+                "%s-adic " % self.prime()
+                + s
+                + precprint(self._prec_type(), self.precision_cap(), self.prime())
+            )
             if hasattr(self, '_label') and self._label:
                 s += " (label: %s)" % self._label
         return s
@@ -153,6 +178,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             Rational Field
         """
         from sage.rings.rational_field import QQ
+
         return QQ
 
     def exact_ring(self):
@@ -165,6 +191,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             Integer Ring
         """
         from sage.rings.integer_ring import ZZ
+
         return ZZ
 
     def is_isomorphic(self, ring) -> bool:
@@ -186,7 +213,11 @@ class pAdicBaseGeneric(pAdicGeneric):
             sage: R = Zp(5, 15, print_mode='digits'); S = Zp(5, 44, print_max_terms=4); R.is_isomorphic(S)
             True
         """
-        return isinstance(ring, pAdicBaseGeneric) and self.prime() == ring.prime() and self.is_field() == ring.is_field()
+        return (
+            isinstance(ring, pAdicBaseGeneric)
+            and self.prime() == ring.prime()
+            and self.is_field() == ring.is_field()
+        )
 
     def gen(self, n=0):
         """
@@ -328,7 +359,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             sage: Zp(17).has_pth_root()
             False
         """
-        return (self.prime() == 2)
+        return self.prime() == 2
 
     def has_root_of_unity(self, n):
         r"""
@@ -353,7 +384,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             sage: R.has_root_of_unity(11)
             False
         """
-        if (self.prime() == 2):
+        if self.prime() == 2:
             return n.divides(2)
         return n.divides(self.prime() - 1)
 
@@ -378,7 +409,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             sage: R.zeta(12)
             8 + 24*37 + 37^2 + 29*37^3 + 23*37^4 + O(37^5)
         """
-        if (self.prime() == 2):
+        if self.prime() == 2:
             if (n is None) or (n == 2):
                 return self(-1)
             if n == 1:
@@ -386,6 +417,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             raise ValueError("No, %sth root of unity in self" % n)
         else:
             from sage.rings.finite_rings.finite_field_constructor import GF
+
             return self.teichmuller(GF(self.prime()).zeta(n).lift())
 
     def zeta_order(self):
@@ -399,7 +431,7 @@ class pAdicBaseGeneric(pAdicGeneric):
             sage: Zp(2).zeta_order()
             2
         """
-        if (self.prime() == 2):
+        if self.prime() == 2:
             return 2
         return self.prime() - 1
 
@@ -440,18 +472,19 @@ class pAdicBaseGeneric(pAdicGeneric):
         from sage.misc.mrange import cartesian_product_iterator
         from sage.rings.real_double import RDF
         from sage.plot.point import point as points
+
         p = self.prime()
-        phi = 2*RDF.pi()/p
+        phi = 2 * RDF.pi() / p
         V = RDF**2
-        vs = [V([(phi*t).sin(), (phi*t).cos()]) for t in range(p)]
+        vs = [V([(phi * t).sin(), (phi * t).cos()]) for t in range(p)]
         all = []
         depth = max(RDF(max_points).log(p).floor(), 1)
-        scale = min(RDF(1.5/p), 1/RDF(3))
-        pts = [vs]*depth
+        scale = min(RDF(1.5 / p), 1 / RDF(3))
+        pts = [vs] * depth
         if depth == 1 and 23 < p < max_points:
-            extras = int(max_points/p)
-            if p/extras > 5:
-                pts = [vs]*depth + [vs[::extras]]
+            extras = int(max_points / p)
+            if p / extras > 5:
+                pts = [vs] * depth + [vs[::extras]]
         for digits in cartesian_product_iterator(pts):
             p = sum([v * scale**n for n, v in enumerate(digits)])
             all.append(tuple(p))

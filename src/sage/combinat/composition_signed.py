@@ -1,6 +1,7 @@
 r"""
 Signed compositions
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #
@@ -117,8 +118,7 @@ class SignedCompositions(Compositions_n):
             sage: SignedCompositions(3).cardinality()
             18
         """
-        return ZZ.sum(binomial(self.n - 1, i - 1) * 2**i
-                      for i in range(1, self.n + 1))
+        return ZZ.sum(binomial(self.n - 1, i - 1) * 2**i for i in range(1, self.n + 1))
 
     def __iter__(self):
         """
@@ -138,4 +138,7 @@ class SignedCompositions(Compositions_n):
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.composition_signed', 'SignedCompositions_n', SignedCompositions)
+
+register_unpickle_override(
+    'sage.combinat.composition_signed', 'SignedCompositions_n', SignedCompositions
+)

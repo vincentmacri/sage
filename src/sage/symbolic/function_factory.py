@@ -11,15 +11,27 @@ Factory for symbolic functions
 ###############################################################################
 from __future__ import annotations
 
-from sage.symbolic.function import (SymbolicFunction, sfunctions_funcs,
-                                    unpickle_wrapper)
+from sage.symbolic.function import SymbolicFunction, sfunctions_funcs, unpickle_wrapper
 
 
-def function_factory(name, nargs=0, latex_name=None, conversions=None,
-            evalf_params_first=True, eval_func=None, evalf_func=None,
-            conjugate_func=None, real_part_func=None, imag_part_func=None,
-            derivative_func=None, tderivative_func=None, power_func=None,
-            series_func=None, print_func=None, print_latex_func=None):
+def function_factory(
+    name,
+    nargs=0,
+    latex_name=None,
+    conversions=None,
+    evalf_params_first=True,
+    eval_func=None,
+    evalf_func=None,
+    conjugate_func=None,
+    real_part_func=None,
+    imag_part_func=None,
+    derivative_func=None,
+    tderivative_func=None,
+    power_func=None,
+    series_func=None,
+    print_func=None,
+    print_latex_func=None,
+):
     r"""
     Create a formal symbolic function. For an explanation of the arguments see
     the documentation for the method :meth:`function`.
@@ -42,6 +54,7 @@ def function_factory(name, nargs=0, latex_name=None, conversions=None,
         sage: g(2).n()
         1.00000000000000
     """
+
     class NewSymbolicFunction(SymbolicFunction):
         def __init__(self):
             """
@@ -52,8 +65,9 @@ def function_factory(name, nargs=0, latex_name=None, conversions=None,
                 sage: f(2,4)
                 f(2, 4)
             """
-            SymbolicFunction.__init__(self, name, nargs, latex_name,
-                    conversions, evalf_params_first)
+            SymbolicFunction.__init__(
+                self, name, nargs, latex_name, conversions, evalf_params_first
+            )
 
         def _maxima_init_(self):
             """
@@ -83,6 +97,7 @@ def function_factory(name, nargs=0, latex_name=None, conversions=None,
 
         def _sympy_(self):
             from sympy import Function
+
             return Function(self.name())
 
         def __reduce__(self):
@@ -96,12 +111,21 @@ def function_factory(name, nargs=0, latex_name=None, conversions=None,
                 f(1, 2)
             """
             pickled_functions = self.__getstate__()[6]
-            return (unpickle_function, (name, nargs, latex_name, conversions,
-                evalf_params_first, pickled_functions))
+            return (
+                unpickle_function,
+                (
+                    name,
+                    nargs,
+                    latex_name,
+                    conversions,
+                    evalf_params_first,
+                    pickled_functions,
+                ),
+            )
 
     l = locals()
     for func_name in sfunctions_funcs:
-        func = l.get(func_name+"_func", None)
+        func = l.get(func_name + "_func", None)
         if func:
             if not callable(func):
                 raise ValueError(func_name + "_func" + " parameter must be callable")
@@ -110,8 +134,9 @@ def function_factory(name, nargs=0, latex_name=None, conversions=None,
     return NewSymbolicFunction()
 
 
-def unpickle_function(name, nargs, latex_name, conversions, evalf_params_first,
-        pickled_funcs):
+def unpickle_function(
+    name, nargs, latex_name, conversions, evalf_params_first, pickled_funcs
+):
     r"""
     This is returned by the ``__reduce__`` method of symbolic functions to be
     called during unpickling to recreate the given function.

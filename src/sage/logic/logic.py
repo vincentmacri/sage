@@ -59,6 +59,7 @@ class SymbolicLogic:
         True  | True  | False | True  |
         True  | True  | True  | True  |
     """
+
     def statement(self, s):
         r"""
         Return a token list to be used by other functions in the class.
@@ -104,7 +105,7 @@ class SymbolicLogic:
         toks, vars, vars_order = ['OPAREN'], {}, []
         tokenize(s, toks)
         statement = [toks, vars, vars_order]
-        try:                # verify the syntax
+        try:  # verify the syntax
             eval(toks)
         except (KeyError, RuntimeError):
             print('Malformed Statement')
@@ -472,8 +473,8 @@ def eval_ltor_toks(lrtoks):
         sage: sage.logic.logic.eval_ltor_toks(ltor)
         'True'
     """
-    reduce_monos(lrtoks)        # monotonic ! operators go first
-    reduce_bins(lrtoks)         # then the binary operators
+    reduce_monos(lrtoks)  # monotonic ! operators go first
+    reduce_bins(lrtoks)  # then the binary operators
     if len(lrtoks) > 1:
         raise RuntimeError
     return lrtoks[0]
@@ -814,10 +815,10 @@ def tokenize(s, toks):
             tok = tok_list[3]
         elif s[i] == '!':
             tok = tok_list[4]
-        elif s[i:i + 2] == '->':
+        elif s[i : i + 2] == '->':
             tok = tok_list[5]
             skip = 2
-        elif s[i:i + 3] == '<->':
+        elif s[i : i + 3] == '<->':
             tok = tok_list[6]
             skip = 3
 
@@ -839,8 +840,9 @@ def tokenize(s, toks):
                 if tok[0] not in string.ascii_letters:
                     valid = 0
                 for c in tok:
-                    if not (c in string.ascii_letters
-                            or c in string.digits or c == '_'):
+                    if not (
+                        c in string.ascii_letters or c in string.digits or c == '_'
+                    ):
                         valid = 0
 
             if valid == 1:

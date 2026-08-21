@@ -63,7 +63,9 @@ class KRTToRCBijectionAbstract:
         """
         self.tp_krt = tp_krt
         self.n = tp_krt.parent().cartan_type().classical().rank()
-        self.ret_rig_con = tp_krt.parent().rigged_configurations()(partition_list=[[]] * self.n)
+        self.ret_rig_con = tp_krt.parent().rigged_configurations()(
+            partition_list=[[]] * self.n
+        )
         # We allow this to be mutable to make the bijection easier to program.
         # Upon completing the bijection, this will be set to immutable.
         # Do not call this, the object could be in a mutable state and ultimately
@@ -120,13 +122,16 @@ class KRTToRCBijectionAbstract:
             <BLANKLINE>
         """
         if verbose:
-            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element \
-                import TensorProductOfKirillovReshetikhinTableauxElement
+            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element import (
+                TensorProductOfKirillovReshetikhinTableauxElement,
+            )
 
         for cur_crystal in reversed(self.tp_krt):
             target = cur_crystal.parent()._r
             # Iterate through the columns
-            for col_number, cur_column in enumerate(reversed(cur_crystal.to_array(False))):
+            for col_number, cur_column in enumerate(
+                reversed(cur_crystal.to_array(False))
+            ):
                 self.cur_path.insert(0, [])  # Prepend an empty list
 
                 self.cur_dims.insert(0, [0, 1])
@@ -137,7 +142,13 @@ class KRTToRCBijectionAbstract:
 
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -151,7 +162,13 @@ class KRTToRCBijectionAbstract:
                 if col_number > 0:
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -227,15 +244,17 @@ class KRTToRCBijectionAbstract:
         # Setup the first block
         block_len = self.ret_rig_con[a][0]
         nu = self.ret_rig_con.nu()
-        vac_num = self.ret_rig_con.parent()._calc_vacancy_number(nu, a, nu[a][0],
-                                                                 dims=self.cur_dims)
+        vac_num = self.ret_rig_con.parent()._calc_vacancy_number(
+            nu, a, nu[a][0], dims=self.cur_dims
+        )
 
         for i, row_len in enumerate(self.ret_rig_con[a]):
             # If we've gone to a different sized block, then update the
             #   values which change when moving to a new block size
             if block_len != row_len:
-                vac_num = self.ret_rig_con.parent()._calc_vacancy_number(nu, a, row_len,
-                                                                         dims=self.cur_dims)
+                vac_num = self.ret_rig_con.parent()._calc_vacancy_number(
+                    nu, a, row_len, dims=self.cur_dims
+                )
                 block_len = row_len
             self.ret_rig_con[a].vacancy_numbers[i] = vac_num
 
@@ -262,15 +281,24 @@ class KRTToRCBijectionAbstract:
         rigged_partition = self.ret_rig_con[a]
         for index, value in enumerate(rigged_partition.rigging):
             if value is None:
-                rigged_partition.rigging[index] = rigged_partition.vacancy_numbers[index]
-                if index > 0 and rigged_partition[index - 1] == rigged_partition[index] \
-                  and rigged_partition.rigging[index - 1] < rigged_partition.rigging[index]:
+                rigged_partition.rigging[index] = rigged_partition.vacancy_numbers[
+                    index
+                ]
+                if (
+                    index > 0
+                    and rigged_partition[index - 1] == rigged_partition[index]
+                    and rigged_partition.rigging[index - 1]
+                    < rigged_partition.rigging[index]
+                ):
                     # If we need to reorder
                     pos = 0
                     width = rigged_partition[index]
                     val = rigged_partition.rigging[index]
                     for i in reversed(range(index - 1)):
-                        if rigged_partition[i] > width or rigged_partition.rigging[i] >= val:
+                        if (
+                            rigged_partition[i] > width
+                            or rigged_partition.rigging[i] >= val
+                        ):
                             pos = i + 1
                             break
 
@@ -380,6 +408,7 @@ class RCToKRTBijectionAbstract:
             Digraph on 3 vertices
         """
         from sage.combinat.crystals.letters import CrystalOfLetters
+
         letters = CrystalOfLetters(self.rigged_con.parent()._cartan_type.classical())
 
         # This is technically bad, but because the first thing we do is append
@@ -397,7 +426,13 @@ class RCToKRTBijectionAbstract:
                 if self.cur_dims[0][1] > 1:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -412,13 +447,24 @@ class RCToKRTBijectionAbstract:
                         self._update_vacancy_numbers(a)
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), 'ls'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), 'ls']
+                        )
 
                 while self.cur_dims[0][0]:  # > 0:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -431,8 +477,13 @@ class RCToKRTBijectionAbstract:
                     ret_crystal_path[-1].append(letters(b))  # Append the rank
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), letters(b)])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), letters(b)]
+                        )
 
                 self.cur_dims.pop(0)  # Pop off the leading column
 
@@ -440,6 +491,7 @@ class RCToKRTBijectionAbstract:
             self._graph.pop(0)  # Remove the dummy at the start
             from sage.graphs.digraph import DiGraph
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             self._graph = DiGraph(self._graph, format='list_of_edges')
             if have_dot2tex():
                 self._graph.set_latex_options(format='dot2tex', edge_labels=True)
@@ -489,17 +541,17 @@ class RCToKRTBijectionAbstract:
 
         # Setup the first block
         block_len = partition[0]
-        vac_num = self.rigged_con.parent()._calc_vacancy_number(self.cur_partitions,
-                                                                a, partition[0],
-                                                                dims=self.cur_dims)
+        vac_num = self.rigged_con.parent()._calc_vacancy_number(
+            self.cur_partitions, a, partition[0], dims=self.cur_dims
+        )
 
         for i, row_len in enumerate(self.cur_partitions[a]):
             # If we've gone to a different sized block, then update the
             #   values which change when moving to a new block size
             if block_len != row_len:
-                vac_num = self.rigged_con.parent()._calc_vacancy_number(self.cur_partitions,
-                                                                        a, row_len,
-                                                                        dims=self.cur_dims)
+                vac_num = self.rigged_con.parent()._calc_vacancy_number(
+                    self.cur_partitions, a, row_len, dims=self.cur_dims
+                )
                 block_len = row_len
 
             partition.vacancy_numbers[i] = vac_num
@@ -527,8 +579,10 @@ class RCToKRTBijectionAbstract:
             0
         """
         for i in reversed(range(len(partition))):
-            if (partition[i] >= last_size
-                    and partition.vacancy_numbers[i] == partition.rigging[i]):
+            if (
+                partition[i] >= last_size
+                and partition.vacancy_numbers[i] == partition.rigging[i]
+            ):
                 return i
 
     def _next_index(self, r):

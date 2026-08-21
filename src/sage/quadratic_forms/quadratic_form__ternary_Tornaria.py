@@ -11,12 +11,14 @@ Tornaria methods for computing with quadratic forms
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.arith.misc import (CRT_vectors,
-                             factor,
-                             gcd,
-                             hilbert_symbol,
-                             kronecker as kronecker_symbol,
-                             prime_to_m_part)
+from sage.arith.misc import (
+    CRT_vectors,
+    factor,
+    gcd,
+    hilbert_symbol,
+    kronecker as kronecker_symbol,
+    prime_to_m_part,
+)
 from sage.misc.functional import is_odd
 from sage.misc.misc_c import prod
 from sage.modules.free_module import FreeModule
@@ -56,7 +58,7 @@ def disc(self):
     if is_odd(self.dim()):
         # This is not so good for characteristic 2.
         return self.base_ring()(self.det() / 2)
-    return (-1)**(self.dim() // 2) * self.det()
+    return (-1) ** (self.dim() // 2) * self.det()
 
 
 def content(self):
@@ -129,6 +131,7 @@ def adjoint(self):
         [ * * 8 ]
     """
     from sage.quadratic_forms.quadratic_form import QuadraticForm
+
     if is_odd(self.dim()):
         return QuadraticForm(self.matrix().adjoint_classical() * 2)
     return QuadraticForm(self.matrix().adjoint_classical())
@@ -154,10 +157,10 @@ def antiadjoint(self):
     n = self.dim()
     R = self.base_ring()
     try:
-        d = R(self.disc()**(ZZ.one() / (n - 1)))
+        d = R(self.disc() ** (ZZ.one() / (n - 1)))
         if is_odd(n):
-            return self.adjoint().scale_by_factor(R.one() / 4 / d**(n - 2))
-        return self.adjoint().scale_by_factor(R.one() / d**(n - 2))
+            return self.adjoint().scale_by_factor(R.one() / 4 / d ** (n - 2))
+        return self.adjoint().scale_by_factor(R.one() / d ** (n - 2))
     except TypeError:
         raise ValueError("not an adjoint")
 
@@ -204,7 +207,7 @@ def reciprocal(self):
         sage: Q.reciprocal().reciprocal() == Q
         True
     """
-    return self.adjoint().primitive() . scale_by_factor(self.content())
+    return self.adjoint().primitive().scale_by_factor(self.content())
 
 
 def omega(self):
@@ -261,7 +264,9 @@ def level__Tornaria(self):
         sage: DiagonalQuadraticForm(ZZ, [1,1,1,1]).level__Tornaria()
         4
     """
-    return self.base_ring()(abs(self.disc()) / self.omega() / self.content()**self.dim())
+    return self.base_ring()(
+        abs(self.disc()) / self.omega() / self.content() ** self.dim()
+    )
 
 
 def discrec(self):
@@ -282,6 +287,7 @@ def discrec(self):
 
 
 # Rational equivalence
+
 
 def hasse_conductor(self):
     """
@@ -305,8 +311,9 @@ def hasse_conductor(self):
         sage: QuadraticForm(ZZ, 3, [2, -2, 0, 2, 0, 5]).hasse_conductor()               # needs sage.libs.pari
         10
     """
-    return prod([x for x, _ in factor(2 * self.level())
-                 if self.hasse_invariant(x) == -1])
+    return prod(
+        [x for x, _ in factor(2 * self.level()) if self.hasse_invariant(x) == -1]
+    )
 
 
 def clifford_invariant(self, p):
@@ -385,11 +392,13 @@ def clifford_conductor(self):
         sage: (H + H + H + H).clifford_conductor()
         1
     """
-    return prod([x for x, _ in factor(2 * self.level())
-                 if self.clifford_invariant(x) == -1])
+    return prod(
+        [x for x, _ in factor(2 * self.level()) if self.clifford_invariant(x) == -1]
+    )
 
 
 # Genus theory
+
 
 def basiclemma(self, M):
     """
@@ -587,6 +596,7 @@ def representation_vector_list(self, B, maxvectors=10**8):
 
 # zeros
 
+
 def is_zero(self, v, p=0) -> bool:
     r"""
     Determine if the vector `v` is on the conic `Q(x) = 0` (mod `p`).
@@ -627,7 +637,7 @@ def is_zero_nonsingular(self, v, p=0) -> bool:
     vm = vector(self.base_ring(), v) * self.matrix()
     if p != 0:
         vm = vm % p
-    return (vm != 0)
+    return vm != 0
 
 
 def is_zero_singular(self, v, p=0) -> bool:

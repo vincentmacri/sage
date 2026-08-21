@@ -71,7 +71,9 @@ class MagmaticAlgebras(Category_over_base_ring):
         # trivial, since some of the axioms of Modules (like the
         # commutativity of '+') are added to the left hand side.  We
         # might want the infrastructure to take this join for us.
-        return Category.join([(Magmas() & AdditiveMagmas()).Distributive(), Modules(R)], as_list=True)
+        return Category.join(
+            [(Magmas() & AdditiveMagmas()).Distributive(), Modules(R)], as_list=True
+        )
 
     def additional_structure(self):
         r"""
@@ -97,11 +99,14 @@ class MagmaticAlgebras(Category_over_base_ring):
         """
         return None
 
-    Associative = LazyImport('sage.categories.associative_algebras', 'AssociativeAlgebras', at_startup=True)
-    Unital = LazyImport('sage.categories.unital_algebras', 'UnitalAlgebras', at_startup=True)
+    Associative = LazyImport(
+        'sage.categories.associative_algebras', 'AssociativeAlgebras', at_startup=True
+    )
+    Unital = LazyImport(
+        'sage.categories.unital_algebras', 'UnitalAlgebras', at_startup=True
+    )
 
     class ParentMethods:
-
         @abstract_method(optional=True)
         def algebra_generators(self):
             """
@@ -117,9 +122,7 @@ class MagmaticAlgebras(Category_over_base_ring):
             """
 
     class WithBasis(CategoryWithAxiom_over_base_ring):
-
         class ParentMethods:
-
             def algebra_generators(self):
                 r"""
                 Return generators for this algebra.
@@ -196,14 +199,14 @@ class MagmaticAlgebras(Category_over_base_ring):
                 """
                 if self.product_on_basis is not NotImplemented:
                     return self._product_from_product_on_basis_multiply
-    #                return self._module_morphism(self._module_morphism(self.product_on_basis, position = 0, codomain=self),
-    #                                                                                          position = 1)
+                #                return self._module_morphism(self._module_morphism(self.product_on_basis, position = 0, codomain=self),
+                #                                                                                          position = 1)
                 if hasattr(self, "product_by_coercion"):
                     return self.product_by_coercion
                 return NotImplemented
 
             # Provides a product using the product_on_basis by calling linear_combination only once
-            def _product_from_product_on_basis_multiply( self, left, right ):
+            def _product_from_product_on_basis_multiply(self, left, right):
                 r"""
                 Compute the product of two elements by extending
                 bilinearly the method :meth:`product_on_basis`.
@@ -217,13 +220,24 @@ class MagmaticAlgebras(Category_over_base_ring):
                     sage: A._product_from_product_on_basis_multiply(a*b + 2*c, a - b)               # needs sage.combinat sage.modules
                     B[word: aba] - B[word: abb] + 2*B[word: ca] - 2*B[word: cb]
                 """
-                return self.linear_combination((self.product_on_basis(mon_left, mon_right), coeff_left * coeff_right )
-                                                for (mon_left, coeff_left) in left.monomial_coefficients(copy=False).items()
-                                                for (mon_right, coeff_right) in right.monomial_coefficients(copy=False).items() )
+                return self.linear_combination(
+                    (
+                        self.product_on_basis(mon_left, mon_right),
+                        coeff_left * coeff_right,
+                    )
+                    for (mon_left, coeff_left) in left.monomial_coefficients(
+                        copy=False
+                    ).items()
+                    for (mon_right, coeff_right) in right.monomial_coefficients(
+                        copy=False
+                    ).items()
+                )
 
         class FiniteDimensional(CategoryWithAxiom_over_base_ring):
             class ParentMethods:
-                def to_finite_dimensional_algebra(self, names='e', assume_associative=True, assume_unital=True):
+                def to_finite_dimensional_algebra(
+                    self, names='e', assume_associative=True, assume_unital=True
+                ):
                     r"""
                     Return ``self`` as a
                     :class:`~sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra.FiniteDimensionalAlgebra`.
@@ -269,13 +283,18 @@ class MagmaticAlgebras(Category_over_base_ring):
                         sage: B.from_vector(x.vector()) == y
                         True
                     """
-                    from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import FiniteDimensionalAlgebra
+                    from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import (
+                        FiniteDimensionalAlgebra,
+                    )
+
                     R = self.base_ring()
-                    return FiniteDimensionalAlgebra(R, [x.to_matrix(side="right").transpose()
-                                                        for x in self.basis()],
-                                                    names=names,
-                                                    assume_associative=assume_associative,
-                                                    assume_unital=assume_unital)
+                    return FiniteDimensionalAlgebra(
+                        R,
+                        [x.to_matrix(side="right").transpose() for x in self.basis()],
+                        names=names,
+                        assume_associative=assume_associative,
+                        assume_unital=assume_unital,
+                    )
 
                 @cached_method
                 def derivations_basis(self):
@@ -340,24 +359,34 @@ class MagmaticAlgebras(Category_over_base_ring):
                     R = self.base_ring()
                     B = self.basis()
                     keys = list(B.keys())
-                    scoeffs = {(j,y,i): c for y in keys for i in keys
-                               for j,c in (B[y]*B[i]).monomial_coefficients(copy=False).items()
-                              }
+                    scoeffs = {
+                        (j, y, i): c
+                        for y in keys
+                        for i in keys
+                        for j, c in (B[y] * B[i])
+                        .monomial_coefficients(copy=False)
+                        .items()
+                    }
                     zero = R.zero()
                     data = {}
                     N = len(keys)
-                    for ii,i in enumerate(keys):
-                        for ij,j in enumerate(keys):
-                            for il,l in enumerate(keys):
+                    for ii, i in enumerate(keys):
+                        for ij, j in enumerate(keys):
+                            for il, l in enumerate(keys):
                                 row = ii + N * ij + N**2 * il
-                                for ik,k in enumerate(keys):
-                                    data[row,ik+N*il] = (data.get((row,ik+N*il), zero)
-                                                         + scoeffs.get((k, i, j), zero))
-                                    data[row,ii+N*ik] = (data.get((row,ii+N*ik), zero)
-                                                         - scoeffs.get((l, k, j), zero))
-                                    data[row,ij+N*ik] = (data.get((row,ij+N*ik), zero)
-                                                         - scoeffs.get((l, i, k), zero))
+                                for ik, k in enumerate(keys):
+                                    data[row, ik + N * il] = data.get(
+                                        (row, ik + N * il), zero
+                                    ) + scoeffs.get((k, i, j), zero)
+                                    data[row, ii + N * ik] = data.get(
+                                        (row, ii + N * ik), zero
+                                    ) - scoeffs.get((l, k, j), zero)
+                                    data[row, ij + N * ik] = data.get(
+                                        (row, ij + N * ik), zero
+                                    ) - scoeffs.get((l, i, k), zero)
                     from sage.matrix.constructor import matrix
+
                     mat = matrix(R, data, sparse=True)
-                    return tuple([matrix(R, N, N, list(b))
-                                  for b in mat.right_kernel().basis()])
+                    return tuple(
+                        [matrix(R, N, N, list(b)) for b in mat.right_kernel().basis()]
+                    )

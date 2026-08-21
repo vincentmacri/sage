@@ -79,16 +79,20 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
             sage: one_fin.change_ring(A) == one
             True
         """
+
         def _flatten(f):
             return [c for value in f for c in value.dense_coefficient_list()]
 
-        elements = (_flatten(self.domain().relations())
-                    + _flatten(self.codomain().relations())
-                    + _flatten(self.values()))
+        elements = (
+            _flatten(self.domain().relations())
+            + _flatten(self.codomain().relations())
+            + _flatten(self.values())
+        )
         elements = [a for a in elements if a not in (0, 1)]
 
-        return enveloping_profile_elements(elements,
-                                           char=self.base_ring().characteristic())
+        return enveloping_profile_elements(
+            elements, char=self.base_ring().characteristic()
+        )
 
     def is_injective(self, top_dim=None, verbose=False) -> bool:
         r"""
@@ -120,9 +124,12 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
             True
         """
         algebra = self.base_ring()
-        finite_algebra = SteenrodAlgebra_generic(algebra.prime(), profile=self.profile())
-        return FPModuleMorphism.is_injective(self.change_ring(finite_algebra),
-                                             top_dim=top_dim, verbose=verbose)
+        finite_algebra = SteenrodAlgebra_generic(
+            algebra.prime(), profile=self.profile()
+        )
+        return FPModuleMorphism.is_injective(
+            self.change_ring(finite_algebra), top_dim=top_dim, verbose=verbose
+        )
 
     def kernel_inclusion(self, top_dim=None, verbose=False):
         r"""
@@ -170,7 +177,9 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
             sage: g.is_zero()
             True
         """
-        return self._action(FPModuleMorphism.kernel_inclusion, top_dim=top_dim, verbose=verbose)
+        return self._action(
+            FPModuleMorphism.kernel_inclusion, top_dim=top_dim, verbose=verbose
+        )
 
     def cokernel_projection(self, verbose=False):
         r"""
@@ -204,13 +213,16 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
             False
         """
         from .module import SteenrodFPModule
-        new_relations = ([x.dense_coefficient_list()
-                          for x in self.codomain().relations()] +
-                         [x.dense_coefficient_list() for x in self._values])
 
-        coker = SteenrodFPModule(self.base_ring(),
-                                 self.codomain().generator_degrees(),
-                                 relations=tuple(new_relations))
+        new_relations = [
+            x.dense_coefficient_list() for x in self.codomain().relations()
+        ] + [x.dense_coefficient_list() for x in self._values]
+
+        coker = SteenrodFPModule(
+            self.base_ring(),
+            self.codomain().generator_degrees(),
+            relations=tuple(new_relations),
+        )
 
         projection = Hom(self.codomain(), coker)(coker.generators())
 
@@ -316,7 +328,9 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
                     g[64] |--> P(0,2)*g[32] + (2P(6))*g[40]
                     g[72] |--> P(6,1)*g[32]
         """
-        return self._action(FPModuleMorphism._resolve_kernel, top_dim=top_dim, verbose=verbose)
+        return self._action(
+            FPModuleMorphism._resolve_kernel, top_dim=top_dim, verbose=verbose
+        )
 
     def _resolve_image(self, top_dim=None, verbose=False):
         r"""
@@ -346,7 +360,9 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
               To:   Finitely presented left module on 2 generators and 2 relations over mod 2 Steenrod algebra, milnor basis
               Defn: g[2] |--> Sq(2)*g[0, 0]
         """
-        return self._action(FPModuleMorphism._resolve_image, top_dim=top_dim, verbose=verbose)
+        return self._action(
+            FPModuleMorphism._resolve_image, top_dim=top_dim, verbose=verbose
+        )
 
     def _action(self, method, *args, **kwds):
         r"""
@@ -392,9 +408,10 @@ class SteenrodFPModuleMorphism(FPModuleMorphism):
         f = fp_result.change_ring(self.base_ring())
         M = f.domain()
         N = f.codomain()
-        new_values = [N.linear_combination(zip(N.generators(),
-                                               v.dense_coefficient_list()))
-                      for v in f.values()]
+        new_values = [
+            N.linear_combination(zip(N.generators(), v.dense_coefficient_list()))
+            for v in f.values()
+        ]
         return Hom(M, N)(new_values)
 
 

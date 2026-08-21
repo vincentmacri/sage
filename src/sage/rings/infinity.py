@@ -562,7 +562,6 @@ class AnInfinity:
 
 
 class UnsignedInfinityRing_class(Singleton, Parent):
-
     def __init__(self):
         """
         Initialize ``self``.
@@ -586,8 +585,7 @@ class UnsignedInfinityRing_class(Singleton, Parent):
             True
         """
         cat = Semirings().Commutative()
-        Parent.__init__(self, self, names=('oo',), normalize=False,
-                        category=cat)
+        Parent.__init__(self, self, names=('oo',), normalize=False, category=cat)
 
     def ngens(self) -> int:
         """
@@ -721,7 +719,9 @@ class UnsignedInfinityRing_class(Singleton, Parent):
         if isinstance(x, float):
             if x in [float('+inf'), float('-inf')]:
                 return self.gen()
-        elif isinstance(x, RingElement) and isinstance(x.parent(), sage.rings.abc.RealIntervalField):
+        elif isinstance(x, RingElement) and isinstance(
+            x.parent(), sage.rings.abc.RealIntervalField
+        ):
             if x.upper().is_infinity() or x.lower().is_infinity():
                 return self.gen()
         else:
@@ -886,7 +886,6 @@ class LessThanInfinity(_uniq, RingElement):
 
 
 class UnsignedInfinity(_uniq, AnInfinity, InfinityElement):
-
     _sign = 0
     _sign_char = ''
 
@@ -949,6 +948,7 @@ class UnsignedInfinity(_uniq, AnInfinity, InfinityElement):
             True
         """
         import sympy
+
         return sympy.zoo
 
     def _richcmp_(self, other, op) -> bool:
@@ -973,6 +973,7 @@ class SignError(ArithmeticError):
     """
     Sign error exception.
     """
+
     pass
 
 
@@ -993,8 +994,9 @@ class InfinityRing_class(Singleton, Ring):
             sage: InfinityRing == UnsignedInfinityRing
             False
         """
-        Ring.__init__(self, self, names=('oo',),
-                      normalize=False, category=Rings().Commutative())
+        Ring.__init__(
+            self, self, names=('oo',), normalize=False, category=Rings().Commutative()
+        )
 
     def fraction_field(self):
         """
@@ -1170,7 +1172,9 @@ class InfinityRing_class(Singleton, Ring):
                 return self.gen(0)
             if x == float('-inf'):
                 return self.gen(1)
-        elif isinstance(x, RingElement) and isinstance(x.parent(), sage.rings.abc.RealIntervalField):
+        elif isinstance(x, RingElement) and isinstance(
+            x.parent(), sage.rings.abc.RealIntervalField
+        ):
             if x.upper().is_positive_infinity():
                 return self.gen(0)
             if x.lower().is_negative_infinity():
@@ -1248,10 +1252,12 @@ class InfinityRing_class(Singleton, Ring):
             True
         """
         from sage.structure.coerce import parent_is_real_numerical
+
         if parent_is_real_numerical(R):
             return True
-        return isinstance(R, (sage.rings.abc.RealIntervalField,
-                              sage.rings.abc.RealBallField))
+        return isinstance(
+            R, (sage.rings.abc.RealIntervalField, sage.rings.abc.RealBallField)
+        )
 
     def _pushout_(self, other):
         r"""
@@ -1269,7 +1275,6 @@ class InfinityRing_class(Singleton, Ring):
 
 
 class FiniteNumber(RingElement):
-
     def __init__(self, parent, x):
         """
         Initialize ``self``.
@@ -1532,7 +1537,6 @@ class FiniteNumber(RingElement):
 
 
 class MinusInfinity(_uniq, AnInfinity, InfinityElement):
-
     _sign = -1
     _sign_char = '-'
 
@@ -1615,6 +1619,7 @@ class MinusInfinity(_uniq, AnInfinity, InfinityElement):
             True
         """
         import sympy
+
         return -sympy.oo
 
     def _gap_init_(self) -> str:
@@ -1632,7 +1637,6 @@ class MinusInfinity(_uniq, AnInfinity, InfinityElement):
 
 
 class PlusInfinity(_uniq, AnInfinity, InfinityElement):
-
     _sign = 1
     _sign_char = '+'
 
@@ -1714,6 +1718,7 @@ class PlusInfinity(_uniq, AnInfinity, InfinityElement):
             True
         """
         import sympy
+
         return sympy.oo
 
     def _gap_init_(self) -> str:
@@ -1782,6 +1787,7 @@ def check_comparison(ring):
     """
 
     from sage.rings.rational_field import QQ
+
     elements = [-1e3, 99.9999, 0, 1, 100000]
     try:
         from sage.symbolic.ring import SR
@@ -1795,8 +1801,10 @@ def check_comparison(ring):
         try:
             z = ring(z)
         except (ValueError, TypeError):
-            continue    # ignore if z is not in ring
-        msg = 'testing {} in {}: id = {}, {}, {}'.format(z, ring, id(z), id(infinity), id(minus_infinity))
+            continue  # ignore if z is not in ring
+        msg = 'testing {} in {}: id = {}, {}, {}'.format(
+            z, ring, id(z), id(infinity), id(minus_infinity)
+        )
         assert minus_infinity < z, msg
         assert z > minus_infinity, msg
         assert z < infinity, msg

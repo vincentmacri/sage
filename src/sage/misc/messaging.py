@@ -77,9 +77,11 @@ def pushover(message, **kwds):
     request.update(pushover_defaults)
     request.update(kwds)
 
-    conn = httplib.HTTPSConnection("api.pushover.net:443",
-                                   context=default_context())
-    conn.request("POST", "/1/messages.json",
-                 urlencode(request),
-                 {"Content-type": "application/x-www-form-urlencoded"})
+    conn = httplib.HTTPSConnection("api.pushover.net:443", context=default_context())
+    conn.request(
+        "POST",
+        "/1/messages.json",
+        urlencode(request),
+        {"Content-type": "application/x-www-form-urlencoded"},
+    )
     return conn.getresponse().status == 200

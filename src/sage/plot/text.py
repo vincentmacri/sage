@@ -1,7 +1,8 @@
 """
 Text in plots
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
 #                     2008 Mike Hansen <mhansen@gmail.com>,
@@ -16,7 +17,7 @@ Text in plots
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.plot.primitive import GraphicPrimitive
 from sage.misc.decorators import options, rename_keyword
 from sage.plot.colors import to_mpl_color
@@ -37,6 +38,7 @@ class Text(GraphicPrimitive):
 
         sphinx_plot(text("I like Fibonacci",(3,5)))
     """
+
     def __init__(self, string, point, options):
         """
         Initialize base class Text.
@@ -72,6 +74,7 @@ class Text(GraphicPrimitive):
             1.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data([self.x], [self.y], dict=True)
 
     def _repr_(self):
@@ -100,23 +103,25 @@ class Text(GraphicPrimitive):
             sage: T[0]._allowed_options()['rotation']
             'How to rotate the text: angle in degrees, vertical, horizontal'
         """
-        return {'fontsize': 'How big the text is. Either the size in points or a relative size, e.g. \'smaller\', \'x-large\', etc',
-                'fontstyle': 'A string either \'normal\', \'italic\' or \'oblique\'',
-                'fontweight': 'A numeric value in the range 0-1000 or a string'
-                              '\'ultralight\', \'light\', \'normal\', \'regular\', \'book\','
-                              '\'medium\', \'roman\', \'semibold\', \'demibold\', \'demi\','
-                              '\'bold,\', \'heavy\', \'extra bold\', \'black\'',
-                'rgbcolor': 'The color as an RGB tuple',
-                'background_color': 'The background color',
-                'bounding_box': 'A dictionary specifying a bounding box',
-                'hue': 'The color given as a hue',
-                'alpha': 'A float (0.0 transparent through 1.0 opaque)',
-                'axis_coords': 'If True use axis coordinates: (0,0) lower left and (1,1) upper right',
-                'rotation': 'How to rotate the text: angle in degrees, vertical, horizontal',
-                'vertical_alignment': 'How to align vertically: top, center, bottom',
-                'horizontal_alignment': 'How to align horizontally: left, center, right',
-                'zorder': 'The layer level in which to draw',
-                'clip': 'Whether to clip or not'}
+        return {
+            'fontsize': 'How big the text is. Either the size in points or a relative size, e.g. \'smaller\', \'x-large\', etc',
+            'fontstyle': 'A string either \'normal\', \'italic\' or \'oblique\'',
+            'fontweight': 'A numeric value in the range 0-1000 or a string'
+            '\'ultralight\', \'light\', \'normal\', \'regular\', \'book\','
+            '\'medium\', \'roman\', \'semibold\', \'demibold\', \'demi\','
+            '\'bold,\', \'heavy\', \'extra bold\', \'black\'',
+            'rgbcolor': 'The color as an RGB tuple',
+            'background_color': 'The background color',
+            'bounding_box': 'A dictionary specifying a bounding box',
+            'hue': 'The color given as a hue',
+            'alpha': 'A float (0.0 transparent through 1.0 opaque)',
+            'axis_coords': 'If True use axis coordinates: (0,0) lower left and (1,1) upper right',
+            'rotation': 'How to rotate the text: angle in degrees, vertical, horizontal',
+            'vertical_alignment': 'How to align vertically: top, center, bottom',
+            'horizontal_alignment': 'How to align horizontally: left, center, right',
+            'zorder': 'The layer level in which to draw',
+            'clip': 'Whether to clip or not',
+        }
 
     def _plot3d_options(self, options=None):
         """
@@ -139,8 +144,13 @@ class Text(GraphicPrimitive):
             if s in options:
                 options_3d[s] = options.pop(s)
         # TODO: figure out how to implement rather than ignore
-        for s in ['axis_coords', 'clip', 'horizontal_alignment',
-                  'rotation', 'vertical_alignment']:
+        for s in [
+            'axis_coords',
+            'clip',
+            'horizontal_alignment',
+            'rotation',
+            'vertical_alignment',
+        ]:
             if s in options:
                 del options[s]
         options_3d.update(GraphicPrimitive._plot3d_options(self, options))
@@ -161,6 +171,7 @@ class Text(GraphicPrimitive):
             (1.0, 1.0, 0)
         """
         from sage.plot.plot3d.shapes2 import text3d
+
         options = self._plot3d_options()
         options.update(kwds)
         return text3d(self.string, (self.x, self.y, 0), **options)
@@ -212,8 +223,14 @@ class Text(GraphicPrimitive):
 
 
 @rename_keyword(color='rgbcolor')
-@options(fontsize=10, rgbcolor=(0,0,1), horizontal_alignment='center',
-         vertical_alignment='center', axis_coords=False, clip=False)
+@options(
+    fontsize=10,
+    rgbcolor=(0, 0, 1),
+    horizontal_alignment='center',
+    vertical_alignment='center',
+    axis_coords=False,
+    clip=False,
+)
 def text(string, xy, **options):
     r"""
     Return a 2D text graphics object at the point `(x, y)`.
@@ -423,6 +440,7 @@ def text(string, xy, **options):
             raise ValueError("use text3d instead for text in 3d")
         raise
     from sage.plot.graphics import Graphics
+
     options['rgbcolor'] = to_mpl_color(options['rgbcolor'])
     point = (float(x), float(y))
     g = Graphics()

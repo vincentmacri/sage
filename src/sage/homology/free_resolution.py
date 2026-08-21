@@ -93,8 +93,11 @@ class FreeResolution(SageObject, metaclass=ClasscallMetaclass):
     that is exact (all homology groups are zero) such that the image
     of `d_1` is `M`.
     """
+
     @staticmethod
-    def __classcall_private__(cls, module, *args, graded=False, degrees=None, shifts=None, **kwds):
+    def __classcall_private__(
+        cls, module, *args, graded=False, degrees=None, shifts=None, **kwds
+    ):
         """
         Dispatch to the correct constructor.
 
@@ -155,24 +158,34 @@ class FreeResolution(SageObject, metaclass=ClasscallMetaclass):
                 module.set_immutable()
             if is_free_module:
                 if graded:
-                    from sage.homology.graded_resolution import GradedFiniteFreeResolution_free_module
-                    return GradedFiniteFreeResolution_free_module(module,
-                                                                  *args,
-                                                                  degrees=degrees,
-                                                                  shifts=shifts,
-                                                                  **kwds)
+                    from sage.homology.graded_resolution import (
+                        GradedFiniteFreeResolution_free_module,
+                    )
+
+                    return GradedFiniteFreeResolution_free_module(
+                        module, *args, degrees=degrees, shifts=shifts, **kwds
+                    )
                 return FiniteFreeResolution_free_module(module, *args, **kwds)
 
-            from sage.rings.polynomial.multi_polynomial_libsingular import MPolynomialRing_libsingular
+            from sage.rings.polynomial.multi_polynomial_libsingular import (
+                MPolynomialRing_libsingular,
+            )
+
             if not isinstance(S, MPolynomialRing_libsingular):
-                raise NotImplementedError("the matrix must be over a PID or a "
-                                          " polynomial ring that is using Singular")
+                raise NotImplementedError(
+                    "the matrix must be over a PID or a "
+                    " polynomial ring that is using Singular"
+                )
 
             if graded:
                 # We are computing a graded resolution
-                from sage.homology.graded_resolution import GradedFiniteFreeResolution_singular
-                return GradedFiniteFreeResolution_singular(module, *args, degrees=degrees,
-                                                           shifts=shifts, **kwds)
+                from sage.homology.graded_resolution import (
+                    GradedFiniteFreeResolution_singular,
+                )
+
+                return GradedFiniteFreeResolution_singular(
+                    module, *args, degrees=degrees, shifts=shifts, **kwds
+                )
 
             return FiniteFreeResolution_singular(module, **kwds)
 
@@ -353,6 +366,7 @@ class FiniteFreeResolution(FreeResolution):
                 [ y*z - x*w]
                 [-y^2 + x*z]
     """
+
     @lazy_attribute
     def _length(self):
         """
@@ -587,6 +601,7 @@ class FiniteFreeResolution(FreeResolution):
              0 <── C_0 <────────────────────────────── C_1 <────── C_2 <── 0
         """
         from sage.homology.chain_complex import ChainComplex
+
         mats = {}
         for i in range(self._length, 0, -1):
             mats[i] = self.matrix(i)
@@ -700,6 +715,7 @@ class FiniteFreeResolution_free_module(FiniteFreeResolution):
         sage: res = I.free_resolution(); res
         S^1 <-- S^1 <-- 0
     """
+
     @lazy_attribute
     def _maps(self):
         r"""
@@ -764,6 +780,7 @@ class FiniteFreeResolution_free_module(FiniteFreeResolution):
         """
         if isinstance(self._module, Ideal_generic):
             from sage.matrix.constructor import matrix
+
             return [matrix([[self._module.gen()]])]
         return [self._m()]
 
@@ -850,6 +867,7 @@ class FiniteFreeResolution_singular(FiniteFreeResolution):
         [-y*z + x*w]
         [ z^2 - y*w]
     """
+
     def __init__(self, module, name='S', algorithm='heuristic', **kwds) -> None:
         r"""
         Initialize ``self``.
@@ -914,7 +932,7 @@ class FiniteFreeResolution_singular(FiniteFreeResolution):
             r = minres(nres(mod, 0))
         elif self._algorithm == 'heuristic':
             std = singular_function('std')
-            res = singular_function('res')    # heuristic method
+            res = singular_function('res')  # heuristic method
             minres = singular_function('minres')
             r = minres(res(std(mod), 0))
 

@@ -27,6 +27,7 @@ EXAMPLES::
     Subclasses of :class:`Nonexact` which require to change the default
     precision should implement a method ``set_default_prec``.
 """
+
 from sage.rings.integer import Integer
 
 
@@ -39,6 +40,7 @@ class Nonexact:
     - ``prec`` -- nonnegative integer representing the default precision of
       ``self`` (default: 20)
     """
+
     def __init__(self, prec=20):
         if prec < 0:
             raise ValueError(f"prec (= {prec}) must be nonnegative")

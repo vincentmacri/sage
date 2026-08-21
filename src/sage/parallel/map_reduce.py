@@ -565,14 +565,14 @@ from sage.misc.lazy_attribute import lazy_attribute
 from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet  # _generic
 
 logger = logging.getLogger(__name__)
-logger.__doc__ = ("""
+logger.__doc__ = """
 A logger for :mod:`sage.parallel.map_reduce`
 
 .. SEEALSO::
 
     `Logging facility for Python <https://docs.python.org/2/library/logging.html>`_
     for more detail on logging and log system configuration.
-""")
+"""
 logger.setLevel(logging.WARN)
 # logger.setLevel(logging.INFO)
 # logger.setLevel(logging.DEBUG)
@@ -580,7 +580,8 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
     '[%(processName)s-%(threadName)s] (%(asctime)s.%(msecs)03.f) %(message)s',
-    datefmt='%H:%M:%S')
+    datefmt='%H:%M:%S',
+)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
@@ -609,6 +610,7 @@ def proc_number(max_proc=None):
         True
     """
     from sage.parallel.ncpus import ncpus
+
     n = ncpus()
     if max_proc is None:
         return n
@@ -629,6 +631,7 @@ class AbortError(Exception):
         ...
         AbortError
     """
+
     pass
 
 
@@ -641,6 +644,7 @@ class ActiveTaskCounterDarwin:
     do not correctly implement POSIX's semaphore semantic. So we use
     a shared integer with a lock.
     """
+
     def __init__(self, task_number):
         r"""
         TESTS::
@@ -775,6 +779,7 @@ class ActiveTaskCounterPosix:
         So there is a non negligible overhead. It will probably be worth it
         if we try to cythonize the code. So I'm keeping both implementations.
     """
+
     def __init__(self, task_number):
         r"""
         TESTS::
@@ -882,8 +887,9 @@ class ActiveTaskCounterPosix:
             pass
 
 
-ActiveTaskCounter = (ActiveTaskCounterDarwin if sys.platform == 'darwin'
-                     else ActiveTaskCounterPosix)
+ActiveTaskCounter = (
+    ActiveTaskCounterDarwin if sys.platform == 'darwin' else ActiveTaskCounterPosix
+)
 
 # ActiveTaskCounter = ActiveTaskCounterDarwin  # to debug Darwin implementation
 
@@ -921,14 +927,17 @@ class RESetMapReduce:
        :mod:`the Map/Reduce module <sage.parallel.map_reduce>` for
        details and examples.
     """
-    def __init__(self,
-                 roots=None,
-                 children=None,
-                 post_process=None,
-                 map_function=None,
-                 reduce_function=None,
-                 reduce_init=None,
-                 forest=None):
+
+    def __init__(
+        self,
+        roots=None,
+        children=None,
+        post_process=None,
+        map_function=None,
+        reduce_function=None,
+        reduce_init=None,
+        forest=None,
+    ):
         r"""
         TESTS::
 
@@ -943,7 +952,9 @@ class RESetMapReduce:
         """
         if forest is not None:
             if not all(x is None for x in (roots, children, post_process)):
-                raise ValueError("forest arg is incompatible with roots, children and post_process")
+                raise ValueError(
+                    "forest arg is incompatible with roots, children and post_process"
+                )
             self._forest = forest
             self._roots = forest._roots
             self.children = forest.children
@@ -983,7 +994,8 @@ class RESetMapReduce:
             self.children,
             post_process=self.post_process,
             structure='forest',
-            enumeration='depth')
+            enumeration='depth',
+        )
 
     def roots(self):
         r"""
@@ -1127,8 +1139,9 @@ class RESetMapReduce:
         self._aborted = mp.Value(ctypes.c_bool, False, lock=False)
         sys.stdout.flush()
         sys.stderr.flush()
-        self._workers = [RESetMapReduceWorker(self, i, reduce_locally)
-                         for i in range(self._nprocess)]
+        self._workers = [
+            RESetMapReduceWorker(self, i, reduce_locally) for i in range(self._nprocess)
+        ]
 
     def start_workers(self):
         r"""
@@ -1188,9 +1201,12 @@ class RESetMapReduce:
         active_proc = self._nprocess
         while active_proc > 0:
             try:
-                logger.debug('Waiting on results; active_proc: {}, '
-                             'timeout: {}, aborted: {}'.format(
-                                 active_proc, timeout, self._aborted.value))
+                logger.debug(
+                    'Waiting on results; active_proc: {}, '
+                    'timeout: {}, aborted: {}'.format(
+                        active_proc, timeout, self._aborted.value
+                    )
+                )
                 newres = self._results.get(timeout=timeout)
             except queue.Empty:
                 logger.debug('Timed out waiting for results; aborting')
@@ -1404,11 +1420,7 @@ class RESetMapReduce:
         victim = random.randint(0, len(self._workers) - 1)
         return self._workers[victim]
 
-    def run(self,
-            max_proc=None,
-            reduce_locally=True,
-            timeout=None,
-            profile=None):
+    def run(self, max_proc=None, reduce_locally=True, timeout=None, profile=None):
         r"""
         Run the computations.
 
@@ -1467,6 +1479,7 @@ class RESetMapReduce:
         self.start_workers()
         if timeout is not None:
             from threading import Timer
+
             self._timer = Timer(timeout, self.abort)
             self._timer.start()
         self.result = self.get_results(timeout=timeout)
@@ -1516,12 +1529,15 @@ class RESetMapReduce:
         # https://stackoverflow.com/questions/2609518/python-nested-function-scopes).
 
         def pstat(name, start, end, istat):
-            res[0] += ("\n" + name + " ".join(
-                "%4i" % (self._stats[i][istat]) for i in range(start, end)))
+            res[0] += (
+                "\n"
+                + name
+                + " ".join("%4i" % (self._stats[i][istat]) for i in range(start, end))
+            )
+
         for start in range(0, self._nprocess, blocksize):
             end = min(start + blocksize, self._nprocess)
-            res[0] = ("#proc:     " +
-                      " ".join("%4i" % (i) for i in range(start, end)))
+            res[0] = "#proc:     " + " ".join("%4i" % (i) for i in range(start, end))
             pstat("reqs sent: ", start, end, 0)
             pstat("reqs rcvs: ", start, end, 1)
             pstat("- thefs:   ", start, end, 2)
@@ -1540,9 +1556,12 @@ class RESetMapReduce:
             24*x^4 + 6*x^3 + 2*x^2 + x + 1
         """
         import functools
-        return functools.reduce(self.reduce_function,
-                                (self.map_function(x) for x in self._forest),
-                                self.reduce_init())
+
+        return functools.reduce(
+            self.reduce_function,
+            (self.map_function(x) for x in self._forest),
+            self.reduce_init(),
+        )
 
 
 class RESetMapReduceWorker(mp.Process):
@@ -1569,6 +1588,7 @@ class RESetMapReduceWorker(mp.Process):
       * ``False`` -- results are sent back after each finished branches, when
         the process is asking for more work.
     """
+
     def __init__(self, mapred, iproc, reduce_locally):
         r"""
         TESTS::
@@ -1695,6 +1715,7 @@ class RESetMapReduceWorker(mp.Process):
         profile = self._mapred._profile
         if profile is not None:
             import cProfile
+
             PROFILER = cProfile.Profile()
             PROFILER.runcall(self.run_myself)
 
@@ -1863,6 +1884,7 @@ class RESetMPExample(RESetMapReduce):
 
     .. SEEALSO:: This is an example of :class:`RESetMapReduce`
     """
+
     def __init__(self, maxl=9):
         r"""
         TESTS::
@@ -1874,6 +1896,7 @@ class RESetMPExample(RESetMapReduce):
         RESetMapReduce.__init__(self)
         from sage.rings.integer_ring import ZZ
         from sage.rings.polynomial.polynomial_ring import polygen
+
         self.x = polygen(ZZ, 'x')
         self.maxl = maxl
 
@@ -1907,8 +1930,11 @@ class RESetMPExample(RESetMapReduce):
             sage: RESetMPExample().children([1,0])
             [[2, 1, 0], [1, 2, 0], [1, 0, 2]]
         """
-        return [l[:i] + [len(l)] + l[i:]
-                for i in range(len(l) + 1)] if len(l) < self.maxl else []
+        return (
+            [l[:i] + [len(l)] + l[i:] for i in range(len(l) + 1)]
+            if len(l) < self.maxl
+            else []
+        )
 
     def map_function(self, l):
         r"""
@@ -1928,7 +1954,7 @@ class RESetMPExample(RESetMapReduce):
             sage: RESetMPExample().map_function([1,0])
             x^2
         """
-        return self.x**len(l)
+        return self.x ** len(l)
 
 
 class RESetParallelIterator(RESetMapReduce):
@@ -1947,6 +1973,7 @@ class RESetParallelIterator(RESetMapReduce):
         sage: sum(1 for _ in S)
         65535
     """
+
     def map_function(self, z):
         r"""
         Return a singleton tuple.

@@ -433,8 +433,12 @@ import os
 import re
 
 from sage.misc.cachefunc import cached_method
-from sage.interfaces.expect import (Expect, ExpectElement, ExpectFunction,
-                                    FunctionElement)
+from sage.interfaces.expect import (
+    Expect,
+    ExpectElement,
+    ExpectFunction,
+    FunctionElement,
+)
 from sage.interfaces.interface import AsciiArtString
 from sage.interfaces.tab_completion import ExtraTabCompletion
 from sage.misc.instancedoc import instancedoc
@@ -446,7 +450,7 @@ def clean_output(s):
         return ''
     i = s.find('Out[')
     j = i + s[i:].find('=')
-    s = s[:i] + ' ' * (j + 1 - i) + s[j + 1:]
+    s = s[:i] + ' ' * (j + 1 - i) + s[j + 1 :]
     s = s.replace('\\\n', '')
     return s.strip('\n')
 
@@ -474,8 +478,17 @@ class Mathematica(ExtraTabCompletion, Expect):
     """
     Interface to the Mathematica interpreter.
     """
-    def __init__(self, maxread=None, script_subdirectory=None, logfile=None, server=None,
-                 server_tmpdir=None, command=None, verbose_start=False):
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        command=None,
+        verbose_start=False,
+    ):
         r"""
         TESTS:
 
@@ -507,17 +520,19 @@ class Mathematica(ExtraTabCompletion, Expect):
             command = 'stty -echo; {}'.format(command)
         else:
             command = 'sh -c "stty -echo; {}"'.format(command)
-        Expect.__init__(self,
-                        name='mathematica',
-                        terminal_echo=False,
-                        command=command,
-                        prompt=r'In\[[0-9]+\]:= ',
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        verbose_start=verbose_start,
-                        logfile=logfile,
-                        eval_using_file_cutoff=eval_using_file_cutoff)
+        Expect.__init__(
+            self,
+            name='mathematica',
+            terminal_echo=False,
+            command=command,
+            prompt=r'In\[[0-9]+\]:= ',
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            verbose_start=verbose_start,
+            logfile=logfile,
+            eval_using_file_cutoff=eval_using_file_cutoff,
+        )
 
     def _read_in_file_command(self, filename):
         return '<<"%s"' % filename
@@ -602,7 +617,10 @@ remote connection to a server running Mathematica -- for hints, type
         cmd = '%s=%s;' % (var, value)
         out = self._eval_line(cmd, allow_use_file=True)
         if len(out) > 8:
-            raise TypeError("Error executing code in Mathematica\nCODE:\n\t%s\nMathematica ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Mathematica\nCODE:\n\t%s\nMathematica ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var, ascii_art=False):
         """
@@ -618,9 +636,12 @@ remote connection to a server running Mathematica -- for hints, type
             return self.eval(var, strip=True)
         return self.eval('InputForm[%s, NumberMarks->False]' % var, strip=True)
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False):
-        s = Expect._eval_line(self, line,
-             allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt)
+    def _eval_line(
+        self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False
+    ):
+        s = Expect._eval_line(
+            self, line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt
+        )
         return str(s).strip('\n')
 
     def _function_call_string(self, function, args, kwds):
@@ -701,7 +722,14 @@ remote connection to a server running Mathematica -- for hints, type
 
     def _tab_completion(self):
         a = self.eval('Names["*"]')
-        return a.replace('$', '').replace('\n \n>', '').replace(',', '').replace('}', '').replace('{', '').split()
+        return (
+            a.replace('$', '')
+            .replace('\n \n>', '')
+            .replace(',', '')
+            .replace('}', '')
+            .replace('{', '')
+            .split()
+        )
 
     def help(self, cmd):
         return self.eval('? %s' % cmd)
@@ -731,12 +759,12 @@ class MathematicaElement(ExpectElement):
         return self.parent().eval('InputForm[%s]' % self.name()).strip()
 
     def __reduce__(self):
-        return reduce_load, (self._reduce(), )
+        return reduce_load, (self._reduce(),)
 
     def _latex_(self):
         z = self.parent().eval('TeXForm[%s]' % self.name())
         i = z.find('=')
-        return z[i + 1:].strip()
+        return z[i + 1 :].strip()
 
     def _repr_(self):
         P = self.parent()
@@ -845,8 +873,11 @@ class MathematicaElement(ExpectElement):
         # Get Mathematica's output and perform preliminary formatting
         res = self._sage_repr()
         if '"' in res:
-            raise NotImplementedError("String conversion from Mathematica \
-                does not work.  Mathematica's output was: %s" % res)
+            raise NotImplementedError(
+                "String conversion from Mathematica \
+                does not work.  Mathematica's output was: %s"
+                % res
+            )
 
         # Find all the mathematica functions, constants and symbolic variables
         # present in `res`.  Convert MMA functions and constants to their
@@ -863,9 +894,11 @@ class MathematicaElement(ExpectElement):
         lsymbols.update(locals)
 
         # Strategies for translating unknown functions/constants:
-        autotrans = [str.lower,      # Try it in lower case
-                     _un_camel,    # Convert `CamelCase` to `camel_case`
-                     lambda x: x]     # Try the original name
+        autotrans = [
+            str.lower,  # Try it in lower case
+            _un_camel,  # Convert `CamelCase` to `camel_case`
+            lambda x: x,
+        ]  # Try the original name
 
         # Find the MMA funcs/vars/constants - they start with a letter.
         # Exclude exponents (e.g. 'e8' from 4.e8)
@@ -884,9 +917,12 @@ class MathematicaElement(ExpectElement):
                         lsymbols[m.group()] = f
                         break
                 else:
-                    raise NotImplementedError("Don't know a Sage equivalent \
+                    raise NotImplementedError(
+                        "Don't know a Sage equivalent \
                         for Mathematica function '%s'.  Please specify one \
-                        manually using the 'locals' dictionary" % m.group())
+                        manually using the 'locals' dictionary"
+                        % m.group()
+                    )
             # Check if Sage has an equivalent constant
             else:
                 for t in autotrans:
@@ -896,11 +932,13 @@ class MathematicaElement(ExpectElement):
             # If Sage has never heard of the variable, then
             # symbolic_expression_from_string will automatically create it
         try:
-            return symbolic_expression_from_string(res, lsymbols,
-                accept_sequence=True)
+            return symbolic_expression_from_string(res, lsymbols, accept_sequence=True)
         except Exception:
-            raise NotImplementedError("Unable to parse Mathematica \
-                output: %s" % res)
+            raise NotImplementedError(
+                "Unable to parse Mathematica \
+                output: %s"
+                % res
+            )
 
     def __str__(self):
         P = self._check_valid()
@@ -957,8 +995,7 @@ class MathematicaElement(ExpectElement):
         if not self._is_graphics():
             raise ValueError('mathematica expression is not graphics')
         filename = os.path.abspath(filename)
-        s = 'Export["%s", %s, ImageSize->%s]' % (filename, self.name(),
-                                                 ImageSize)
+        s = 'Export["%s", %s, ImageSize->%s]' % (filename, self.name(), ImageSize)
         P.eval(s)
 
     def _rich_repr_(self, display_manager, **kwds):
@@ -985,7 +1022,8 @@ class MathematicaElement(ExpectElement):
                 return
             if OutputImagePng in display_manager.supported_output():
                 return display_manager.graphics_from_save(
-                    self.save_image, kwds, '.png', OutputImagePng)
+                    self.save_image, kwds, '.png', OutputImagePng
+                )
         else:
             OutputLatex = display_manager.types.OutputLatex
             dmp = display_manager.preferences.text
@@ -1028,6 +1066,7 @@ class MathematicaElement(ExpectElement):
             sage: P.show(ImageSize=800)                          # optional - mathematica mathematicafrontend
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self, ImageSize=ImageSize)
 
@@ -1108,8 +1147,11 @@ def reduce_load(X):
 
 def mathematica_console(readline=True):
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%mathematica magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%mathematica magics instead.'
+        )
     if not readline:
         os.system('math')
         return
@@ -1118,6 +1160,7 @@ def mathematica_console(readline=True):
 
 
 # some tools for online interface
+
 
 def request_wolfram_alpha(input, verbose=False):
     r"""
@@ -1166,8 +1209,9 @@ def request_wolfram_alpha(input, verbose=False):
 
     # we need cookies for this...
     cj = CookieJar()
-    opener = build_opener(HTTPCookieProcessor(cj),
-                          HTTPSHandler(context=default_context()))
+    opener = build_opener(
+        HTTPCookieProcessor(cj), HTTPSHandler(context=default_context())
+    )
     # build initial query for code
     req = Request("https://www.wolframalpha.com/input/api/v1/code")
     resp = opener.open(req)
@@ -1200,7 +1244,8 @@ def request_wolfram_alpha(input, verbose=False):
         'scantimeout': '0.5',
         'sponsorcategories': 'true',
         'statemethod': 'deploybutton',
-        'storesubpodexprs': 'true'}
+        'storesubpodexprs': 'true',
+    }
     # # we can also change some parameters
     # params = {
     #     'assumptionsversion': '2',
@@ -1312,9 +1357,11 @@ def symbolic_expression_from_mathematica_string(mexpr):
     expr = expr.replace('{', '[').replace('}', ']')
     lsymbols = symbol_table['mathematica'].copy()
     lsymbols_names_only = [s[0] for s in lsymbols]
-    autotrans = [lambda x:x.lower(),      # Try it in lower case
-                 _un_camel,      # Convert `CamelCase` to `camel_case`
-                 lambda x: x]     # Try the original name
+    autotrans = [
+        lambda x: x.lower(),  # Try it in lower case
+        _un_camel,  # Convert `CamelCase` to `camel_case`
+        lambda x: x,
+    ]  # Try the original name
     # Find the MMA funcs/vars/constants - they start with a letter.
     # Exclude exponents (e.g. 'e8' from 4.e8)
     p = re.compile(r'(?<!\.)[a-zA-Z]\w*')
@@ -1333,7 +1380,10 @@ def symbolic_expression_from_mathematica_string(mexpr):
                     lsymbols[(m.group(), f.number_of_arguments())] = f
                     break
             else:
-                raise NotImplementedError("Don't know a Sage equivalent for Mathematica function '%s'." % m.group())
+                raise NotImplementedError(
+                    "Don't know a Sage equivalent for Mathematica function '%s'."
+                    % m.group()
+                )
         # Check if Sage has an equivalent constant
         else:
             for t in autotrans:

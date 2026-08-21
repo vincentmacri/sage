@@ -42,6 +42,7 @@ class ElementWithLabel:
         sage: list(nP)
         [(0, 0), (0, 0)]
     """
+
     def __init__(self, element, label):
         """
         Construct an object that wraps ``element`` but presents itself
@@ -148,8 +149,9 @@ class ElementWithLabel:
             sage: b == 1
             False
         """
-        if not (isinstance(self, ElementWithLabel) and
-                isinstance(other, ElementWithLabel)):
+        if not (
+            isinstance(self, ElementWithLabel) and isinstance(other, ElementWithLabel)
+        ):
             return False
         return self.element == other.element and self.label == other.label
 

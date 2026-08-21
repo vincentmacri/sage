@@ -23,8 +23,10 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.inherit_comparison import InheritComparisonClasscallMetaclass
 from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.misc.lazy_import import lazy_import
-from sage.combinat.abstract_tree import (AbstractClonableTree,
-                                         AbstractLabelledClonableTree)
+from sage.combinat.abstract_tree import (
+    AbstractClonableTree,
+    AbstractLabelledClonableTree,
+)
 from sage.combinat.combinatorial_map import combinatorial_map
 from sage.misc.cachefunc import cached_method
 from sage.categories.sets_cat import Sets, EmptySetError
@@ -37,8 +39,9 @@ from sage.rings.infinity import Infinity
 lazy_import('sage.combinat.dyck_word', 'CompleteDyckWords_size')
 
 
-class OrderedTree(AbstractClonableTree, ClonableList,
-        metaclass=InheritComparisonClasscallMetaclass):
+class OrderedTree(
+    AbstractClonableTree, ClonableList, metaclass=InheritComparisonClasscallMetaclass
+):
     """
     The class of (ordered rooted) trees.
 
@@ -178,6 +181,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
         sage: tt1.__hash__() == tt2.__hash__()
         False
     """
+
     @staticmethod
     def __classcall_private__(cls, *args, **opts):
         """
@@ -251,8 +255,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             children = []
         if isinstance(children, str):
             children = eval(children)
-        if (children.__class__ is self.__class__ and
-                children.parent() == parent):
+        if children.__class__ is self.__class__ and children.parent() == parent:
             children = list(children)
         else:
             children = [self.__class__(parent, x) for x in children]
@@ -299,6 +302,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             [., [[., [., .]], [[., [[., .], .]], .]]]
         """
         from sage.combinat.binary_tree import BinaryTree
+
         root = BinaryTree()
         if bijection == "left":
             for child in self:
@@ -309,8 +313,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             for child in children:
                 root = BinaryTree([child._to_binary_tree_rec(bijection), root])
         else:
-            raise ValueError("the bijection argument should be either "
-                             "left or right")
+            raise ValueError("the bijection argument should be either left or right")
         return root
 
     @combinatorial_map(name="To binary tree, left brother = left child")
@@ -411,6 +414,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             [[0, 0, 1], [1, 0, 0]]
         """
         from sage.combinat.parallelogram_polyomino import ParallelogramPolyomino
+
         if self.number_of_nodes() == 1:
             return ParallelogramPolyomino([[1], [1]])
         upper_nodes = []
@@ -517,6 +521,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             word.extend(child.to_dyck_word())
             word.append(0)
         from sage.combinat.dyck_word import DyckWord
+
         return DyckWord(word)
 
     @combinatorial_map(name="To graph")
@@ -557,6 +562,7 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             False
         """
         from sage.graphs.graph import Graph
+
         g = Graph()
         if self in LabelledOrderedTrees():
             relabel = False
@@ -620,11 +626,14 @@ class OrderedTree(AbstractClonableTree, ClonableList,
             node = roots.pop()
             for child in node:
                 elements.append(child.label())
-                relations.append((node.label(), child.label())
-                                 if root_to_leaf else (child.label(),
-                                                       node.label()))
+                relations.append(
+                    (node.label(), child.label())
+                    if root_to_leaf
+                    else (child.label(), node.label())
+                )
                 roots.append(child)
         from sage.combinat.posets.posets import Poset
+
         p = Poset([elements, relations])
         if relabel:
             p = p.canonical_label()
@@ -857,6 +866,7 @@ class OrderedTrees(UniqueRepresentation, Parent):
               is an implementation detail. It could be changed in the future
               and one should not rely on it.
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None):
         """
@@ -933,8 +943,11 @@ class OrderedTrees_all(DisjointUnionEnumeratedSets, OrderedTrees):
             sage: TestSuite(B).run() # long time
         """
         DisjointUnionEnumeratedSets.__init__(
-            self, Family(NonNegativeIntegers(), OrderedTrees_size),
-            facade=True, keepkey=False)
+            self,
+            Family(NonNegativeIntegers(), OrderedTrees_size),
+            facade=True,
+            keepkey=False,
+        )
 
     def _repr_(self):
         """
@@ -1075,6 +1088,7 @@ class OrderedTrees_size(OrderedTrees):
         if self._size == 0:
             return Integer(0)
         from .combinat import catalan_number
+
         return catalan_number(self._size - 1)
 
     def random_element(self):
@@ -1202,6 +1216,7 @@ class LabelledOrderedTree(AbstractLabelledClonableTree, OrderedTree):
         sage: LabelledOrderedTree([[],[[], []]], label = 3)
         3[None[], None[None[], None[]]]
     """
+
     @staticmethod
     def __classcall_private__(cls, *args, **opts):
         """

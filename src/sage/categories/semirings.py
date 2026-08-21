@@ -52,4 +52,8 @@ class Semirings(CategoryWithAxiom):
         sage: Semirings().example()
         An example of a semiring: the ternary-logic semiring
     """
-    _base_category_class_and_axiom = (MagmasAndAdditiveMagmas.Distributive.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative, "Unital")
+
+    _base_category_class_and_axiom = (
+        MagmasAndAdditiveMagmas.Distributive.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative,
+        "Unital",
+    )

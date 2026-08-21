@@ -60,8 +60,10 @@ from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.misc.latex import latex
 from sage.misc.cachefunc import cached_method
 from sage.groups.matrix_gps.named_group import (
-    normalize_args_vectorspace, normalize_args_invariant_form,
-    NamedMatrixGroup_generic)
+    normalize_args_vectorspace,
+    normalize_args_invariant_form,
+    NamedMatrixGroup_generic,
+)
 
 
 def finite_field_sqrt(ring):
@@ -88,6 +90,7 @@ def finite_field_sqrt(ring):
 # Unitary Group: common Code for both GU and SU
 ###############################################################################
 
+
 def _UG(n, R, special, var='a', invariant_form=None):
     r"""
     This function is commonly used by the functions :func:`GU` and :func:`SU`
@@ -110,7 +113,9 @@ def _UG(n, R, special, var='a', invariant_form=None):
         q = ring.cardinality()
         ring = GF(q**2, name=var)
         if invariant_form is not None:
-            raise NotImplementedError("invariant_form for finite groups is fixed by GAP")
+            raise NotImplementedError(
+                "invariant_form for finite groups is fixed by GAP"
+            )
 
     if invariant_form is not None:
         invariant_form = normalize_args_invariant_form(ring, degree, invariant_form)
@@ -125,10 +130,12 @@ def _UG(n, R, special, var='a', invariant_form=None):
         except ValueError:
             inserted_text = "with respect to hermitian form"
 
-        name = '{0} Unitary Group of degree {1} over {2} {3}\n{4}'.format(prefix,
-                                 degree, ring, inserted_text, invariant_form)
-        ltx = r'\text{{{0}U}}_{{{1}}}({2})\text{{ {3} }}{4}'.format(latex_prefix,
-                     degree, latex(ring), inserted_text, latex(invariant_form))
+        name = '{0} Unitary Group of degree {1} over {2} {3}\n{4}'.format(
+            prefix, degree, ring, inserted_text, invariant_form
+        )
+        ltx = r'\text{{{0}U}}_{{{1}}}({2})\text{{ {3} }}{4}'.format(
+            latex_prefix, degree, latex(ring), inserted_text, latex(invariant_form)
+        )
     else:
         name = '{0} Unitary Group of degree {1} over {2}'.format(prefix, degree, ring)
         ltx = r'\text{{{0}U}}_{{{1}}}({2})'.format(latex_prefix, degree, latex(ring))
@@ -142,13 +149,15 @@ def _UG(n, R, special, var='a', invariant_form=None):
             cmd = '{0}U({1}, {2})'.format(latex_prefix, degree, q)
             return UnitaryMatrixGroup_gap(degree, ring, special, name, ltx, cmd)
 
-    return UnitaryMatrixGroup_generic(degree, ring, special, name, ltx,
-                                      invariant_form=invariant_form)
+    return UnitaryMatrixGroup_generic(
+        degree, ring, special, name, ltx, invariant_form=invariant_form
+    )
 
 
 ###############################################################################
 # General Unitary Group
 ###############################################################################
+
 
 def GU(n, R, var='a', invariant_form=None):
     r"""
@@ -264,6 +273,7 @@ def GU(n, R, var='a', invariant_form=None):
 # Special Unitary Group
 ###############################################################################
 
+
 def SU(n, R, var='a', invariant_form=None):
     r"""
     The special unitary group `SU( d, R )` consists of all `d \times d`
@@ -356,6 +366,7 @@ def SU(n, R, var='a', invariant_form=None):
 # Unitary Group class
 ########################################################################
 
+
 class UnitaryMatrixGroup_generic(NamedMatrixGroup_generic):
     r"""
     General Unitary Group over arbitrary rings.
@@ -405,6 +416,7 @@ class UnitaryMatrixGroup_generic(NamedMatrixGroup_generic):
             return self._invariant_form
 
         from sage.matrix.constructor import identity_matrix
+
         m = identity_matrix(self.base_ring(), self.degree())
         m.set_immutable()
         return m
@@ -432,4 +444,8 @@ class UnitaryMatrixGroup_generic(NamedMatrixGroup_generic):
             if H == self.one().matrix():
                 raise TypeError('matrix must be unitary')
             else:
-                raise TypeError('matrix must be unitary with respect to the hermitian form\n{}'.format(H))
+                raise TypeError(
+                    'matrix must be unitary with respect to the hermitian form\n{}'.format(
+                        H
+                    )
+                )

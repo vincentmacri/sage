@@ -30,8 +30,9 @@ from sage.arith.misc import factorial
 lazy_import('sage.matrix.constructor', 'matrix')
 
 
-class LinearExtensionOfPoset(ClonableArray,
-                             metaclass=InheritComparisonClasscallMetaclass):
+class LinearExtensionOfPoset(
+    ClonableArray, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     A linear extension of a finite poset `P` of size `n` is a total
     ordering `\pi := \pi_0 \pi_1 \ldots \pi_{n-1}` of its elements
@@ -80,6 +81,7 @@ class LinearExtensionOfPoset(ClonableArray,
         sage: Q.cover_relations()
         [[1, 2], [1, 4], [3, 4]]
     """
+
     @staticmethod
     def __classcall_private__(cls, linear_extension, poset):
         r"""
@@ -242,7 +244,7 @@ class LinearExtensionOfPoset(ClonableArray,
         for i in range(len(self) - 1):
             if not P.covers(self[i], self[i + 1]):
                 for u in P.upper_covers(self[i]):
-                    if all(l in self[:i + 1] for l in P.lower_covers(u)):
+                    if all(l in self[: i + 1] for l in P.lower_covers(u)):
                         return False
         return True
 
@@ -296,9 +298,12 @@ class LinearExtensionOfPoset(ClonableArray,
                 return False
             linext.append(e)
             for y in reversed(linext):
-                L = [x for x in H.neighbor_out_iterator(y)
-                     if x not in linext
-                     and all(low in linext for low in H.neighbor_in_iterator(x))]
+                L = [
+                    x
+                    for x in H.neighbor_out_iterator(y)
+                    if x not in linext
+                    and all(low in linext for low in H.neighbor_in_iterator(x))
+                ]
                 if L:
                     break
             else:
@@ -597,9 +602,9 @@ class LinearExtensionsOfPoset(UniqueRepresentation, Parent):
         # the set {0,...,n-1} with a nice dictionary of edges
 
         for i in range(n):
-            up[n - 1 - i] = sorted(set(up[n - 1 - i] +
-                                       [item for x in up[n - 1 - i]
-                                        for item in up[x]]))
+            up[n - 1 - i] = sorted(
+                set(up[n - 1 - i] + [item for x in up[n - 1 - i] for item in up[x]])
+            )
         # Compute the principal order filter for each element.
 
         Jup = {1: []}
@@ -667,7 +672,10 @@ class LinearExtensionsOfPoset(UniqueRepresentation, Parent):
             sage: list(L)                                                               # needs sage.modules
             [[1, 2, 3, 4], [2, 1, 3, 4], [2, 1, 4, 3], [1, 4, 2, 3], [1, 2, 4, 3]]
         """
-        from sage.combinat.posets.linear_extension_iterator import linear_extension_iterator
+        from sage.combinat.posets.linear_extension_iterator import (
+            linear_extension_iterator,
+        )
+
         vertex_to_element = self._poset._vertex_to_element
         for lin_ext in linear_extension_iterator(self._poset._hasse_diagram):
             yield self._element_constructor_([vertex_to_element(_) for _ in lin_ext])
@@ -700,8 +708,7 @@ class LinearExtensionsOfPoset(UniqueRepresentation, Parent):
         """
         if not self._is_facade:
             return super().__contains__(obj)
-        return (isinstance(obj, (list, tuple)) and
-                self.poset().is_linear_extension(obj))
+        return isinstance(obj, (list, tuple)) and self.poset().is_linear_extension(obj)
 
     def markov_chain_digraph(self, action='promotion', labeling='identity') -> DiGraph:
         r"""
@@ -804,9 +811,11 @@ class LinearExtensionsOfPoset(UniqueRepresentation, Parent):
                     d[x][child] += [i + 1]
         G = DiGraph(d, format='dict_of_dicts')
         if have_dot2tex():
-            G.set_latex_options(format='dot2tex', edge_labels=True,
-                                color_by_label={1: "blue", 2: "red",
-                                                3: "green", 4: "yellow"})
+            G.set_latex_options(
+                format='dot2tex',
+                edge_labels=True,
+                color_by_label={1: "blue", 2: "red", 3: "green", 4: "yellow"},
+            )
         return G
 
     def markov_chain_transition_matrix(self, action='promotion', labeling='identity'):
@@ -864,6 +873,7 @@ class LinearExtensionsOfPoset(UniqueRepresentation, Parent):
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.matrix.constructor import matrix
+
         L = sorted(self.list())
         n = self.poset().cardinality()
         R = PolynomialRing(QQ, 'x', n)
@@ -997,6 +1007,7 @@ class LinearExtensionsOfMobile(LinearExtensionsOfPoset):
             361628701868606400
         """
         import sage.combinat.posets.d_complete as dc
+
         # Find folds
         if self._poset._anchor:
             anchor_index = self._poset._ribbon.index(self._poset._anchor[0])
@@ -1007,9 +1018,13 @@ class LinearExtensionsOfMobile(LinearExtensionsOfPoset):
         folds_down = []
 
         for ind, r in enumerate(self._poset._ribbon[:-1]):
-            if ind < anchor_index and self._poset.is_greater_than(r, self._poset._ribbon[ind + 1]):
+            if ind < anchor_index and self._poset.is_greater_than(
+                r, self._poset._ribbon[ind + 1]
+            ):
                 folds_up.append((self._poset._ribbon[ind + 1], r))
-            elif ind >= anchor_index and self._poset.is_less_than(r, self._poset._ribbon[ind + 1]):
+            elif ind >= anchor_index and self._poset.is_less_than(
+                r, self._poset._ribbon[ind + 1]
+            ):
                 folds_down.append((r, self._poset._ribbon[ind + 1]))
 
         if not folds_up and not folds_down:
@@ -1017,16 +1032,27 @@ class LinearExtensionsOfMobile(LinearExtensionsOfPoset):
 
         # Get ordered connected components
         cr = self._poset.cover_relations()
-        foldless_cr = [tuple(c) for c in cr if tuple(c) not in folds_up and tuple(c) not in folds_down]
+        foldless_cr = [
+            tuple(c)
+            for c in cr
+            if tuple(c) not in folds_up and tuple(c) not in folds_down
+        ]
 
         elmts = list(self._poset._elements)
         poset_components = DiGraph([elmts, foldless_cr])
-        ordered_poset_components = [poset_components.connected_component_containing_vertex(f[1], sort=False)
-                                    for f in folds_up]
-        ordered_poset_components.extend(poset_components.connected_component_containing_vertex(f[0], sort=False)
-                                        for f in folds_down)
-        ordered_poset_components.append(poset_components.connected_component_containing_vertex(
-            folds_down[-1][1] if folds_down else folds_up[-1][0], sort=False))
+        ordered_poset_components = [
+            poset_components.connected_component_containing_vertex(f[1], sort=False)
+            for f in folds_up
+        ]
+        ordered_poset_components.extend(
+            poset_components.connected_component_containing_vertex(f[0], sort=False)
+            for f in folds_down
+        )
+        ordered_poset_components.append(
+            poset_components.connected_component_containing_vertex(
+                folds_down[-1][1] if folds_down else folds_up[-1][0], sort=False
+            )
+        )
 
         # Return determinant
 
@@ -1036,12 +1062,16 @@ class LinearExtensionsOfMobile(LinearExtensionsOfPoset):
 
         mat = []
         for i in range(len(folds) + 1):
-            mat_poset = dc.DCompletePoset(self._poset.subposet(ordered_poset_components[i]))
+            mat_poset = dc.DCompletePoset(
+                self._poset.subposet(ordered_poset_components[i])
+            )
             row = [0] * (i - 1 if i - 1 > 0 else 0) + [1] * (1 if i >= 1 else 0)
             row.append(1 / mat_poset.hook_product())
             for j, f in enumerate(folds[i:]):
                 next_poset = self._poset.subposet(ordered_poset_components[j + i + 1])
-                mat_poset = dc.DCompletePoset(next_poset.slant_sum(mat_poset, f[0], f[1]))
+                mat_poset = dc.DCompletePoset(
+                    next_poset.slant_sum(mat_poset, f[0], f[1])
+                )
                 row.append(1 / mat_poset.hook_product())
 
             mat.append(row)

@@ -44,6 +44,7 @@ class CrystalOfBKKTableaux(CrystalOfWords):
         sage: T.cardinality()
         20
     """
+
     @staticmethod
     def __classcall_private__(cls, ct, shape):
         """
@@ -98,7 +99,9 @@ class CrystalOfBKKTableaux(CrystalOfWords):
         """
         m = self._cartan_type.m + 1
         n = self._cartan_type.n + 1
-        return "Crystal of BKK tableaux of shape {} of gl({}|{})".format(self.shape(), m, n)
+        return "Crystal of BKK tableaux of shape {} of gl({}|{})".format(
+            self.shape(), m, n
+        )
 
     def shape(self):
         r"""

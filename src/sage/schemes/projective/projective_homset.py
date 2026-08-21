@@ -58,6 +58,7 @@ lazy_import('sage.rings.real_mpfr', 'RR')
 #  Projective varieties
 # *******************************************************************
 
+
 class SchemeHomset_points_projective_field(SchemeHomset_points):
     """
     Set of rational points of a projective variety over a field.
@@ -72,6 +73,7 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
         sage: SchemeHomset_points_projective_field(Spec(QQ), ProjectiveSpace(QQ,2))
         Set of rational points of Projective Space of dimension 2 over Rational Field
     """
+
     def points(self, **kwds):
         """
         Return some or all rational points of a projective scheme.
@@ -167,85 +169,104 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
             6
         """
         from sage.schemes.projective.projective_space import ProjectiveSpace_ring
+
         X = self.codomain()
         if not isinstance(X, ProjectiveSpace_ring) and X.base_ring() in Fields():
             if hasattr(X.base_ring(), 'precision'):
                 numerical = True
-                verbose("Warning: computations in the numerical fields are inexact;points may be computed partially or incorrectly.", level=0)
-                pt_tol = RR(kwds.pop('point_tolerance', 10**(-10)))
-                zero_tol = RR(kwds.pop('zero_tolerance', 10**(-10)))
+                verbose(
+                    "Warning: computations in the numerical fields are inexact;points may be computed partially or incorrectly.",
+                    level=0,
+                )
+                pt_tol = RR(kwds.pop('point_tolerance', 10 ** (-10)))
+                zero_tol = RR(kwds.pop('zero_tolerance', 10 ** (-10)))
                 if pt_tol <= 0 or zero_tol <= 0:
                     raise ValueError("tolerance must be positive")
             else:
                 numerical = False
-            #Then it must be a subscheme
+            # Then it must be a subscheme
             dim_ideal = X.defining_ideal().dimension()
-            if dim_ideal < 1: # no points
+            if dim_ideal < 1:  # no points
                 return []
-            if dim_ideal == 1: # if X zero-dimensional
+            if dim_ideal == 1:  # if X zero-dimensional
                 rat_points = set()
                 PS = X.ambient_space()
                 N = PS.dimension_relative()
                 BR = X.base_ring()
-                #need a lexicographic ordering for elimination
+                # need a lexicographic ordering for elimination
                 R = PolynomialRing(BR, N + 1, PS.variable_names(), order='lex')
                 I = R.ideal(X.defining_polynomials())
                 I0 = R.ideal(0)
-                #Determine the points through elimination
-                #This is much faster than using the I.variety() function on each affine chart.
+                # Determine the points through elimination
+                # This is much faster than using the I.variety() function on each affine chart.
                 for k in range(N + 1):
-                    #create the elimination ideal for the kth affine patch
-                    G = I.substitute({R.gen(k):1}).groebner_basis()
+                    # create the elimination ideal for the kth affine patch
+                    G = I.substitute({R.gen(k): 1}).groebner_basis()
                     if G != [1]:
                         P = {}
-                        #keep track that we know the kth coordinate is 1
-                        P.update({R.gen(k):1})
+                        # keep track that we know the kth coordinate is 1
+                        P.update({R.gen(k): 1})
                         points = [P]
-                        #work backwards from solving each equation for the possible
-                        #values of the next coordinate
+                        # work backwards from solving each equation for the possible
+                        # values of the next coordinate
                         for i in range(len(G) - 1, -1, -1):
                             new_points = []
                             good = 0
                             for P in points:
-                                #substitute in our dictionary entry that has the values
-                                #of coordinates known so far. This results in a single
-                                #variable polynomial (by elimination)
+                                # substitute in our dictionary entry that has the values
+                                # of coordinates known so far. This results in a single
+                                # variable polynomial (by elimination)
                                 L = G[i].substitute(P)
                                 if R(L).degree() > 0:
                                     if numerical:
-                                        for pol in L.univariate_polynomial().roots(multiplicities=False):
+                                        for pol in L.univariate_polynomial().roots(
+                                            multiplicities=False
+                                        ):
                                             good = 1
                                             r = L.variables()[0]
                                             varindex = R.gens().index(r)
-                                            P.update({R.gen(varindex):pol})
+                                            P.update({R.gen(varindex): pol})
                                             new_points.append(copy(P))
                                     else:
                                         L = L.factor()
-                                    #the linear factors give the possible rational values of
-                                    #this coordinate
+                                        # the linear factors give the possible rational values of
+                                        # this coordinate
                                         for pol, pow in L:
-                                            if pol.degree() == 1 and len(pol.variables()) == 1:
+                                            if (
+                                                pol.degree() == 1
+                                                and len(pol.variables()) == 1
+                                            ):
                                                 good = 1
                                                 r = pol.variables()[0]
                                                 varindex = R.gens().index(r)
-                                                #add this coordinates information to
-                                                #each dictionary entry
-                                                P.update({R.gen(varindex):-pol.constant_coefficient() / pol.monomial_coefficient(r)})
+                                                # add this coordinates information to
+                                                # each dictionary entry
+                                                P.update(
+                                                    {
+                                                        R.gen(
+                                                            varindex
+                                                        ): -pol.constant_coefficient()
+                                                        / pol.monomial_coefficient(r)
+                                                    }
+                                                )
                                                 new_points.append(copy(P))
                                 else:
                                     new_points.append(P)
                                     good = 1
                             if good:
                                 points = new_points
-                        #the dictionary entries now have values for all coordinates
-                        #they are the rational solutions to the equations
-                        #make them into projective points
+                        # the dictionary entries now have values for all coordinates
+                        # they are the rational solutions to the equations
+                        # make them into projective points
                         for i in range(len(points)):
                             if numerical:
                                 if len(points[i]) == N + 1:
                                     S = PS([points[i][R.gen(j)] for j in range(N + 1)])
                                     S.normalize_coordinates()
-                                    if all(g(list(S)) < zero_tol for g in X.defining_polynomials()):
+                                    if all(
+                                        g(list(S)) < zero_tol
+                                        for g in X.defining_polynomials()
+                                    ):
                                         rat_points.add(S)
                             else:
                                 if len(points[i]) == N + 1 and I.subs(points[i]) == I0:
@@ -258,10 +279,9 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
                     dupl_points = list(rat_points)
                     for i in range(len(dupl_points)):
                         u = dupl_points[i]
-                        for j in range(i+1, len(dupl_points)):
+                        for j in range(i + 1, len(dupl_points)):
                             v = dupl_points[j]
-                            if all((u[k] - v[k]).abs() < pt_tol
-                                   for k in range(len(u))):
+                            if all((u[k] - v[k]).abs() < pt_tol for k in range(len(u))):
                                 rat_points.remove(u)
                                 break
 
@@ -274,18 +294,32 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
         if isinstance(R, RationalField):
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            if isinstance(X, AlgebraicScheme_subscheme): # sieve should only be called for subschemes
+            if isinstance(
+                X, AlgebraicScheme_subscheme
+            ):  # sieve should only be called for subschemes
                 from sage.schemes.projective.projective_rational_point import sieve
+
                 return sieve(X, B)
-            from sage.schemes.projective.projective_rational_point import enum_projective_rational_field
+            from sage.schemes.projective.projective_rational_point import (
+                enum_projective_rational_field,
+            )
+
             return enum_projective_rational_field(self, B)
         if R in NumberFields():
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            from sage.schemes.projective.projective_rational_point import enum_projective_number_field
-            return enum_projective_number_field(self, bound=B, tolerance=tol, precision=prec)
+            from sage.schemes.projective.projective_rational_point import (
+                enum_projective_number_field,
+            )
+
+            return enum_projective_number_field(
+                self, bound=B, tolerance=tol, precision=prec
+            )
         if isinstance(R, FiniteField):
-            from sage.schemes.projective.projective_rational_point import enum_projective_finite_field
+            from sage.schemes.projective.projective_rational_point import (
+                enum_projective_finite_field,
+            )
+
             return enum_projective_finite_field(self.extended_codomain())
         raise TypeError("unable to enumerate points over %s" % R)
 
@@ -373,6 +407,7 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
             TypeError: F must be a numerical field
         """
         from sage.schemes.projective.projective_space import ProjectiveSpace_ring
+
         if F is None:
             F = CC
         if F not in Fields() or not hasattr(F, 'precision'):
@@ -383,49 +418,51 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
 
         PP = X.ambient_space().change_ring(F)
         if not isinstance(X, ProjectiveSpace_ring) and X.base_ring() in Fields():
-            #Then it must be a subscheme
+            # Then it must be a subscheme
             dim_ideal = X.defining_ideal().dimension()
-            if dim_ideal < 1: # no points
+            if dim_ideal < 1:  # no points
                 return []
-            if dim_ideal == 1: # if X zero-dimensional
-                pt_tol = RR(kwds.pop('point_tolerance', 10**(-10)))
-                zero_tol = RR(kwds.pop('zero_tolerance', 10**(-10)))
+            if dim_ideal == 1:  # if X zero-dimensional
+                pt_tol = RR(kwds.pop('point_tolerance', 10 ** (-10)))
+                zero_tol = RR(kwds.pop('zero_tolerance', 10 ** (-10)))
                 if pt_tol <= 0 or zero_tol <= 0:
                     raise ValueError("tolerance must be positive")
                 rat_points = set()
                 PS = X.ambient_space()
                 N = PS.dimension_relative()
                 BR = X.base_ring()
-                #need a lexicographic ordering for elimination
+                # need a lexicographic ordering for elimination
                 R = PolynomialRing(BR, N + 1, PS.variable_names(), order='lex')
                 RF = R.change_ring(F)
                 I = R.ideal(X.defining_polynomials())
-                #Determine the points through elimination
-                #This is much faster than using the I.variety() function on each affine chart.
+                # Determine the points through elimination
+                # This is much faster than using the I.variety() function on each affine chart.
                 for k in range(N + 1):
-                    #create the elimination ideal for the kth affine patch
-                    G = I.substitute({R.gen(k):1}).groebner_basis()
+                    # create the elimination ideal for the kth affine patch
+                    G = I.substitute({R.gen(k): 1}).groebner_basis()
                     G = [RF(g) for g in G]
                     if G != [1]:
                         P = {}
-                        #keep track that we know the kth coordinate is 1
-                        P.update({RF.gen(k):1})
+                        # keep track that we know the kth coordinate is 1
+                        P.update({RF.gen(k): 1})
                         points = [P]
-                        #work backwards from solving each equation for the possible
-                        #values of the next coordinate
+                        # work backwards from solving each equation for the possible
+                        # values of the next coordinate
                         for i in range(len(G) - 1, -1, -1):
                             new_points = []
                             good = 0
                             for P in points:
-                                #substitute in our dictionary entry that has the values
-                                #of coordinates known so far. This results in a single
-                                #variable polynomial (by elimination)
+                                # substitute in our dictionary entry that has the values
+                                # of coordinates known so far. This results in a single
+                                # variable polynomial (by elimination)
                                 L = G[i].substitute(P)
                                 if len(RF(L).variables()) == 1:
-                                    for pol in L.univariate_polynomial().roots(ring=F, multiplicities=False):
+                                    for pol in L.univariate_polynomial().roots(
+                                        ring=F, multiplicities=False
+                                    ):
                                         r = L.variables()[0]
                                         varindex = RF.gens().index(r)
-                                        P.update({RF.gen(varindex):pol})
+                                        P.update({RF.gen(varindex): pol})
                                         new_points.append(copy(P))
                                         good = 1
                                 else:
@@ -433,9 +470,9 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
                                     good = 1
                             if good:
                                 points = new_points
-                        #the dictionary entries now have values for all coordinates
-                        #they are approximate solutions to the equations
-                        #make them into projective points
+                        # the dictionary entries now have values for all coordinates
+                        # they are approximate solutions to the equations
+                        # make them into projective points
                         polys = [g.change_ring(F) for g in X.defining_polynomials()]
                         for i in range(len(points)):
                             if len(points[i]) == N + 1:
@@ -444,20 +481,23 @@ class SchemeHomset_points_projective_field(SchemeHomset_points):
                                 if all(g(list(S)) < zero_tol for g in polys):
                                     rat_points.add(S)
                         # remove duplicate element using tolerance
-                        #since they are normalized we can just compare coefficients
+                        # since they are normalized we can just compare coefficients
                         dupl_points = list(rat_points)
                         for i in range(len(dupl_points)):
                             u = dupl_points[i]
-                            for j in range(i+1, len(dupl_points)):
+                            for j in range(i + 1, len(dupl_points)):
                                 v = dupl_points[j]
-                                if all((u[k] - v[k]).abs() < pt_tol
-                                       for k in range(len(u))):
+                                if all(
+                                    (u[k] - v[k]).abs() < pt_tol for k in range(len(u))
+                                ):
                                     rat_points.remove(u)
                                     break
 
                 rat_points = sorted(rat_points)
                 return rat_points
-            raise NotImplementedError('numerical approximation of points only for dimension 0 subschemes')
+            raise NotImplementedError(
+                'numerical approximation of points only for dimension 0 subschemes'
+            )
 
 
 # TODO: Should this inherit from the weighted projective class?
@@ -521,8 +561,11 @@ class SchemeHomset_points_projective_ring(SchemeHomset_points):
         if R == ZZ:
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            from sage.schemes.projective.projective_rational_point import enum_projective_rational_field
-            return enum_projective_rational_field(self,B)
+            from sage.schemes.projective.projective_rational_point import (
+                enum_projective_rational_field,
+            )
+
+            return enum_projective_rational_field(self, B)
         raise TypeError("unable to enumerate points over %s" % R)
 
 
@@ -538,6 +581,7 @@ class SchemeHomset_polynomial_projective_space(SchemeHomset_generic):
           From: Projective Space of dimension 2 over Rational Field
           To:   Projective Space of dimension 2 over Rational Field
     """
+
     def identity(self):
         """
         Return the identity morphism of this hom-set.
@@ -555,6 +599,7 @@ class SchemeHomset_polynomial_projective_space(SchemeHomset_generic):
         """
         if self.is_endomorphism_set():
             from sage.schemes.generic.morphism import SchemeMorphism_polynomial_id
+
             return SchemeMorphism_polynomial_id(self.domain())
         raise TypeError("identity map is only defined for endomorphisms")
 
@@ -562,6 +607,7 @@ class SchemeHomset_polynomial_projective_space(SchemeHomset_generic):
 # *******************************************************************
 #  Abelian varieties
 # *******************************************************************
+
 
 class SchemeHomset_points_abelian_variety_field(SchemeHomset_points_projective_field):
     r"""
@@ -685,8 +731,10 @@ class SchemeHomset_points_abelian_variety_field(SchemeHomset_points_projective_f
             implemented as modules over rings other than ZZ
         """
         if R is not ZZ:
-            raise NotImplementedError('Abelian variety point sets are not '
-                            'implemented as modules over rings other than ZZ')
+            raise NotImplementedError(
+                'Abelian variety point sets are not '
+                'implemented as modules over rings other than ZZ'
+            )
         return self
 
     def zero(self):
@@ -708,6 +756,9 @@ class SchemeHomset_points_abelian_variety_field(SchemeHomset_points_projective_f
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.schemes.generic.homset',
-                           'SchemeHomsetModule_abelian_variety_coordinates_field',
-                           SchemeHomset_points_abelian_variety_field)
+
+register_unpickle_override(
+    'sage.schemes.generic.homset',
+    'SchemeHomsetModule_abelian_variety_coordinates_field',
+    SchemeHomset_points_abelian_variety_field,
+)

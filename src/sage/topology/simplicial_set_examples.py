@@ -40,12 +40,16 @@ from sage.rings.integer import Integer
 from sage.structure.parent import Parent
 
 from .delta_complex import delta_complexes
-from .simplicial_set import AbstractSimplex, \
-    SimplicialSet_arbitrary, SimplicialSet_finite
+from .simplicial_set import (
+    AbstractSimplex,
+    SimplicialSet_arbitrary,
+    SimplicialSet_finite,
+)
 
 import sage.topology.simplicial_complex_catalog as simplicial_complexes
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.categories.simplicial_sets', 'SimplicialSets')
 
 kenzo_path = Path(SAGE_ENV['SAGE_EXTCODE']) / 'kenzo'
@@ -53,6 +57,7 @@ kenzo_path = Path(SAGE_ENV['SAGE_EXTCODE']) / 'kenzo'
 
 # ######################################################################
 # The nerve of a finite monoid, used in sage.categories.finite_monoid.
+
 
 class Nerve(SimplicialSet_arbitrary):
     def __init__(self, monoid):
@@ -85,8 +90,7 @@ class Nerve(SimplicialSet_arbitrary):
         self.rename("Nerve of {}".format(str(monoid)))
         self.rename_latex("B{}".format(latex(monoid)))
 
-        e = AbstractSimplex(0, name=str(monoid.one()),
-                            latex_name=latex(monoid.one()))
+        e = AbstractSimplex(0, name=str(monoid.one()), latex_name=latex(monoid.one()))
         self._basepoint = e
         vertex = SimplicialSet_finite({e: None}, base_point=e)
         # self._n_skeleton: cache the highest dimensional skeleton
@@ -117,9 +121,11 @@ class Nerve(SimplicialSet_arbitrary):
             sage: BC3 == BC3
             True
         """
-        return (isinstance(other, Nerve)
-                and self._monoid == other._monoid
-                and self.base_point() == other.base_point())
+        return (
+            isinstance(other, Nerve)
+            and self._monoid == other._monoid
+            and self.base_point() == other.base_point()
+        )
 
     def __ne__(self, other) -> bool:
         """
@@ -184,6 +190,7 @@ class Nerve(SimplicialSet_arbitrary):
             False
         """
         from .simplicial_set_constructions import SubSimplicialSet
+
         monoid = self._monoid
         one = monoid.one()
         # Build up chains of elements inductively, from dimension d-1
@@ -230,9 +237,11 @@ class Nerve(SimplicialSet_arbitrary):
                     # bdries: the face maps applied to chain, in a
                     # format suitable for passing to the DeltaComplex
                     # constructor.
-                    x = AbstractSimplex(d,
-                                        name=' * '.join(str(_) for _ in chain),
-                                        latex_name=' * '.join(latex(_) for _ in chain))
+                    x = AbstractSimplex(
+                        d,
+                        name=' * '.join(str(_) for _ in chain),
+                        latex_name=' * '.join(latex(_) for _ in chain),
+                    )
                     new_faces[chain] = x
 
                     # Compute faces of x.
@@ -244,12 +253,12 @@ class Nerve(SimplicialSet_arbitrary):
                             if d == 2:
                                 face = e.apply_degeneracies(i)
                             else:
-                                face = (face_dict[chain[:i]
-                                                  + chain[i+2:]].apply_degeneracies(i))
+                                face = face_dict[
+                                    chain[:i] + chain[i + 2 :]
+                                ].apply_degeneracies(i)
                         else:
                             # Non-degenerate.
-                            face = (face_dict[chain[:i]
-                                              + (product,) + chain[i+2:]])
+                            face = face_dict[chain[:i] + (product,) + chain[i + 2 :]]
                         faces.append(face)
                     faces.append(face_dict[chain[:-1]])
                     simplices[x] = faces
@@ -263,6 +272,7 @@ class Nerve(SimplicialSet_arbitrary):
 
 ########################################################################
 # Catalog of examples. These are accessed via simplicial_set_catalog.py.
+
 
 def Sphere(n):
     r"""
@@ -294,15 +304,18 @@ def Sphere(n):
     v_0 = AbstractSimplex(0, name='v_0')
     if n == 0:
         w_0 = AbstractSimplex(0, name='w_0')
-        return SimplicialSet_finite({v_0: None, w_0: None}, base_point=v_0,
-                                    name='S^0')
+        return SimplicialSet_finite({v_0: None, w_0: None}, base_point=v_0, name='S^0')
     degens = range(n - 2, -1, -1)
     degen_v = v_0.apply_degeneracies(*degens)
-    sigma = AbstractSimplex(n, name='sigma_{}'.format(n),
-                            latex_name='\\sigma_{}'.format(n))
-    return SimplicialSet_finite({sigma: [degen_v] * (n + 1)}, base_point=v_0,
-                                name='S^{}'.format(n),
-                                latex_name='S^{{{}}}'.format(n))
+    sigma = AbstractSimplex(
+        n, name='sigma_{}'.format(n), latex_name='\\sigma_{}'.format(n)
+    )
+    return SimplicialSet_finite(
+        {sigma: [degen_v] * (n + 1)},
+        base_point=v_0,
+        name='S^{}'.format(n),
+        latex_name='S^{{{}}}'.format(n),
+    )
 
 
 def ClassifyingSpace(group):
@@ -398,8 +411,7 @@ def KleinBottle():
     """
     temp = SimplicialSet_finite(delta_complexes.KleinBottle())
     pt = temp.n_cells(0)[0]
-    return SimplicialSet_finite(temp.face_data(), base_point=pt,
-                                name='Klein bottle')
+    return SimplicialSet_finite(temp.face_data(), base_point=pt, name='Klein bottle')
 
 
 def Torus():
@@ -443,9 +455,11 @@ def Simplex(n):
         sage: K.n_cells(2)
         [(0, 1, 2)]
     """
-    return SimplicialSet_finite(simplicial_complexes.Simplex(n),
-                                name='{}-simplex'.format(n),
-                                latex_name='\\Delta^{{{}}}'.format(n))
+    return SimplicialSet_finite(
+        simplicial_complexes.Simplex(n),
+        name='{}-simplex'.format(n),
+        latex_name='\\Delta^{{{}}}'.format(n),
+    )
 
 
 @cached_function
@@ -491,9 +505,9 @@ def Point():
         True
     """
     star = AbstractSimplex(0, name='*')
-    return SimplicialSet_finite({star: None}, base_point=star,
-                                name='Point',
-                                latex_name='*')
+    return SimplicialSet_finite(
+        {star: None}, base_point=star, name='Point', latex_name='*'
+    )
 
 
 def Horn(n, k):
@@ -524,7 +538,7 @@ def Horn(n, k):
     """
     K = Simplex(n)
     sigma = K.n_cells(n)[0]
-    L = K.subsimplicial_set(K.faces(sigma)[:k] + K.faces(sigma)[k+1:])
+    L = K.subsimplicial_set(K.faces(sigma)[:k] + K.faces(sigma)[k + 1 :])
     L.rename('({}, {})-Horn'.format(n, k))
     L.rename_latex('\\Lambda^{{{}}}_{{{}}}'.format(n, k))
     return L
@@ -567,7 +581,9 @@ def ComplexProjectiveSpace(n):
         ValueError: complex projective spaces are only available in dimensions between 0 and 4
     """
     if n < 0 or n > 4:
-        raise ValueError('complex projective spaces are only available in dimensions between 0 and 4')
+        raise ValueError(
+            'complex projective spaces are only available in dimensions between 0 and 4'
+        )
     if n == 0:
         return Point()
     if n == 1:
@@ -590,45 +606,62 @@ def ComplexProjectiveSpace(n):
         f4_101101 = AbstractSimplex(4, name='tau_0', latex_name='\\tau_0')
         f4_201110 = AbstractSimplex(4, name='tau_1', latex_name='\\tau_1')
         f4_211010 = AbstractSimplex(4, name='tau_2', latex_name='\\tau_2')
-        K = SimplicialSet_finite({f2_1: (v.apply_degeneracies(0),
-                                         v.apply_degeneracies(0),
-                                         v.apply_degeneracies(0)),
-                                  f2_2: (v.apply_degeneracies(0),
-                                         v.apply_degeneracies(0),
-                                         v.apply_degeneracies(0)),
-                                  f3_110: (f2_1, f2_2, f2_1, v.apply_degeneracies(1, 0)),
-                                  f3_011: (f2_1, f2_1, f2_1, f2_1),
-                                  f3_111: (v.apply_degeneracies(1, 0), f2_1, f2_2, f2_1),
-                                  f4_101101: (f2_1.apply_degeneracies(0),
-                                              f2_1.apply_degeneracies(0),
-                                              f3_011,
-                                              f2_1.apply_degeneracies(2),
-                                              f2_1.apply_degeneracies(2)),
-                                  f4_201110: (f2_1.apply_degeneracies(1),
-                                              f3_111,
-                                              f3_011,
-                                              f3_110,
-                                              f2_1.apply_degeneracies(1)),
-                                  f4_211010: (f2_1.apply_degeneracies(2),
-                                              f3_111,
-                                              f2_1.apply_degeneracies(1),
-                                              f3_110,
-                                              f2_1.apply_degeneracies(0))},
-                                 base_point=v, name='CP^2',
-                                 latex_name='CP^{2}')
+        K = SimplicialSet_finite(
+            {
+                f2_1: (
+                    v.apply_degeneracies(0),
+                    v.apply_degeneracies(0),
+                    v.apply_degeneracies(0),
+                ),
+                f2_2: (
+                    v.apply_degeneracies(0),
+                    v.apply_degeneracies(0),
+                    v.apply_degeneracies(0),
+                ),
+                f3_110: (f2_1, f2_2, f2_1, v.apply_degeneracies(1, 0)),
+                f3_011: (f2_1, f2_1, f2_1, f2_1),
+                f3_111: (v.apply_degeneracies(1, 0), f2_1, f2_2, f2_1),
+                f4_101101: (
+                    f2_1.apply_degeneracies(0),
+                    f2_1.apply_degeneracies(0),
+                    f3_011,
+                    f2_1.apply_degeneracies(2),
+                    f2_1.apply_degeneracies(2),
+                ),
+                f4_201110: (
+                    f2_1.apply_degeneracies(1),
+                    f3_111,
+                    f3_011,
+                    f3_110,
+                    f2_1.apply_degeneracies(1),
+                ),
+                f4_211010: (
+                    f2_1.apply_degeneracies(2),
+                    f3_111,
+                    f2_1.apply_degeneracies(1),
+                    f3_110,
+                    f2_1.apply_degeneracies(0),
+                ),
+            },
+            base_point=v,
+            name='CP^2',
+            latex_name='CP^{2}',
+        )
         return K
     if n == 3:
         file = kenzo_path / 'CP3.txt'
         data = simplicial_data_from_kenzo_output(file)
         v = [sigma for sigma in data if sigma.dimension() == 0][0]
-        return SimplicialSet_finite(data, base_point=v, name='CP^3',
-                                    latex_name='CP^{3}')
+        return SimplicialSet_finite(
+            data, base_point=v, name='CP^3', latex_name='CP^{3}'
+        )
     if n == 4:
         file = kenzo_path / 'CP4.txt'
         data = simplicial_data_from_kenzo_output(file)
         v = [sigma for sigma in data if sigma.dimension() == 0][0]
-        return SimplicialSet_finite(data, base_point=v, name='CP^4',
-                                    latex_name='CP^{4}')
+        return SimplicialSet_finite(
+            data, base_point=v, name='CP^4', latex_name='CP^{4}'
+        )
 
 
 def simplicial_data_from_kenzo_output(filename) -> dict:
@@ -675,7 +708,7 @@ def simplicial_data_from_kenzo_output(filename) -> dict:
         else:
             end = new_dim_idx
         if dim == 0:
-            simplex_string = data[data.find('Vertices :') + len('Vertices :'):end]
+            simplex_string = data[data.find('Vertices :') + len('Vertices :') : end]
             vertices = OneOrMore(nested_expr()).parse_string(simplex_string).asList()[0]
             for v in vertices:
                 vertex = AbstractSimplex(0, name=v)
@@ -701,12 +734,11 @@ def simplicial_data_from_kenzo_output(filename) -> dict:
                             if degen_str == '-':
                                 degens = []
                             else:
-                                degens = [Integer(_)
-                                          for _ in degen_str.split('-')]
+                                degens = [Integer(_) for _ in degen_str.split('-')]
                         else:
                             degens = [Integer(degen_str)]
 
-                        face_name = f[m.end(0):].strip()[:-1]
+                        face_name = f[m.end(0) :].strip()[:-1]
                         nondegen = simplex_names[face_name]
                         faces.append(nondegen.apply_degeneracies(*degens))
 
@@ -780,29 +812,40 @@ def HopfMap():
     alpha_4 = AbstractSimplex(3, name='alpha_4', latex_name='\\alpha_4')
     alpha_5 = AbstractSimplex(3, name='alpha_5', latex_name='\\alpha_5')
     alpha_6 = AbstractSimplex(3, name='alpha_6', latex_name='\\alpha_6')
-    S3 = SimplicialSet_finite({beta_11: (w_0, w_0), beta_22: (w_0, w_0),
-                               beta_23: (w_0, w_0), beta_44: (w_0, w_0),
-                               beta_1: (w_1, beta_11, w_1),
-                               beta_2: (w_1, beta_22, beta_23),
-                               beta_3: (w_1, beta_23, w_1),
-                               beta_4: (w_1, beta_44, w_1),
-                               alpha_12: (beta_11, beta_23, w_1),
-                               alpha_23: (beta_11, beta_22, w_1),
-                               alpha_34: (beta_11, beta_22, beta_44),
-                               alpha_45: (w_1, beta_23, beta_44),
-                               alpha_56: (w_1, beta_23, w_1),
-                               alpha_1: (beta_1, beta_3, alpha_12, w_2),
-                               alpha_2: (beta_11.apply_degeneracies(1), beta_2,
-                                         alpha_23, alpha_12),
-                               alpha_3: (beta_11.apply_degeneracies(0), alpha_34,
-                                         alpha_23, beta_4),
-                               alpha_4: (beta_1, beta_2, alpha_34, alpha_45),
-                               alpha_5: (w_2, alpha_45, alpha_56, beta_4),
-                               alpha_6: (w_2, beta_3, alpha_56, w_2)},
-                              base_point=w_0)
-    return S3.Hom(S2)({alpha_1: s0_sigma, alpha_2: s1_sigma,
-                       alpha_3: s2_sigma, alpha_4: s0_sigma,
-                       alpha_5: s2_sigma, alpha_6: s1_sigma})
+    S3 = SimplicialSet_finite(
+        {
+            beta_11: (w_0, w_0),
+            beta_22: (w_0, w_0),
+            beta_23: (w_0, w_0),
+            beta_44: (w_0, w_0),
+            beta_1: (w_1, beta_11, w_1),
+            beta_2: (w_1, beta_22, beta_23),
+            beta_3: (w_1, beta_23, w_1),
+            beta_4: (w_1, beta_44, w_1),
+            alpha_12: (beta_11, beta_23, w_1),
+            alpha_23: (beta_11, beta_22, w_1),
+            alpha_34: (beta_11, beta_22, beta_44),
+            alpha_45: (w_1, beta_23, beta_44),
+            alpha_56: (w_1, beta_23, w_1),
+            alpha_1: (beta_1, beta_3, alpha_12, w_2),
+            alpha_2: (beta_11.apply_degeneracies(1), beta_2, alpha_23, alpha_12),
+            alpha_3: (beta_11.apply_degeneracies(0), alpha_34, alpha_23, beta_4),
+            alpha_4: (beta_1, beta_2, alpha_34, alpha_45),
+            alpha_5: (w_2, alpha_45, alpha_56, beta_4),
+            alpha_6: (w_2, beta_3, alpha_56, w_2),
+        },
+        base_point=w_0,
+    )
+    return S3.Hom(S2)(
+        {
+            alpha_1: s0_sigma,
+            alpha_2: s1_sigma,
+            alpha_3: s2_sigma,
+            alpha_4: s0_sigma,
+            alpha_5: s2_sigma,
+            alpha_6: s1_sigma,
+        }
+    )
 
 
 def PresentationComplex(G):
@@ -855,14 +898,21 @@ def PresentationComplex(G):
     O = AbstractSimplex(0)
     SO = O.apply_degeneracies(0)
     edges = {i + 1: AbstractSimplex(1, name=str(g)) for (i, g) in enumerate(G.gens())}
-    inverseedges = {-i - 1: AbstractSimplex(1, name=str(g.inverse())) for (i, g) in enumerate(G.gens())}
+    inverseedges = {
+        -i - 1: AbstractSimplex(1, name=str(g.inverse()))
+        for (i, g) in enumerate(G.gens())
+    }
     all_edges = {}
     all_edges.update(edges)
     all_edges.update(inverseedges)
-    triangles = {i + 1 : AbstractSimplex(2, name='T' + str(g)) for (i, g) in enumerate(G.gens())}
+    triangles = {
+        i + 1: AbstractSimplex(2, name='T' + str(g)) for (i, g) in enumerate(G.gens())
+    }
     face_maps = {O: None}
     face_maps.update({g: [O, O] for g in all_edges.values()})
-    face_maps.update({triangles[t]: [all_edges[t], SO, all_edges[-t]] for t in triangles})
+    face_maps.update(
+        {triangles[t]: [all_edges[t], SO, all_edges[-t]] for t in triangles}
+    )
     for r in G.relations():
         if len(r.Tietze()) == 0:
             T = AbstractSimplex(2, name=str(r))

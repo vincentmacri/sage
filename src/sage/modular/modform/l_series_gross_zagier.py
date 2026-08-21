@@ -1,6 +1,7 @@
 """
 Gross-Zagier L-series
 """
+
 from sage.lfunctions.pari import lfun_generic, LFunction
 from sage.modular.dirichlet import kronecker_character
 from sage.modular.modform.l_series_gross_zagier_coeffs import gross_zagier_L_series
@@ -9,7 +10,6 @@ from sage.structure.sage_object import SageObject
 
 
 class GrossZagierLseries(SageObject):
-
     def __init__(self, E, A, prec=53, max_imaginary_part=0) -> None:
         r"""
         Class for the Gross-Zagier `L`-series.
@@ -55,15 +55,12 @@ class GrossZagierLseries(SageObject):
         K = A.gens()[0].parent()
         D = K.disc()
         if not (K.degree() == 2 and D < 0):
-            raise ValueError("A is not an ideal class in an"
-                             " imaginary quadratic field")
+            raise ValueError("A is not an ideal class in an imaginary quadratic field")
         Q = ideal.quadratic_form().reduced_form()
-        epsilon = - kronecker_character(D)(N)
+        epsilon = -kronecker_character(D)(N)
 
         # first compute the number of required terms
-        Lpari = lfun_generic(N**2 * D**2,
-                             [0, 0, 1, 1],
-                             weight=2, eps=epsilon)
+        Lpari = lfun_generic(N**2 * D**2, [0, 0, 1, 1], weight=2, eps=epsilon)
         L = LFunction(Lpari, prec=prec, max_im=max_imaginary_part)
         nterms = Integer(L.cost())
         if nterms > 1e6:

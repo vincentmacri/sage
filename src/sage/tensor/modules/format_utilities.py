@@ -98,7 +98,7 @@ def is_atomic(expr, sep=['+', '-']) -> bool:
         elif c == ')':
             level -= 1
             continue
-        if any(expr[n:n + len(s)] == s for s in sep):
+        if any(expr[n : n + len(s)] == s for s in sep):
             if level == 0 and n > 0:
                 return False
     return True
@@ -302,6 +302,7 @@ class FormattedExpansion(SageObject):
         sage: latex(f)
         \frac{x}{2}
     """
+
     def __init__(self, txt=None, latex=None):
         r"""
         TESTS::

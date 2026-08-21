@@ -60,7 +60,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 user_globals = None
 
 
@@ -82,7 +81,8 @@ def _check():
         raise RuntimeError(
             "the user-space globals dictionary has not been initialized. "
             "Use initialize_globals() or set_globals() or use a different "
-            "function which doesn't need these globals")
+            "function which doesn't need these globals"
+        )
 
 
 def get_globals():
@@ -157,6 +157,7 @@ def initialize_globals(all, g=None):
         if key[0] != '_':
             user_globals[key] = getattr(all, key)
     from sage.misc.lazy_import import clean_namespace
+
     clean_namespace(user_globals)
 
 

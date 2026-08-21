@@ -1,7 +1,7 @@
 r"""
 H-trivial semigroups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2016 Nicolas M. Thiéry <nthiery at users.sf.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@ H-trivial semigroups
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.semigroups import Semigroups

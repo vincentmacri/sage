@@ -71,7 +71,7 @@ def lift_to_gamma1(g, m, n):
     c2 = crt(c, 0, m, n)
     d2 = crt(d, 1, m, n)
     a3, b3, c3, d3 = (ZZ(_) for _ in lift_to_sl2z(c2, d2, m * n))
-    r = (a3*b - b3*a) % m
+    r = (a3 * b - b3 * a) % m
     return [a3 + r * c3, b3 + r * d3, c3, d3]
 
 
@@ -247,8 +247,11 @@ def lift_for_SL(A, N=None):
         ....:     M = random_matrix(Zmod(p), d, algorithm='unimodular')
         ....:     assert lift_for_SL(M).det() == 1
     """
-    from sage.matrix.special import (identity_matrix, diagonal_matrix,
-                                     block_diagonal_matrix)
+    from sage.matrix.special import (
+        identity_matrix,
+        diagonal_matrix,
+        block_diagonal_matrix,
+    )
     from sage.misc.misc_c import prod
 
     ring = A.parent().base_ring()
@@ -262,7 +265,7 @@ def lift_for_SL(A, N=None):
     if m <= 1:
         return identity_matrix(ZZ, m)
 
-    AZZ = A .change_ring(ZZ)
+    AZZ = A.change_ring(ZZ)
     D, U, V = AZZ.smith_form()
     diag = diagonal_matrix([-1] + [1] * (m - 1))
     if U.det() == -1:

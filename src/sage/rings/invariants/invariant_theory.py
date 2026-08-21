@@ -109,7 +109,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.matrix.constructor import matrix
 from sage.structure.sage_object import SageObject
 from sage.structure.richcmp import richcmp_method, richcmp
@@ -265,29 +264,35 @@ def transvectant(f, g, h=1, scale='default'):
         raise ValueError('all input forms must be in the same polynomial ring')
     x = f._variables[0]
     y = f._variables[1]
-    degree = f._d + g._d - 2*h
+    degree = f._d + g._d - 2 * h
     if h > f._d or h > g._d:
         tv = R(0)
     else:
         from sage.functions.other import binomial, factorial
+
         if scale == 'default':
-            scalar = factorial(f._d-h) * factorial(g._d-h) \
-                * R(factorial(f._d)*factorial(g._d))**(-1)
+            scalar = (
+                factorial(f._d - h)
+                * factorial(g._d - h)
+                * R(factorial(f._d) * factorial(g._d)) ** (-1)
+            )
         elif scale == 'none':
             scalar = 1
         else:
             raise ValueError('unknown scale type: %s' % scale)
 
         def diff(j):
-            df = f.form().derivative(x, j).derivative(y, h-j)
-            dg = g.form().derivative(x, h-j).derivative(y, j)
-            return (-1)**j * binomial(h, j) * df * dg
-        tv = scalar * sum([diff(j) for j in range(h+1)])
+            df = f.form().derivative(x, j).derivative(y, h - j)
+            dg = g.form().derivative(x, h - j).derivative(y, j)
+            return (-1) ** j * binomial(h, j) * df * dg
+
+        tv = scalar * sum([diff(j) for j in range(h + 1)])
         if tv.parent() is not R:
             S = tv.parent()
             x = S(x)
             y = S(y)
     return AlgebraicForm(2, degree, tv, x, y)
+
 
 ######################################################################
 
@@ -355,15 +360,18 @@ class FormsBase(SageObject):
             x^6*y^3 - x^3*y^6 - x^6 + y^6 + x^3 - y^3
         """
         if self._homogeneous:
+
             def diff(p, d):
                 return [p.derivative(x) for x in self._variables]
         else:
+
             def diff(p, d):
                 variables = self._variables[0:-1]
                 grad = [p.derivative(x) for x in variables]
-                dp_dz = d*p - sum(x*dp_dx for x, dp_dx in zip(variables, grad))
+                dp_dz = d * p - sum(x * dp_dx for x, dp_dx in zip(variables, grad))
                 grad.append(dp_dz)
                 return grad
+
         jac = [diff(p, d) for p, d in args]
         return matrix(self._ring, jac).det()
 
@@ -442,6 +450,7 @@ class FormsBase(SageObject):
 
 
 ######################################################################
+
 
 class AlgebraicForm(FormsBase):
     """
@@ -524,11 +533,17 @@ class AlgebraicForm(FormsBase):
         variables = _guess_variables(polynomial, *args)
         if len(variables) == n:
             pass
-        elif len(variables) == n-1:
+        elif len(variables) == n - 1:
             variables = variables + (None,)
         else:
-            raise ValueError('need '+str(n)+' or ' +
-                             str(n-1)+' variables, got '+str(variables))
+            raise ValueError(
+                'need '
+                + str(n)
+                + ' or '
+                + str(n - 1)
+                + ' variables, got '
+                + str(variables)
+            )
         ring = polynomial.parent()
         homogeneous = variables[-1] is not None
         super().__init__(n, homogeneous, ring, variables)
@@ -553,14 +568,17 @@ class AlgebraicForm(FormsBase):
             degrees.update(self._polynomial.exponents())
         else:
             for e in self._polynomial.exponents():
-                deg = sum([ e[R.gens().index(x)]
-                            for x in self._variables if x is not None ])
+                deg = sum(
+                    [e[R.gens().index(x)] for x in self._variables if x is not None]
+                )
                 degrees.add(deg)
         if self._homogeneous and len(degrees) > 1:
             raise ValueError('polynomial is not homogeneous')
-        if degrees == set() or \
-                (self._homogeneous and degrees == set([self._d])) or \
-                (not self._homogeneous and max(degrees) <= self._d):
+        if (
+            degrees == set()
+            or (self._homogeneous and degrees == set([self._d]))
+            or (not self._homogeneous and max(degrees) <= self._d)
+        ):
             return
         raise ValueError('polynomial is of the wrong degree')
 
@@ -598,6 +616,7 @@ class AlgebraicForm(FormsBase):
         """
         assert self._homogeneous
         from sage.matrix.constructor import vector, random_matrix
+
         if g is None:
             F = self._ring.base_ring()
             g = random_matrix(F, self._n, algorithm='unimodular')
@@ -605,7 +624,9 @@ class AlgebraicForm(FormsBase):
         g_v = g * v
         transform = {v[i]: g_v[i] for i in range(self._n)}
         # The covariant of the transformed polynomial
-        g_self = self.__class__(self._n, self._d, self.form().subs(transform), self.variables())
+        g_self = self.__class__(
+            self._n, self._d, self.form().subs(transform), self.variables()
+        )
         cov_g = getattr(g_self, method_name)()
         # The transform of the covariant
         g_cov = getattr(self, method_name)().subs(transform)
@@ -651,15 +672,37 @@ class AlgebraicForm(FormsBase):
             'Binary quintic given by x^5 + y^5'
         """
         s = ''
-        ary = ['Unary', 'Binary', 'Ternary', 'Quaternary', 'Quinary',
-               'Senary', 'Septenary', 'Octonary', 'Nonary', 'Denary']
+        ary = [
+            'Unary',
+            'Binary',
+            'Ternary',
+            'Quaternary',
+            'Quinary',
+            'Senary',
+            'Septenary',
+            'Octonary',
+            'Nonary',
+            'Denary',
+        ]
         try:
-            s += ary[self._n-1]
+            s += ary[self._n - 1]
         except IndexError:
             s += 'Algebraic'
-        ic = ['constant form', 'monic', 'quadratic', 'cubic', 'quartic', 'quintic',
-              'sextic', 'septimic', 'octavic', 'nonic', 'decimic',
-              'undecimic', 'duodecimic']
+        ic = [
+            'constant form',
+            'monic',
+            'quadratic',
+            'cubic',
+            'quartic',
+            'quintic',
+            'sextic',
+            'septimic',
+            'octavic',
+            'nonic',
+            'decimic',
+            'undecimic',
+            'duodecimic',
+        ]
         s += ' '
         if self._d < 0:
             s += 'form of degree {}'.format(self._d)
@@ -740,12 +783,15 @@ class AlgebraicForm(FormsBase):
             variables = [R(_) for _ in self._variables[0:-1]] + [R(var)]
         except AttributeError:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-            R = PolynomialRing(self._ring.base_ring(), [str(self._ring.gen(0)), str(var)])
+
+            R = PolynomialRing(
+                self._ring.base_ring(), [str(self._ring.gen(0)), str(var)]
+            )
             polynomial = R(self._polynomial).homogenize(var)
             variables = R.gens()
         if polynomial.total_degree() < self._d:
             k = self._d - polynomial.total_degree()
-            polynomial = polynomial * R(var)**k
+            polynomial = polynomial * R(var) ** k
         return self.__class__(self._n, self._d, polynomial, variables)
 
     def _extract_coefficients(self, monomials):
@@ -850,7 +896,9 @@ class AlgebraicForm(FormsBase):
 
         for c, i in coeff_tuple_iter():
             coeffs[i] = c + coeffs.pop(i, coeff_ring.zero())
-        result = tuple(coeffs.pop(mono_to_tuple(m), coeff_ring.zero()) for m in monomials)
+        result = tuple(
+            coeffs.pop(mono_to_tuple(m), coeff_ring.zero()) for m in monomials
+        )
         if coeffs:
             raise ValueError('less monomials were passed than the form actually has')
         return result
@@ -910,15 +958,18 @@ class AlgebraicForm(FormsBase):
             transform = g
         else:
             from sage.modules.free_module_element import vector
+
             v = vector(self._ring, self._variables)
-            g_v = vector(self._ring, g*v)
+            g_v = vector(self._ring, g * v)
             transform = {v[i]: g_v[i] for i in range(self._n)}
         # The covariant of the transformed polynomial
-        return self.__class__(self._n, self._d,
-                              self.form().subs(transform), self.variables())
+        return self.__class__(
+            self._n, self._d, self.form().subs(transform), self.variables()
+        )
 
 
 ######################################################################
+
 
 class QuadraticForm(AlgebraicForm):
     """
@@ -994,8 +1045,10 @@ class QuadraticForm(AlgebraicForm):
             sage: QuadraticForm.from_invariants(1, x, y)
             Binary quadratic with coefficients (1, -1/4, 0)
         """
-        coeffs = reconstruction.binary_quadratic_coefficients_from_invariants(discriminant, *args, **kwargs)
-        polynomial = sum([coeffs[i]*x**(2-i)*z**i for i in range(3)])
+        coeffs = reconstruction.binary_quadratic_coefficients_from_invariants(
+            discriminant, *args, **kwargs
+        )
+        polynomial = sum([coeffs[i] * x ** (2 - i) * z**i for i in range(3)])
         return cls(2, 2, polynomial, *args)
 
     @cached_method
@@ -1031,8 +1084,13 @@ class QuadraticForm(AlgebraicForm):
             return a * b
 
         squares = tuple(prod(x, x) for x in var)
-        mixed = tuple([prod(var[i], var[j]) for i in range(self._n)
-                       for j in range(i + 1, self._n)])
+        mixed = tuple(
+            [
+                prod(var[i], var[j])
+                for i in range(self._n)
+                for j in range(i + 1, self._n)
+            ]
+        )
         return squares + mixed
 
     @cached_method
@@ -1087,8 +1145,8 @@ class QuadraticForm(AlgebraicForm):
             (a, b, c, 1/2*d, 1/2*e, 1/2*f)
         """
         coeff = self.coeffs()
-        squares = coeff[0:self._n]
-        mixed = tuple( c/2 for c in coeff[self._n:] )
+        squares = coeff[0 : self._n]
+        mixed = tuple(c / 2 for c in coeff[self._n :])
         return squares + mixed
 
     @cached_method
@@ -1122,7 +1180,7 @@ class QuadraticForm(AlgebraicForm):
             A[i, i] = coeff[i]
         ij = self._n
         for i in range(self._n):
-            for j in range(i+1, self._n):
+            for j in range(i + 1, self._n):
                 A[i, j] = coeff[ij]
                 A[j, i] = coeff[ij]
                 ij += 1
@@ -1154,10 +1212,11 @@ class QuadraticForm(AlgebraicForm):
             4*a*b*c - c*d^2 - b*e^2 + d*e*f - a*f^2
         """
         from sage.misc.functional import is_odd
-        A = 2*self._matrix_()
+
+        A = 2 * self._matrix_()
         if is_odd(self._n):
             return A.det() / 2
-        return (-1)**(self._n//2) * A.det()
+        return (-1) ** (self._n // 2) * A.det()
 
     @cached_method
     def invariants(self, type='discriminant'):
@@ -1185,8 +1244,9 @@ class QuadraticForm(AlgebraicForm):
         """
         if type == 'discriminant':
             return (self.discriminant(),)
-        raise ValueError('unknown type of invariants {} for a binary'
-                         ' quadratic'.format(type))
+        raise ValueError(
+            'unknown type of invariants {} for a binary quadratic'.format(type)
+        )
 
     @cached_method
     def dual(self):
@@ -1251,7 +1311,7 @@ class QuadraticForm(AlgebraicForm):
         if self._homogeneous:
             var = self._variables
         else:
-            var = self._variables[0:-1] + (1, )
+            var = self._variables[0:-1] + (1,)
         n = self._n
         p = sum(Aadj[i, j] * var[i] * var[j] for i in range(n) for j in range(n))
         return invariant_theory.quadratic_form(p, self.variables())
@@ -1286,12 +1346,14 @@ class QuadraticForm(AlgebraicForm):
             X^2 + 2*X*Y + Y^2 + 3*X*Z + Z^2
         """
         R = self._ring
-        B = 2*self._matrix_()
+        B = 2 * self._matrix_()
         import sage.quadratic_forms.quadratic_form
+
         return sage.quadratic_forms.quadratic_form.QuadraticForm(R, B)
 
 
 ######################################################################
+
 
 class BinaryQuartic(AlgebraicForm):
     """
@@ -1351,7 +1413,7 @@ class BinaryQuartic(AlgebraicForm):
         x0 = self._x
         x1 = self._y
         if self._homogeneous:
-            return (x1**4, x1**3*x0, x1**2*x0**2, x1*x0**3, x0**4)
+            return (x1**4, x1**3 * x0, x1**2 * x0**2, x1 * x0**3, x0**4)
         return (self._ring.one(), x0, x0**2, x0**3, x0**4)
 
     @cached_method
@@ -1412,7 +1474,7 @@ class BinaryQuartic(AlgebraicForm):
             (a0, a1, a2, a3, a4)
         """
         coeff = self.coeffs()
-        return (coeff[0], coeff[1]/4, coeff[2]/6, coeff[3]/4, coeff[4])
+        return (coeff[0], coeff[1] / 4, coeff[2] / 6, coeff[3] / 4, coeff[4])
 
     @cached_method
     def EisensteinD(self):
@@ -1439,7 +1501,7 @@ class BinaryQuartic(AlgebraicForm):
         """
         a = self.scaled_coeffs()
         assert len(a) == 5
-        return a[0]*a[4]+3*a[2]**2-4*a[1]*a[3]
+        return a[0] * a[4] + 3 * a[2] ** 2 - 4 * a[1] * a[3]
 
     @cached_method
     def EisensteinE(self):
@@ -1466,7 +1528,13 @@ class BinaryQuartic(AlgebraicForm):
         """
         a = self.scaled_coeffs()
         assert len(a) == 5
-        return a[0]*a[3]**2 + a[1]**2*a[4] - a[0]*a[2]*a[4] - 2*a[1]*a[2]*a[3] + a[2]**3
+        return (
+            a[0] * a[3] ** 2
+            + a[1] ** 2 * a[4]
+            - a[0] * a[2] * a[4]
+            - 2 * a[1] * a[2] * a[3]
+            + a[2] ** 3
+        )
 
     @cached_method
     def g_covariant(self):
@@ -1511,11 +1579,13 @@ class BinaryQuartic(AlgebraicForm):
             xpow = [x0**4, x0**3 * x1, x0**2 * x1**2, x0 * x1**3, x1**4]
         else:
             xpow = [x0**4, x0**3, x0**2, x0, self._ring.one()]
-        return (a1**2 - a0*a2)*xpow[0] + \
-            (2*a1*a2 - 2*a0*a3)*xpow[1] + \
-            (3*a2**2 - 2*a1*a3 - a0*a4)*xpow[2] + \
-            (2*a2*a3 - 2*a1*a4)*xpow[3] + \
-            (a3**2 - a2*a4)*xpow[4]
+        return (
+            (a1**2 - a0 * a2) * xpow[0]
+            + (2 * a1 * a2 - 2 * a0 * a3) * xpow[1]
+            + (3 * a2**2 - 2 * a1 * a3 - a0 * a4) * xpow[2]
+            + (2 * a2 * a3 - 2 * a1 * a4) * xpow[3]
+            + (a3**2 - a2 * a4) * xpow[4]
+        )
 
     @cached_method
     def h_covariant(self):
@@ -1564,20 +1634,32 @@ class BinaryQuartic(AlgebraicForm):
         x0 = self._x
         x1 = self._y
         if self._homogeneous:
-            xpow = [x0**6, x0**5 * x1, x0**4 * x1**2, x0**3 * x1**3,
-                    x0**2 * x1**4, x0 * x1**5, x1**6]
+            xpow = [
+                x0**6,
+                x0**5 * x1,
+                x0**4 * x1**2,
+                x0**3 * x1**3,
+                x0**2 * x1**4,
+                x0 * x1**5,
+                x1**6,
+            ]
         else:
             xpow = [x0**6, x0**5, x0**4, x0**3, x0**2, x0, x0.parent().one()]
-        return (-2*a3**3 + 3*a2*a3*a4 - a1*a4**2) * xpow[0] + \
-            (-6*a2*a3**2 + 9*a2**2*a4 - 2*a1*a3*a4 - a0*a4**2) * xpow[1] + \
-            5 * (-2*a1*a3**2 + 3*a1*a2*a4 - a0*a3*a4) * xpow[2] + \
-            10 * (-a0*a3**2 + a1**2*a4) * xpow[3] + \
-            5 * (2*a1**2*a3 - 3*a0*a2*a3 + a0*a1*a4) * xpow[4] + \
-            (6*a1**2*a2 - 9*a0*a2**2 + 2*a0*a1*a3 + a0**2*a4) * xpow[5] + \
-            (2*a1**3 - 3*a0*a1*a2 + a0**2*a3) * xpow[6]
+        return (
+            (-2 * a3**3 + 3 * a2 * a3 * a4 - a1 * a4**2) * xpow[0]
+            + (-6 * a2 * a3**2 + 9 * a2**2 * a4 - 2 * a1 * a3 * a4 - a0 * a4**2)
+            * xpow[1]
+            + 5 * (-2 * a1 * a3**2 + 3 * a1 * a2 * a4 - a0 * a3 * a4) * xpow[2]
+            + 10 * (-a0 * a3**2 + a1**2 * a4) * xpow[3]
+            + 5 * (2 * a1**2 * a3 - 3 * a0 * a2 * a3 + a0 * a1 * a4) * xpow[4]
+            + (6 * a1**2 * a2 - 9 * a0 * a2**2 + 2 * a0 * a1 * a3 + a0**2 * a4)
+            * xpow[5]
+            + (2 * a1**3 - 3 * a0 * a1 * a2 + a0**2 * a3) * xpow[6]
+        )
 
 
 ######################################################################
+
 
 class BinaryQuintic(AlgebraicForm):
     """
@@ -1664,8 +1746,10 @@ class BinaryQuintic(AlgebraicForm):
             sage: BinaryQuintic.from_invariants([3,6,12], x, y)
             Binary quintic with coefficients (0, 1, 0, 0, 1, 0)
         """
-        coeffs = reconstruction.binary_quintic_coefficients_from_invariants(invariants, *args, **kwargs)
-        polynomial = sum([coeffs[i]*x**i*z**(5-i) for i in range(6)])
+        coeffs = reconstruction.binary_quintic_coefficients_from_invariants(
+            invariants, *args, **kwargs
+        )
+        polynomial = sum([coeffs[i] * x**i * z ** (5 - i) for i in range(6)])
         return cls(2, 5, polynomial, *args)
 
     @cached_method
@@ -1691,7 +1775,7 @@ class BinaryQuintic(AlgebraicForm):
         x0 = self._x
         x1 = self._y
         if self._homogeneous:
-            return (x1**5, x1**4*x0, x1**3*x0**2, x1**2*x0**3, x1*x0**4, x0**5)
+            return (x1**5, x1**4 * x0, x1**3 * x0**2, x1**2 * x0**3, x1 * x0**4, x0**5)
         return (self._ring.one(), x0, x0**2, x0**3, x0**4, x0**5)
 
     @cached_method
@@ -1752,8 +1836,14 @@ class BinaryQuintic(AlgebraicForm):
             (a0, a1, a2, a3, a4, a5)
         """
         coeff = self.coeffs()
-        return (coeff[0], coeff[1] / 5, coeff[2] / 10, coeff[3] / 10,
-                coeff[4] / 5, coeff[5])
+        return (
+            coeff[0],
+            coeff[1] / 5,
+            coeff[2] / 10,
+            coeff[3] / 10,
+            coeff[4] / 5,
+            coeff[5],
+        )
 
     @cached_method
     def H_covariant(self, as_form=False):
@@ -2277,8 +2367,9 @@ class BinaryQuintic(AlgebraicForm):
             return self.clebsch_invariants(as_tuple=True)
         if type == 'arithmetic':
             return self.arithmetic_invariants(as_tuple=True)
-        raise ValueError('unknown type of invariants {} for a binary'
-                         ' quintic'.format(type))
+        raise ValueError(
+            'unknown type of invariants {} for a binary quintic'.format(type)
+        )
 
     @cached_method
     def clebsch_invariants(self, as_tuple=False):
@@ -2307,8 +2398,9 @@ class BinaryQuintic(AlgebraicForm):
              -148978972828696847376/30517578125)
         """
         if self._ring.characteristic() in [2, 3, 5]:
-            raise NotImplementedError('no invariants implemented for fields '
-                                      'of characteristic 2, 3 or 5')
+            raise NotImplementedError(
+                'no invariants implemented for fields of characteristic 2, 3 or 5'
+            )
         # todo: add support
         else:
             invariants = {}
@@ -2317,8 +2409,7 @@ class BinaryQuintic(AlgebraicForm):
             invariants['C'] = self.C_invariant()
             invariants['R'] = self.R_invariant()
         if as_tuple:
-            return (invariants['A'], invariants['B'], invariants['C'],
-                    invariants['R'])
+            return (invariants['A'], invariants['B'], invariants['C'], invariants['R'])
         return invariants
 
     @cached_method
@@ -2370,12 +2461,14 @@ class BinaryQuintic(AlgebraicForm):
         R = self._ring
         clebsch = self.clebsch_invariants()
         invariants = {}
-        invariants['I4'] = R(2)**-1*5**4*clebsch['A']
-        invariants['I8'] = 5**5 * (R(2)**-1*47*clebsch['A']**2
-                                    - 2**2*clebsch['B'])
-        invariants['I12'] = 5**10 * (R(2)**-1*3*clebsch['A']**3
-                                        - 2**5*R(3)**-1*clebsch['C'])
-        invariants['I18'] = 2**8*R(3)**-1*5**15 * clebsch['R']
+        invariants['I4'] = R(2) ** -1 * 5**4 * clebsch['A']
+        invariants['I8'] = 5**5 * (
+            R(2) ** -1 * 47 * clebsch['A'] ** 2 - 2**2 * clebsch['B']
+        )
+        invariants['I12'] = 5**10 * (
+            R(2) ** -1 * 3 * clebsch['A'] ** 3 - 2**5 * R(3) ** -1 * clebsch['C']
+        )
+        invariants['I18'] = 2**8 * R(3) ** -1 * 5**15 * clebsch['R']
         return invariants
 
     @cached_method
@@ -2415,10 +2508,12 @@ class BinaryQuintic(AlgebraicForm):
         """
         clebsch = self.clebsch_invariants(as_tuple=True)
         if reduce_gcd:
-            return invariant_theory.binary_form_from_invariants(5, clebsch,
-                                variables=self.variables(), scaling='coprime')
-        return invariant_theory.binary_form_from_invariants(5, clebsch,
-                            variables=self.variables(), scaling='normalized')
+            return invariant_theory.binary_form_from_invariants(
+                5, clebsch, variables=self.variables(), scaling='coprime'
+            )
+        return invariant_theory.binary_form_from_invariants(
+            5, clebsch, variables=self.variables(), scaling='normalized'
+        )
 
 
 ######################################################################
@@ -2452,12 +2547,13 @@ def _covariant_conic(A_scaled_coeffs, B_scaled_coeffs, monomials):
     a0, b0, c0, h0, g0, f0 = A_scaled_coeffs
     a1, b1, c1, h1, g1, f1 = B_scaled_coeffs
     return (
-        (b0*c1+c0*b1-2*f0*f1) * monomials[0] +
-        (a0*c1+c0*a1-2*g0*g1) * monomials[1] +
-        (a0*b1+b0*a1-2*h0*h1) * monomials[2] +
-        2*(f0*g1+g0*f1 - c0*h1-h0*c1) * monomials[3] +
-        2*(h0*f1+f0*h1 - b0*g1-g0*b1) * monomials[4] +
-        2*(g0*h1+h0*g1 - a0*f1-f0*a1) * monomials[5]  )
+        (b0 * c1 + c0 * b1 - 2 * f0 * f1) * monomials[0]
+        + (a0 * c1 + c0 * a1 - 2 * g0 * g1) * monomials[1]
+        + (a0 * b1 + b0 * a1 - 2 * h0 * h1) * monomials[2]
+        + 2 * (f0 * g1 + g0 * f1 - c0 * h1 - h0 * c1) * monomials[3]
+        + 2 * (h0 * f1 + f0 * h1 - b0 * g1 - g0 * b1) * monomials[4]
+        + 2 * (g0 * h1 + h0 * g1 - a0 * f1 - f0 * a1) * monomials[5]
+    )
 
 
 ######################################################################
@@ -2520,8 +2616,8 @@ class TernaryQuadratic(QuadraticForm):
         R = self._ring
         x, y, z = self._x, self._y, self._z
         if self._homogeneous:
-            return (x**2, y**2, z**2, x*y, x*z, y*z)
-        return (x**2, y**2, R.one(), x*y, x, y)
+            return (x**2, y**2, z**2, x * y, x * z, y * z)
+        return (x**2, y**2, R.one(), x * y, x, y)
 
     @cached_method
     def coeffs(self):
@@ -2578,7 +2674,7 @@ class TernaryQuadratic(QuadraticForm):
         """
         F = self._ring.base_ring()
         a200, a020, a002, a110, a101, a011 = self.coeffs()
-        return (a200, a020, a002, a110/F(2), a101/F(2), a011/F(2))
+        return (a200, a020, a002, a110 / F(2), a101 / F(2), a011 / F(2))
 
     def covariant_conic(self, other):
         """
@@ -2626,11 +2722,13 @@ class TernaryQuadratic(QuadraticForm):
             [ f_*g + f*g_ - c_*h - c*h_       a_*c + a*c_ - 2*g*g_ -a_*f - a*f_ + g_*h + g*h_]
             [-b_*g - b*g_ + f_*h + f*h_ -a_*f - a*f_ + g_*h + g*h_       a_*b + a*b_ - 2*h*h_]
         """
-        return _covariant_conic(self.scaled_coeffs(), other.scaled_coeffs(),
-                                self.monomials())
+        return _covariant_conic(
+            self.scaled_coeffs(), other.scaled_coeffs(), self.monomials()
+        )
 
 
 ######################################################################
+
 
 class TernaryCubic(AlgebraicForm):
     """
@@ -2694,10 +2792,19 @@ class TernaryCubic(AlgebraicForm):
         R = self._ring
         x, y, z = self._x, self._y, self._z
         if self._homogeneous:
-            return (x**3, y**3, z**3, x**2*y, x**2*z, x*y**2,
-                    y**2*z, x*z**2, y*z**2, x*y*z)
-        return (x**3, y**3, R.one(), x**2*y, x**2, x*y**2,
-                y**2, x, y, x*y)
+            return (
+                x**3,
+                y**3,
+                z**3,
+                x**2 * y,
+                x**2 * z,
+                x * y**2,
+                y**2 * z,
+                x * z**2,
+                y * z**2,
+                x * y * z,
+            )
+        return (x**3, y**3, R.one(), x**2 * y, x**2, x * y**2, y**2, x, y, x * y)
 
     @cached_method
     def coeffs(self):
@@ -2765,10 +2872,18 @@ class TernaryCubic(AlgebraicForm):
         """
         a = self.coeffs()
         F = self._ring.base_ring()
-        return (a[0], a[1], a[2],
-                1/F(3)*a[3], 1/F(3)*a[4], 1/F(3)*a[5],
-                1/F(3)*a[6], 1/F(3)*a[7], 1/F(3)*a[8],
-                1/F(6)*a[9])
+        return (
+            a[0],
+            a[1],
+            a[2],
+            1 / F(3) * a[3],
+            1 / F(3) * a[4],
+            1 / F(3) * a[5],
+            1 / F(3) * a[6],
+            1 / F(3) * a[7],
+            1 / F(3) * a[8],
+            1 / F(6) * a[9],
+        )
 
     def S_invariant(self):
         """
@@ -2782,13 +2897,24 @@ class TernaryCubic(AlgebraicForm):
             -1/1296
         """
         a, b, c, a2, a3, b1, b3, c1, c2, m = self.scaled_coeffs()
-        S = (a*b*c*m-(b*c*a2*a3+c*a*b1*b3+a*b*c1*c2)
-             - m*(a*b3*c2+b*c1*a3+c*a2*b1)
-             + (a*b1*c2**2+a*c1*b3**2+b*a2*c1**2+b*c2*a3**2+c*b3*a2**2+c*a3*b1**2)
-             - m**4+2*m**2*(b1*c1+c2*a2+a3*b3)
-             - 3*m*(a2*b3*c1+a3*b1*c2)
-             - (b1**2*c1**2+c2**2*a2**2+a3**2*b3**2)
-             + (c2*a2*a3*b3+a3*b3*b1*c1+b1*c1*c2*a2))
+        S = (
+            a * b * c * m
+            - (b * c * a2 * a3 + c * a * b1 * b3 + a * b * c1 * c2)
+            - m * (a * b3 * c2 + b * c1 * a3 + c * a2 * b1)
+            + (
+                a * b1 * c2**2
+                + a * c1 * b3**2
+                + b * a2 * c1**2
+                + b * c2 * a3**2
+                + c * b3 * a2**2
+                + c * a3 * b1**2
+            )
+            - m**4
+            + 2 * m**2 * (b1 * c1 + c2 * a2 + a3 * b3)
+            - 3 * m * (a2 * b3 * c1 + a3 * b1 * c2)
+            - (b1**2 * c1**2 + c2**2 * a2**2 + a3**2 * b3**2)
+            + (c2 * a2 * a3 * b3 + a3 * b3 * b1 * c1 + b1 * c1 * c2 * a2)
+        )
         return S
 
     def T_invariant(self):
@@ -2808,37 +2934,112 @@ class TernaryCubic(AlgebraicForm):
             -t^6 - t^3 + 1
         """
         a, b, c, a2, a3, b1, b3, c1, c2, m = self.scaled_coeffs()
-        T = (a**2*b**2*c**2-6*a*b*c*(a*b3*c2+b*c1*a3+c*a2*b1)
-             - 20*a*b*c*m**3+12*a*b*c*m*(b1*c1+c2*a2+a3*b3)
-             + 6*a*b*c*(a2*b3*c1+a3*b1*c2) +
-             4*(a**2*b*c2**3+a**2*c*b3**3+b**2*c*a3**3 +
-                b**2*a*c1**3+c**2*a*b1**3+c**2*b*a2**3)
-             + 36*m**2*(b*c*a2*a3+c*a*b1*b3+a*b*c1*c2)
-             - 24*m*(b*c*b1*a3**2+b*c*c1*a2**2+c*a*c2*b1**2+c*a*a2*b3**2+a*b*a3*c2**2 +
-                     a*b*b3*c1**2)
-             - 3*(a**2*b3**2*c2**2+b**2*c1**2*a3**2+c**2*a2**2*b1**2) +
-             18*(b*c*b1*c1*a2*a3+c*a*c2*a2*b3*b1+a*b*a3*b3*c1*c2)
-             - 12*(b*c*c2*a3*a2**2+b*c*b3*a2*a3**2+c*a*c1*b3*b1**2 +
-                   c*a*a3*b1*b3**2+a*b*a2*c1*c2**2+a*b*b1*c2*c1**2)
-             - 12*m**3*(a*b3*c2+b*c1*a3+c*a2*b1)
-             + 12*m**2*(a*b1*c2**2+a*c1*b3**2+b*a2*c1**2 +
-                        b*c2*a3**2+c*b3*a2**2+c*a3*b1**2)
-             - 60*m*(a*b1*b3*c1*c2+b*c1*c2*a2*a3+c*a2*a3*b1*b3)
-             + 12*m*(a*a2*b3*c2**2+a*a3*c2*b3**2+b*b3*c1*a3**2 +
-                     b*b1*a3*c1**2+c*c1*a2*b1**2+c*c2*b1*a2**2)
-             + 6*(a*b3*c2+b*c1*a3+c*a2*b1)*(a2*b3*c1+a3*b1*c2)
-             + 24*(a*b1*b3**2*c1**2+a*c1*c2**2*b1**2+b*c2*c1**2*a2**2
-                   + b*a2*a3**2*c2**2+c*a3*a2**2*b3**2+c*b3*b1**2*a3**2)
-             - 12*(a*a2*b1*c2**3+a*a3*c1*b3**3+b*b3*c2*a3**3+b*b1*a2*c1**3
-                   + c*c1*a3*b1**3+c*c2*b3*a2**3)
-             - 8*m**6+24*m**4*(b1*c1+c2*a2+a3*b3)-36*m**3*(a2*b3*c1+a3*b1*c2)
-             - 12*m**2*(b1*c1*c2*a2+c2*a2*a3*b3+a3*b3*b1*c1)
-             - 24*m**2*(b1**2*c1**2+c2**2*a2**2+a3**2*b3**2)
-             + 36*m*(a2*b3*c1+a3*b1*c2)*(b1*c1+c2*a2+a3*b3)
-             + 8*(b1**3*c1**3+c2**3*a2**3+a3**3*b3**3)
-             - 27*(a2**2*b3**2*c1**2+a3**2*b1**2*c2**2)-6*b1*c1*c2*a2*a3*b3
-             - 12*(b1**2*c1**2*c2*a2+b1**2*c1**2*a3*b3+c2**2*a2**2*a3*b3 +
-                   c2**2*a2**2*b1*c1+a3**2*b3**2*b1*c1+a3**2*b3**2*c2*a2))
+        T = (
+            a**2 * b**2 * c**2
+            - 6 * a * b * c * (a * b3 * c2 + b * c1 * a3 + c * a2 * b1)
+            - 20 * a * b * c * m**3
+            + 12 * a * b * c * m * (b1 * c1 + c2 * a2 + a3 * b3)
+            + 6 * a * b * c * (a2 * b3 * c1 + a3 * b1 * c2)
+            + 4
+            * (
+                a**2 * b * c2**3
+                + a**2 * c * b3**3
+                + b**2 * c * a3**3
+                + b**2 * a * c1**3
+                + c**2 * a * b1**3
+                + c**2 * b * a2**3
+            )
+            + 36 * m**2 * (b * c * a2 * a3 + c * a * b1 * b3 + a * b * c1 * c2)
+            - 24
+            * m
+            * (
+                b * c * b1 * a3**2
+                + b * c * c1 * a2**2
+                + c * a * c2 * b1**2
+                + c * a * a2 * b3**2
+                + a * b * a3 * c2**2
+                + a * b * b3 * c1**2
+            )
+            - 3 * (a**2 * b3**2 * c2**2 + b**2 * c1**2 * a3**2 + c**2 * a2**2 * b1**2)
+            + 18
+            * (
+                b * c * b1 * c1 * a2 * a3
+                + c * a * c2 * a2 * b3 * b1
+                + a * b * a3 * b3 * c1 * c2
+            )
+            - 12
+            * (
+                b * c * c2 * a3 * a2**2
+                + b * c * b3 * a2 * a3**2
+                + c * a * c1 * b3 * b1**2
+                + c * a * a3 * b1 * b3**2
+                + a * b * a2 * c1 * c2**2
+                + a * b * b1 * c2 * c1**2
+            )
+            - 12 * m**3 * (a * b3 * c2 + b * c1 * a3 + c * a2 * b1)
+            + 12
+            * m**2
+            * (
+                a * b1 * c2**2
+                + a * c1 * b3**2
+                + b * a2 * c1**2
+                + b * c2 * a3**2
+                + c * b3 * a2**2
+                + c * a3 * b1**2
+            )
+            - 60
+            * m
+            * (a * b1 * b3 * c1 * c2 + b * c1 * c2 * a2 * a3 + c * a2 * a3 * b1 * b3)
+            + 12
+            * m
+            * (
+                a * a2 * b3 * c2**2
+                + a * a3 * c2 * b3**2
+                + b * b3 * c1 * a3**2
+                + b * b1 * a3 * c1**2
+                + c * c1 * a2 * b1**2
+                + c * c2 * b1 * a2**2
+            )
+            + 6
+            * (a * b3 * c2 + b * c1 * a3 + c * a2 * b1)
+            * (a2 * b3 * c1 + a3 * b1 * c2)
+            + 24
+            * (
+                a * b1 * b3**2 * c1**2
+                + a * c1 * c2**2 * b1**2
+                + b * c2 * c1**2 * a2**2
+                + b * a2 * a3**2 * c2**2
+                + c * a3 * a2**2 * b3**2
+                + c * b3 * b1**2 * a3**2
+            )
+            - 12
+            * (
+                a * a2 * b1 * c2**3
+                + a * a3 * c1 * b3**3
+                + b * b3 * c2 * a3**3
+                + b * b1 * a2 * c1**3
+                + c * c1 * a3 * b1**3
+                + c * c2 * b3 * a2**3
+            )
+            - 8 * m**6
+            + 24 * m**4 * (b1 * c1 + c2 * a2 + a3 * b3)
+            - 36 * m**3 * (a2 * b3 * c1 + a3 * b1 * c2)
+            - 12 * m**2 * (b1 * c1 * c2 * a2 + c2 * a2 * a3 * b3 + a3 * b3 * b1 * c1)
+            - 24 * m**2 * (b1**2 * c1**2 + c2**2 * a2**2 + a3**2 * b3**2)
+            + 36 * m * (a2 * b3 * c1 + a3 * b1 * c2) * (b1 * c1 + c2 * a2 + a3 * b3)
+            + 8 * (b1**3 * c1**3 + c2**3 * a2**3 + a3**3 * b3**3)
+            - 27 * (a2**2 * b3**2 * c1**2 + a3**2 * b1**2 * c2**2)
+            - 6 * b1 * c1 * c2 * a2 * a3 * b3
+            - 12
+            * (
+                b1**2 * c1**2 * c2 * a2
+                + b1**2 * c1**2 * a3 * b3
+                + c2**2 * a2**2 * a3 * b3
+                + c2**2 * a2**2 * b1 * c1
+                + a3**2 * b3**2 * b1 * c1
+                + a3**2 * b3**2 * c2 * a2
+            )
+        )
         return T
 
     @cached_method
@@ -2877,12 +3078,12 @@ class TernaryCubic(AlgebraicForm):
         else:
             x, y, z = (self._x, self._y, 1)
         F = self._ring.base_ring()
-        A00 = 3*x*a30 + y*a21 + z*a20
-        A11 = x*a12 + 3*y*a03 + z*a02
-        A22 = x*a10 + y*a01 + 3*z*a00
-        A01 = x*a21 + y*a12 + 1/F(2)*z*a11
-        A02 = x*a20 + 1/F(2)*y*a11 + z*a10
-        A12 = 1/F(2)*x*a11 + y*a02 + z*a01
+        A00 = 3 * x * a30 + y * a21 + z * a20
+        A11 = x * a12 + 3 * y * a03 + z * a02
+        A22 = x * a10 + y * a01 + 3 * z * a00
+        A01 = x * a21 + y * a12 + 1 / F(2) * z * a11
+        A02 = x * a20 + 1 / F(2) * y * a11 + z * a10
+        A12 = 1 / F(2) * x * a11 + y * a02 + z * a01
         return matrix(self._ring, [[A00, A01, A02], [A01, A11, A12], [A02, A12, A22]])
 
     @cached_method
@@ -2912,17 +3113,15 @@ class TernaryCubic(AlgebraicForm):
             x, y, z = self.variables()
         else:
             x, y, z = self._x, self._y, 1
-        Uxx = 6*x*a30 + 2*y*a21 + 2*z*a20
-        Uxy = 2*x*a21 + 2*y*a12 + z*a11
-        Uxz = 2*x*a20 + y*a11 + 2*z*a10
-        Uyy = 2*x*a12 + 6*y*a03 + 2*z*a02
-        Uyz = x*a11 + 2*y*a02 + 2*z*a01
-        Uzz = 2*x*a10 + 2*y*a01 + 6*z*a00
-        H = matrix(self._ring, [[Uxx, Uxy, Uxz],
-                                [Uxy, Uyy, Uyz],
-                                [Uxz, Uyz, Uzz]])
+        Uxx = 6 * x * a30 + 2 * y * a21 + 2 * z * a20
+        Uxy = 2 * x * a21 + 2 * y * a12 + z * a11
+        Uxz = 2 * x * a20 + y * a11 + 2 * z * a10
+        Uyy = 2 * x * a12 + 6 * y * a03 + 2 * z * a02
+        Uyz = x * a11 + 2 * y * a02 + 2 * z * a01
+        Uzz = 2 * x * a10 + 2 * y * a01 + 6 * z * a00
+        H = matrix(self._ring, [[Uxx, Uxy, Uxz], [Uxy, Uyy, Uyz], [Uxz, Uyz, Uzz]])
         F = self._ring.base_ring()
-        return 1/F(216) * H.det()
+        return 1 / F(216) * H.det()
 
     def Theta_covariant(self):
         r"""
@@ -2948,14 +3147,30 @@ class TernaryCubic(AlgebraicForm):
             6952
         """
         U_conic = self.polar_conic().adjugate()
-        U_coeffs = (U_conic[0, 0], U_conic[1, 1], U_conic[2, 2],
-                    U_conic[0, 1], U_conic[0, 2], U_conic[1, 2])
-        H_conic = TernaryCubic(3, 3, self.Hessian(), self.variables()).polar_conic().adjugate()
-        H_coeffs = (H_conic[0, 0], H_conic[1, 1], H_conic[2, 2],
-                    H_conic[0, 1], H_conic[0, 2], H_conic[1, 2])
+        U_coeffs = (
+            U_conic[0, 0],
+            U_conic[1, 1],
+            U_conic[2, 2],
+            U_conic[0, 1],
+            U_conic[0, 2],
+            U_conic[1, 2],
+        )
+        H_conic = (
+            TernaryCubic(3, 3, self.Hessian(), self.variables())
+            .polar_conic()
+            .adjugate()
+        )
+        H_coeffs = (
+            H_conic[0, 0],
+            H_conic[1, 1],
+            H_conic[2, 2],
+            H_conic[0, 1],
+            H_conic[0, 2],
+            H_conic[1, 2],
+        )
         quadratic = TernaryQuadratic(3, 2, self._ring.zero(), self.variables())
         F = self._ring.base_ring()
-        return 1/F(9) * _covariant_conic(U_coeffs, H_coeffs, quadratic.monomials())
+        return 1 / F(9) * _covariant_conic(U_coeffs, H_coeffs, quadratic.monomials())
 
     def J_covariant(self):
         """
@@ -2974,10 +3189,13 @@ class TernaryCubic(AlgebraicForm):
             x^6*y^3 - x^3*y^6 - x^6 + y^6 + x^3 - y^3
         """
         F = self._ring.base_ring()
-        return 1 / F(9) * self._jacobian_determinant(
-            [self.form(), 3],
-            [self.Hessian(), 3],
-            [self.Theta_covariant(), 6])
+        return (
+            1
+            / F(9)
+            * self._jacobian_determinant(
+                [self.form(), 3], [self.Hessian(), 3], [self.Theta_covariant(), 6]
+            )
+        )
 
     def syzygy(self, U, S, T, H, Theta, J):
         r"""
@@ -3011,14 +3229,29 @@ class TernaryCubic(AlgebraicForm):
             sage: cubic.syzygy(U, S, T, H, Theta, J)
             0
         """
-        return ( -J**2 + 4*Theta**3 + T*U**2*Theta**2 +
-                 Theta*(-4*S**3*U**4 + 2*S*T*U**3*H - 72*S**2*U**2*H**2
-                        - 18*T*U*H**3 + 108*S*H**4)
-                 - 16*S**4*U**5*H - 11*S**2*T*U**4*H**2 - 4*T**2*U**3*H**3
-                 + 54*S*T*U**2*H**4 - 432*S**2*U*H**5 - 27*T*H**6 )
+        return (
+            -(J**2)
+            + 4 * Theta**3
+            + T * U**2 * Theta**2
+            + Theta
+            * (
+                -4 * S**3 * U**4
+                + 2 * S * T * U**3 * H
+                - 72 * S**2 * U**2 * H**2
+                - 18 * T * U * H**3
+                + 108 * S * H**4
+            )
+            - 16 * S**4 * U**5 * H
+            - 11 * S**2 * T * U**4 * H**2
+            - 4 * T**2 * U**3 * H**3
+            + 54 * S * T * U**2 * H**4
+            - 432 * S**2 * U * H**5
+            - 27 * T * H**6
+        )
 
 
 ######################################################################
+
 
 class SeveralAlgebraicForms(FormsBase):
     """
@@ -3115,10 +3348,14 @@ class SeveralAlgebraicForms(FormsBase):
         if self.n_forms() == 1:
             return self.get_form(0)._repr_()
         if self.n_forms() == 2:
-            return 'Joint ' + self.get_form(0)._repr_().lower() + \
-                   ' and ' + self.get_form(1)._repr_().lower()
+            return (
+                'Joint '
+                + self.get_form(0)._repr_().lower()
+                + ' and '
+                + self.get_form(1)._repr_().lower()
+            )
         s = 'Joint '
-        for i in range(self.n_forms()-1):
+        for i in range(self.n_forms() - 1):
             s += self.get_form(i)._repr_().lower() + ', '
         s += 'and ' + self.get_form(-1)._repr_().lower()
         return s
@@ -3230,11 +3467,12 @@ class SeveralAlgebraicForms(FormsBase):
         """
         assert self._homogeneous
         from sage.matrix.constructor import vector, random_matrix
+
         if g is None:
             F = self._ring.base_ring()
             g = random_matrix(F, self._n, algorithm='unimodular')
         v = vector(self.variables())
-        g_v = g*v
+        g_v = g * v
         transform = {v[i]: g_v[i] for i in range(self._n)}
         # The covariant of the transformed form
         transformed = [f.transformed(transform) for f in self._forms]
@@ -3251,8 +3489,8 @@ class SeveralAlgebraicForms(FormsBase):
 
 ######################################################################
 
-class TwoAlgebraicForms(SeveralAlgebraicForms):
 
+class TwoAlgebraicForms(SeveralAlgebraicForms):
     def first(self):
         """
         Return the first of the two forms.
@@ -3299,6 +3537,7 @@ class TwoAlgebraicForms(SeveralAlgebraicForms):
 
 
 ######################################################################
+
 
 class TwoTernaryQuadratics(TwoAlgebraicForms):
     """
@@ -3383,9 +3622,20 @@ class TwoTernaryQuadratics(TwoAlgebraicForms):
         """
         a00, a11, a22, a01, a02, a12 = scaled_coeffs_1
         b00, b11, b22, b01, b02, b12 = scaled_coeffs_2
-        return -a12**2*b00 + a11*a22*b00 + 2*a02*a12*b01 - 2*a01*a22*b01 - \
-            a02**2*b11 + a00*a22*b11 - 2*a11*a02*b02 + 2*a01*a12*b02 + \
-            2*a01*a02*b12 - 2*a00*a12*b12 - a01**2*b22 + a00*a11*b22
+        return (
+            -(a12**2) * b00
+            + a11 * a22 * b00
+            + 2 * a02 * a12 * b01
+            - 2 * a01 * a22 * b01
+            - a02**2 * b11
+            + a00 * a22 * b11
+            - 2 * a11 * a02 * b02
+            + 2 * a01 * a12 * b02
+            + 2 * a01 * a02 * b12
+            - 2 * a00 * a12 * b12
+            - a01**2 * b22
+            + a00 * a11 * b22
+        )
 
     def Theta_invariant(self):
         r"""
@@ -3401,7 +3651,9 @@ class TwoTernaryQuadratics(TwoAlgebraicForms):
             sage: q.Theta_invariant() == coeffs[2]
             True
         """
-        return self._Theta_helper(self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs())
+        return self._Theta_helper(
+            self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs()
+        )
 
     def Theta_prime_invariant(self):
         r"""
@@ -3417,7 +3669,9 @@ class TwoTernaryQuadratics(TwoAlgebraicForms):
             sage: q.Theta_prime_invariant() == coeffs[1]
             True
         """
-        return self._Theta_helper(self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs())
+        return self._Theta_helper(
+            self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs()
+        )
 
     def F_covariant(self):
         r"""
@@ -3455,7 +3709,8 @@ class TwoTernaryQuadratics(TwoAlgebraicForms):
         return self._jacobian_determinant(
             (self.first().polynomial(), 2),
             (self.second().polynomial(), 2),
-            (self.F_covariant(), 2))
+            (self.F_covariant(), 2),
+        )
 
     def syzygy(self, Delta, Theta, Theta_prime, Delta_prime, S, S_prime, F, J):
         """
@@ -3497,23 +3752,25 @@ class TwoTernaryQuadratics(TwoAlgebraicForms):
             1/64*x^2 + 1
         """
         R = self._ring.base_ring()
-        return (J**2 / R(64)
-                + F**3
-                - 2 * F**2 * Theta*S_prime
-                - 2 * F**2 * Theta_prime*S
-                + F * S**2 * (Delta_prime * Theta + Theta_prime**2)
-                + F * S_prime**2 * (Delta * Theta_prime + Theta**2)
-                + 3 * F * S * S_prime * (Theta*Theta_prime - Delta*Delta_prime)
-                + S**3 * (Delta_prime**2 * Delta - Theta * Theta_prime * Delta_prime)
-                + S_prime**3 * (Delta**2 * Delta_prime - Theta_prime * Theta * Delta)
-                + S**2 * S_prime * (
-                    Delta_prime * Delta * Theta_prime - Theta * Theta_prime**2)
-                + S * S_prime**2 * (
-                    Delta * Delta_prime * Theta - Theta_prime * Theta**2)
+        return (
+            J**2 / R(64)
+            + F**3
+            - 2 * F**2 * Theta * S_prime
+            - 2 * F**2 * Theta_prime * S
+            + F * S**2 * (Delta_prime * Theta + Theta_prime**2)
+            + F * S_prime**2 * (Delta * Theta_prime + Theta**2)
+            + 3 * F * S * S_prime * (Theta * Theta_prime - Delta * Delta_prime)
+            + S**3 * (Delta_prime**2 * Delta - Theta * Theta_prime * Delta_prime)
+            + S_prime**3 * (Delta**2 * Delta_prime - Theta_prime * Theta * Delta)
+            + S**2
+            * S_prime
+            * (Delta_prime * Delta * Theta_prime - Theta * Theta_prime**2)
+            + S * S_prime**2 * (Delta * Delta_prime * Theta - Theta_prime * Theta**2)
         )
 
 
 ######################################################################
+
 
 class TwoQuaternaryQuadratics(TwoAlgebraicForms):
     """
@@ -3603,19 +3860,64 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
         """
         a0, a1, a2, a3, b0, b1, b2, b3, b4, b5 = scaled_coeffs_1
         A0, A1, A2, A3, B0, B1, B2, B3, B4, B5 = scaled_coeffs_2
-        return a1*a2*a3*A0 - a3*b3**2*A0 - a2*b4**2*A0 + 2*b3*b4*b5*A0 - a1*b5**2*A0 \
-            + a0*a2*a3*A1 - a3*b1**2*A1 - a2*b2**2*A1 + 2*b1*b2*b5*A1 - a0*b5**2*A1 \
-            + a0*a1*a3*A2 - a3*b0**2*A2 - a1*b2**2*A2 + 2*b0*b2*b4*A2 - a0*b4**2*A2 \
-            + a0*a1*a2*A3 - a2*b0**2*A3 - a1*b1**2*A3 + 2*b0*b1*b3*A3 - a0*b3**2*A3 \
-            - 2*a2*a3*b0*B0 + 2*a3*b1*b3*B0 + 2*a2*b2*b4*B0 - 2*b2*b3*b5*B0 \
-            - 2*b1*b4*b5*B0 + 2*b0*b5**2*B0 - 2*a1*a3*b1*B1 + 2*a3*b0*b3*B1 \
-            - 2*b2*b3*b4*B1 + 2*b1*b4**2*B1 + 2*a1*b2*b5*B1 - 2*b0*b4*b5*B1 \
-            - 2*a1*a2*b2*B2 + 2*b2*b3**2*B2 + 2*a2*b0*b4*B2 - 2*b1*b3*b4*B2 \
-            + 2*a1*b1*b5*B2 - 2*b0*b3*b5*B2 + 2*a3*b0*b1*B3 - 2*a0*a3*b3*B3 \
-            + 2*b2**2*b3*B3 - 2*b1*b2*b4*B3 - 2*b0*b2*b5*B3 + 2*a0*b4*b5*B3 \
-            + 2*a2*b0*b2*B4 - 2*b1*b2*b3*B4 - 2*a0*a2*b4*B4 + 2*b1**2*b4*B4 \
-            - 2*b0*b1*b5*B4 + 2*a0*b3*b5*B4 + 2*a1*b1*b2*B5 - 2*b0*b2*b3*B5 \
-            - 2*b0*b1*b4*B5 + 2*a0*b3*b4*B5 - 2*a0*a1*b5*B5 + 2*b0**2*b5*B5
+        return (
+            a1 * a2 * a3 * A0
+            - a3 * b3**2 * A0
+            - a2 * b4**2 * A0
+            + 2 * b3 * b4 * b5 * A0
+            - a1 * b5**2 * A0
+            + a0 * a2 * a3 * A1
+            - a3 * b1**2 * A1
+            - a2 * b2**2 * A1
+            + 2 * b1 * b2 * b5 * A1
+            - a0 * b5**2 * A1
+            + a0 * a1 * a3 * A2
+            - a3 * b0**2 * A2
+            - a1 * b2**2 * A2
+            + 2 * b0 * b2 * b4 * A2
+            - a0 * b4**2 * A2
+            + a0 * a1 * a2 * A3
+            - a2 * b0**2 * A3
+            - a1 * b1**2 * A3
+            + 2 * b0 * b1 * b3 * A3
+            - a0 * b3**2 * A3
+            - 2 * a2 * a3 * b0 * B0
+            + 2 * a3 * b1 * b3 * B0
+            + 2 * a2 * b2 * b4 * B0
+            - 2 * b2 * b3 * b5 * B0
+            - 2 * b1 * b4 * b5 * B0
+            + 2 * b0 * b5**2 * B0
+            - 2 * a1 * a3 * b1 * B1
+            + 2 * a3 * b0 * b3 * B1
+            - 2 * b2 * b3 * b4 * B1
+            + 2 * b1 * b4**2 * B1
+            + 2 * a1 * b2 * b5 * B1
+            - 2 * b0 * b4 * b5 * B1
+            - 2 * a1 * a2 * b2 * B2
+            + 2 * b2 * b3**2 * B2
+            + 2 * a2 * b0 * b4 * B2
+            - 2 * b1 * b3 * b4 * B2
+            + 2 * a1 * b1 * b5 * B2
+            - 2 * b0 * b3 * b5 * B2
+            + 2 * a3 * b0 * b1 * B3
+            - 2 * a0 * a3 * b3 * B3
+            + 2 * b2**2 * b3 * B3
+            - 2 * b1 * b2 * b4 * B3
+            - 2 * b0 * b2 * b5 * B3
+            + 2 * a0 * b4 * b5 * B3
+            + 2 * a2 * b0 * b2 * B4
+            - 2 * b1 * b2 * b3 * B4
+            - 2 * a0 * a2 * b4 * B4
+            + 2 * b1**2 * b4 * B4
+            - 2 * b0 * b1 * b5 * B4
+            + 2 * a0 * b3 * b5 * B4
+            + 2 * a1 * b1 * b2 * B5
+            - 2 * b0 * b2 * b3 * B5
+            - 2 * b0 * b1 * b4 * B5
+            + 2 * a0 * b3 * b4 * B5
+            - 2 * a0 * a1 * b5 * B5
+            + 2 * b0**2 * b5 * B5
+        )
 
     def Theta_invariant(self):
         r"""
@@ -3633,7 +3935,9 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             sage: q.Theta_invariant() == coeffs[3]
             True
         """
-        return self._Theta_helper(self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs())
+        return self._Theta_helper(
+            self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs()
+        )
 
     def Theta_prime_invariant(self):
         r"""
@@ -3651,7 +3955,9 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             sage: q.Theta_prime_invariant() == coeffs[1]
             True
         """
-        return self._Theta_helper(self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs())
+        return self._Theta_helper(
+            self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs()
+        )
 
     def Phi_invariant(self):
         r"""
@@ -3671,24 +3977,89 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
         """
         a0, a1, a2, a3, b0, b1, b2, b3, b4, b5 = self.get_form(0).scaled_coeffs()
         A0, A1, A2, A3, B0, B1, B2, B3, B4, B5 = self.get_form(1).scaled_coeffs()
-        return a2*a3*A0*A1 - b5**2*A0*A1 + a1*a3*A0*A2 - b4**2*A0*A2 + a0*a3*A1*A2 \
-            - b2**2*A1*A2 + a1*a2*A0*A3 - b3**2*A0*A3 + a0*a2*A1*A3 - b1**2*A1*A3 \
-            + a0*a1*A2*A3 - b0**2*A2*A3 - 2*a3*b0*A2*B0 + 2*b2*b4*A2*B0 - 2*a2*b0*A3*B0 \
-            + 2*b1*b3*A3*B0 - a2*a3*B0**2 + b5**2*B0**2 - 2*a3*b1*A1*B1 + 2*b2*b5*A1*B1 \
-            - 2*a1*b1*A3*B1 + 2*b0*b3*A3*B1 + 2*a3*b3*B0*B1 - 2*b4*b5*B0*B1 - a1*a3*B1**2 \
-            + b4**2*B1**2 - 2*a2*b2*A1*B2 + 2*b1*b5*A1*B2 - 2*a1*b2*A2*B2 + 2*b0*b4*A2*B2 \
-            + 2*a2*b4*B0*B2 - 2*b3*b5*B0*B2 - 2*b3*b4*B1*B2 + 2*a1*b5*B1*B2 - a1*a2*B2**2 \
-            + b3**2*B2**2 - 2*a3*b3*A0*B3 + 2*b4*b5*A0*B3 + 2*b0*b1*A3*B3 - 2*a0*b3*A3*B3 \
-            + 2*a3*b1*B0*B3 - 2*b2*b5*B0*B3 + 2*a3*b0*B1*B3 - 2*b2*b4*B1*B3 \
-            + 4*b2*b3*B2*B3 - 2*b1*b4*B2*B3 - 2*b0*b5*B2*B3 - a0*a3*B3**2 + b2**2*B3**2 \
-            - 2*a2*b4*A0*B4 + 2*b3*b5*A0*B4 + 2*b0*b2*A2*B4 - 2*a0*b4*A2*B4 \
-            + 2*a2*b2*B0*B4 - 2*b1*b5*B0*B4 - 2*b2*b3*B1*B4 + 4*b1*b4*B1*B4 \
-            - 2*b0*b5*B1*B4 + 2*a2*b0*B2*B4 - 2*b1*b3*B2*B4 - 2*b1*b2*B3*B4 \
-            + 2*a0*b5*B3*B4 - a0*a2*B4**2 + b1**2*B4**2 + 2*b3*b4*A0*B5 - 2*a1*b5*A0*B5 \
-            + 2*b1*b2*A1*B5 - 2*a0*b5*A1*B5 - 2*b2*b3*B0*B5 - 2*b1*b4*B0*B5 \
-            + 4*b0*b5*B0*B5 + 2*a1*b2*B1*B5 - 2*b0*b4*B1*B5 + 2*a1*b1*B2*B5 \
-            - 2*b0*b3*B2*B5 - 2*b0*b2*B3*B5 + 2*a0*b4*B3*B5 - 2*b0*b1*B4*B5 \
-            + 2*a0*b3*B4*B5 - a0*a1*B5**2 + b0**2*B5**2
+        return (
+            a2 * a3 * A0 * A1
+            - b5**2 * A0 * A1
+            + a1 * a3 * A0 * A2
+            - b4**2 * A0 * A2
+            + a0 * a3 * A1 * A2
+            - b2**2 * A1 * A2
+            + a1 * a2 * A0 * A3
+            - b3**2 * A0 * A3
+            + a0 * a2 * A1 * A3
+            - b1**2 * A1 * A3
+            + a0 * a1 * A2 * A3
+            - b0**2 * A2 * A3
+            - 2 * a3 * b0 * A2 * B0
+            + 2 * b2 * b4 * A2 * B0
+            - 2 * a2 * b0 * A3 * B0
+            + 2 * b1 * b3 * A3 * B0
+            - a2 * a3 * B0**2
+            + b5**2 * B0**2
+            - 2 * a3 * b1 * A1 * B1
+            + 2 * b2 * b5 * A1 * B1
+            - 2 * a1 * b1 * A3 * B1
+            + 2 * b0 * b3 * A3 * B1
+            + 2 * a3 * b3 * B0 * B1
+            - 2 * b4 * b5 * B0 * B1
+            - a1 * a3 * B1**2
+            + b4**2 * B1**2
+            - 2 * a2 * b2 * A1 * B2
+            + 2 * b1 * b5 * A1 * B2
+            - 2 * a1 * b2 * A2 * B2
+            + 2 * b0 * b4 * A2 * B2
+            + 2 * a2 * b4 * B0 * B2
+            - 2 * b3 * b5 * B0 * B2
+            - 2 * b3 * b4 * B1 * B2
+            + 2 * a1 * b5 * B1 * B2
+            - a1 * a2 * B2**2
+            + b3**2 * B2**2
+            - 2 * a3 * b3 * A0 * B3
+            + 2 * b4 * b5 * A0 * B3
+            + 2 * b0 * b1 * A3 * B3
+            - 2 * a0 * b3 * A3 * B3
+            + 2 * a3 * b1 * B0 * B3
+            - 2 * b2 * b5 * B0 * B3
+            + 2 * a3 * b0 * B1 * B3
+            - 2 * b2 * b4 * B1 * B3
+            + 4 * b2 * b3 * B2 * B3
+            - 2 * b1 * b4 * B2 * B3
+            - 2 * b0 * b5 * B2 * B3
+            - a0 * a3 * B3**2
+            + b2**2 * B3**2
+            - 2 * a2 * b4 * A0 * B4
+            + 2 * b3 * b5 * A0 * B4
+            + 2 * b0 * b2 * A2 * B4
+            - 2 * a0 * b4 * A2 * B4
+            + 2 * a2 * b2 * B0 * B4
+            - 2 * b1 * b5 * B0 * B4
+            - 2 * b2 * b3 * B1 * B4
+            + 4 * b1 * b4 * B1 * B4
+            - 2 * b0 * b5 * B1 * B4
+            + 2 * a2 * b0 * B2 * B4
+            - 2 * b1 * b3 * B2 * B4
+            - 2 * b1 * b2 * B3 * B4
+            + 2 * a0 * b5 * B3 * B4
+            - a0 * a2 * B4**2
+            + b1**2 * B4**2
+            + 2 * b3 * b4 * A0 * B5
+            - 2 * a1 * b5 * A0 * B5
+            + 2 * b1 * b2 * A1 * B5
+            - 2 * a0 * b5 * A1 * B5
+            - 2 * b2 * b3 * B0 * B5
+            - 2 * b1 * b4 * B0 * B5
+            + 4 * b0 * b5 * B0 * B5
+            + 2 * a1 * b2 * B1 * B5
+            - 2 * b0 * b4 * B1 * B5
+            + 2 * a1 * b1 * B2 * B5
+            - 2 * b0 * b3 * B2 * B5
+            - 2 * b0 * b2 * B3 * B5
+            + 2 * a0 * b4 * B3 * B5
+            - 2 * b0 * b1 * B4 * B5
+            + 2 * a0 * b3 * B4 * B5
+            - a0 * a1 * B5**2
+            + b0**2 * B5**2
+        )
 
     def _T_helper(self, scaled_coeffs_1, scaled_coeffs_2):
         """
@@ -3708,69 +4079,457 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
         # cyclic: a0 -> a1 -> a2 -> a3 -> a0, b0->b3->b5->b2->b0, b1->b4->b1
         # flip: a0<->a1, b1<->b3, b2<->b4
 
-        def T00(a0, a1, a2, a3, b0, b1, b2, b3, b4, b5, A0, A1, A2, A3, B0, B1, B2, B3, B4, B5):
-            return a0*a3*A0*A1*A2 - b2**2*A0*A1*A2 + a0*a2*A0*A1*A3 - b1**2*A0*A1*A3 \
-                + a0*a1*A0*A2*A3 - b0**2*A0*A2*A3 - a0*a3*A2*B0**2 + b2**2*A2*B0**2 \
-                - a0*a2*A3*B0**2 + b1**2*A3*B0**2 - 2*b0*b1*A3*B0*B1 + 2*a0*b3*A3*B0*B1 \
-                - a0*a3*A1*B1**2 + b2**2*A1*B1**2 - a0*a1*A3*B1**2 + b0**2*A3*B1**2 \
-                - 2*b0*b2*A2*B0*B2 + 2*a0*b4*A2*B0*B2 - 2*b1*b2*A1*B1*B2 + 2*a0*b5*A1*B1*B2 \
-                - a0*a2*A1*B2**2 + b1**2*A1*B2**2 - a0*a1*A2*B2**2 + b0**2*A2*B2**2 \
-                + 2*b0*b1*A0*A3*B3 - 2*a0*b3*A0*A3*B3 + 2*a0*a3*B0*B1*B3 - 2*b2**2*B0*B1*B3 \
-                + 2*b1*b2*B0*B2*B3 - 2*a0*b5*B0*B2*B3 + 2*b0*b2*B1*B2*B3 - 2*a0*b4*B1*B2*B3 \
-                - 2*b0*b1*B2**2*B3 + 2*a0*b3*B2**2*B3 - a0*a3*A0*B3**2 + b2**2*A0*B3**2 \
-                + 2*b0*b2*A0*A2*B4 - 2*a0*b4*A0*A2*B4 + 2*b1*b2*B0*B1*B4 - 2*a0*b5*B0*B1*B4 \
-                - 2*b0*b2*B1**2*B4 + 2*a0*b4*B1**2*B4 + 2*a0*a2*B0*B2*B4 - 2*b1**2*B0*B2*B4 \
-                + 2*b0*b1*B1*B2*B4 - 2*a0*b3*B1*B2*B4 - 2*b1*b2*A0*B3*B4 + 2*a0*b5*A0*B3*B4 \
-                - a0*a2*A0*B4**2 + b1**2*A0*B4**2 + 2*b1*b2*A0*A1*B5 - 2*a0*b5*A0*A1*B5 \
-                - 2*b1*b2*B0**2*B5 + 2*a0*b5*B0**2*B5 + 2*b0*b2*B0*B1*B5 - 2*a0*b4*B0*B1*B5 \
-                + 2*b0*b1*B0*B2*B5 - 2*a0*b3*B0*B2*B5 + 2*a0*a1*B1*B2*B5 - 2*b0**2*B1*B2*B5 \
-                - 2*b0*b2*A0*B3*B5 + 2*a0*b4*A0*B3*B5 - 2*b0*b1*A0*B4*B5 + 2*a0*b3*A0*B4*B5 \
-                - a0*a1*A0*B5**2 + b0**2*A0*B5**2
+        def T00(
+            a0,
+            a1,
+            a2,
+            a3,
+            b0,
+            b1,
+            b2,
+            b3,
+            b4,
+            b5,
+            A0,
+            A1,
+            A2,
+            A3,
+            B0,
+            B1,
+            B2,
+            B3,
+            B4,
+            B5,
+        ):
+            return (
+                a0 * a3 * A0 * A1 * A2
+                - b2**2 * A0 * A1 * A2
+                + a0 * a2 * A0 * A1 * A3
+                - b1**2 * A0 * A1 * A3
+                + a0 * a1 * A0 * A2 * A3
+                - b0**2 * A0 * A2 * A3
+                - a0 * a3 * A2 * B0**2
+                + b2**2 * A2 * B0**2
+                - a0 * a2 * A3 * B0**2
+                + b1**2 * A3 * B0**2
+                - 2 * b0 * b1 * A3 * B0 * B1
+                + 2 * a0 * b3 * A3 * B0 * B1
+                - a0 * a3 * A1 * B1**2
+                + b2**2 * A1 * B1**2
+                - a0 * a1 * A3 * B1**2
+                + b0**2 * A3 * B1**2
+                - 2 * b0 * b2 * A2 * B0 * B2
+                + 2 * a0 * b4 * A2 * B0 * B2
+                - 2 * b1 * b2 * A1 * B1 * B2
+                + 2 * a0 * b5 * A1 * B1 * B2
+                - a0 * a2 * A1 * B2**2
+                + b1**2 * A1 * B2**2
+                - a0 * a1 * A2 * B2**2
+                + b0**2 * A2 * B2**2
+                + 2 * b0 * b1 * A0 * A3 * B3
+                - 2 * a0 * b3 * A0 * A3 * B3
+                + 2 * a0 * a3 * B0 * B1 * B3
+                - 2 * b2**2 * B0 * B1 * B3
+                + 2 * b1 * b2 * B0 * B2 * B3
+                - 2 * a0 * b5 * B0 * B2 * B3
+                + 2 * b0 * b2 * B1 * B2 * B3
+                - 2 * a0 * b4 * B1 * B2 * B3
+                - 2 * b0 * b1 * B2**2 * B3
+                + 2 * a0 * b3 * B2**2 * B3
+                - a0 * a3 * A0 * B3**2
+                + b2**2 * A0 * B3**2
+                + 2 * b0 * b2 * A0 * A2 * B4
+                - 2 * a0 * b4 * A0 * A2 * B4
+                + 2 * b1 * b2 * B0 * B1 * B4
+                - 2 * a0 * b5 * B0 * B1 * B4
+                - 2 * b0 * b2 * B1**2 * B4
+                + 2 * a0 * b4 * B1**2 * B4
+                + 2 * a0 * a2 * B0 * B2 * B4
+                - 2 * b1**2 * B0 * B2 * B4
+                + 2 * b0 * b1 * B1 * B2 * B4
+                - 2 * a0 * b3 * B1 * B2 * B4
+                - 2 * b1 * b2 * A0 * B3 * B4
+                + 2 * a0 * b5 * A0 * B3 * B4
+                - a0 * a2 * A0 * B4**2
+                + b1**2 * A0 * B4**2
+                + 2 * b1 * b2 * A0 * A1 * B5
+                - 2 * a0 * b5 * A0 * A1 * B5
+                - 2 * b1 * b2 * B0**2 * B5
+                + 2 * a0 * b5 * B0**2 * B5
+                + 2 * b0 * b2 * B0 * B1 * B5
+                - 2 * a0 * b4 * B0 * B1 * B5
+                + 2 * b0 * b1 * B0 * B2 * B5
+                - 2 * a0 * b3 * B0 * B2 * B5
+                + 2 * a0 * a1 * B1 * B2 * B5
+                - 2 * b0**2 * B1 * B2 * B5
+                - 2 * b0 * b2 * A0 * B3 * B5
+                + 2 * a0 * b4 * A0 * B3 * B5
+                - 2 * b0 * b1 * A0 * B4 * B5
+                + 2 * a0 * b3 * A0 * B4 * B5
+                - a0 * a1 * A0 * B5**2
+                + b0**2 * A0 * B5**2
+            )
 
-        def T01(a0, a1, a2, a3, b0, b1, b2, b3, b4, b5, A0, A1, A2, A3, B0, B1, B2, B3, B4, B5):
-            return a3*b0*A0*A1*A2 - b2*b4*A0*A1*A2 + a2*b0*A0*A1*A3 - b1*b3*A0*A1*A3 \
-                + a0*a1*A2*A3*B0 - b0**2*A2*A3*B0 - a3*b0*A2*B0**2 + b2*b4*A2*B0**2 \
-                - a2*b0*A3*B0**2 + b1*b3*A3*B0**2 - b0*b1*A1*A3*B1 + a0*b3*A1*A3*B1 \
-                - a1*b1*A3*B0*B1 + b0*b3*A3*B0*B1 - a3*b0*A1*B1**2 + b2*b4*A1*B1**2 \
-                - b0*b2*A1*A2*B2 + a0*b4*A1*A2*B2 - a1*b2*A2*B0*B2 + b0*b4*A2*B0*B2 \
-                - b2*b3*A1*B1*B2 - b1*b4*A1*B1*B2 + 2*b0*b5*A1*B1*B2 - a2*b0*A1*B2**2 \
-                + b1*b3*A1*B2**2 + a1*b1*A0*A3*B3 - b0*b3*A0*A3*B3 + b0*b1*A3*B0*B3 \
-                - a0*b3*A3*B0*B3 - a0*a1*A3*B1*B3 + b0**2*A3*B1*B3 + 2*a3*b0*B0*B1*B3 \
-                - 2*b2*b4*B0*B1*B3 + b2*b3*B0*B2*B3 + b1*b4*B0*B2*B3 - 2*b0*b5*B0*B2*B3 \
-                + a1*b2*B1*B2*B3 - b0*b4*B1*B2*B3 - a1*b1*B2**2*B3 + b0*b3*B2**2*B3 \
-                - a3*b0*A0*B3**2 + b2*b4*A0*B3**2 + b0*b2*B2*B3**2 - a0*b4*B2*B3**2 \
-                + a1*b2*A0*A2*B4 - b0*b4*A0*A2*B4 + b0*b2*A2*B0*B4 - a0*b4*A2*B0*B4 \
-                + b2*b3*B0*B1*B4 + b1*b4*B0*B1*B4 - 2*b0*b5*B0*B1*B4 - a1*b2*B1**2*B4 \
-                + b0*b4*B1**2*B4 - a0*a1*A2*B2*B4 + b0**2*A2*B2*B4 + 2*a2*b0*B0*B2*B4 \
-                - 2*b1*b3*B0*B2*B4 + a1*b1*B1*B2*B4 - b0*b3*B1*B2*B4 - b2*b3*A0*B3*B4 \
-                - b1*b4*A0*B3*B4 + 2*b0*b5*A0*B3*B4 - b0*b2*B1*B3*B4 + a0*b4*B1*B3*B4 \
-                - b0*b1*B2*B3*B4 + a0*b3*B2*B3*B4 - a2*b0*A0*B4**2 + b1*b3*A0*B4**2 \
-                + b0*b1*B1*B4**2 - a0*b3*B1*B4**2 + b2*b3*A0*A1*B5 + b1*b4*A0*A1*B5 \
-                - 2*b0*b5*A0*A1*B5 - b2*b3*B0**2*B5 - b1*b4*B0**2*B5 + 2*b0*b5*B0**2*B5 \
-                + b0*b2*A1*B1*B5 - a0*b4*A1*B1*B5 + a1*b2*B0*B1*B5 - b0*b4*B0*B1*B5 \
-                + b0*b1*A1*B2*B5 - a0*b3*A1*B2*B5 + a1*b1*B0*B2*B5 - b0*b3*B0*B2*B5 \
-                - a1*b2*A0*B3*B5 + b0*b4*A0*B3*B5 - b0*b2*B0*B3*B5 + a0*b4*B0*B3*B5 \
-                + a0*a1*B2*B3*B5 - b0**2*B2*B3*B5 - a1*b1*A0*B4*B5 + b0*b3*A0*B4*B5 \
-                - b0*b1*B0*B4*B5 + a0*b3*B0*B4*B5 + a0*a1*B1*B4*B5 - b0**2*B1*B4*B5 \
-                - a0*a1*B0*B5**2 + b0**2*B0*B5**2
+        def T01(
+            a0,
+            a1,
+            a2,
+            a3,
+            b0,
+            b1,
+            b2,
+            b3,
+            b4,
+            b5,
+            A0,
+            A1,
+            A2,
+            A3,
+            B0,
+            B1,
+            B2,
+            B3,
+            B4,
+            B5,
+        ):
+            return (
+                a3 * b0 * A0 * A1 * A2
+                - b2 * b4 * A0 * A1 * A2
+                + a2 * b0 * A0 * A1 * A3
+                - b1 * b3 * A0 * A1 * A3
+                + a0 * a1 * A2 * A3 * B0
+                - b0**2 * A2 * A3 * B0
+                - a3 * b0 * A2 * B0**2
+                + b2 * b4 * A2 * B0**2
+                - a2 * b0 * A3 * B0**2
+                + b1 * b3 * A3 * B0**2
+                - b0 * b1 * A1 * A3 * B1
+                + a0 * b3 * A1 * A3 * B1
+                - a1 * b1 * A3 * B0 * B1
+                + b0 * b3 * A3 * B0 * B1
+                - a3 * b0 * A1 * B1**2
+                + b2 * b4 * A1 * B1**2
+                - b0 * b2 * A1 * A2 * B2
+                + a0 * b4 * A1 * A2 * B2
+                - a1 * b2 * A2 * B0 * B2
+                + b0 * b4 * A2 * B0 * B2
+                - b2 * b3 * A1 * B1 * B2
+                - b1 * b4 * A1 * B1 * B2
+                + 2 * b0 * b5 * A1 * B1 * B2
+                - a2 * b0 * A1 * B2**2
+                + b1 * b3 * A1 * B2**2
+                + a1 * b1 * A0 * A3 * B3
+                - b0 * b3 * A0 * A3 * B3
+                + b0 * b1 * A3 * B0 * B3
+                - a0 * b3 * A3 * B0 * B3
+                - a0 * a1 * A3 * B1 * B3
+                + b0**2 * A3 * B1 * B3
+                + 2 * a3 * b0 * B0 * B1 * B3
+                - 2 * b2 * b4 * B0 * B1 * B3
+                + b2 * b3 * B0 * B2 * B3
+                + b1 * b4 * B0 * B2 * B3
+                - 2 * b0 * b5 * B0 * B2 * B3
+                + a1 * b2 * B1 * B2 * B3
+                - b0 * b4 * B1 * B2 * B3
+                - a1 * b1 * B2**2 * B3
+                + b0 * b3 * B2**2 * B3
+                - a3 * b0 * A0 * B3**2
+                + b2 * b4 * A0 * B3**2
+                + b0 * b2 * B2 * B3**2
+                - a0 * b4 * B2 * B3**2
+                + a1 * b2 * A0 * A2 * B4
+                - b0 * b4 * A0 * A2 * B4
+                + b0 * b2 * A2 * B0 * B4
+                - a0 * b4 * A2 * B0 * B4
+                + b2 * b3 * B0 * B1 * B4
+                + b1 * b4 * B0 * B1 * B4
+                - 2 * b0 * b5 * B0 * B1 * B4
+                - a1 * b2 * B1**2 * B4
+                + b0 * b4 * B1**2 * B4
+                - a0 * a1 * A2 * B2 * B4
+                + b0**2 * A2 * B2 * B4
+                + 2 * a2 * b0 * B0 * B2 * B4
+                - 2 * b1 * b3 * B0 * B2 * B4
+                + a1 * b1 * B1 * B2 * B4
+                - b0 * b3 * B1 * B2 * B4
+                - b2 * b3 * A0 * B3 * B4
+                - b1 * b4 * A0 * B3 * B4
+                + 2 * b0 * b5 * A0 * B3 * B4
+                - b0 * b2 * B1 * B3 * B4
+                + a0 * b4 * B1 * B3 * B4
+                - b0 * b1 * B2 * B3 * B4
+                + a0 * b3 * B2 * B3 * B4
+                - a2 * b0 * A0 * B4**2
+                + b1 * b3 * A0 * B4**2
+                + b0 * b1 * B1 * B4**2
+                - a0 * b3 * B1 * B4**2
+                + b2 * b3 * A0 * A1 * B5
+                + b1 * b4 * A0 * A1 * B5
+                - 2 * b0 * b5 * A0 * A1 * B5
+                - b2 * b3 * B0**2 * B5
+                - b1 * b4 * B0**2 * B5
+                + 2 * b0 * b5 * B0**2 * B5
+                + b0 * b2 * A1 * B1 * B5
+                - a0 * b4 * A1 * B1 * B5
+                + a1 * b2 * B0 * B1 * B5
+                - b0 * b4 * B0 * B1 * B5
+                + b0 * b1 * A1 * B2 * B5
+                - a0 * b3 * A1 * B2 * B5
+                + a1 * b1 * B0 * B2 * B5
+                - b0 * b3 * B0 * B2 * B5
+                - a1 * b2 * A0 * B3 * B5
+                + b0 * b4 * A0 * B3 * B5
+                - b0 * b2 * B0 * B3 * B5
+                + a0 * b4 * B0 * B3 * B5
+                + a0 * a1 * B2 * B3 * B5
+                - b0**2 * B2 * B3 * B5
+                - a1 * b1 * A0 * B4 * B5
+                + b0 * b3 * A0 * B4 * B5
+                - b0 * b1 * B0 * B4 * B5
+                + a0 * b3 * B0 * B4 * B5
+                + a0 * a1 * B1 * B4 * B5
+                - b0**2 * B1 * B4 * B5
+                - a0 * a1 * B0 * B5**2
+                + b0**2 * B0 * B5**2
+            )
 
-        t00 = T00(a0, a1, a2, a3, b0, b1, b2, b3, b4, b5, A0, A1, A2, A3, B0, B1, B2, B3, B4, B5)
-        t11 = T00(a1, a2, a3, a0, b3, b4, b0, b5, b1, b2, A1, A2, A3, A0, B3, B4, B0, B5, B1, B2)
-        t22 = T00(a2, a3, a0, a1, b5, b1, b3, b2, b4, b0, A2, A3, A0, A1, B5, B1, B3, B2, B4, B0)
-        t33 = T00(a3, a0, a1, a2, b2, b4, b5, b0, b1, b3, A3, A0, A1, A2, B2, B4, B5, B0, B1, B3)
-        t01 = T01(a0, a1, a2, a3, b0, b1, b2, b3, b4, b5, A0, A1, A2, A3, B0, B1, B2, B3, B4, B5)
-        t12 = T01(a1, a2, a3, a0, b3, b4, b0, b5, b1, b2, A1, A2, A3, A0, B3, B4, B0, B5, B1, B2)
-        t23 = T01(a2, a3, a0, a1, b5, b1, b3, b2, b4, b0, A2, A3, A0, A1, B5, B1, B3, B2, B4, B0)
-        t30 = T01(a3, a0, a1, a2, b2, b4, b5, b0, b1, b3, A3, A0, A1, A2, B2, B4, B5, B0, B1, B3)
-        t02 = T01(a0, a2, a3, a1, b1, b2, b0, b5, b3, b4, A0, A2, A3, A1, B1, B2, B0, B5, B3, B4)
-        t13 = T01(a1, a3, a0, a2, b4, b0, b3, b2, b5, b1, A1, A3, A0, A2, B4, B0, B3, B2, B5, B1)
+        t00 = T00(
+            a0,
+            a1,
+            a2,
+            a3,
+            b0,
+            b1,
+            b2,
+            b3,
+            b4,
+            b5,
+            A0,
+            A1,
+            A2,
+            A3,
+            B0,
+            B1,
+            B2,
+            B3,
+            B4,
+            B5,
+        )
+        t11 = T00(
+            a1,
+            a2,
+            a3,
+            a0,
+            b3,
+            b4,
+            b0,
+            b5,
+            b1,
+            b2,
+            A1,
+            A2,
+            A3,
+            A0,
+            B3,
+            B4,
+            B0,
+            B5,
+            B1,
+            B2,
+        )
+        t22 = T00(
+            a2,
+            a3,
+            a0,
+            a1,
+            b5,
+            b1,
+            b3,
+            b2,
+            b4,
+            b0,
+            A2,
+            A3,
+            A0,
+            A1,
+            B5,
+            B1,
+            B3,
+            B2,
+            B4,
+            B0,
+        )
+        t33 = T00(
+            a3,
+            a0,
+            a1,
+            a2,
+            b2,
+            b4,
+            b5,
+            b0,
+            b1,
+            b3,
+            A3,
+            A0,
+            A1,
+            A2,
+            B2,
+            B4,
+            B5,
+            B0,
+            B1,
+            B3,
+        )
+        t01 = T01(
+            a0,
+            a1,
+            a2,
+            a3,
+            b0,
+            b1,
+            b2,
+            b3,
+            b4,
+            b5,
+            A0,
+            A1,
+            A2,
+            A3,
+            B0,
+            B1,
+            B2,
+            B3,
+            B4,
+            B5,
+        )
+        t12 = T01(
+            a1,
+            a2,
+            a3,
+            a0,
+            b3,
+            b4,
+            b0,
+            b5,
+            b1,
+            b2,
+            A1,
+            A2,
+            A3,
+            A0,
+            B3,
+            B4,
+            B0,
+            B5,
+            B1,
+            B2,
+        )
+        t23 = T01(
+            a2,
+            a3,
+            a0,
+            a1,
+            b5,
+            b1,
+            b3,
+            b2,
+            b4,
+            b0,
+            A2,
+            A3,
+            A0,
+            A1,
+            B5,
+            B1,
+            B3,
+            B2,
+            B4,
+            B0,
+        )
+        t30 = T01(
+            a3,
+            a0,
+            a1,
+            a2,
+            b2,
+            b4,
+            b5,
+            b0,
+            b1,
+            b3,
+            A3,
+            A0,
+            A1,
+            A2,
+            B2,
+            B4,
+            B5,
+            B0,
+            B1,
+            B3,
+        )
+        t02 = T01(
+            a0,
+            a2,
+            a3,
+            a1,
+            b1,
+            b2,
+            b0,
+            b5,
+            b3,
+            b4,
+            A0,
+            A2,
+            A3,
+            A1,
+            B1,
+            B2,
+            B0,
+            B5,
+            B3,
+            B4,
+        )
+        t13 = T01(
+            a1,
+            a3,
+            a0,
+            a2,
+            b4,
+            b0,
+            b3,
+            b2,
+            b5,
+            b1,
+            A1,
+            A3,
+            A0,
+            A2,
+            B4,
+            B0,
+            B3,
+            B2,
+            B5,
+            B1,
+        )
         if self._homogeneous:
             w, x, y, z = self._variables
         else:
             w, x, y = self._variables[0:3]
             z = self._ring.one()
-        return t00*w*w + 2*t01*w*x + 2*t02*w*y + 2*t30*w*z + t11*x*x + 2*t12*x*y \
-            + 2*t13*x*z + t22*y*y + 2*t23*y*z + t33*z*z
+        return (
+            t00 * w * w
+            + 2 * t01 * w * x
+            + 2 * t02 * w * y
+            + 2 * t30 * w * z
+            + t11 * x * x
+            + 2 * t12 * x * y
+            + 2 * t13 * x * z
+            + t22 * y * y
+            + 2 * t23 * y * z
+            + t33 * z * z
+        )
 
     def T_covariant(self):
         """
@@ -3791,7 +4550,9 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             sage: M == q.Delta_invariant()*T             # long time
             True
         """
-        return self._T_helper(self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs())
+        return self._T_helper(
+            self.get_form(0).scaled_coeffs(), self.get_form(1).scaled_coeffs()
+        )
 
     def T_prime_covariant(self):
         """
@@ -3813,7 +4574,9 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             sage: M == q.Delta_prime_invariant() * Tprime   # long time
             True
         """
-        return self._T_helper(self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs())
+        return self._T_helper(
+            self.get_form(1).scaled_coeffs(), self.get_form(0).scaled_coeffs()
+        )
 
     def J_covariant(self):
         """
@@ -3834,11 +4597,16 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             * (a3*A2 - a2*A3) * (a3*A1 - a1*A3) * (a3*A0 - a0*A3)
         """
         F = self._ring.base_ring()
-        return 1/F(16) * self._jacobian_determinant(
-            [self.first().form(), 2],
-            [self.second().form(), 2],
-            [self.T_covariant(), 4],
-            [self.T_prime_covariant(), 4])
+        return (
+            1
+            / F(16)
+            * self._jacobian_determinant(
+                [self.first().form(), 2],
+                [self.second().form(), 2],
+                [self.T_covariant(), 4],
+                [self.T_prime_covariant(), 4],
+            )
+        )
 
     def syzygy(self, Delta, Theta, Phi, Theta_prime, Delta_prime, U, V, T, T_prime, J):
         """
@@ -3881,63 +4649,154 @@ class TwoQuaternaryQuadratics(TwoAlgebraicForms):
             sage: biquadratic.syzygy(1, 1, 1, 1, 1, 1, 1, 1, 1, x)
             -x^2 + 1
         """
-        return -J**2 + \
-            Delta * T**4 - Theta * T**3*T_prime + Phi * T**2*T_prime**2 \
-            - Theta_prime * T*T_prime**3 + Delta_prime * T_prime**4 + \
-            ( (Theta_prime**2 - 2*Delta_prime*Phi) * T_prime**3 -
-              (Theta_prime*Phi - 3*Theta*Delta_prime) * T_prime**2*T +
-              (Theta*Theta_prime - 4*Delta*Delta_prime) * T_prime*T**2 -
-              (Delta*Theta_prime) * T**3
-            ) * U + \
-            ( (Theta**2 - 2*Delta*Phi)*T**3 -
-              (Theta*Phi - 3*Theta_prime*Delta)*T**2*T_prime +
-              (Theta*Theta_prime - 4*Delta*Delta_prime)*T*T_prime**2 -
-              (Delta_prime*Theta)*T_prime**3
-            ) * V + \
-            ( (Delta*Phi*Delta_prime) * T**2 +
-              (3*Delta*Theta_prime*Delta_prime - Theta*Phi*Delta_prime) * T*T_prime +
-              (2*Delta*Delta_prime**2 - 2*Theta*Theta_prime*Delta_prime
-               + Phi**2*Delta_prime) * T_prime**2
-            ) * U**2 + \
-            ( (Delta*Theta*Delta_prime + 2*Delta*Phi*Theta_prime - Theta**2*Theta_prime) * T**2 +
-              (4*Delta*Phi*Delta_prime - 3*Theta**2*Delta_prime
-               - 3*Delta*Theta_prime**2 + Theta*Phi*Theta_prime) * T*T_prime +
-              (Delta*Theta_prime*Delta_prime + 2*Delta_prime*Phi*Theta
-               - Theta*Theta_prime**2) * T_prime**2
-            ) * U*V + \
-            ( (2*Delta**2*Delta_prime - 2*Delta*Theta*Theta_prime + Delta*Phi**2) * T**2 +
-              (3*Delta*Theta*Delta_prime - Delta*Phi*Theta_prime) * T*T_prime +
-              Delta*Phi*Delta_prime * T_prime**2
-            ) * V**2 + \
-            ( (-Delta*Theta*Delta_prime**2) * T +
-              (-2*Delta*Phi*Delta_prime**2 + Theta**2*Delta_prime**2) * T_prime
-            ) * U**3 + \
-            ( (4*Delta**2*Delta_prime**2 - Delta*Theta*Theta_prime*Delta_prime
-               - 2*Delta*Phi**2*Delta_prime + Theta**2*Phi*Delta_prime) * T +
-              (-5*Delta*Theta*Delta_prime**2 + Delta*Phi*Theta_prime*Delta_prime
-                + 2*Theta**2*Theta_prime*Delta_prime - Theta*Phi**2*Delta_prime) * T_prime
-            ) * U**2*V + \
-            ( (-5*Delta**2*Theta_prime*Delta_prime + Delta*Theta*Phi*Delta_prime
-                + 2*Delta*Theta*Theta_prime**2 - Delta*Phi**2*Theta_prime) * T +
-              (4*Delta**2*Delta_prime**2 - Delta*Theta*Theta_prime*Delta_prime
-               - 2*Delta*Phi**2*Delta_prime + Delta*Phi*Theta_prime**2) * T_prime
-            ) * U*V**2 + \
-            ( (-2*Delta**2*Phi*Delta_prime + Delta**2*Theta_prime**2) * T +
-              (-Delta**2*Theta_prime*Delta_prime) * T_prime
-            ) * V**3 + \
-            (Delta**2*Delta_prime**3) * U**4 + \
-            (-3*Delta**2*Theta_prime*Delta_prime**2 + 3*Delta*Theta*Phi*Delta_prime**2
-              - Theta**3*Delta_prime**2) * U**3*V + \
-            (-3*Delta**2*Phi*Delta_prime**2 + 3*Delta*Theta**2*Delta_prime**2
-              + 3*Delta**2*Theta_prime**2*Delta_prime
-              - 3*Delta*Theta*Phi*Theta_prime*Delta_prime
-              + Delta*Phi**3*Delta_prime) * U**2*V**2 + \
-            (-3*Delta**2*Theta*Delta_prime**2 + 3*Delta**2*Phi*Theta_prime*Delta_prime
-              - Delta**2*Theta_prime**3) * U*V**3 + \
-            (Delta**3*Delta_prime**2) * V**4
+        return (
+            -(J**2)
+            + Delta * T**4
+            - Theta * T**3 * T_prime
+            + Phi * T**2 * T_prime**2
+            - Theta_prime * T * T_prime**3
+            + Delta_prime * T_prime**4
+            + (
+                (Theta_prime**2 - 2 * Delta_prime * Phi) * T_prime**3
+                - (Theta_prime * Phi - 3 * Theta * Delta_prime) * T_prime**2 * T
+                + (Theta * Theta_prime - 4 * Delta * Delta_prime) * T_prime * T**2
+                - (Delta * Theta_prime) * T**3
+            )
+            * U
+            + (
+                (Theta**2 - 2 * Delta * Phi) * T**3
+                - (Theta * Phi - 3 * Theta_prime * Delta) * T**2 * T_prime
+                + (Theta * Theta_prime - 4 * Delta * Delta_prime) * T * T_prime**2
+                - (Delta_prime * Theta) * T_prime**3
+            )
+            * V
+            + (
+                (Delta * Phi * Delta_prime) * T**2
+                + (3 * Delta * Theta_prime * Delta_prime - Theta * Phi * Delta_prime)
+                * T
+                * T_prime
+                + (
+                    2 * Delta * Delta_prime**2
+                    - 2 * Theta * Theta_prime * Delta_prime
+                    + Phi**2 * Delta_prime
+                )
+                * T_prime**2
+            )
+            * U**2
+            + (
+                (
+                    Delta * Theta * Delta_prime
+                    + 2 * Delta * Phi * Theta_prime
+                    - Theta**2 * Theta_prime
+                )
+                * T**2
+                + (
+                    4 * Delta * Phi * Delta_prime
+                    - 3 * Theta**2 * Delta_prime
+                    - 3 * Delta * Theta_prime**2
+                    + Theta * Phi * Theta_prime
+                )
+                * T
+                * T_prime
+                + (
+                    Delta * Theta_prime * Delta_prime
+                    + 2 * Delta_prime * Phi * Theta
+                    - Theta * Theta_prime**2
+                )
+                * T_prime**2
+            )
+            * U
+            * V
+            + (
+                (
+                    2 * Delta**2 * Delta_prime
+                    - 2 * Delta * Theta * Theta_prime
+                    + Delta * Phi**2
+                )
+                * T**2
+                + (3 * Delta * Theta * Delta_prime - Delta * Phi * Theta_prime)
+                * T
+                * T_prime
+                + Delta * Phi * Delta_prime * T_prime**2
+            )
+            * V**2
+            + (
+                (-Delta * Theta * Delta_prime**2) * T
+                + (-2 * Delta * Phi * Delta_prime**2 + Theta**2 * Delta_prime**2)
+                * T_prime
+            )
+            * U**3
+            + (
+                (
+                    4 * Delta**2 * Delta_prime**2
+                    - Delta * Theta * Theta_prime * Delta_prime
+                    - 2 * Delta * Phi**2 * Delta_prime
+                    + Theta**2 * Phi * Delta_prime
+                )
+                * T
+                + (
+                    -5 * Delta * Theta * Delta_prime**2
+                    + Delta * Phi * Theta_prime * Delta_prime
+                    + 2 * Theta**2 * Theta_prime * Delta_prime
+                    - Theta * Phi**2 * Delta_prime
+                )
+                * T_prime
+            )
+            * U**2
+            * V
+            + (
+                (
+                    -5 * Delta**2 * Theta_prime * Delta_prime
+                    + Delta * Theta * Phi * Delta_prime
+                    + 2 * Delta * Theta * Theta_prime**2
+                    - Delta * Phi**2 * Theta_prime
+                )
+                * T
+                + (
+                    4 * Delta**2 * Delta_prime**2
+                    - Delta * Theta * Theta_prime * Delta_prime
+                    - 2 * Delta * Phi**2 * Delta_prime
+                    + Delta * Phi * Theta_prime**2
+                )
+                * T_prime
+            )
+            * U
+            * V**2
+            + (
+                (-2 * Delta**2 * Phi * Delta_prime + Delta**2 * Theta_prime**2) * T
+                + (-(Delta**2) * Theta_prime * Delta_prime) * T_prime
+            )
+            * V**3
+            + (Delta**2 * Delta_prime**3) * U**4
+            + (
+                -3 * Delta**2 * Theta_prime * Delta_prime**2
+                + 3 * Delta * Theta * Phi * Delta_prime**2
+                - Theta**3 * Delta_prime**2
+            )
+            * U**3
+            * V
+            + (
+                -3 * Delta**2 * Phi * Delta_prime**2
+                + 3 * Delta * Theta**2 * Delta_prime**2
+                + 3 * Delta**2 * Theta_prime**2 * Delta_prime
+                - 3 * Delta * Theta * Phi * Theta_prime * Delta_prime
+                + Delta * Phi**3 * Delta_prime
+            )
+            * U**2
+            * V**2
+            + (
+                -3 * Delta**2 * Theta * Delta_prime**2
+                + 3 * Delta**2 * Phi * Theta_prime * Delta_prime
+                - Delta**2 * Theta_prime**3
+            )
+            * U
+            * V**3
+            + (Delta**3 * Delta_prime**2) * V**4
+        )
 
 
 ######################################################################
+
 
 class InvariantTheoryFactory:
     """
@@ -4203,7 +5062,9 @@ class InvariantTheoryFactory:
         """
         return BinaryQuintic(2, 5, quintic, *args, **kwds)
 
-    def binary_form_from_invariants(self, degree, invariants, variables=None, as_form=True, *args, **kwargs):
+    def binary_form_from_invariants(
+        self, degree, invariants, variables=None, as_form=True, *args, **kwargs
+    ):
         r"""
         Reconstruct a binary form from the values of its invariants.
 
@@ -4335,42 +5196,55 @@ class InvariantTheoryFactory:
             from sage.rings.fraction_field import FractionField
             from sage.structure.sequence import Sequence
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             K = FractionField(Sequence(list(invariants)).universe())
             if variables is None:
                 x, z = PolynomialRing(K, 'x,z').gens()
             elif len(variables) == 2:
                 x, z = variables
             else:
-                raise ValueError('incorrect number of variables provided, '
-                                 'exactly two variables should be provided')
+                raise ValueError(
+                    'incorrect number of variables provided, '
+                    'exactly two variables should be provided'
+                )
         if degree == 2:
             if len(invariants) == 1:
                 if as_form:
-                    return QuadraticForm.from_invariants(invariants[0], x, z,
-                                                           *args, **kwargs)
+                    return QuadraticForm.from_invariants(
+                        invariants[0], x, z, *args, **kwargs
+                    )
                 return reconstruction.binary_quadratic_coefficients_from_invariants(
-                                        invariants[0], *args, **kwargs)
-            raise ValueError('incorrect number of invariants provided, '
-                             'only one invariant should be provided')
+                    invariants[0], *args, **kwargs
+                )
+            raise ValueError(
+                'incorrect number of invariants provided, '
+                'only one invariant should be provided'
+            )
         elif degree == 3:
             if len(invariants) == 1:
                 if as_form:
                     raise NotImplementedError('no class for binary cubics implemented')
                 else:
                     return reconstruction.binary_cubic_coefficients_from_invariants(
-                                            invariants[0], *args, **kwargs)
+                        invariants[0], *args, **kwargs
+                    )
             else:
-                raise ValueError('incorrect number of invariants provided, only '
-                                 'one invariant should be provided')
+                raise ValueError(
+                    'incorrect number of invariants provided, only '
+                    'one invariant should be provided'
+                )
         elif degree == 5:
             if as_form:
-                return BinaryQuintic.from_invariants(invariants, x, z,
-                                                   *args, **kwargs)
+                return BinaryQuintic.from_invariants(invariants, x, z, *args, **kwargs)
             return reconstruction.binary_quintic_coefficients_from_invariants(
-                                        invariants, *args, **kwargs)
+                invariants, *args, **kwargs
+            )
         else:
-            raise NotImplementedError('no reconstruction for binary forms of '
-                                      'degree {} implemented'.format(degree))
+            raise NotImplementedError(
+                'no reconstruction for binary forms of degree {} implemented'.format(
+                    degree
+                )
+            )
 
     def ternary_quadratic(self, quadratic, *args, **kwds):
         """

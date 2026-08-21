@@ -34,7 +34,10 @@ import itertools
 from sage.categories.algebras_with_basis import AlgebrasWithBasis
 from sage.categories.modules_with_basis import ModulesWithBasis
 from sage.categories.rings import Rings
-from sage.combinat.free_module import CombinatorialFreeModule, CombinatorialFreeModule_Tensor
+from sage.combinat.free_module import (
+    CombinatorialFreeModule,
+    CombinatorialFreeModule_Tensor,
+)
 from sage.combinat.integer_lists import IntegerListsLex
 from sage.combinat.partition import Partitions, Partition
 from sage.combinat.permutation import Permutations
@@ -120,8 +123,11 @@ def schur_representative_indices(n, r):
                     I1 = _schur_I_nr_representatives(n, k)
                 else:
                     I2 = _schur_I_nr_representatives(n, k - j)
-                    I1 = [I1[m1] + I2[m2] for m1 in range(len(I1))
-                          for m2 in range(len(I2))]
+                    I1 = [
+                        I1[m1] + I2[m2]
+                        for m1 in range(len(I1))
+                        for m2 in range(len(I2))
+                    ]
                 j = k
             elif k == l - 1:
                 I2 = []
@@ -130,8 +136,11 @@ def schur_representative_indices(n, r):
                     I1 = _schur_I_nr_representatives(n, k)
                 else:
                     I2 = _schur_I_nr_representatives(n, k - j)
-                    I1 = [I1[m1] + I2[m2] for m1 in range(len(I1))
-                          for m2 in range(len(I2))]
+                    I1 = [
+                        I1[m1] + I2[m2]
+                        for m1 in range(len(I1))
+                        for m2 in range(len(I2))
+                    ]
             else:
                 k += 1
 
@@ -204,6 +213,7 @@ class SchurAlgebra(CombinatorialFreeModule):
     - [Gr2007]_
     - :wikipedia:`Schur_algebra`
     """
+
     def __init__(self, R, n, r):
         """
         Initialize ``self``.
@@ -238,10 +248,14 @@ class SchurAlgebra(CombinatorialFreeModule):
         self._n = n
         self._r = r
 
-        CombinatorialFreeModule.__init__(self, R,
-                                         schur_representative_indices(n, r),
-                                         prefix='S', bracket=False,
-                                         category=AlgebrasWithBasis(R).FiniteDimensional())
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            schur_representative_indices(n, r),
+            prefix='S',
+            bracket=False,
+            category=AlgebrasWithBasis(R).FiniteDimensional(),
+        )
 
     def _repr_(self) -> str:
         """
@@ -278,8 +292,7 @@ class SchurAlgebra(CombinatorialFreeModule):
             sage: x * e == x
             True
         """
-        tt = IntegerListsLex(length=self._r, min_part=1, max_part=self._n,
-                             min_slope=0)
+        tt = IntegerListsLex(length=self._r, min_part=1, max_part=self._n, min_slope=0)
         words = [tuple(u) for u in tt]
         return self.sum(self._monomial((w, w)) for w in words)
 
@@ -323,8 +336,7 @@ class SchurAlgebra(CombinatorialFreeModule):
         l = sorted(l)
 
         # Find basis elements (p,q) such that p ~ i and q ~ l
-        e_pq = [v for v in self.basis().keys()
-                if v[0] == i and sorted(v[1]) == l]
+        e_pq = [v for v in self.basis().keys() if v[0] == i and sorted(v[1]) == l]
 
         b = self.basis()
         product = self.zero()
@@ -333,8 +345,10 @@ class SchurAlgebra(CombinatorialFreeModule):
         for e in e_pq:
             Z_ijklpq = self.base_ring().zero()
             for s in Permutations(list(j)):
-                if (schur_representative_from_index(e[0], s) == e_ij
-                        and schur_representative_from_index(s, e[1]) == e_kl):
+                if (
+                    schur_representative_from_index(e[0], s) == e_ij
+                    and schur_representative_from_index(s, e[1]) == e_kl
+                ):
                     Z_ijklpq += self.base_ring().one()
             product += Z_ijklpq * b[e]
 
@@ -359,7 +373,7 @@ class SchurAlgebra(CombinatorialFreeModule):
             sage: S.dimension()
             35
         """
-        return binomial(self._n ** 2 + self._r - 1, self._r)
+        return binomial(self._n**2 + self._r - 1, self._r)
 
 
 class SchurTensorModule(CombinatorialFreeModule_Tensor):
@@ -411,6 +425,7 @@ class SchurTensorModule(CombinatorialFreeModule_Tensor):
         ....:      for bT in T.basis() for bA in A.basis() for p in P)
         True
     """
+
     def __init__(self, R, n, r):
         """
         Initialize ``self``.
@@ -471,8 +486,11 @@ class SchurTensorModule(CombinatorialFreeModule_Tensor):
             B[1] # B[1] # B[2] + B[1] # B[2] # B[1] + B[2] # B[1] # B[1]
         """
         L = range(1, self._n + 1)
-        ret = [tuple(i) for i in itertools.product(L, repeat=self._r)
-               if schur_representative_from_index(i, v) == xi]
+        ret = [
+            tuple(i)
+            for i in itertools.product(L, repeat=self._r)
+            if schur_representative_from_index(i, v) == xi
+        ]
         return self.sum_of_monomials(ret)
 
     class Element(CombinatorialFreeModule_Tensor.Element):
@@ -520,13 +538,16 @@ class SchurTensorModule(CombinatorialFreeModule_Tensor):
             P = self.parent()
             if self_on_left:
                 if elt in P._sga:
-                    return P.sum_of_terms((tuple([m[i - 1] for i in me]),
-                                           c * ce)
-                                          for m, c in self for me, ce in elt)
+                    return P.sum_of_terms(
+                        (tuple([m[i - 1] for i in me]), c * ce)
+                        for m, c in self
+                        for me, ce in elt
+                    )
 
                 if elt in P._sga._indices:
-                    return P.sum_of_terms((tuple([m[i - 1] for i in elt]), c)
-                                          for m, c in self)
+                    return P.sum_of_terms(
+                        (tuple([m[i - 1] for i in elt]), c) for m, c in self
+                    )
 
             elif elt in P._schur:  # self_on_left is False
                 return P._schur_action(elt, self)
@@ -583,6 +604,7 @@ def GL_irreducible_character(n, mu, KK):
 
     # make ST the superstandard tableau of shape mu
     from sage.combinat.tableau import from_shape_and_word
+
     ST = from_shape_and_word(mu, list(range(1, r + 1)), convention='English')
 
     # make ell the reading word of the highest weight tableau of shape mu
@@ -592,8 +614,9 @@ def GL_irreducible_character(n, mu, KK):
 
     # This is the notation `\{X\}` from just before (5.3a) of [Gr2007]_.
     S = SGA._indices
-    BracC = SGA._from_dict({S(x.tuple()): x.sign() for x in ST.column_stabilizer()},
-                           remove_zeros=False)
+    BracC = SGA._from_dict(
+        {S(x.tuple()): x.sign() for x in ST.column_stabilizer()}, remove_zeros=False
+    )
     f = e * BracC  # M.action_by_symmetric_group_algebra(e, BracC)
 
     # [Green, Theorem 5.3b] says that a basis of the Carter-Lusztig
@@ -643,7 +666,9 @@ def GL_irreducible_character(n, mu, KK):
             P_index = contents.index(P)
             JJ[P_index].append(i)
             schur_rep = schur_representative_from_index(i, tuple(ell))
-            x = A.basis()[schur_rep] * f  # M.action_by_Schur_alg(A.basis()[schur_rep], f)
+            x = (
+                A.basis()[schur_rep] * f
+            )  # M.action_by_Schur_alg(A.basis()[schur_rep], f)
             graded_basis[P_index].append(x.to_vector())
         except ValueError:
             pass
@@ -660,9 +685,13 @@ def GL_irreducible_character(n, mu, KK):
 
     phi = mbasis.zero()
     for aa, c_aa in enumerate(contents):
-        mat = [[elt_basis_aa.inner_product(elt_carter_lusztig)
-                for elt_carter_lusztig in carter_lusztig]
-               for elt_basis_aa in graded_basis[aa]]
+        mat = [
+            [
+                elt_basis_aa.inner_product(elt_carter_lusztig)
+                for elt_carter_lusztig in carter_lusztig
+            ]
+            for elt_basis_aa in graded_basis[aa]
+        ]
         angle = Matrix(mat)
         phi += (len(JJ[aa]) - angle.nullity()) * mbasis(c_aa)
     return phi

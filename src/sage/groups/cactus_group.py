@@ -69,6 +69,7 @@ class CactusGroup(UniqueRepresentation, Group):
         ....:     for p in range(1, 6) for q in range(p+1, 6))
         True
     """
+
     def __init__(self, n):
         r"""
         Initialize ``self``.
@@ -95,10 +96,13 @@ class CactusGroup(UniqueRepresentation, Group):
         """
         self._n = n
         ell = len(str(n))
-        names = ['s{}{}'.format('0' * (ell - len(str(i))) + str(i),
-                                '0' * (ell - len(str(j))) + str(j))
-                 for i in range(1, self._n + 1)
-                 for j in range(i + 1, self._n + 1)]
+        names = [
+            's{}{}'.format(
+                '0' * (ell - len(str(i))) + str(i), '0' * (ell - len(str(j))) + str(j)
+            )
+            for i in range(1, self._n + 1)
+            for j in range(i + 1, self._n + 1)
+        ]
         cat = Groups().FinitelyGeneratedAsMagma()
         if n > 2:
             cat = cat.Infinite()
@@ -130,14 +134,24 @@ class CactusGroup(UniqueRepresentation, Group):
              frozenset({1, 3, 4}), frozenset({2, 3, 4}), frozenset({1, 2, 3, 4})]
         """
         n = self._n
-        I = list(range(1, n+1))
-        PS = sum(([frozenset(A) for A in combinations(I, k)] for k in range(2,n+1)), [])
-        G = Graph([list(range(len(PS))),
-                   [[i,j,-1] for j in range(1, len(PS)) for i in range(j)
-                    if PS[i] & PS[j] not in [frozenset(), PS[i], PS[j]]]
-                   ], format='vertices_and_edges')
+        I = list(range(1, n + 1))
+        PS = sum(
+            ([frozenset(A) for A in combinations(I, k)] for k in range(2, n + 1)), []
+        )
+        G = Graph(
+            [
+                list(range(len(PS))),
+                [
+                    [i, j, -1]
+                    for j in range(1, len(PS))
+                    for i in range(j)
+                    if PS[i] & PS[j] not in [frozenset(), PS[i], PS[j]]
+                ],
+            ],
+            format='vertices_and_edges',
+        )
         self._subsets = PS
-        self._subsets_inv = {X: i for i,X in enumerate(PS)}
+        self._subsets_inv = {X: i for i, X in enumerate(PS)}
         return G
 
     def right_angled_coxeter_group(self):
@@ -165,6 +179,7 @@ class CactusGroup(UniqueRepresentation, Group):
         from sage.rings.rational_field import QQ
         from sage.combinat.root_system.coxeter_group import CoxeterGroup
         from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+
         return CoxeterGroup(CoxeterMatrix(self._WG), base_ring=QQ)
 
     def _repr_(self):
@@ -213,8 +228,7 @@ class CactusGroup(UniqueRepresentation, Group):
             sage: J3.group_generators()
             Finite family {(1, 2): s[1,2], (1, 3): s[1,3], (2, 3): s[2,3]}
         """
-        l = [(i, j) for i in range(1, self._n + 1)
-             for j in range(i + 1, self._n + 1)]
+        l = [(i, j) for i in range(1, self._n + 1) for j in range(i + 1, self._n + 1)]
         return Family(l, lambda x: self.element_class(self, [x]))
 
     @cached_method
@@ -258,7 +272,7 @@ class CactusGroup(UniqueRepresentation, Group):
             return self.gens()[i]
         if not (1 <= i < j <= self._n):
             raise ValueError(f"s[{i},{j}] is not a valid generator")
-        return self.element_class(self, [(i,j)])
+        return self.element_class(self, [(i, j)])
 
     @cached_method
     def one(self):
@@ -373,6 +387,7 @@ class CactusGroup(UniqueRepresentation, Group):
             s[1,2]*s[2,3]*s[1,2]*s[1,3]
         """
         from sage.misc.prandom import randint
+
         l = randint(0, max_length)
         gens = list(self.group_generators())
         ret = self.one()
@@ -436,6 +451,7 @@ class CactusGroup(UniqueRepresentation, Group):
         if t is None:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
             from sage.rings.integer_ring import ZZ
+
             t = PolynomialRing(ZZ, 't').gen()
         R = t.parent()
         ret = []
@@ -444,9 +460,12 @@ class CactusGroup(UniqueRepresentation, Group):
             for y in K:
                 if x is y:
                     ret.append(R.one())
-                elif (x[1] < y[0] or x[0] > y[1] or  # Disjoint
-                      (x[0] <= y[0] and y[1] <= x[1]) or  # y <= x
-                      (y[0] <= x[0] and x[1] <= y[1])):  # x <= y
+                elif (
+                    x[1] < y[0]
+                    or x[0] > y[1]  # Disjoint
+                    or (x[0] <= y[0] and y[1] <= x[1])  # y <= x
+                    or (y[0] <= x[0] and x[1] <= y[1])
+                ):  # x <= y
                     ret.append(R.zero())
                 else:
                     ret.append(-t)
@@ -520,6 +539,7 @@ class CactusGroup(UniqueRepresentation, Group):
         F = B.base_ring().fraction_field()
         K = self.group_generators().keys()
         from sage.modules.free_module import FreeModule
+
         V = FreeModule(F, len(K))
         basis = V.basis()
         ret = {}
@@ -548,6 +568,7 @@ class CactusGroup(UniqueRepresentation, Group):
         """
         An element of a cactus group.
         """
+
         def __init__(self, parent, data):
             """
             Initialize ``self``.
@@ -575,7 +596,7 @@ class CactusGroup(UniqueRepresentation, Group):
             """
             if not self._data:
                 return '1'
-            return '*'.join(f"s[{i},{j}]" for i,j in self._data)
+            return '*'.join(f"s[{i},{j}]" for i, j in self._data)
 
         def _latex_(self):
             """
@@ -591,7 +612,7 @@ class CactusGroup(UniqueRepresentation, Group):
             """
             if not self._data:
                 return '1'
-            return " ".join(f"s_{{{i},{j}}}" for i,j in self._data)
+            return " ".join(f"s_{{{i},{j}}}" for i, j in self._data)
 
         def _unicode_art_(self):
             """
@@ -612,11 +633,22 @@ class CactusGroup(UniqueRepresentation, Group):
                 s₃,₁₁
             """
             from sage.typeset.unicode_art import unicode_subscript, unicode_art
+
             if not self._data:
                 return unicode_art('1')
             if self.parent()._n < 10:
-                return unicode_art(' '.join('s{}{}'.format(unicode_subscript(p), unicode_subscript(q)) for p,q in self._data))
-            return unicode_art(' '.join('s{},{}'.format(unicode_subscript(p), unicode_subscript(q)) for p,q in self._data))
+                return unicode_art(
+                    ' '.join(
+                        's{}{}'.format(unicode_subscript(p), unicode_subscript(q))
+                        for p, q in self._data
+                    )
+                )
+            return unicode_art(
+                ' '.join(
+                    's{},{}'.format(unicode_subscript(p), unicode_subscript(q))
+                    for p, q in self._data
+                )
+            )
 
         def __hash__(self):
             r"""
@@ -728,7 +760,7 @@ class CactusGroup(UniqueRepresentation, Group):
             ret = P.one()
             for x in self._data:
                 lst = list(range(1, n + 1))
-                lst[x[0] - 1:x[1]] = list(reversed(lst[x[0] - 1:x[1]]))
+                lst[x[0] - 1 : x[1]] = list(reversed(lst[x[0] - 1 : x[1]]))
                 ret *= P(lst)
             return ret
 
@@ -765,7 +797,7 @@ class CactusGroup(UniqueRepresentation, Group):
                 True
             """
             G = self.parent().geometric_representation_generators()
-            ret = G[(1,2)].parent().one()
+            ret = G[(1, 2)].parent().one()
             for x in self._data:
                 ret *= G[x]
             ret.set_immutable()
@@ -810,11 +842,11 @@ class CactusGroup(UniqueRepresentation, Group):
             G = P._WG  # The defining graph
 
             # Convert to an element in the right-angled Coxeter group
-            perm = list(range(1,n+1))
+            perm = list(range(1, n + 1))
             word = []
-            for p,q in self._data:
-                word.append(P._subsets_inv[frozenset(perm[p-1:q])])
-                perm[p-1:q] = reversed(perm[p-1:q])
+            for p, q in self._data:
+                word.append(P._subsets_inv[frozenset(perm[p - 1 : q])])
+                perm[p - 1 : q] = reversed(perm[p - 1 : q])
 
             # Normalize the word
             # This code works for any right-angled Coxeter group
@@ -828,7 +860,7 @@ class CactusGroup(UniqueRepresentation, Group):
                     if G.has_edge(cur, i):
                         continue
                     did_swap = False
-                    for j in range(pos+1, len(word)):
+                    for j in range(pos + 1, len(word)):
                         if word[j] == i:
                             word.pop(j)
                             if cur == i:  # canceling s_i s_i = 1
@@ -846,15 +878,15 @@ class CactusGroup(UniqueRepresentation, Group):
 
             # Convert back
             ret = []
-            perm = list(range(1,n+1))
+            perm = list(range(1, n + 1))
             for i in word:
                 X = P._subsets[i]
-                pos = [j for j,val in enumerate(perm) if val in X]
-                for j in range(len(pos)//2):
-                    perm[pos[j]], perm[pos[-j-1]] = perm[pos[-j-1]], perm[pos[j]]
+                pos = [j for j, val in enumerate(perm) if val in X]
+                for j in range(len(pos) // 2):
+                    perm[pos[j]], perm[pos[-j - 1]] = perm[pos[-j - 1]], perm[pos[j]]
                 pos.sort()
-                assert all(pos[k] + 1 == pos[k+1] for k in range(len(pos)-1))
-                ret.append((pos[0]+1, pos[-1]+1))
+                assert all(pos[k] + 1 == pos[k + 1] for k in range(len(pos) - 1))
+                ret.append((pos[0] + 1, pos[-1] + 1))
 
             self._data = tuple(ret)
 
@@ -872,6 +904,7 @@ class PureCactusGroup(KernelSubgroup):
         1 \longrightarrow PJ_n \longrightarrow J_n \longrightarrow S_n
         \longrightarrow 1.
     """
+
     def __init__(self, n):
         r"""
         Initialize ``self``.
@@ -885,6 +918,7 @@ class PureCactusGroup(KernelSubgroup):
         """
         J = CactusGroup(n)
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         S = SymmetricGroup(n)
         KernelSubgroup.__init__(self, S.coerce_map_from(J))
 
@@ -972,6 +1006,7 @@ class PureCactusGroup(KernelSubgroup):
             True
         """
         from sage.arith.misc import factorial
+
         J = self.ambient()
         G = J.gens()
         one = J.one()
@@ -993,7 +1028,7 @@ class PureCactusGroup(KernelSubgroup):
         gens = []
         for s in reprs.values():
             for g in G:
-                val = s * g * ~(reprs[(s*g).to_permutation()])
+                val = s * g * ~(reprs[(s * g).to_permutation()])
                 if val == one or val in gens:
                     continue
                 gens.append(val)

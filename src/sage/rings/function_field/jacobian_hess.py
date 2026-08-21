@@ -115,6 +115,7 @@ class JacobianPoint(JacobianPoint_base):
         sage: -(dS.divisor() + ds.divisor()) == pl
         True
     """
+
     def __init__(self, parent, dS, ds) -> None:
         """
         Initialize.
@@ -305,7 +306,10 @@ class JacobianPoint(JacobianPoint_base):
         r"""
         Deprecated alias of ``self * n``.
         """
-        deprecation(41453, 'this method is deprecated, use regular multiplication with * instead')
+        deprecation(
+            41453,
+            'this method is deprecated, use regular multiplication with * instead',
+        )
         return self * n
 
     def defining_divisor(self):
@@ -350,6 +354,7 @@ class JacobianPoint_finite_field(JacobianPoint, JacobianPoint_finite_field_base)
     """
     Points of Jacobians over finite fields
     """
+
     pass
 
 
@@ -380,6 +385,7 @@ class JacobianGroupEmbedding(Map):
           To:   Group of rational points of Jacobian
            over Finite Field in z3 of size 17^3 (Hess model)
     """
+
     def __init__(self, base_group, extension_group) -> None:
         """
         Initialize.
@@ -417,7 +423,9 @@ class JacobianGroupEmbedding(Map):
         self._O_ext = F_ext.maximal_order()
         self._Oinf_ext = F_ext.maximal_order_infinite()
 
-        Map.__init__(self, Hom(base_group, extension_group, CommutativeAdditiveGroups()))
+        Map.__init__(
+            self, Hom(base_group, extension_group, CommutativeAdditiveGroups())
+        )
 
     def _repr_type(self) -> str:
         """
@@ -491,6 +499,7 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         Group of rational points of Jacobian
          over Finite Field of size 17 (Hess model)
     """
+
     Element = JacobianPoint
     _embedding_map_class = JacobianGroupEmbedding
 
@@ -556,21 +565,29 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
             return self.zero()
 
         if isinstance(x, FunctionFieldPlace):
-            if (self._base_place is not None
+            if (
+                self._base_place is not None
                 and x in self._function_field.place_set()
-                and x.degree() == 1):
+                and x.degree() == 1
+            ):
                 x = x - self._base_place
             else:
                 x = x.divisor()
 
-        if (isinstance(x, FunctionFieldDivisor)
-            and x in self._function_field.divisor_group()):
+        if (
+            isinstance(x, FunctionFieldDivisor)
+            and x in self._function_field.divisor_group()
+        ):
             if x.degree() == 0:
                 return self.point(x)
             if x.is_effective():
                 if x.degree() != self._genus:
-                    raise ValueError(f"effective divisor is not of degree {self._genus}")
-                return self.element_class(self, *riemann_roch._divisor_to_inverted_ideals(x))
+                    raise ValueError(
+                        f"effective divisor is not of degree {self._genus}"
+                    )
+                return self.element_class(
+                    self, *riemann_roch._divisor_to_inverted_ideals(x)
+                )
 
         raise ValueError(f"cannot construct a point from {x}")
 
@@ -690,6 +707,7 @@ class JacobianGroup_finite_field(JacobianGroup, JacobianGroup_finite_field_base)
           To:   Group of rational points of Jacobian
            over Finite Field in z3 of size 17^3 (Hess model)
     """
+
     Element = JacobianPoint_finite_field
 
     def __init__(self, parent, function_field, base_div) -> None:
@@ -839,6 +857,7 @@ class Jacobian(Jacobian_base, UniqueRepresentation):
         Jacobian of Projective Plane Curve over Finite Field of size 17
          defined by x^3 - y^2*z + 5*z^3 (Hess model)
     """
+
     def __init__(self, function_field, base_div, **kwds) -> None:
         """
         Initialize.

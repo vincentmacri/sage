@@ -12,6 +12,7 @@ Hecke algebras", which include Hecke operators coprime to the level. Morphisms
 in the category of Hecke modules are not required to commute with the action of
 the full Hecke algebra, only with the anemic algebra.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2004 William Stein <wstein@gmail.com>
 #
@@ -66,7 +67,7 @@ def _heckebasis(M) -> list:
         [0 5]]
     """
     d = M.rank()
-    WW = ZZ**(d**2)
+    WW = ZZ ** (d**2)
     MM = MatrixSpace(QQ, d)
     S = []
     Denom = []
@@ -100,6 +101,7 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
         sage: CuspForms(1, 12).hecke_algebra() # indirect doctest
         Full Hecke algebra acting on Cuspidal subspace of dimension 1 of Modular Forms space of dimension 2 for Modular Group SL(2,Z) of weight 12 over Rational Field
     """
+
     @staticmethod
     def __classcall__(cls, M):
         r"""
@@ -157,6 +159,7 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
         if isinstance(M, tuple):
             M = M[0]
         from .module import HeckeModule_generic
+
         if not isinstance(M, HeckeModule_generic):
             msg = f"M (={M}) must be a HeckeModule"
             raise TypeError(msg)
@@ -223,7 +226,11 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
             ...
             TypeError: Don't know how to construct an element of Anemic Hecke algebra acting on Modular Symbols space of dimension 3 for Gamma_0(11) of weight 2 with sign 0 over Rational Field from Hecke operator T_11 on Modular Symbols space of dimension 3 for Gamma_0(11) of weight 2 with sign 0 over Rational Field
         """
-        from .hecke_operator import HeckeAlgebraElement_matrix, HeckeOperator, HeckeAlgebraElement
+        from .hecke_operator import (
+            HeckeAlgebraElement_matrix,
+            HeckeOperator,
+            HeckeAlgebraElement,
+        )
 
         if not isinstance(x, Element):
             x = self.base_ring()(x)
@@ -237,17 +244,29 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
             return x
 
         if isinstance(x, HeckeOperator):
-            if x.parent() == self \
-                    or (not self.is_anemic() and x.parent() == self.anemic_subalgebra()) \
-                    or (self.is_anemic() and x.parent().anemic_subalgebra() == self and gcd(x.index(), self.level()) == 1):
+            if (
+                x.parent() == self
+                or (not self.is_anemic() and x.parent() == self.anemic_subalgebra())
+                or (
+                    self.is_anemic()
+                    and x.parent().anemic_subalgebra() == self
+                    and gcd(x.index(), self.level()) == 1
+                )
+            ):
                 return HeckeOperator(self, x.index())
 
         if isinstance(x, HeckeAlgebraElement):
-            if x.parent() == self or (not self.is_anemic() and x.parent() == self.anemic_subalgebra()):
+            if x.parent() == self or (
+                not self.is_anemic() and x.parent() == self.anemic_subalgebra()
+            ):
                 if x.parent().module().basis_matrix() == self.module().basis_matrix():
                     return HeckeAlgebraElement_matrix(self, x.matrix())
-                A = matrix([self.module().coordinate_vector(x.parent().module().gen(i))
-                            for i in range(x.parent().module().rank())])
+                A = matrix(
+                    [
+                        self.module().coordinate_vector(x.parent().module().gen(i))
+                        for i in range(x.parent().module().rank())
+                    ]
+                )
                 return HeckeAlgebraElement_matrix(self, ~A * x.matrix() * A)
 
         try:
@@ -258,7 +277,9 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
                     raise NotImplementedError(msg)
             return HeckeAlgebraElement_matrix(self, A)
         except TypeError:
-            raise TypeError("Don't know how to construct an element of %s from %s" % (self, x))
+            raise TypeError(
+                "Don't know how to construct an element of %s from %s" % (self, x)
+            )
 
     def _coerce_map_from_(self, R):
         """
@@ -323,6 +344,7 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
             [0 1]
         """
         from .hecke_operator import HeckeAlgebraElement_matrix
+
         A = self.matrix_space()
         return HeckeAlgebraElement_matrix(self, A.one())
 
@@ -453,8 +475,10 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
                     continue
                 # Lift the projected basis to a basis in the Hecke algebra.
                 trans = proj_span.solve_left(proj_basis)
-                basis = [sum(c * T for c, T in zip(row, span) if c != 0)
-                         for row in trans[:dim]]
+                basis = [
+                    sum(c * T for c, T in zip(row, span) if c != 0)
+                    for row in trans[:dim]
+                ]
                 break
 
         return tuple(basis)
@@ -493,7 +517,9 @@ class HeckeAlgebra_base(CachedRepresentation, Parent):
         trace_matrix = matrix(ZZ, d)
         for i in range(d):
             for j in range(i + 1):
-                trace_matrix[i, j] = trace_matrix[j, i] = basis[i].matrix().trace_of_product(basis[j].matrix())
+                trace_matrix[i, j] = trace_matrix[j, i] = (
+                    basis[i].matrix().trace_of_product(basis[j].matrix())
+                )
         return trace_matrix.det()
 
     def gens(self) -> Iterator:
@@ -577,6 +603,7 @@ class HeckeAlgebra_full(HeckeAlgebra_base):
     A full Hecke algebra (including the operators `T_n` where `n` is not
     assumed to be coprime to the level).
     """
+
     def _repr_(self) -> str:
         r"""
         String representation of ``self``.
@@ -639,6 +666,7 @@ class HeckeAlgebra_anemic(HeckeAlgebra_base):
     r"""
     An anemic Hecke algebra, generated by Hecke operators with index coprime to the level.
     """
+
     def _repr_(self) -> str:
         r"""
         EXAMPLES::
@@ -682,7 +710,9 @@ class HeckeAlgebra_anemic(HeckeAlgebra_base):
         """
         n = int(n)
         if gcd(self.module().level(), n) != 1:
-            raise IndexError("Hecke operator T_%s not defined in the anemic Hecke algebra" % n)
+            raise IndexError(
+                "Hecke operator T_%s not defined in the anemic Hecke algebra" % n
+            )
         return self.module()._hecke_operator_class()(self, n)
 
     def is_anemic(self) -> bool:

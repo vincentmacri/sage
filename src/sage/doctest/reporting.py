@@ -101,6 +101,7 @@ class DocTestReporter(SageObject):
     """
     This class reports to the users on the results of doctests.
     """
+
     def __init__(self, controller):
         """
         Initialize the reporter.
@@ -150,7 +151,10 @@ class DocTestReporter(SageObject):
             False
 
         """
-        if self.controller.options.optional is True or tag in self.controller.options.optional:
+        if (
+            self.controller.options.optional is True
+            or tag in self.controller.options.optional
+        ):
             return True
         return tag in available_software.seen()
 
@@ -186,7 +190,11 @@ class DocTestReporter(SageObject):
             sage: print(DTR.report_head(FDS, "Failed by self-sabotage"))
             ... --long .../sage/doctest/reporting.py  # Failed by self-sabotage
         """
-        cmd = os.path.relpath(argv[0]).replace("-runtests", " -t") if "sage-runtests" in argv[0] else "python3 -m sage.doctest"
+        cmd = (
+            os.path.relpath(argv[0]).replace("-runtests", " -t")
+            if "sage-runtests" in argv[0]
+            else "python3 -m sage.doctest"
+        )
         if self.controller.options.long:
             cmd += " --long"
 
@@ -213,7 +221,9 @@ class DocTestReporter(SageObject):
                 cmd += f" [failed in baseline: {failed}]"
         return cmd
 
-    def _log_failure(self, source, fail_msg, event, output=None, *, process_tree_before_kill=None):
+    def _log_failure(
+        self, source, fail_msg, event, output=None, *, process_tree_before_kill=None
+    ):
         r"""
         Report on the result of a failed doctest run.
 
@@ -266,7 +276,11 @@ class DocTestReporter(SageObject):
             command = f'::error title={fail_msg}'
             command += f',file={source.printpath}'
             if output:
-                if m := re.search("## line ([0-9]+) ##\n-{40,100}\n(.*)", output, re.MULTILINE | re.DOTALL):
+                if m := re.search(
+                    "## line ([0-9]+) ##\n-{40,100}\n(.*)",
+                    output,
+                    re.MULTILINE | re.DOTALL,
+                ):
                     lineno = m.group(1)
                     message = m.group(2)
                     command += f',line={lineno}'
@@ -292,7 +306,17 @@ class DocTestReporter(SageObject):
             log(process_tree_before_kill)
             log(stars)
 
-    def report(self, source, timeout, return_code, results, output, pid=None, *, process_tree_before_kill=None):
+    def report(
+        self,
+        source,
+        timeout,
+        return_code,
+        results,
+        output,
+        pid=None,
+        *,
+        process_tree_before_kill=None,
+    ):
         """
         Report on the result of running doctests on a given source.
 
@@ -506,7 +530,13 @@ class DocTestReporter(SageObject):
                         fail_msg += " (and interrupt failed)"
                     else:
                         fail_msg += " (with %s after interrupt)" % signal_name(sig)
-                self._log_failure(source, fail_msg, f"{process_name} timed out", output, process_tree_before_kill=process_tree_before_kill)
+                self._log_failure(
+                    source,
+                    fail_msg,
+                    f"{process_name} timed out",
+                    output,
+                    process_tree_before_kill=process_tree_before_kill,
+                )
                 postscript['lines'].append(self.report_head(source, fail_msg))
                 stats[basename] = {"failed": True, "walltime": 1e6, "ntests": ntests}
                 if not baseline.get('failed', False):
@@ -522,23 +552,45 @@ class DocTestReporter(SageObject):
                 postscript['lines'].append(self.report_head(source, fail_msg))
                 stats[basename] = {"failed": True, "walltime": 1e6, "ntests": ntests}
                 if not baseline.get('failed', False):
-                    self.error_status |= (8 if return_code > 0 else 16)
+                    self.error_status |= 8 if return_code > 0 else 16
             else:
-                if hasattr(result_dict, 'walltime') and hasattr(result_dict.walltime, '__len__') and len(result_dict.walltime) > 0:
+                if (
+                    hasattr(result_dict, 'walltime')
+                    and hasattr(result_dict.walltime, '__len__')
+                    and len(result_dict.walltime) > 0
+                ):
                     wall = sum(result_dict.walltime) / len(result_dict.walltime)
                 else:
                     wall = 1e6
-                if hasattr(result_dict, 'cputime') and hasattr(result_dict.cputime, '__len__') and len(result_dict.cputime) > 0:
+                if (
+                    hasattr(result_dict, 'cputime')
+                    and hasattr(result_dict.cputime, '__len__')
+                    and len(result_dict.cputime) > 0
+                ):
                     cpu = sum(result_dict.cputime) / len(result_dict.cputime)
                 else:
                     cpu = 1e6
                 if result_dict.err == 'badresult':
-                    self._log_failure(source, "Error in doctesting framework (bad result returned)", "error", output)
-                    postscript['lines'].append(self.report_head(source, "Testing error: bad result"))
+                    self._log_failure(
+                        source,
+                        "Error in doctesting framework (bad result returned)",
+                        "error",
+                        output,
+                    )
+                    postscript['lines'].append(
+                        self.report_head(source, "Testing error: bad result")
+                    )
                     self.error_status |= 64
                 elif result_dict.err == 'noresult':
-                    self._log_failure(source, "Error in doctesting framework (no result returned)", "error", output)
-                    postscript['lines'].append(self.report_head(source, "Testing error: no result"))
+                    self._log_failure(
+                        source,
+                        "Error in doctesting framework (no result returned)",
+                        "error",
+                        output,
+                    )
+                    postscript['lines'].append(
+                        self.report_head(source, "Testing error: no result")
+                    )
                     self.error_status |= 64
                 elif result_dict.err == 'tab':
                     if len(result_dict.tab_linenos) > 5:
@@ -547,11 +599,15 @@ class DocTestReporter(SageObject):
                     if len(result_dict.tab_linenos) > 1:
                         tabs = "s" + tabs
                     log("    Error: TAB character found at line%s" % (tabs))
-                    postscript['lines'].append(self.report_head(source, "Tab character found"))
+                    postscript['lines'].append(
+                        self.report_head(source, "Tab character found")
+                    )
                     self.error_status |= 32
                 elif result_dict.err == 'line_number':
                     log("    Error: Source line number found")
-                    postscript['lines'].append(self.report_head(source, "Source line number found"))
+                    postscript['lines'].append(
+                        self.report_head(source, "Source line number found")
+                    )
                     self.error_status |= 256
                 elif result_dict.err is not None:
                     # This case should not occur
@@ -568,9 +624,17 @@ class DocTestReporter(SageObject):
                     if hasattr(result_dict, 'tb'):
                         log(result_dict.tb)
                     if hasattr(result_dict, 'walltime'):
-                        stats[basename] = {"failed": True, "walltime": wall, "ntests": ntests}
+                        stats[basename] = {
+                            "failed": True,
+                            "walltime": wall,
+                            "ntests": ntests,
+                        }
                     else:
-                        stats[basename] = {"failed": True, "walltime": 1e6, "ntests": ntests}
+                        stats[basename] = {
+                            "failed": True,
+                            "walltime": 1e6,
+                            "ntests": ntests,
+                        }
                     # This codepath is triggered by doctests that test some timeout
                     # ("AlarmInterrupt in doctesting framework") or other signal handling
                     # behavior. This is why we handle the baseline in this codepath,
@@ -585,7 +649,11 @@ class DocTestReporter(SageObject):
                         if not baseline.get('failed', False):
                             self.error_status |= 1
                     if f or result_dict.err == 'tab':
-                        stats[basename] = {"failed": True, "walltime": wall, "ntests": ntests}
+                        stats[basename] = {
+                            "failed": True,
+                            "walltime": wall,
+                            "ntests": ntests,
+                        }
                     else:
                         stats[basename] = {"walltime": wall, "ntests": ntests}
                     postscript['cputime'] += cpu
@@ -600,26 +668,47 @@ class DocTestReporter(SageObject):
                         if tag == "long time":
                             if not self.controller.options.long:
                                 if self.controller.options.show_skipped:
-                                    log("    %s not run" % (count_noun(nskipped, "long test")))
+                                    log(
+                                        "    %s not run"
+                                        % (count_noun(nskipped, "long test"))
+                                    )
                         elif tag == "not tested":
                             if self.controller.options.show_skipped:
-                                log("    %s not run" % (count_noun(nskipped, "not tested test")))
+                                log(
+                                    "    %s not run"
+                                    % (count_noun(nskipped, "not tested test"))
+                                )
                         elif tag == "not implemented":
                             if self.controller.options.show_skipped:
-                                log("    %s for not implemented functionality not run" % (count_noun(nskipped, "test")))
+                                log(
+                                    "    %s for not implemented functionality not run"
+                                    % (count_noun(nskipped, "test"))
+                                )
                         elif not self.were_doctests_with_optional_tag_run(tag):
                             if tag == "bug":
                                 if self.controller.options.show_skipped:
-                                    log("    %s not run due to known bugs" % (count_noun(nskipped, "test")))
+                                    log(
+                                        "    %s not run due to known bugs"
+                                        % (count_noun(nskipped, "test"))
+                                    )
                             elif tag == "":
                                 if self.controller.options.show_skipped:
-                                    log("    %s not run" % (count_noun(nskipped, "unlabeled test")))
+                                    log(
+                                        "    %s not run"
+                                        % (count_noun(nskipped, "unlabeled test"))
+                                    )
                             elif self.controller.options.show_skipped:
-                                log("    %s not run" % (count_noun(nskipped, tag + " test")))
+                                log(
+                                    "    %s not run"
+                                    % (count_noun(nskipped, tag + " test"))
+                                )
 
                     nskipped = result_dict.walltime_skips
                     if self.controller.options.show_skipped:
-                        log("    %s not run because we ran out of time" % (count_noun(nskipped, "test")))
+                        log(
+                            "    %s not run because we ran out of time"
+                            % (count_noun(nskipped, "test"))
+                        )
 
                     if nskipped != 0:
                         # It would be nice to report "a/b tests run" instead of
@@ -630,16 +719,26 @@ class DocTestReporter(SageObject):
                         # tests multiple times, and some other unclear mangling
                         # of these numbers that was not clear to the author.
                         ntests_run = result_dict.tests
-                        total = "%d%% of tests run" % (round(100*ntests_run/float(ntests_run + nskipped)))
+                        total = "%d%% of tests run" % (
+                            round(100 * ntests_run / float(ntests_run + nskipped))
+                        )
                     else:
                         total = count_noun(ntests, "test")
                     if not (self.controller.options.only_errors and not f):
-                        log("    [%s, %s%.2fs wall]" % (total, "%s, " % (count_noun(f, "failure")) if f else "", wall))
+                        log(
+                            "    [%s, %s%.2fs wall]"
+                            % (
+                                total,
+                                "%s, " % (count_noun(f, "failure")) if f else "",
+                                wall,
+                            )
+                        )
 
             self.sources_completed += 1
 
         except Exception:
             import traceback
+
             log(traceback.format_exc(), end="")
 
     def finalize(self):
@@ -728,8 +827,14 @@ class DocTestReporter(SageObject):
         """
         log = self.controller.log
         postscript = self.postscript
-        if self.sources_completed < len(self.controller.sources) * self.controller.options.global_iterations:
-            postscript['lines'].append("Doctests interrupted: %s/%s files tested" % (self.sources_completed, len(self.controller.sources)))
+        if (
+            self.sources_completed
+            < len(self.controller.sources) * self.controller.options.global_iterations
+        ):
+            postscript['lines'].append(
+                "Doctests interrupted: %s/%s files tested"
+                % (self.sources_completed, len(self.controller.sources))
+            )
             self.error_status |= 128
         elif not postscript['lines']:
             postscript['lines'].append("All tests passed!")

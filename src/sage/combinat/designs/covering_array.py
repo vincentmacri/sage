@@ -52,6 +52,7 @@ AUTHORS:
 # **********************************************************************
 
 from .orthogonal_arrays import OA_relabel, OA_standard_label
+
 CA_relabel = OA_relabel
 CA_standard_label = OA_standard_label
 
@@ -126,12 +127,13 @@ def Kleitman_Spencer_Katona(N):
     """
     from itertools import combinations
     from sage.arith.misc import integer_ceil
+
     if N < 4:
         raise ValueError("N must be greater than 3")
 
     col_list = []
-    for p in combinations(range(N-1), integer_ceil(N/2)):
-        S = [0]*N
+    for p in combinations(range(N - 1), integer_ceil(N / 2)):
+        S = [0] * N
         for i in p:
             S[i] = 1
         col_list.append(S)
@@ -163,14 +165,28 @@ def column_Kleitman_Spencer_Katona(k):
         NotImplementedError: not implemented for k > 24310
 
     """
-    kdict = [(3, 4), (4, 5), (10, 6), (15, 7), (35, 8), (56, 9),
-             (126, 10), (210, 11), (462, 12), (792, 13), (1716, 14),
-             (3003, 15), (6435, 16), (11440, 17), (24310, 18)]
+    kdict = [
+        (3, 4),
+        (4, 5),
+        (10, 6),
+        (15, 7),
+        (35, 8),
+        (56, 9),
+        (126, 10),
+        (210, 11),
+        (462, 12),
+        (792, 13),
+        (1716, 14),
+        (3003, 15),
+        (6435, 16),
+        (11440, 17),
+        (24310, 18),
+    ]
 
     if k > kdict[-1][0]:
         raise NotImplementedError("not implemented for k > {}".format(kdict[-1][0]))
 
-    for (ki, N) in kdict:
+    for ki, N in kdict:
         if k <= ki:
             return truncate_columns(Kleitman_Spencer_Katona(N), k)
 
@@ -261,6 +277,9 @@ def covering_array(strength, number_columns, levels):
     if orthogonal_array(number_columns, levels, strength, existence=True) is True:
         return orthogonal_array(number_columns, levels, strength)
 
-    print("No direct construction known and/or implemented for a CA(N; {}, {}, {})".format(
-        strength, number_columns, levels))
+    print(
+        "No direct construction known and/or implemented for a CA(N; {}, {}, {})".format(
+            strength, number_columns, levels
+        )
+    )
     return

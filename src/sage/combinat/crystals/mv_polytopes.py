@@ -7,7 +7,7 @@ AUTHORS:
 - Dinakar Muthiah, Travis Scrimshaw (2015-05-11): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Dinakar Muthiah <muthiah at ualberta.ca>
 #                     2015 Travis Scrimshaw <tscrimsh at umn.edu>
 #
@@ -16,7 +16,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.combinat.crystals.pbw_crystal import PBWCrystalElement, PBWCrystal
 
 
@@ -57,7 +57,9 @@ class MVPolytope(PBWCrystalElement):
             sage: b
             MV polytope with Lusztig datum (0, 1, ..., 1, 0, 0, 0, 0, 0, 0, 3, 1)
         """
-        pbw_datum = self._pbw_datum.convert_to_new_long_word(self.parent()._default_word)
+        pbw_datum = self._pbw_datum.convert_to_new_long_word(
+            self.parent()._default_word
+        )
         return "MV polytope with Lusztig datum {}".format(pbw_datum.lusztig_datum)
 
     def _latex_(self):
@@ -99,10 +101,12 @@ class MVPolytope(PBWCrystalElement):
         proj = plot_options.projection
         if proj(P.zero()).parent().dimension() != 2:
             from sage.misc.latex import latex
+
             return latex(repr(self))
 
         # We need this to use tikz
         from sage.graphs.graph_latex import setup_latex_preamble
+
         setup_latex_preamble()
 
         pbw_data = self._pbw_datum.parent
@@ -117,8 +121,10 @@ class MVPolytope(PBWCrystalElement):
             cur = proj(P.zero())
             red = tuple(red)
             ret += str(cur)
-            roots = [proj(P.sum(c*al[a] for a,c in root))
-                     for root in pbw_data._root_list_from(red)]
+            roots = [
+                proj(P.sum(c * al[a] for a, c in root))
+                for root in pbw_data._root_list_from(red)
+            ]
             datum = pbw_data.convert_to_new_long_word(self._pbw_datum, red)
             for i in reversed(range(len(datum.lusztig_datum))):
                 cur -= roots[i] * datum.lusztig_datum[i]
@@ -128,7 +134,9 @@ class MVPolytope(PBWCrystalElement):
 
         if latex_options["mark_endpoints"]:
             circle_size = latex_options["circle_size"]
-            ret += "\\draw[fill=black] {} circle ({});\n".format(proj(P.zero()), circle_size)
+            ret += "\\draw[fill=black] {} circle ({});\n".format(
+                proj(P.zero()), circle_size
+            )
             ret += "\\draw[fill=black] {} circle ({});\n".format(final, circle_size)
         ret += "\\end{tikzpicture}"
         return ret
@@ -164,10 +172,12 @@ class MVPolytope(PBWCrystalElement):
         for red in sorted(w0.reduced_words()):
             cur = P.zero()
             red = tuple(red)
-            roots = [P.sum(c*al[a] for a,c in root)
-                     for root in pbw_data._root_list_from(red)]
+            roots = [
+                P.sum(c * al[a] for a, c in root)
+                for root in pbw_data._root_list_from(red)
+            ]
             datum = pbw_data.convert_to_new_long_word(self._pbw_datum, red)
-            for i,c in enumerate(datum.lusztig_datum):
+            for i, c in enumerate(datum.lusztig_datum):
                 cur = cur + roots[i] * c
                 vertices.add(cur)
         return list(vertices)
@@ -199,6 +209,7 @@ class MVPolytope(PBWCrystalElement):
             P = self.parent().weight_lattice_realization()
 
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         return Polyhedron([v.to_vector() for v in self._polytope_vertices(P)])
 
     def plot(self, P=None, **options):
@@ -368,10 +379,12 @@ class MVPolytopes(PBWCrystal):
             sage: TestSuite(MV).run()
         """
         PBWCrystal.__init__(self, cartan_type)
-        self._latex_options = {"projection": True,
-                               "mark_endpoints": True,
-                               "P": self.weight_lattice_realization(),
-                               "circle_size": 0.1}
+        self._latex_options = {
+            "projection": True,
+            "mark_endpoints": True,
+            "P": self.weight_lattice_realization(),
+            "circle_size": 0.1,
+        }
 
     def _repr_(self):
         """
@@ -461,6 +474,7 @@ class MVPolytopes(PBWCrystal):
              'projection': True}
         """
         from copy import copy
+
         return copy(self._latex_options)
 
     Element = MVPolytope

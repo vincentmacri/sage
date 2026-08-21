@@ -31,10 +31,13 @@ class FinitelyGeneratedLieConformalAlgebras(CategoryWithAxiom_over_base_ring):
         sage: LieConformalAlgebras(QQbar).FinitelyGenerated()                           # needs sage.rings.number_field
         Category of finitely generated Lie conformal algebras over Algebraic Field
     """
-    _base_category_class_and_axiom = (LieConformalAlgebras, "FinitelyGeneratedAsLambdaBracketAlgebra")
+
+    _base_category_class_and_axiom = (
+        LieConformalAlgebras,
+        "FinitelyGeneratedAsLambdaBracketAlgebra",
+    )
 
     class ParentMethods:
-
         def some_elements(self):
             """
             Some elements of this Lie conformal algebra.
@@ -53,8 +56,9 @@ class FinitelyGeneratedLieConformalAlgebras(CategoryWithAxiom_over_base_ring):
             """
             S = list(self.gens())
             from sage.misc.misc import some_tuples
-            for x,y in some_tuples(S, 2, 0, max_samples=self.ngens()):
-                S.append(x.T() + 2*y.T(2))
+
+            for x, y in some_tuples(S, 2, 0, max_samples=self.ngens()):
+                S.append(x.T() + 2 * y.T(2))
             return S
 
     class Super(SuperModulesCategory):
@@ -67,6 +71,7 @@ class FinitelyGeneratedLieConformalAlgebras(CategoryWithAxiom_over_base_ring):
             Category of super finitely generated Lie conformal algebras
              over Algebraic Real Field
         """
+
         class Graded(GradedModulesCategory):
             """
             The category of H-graded super finitely generated Lie conformal algebras.
@@ -77,6 +82,7 @@ class FinitelyGeneratedLieConformalAlgebras(CategoryWithAxiom_over_base_ring):
                 Category of H-graded super finitely generated Lie conformal algebras
                  over Algebraic Field
             """
+
             def _repr_object_names(self):
                 """
                 The names of the objects of ``self``.
@@ -100,6 +106,7 @@ class FinitelyGeneratedLieConformalAlgebras(CategoryWithAxiom_over_base_ring):
             Category of H-graded finitely generated Lie conformal algebras
              over Algebraic Field
         """
+
         def _repr_object_names(self):
             """
             The names of the objects of ``self``.

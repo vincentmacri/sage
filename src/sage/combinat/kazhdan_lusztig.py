@@ -18,7 +18,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from sage.rings.polynomial.polynomial_element import Polynomial
 from sage.misc.cachefunc import cached_method
 from sage.rings.polynomial.laurent_polynomial import LaurentPolynomial
@@ -114,12 +113,12 @@ class KazhdanLusztigPolynomial(UniqueRepresentation, SageObject):
                 return self._base_ring.one()
             return self._base_ring.zero()
         s = self._coxeter_group.simple_reflection(y.first_descent(side='left'))
-        if (s*x).length() < x.length():
-            ret = self.R(s*x,s*y)
+        if (s * x).length() < x.length():
+            ret = self.R(s * x, s * y)
             if self._trace:
                 print("  R(%s,%s)=%s" % (x, y, ret))
             return ret
-        ret = (self._q-1)*self.R(s*x,y)+self._q*self.R(s*x,s*y)
+        ret = (self._q - 1) * self.R(s * x, y) + self._q * self.R(s * x, s * y)
         if self._trace:
             print("  R(%s,%s)=%s" % (x, y, ret))
         return ret
@@ -202,8 +201,11 @@ class KazhdanLusztigPolynomial(UniqueRepresentation, SageObject):
             if x.length() == 0:
                 return self._base_ring.one()
             return self._base_ring.zero()
-        p = sum(-self.R(x, t) * self.P(t, y)
-                for t in self._coxeter_group.bruhat_interval(x, y) if t != x)
+        p = sum(
+            -self.R(x, t) * self.P(t, y)
+            for t in self._coxeter_group.bruhat_interval(x, y)
+            if t != x
+        )
         tr = (y.length() - x.length() + 1) // 2
         ret = p.truncate(tr)
         if self._trace:

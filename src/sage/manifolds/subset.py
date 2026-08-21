@@ -54,6 +54,7 @@ Families of subsets after the above operations::
     Set {A, A_inter_B, A_union_B, B} of subsets
     of the 2-dimensional topological manifold M
 """
+
 # ***************************************************************************
 #       Copyright (C) 2015-2020 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015      Michal Bejger <bejger@camk.edu.pl>
@@ -191,9 +192,12 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         if self is not manifold:
             for dom in manifold._subsets:
                 if name == dom._name:
-                    raise ValueError("the name '" + name +
-                                     "' is already used for another " +
-                                     "subset of the {}".format(manifold))
+                    raise ValueError(
+                        "the name '"
+                        + name
+                        + "' is already used for another "
+                        + "subset of the {}".format(manifold)
+                    )
             manifold._subsets.add(self)
 
         # subsets containing self
@@ -212,7 +216,7 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         self._unions = {}
 
         self._open_covers = []  # list of open covers of self
-        self._is_open = False   # a priori (may be redefined by subclasses)
+        self._is_open = False  # a priori (may be redefined by subclasses)
         self._manifold = manifold  # the ambient manifold
         self._has_defined_points = False
 
@@ -263,8 +267,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
 
     # ### Methods required for any Parent in the category of sets:
 
-    def _element_constructor_(self, coords=None, chart=None, name=None,
-                              latex_name=None, check_coords=True):
+    def _element_constructor_(
+        self, coords=None, chart=None, name=None, latex_name=None, check_coords=True
+    ):
         r"""
         Construct a point in the subset from its coordinates in some chart.
 
@@ -345,16 +350,21 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             if point.parent() is self:
                 return point
             if point in self:
-                resu = self.element_class(self, name=point._name,
-                                          latex_name=point._latex_name)
+                resu = self.element_class(
+                    self, name=point._name, latex_name=point._latex_name
+                )
                 for chart, coords in point._coordinates.items():
                     resu._coordinates[chart] = coords
                 return resu
-            raise ValueError("the {}".format(point) +
-                             " is not in {}".format(self))
-        return self.element_class(self, coords=coords, chart=chart,
-                                  name=name, latex_name=latex_name,
-                                  check_coords=check_coords)
+            raise ValueError("the {}".format(point) + " is not in {}".format(self))
+        return self.element_class(
+            self,
+            coords=coords,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            check_coords=check_coords,
+        )
 
     def _an_element_(self):
         r"""
@@ -693,8 +703,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             sage: M.open_cover_family()
             Set {{A, B, V}, {M}, {U, V}} of objects of the 2-dimensional topological manifold M
         """
-        return ManifoldObjectFiniteFamily(self.open_covers(
-            trivial=trivial, supersets=supersets))
+        return ManifoldObjectFiniteFamily(
+            self.open_covers(trivial=trivial, supersets=supersets)
+        )
 
     def open_supersets(self):
         r"""
@@ -806,7 +817,14 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         """
         return ManifoldSubsetFiniteFamily(self.subsets())
 
-    def subset_digraph(self, loops=False, quotient=False, open_covers=False, points=False, lower_bound=None):
+    def subset_digraph(
+        self,
+        loops=False,
+        quotient=False,
+        open_covers=False,
+        points=False,
+        lower_bound=None,
+    ):
         r"""
         Return the digraph whose arcs represent subset relations among the subsets of ``self``.
 
@@ -887,22 +905,27 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             sphinx_plot(graphics_array([g1, g2, g3]), figsize=(8, 3))
         """
         from sage.graphs.digraph import DiGraph
+
         D = DiGraph(multiedges=False, loops=loops)
 
         if loops:
             add_edges = D.add_edges
         else:
+
             def add_edges(edges):
                 for u, v in edges:
                     if u != v:
                         D.add_edge((u, v))
 
         if quotient:
+
             def vertex_family(subset):
                 return ManifoldSubsetFiniteFamily(subset.equal_subsets())
         else:
+
             def vertex_family(subset):
                 return ManifoldSubsetFiniteFamily([subset])
+
         subset_to_vertex = {}
 
         def vertex(subset):
@@ -928,13 +951,13 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             if lower_bound is None:
                 subsets = S._subsets
             else:
-                subsets = [subset for subset in S._subsets
-                           if lower_bound.is_subset(subset)]
+                subsets = [
+                    subset for subset in S._subsets if lower_bound.is_subset(subset)
+                ]
 
             add_edges((vertex(subset), vertex(S)) for subset in subsets)
 
-            subsets_without_S = [subset for subset in subsets
-                                 if subset is not S]
+            subsets_without_S = [subset for subset in subsets if subset is not S]
             to_visit.extend(subsets_without_S)
 
         # Make sure to include isolated vertices in the graph
@@ -943,11 +966,17 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         if open_covers:
 
             def open_cover_vertex(open_cover):
-                return tuple(sorted(ManifoldSubsetFiniteFamily([subset]) for subset in open_cover))
+                return tuple(
+                    sorted(
+                        ManifoldSubsetFiniteFamily([subset]) for subset in open_cover
+                    )
+                )
 
             for S in visited:
-                add_edges((vertex(S), open_cover_vertex(open_cover))
-                          for open_cover in S.open_covers(trivial=False))
+                add_edges(
+                    (vertex(S), open_cover_vertex(open_cover))
+                    for open_cover in S.open_covers(trivial=False)
+                )
 
         if points is not False:
             subset_to_points = defaultdict(list)
@@ -967,10 +996,11 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             def anonymous_point_vertex(S):
                 return f"p{S._name}"
 
-            add_edges((anonymous_point_vertex(S), vertex(S))
-                      for S in visited
-                      if S.has_defined_points(subsets=False)
-                      and S not in subset_to_points)
+            add_edges(
+                (anonymous_point_vertex(S), vertex(S))
+                for S in visited
+                if S.has_defined_points(subsets=False) and S not in subset_to_points
+            )
 
         return D
 
@@ -1051,8 +1081,15 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             sphinx_plot(graphics_array([g1, g2, g3]), figsize=(8, 3))
         """
         from sage.combinat.posets.posets import Poset
-        return Poset(self.subset_digraph(open_covers=open_covers, points=points,
-                                         quotient=True, lower_bound=lower_bound))
+
+        return Poset(
+            self.subset_digraph(
+                open_covers=open_covers,
+                points=points,
+                quotient=True,
+                lower_bound=lower_bound,
+            )
+        )
 
     def equal_subsets(self):
         r"""
@@ -1144,7 +1181,14 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         """
         return ManifoldSubsetFiniteFamily(self.supersets())
 
-    def superset_digraph(self, loops=False, quotient=False, open_covers=False, points=False, upper_bound=None):
+    def superset_digraph(
+        self,
+        loops=False,
+        quotient=False,
+        open_covers=False,
+        points=False,
+        upper_bound=None,
+    ):
         r"""
         Return the digraph whose arcs represent subset relations among the supersets of ``self``.
 
@@ -1171,8 +1215,13 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         """
         if upper_bound is None:
             upper_bound = self._manifold
-        return upper_bound.subset_digraph(loops=loops, open_covers=open_covers, points=points,
-                                          quotient=quotient, lower_bound=self)
+        return upper_bound.subset_digraph(
+            loops=loops,
+            open_covers=open_covers,
+            points=points,
+            quotient=quotient,
+            lower_bound=self,
+        )
 
     def superset_poset(self, open_covers=False, points=False, upper_bound=None):
         r"""
@@ -1197,8 +1246,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         """
         if upper_bound is None:
             upper_bound = self._manifold
-        return upper_bound.subset_poset(open_covers=open_covers, points=points,
-                                        lower_bound=self)
+        return upper_bound.subset_poset(
+            open_covers=open_covers, points=points, lower_bound=self
+        )
 
     def get_subset(self, name):
         r"""
@@ -1341,7 +1391,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             g3 = P.plot(element_labels={element: label(element) for element in P})
             sphinx_plot(graphics_array([g1, g2, g3]), figsize=(8, 3))
         """
-        subsets = ManifoldSubsetFiniteFamily.from_subsets_or_families(*subsets_or_families)
+        subsets = ManifoldSubsetFiniteFamily.from_subsets_or_families(
+            *subsets_or_families
+        )
         if disjoint:
             for U, V in itertools.combinations(subsets, 2):
                 U.intersection(V).declare_empty()
@@ -1384,15 +1436,18 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         """
         if dom1 == dom2:
             if dom1 != self:
-                raise ValueError("the union of two identical sets must be " +
-                                 "this set")
+                raise ValueError(
+                    "the union of two identical sets must be " + "this set"
+                )
             return
         if not dom1.is_subset(self):
-            raise TypeError("the {} is not a subset of ".format(dom1) +
-                            "the {}".format(self))
+            raise TypeError(
+                "the {} is not a subset of ".format(dom1) + "the {}".format(self)
+            )
         if not dom2.is_subset(self):
-            raise TypeError("the {} is not a subset of ".format(dom2) +
-                            "the {}".format(self))
+            raise TypeError(
+                "the {} is not a subset of ".format(dom2) + "the {}".format(self)
+            )
         dom1._unions[dom2._name] = self
         dom2._unions[dom1._name] = self
         for oc1 in dom1._open_covers:
@@ -1716,8 +1771,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         if self.has_defined_points(subsets=False):
             # Fast path, do not check subsets
             return False
-        return any(not cover
-                   for cover in self.open_covers(trivial=False, supersets=True))
+        return any(
+            not cover for cover in self.open_covers(trivial=False, supersets=True)
+        )
 
     def declare_nonempty(self):
         r"""
@@ -1746,7 +1802,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             # Fast path, do not check subsets
             return
         if self.is_empty():
-            raise TypeError('cannot be nonempty because it has already been declared empty')
+            raise TypeError(
+                'cannot be nonempty because it has already been declared empty'
+            )
         self._has_defined_points = True
 
     def has_defined_points(self, subsets=True) -> bool:
@@ -1820,8 +1878,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             sage: q._coordinates
             {Chart (A, (u, v)): (-1, 0)}
         """
-        return self.element_class(self, coords=coords, chart=chart,
-                                  name=name, latex_name=latex_name)
+        return self.element_class(
+            self, coords=coords, chart=chart, name=name, latex_name=latex_name
+        )
 
     def declare_closed(self):
         r"""
@@ -1848,6 +1907,7 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             return
         self.complement(is_open=True)
         from sage.manifolds.subsets.closure import ManifoldSubsetClosure
+
         for closure in self.manifold().subsets():
             if isinstance(closure, ManifoldSubsetClosure):
                 if closure._subset.is_subset(self):
@@ -1974,9 +2034,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             supersets = set(supersets)
         supersets.update([self])
         # Delegate to the manifold's method.
-        return self._manifold.open_subset(name, latex_name=latex_name,
-                                          coord_def=coord_def,
-                                          supersets=supersets)
+        return self._manifold.open_subset(
+            name, latex_name=latex_name, coord_def=coord_def, supersets=supersets
+        )
 
     def _init_open_subset(self, resu, coord_def):
         r"""
@@ -2072,7 +2132,12 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             res._def_chart = self._def_chart
         return res
 
-    def intersection(self, *others: ManifoldSubset, name: Optional[str] = None, latex_name: Optional[str] = None) -> ManifoldSubset:
+    def intersection(
+        self,
+        *others: ManifoldSubset,
+        name: Optional[str] = None,
+        latex_name: Optional[str] = None,
+    ) -> ManifoldSubset:
         r"""
         Return the intersection of the current subset with other subsets.
 
@@ -2241,9 +2306,10 @@ class ManifoldSubset(UniqueRepresentation, Parent):
                     subsets.add(UV)
                     return True
             return False
+
         while reduce():
             pass
-        assert subsets   # there must be a survivor
+        assert subsets  # there must be a survivor
         return ManifoldSubsetFiniteFamily(subsets)
 
     def _intersection_subset(self, *others, name=None, latex_name=None):
@@ -2463,6 +2529,7 @@ class ManifoldSubset(UniqueRepresentation, Parent):
                     subsets.add(UV)
                     return True
             return False
+
         while reduce():
             pass
         return ManifoldSubsetFiniteFamily(subsets)
@@ -2574,9 +2641,9 @@ class ManifoldSubset(UniqueRepresentation, Parent):
             superset = self.manifold()
         elif not self.is_subset(superset):
             raise TypeError("superset must be a superset of self")
-        return superset.difference(self,
-                                   name=name, latex_name=latex_name,
-                                   is_open=is_open)
+        return superset.difference(
+            self, name=name, latex_name=latex_name, is_open=is_open
+        )
 
     def difference(self, other, name=None, latex_name=None, is_open=False):
         r"""
@@ -2656,8 +2723,7 @@ class ManifoldSubset(UniqueRepresentation, Parent):
 
         if latex_name is None:
             if name is None:
-                latex_name = r'\setminus '.join(S._latex_name
-                                                for S in (self, other))
+                latex_name = r'\setminus '.join(S._latex_name for S in (self, other))
             else:
                 latex_name = name
         if name is None:
@@ -2713,6 +2779,7 @@ class ManifoldSubset(UniqueRepresentation, Parent):
         if self.is_closed():
             return self
         from sage.manifolds.subsets.closure import ManifoldSubsetClosure
+
         return ManifoldSubsetClosure(self, name=name, latex_name=latex_name)
 
     # ### End of construction of new sets from self

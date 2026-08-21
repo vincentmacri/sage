@@ -11,7 +11,6 @@ Congruence subgroup `\Gamma_1(N)`
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.arith.misc import divisors, moebius
 from sage.arith.misc import euler_phi as phi
 from sage.misc.cachefunc import cached_method
@@ -48,6 +47,7 @@ def Gamma1_constructor(N):
         from .congroup_gamma0 import (
             Gamma0_constructor,
         )
+
         return Gamma0_constructor(N)
     try:
         return _gamma1_cache[N]
@@ -77,6 +77,7 @@ class Gamma1_class(GammaH_class):
         sage: Gamma1(23).dimension_cusp_forms(1)
         1
     """
+
     def __init__(self, level) -> None:
         r"""
         The congruence subgroup `\Gamma_1(N)`.
@@ -208,10 +209,14 @@ class Gamma1_class(GammaH_class):
             from sage.modular.modsym.g1list import G1list
 
             from .congroup import generators_helper
+
             level = self.level()
             gen_list = generators_helper(G1list(level), level)
             return [self(g, check=False) for g in gen_list]
-        raise ValueError("Unknown algorithm '%s' (should be either 'farey' or 'todd-coxeter')" % algorithm)
+        raise ValueError(
+            "Unknown algorithm '%s' (should be either 'farey' or 'todd-coxeter')"
+            % algorithm
+        )
 
     def _contains_sl2(self, a, b, c, d):
         r"""
@@ -234,7 +239,7 @@ class Gamma1_class(GammaH_class):
         """
         N = self.level()
         # don't need to check d == 1 mod N as this is automatic from det
-        return ((a % N == 1) and (c % N == 0))
+        return (a % N == 1) and (c % N == 0)
 
     def nu2(self):
         r"""
@@ -291,7 +296,7 @@ class Gamma1_class(GammaH_class):
         n = self.level()
         if n <= 4:
             return [None, 1, 2, 2, 3][n]
-        return ZZ(sum([phi(d)*phi(n/d)/ZZ(2) for d in n.divisors()]))
+        return ZZ(sum([phi(d) * phi(n / d) / ZZ(2) for d in n.divisors()]))
 
     def index(self):
         r"""
@@ -308,7 +313,9 @@ class Gamma1_class(GammaH_class):
             sage: [Gamma1(n).projective_index() for n in [1..16]]
             [1, 3, 4, 6, 12, 12, 24, 24, 36, 36, 60, 48, 84, 72, 96, 96]
         """
-        return prod([p**(2*e) - p**(2*e-2) for (p,e) in self.level().factor()])
+        return prod(
+            [p ** (2 * e) - p ** (2 * e - 2) for (p, e) in self.level().factor()]
+        )
 
     ##################################################################################
     # Dimension formulas for Gamma1, accepting a Dirichlet character as an argument. #
@@ -363,7 +370,9 @@ class Gamma1_class(GammaH_class):
             sage: Gamma1(39).dimension_modular_forms(2, G[1], algorithm='Quer')
             7
         """
-        return self.dimension_cusp_forms(k, eps, algorithm) + self.dimension_eis(k, eps, algorithm)
+        return self.dimension_cusp_forms(k, eps, algorithm) + self.dimension_eis(
+            k, eps, algorithm
+        )
 
     def dimension_cusp_forms(self, k=2, eps=None, algorithm='CohenOesterle'):
         r"""
@@ -436,16 +445,23 @@ class Gamma1_class(GammaH_class):
         eps = DirichletGroup(N, K)(eps)
 
         if K.characteristic() != 0:
-            raise NotImplementedError('dimension_cusp_forms() is only implemented for rings of characteristic 0')
+            raise NotImplementedError(
+                'dimension_cusp_forms() is only implemented for rings of characteristic 0'
+            )
 
         if eps.is_trivial():
             return Gamma0(N).dimension_cusp_forms(k)
 
-        if (k <= 0) or ((k % 2) == 1 and eps.is_even()) or ((k % 2) == 0 and eps.is_odd()):
+        if (
+            (k <= 0)
+            or ((k % 2) == 1 and eps.is_even())
+            or ((k % 2) == 0 and eps.is_odd())
+        ):
             return ZZ(0)
 
         if k == 1:
             from sage.modular.modform.weight1 import dimension_wt1_cusp_forms
+
             return dimension_wt1_cusp_forms(eps)
 
         # now the main part
@@ -454,13 +470,14 @@ class Gamma1_class(GammaH_class):
             n = eps.order()
             dim = ZZ(0)
             for d in n.divisors():
-                G = GammaH_constructor(N,(eps**d).kernel())
-                dim = dim + moebius(d)*G.dimension_cusp_forms(k)
-            return dim//phi(n)
+                G = GammaH_constructor(N, (eps**d).kernel())
+                dim = dim + moebius(d) * G.dimension_cusp_forms(k)
+            return dim // phi(n)
 
         if algorithm == "CohenOesterle":
             from sage.modular.dims import CohenOesterle
-            return ZZ( K(Gamma0(N).index() * (k-1)/ZZ(12)) + CohenOesterle(eps,k) )
+
+            return ZZ(K(Gamma0(N).index() * (k - 1) / ZZ(12)) + CohenOesterle(eps, k))
 
         # algorithm not in ["CohenOesterle", "Quer"]:
         raise ValueError("Unrecognised algorithm in dimension_cusp_forms")
@@ -525,24 +542,29 @@ class Gamma1_class(GammaH_class):
             return Gamma0(N).dimension_eis(k)
 
         # Note case of k = 0 and trivial character already dealt with separately, so k <= 0 here is valid:
-        if (k <= 0) or ((k % 2) == 1 and eps.is_even()) or ((k % 2) == 0 and eps.is_odd()):
+        if (
+            (k <= 0)
+            or ((k % 2) == 1 and eps.is_even())
+            or ((k % 2) == 0 and eps.is_odd())
+        ):
             return ZZ(0)
 
         if algorithm == "Quer":
             n = eps.order()
             dim = ZZ(0)
             for d in n.divisors():
-                G = GammaH_constructor(N,(eps**d).kernel())
-                dim = dim + moebius(d)*G.dimension_eis(k)
-            return dim//phi(n)
+                G = GammaH_constructor(N, (eps**d).kernel())
+                dim = dim + moebius(d) * G.dimension_eis(k)
+            return dim // phi(n)
 
         if algorithm == "CohenOesterle":
             from sage.modular.dims import CohenOesterle
-            j = 2-k
+
+            j = 2 - k
             # We use the Cohen-Oesterle formula in a subtle way to
             # compute dim M_k(N,eps) (see Ch. 6 of William Stein's book on
             # computing with modular forms).
-            alpha = -ZZ( K(Gamma0(N).index()*(j-1)/ZZ(12)) + CohenOesterle(eps,j) )
+            alpha = -ZZ(K(Gamma0(N).index() * (j - 1) / ZZ(12)) + CohenOesterle(eps, j))
             if k == 1:
                 return alpha
             return alpha - self.dimension_cusp_forms(k, eps)
@@ -613,13 +635,22 @@ class Gamma1_class(GammaH_class):
 
         if eps.is_trivial():
             from .all import Gamma0
+
             return Gamma0(N).dimension_new_cusp_forms(k, p)
 
         from .congroup_gammaH import mumu
 
         if p == 0 or N % p != 0 or eps.conductor().valuation(p) == N.valuation(p):
-            D = [eps.conductor()*d for d in divisors(N//eps.conductor())]
-            return sum([Gamma1_constructor(M).dimension_cusp_forms(k, eps.restrict(M), algorithm)*mumu(N//M) for M in D])
-        eps_p = eps.restrict(N//p)
-        old = Gamma1_constructor(N//p).dimension_cusp_forms(k, eps_p, algorithm)
-        return self.dimension_cusp_forms(k, eps, algorithm) - 2*old
+            D = [eps.conductor() * d for d in divisors(N // eps.conductor())]
+            return sum(
+                [
+                    Gamma1_constructor(M).dimension_cusp_forms(
+                        k, eps.restrict(M), algorithm
+                    )
+                    * mumu(N // M)
+                    for M in D
+                ]
+            )
+        eps_p = eps.restrict(N // p)
+        old = Gamma1_constructor(N // p).dimension_cusp_forms(k, eps_p, algorithm)
+        return self.dimension_cusp_forms(k, eps, algorithm) - 2 * old

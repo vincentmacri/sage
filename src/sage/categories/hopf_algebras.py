@@ -1,6 +1,7 @@
 r"""
 Hopf algebras
 """
+
 # ****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                     Nicolas M. Thiery <nthiery at users.sf.net>
@@ -33,6 +34,7 @@ class HopfAlgebras(Category_over_base_ring):
 
         sage: TestSuite(HopfAlgebras(ZZ)).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -57,10 +59,11 @@ class HopfAlgebras(Category_over_base_ring):
         """
         return self
 
-    WithBasis = LazyImport('sage.categories.hopf_algebras_with_basis', 'HopfAlgebrasWithBasis')
+    WithBasis = LazyImport(
+        'sage.categories.hopf_algebras_with_basis', 'HopfAlgebrasWithBasis'
+    )
 
     class ElementMethods:
-
         def antipode(self):
             """
             Return the antipode of ``self``.
@@ -104,6 +107,7 @@ class HopfAlgebras(Category_over_base_ring):
         """
         The category of Hopf algebra morphisms.
         """
+
         pass
 
     class Super(SuperModulesCategory):
@@ -116,6 +120,7 @@ class HopfAlgebras(Category_over_base_ring):
             algebra with a `\ZZ/2\ZZ` grading due to the
             signed bialgebra compatibility conditions.
         """
+
         def dual(self):
             """
             Return the dual category.
@@ -148,6 +153,7 @@ class HopfAlgebras(Category_over_base_ring):
         """
         The category of Hopf algebras constructed by tensor product of Hopf algebras
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -185,9 +191,7 @@ class HopfAlgebras(Category_over_base_ring):
             pass
 
     class Realizations(RealizationsCategory):
-
         class ParentMethods:
-
             # TODO:
             # - Use @conditionally_defined once it's in Sage, for a nicer idiom
             # - Do the right thing (TM): once we will have proper

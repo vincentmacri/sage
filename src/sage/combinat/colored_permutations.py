@@ -6,6 +6,7 @@ Colored permutations
     Much of the colored permutations (and element) class can be
     generalized to `G \wr S_n`
 """
+
 import itertools
 
 from sage.arith.functions import lcm
@@ -42,6 +43,7 @@ class ColoredPermutation(MultiplicativeGroupElement):
     """
     A colored permutation.
     """
+
     def __init__(self, parent, colors, perm):
         """
         Initialize ``self``.
@@ -92,8 +94,9 @@ class ColoredPermutation(MultiplicativeGroupElement):
             [3_{1}, 1_{0}, 2_{0}]
         """
         ret = "["
-        ret += ", ".join("{}_{{{}}}".format(x, c)
-                         for c, x in zip(self._colors, self._perm))
+        ret += ", ".join(
+            "{}_{{{}}}".format(x, c) for c, x in zip(self._colors, self._perm)
+        )
         return ret + "]"
 
     def __len__(self):
@@ -120,8 +123,10 @@ class ColoredPermutation(MultiplicativeGroupElement):
             sage: s1*s2*s1 == s2*s1*s2
             True
         """
-        colors = tuple(c + other._colors[val - 1]  # -1 for indexing
-                       for c, val in zip(self._colors, self._perm))
+        colors = tuple(
+            c + other._colors[val - 1]  # -1 for indexing
+            for c, val in zip(self._colors, self._perm)
+        )
         p = self._perm._left_to_right_multiply_on_right(other._perm)
         return self.__class__(self.parent(), colors, p)
 
@@ -139,9 +144,11 @@ class ColoredPermutation(MultiplicativeGroupElement):
             True
         """
         ip = ~self._perm
-        return self.__class__(self.parent(),
-                              tuple(-self._colors[i - 1] for i in ip),  # -1 for indexing
-                              ip)
+        return self.__class__(
+            self.parent(),
+            tuple(-self._colors[i - 1] for i in ip),  # -1 for indexing
+            ip,
+        )
 
     def __eq__(self, other):
         """
@@ -160,9 +167,11 @@ class ColoredPermutation(MultiplicativeGroupElement):
         """
         if not isinstance(other, ColoredPermutation):
             return False
-        return (self.parent() is other.parent()
-                and self._colors == other._colors
-                and self._perm == other._perm)
+        return (
+            self.parent() is other.parent()
+            and self._colors == other._colors
+            and self._perm == other._perm
+        )
 
     def __ne__(self, other):
         """
@@ -417,6 +426,7 @@ class ColoredPermutation(MultiplicativeGroupElement):
         """
         return ZZ(len(self.reduced_word()))
 
+
 # TODO: Parts of this should be put in the category of complex
 # reflection groups
 
@@ -464,6 +474,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
         sage: groups.misc.ShephardToddFamily(6, 6, 4)
         Complex reflection group G(6, 6, 4)
     """
+
     @staticmethod
     def __classcall_private__(cls, m, p, n):
         r"""
@@ -514,11 +525,15 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
 
         if self._p <= self._m <= 2 or (self._n == 2 and self._p == self._m):
             from sage.categories.finite_coxeter_groups import FiniteCoxeterGroups
+
             category = FiniteCoxeterGroups()
             if not (self._n == self._m == self._p == 2):  # special case of type D_2
                 category = category.Irreducible()
         else:
-            from sage.categories.complex_reflection_groups import ComplexReflectionGroups
+            from sage.categories.complex_reflection_groups import (
+                ComplexReflectionGroups,
+            )
+
             category = ComplexReflectionGroups().Finite().Irreducible()
             if self._p in [1, self._m]:
                 category = category.WellGenerated()
@@ -533,7 +548,9 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             sage: groups.misc.ShephardToddFamily(6, 2, 3)
             Complex reflection group G(6, 2, 3)
         """
-        return "Complex reflection group G({}, {}, {})".format(self._m, self._p, self._n)
+        return "Complex reflection group G({}, {}, {})".format(
+            self._m, self._p, self._n
+        )
 
     @cached_method
     def index_set(self):
@@ -647,6 +664,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             [2 2 4 1]
         """
         from sage.combinat.root_system.cartan_type import CartanType
+
         if self._p == 1:
             if self._m == 1:
                 return CartanType(['A', self._n - 1]).coxeter_matrix()
@@ -671,8 +689,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             sage: C.one()
             [[0, 0, 0], [1, 2, 3]]
         """
-        return self.element_class(self, [self._C.zero()] * self._n,
-                                  self._P.identity())
+        return self.element_class(self, [self._C.zero()] * self._n, self._P.identity())
 
     def random_element(self):
         r"""
@@ -742,10 +759,10 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             return sn
 
         if i == self._n + 1 or self._n == 1:
-            return sn ** self._p
+            return sn**self._p
 
         snm = self.simple_reflection(self._n - 1)
-        return sn**(self._m - 1) * snm * sn
+        return sn ** (self._m - 1) * snm * sn
 
     @cached_method
     def _inverse_simple_reflections(self):
@@ -802,6 +819,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             )
         """
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
         return MatrixGroup([g.to_matrix() for g in self.gens()])
 
     def as_permutation_group(self):
@@ -815,6 +833,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             Complex reflection group G(4, 1, 3) as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import ComplexReflectionGroup
+
         return ComplexReflectionGroup(self._m, self._p, self._n)
 
     def _element_constructor_(self, x):
@@ -850,7 +869,9 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             return self.element_class(self, c, self._P(p))
 
         if len(x) != 2:
-            raise ValueError("input must be a pair of a list of colors and a permutation")
+            raise ValueError(
+                "input must be a pair of a list of colors and a permutation"
+            )
         if self._p > 1 and sum(x[0]) % self._p:
             raise ValueError("{} is not an element".format(x))
         return self.element_class(self, [self._C(v) for v in x[0]], self._P(x[1]))
@@ -882,11 +903,15 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
         """
         if isinstance(C, Permutations) and C.n == self._n:
             return lambda P, x: P.element_class(P, [P._C.zero()] * P._n, x)
-        if self._m == 2 and self._p == 1 and isinstance(C, SignedPermutations) and C._n == self._n:
-            return lambda P, x: P.element_class(P,
-                                                [P._C.zero() if v == 1 else P._C.one()
-                                                 for v in x._colors],
-                                                x._perm)
+        if (
+            self._m == 2
+            and self._p == 1
+            and isinstance(C, SignedPermutations)
+            and C._n == self._n
+        ):
+            return lambda P, x: P.element_class(
+                P, [P._C.zero() if v == 1 else P._C.one() for v in x._colors], x._perm
+            )
         return super()._coerce_map_from_(C)
 
     def __iter__(self):
@@ -940,7 +965,7 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
             sage: C.cardinality() == 4**3 * factorial(3)
             True
         """
-        ret = self._m ** self._n * self._P.cardinality()
+        ret = self._m**self._n * self._P.cardinality()
         if self._p == 1:
             return ret
         return ret // self._p
@@ -1055,11 +1080,11 @@ class ShephardToddFamilyGroup(UniqueRepresentation, Parent):
         """
         # Special case for the usual symmetric group
         if self._m == 1:
-            return tuple([ZZ(v) for v in reversed(range(self._n-1))])
+            return tuple([ZZ(v) for v in reversed(range(self._n - 1))])
         if self._p < self._m:
             return tuple([self._m * i for i in reversed(range(self._n))])
-        codegrees = [self._m * i for i in reversed(range(self._n-1))]
-        codegrees.append((self._n-1)*self._m - self._n)
+        codegrees = [self._m * i for i in reversed(range(self._n - 1))]
+        codegrees.append((self._n - 1) * self._m - self._n)
         return tuple(sorted(codegrees, reverse=True))
 
     def number_of_reflection_hyperplanes(self):
@@ -1219,6 +1244,7 @@ class ColoredPermutations(ShephardToddFamilyGroup):
     - :wikipedia:`Generalized_symmetric_group`
     - :wikipedia:`Complex_reflection_group`
     """
+
     def __init__(self, m, n):
         r"""
         Initialize ``self``.
@@ -1271,11 +1297,13 @@ class ColoredPermutations(ShephardToddFamilyGroup):
 #  Signed permutations
 
 
-class SignedPermutation(ColoredPermutation,
-                        metaclass=InheritComparisonClasscallMetaclass):
+class SignedPermutation(
+    ColoredPermutation, metaclass=InheritComparisonClasscallMetaclass
+):
     """
     A signed permutation.
     """
+
     @staticmethod
     def __classcall_private__(cls, pi):
         """
@@ -1332,8 +1360,10 @@ class SignedPermutation(ColoredPermutation,
             sage: s3*s4*s3*s4 == s4*s3*s4*s3
             True
         """
-        colors = tuple(c * other._colors[val - 1]  # -1 for indexing
-                       for c, val in zip(self._colors, self._perm))
+        colors = tuple(
+            c * other._colors[val - 1]  # -1 for indexing
+            for c, val in zip(self._colors, self._perm)
+        )
         p = self._perm._left_to_right_multiply_on_right(other._perm)
         return self.__class__(self.parent(), colors, p)
 
@@ -1352,9 +1382,11 @@ class SignedPermutation(ColoredPermutation,
             True
         """
         ip = ~self._perm
-        return self.__class__(self.parent(),
-                              tuple(self._colors[i - 1] for i in ip),  # -1 for indexing
-                              ip)
+        return self.__class__(
+            self.parent(),
+            tuple(self._colors[i - 1] for i in ip),  # -1 for indexing
+            ip,
+        )
 
     def __iter__(self):
         """
@@ -1413,8 +1445,9 @@ class SignedPermutation(ColoredPermutation,
                 return -self._colors[-i - 1] * self._perm[-i - 1]
             return self._colors[i - 1] * self._perm[i - 1]
 
-        raise TypeError("i (= %s) must equal +/- an integer between %s and %s"
-                        % (i, 1, len(self)))
+        raise TypeError(
+            "i (= %s) must equal +/- an integer between %s and %s" % (i, 1, len(self))
+        )
 
     def to_matrix(self):
         """
@@ -1567,7 +1600,7 @@ class SignedPermutation(ColoredPermutation,
         pos_cycles = []
         neg_cycles = []
         for C in cycles:
-            if (not len(C) % 2) and C[0] == -C[len(C)//2]:
+            if (not len(C) % 2) and C[0] == -C[len(C) // 2]:
                 neg_cycles.append(C)
             else:
                 pos_cycles.append(C)
@@ -1590,7 +1623,9 @@ class SignedPermutation(ColoredPermutation,
             sage: pi.order()
             12
         """
-        return lcm(len(c) for c in self.to_cycles(singletons=False, negative_cycles=False))
+        return lcm(
+            len(c) for c in self.to_cycles(singletons=False, negative_cycles=False)
+        )
 
 
 class SignedPermutations(ColoredPermutations):
@@ -1649,6 +1684,7 @@ class SignedPermutations(ColoredPermutations):
 
     - :wikipedia:`Hyperoctahedral_group`
     """
+
     def __init__(self, n):
         """
         Initialize ``self``.
@@ -1682,8 +1718,7 @@ class SignedPermutations(ColoredPermutations):
             sage: S.one()
             [1, 2, 3, 4]
         """
-        return self.element_class(self, [ZZ.one()] * self._n,
-                                  self._P.identity())
+        return self.element_class(self, [ZZ.one()] * self._n, self._P.identity())
 
     def random_element(self):
         """
@@ -1697,10 +1732,11 @@ class SignedPermutations(ColoredPermutations):
             sage: s in C
             True
         """
-        return self.element_class(self,
-                                  [choice([ZZ.one(), -ZZ.one()])
-                                   for _ in range(self._n)],
-                                  self._P.random_element())
+        return self.element_class(
+            self,
+            [choice([ZZ.one(), -ZZ.one()]) for _ in range(self._n)],
+            self._P.random_element(),
+        )
 
     def simple_reflection(self, i):
         r"""
@@ -1776,7 +1812,9 @@ class SignedPermutations(ColoredPermutations):
             return self.element_class(self, c, self._P(p))
 
         if len(x) != 2:
-            raise ValueError("input must be a pair of a list of signs and a permutation")
+            raise ValueError(
+                "input must be a pair of a list of signs and a permutation"
+            )
         if any(s != 1 and s != -1 for s in x[0]):
             raise ValueError("the sign must be +1 or -1")
         return self.element_class(self, [ZZ(v) for v in x[0]], self._P(x[1]))
@@ -1822,10 +1860,9 @@ class SignedPermutations(ColoredPermutations):
         if isinstance(C, Permutations) and C.n == self._n:
             return lambda P, x: P.element_class(P, [1] * P._n, x)
         if isinstance(C, ColoredPermutations) and C._n == self._n and C._m == 2:
-            return lambda P, x: P.element_class(P,
-                                                [1 if v == 0 else -1
-                                                 for v in x._colors],
-                                                x._perm)
+            return lambda P, x: P.element_class(
+                P, [1 if v == 0 else -1 for v in x._colors], x._perm
+            )
         return super()._coerce_map_from_(C)
 
     def tabloid_module(self, shape, base_ring):
@@ -1990,23 +2027,29 @@ class SignedPermutations(ColoredPermutations):
         cnt = 0
 
         for i in la:
-            cyc += [tuple(range(cnt+1, cnt+i+1))] + [tuple(range(-cnt-1, -cnt-i-1, -1))]
+            cyc += [tuple(range(cnt + 1, cnt + i + 1))] + [
+                tuple(range(-cnt - 1, -cnt - i - 1, -1))
+            ]
             cnt += i
         for i in mu:
-            cyc += [tuple(range(cnt+1, cnt+i+1)) + tuple(range(-cnt-1, -cnt-i-1, -1))]
+            cyc += [
+                tuple(range(cnt + 1, cnt + i + 1))
+                + tuple(range(-cnt - 1, -cnt - i - 1, -1))
+            ]
             cnt += i
 
         p = [None] * self._n
         for c in cyc:
-            for i in range(len(c)-1):
+            for i in range(len(c) - 1):
                 if c[i] > 0:
-                    p[c[i]-1] = c[i+1]
+                    p[c[i] - 1] = c[i + 1]
             if c[-1] > 0:
-                p[c[-1]-1] = c[0]
+                p[c[-1] - 1] = c[0]
 
         return self(p)
 
     Element = SignedPermutation
+
 
 # TODO: Make this a subgroup
 # class EvenSignedPermutations(SignedPermutations):
@@ -2046,6 +2089,7 @@ class SignedPermutationGroupConjugacyClass(ConjugacyClass):
     - ``group`` -- the signed permutations of `n`
     - ``shape`` -- a pair of partitions or an element of ``group``
     """
+
     def __init__(self, group, shape):
         """
         Initialize ``self``.
@@ -2183,6 +2227,7 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
 
     - [Morris1981]_
     """
+
     @staticmethod
     def __classcall_private__(cls, G, base_ring, diagram):
         r"""
@@ -2217,6 +2262,7 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
         """
         self._diagram = diagram
         from sage.categories.modules_with_basis import ModulesWithBasis
+
         cat = ModulesWithBasis(base_ring).FiniteDimensional()
 
         # Build the tabloids
@@ -2224,16 +2270,26 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
         from sage.combinat.set_partition_ordered import OrderedSetPartitions
         from sage.categories.sets_cat import cartesian_product
         from itertools import product
+
         la, mu = self._diagram
-        data = [cartesian_product([OrderedSetPartitions([val * x for x, val in zip(sorted(X), signs)], la),
-                                   OrderedSetPartitions(sorted(Y), mu)])
-                for (X, Y) in OrderedSetPartitions(G._n, [sum(la), sum(mu)])
-                for signs in product([1, -1], repeat=sum(la))]
+        data = [
+            cartesian_product(
+                [
+                    OrderedSetPartitions(
+                        [val * x for x, val in zip(sorted(X), signs)], la
+                    ),
+                    OrderedSetPartitions(sorted(Y), mu),
+                ]
+            )
+            for (X, Y) in OrderedSetPartitions(G._n, [sum(la), sum(mu)])
+            for signs in product([1, -1], repeat=sum(la))
+        ]
         tabloids = DisjointUnionEnumeratedSets(data)
         tabloids.rename(f"Tabloids of shape {self._diagram}")
 
-        CombinatorialFreeModule.__init__(self, base_ring, tabloids,
-                                         category=cat, prefix='T', bracket='')
+        CombinatorialFreeModule.__init__(
+            self, base_ring, tabloids, category=cat, prefix='T', bracket=''
+        )
         Representation_abstract.__init__(self, G, "left")
 
     def _repr_(self):
@@ -2285,14 +2341,22 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
         """
         # This is basically copied from CombinatorialFreeModule._ascii_art_term
         from sage.typeset.ascii_art import AsciiArt, ascii_art
+
         pref = AsciiArt([self.prefix()])
         data = []
         for T in TP:
-            tab = "\n".join("{" + ", ".join(str(val) for val in sorted(row)) + "}" for row in T)
+            tab = "\n".join(
+                "{" + ", ".join(str(val) for val in sorted(row)) + "}" for row in T
+            )
             if not tab:
                 tab = '-'
             data.append(tab)
-        r = pref * (AsciiArt([" " * len(pref)]) + ascii_art(data[0]) + ascii_art(', ') + ascii_art(data[1]))
+        r = pref * (
+            AsciiArt([" " * len(pref)])
+            + ascii_art(data[0])
+            + ascii_art(', ')
+            + ascii_art(data[1])
+        )
         r._baseline = r._h - 1
         return r
 
@@ -2310,6 +2374,7 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
                {3}   , {5}      {3}   , {4}      {2}   , {5}
         """
         from sage.typeset.unicode_art import unicode_art
+
         r = unicode_art(repr(self._ascii_art_term(T)))
         r._baseline = r._h - 1
         return r
@@ -2357,11 +2422,13 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
         """
         data = []
         import re
+
         for T in TP:
             if not T:
                 tab = "\\emptyset"
             else:
                 from sage.combinat.output import tex_from_array
+
                 A = list(map(sorted, T))
                 tab = str(tex_from_array(A))
                 tab = tab.replace("|", "")
@@ -2413,8 +2480,10 @@ class TabloidModule(Representation_abstract, CombinatorialFreeModule):
         """
         if self._left_repr == vec_on_left:
             g = ~g
-        return self.sum_of_terms((self._semigroup_basis_action(g, T), c)
-                                 for T, c in vec._monomial_coefficients.items())
+        return self.sum_of_terms(
+            (self._semigroup_basis_action(g, T), c)
+            for T, c in vec._monomial_coefficients.items()
+        )
 
     def specht_module(self):
         r"""
@@ -2498,6 +2567,7 @@ class SpechtModule(Representation_abstract, SubmoduleWithBasis):
 
     - [Morris1981]_
     """
+
     def __init__(self, ambient):
         r"""
         Initialize ``self``.
@@ -2510,8 +2580,9 @@ class SpechtModule(Representation_abstract, SubmoduleWithBasis):
             sage: SM = B5.specht_module([[2], [2,1]], QQ)
             sage: TestSuite(SM).run()
         """
-        Representation_abstract.__init__(self, ambient._semigroup, ambient._side,
-                                         algebra=ambient._semigroup_algebra)
+        Representation_abstract.__init__(
+            self, ambient._semigroup, ambient._side, algebra=ambient._semigroup_algebra
+        )
         self._diagram = ambient._diagram
 
         ambient_basis = ambient.basis()
@@ -2527,21 +2598,33 @@ class SpechtModule(Representation_abstract, SubmoduleWithBasis):
                 n = T.size()
                 for sigma in T.column_stabilizer():
                     sigma = sigma.tuple()
-                    for signs in product(*[[1, -1] if i not in mu_vals else [1]
-                                           for i in range(1, n+1)]):
+                    for signs in product(
+                        *[[1, -1] if i not in mu_vals else [1] for i in range(1, n + 1)]
+                    ):
                         yield self._semigroup([s * val for s, val in zip(signs, sigma)])
 
-            return ambient.sum_of_terms((ambient._semigroup_basis_action(elt, tab),
-                                         1 - 2*(elt.length() % 2))  # == (-1)**elt.length()
-                                        for elt in group_elements(T))
+            return ambient.sum_of_terms(
+                (
+                    ambient._semigroup_basis_action(elt, tab),
+                    1 - 2 * (elt.length() % 2),
+                )  # == (-1)**elt.length()
+                for elt in group_elements(T)
+            )
 
         from sage.sets.family import Family
-        basis = Family({T: elt(T)
-                        for T in self._diagram.standard_tableaux()})
+
+        basis = Family({T: elt(T) for T in self._diagram.standard_tableaux()})
         cat = ambient.category().Subobjects()
-        SubmoduleWithBasis.__init__(self, basis, support_order, ambient=ambient,
-                                    unitriangular=False, category=cat,
-                                    prefix='S', bracket='')
+        SubmoduleWithBasis.__init__(
+            self,
+            basis,
+            support_order,
+            ambient=ambient,
+            unitriangular=False,
+            category=cat,
+            prefix='S',
+            bracket='',
+        )
 
     def _repr_(self):
         """
@@ -2553,7 +2636,9 @@ class SpechtModule(Representation_abstract, SubmoduleWithBasis):
             sage: B5.specht_module([[1,1], [2,1]], GF(3))
             Specht module of shape ([1, 1], [2, 1]) over Finite Field of size 3
         """
-        return "Specht module of shape {} over {}".format(self._diagram, self.base_ring())
+        return "Specht module of shape {} over {}".format(
+            self._diagram, self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -2626,7 +2711,7 @@ class SpechtModule(Representation_abstract, SubmoduleWithBasis):
         Uinv = U.matrix_from_rows(range(n)).inverse()
         # This is a slight abuse as the codomain should be a module with a different
         #    S_n action, but we only use it internally, so there isn't any problems
-        PLinv = (P*L).inverse()
+        PLinv = (P * L).inverse()
 
         def retraction(elt):
             vec = PLinv * elt.to_vector(order=self._support_order)
@@ -2754,6 +2839,7 @@ class MaximalSpechtSubmodule(Representation_abstract, SubmoduleWithBasis):
         sage: sum(U.semigroup_algebra().basis()) * u  # long time
         0
     """
+
     def __init__(self, specht_module):
         r"""
         Initialize ``self``.
@@ -2775,17 +2861,24 @@ class MaximalSpechtSubmodule(Representation_abstract, SubmoduleWithBasis):
             sage: U.dimension()
             0
         """
-        Representation_abstract.__init__(self, specht_module._semigroup, specht_module._side,
-                                         algebra=specht_module._semigroup_algebra)
+        Representation_abstract.__init__(
+            self,
+            specht_module._semigroup,
+            specht_module._side,
+            algebra=specht_module._semigroup_algebra,
+        )
         self._diagram = specht_module._diagram
 
         from sage.sets.family import Family
+
         p = specht_module.base_ring().characteristic()
         if p == 0:
             basis = Family([])
         else:
             TM = specht_module._ambient
-            if not all(la.is_regular(p) for la in TM._diagram) or (p == 2 and TM._diagram[0]):
+            if not all(la.is_regular(p) for la in TM._diagram) or (
+                p == 2 and TM._diagram[0]
+            ):
                 basis = specht_module.basis()
             else:
                 TV = TM._dense_free_module()
@@ -2797,9 +2890,15 @@ class MaximalSpechtSubmodule(Representation_abstract, SubmoduleWithBasis):
         unitriangular = all(b.leading_support() == 1 for b in basis)
         support_order = list(specht_module.basis().keys())
         cat = specht_module.category().Subobjects()
-        SubmoduleWithBasis.__init__(self, basis, support_order, ambient=specht_module,
-                                    unitriangular=unitriangular, category=cat,
-                                    prefix='U')
+        SubmoduleWithBasis.__init__(
+            self,
+            basis,
+            support_order,
+            ambient=specht_module,
+            unitriangular=unitriangular,
+            category=cat,
+            prefix='U',
+        )
 
     def _repr_(self):
         r"""
@@ -2920,6 +3019,7 @@ class SimpleModule(Representation_abstract, QuotientModuleWithBasis):
         [0 0 0 0 0 0 1 0]
         [0 0 0 0 0 0 0 1]
     """
+
     def __init__(self, specht_module) -> None:
         r"""
         Initialize ``self``.
@@ -2934,13 +3034,16 @@ class SimpleModule(Representation_abstract, QuotientModuleWithBasis):
         d = self._diagram = specht_module._diagram
         if (p == 2 and d[0]) or not all(la.is_regular(p) for la in d):
             raise ValueError(f"the partition must be {p}-regular")
-        Representation_abstract.__init__(self, specht_module._semigroup,
-                                         specht_module._side,
-                                         algebra=specht_module._semigroup_algebra)
+        Representation_abstract.__init__(
+            self,
+            specht_module._semigroup,
+            specht_module._side,
+            algebra=specht_module._semigroup_algebra,
+        )
         cat = specht_module.category()
-        QuotientModuleWithBasis.__init__(self,
-                                         specht_module.maximal_submodule(),
-                                         cat, prefix='D', bracket='')
+        QuotientModuleWithBasis.__init__(
+            self, specht_module.maximal_submodule(), cat, prefix='D', bracket=''
+        )
 
     def _repr_(self) -> str:
         r"""

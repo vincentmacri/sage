@@ -3,7 +3,7 @@
 Crystals of Kac modules of the general-linear Lie superalgebra
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@ Crystals of Kac modules of the general-linear Lie superalgebra
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.parent import Parent
 from sage.structure.element_wrapper import ElementWrapper
@@ -51,6 +51,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
         sage: mg.f_string([0,-1,0,1,2,1,0])
         {-e[-2]+e[3], -e[-1]+e[1], -e[-1]+e[2]}
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """
@@ -138,10 +139,11 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 sage: mg.f_string([0,-1,0])
                 {-e[-2]+e[1], -e[-1]+e[1]}
             """
-            return ('{'
-                    + ", ".join("-e[{}]+e[{}]".format(*i)
-                                for i in sorted(self.value))
-                    + '}')
+            return (
+                '{'
+                + ", ".join("-e[{}]+e[{}]".format(*i) for i in sorted(self.value))
+                + '}'
+            )
 
         def _latex_(self):
             r"""
@@ -158,10 +160,11 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 sage: latex(mg.f_string([0,-1,0]))
                 \{-e_{-2}+e_{1}, -e_{-1}+e_{1}\}
             """
-            return (r'\{'
-                    + ", ".join("-e_{{{}}}+e_{{{}}}".format(*i)
-                                for i in sorted(self.value))
-                    + r'\}')
+            return (
+                r'\{'
+                + ", ".join("-e_{{{}}}+e_{{{}}}".format(*i) for i in sorted(self.value))
+                + r'\}'
+            )
 
         def e(self, i):
             r"""
@@ -184,9 +187,9 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 {}
             """
             if i == 0:
-                if (-1,1) not in self.value:
+                if (-1, 1) not in self.value:
                     return None
-                return type(self)(self.parent(), self.value.difference([(-1,1)]))
+                return type(self)(self.parent(), self.value.difference([(-1, 1)]))
 
             count = 0
             act_val = None
@@ -243,9 +246,9 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 {-e[-2]+e[3], -e[-1]+e[2]}
             """
             if i == 0:
-                if (-1,1) in self.value:
+                if (-1, 1) in self.value:
                     return None
-                return type(self)(self.parent(), self.value.union([(-1,1)]))
+                return type(self)(self.parent(), self.value.union([(-1, 1)]))
 
             count = 0
             act_val = None
@@ -262,7 +265,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                         count += 1
                 if act_val is None:
                     return None
-                ret = self.value.difference([act_val]).union([(i-1, act_val[1])])
+                ret = self.value.difference([act_val]).union([(i - 1, act_val[1])])
                 return type(self)(self.parent(), ret)
 
             # else i > 0
@@ -278,7 +281,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                     count += 1
             if act_val is None:
                 return None
-            ret = self.value.difference([act_val]).union([(act_val[0], i+1)])
+            ret = self.value.difference([act_val]).union([(act_val[0], i + 1)])
             return type(self)(self.parent(), ret)
 
         def epsilon(self, i):
@@ -314,7 +317,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 ....:         assert x.epsilon(i) == count_e(x, i)
             """
             if i == 0:
-                return ZZ.one() if (-1,1) in self.value else ZZ.zero()
+                return ZZ.one() if (-1, 1) in self.value else ZZ.zero()
 
             count = 0
             ret = 0
@@ -330,7 +333,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                     elif val[0] == i:
                         count += 1
 
-            else: # i > 0
+            else:  # i > 0
                 lst = sorted(self.value, key=lambda x: (-x[0], -x[1]))
                 for val in reversed(lst):
                     # We don't have to check val[0] because this is an odd root
@@ -375,7 +378,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                 ....:         assert x.phi(i) == count_f(x, i)
             """
             if i == 0:
-                return ZZ.zero() if (-1,1) in self.value else ZZ.one()
+                return ZZ.zero() if (-1, 1) in self.value else ZZ.one()
 
             count = 0
             ret = 0
@@ -391,7 +394,7 @@ class CrystalOfOddNegativeRoots(UniqueRepresentation, Parent):
                     elif val[0] == i - 1:
                         count += 1
 
-            else: # i > 0
+            else:  # i > 0
                 lst = sorted(self.value, key=lambda x: (-x[0], -x[1]))
                 for val in lst:
                     # We don't have to check val[0] because this is an odd root
@@ -518,6 +521,7 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
 
     - [Kwon2012]_
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type, la, mu):
         """
@@ -551,9 +555,11 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
         self._S = CrystalOfOddNegativeRoots(self._cartan_type)
         self._dual = CrystalOfTableaux(['A', self._cartan_type.m], shape=la)
         self._reg = CrystalOfTableaux(['A', self._cartan_type.n], shape=mu)
-        data = (self._S.module_generators[0],
-                self._dual.module_generators[0],
-                self._reg.module_generators[0])
+        data = (
+            self._S.module_generators[0],
+            self._dual.module_generators[0],
+            self._reg.module_generators[0],
+        )
         self.module_generators = (self.element_class(self, data),)
 
     def _repr_(self):
@@ -566,7 +572,8 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
             Crystal of Kac module K([3, 1], [1]) of type ['A', [2, 1]]
         """
         return "Crystal of Kac module K({}, {}) of type {}".format(
-                    self._la, self._mu, self._cartan_type)
+            self._la, self._mu, self._cartan_type
+        )
 
     def module_generator(self):
         """
@@ -643,9 +650,10 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
                 }
             """
             from sage.misc.latex import latex
-            return r" \otimes ".join([latex(self.value[0]),
-                                      latex_dual(self.value[1]),
-                                      latex(self.value[2])])
+
+            return r" \otimes ".join(
+                [latex(self.value[0]), latex_dual(self.value[1]), latex(self.value[2])]
+            )
 
         def e(self, i):
             r"""
@@ -686,8 +694,8 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
                 return type(self)(self.parent(), (self.value[0], self.value[1], x))
             # else i < 0
             M = self.parent()._cartan_type.m + 1
-            if self.value[0].phi(i) < self.value[1].epsilon(M+i):
-                x = self.value[1].e(M+i)
+            if self.value[0].phi(i) < self.value[1].epsilon(M + i):
+                x = self.value[1].e(M + i)
                 if x is None:
                     return None
                 return type(self)(self.parent(), (self.value[0], x, self.value[2]))
@@ -734,12 +742,12 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
                 return type(self)(self.parent(), (x, self.value[1], self.value[2]))
             # else i < 0
             M = self.parent()._cartan_type.m + 1
-            if self.value[0].phi(i) > self.value[1].epsilon(M+i):
+            if self.value[0].phi(i) > self.value[1].epsilon(M + i):
                 x = self.value[0].f(i)
                 if x is None:
                     return None
                 return type(self)(self.parent(), (x, self.value[1], self.value[2]))
-            x = self.value[1].f(M+i)
+            x = self.value[1].f(M + i)
             if x is None:
                 return None
             return type(self)(self.parent(), (self.value[0], x, self.value[2]))
@@ -765,9 +773,10 @@ class CrystalOfKacModule(UniqueRepresentation, Parent):
             e = self.parent().weight_lattice_realization().basis()
             M = self.parent()._cartan_type.m + 1
             wt = self.value[0].weight()
-            wt += sum(c*e[i-M] for i,c in self.value[1].weight())
-            wt += sum(c*e[i+1] for i,c in self.value[2].weight())
+            wt += sum(c * e[i - M] for i, c in self.value[1].weight())
+            wt += sum(c * e[i + 1] for i, c in self.value[2].weight())
             return wt
+
 
 #####################################################################
 ## Helper functions
@@ -803,15 +812,16 @@ def to_dual_tableau(elt):
         ({}, [], [])
     """
     from sage.combinat.tableau import Tableau
+
     M = elt.parent().cartan_type().rank() + 2
     if not elt:
         return Tableau([])
-    tab = [ [elt[0].value-M] ]
+    tab = [[elt[0].value - M]]
     for i in range(1, len(elt)):
-        if elt[i-1] < elt[i] or (elt[i-1].value != 0 and elt[i-1] == elt[i]):
-            tab.append([elt[i].value-M])
+        if elt[i - 1] < elt[i] or (elt[i - 1].value != 0 and elt[i - 1] == elt[i]):
+            tab.append([elt[i].value - M])
         else:
-            tab[len(tab)-1].append(elt[i].value-M)
+            tab[len(tab) - 1].append(elt[i].value - M)
     for x in tab:
         x.reverse()
     return Tableau(tab).conjugate()
@@ -839,18 +849,19 @@ def latex_dual(elt):
     M = elt.parent().cartan_type().rank() + 2
     from sage.combinat.tableau import Tableau
     from sage.combinat.output import tex_from_array
+
     # Modified version of to_tableau() to have the entries be letters
     #   rather than their values
     if not elt:
         return "{\\emptyset}"
 
-    tab = [ ["\\overline{{{}}}".format(M-elt[0].value)] ]
+    tab = [["\\overline{{{}}}".format(M - elt[0].value)]]
     for i in range(1, len(elt)):
-        if elt[i-1] < elt[i] or (elt[i-1].value != 0 and elt[i-1] == elt[i]):
-            tab.append(["\\overline{{{}}}".format(M-elt[i].value)])
+        if elt[i - 1] < elt[i] or (elt[i - 1].value != 0 and elt[i - 1] == elt[i]):
+            tab.append(["\\overline{{{}}}".format(M - elt[i].value)])
         else:
-            l = len(tab)-1
-            tab[l].append("\\overline{{{}}}".format(M-elt[i].value))
+            l = len(tab) - 1
+            tab[l].append("\\overline{{{}}}".format(M - elt[i].value))
     for x in tab:
         x.reverse()
 

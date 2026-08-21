@@ -1,12 +1,12 @@
 r"""
 Commutative additive groups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import AbelianCategory
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -56,6 +56,7 @@ class CommutativeAdditiveGroups(CategoryWithAxiom, AbelianCategory):
 
     Also, it's likely that some code will end up there at some point.
     """
+
     _base_category_class_and_axiom = (AdditiveGroups, "AdditiveCommutative")
 
     class CartesianProducts(CartesianProductsCategory):
@@ -89,10 +90,12 @@ class CommutativeAdditiveGroups(CategoryWithAxiom, AbelianCategory):
                     18
                 """
                 from sage.rings.infinity import Infinity
+
                 orders = [x.additive_order() for x in self.cartesian_factors()]
                 if any(o is Infinity for o in orders):
                     return Infinity
                 from sage.arith.functions import LCM_list
+
                 return LCM_list(orders)
 
     class Algebras(AlgebrasCategory):

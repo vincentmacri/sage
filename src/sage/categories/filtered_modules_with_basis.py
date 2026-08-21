@@ -21,12 +21,12 @@ See the class documentation
 :class:`~sage.categories.filtered_modules_with_basis.FilteredModulesWithBasis`
 for further details.
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.filtered_modules import FilteredModulesCategory
 from sage.misc.abstract_method import abstract_method
@@ -110,6 +110,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
         sage: C = ModulesWithBasis(QQ).Filtered()
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         # TODO: which syntax do we prefer?
         # A.basis(degree = 3)
@@ -188,6 +189,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
             """
             if d is None:
                 from sage.sets.family import Family
+
                 return Family(self._indices, self.monomial)
             return self.homogeneous_component_basis(d)
 
@@ -218,6 +220,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 Finite family {'b': B['b']}
             """
             from sage.sets.family import Family
+
             try:
                 S = self._indices.subset(size=d)
             except (AttributeError, ValueError, TypeError):
@@ -237,15 +240,20 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
             """
             from sage.categories.modules_with_basis import ModulesWithBasis
             from sage.categories.filtered_algebras import FilteredAlgebras
+
             if self.base_ring() in FilteredAlgebras:
-                raise NotImplementedError("this is only a natural module over"
-                                          " the degree 0 component of the filtered"
-                                          " algebra and coordinate rings are not"
-                                          " yet implemented for submodules")
+                raise NotImplementedError(
+                    "this is only a natural module over"
+                    " the degree 0 component of the filtered"
+                    " algebra and coordinate rings are not"
+                    " yet implemented for submodules"
+                )
             category = ModulesWithBasis(self.category().base_ring())
-            M = self.submodule(self.homogeneous_component_basis(d),
-                               category=category,
-                               already_echelonized=True)
+            M = self.submodule(
+                self.homogeneous_component_basis(d),
+                category=category,
+                already_echelonized=True,
+            )
             M.rename("Degree {} homogeneous component of {}".format(d, self))
             return M
 
@@ -287,13 +295,18 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 1 + t + 2*t^2 + 3*t^3 + 5*t^4 + 7*t^5 + 11*t^6 + 15*t^7 + 22*t^8 + 30*t^9 + O(t^10)
             """
             from sage.rings.integer_ring import ZZ
+
             if prec is None:
                 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
+
                 R = LazyPowerSeriesRing(ZZ, 't')
                 return R(lambda n: self.homogeneous_component_basis(n).cardinality())
             from sage.rings.power_series_ring import PowerSeriesRing
+
             R = PowerSeriesRing(ZZ, 't')
-            elt = R([self.homogeneous_component_basis(n).cardinality() for n in range(prec)])
+            elt = R(
+                [self.homogeneous_component_basis(n).cardinality() for n in range(prec)]
+            )
             return elt.O(prec)
 
         def graded_algebra(self):
@@ -350,6 +363,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                  the free module on partitions over Integer Ring
             """
             from sage.algebras.associated_graded import AssociatedGradedAlgebra
+
             return AssociatedGradedAlgebra(self)
 
         # Maps
@@ -380,8 +394,9 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 True
             """
             base_one = self.base_ring().one()
-            return self.module_morphism(diagonal=lambda x: base_one,
-                                        codomain=self.graded_algebra())
+            return self.module_morphism(
+                diagonal=lambda x: base_one, codomain=self.graded_algebra()
+            )
 
         def from_graded_conversion(self):
             r"""
@@ -412,8 +427,9 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 True
             """
             base_one = self.base_ring().one()
-            return self.graded_algebra().module_morphism(diagonal=lambda x: base_one,
-                                                         codomain=self)
+            return self.graded_algebra().module_morphism(
+                diagonal=lambda x: base_one, codomain=self
+            )
 
         def projection(self, i):
             r"""
@@ -448,8 +464,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
             base_zero = self.base_ring().zero()
             base_one = self.base_ring().one()
             grA = self.graded_algebra()
-            proj = lambda x: (base_one if self.degree_on_basis(x) == i
-                              else base_zero)
+            proj = lambda x: base_one if self.degree_on_basis(x) == i else base_zero
             return self.module_morphism(diagonal=proj, codomain=grA)
 
         def induced_graded_map(self, other, f):
@@ -689,6 +704,7 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
             grA = self.graded_algebra()
             grB = other.graded_algebra()
             from sage.categories.graded_modules_with_basis import GradedModulesWithBasis
+
             cat = GradedModulesWithBasis(self.base_ring())
             from_gr = self.from_graded_conversion()
 
@@ -696,8 +712,8 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 i = grA.degree_on_basis(m)
                 lifted_img_of_m = f(from_gr(grA.monomial(m)))
                 return other.projection(i)(lifted_img_of_m)
-            return grA.module_morphism(on_basis=on_basis,
-                                       codomain=grB, category=cat)
+
+            return grA.module_morphism(on_basis=on_basis, codomain=grB, category=cat)
             # If we could assume that the projection of the basis
             # element of ``self`` indexed by an index ``m`` is the
             # basis element of ``grA`` indexed by ``m``, then this
@@ -713,7 +729,6 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
             # ass one day. What do you think?
 
     class ElementMethods:
-
         def is_homogeneous(self):
             r"""
             Return whether the element ``self`` is homogeneous.
@@ -1004,9 +1019,9 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 True
             """
             degree_on_basis = self.parent().degree_on_basis
-            return self.parent().sum_of_terms((i, c)
-                                              for (i, c) in self
-                                              if degree_on_basis(i) == n)
+            return self.parent().sum_of_terms(
+                (i, c) for (i, c) in self if degree_on_basis(i) == n
+            )
 
         def truncate(self, n):
             """
@@ -1076,8 +1091,9 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 True
             """
             degree_on_basis = self.parent().degree_on_basis
-            return self.parent().sum_of_terms((i, c) for (i, c) in self
-                                              if degree_on_basis(i) < n)
+            return self.parent().sum_of_terms(
+                (i, c) for (i, c) in self if degree_on_basis(i) < n
+            )
 
     class Subobjects(SubobjectsCategory):
         class ParentMethods:
@@ -1202,7 +1218,10 @@ class FilteredModulesWithBasis(FilteredModulesCategory):
                 """
                 from collections import defaultdict
                 from sage.rings.integer_ring import ZZ
-                from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+                from sage.rings.polynomial.polynomial_ring_constructor import (
+                    PolynomialRing,
+                )
+
                 PR = PolynomialRing(ZZ, 't')
                 dims = defaultdict(ZZ)
                 for b in self.basis():

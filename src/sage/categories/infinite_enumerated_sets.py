@@ -12,7 +12,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # *****************************************************************************
 
-
 from sage.categories.category_with_axiom import CategoryWithAxiom
 
 
@@ -44,7 +43,6 @@ class InfiniteEnumeratedSets(CategoryWithAxiom):
     """
 
     class ParentMethods:
-
         def random_element(self):
             """
             Raise an error because ``self`` is an infinite enumerated set.
@@ -88,7 +86,8 @@ class InfiniteEnumeratedSets(CategoryWithAxiom):
                 NotImplementedError: cannot list an infinite set
             """
             raise NotImplementedError("cannot list an infinite set")
-        _list_default = list # needed by the check system.
+
+        _list_default = list  # needed by the check system.
 
         def _test_enumerated_set_iter_cardinality(self, **options):
             """
@@ -110,5 +109,6 @@ class InfiniteEnumeratedSets(CategoryWithAxiom):
             """
             tester = self._tester(**options)
             from sage.rings.infinity import infinity
+
             tester.assertEqual(self.cardinality(), infinity)
             tester.assertRaises(NotImplementedError, self.list)

@@ -156,6 +156,7 @@ REFERENCES:
    Periods in Quantum Field Theory and Arithmetic, Springer Proceedings
    in Mathematics and Statistics 314, 2020
 """
+
 # ****************************************************************************
 #       Copyright (C) 2020     Frédéric Chapoton
 #
@@ -205,17 +206,34 @@ lazy_import('sage.libs.pari', 'pari')
 # using the following convention
 # (3, 5) <---> (sign) * [1,0,0,1,0,0,0,0]
 # taken from the Maple implementation by F. Brown
-B_data: list[list[tuple]] = [[], [], [(2,)], [(3,)], [], [(5,)], [],
-                             [(7,)], [(3, 5)], [(9,)],
-                             [(3, 7)], [(11,), (3, 3, 5)],
-                             [(5, 7), (5, 3, 2, 2)],
-                             [(13,), (3, 5, 5), (3, 3, 7)],
-                             [(5, 9), (3, 11), (3, 3, 3, 5)],
-                             [(15,), (3, 5, 7), (3, 3, 9), (5, 3, 3, 2, 2)],
-                             [(11, 5), (13, 3), (5, 5, 3, 3),
-                              (7, 3, 3, 3), (7, 5, 2, 2)],
-                             [(17,), (7, 5, 5), (9, 3, 5), (9, 5, 3),
-                              (11, 3, 3), (5, 3, 3, 3, 3), (5, 5, 3, 2, 2)]]
+B_data: list[list[tuple]] = [
+    [],
+    [],
+    [(2,)],
+    [(3,)],
+    [],
+    [(5,)],
+    [],
+    [(7,)],
+    [(3, 5)],
+    [(9,)],
+    [(3, 7)],
+    [(11,), (3, 3, 5)],
+    [(5, 7), (5, 3, 2, 2)],
+    [(13,), (3, 5, 5), (3, 3, 7)],
+    [(5, 9), (3, 11), (3, 3, 3, 5)],
+    [(15,), (3, 5, 7), (3, 3, 9), (5, 3, 3, 2, 2)],
+    [(11, 5), (13, 3), (5, 5, 3, 3), (7, 3, 3, 3), (7, 5, 2, 2)],
+    [
+        (17,),
+        (7, 5, 5),
+        (9, 3, 5),
+        (9, 5, 3),
+        (11, 3, 3),
+        (5, 3, 3, 3, 3),
+        (5, 5, 3, 2, 2),
+    ],
+]
 
 Words10 = Words((1, 0), infinite=False)
 
@@ -254,8 +272,7 @@ def coproduct_iterator(paire) -> Iterator[list]:
         if step == 5:
             continue
         if tail[step] != start_value:
-            yield from coproduct_iterator((head + [last_index + step],
-                                           tail[step:]))
+            yield from coproduct_iterator((head + [last_index + step], tail[step:]))
 
 
 def composition_to_iterated(w, reverse=False) -> tuple[int, ...]:
@@ -381,12 +398,12 @@ def minimize_term(w, cf):
         if x < y:
             return (w, cf)
         if x > y:
-            return (Words10(reverse_w, check=False),
-                    -cf if len(w) % 2 else cf)
+            return (Words10(reverse_w, check=False), -cf if len(w) % 2 else cf)
     return (w, cf)
 
 
 # numerical values
+
 
 class MultizetaValues(Singleton):
     """
@@ -423,6 +440,7 @@ class MultizetaValues(Singleton):
         sage: parent(M((2,3,4,5), prec=128))
         Real Field with 128 bits of precision
     """
+
     def __init__(self) -> None:
         """
         When first called, pre-compute up to weight 8 at precision 1024.
@@ -650,6 +668,7 @@ class Multizetas(CombinatorialFreeModule):
         sage: z
         ζ(1,2,3)
     """
+
     def __init__(self, R) -> None:
         """
         TESTS::
@@ -983,8 +1002,10 @@ class Multizetas(CombinatorialFreeModule):
         """
         basis_MZV = extend_multiplicative_basis(B_data, n)
         W = self.basis().keys()
-        return (prod(self._monomial(W(compo, check=False))
-                     for compo in term) for term in basis_MZV)
+        return (
+            prod(self._monomial(W(compo, check=False)) for compo in term)
+            for term in basis_MZV
+        )
 
     def basis_brown(self, n) -> list:
         r"""
@@ -1012,8 +1033,10 @@ class Multizetas(CombinatorialFreeModule):
             [ζ(3,3), ζ(2,2,2)]
         """
         W = self.basis().keys()
-        return [self._monomial(W(tuple(c), check=False))
-                for c in IntegerVectors(n, min_part=2, max_part=3)]
+        return [
+            self._monomial(W(tuple(c), check=False))
+            for c in IntegerVectors(n, min_part=2, max_part=3)
+        ]
 
     @cached_method
     def basis_filtration(self, d, reverse=False):
@@ -1334,7 +1357,10 @@ class Multizetas(CombinatorialFreeModule):
                 sage: type(a._numerical_approx_pari())
                 <class 'cypari2.gen.Gen'>
             """
-            return sum(cf * Values.pari_eval(tuple(w)) for w, cf in self.monomial_coefficients().items())
+            return sum(
+                cf * Values.pari_eval(tuple(w))
+                for w, cf in self.monomial_coefficients().items()
+            )
 
         def numerical_approx(self, prec=None, digits=None, algorithm=None):
             """
@@ -1374,6 +1400,7 @@ class Multizetas(CombinatorialFreeModule):
             if prec is None:
                 if digits:
                     from sage.arith.numerical_approx import digits_to_bits
+
                     prec = digits_to_bits(digits)
                 else:
                     prec = 53
@@ -1382,9 +1409,15 @@ class Multizetas(CombinatorialFreeModule):
             if not self.monomial_coefficients():
                 return ZZ(0).n(prec=prec, digits=digits, algorithm=algorithm)
             if prec < Values.prec:
-                s = sum(cf * Values(tuple(w)) for w, cf in self.monomial_coefficients().items())
+                s = sum(
+                    cf * Values(tuple(w))
+                    for w, cf in self.monomial_coefficients().items()
+                )
                 return s.n(prec=prec)
-            return sum(cf * Values(tuple(w), prec=prec) for w, cf in self.monomial_coefficients().items())
+            return sum(
+                cf * Values(tuple(w), prec=prec)
+                for w, cf in self.monomial_coefficients().items()
+            )
 
 
 class Multizetas_iterated(CombinatorialFreeModule):
@@ -1407,6 +1440,7 @@ class Multizetas_iterated(CombinatorialFreeModule):
         sage: M((1,0))*M((1,0,0))
         6*I(11000) + 3*I(10100) + I(10010)
     """
+
     def __init__(self, R) -> None:
         """
         TESTS::
@@ -1423,8 +1457,7 @@ class Multizetas_iterated(CombinatorialFreeModule):
         cat = GradedAlgebrasWithBasis(R).Commutative()
         if R in Domains():
             cat = cat & Domains()
-        CombinatorialFreeModule.__init__(self, R, Words10, prefix='I',
-                                         category=cat)
+        CombinatorialFreeModule.__init__(self, R, Words10, prefix='I', category=cat)
 
     def _repr_(self) -> str:
         """
@@ -1538,9 +1571,9 @@ class Multizetas_iterated(CombinatorialFreeModule):
             2*I(1100) + I(1010)
         """
         half = self.half_product_on_basis
-        return self._module_morphism(self._module_morphism(half, position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(half, position=0, codomain=self), position=1
+        )
 
     def coproduct_on_basis(self, w):
         """
@@ -1563,7 +1596,7 @@ class Multizetas_iterated(CombinatorialFreeModule):
         def split_word(indices):
             L = self.one()
             for i in range(len(indices) - 1):
-                w = Word(seq[indices[i]:indices[i + 1] + 1])
+                w = Word(seq[indices[i] : indices[i + 1] + 1])
                 if len(w) == 2:  # this factor is one
                     continue
                 if len(w) <= 4 or len(w) == 6 or w[0] == w[-1]:
@@ -1576,7 +1609,8 @@ class Multizetas_iterated(CombinatorialFreeModule):
         resu = self.tensor_square().zero()
         for indices in terms:
             resu += split_word(indices).tensor(
-                M_all(Word(seq[i] for i in indices)).regularise().simplify())
+                M_all(Word(seq[i] for i in indices)).regularise().simplify()
+            )
         return resu
 
     @lazy_attribute
@@ -1641,7 +1675,7 @@ class Multizetas_iterated(CombinatorialFreeModule):
         if basering is None:
             basering = self.base_ring()
         codomain = Multizetas(basering)
-        return (-1)**w.count(1) * codomain(iterated_to_composition(w))
+        return (-1) ** w.count(1) * codomain(iterated_to_composition(w))
 
     def dual_on_basis(self, w):
         """
@@ -1717,8 +1751,8 @@ class Multizetas_iterated(CombinatorialFreeModule):
         it = [0] + list(w) + [1]
         coprod = MZV_MZV.zero()
         for p in range(N + 1 - k):
-            left = Im(it[p: p + k + 2])
-            right = Im(it[:p + 1] + it[p + k + 1:])
+            left = Im(it[p : p + k + 2])
+            right = Im(it[: p + 1] + it[p + k + 1 :])
             if left and right:
                 coprod += left.regularise().tensor(right.regularise())
         return coprod
@@ -1740,11 +1774,12 @@ class Multizetas_iterated(CombinatorialFreeModule):
             sage: D3(elt)
             -6*I(100) # I(110) + 3*I(100) # I(10)
         """
+
         def map_on_basis(elt):
             return self.D_on_basis(k, elt)
+
         cod = Multizetas_iterated(self.base_ring()).tensor_square()
-        return self.module_morphism(map_on_basis, position=0,
-                                    codomain=cod)
+        return self.module_morphism(map_on_basis, position=0, codomain=cod)
 
     @cached_method
     def phi_extended(self, w):
@@ -1806,7 +1841,7 @@ class Multizetas_iterated(CombinatorialFreeModule):
         compo = tuple(iterated_to_composition(w))
         if compo in B_data[N]:
             # do not forget the sign
-            return (-1)**len(compo) * phi_on_multiplicative_basis(compo)
+            return (-1) ** len(compo) * phi_on_multiplicative_basis(compo)
         u = compute_u_on_basis(w)
         rho_inverse_u = rho_inverse(u)
         xi = self.composition_on_basis(w, QQ)
@@ -1906,8 +1941,9 @@ class Multizetas_iterated(CombinatorialFreeModule):
                 I(100)
             """
             summing = self.parent().sum_of_terms
-            return summing(minimize_term(w, cf)
-                           for w, cf in self.monomial_coefficients().items())
+            return summing(
+                minimize_term(w, cf) for w, cf in self.monomial_coefficients().items()
+            )
 
         def coproduct(self):
             """
@@ -1958,7 +1994,9 @@ class Multizetas_iterated(CombinatorialFreeModule):
                 sage: (3*x+y).n()  # indirect doctest
                 1.23317037269047
             """
-            return self.composition().numerical_approx(prec=prec, digits=digits, algorithm=algorithm)
+            return self.composition().numerical_approx(
+                prec=prec, digits=digits, algorithm=algorithm
+            )
 
         def phi(self):
             """
@@ -2068,6 +2106,7 @@ class All_iterated(CombinatorialFreeModule):
         sage: x.regularise()
         -I(10)
     """
+
     def __init__(self, R) -> None:
         """
         TESTS::
@@ -2142,8 +2181,7 @@ class All_iterated(CombinatorialFreeModule):
         W = self.basis().keys()
         w = W(x, check=False)
         # condition R1 of F. Brown
-        if w[0] == w[-1] or (len(w) >= 4 and
-                             all(x == w[1] for x in w[2:-1])):
+        if w[0] == w[-1] or (len(w) >= 4 and all(x == w[1] for x in w[2:-1])):
             return self.zero()
         return self._monomial(w)
 
@@ -2281,14 +2319,14 @@ class All_iterated(CombinatorialFreeModule):
 
         resu = self.zero()
         for idx in IntegerVectors(k, r):
-            coeff = ZZ.prod(ZZ(nj + ij - 1).binomial(ij)
-                            for nj, ij in zip(n_zeros, idx))
+            coeff = ZZ.prod(
+                ZZ(nj + ij - 1).binomial(ij) for nj, ij in zip(n_zeros, idx)
+            )
             indice = [0]
             for nj, ij in zip(n_zeros, idx):
                 indice += [1] + [0] * (nj + ij - 1)
-            resu += coeff * self._monomial(W(tuple(indice + [1]),
-                                             check=False))
-        return (-1)**k * resu  # attention au signe
+            resu += coeff * self._monomial(W(tuple(indice + [1]), check=False))
+        return (-1) ** k * resu  # attention au signe
 
     @lazy_attribute
     def expand(self):
@@ -2360,13 +2398,14 @@ class All_iterated(CombinatorialFreeModule):
             """
             P = self.parent()
             step1 = P.reversal(self)  # R3
-            step2 = P.expand(step1)   # R2
-            step3 = P.dual(step2)     # R4
-            step4 = P.expand(step3)    # R2
+            step2 = P.expand(step1)  # R2
+            step3 = P.dual(step2)  # R4
+            step4 = P.expand(step3)  # R2
             return step4.conversion()  # dans Multizetas_iterated
 
 
 # **************** procedures after F. Brown ************
+
 
 def coeff_phi(w):
     """
@@ -2391,7 +2430,7 @@ def coeff_phi(w):
         109/16
     """
     if all(x == 0 for x in w[1:]):
-        return -1   # beware the sign
+        return -1  # beware the sign
     k = len(w)
     assert k % 2
     M = Multizetas_iterated(QQ)
@@ -2425,7 +2464,7 @@ def phi_on_multiplicative_basis(compo):
         return f(2)
 
     if len(compo) == 1:
-        n, = compo
+        (n,) = compo
         return f(n)
 
     return compute_u_on_compo(compo)
@@ -2498,7 +2537,7 @@ def D_on_compo(k, compo):
     """
     it = composition_to_iterated(compo)
     M = Multizetas_iterated(QQ)
-    return (-1)**len(compo) * M.D_on_basis(k, it)
+    return (-1) ** len(compo) * M.D_on_basis(k, it)
 
 
 def compute_u_on_compo(compo):
@@ -2522,7 +2561,7 @@ def compute_u_on_compo(compo):
         -75/4*f3f7 + 81/4*f5f5 + 75/8*f7f3 + 11*f2*f3f5 - 9*f2*f5f3
     """
     it = composition_to_iterated(compo)
-    return (-1)**len(compo) * compute_u_on_basis(it)
+    return (-1) ** len(compo) * compute_u_on_basis(it)
 
 
 def compute_u_on_basis(w):
@@ -2558,10 +2597,11 @@ def compute_u_on_basis(w):
     N = len(w)
     xi_dict = {}
     for k in range(3, N, 2):
-        xi_dict[k] = F.sum(cf * coeff_phi(ww[0]) * M.phi_extended(tuple(ww[1]))
-                           for ww, cf in M.D_on_basis(k, w))
-    return F.sum(F.half_product(F.gen(k), xi_dict[k])
-                 for k in range(3, N, 2))
+        xi_dict[k] = F.sum(
+            cf * coeff_phi(ww[0]) * M.phi_extended(tuple(ww[1]))
+            for ww, cf in M.D_on_basis(k, w)
+        )
+    return F.sum(F.half_product(F.gen(k), xi_dict[k]) for k in range(3, N, 2))
 
 
 @cached_function

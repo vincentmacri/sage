@@ -703,10 +703,17 @@ class WithPicklingByInitArgs(metaclass=ClasscallMetaclass):
         #
         # Note that the same code is used to get the state of UniqueFactory objects.
         from sage.misc.cachefunc import CachedFunction
+
         d = {}
         try:
-            d.update({key: value for key, value in self.__dict__.items()
-                      if isinstance(value, CachedFunction) and value.is_pickled_with_cache()})
+            d.update(
+                {
+                    key: value
+                    for key, value in self.__dict__.items()
+                    if isinstance(value, CachedFunction)
+                    and value.is_pickled_with_cache()
+                }
+            )
         except AttributeError:
             pass
         return d

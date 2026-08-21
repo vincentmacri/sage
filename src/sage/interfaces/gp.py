@@ -187,13 +187,18 @@ class Gp(ExtraTabCompletion, Expect):
             sage: Gp()
             PARI/GP interpreter
     """
-    def __init__(self, stacksize=10000000,   # 10MB
-                 maxread=None, script_subdirectory=None,
-                 logfile=None,
-                 server=None,
-                 server_tmpdir=None,
-                 init_list_length=1024,
-                 seed=None):
+
+    def __init__(
+        self,
+        stacksize=10000000,  # 10MB
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        init_list_length=1024,
+        seed=None,
+    ):
         """
         Initialization of this PARI gp interpreter.
 
@@ -218,19 +223,21 @@ class Gp(ExtraTabCompletion, Expect):
             sage: gp == loads(dumps(gp))
             True
         """
-        Expect.__init__(self,
-                        name='pari',
-                        prompt='\\? ',
-                        # --fast so the system gprc isn't read (we configure below)
-                        command=f"gp --fast --emacs --quiet --stacksize {stacksize}",
-                        maxread=maxread,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=1024)
+        Expect.__init__(
+            self,
+            name='pari',
+            prompt='\\? ',
+            # --fast so the system gprc isn't read (we configure below)
+            command=f"gp --fast --emacs --quiet --stacksize {stacksize}",
+            maxread=maxread,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=1024,
+        )
         self.__seq = 0
         self.__var_store_len = 0
         self.__init_list_length = init_list_length
@@ -438,7 +445,9 @@ class Gp(ExtraTabCompletion, Expect):
         """
         return self.set_default('seriesprecision', prec)
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False):
+    def _eval_line(
+        self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False
+    ):
         """
         EXAMPLES::
 
@@ -455,16 +464,19 @@ class Gp(ExtraTabCompletion, Expect):
         line = line.strip()
         if len(line) == 0:
             return ''
-        a = Expect._eval_line(self, line,
-                              allow_use_file=allow_use_file,
-                              wait_for_prompt=wait_for_prompt)
+        a = Expect._eval_line(
+            self, line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt
+        )
         if a.find("the PARI stack overflows") != -1:
-            verbose("automatically doubling the PARI stack and re-executing current input line")
+            verbose(
+                "automatically doubling the PARI stack and re-executing current input line"
+            )
             b = self.eval("allocatemem()")
             if b.find("Warning: not enough memory") != -1:
                 raise RuntimeError(a)
-            return self._eval_line(line, allow_use_file=allow_use_file,
-                                   wait_for_prompt=wait_for_prompt)
+            return self._eval_line(
+                line, allow_use_file=allow_use_file, wait_for_prompt=wait_for_prompt
+            )
         return a
 
     def cputime(self, t=None):
@@ -567,7 +579,10 @@ class Gp(ExtraTabCompletion, Expect):
         cmd = '%s=%s;' % (var, value)
         out = self.eval(cmd)
         if out.find('***') != -1:
-            raise TypeError("Error executing code in GP:\nCODE:\n\t%s\nPARI/GP ERROR:\n%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in GP:\nCODE:\n\t%s\nPARI/GP ERROR:\n%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -855,6 +870,7 @@ class GpElement(ExpectElement, sage.interfaces.abc.GpElement):
     The two elliptic curves look the same, but internally the floating
     point numbers are slightly different.
     """
+
     def _reduce(self):
         """
         Return the string representation of self, for pickling.
@@ -1070,9 +1086,11 @@ def gp_console():
         (readline v6.0 enabled, extended help enabled)
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. '
-                           'Try %%gp magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%gp magics instead.'
+        )
     os.system('gp')
 
 
@@ -1085,7 +1103,7 @@ def gp_version():
     """
     v = gp.eval(r'\v')
     i = v.find("Version ")
-    w = v[i + len("Version "):]
+    w = v[i + len("Version ") :]
     i = w.find(' ')
     w = w[:i]
     t = tuple([int(n) for n in w.split('.')])

@@ -77,6 +77,7 @@ class DiscretePseudoValuation(Morphism):
 
         sage: TestSuite(v).run()                # long time
     """
+
     def __init__(self, parent):
         r"""
         TESTS::
@@ -104,6 +105,7 @@ class DiscretePseudoValuation(Morphism):
             True
         """
         from sage.rings.infinity import infinity
+
         if self(f) is infinity:
             return self(g) is infinity
 
@@ -244,6 +246,7 @@ class DiscretePseudoValuation(Morphism):
         if self == other:
             return True
         from .scaled_valuation import ScaledValuation_generic
+
         if isinstance(other, ScaledValuation_generic):
             return other <= self
         raise NotImplementedError("Operator not implemented for this valuation")
@@ -265,8 +268,10 @@ class DiscretePseudoValuation(Morphism):
             sage: QQ.valuation(2)._test_valuation_inheritance()
         """
         tester = self._tester(**options)
-        tester.assertNotEqual(isinstance(self, InfiniteDiscretePseudoValuation),
-                              isinstance(self, DiscreteValuation))
+        tester.assertNotEqual(
+            isinstance(self, InfiniteDiscretePseudoValuation),
+            isinstance(self, DiscreteValuation),
+        )
 
 
 class InfiniteDiscretePseudoValuation(DiscretePseudoValuation):
@@ -289,6 +294,7 @@ class InfiniteDiscretePseudoValuation(DiscretePseudoValuation):
         True
         sage: TestSuite(w).run()                # long time
     """
+
     def is_discrete_valuation(self):
         r"""
         Return whether this valuation is a discrete valuation.
@@ -324,6 +330,7 @@ class NegativeInfiniteDiscretePseudoValuation(InfiniteDiscretePseudoValuation):
 
         sage: TestSuite(w).run()                # long time
     """
+
     def is_negative_pseudo_valuation(self):
         r"""
         Return whether this valuation attains the value `-\infty`.
@@ -362,6 +369,7 @@ class DiscreteValuation(DiscretePseudoValuation):
         True
         sage: TestSuite(w).run()                # long time
     """
+
     def is_discrete_valuation(self):
         r"""
         Return whether this valuation is a discrete valuation.
@@ -374,7 +382,16 @@ class DiscreteValuation(DiscretePseudoValuation):
         """
         return True
 
-    def mac_lane_approximants(self, G, assume_squarefree=False, require_final_EF=True, required_precision=-1, require_incomparability=False, require_maximal_degree=False, algorithm='serial'):
+    def mac_lane_approximants(
+        self,
+        G,
+        assume_squarefree=False,
+        require_final_EF=True,
+        required_precision=-1,
+        require_incomparability=False,
+        require_maximal_degree=False,
+        algorithm='serial',
+    ):
         r"""
         Return approximants on `K[x]` for the extensions of this valuation to
         `L=K[x]/(G)`.
@@ -675,7 +692,10 @@ class DiscreteValuation(DiscretePseudoValuation):
             raise ValueError("G must be defined over the domain of this valuation")
 
         from sage.misc.verbose import verbose
-        verbose("Approximants of %r on %r towards %r" % (self, self.domain(), G), level=3)
+
+        verbose(
+            "Approximants of %r on %r towards %r" % (self, self.domain(), G), level=3
+        )
 
         from sage.rings.valuation.gauss_valuation import GaussValuation
 
@@ -701,14 +721,20 @@ class DiscreteValuation(DiscretePseudoValuation):
                 return False
             if require_final_EF and not leaf.ef:
                 return False
-            if require_maximal_degree and leaf.valuation.phi().degree() != leaf.valuation.E() * leaf.valuation.F():
+            if (
+                require_maximal_degree
+                and leaf.valuation.phi().degree()
+                != leaf.valuation.E() * leaf.valuation.F()
+            ):
                 return False
             if require_incomparability:
                 if any(leaf.valuation <= o.valuation for o in others):
                     return False
             return True
 
-        seed = MacLaneApproximantNode(GaussValuation(R, self), None, G.degree() == 1, G.degree(), None, None)
+        seed = MacLaneApproximantNode(
+            GaussValuation(R, self), None, G.degree() == 1, G.degree(), None, None
+        )
         seed.forced_leaf = is_sufficient(seed, [])
 
         def create_children(node):
@@ -735,14 +761,23 @@ class DiscreteValuation(DiscretePseudoValuation):
                 # need to compute valuations for coefficients
                 # beyond that bound as they do not contribute any
                 # augmentations.
-                principal_part_bound=node.principal_part_bound
+                principal_part_bound=node.principal_part_bound,
             )
-            for w, bound, principal_part_bound, coefficients, valuations in augmentations:
-                ef = bound == w.E()*w.F()
-                new_leafs.append(MacLaneApproximantNode(w, node, ef, principal_part_bound, coefficients, valuations))
+            for (
+                w,
+                bound,
+                principal_part_bound,
+                coefficients,
+                valuations,
+            ) in augmentations:
+                ef = bound == w.E() * w.F()
+                new_leafs.append(
+                    MacLaneApproximantNode(
+                        w, node, ef, principal_part_bound, coefficients, valuations
+                    )
+                )
             for leaf in new_leafs:
-                if is_sufficient(leaf, [lf for lf in new_leafs
-                                        if lf is not leaf]):
+                if is_sufficient(leaf, [lf for lf in new_leafs if lf is not leaf]):
                     leaf.forced_leaf = True
             return new_leafs
 
@@ -750,19 +785,22 @@ class DiscreteValuation(DiscretePseudoValuation):
             return v + w
 
         from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet
-        tree = RecursivelyEnumeratedSet([seed],
-                                        successors=create_children,
-                                        structure='forest',
-                                        enumeration='breadth')
+
+        tree = RecursivelyEnumeratedSet(
+            [seed],
+            successors=create_children,
+            structure='forest',
+            enumeration='breadth',
+        )
         # this is a tad faster but annoying for profiling / debugging
         if algorithm == 'parallel':
-            nodes = tree.map_reduce(map_function=lambda x: [x],
-                                    reduce_init=[])
+            nodes = tree.map_reduce(map_function=lambda x: [x], reduce_init=[])
         elif algorithm == 'serial':
             from sage.parallel.map_reduce import RESetMapReduce
-            nodes = RESetMapReduce(forest=tree,
-                                   map_function=lambda x: [x],
-                                   reduce_init=[]).run_serial()
+
+            nodes = RESetMapReduce(
+                forest=tree, map_function=lambda x: [x], reduce_init=[]
+            ).run_serial()
         else:
             raise NotImplementedError(algorithm)
         leafs = {node.valuation for node in nodes}
@@ -809,8 +847,12 @@ class DiscreteValuation(DiscretePseudoValuation):
         if e == 1:
             return self.simplify(x, error=error)
         if e % 2 == 0:
-            return self._pow(self.simplify(x*x, error=error*2/e), e//2, error=error)
-        return self.simplify(x*self._pow(x, e-1, error=error*(e-1)/e), error=error)
+            return self._pow(
+                self.simplify(x * x, error=error * 2 / e), e // 2, error=error
+            )
+        return self.simplify(
+            x * self._pow(x, e - 1, error=error * (e - 1) / e), error=error
+        )
 
     def mac_lane_approximant(self, G, valuation, approximants=None):
         r"""
@@ -897,29 +939,44 @@ class DiscreteValuation(DiscretePseudoValuation):
         # Check that valuation is an approximant for a valuation
         # on domain that extends its restriction to the base field.
         from sage.rings.infinity import infinity
+
         if valuation(G) is not infinity:
             v = valuation
             while not v.is_gauss_valuation():
                 if v(G) <= v._base_valuation(G):
-                    raise ValueError("The valuation %r is not an approximant for a valuation which extends %r with respect to %r since the valuation of %r does not increase in every step" % (valuation, self, G, G))
+                    raise ValueError(
+                        "The valuation %r is not an approximant for a valuation which extends %r with respect to %r since the valuation of %r does not increase in every step"
+                        % (valuation, self, G, G)
+                    )
                 v = v._base_valuation
 
         if approximants is None:
             approximants = self.mac_lane_approximants(G)
 
-        assert all(approximant.domain() is valuation.domain() for approximant in approximants)
+        assert all(
+            approximant.domain() is valuation.domain() for approximant in approximants
+        )
 
         greater_approximants = [w for w in approximants if w >= valuation]
         if len(greater_approximants) > 1:
-            raise ValueError("The valuation %r does not approximate a unique extension of %r with respect to %r" % (valuation, self, G))
+            raise ValueError(
+                "The valuation %r does not approximate a unique extension of %r with respect to %r"
+                % (valuation, self, G)
+            )
         if len(greater_approximants) == 1:
             return greater_approximants[0]
 
         smaller_approximants = [w for w in approximants if w <= valuation]
         if len(smaller_approximants) > 1:
-            raise ValueError("The valuation %r is not approximated by a unique extension of %r with respect to %r" % (valuation, self, G))
+            raise ValueError(
+                "The valuation %r is not approximated by a unique extension of %r with respect to %r"
+                % (valuation, self, G)
+            )
         if len(smaller_approximants) == 0:
-            raise ValueError("The valuation %r is not related to an extension of %r with respect to %r" % (valuation, self, G))
+            raise ValueError(
+                "The valuation %r is not related to an extension of %r with respect to %r"
+                % (valuation, self, G)
+            )
         return smaller_approximants[0]
 
     def montes_factorization(self, G, assume_squarefree=False, required_precision=None):
@@ -1000,6 +1057,7 @@ class DiscreteValuation(DiscretePseudoValuation):
         """
         if required_precision is None:
             from sage.rings.infinity import infinity
+
             required_precision = infinity
 
         R = G.parent()
@@ -1011,10 +1069,16 @@ class DiscreteValuation(DiscretePseudoValuation):
             raise ValueError("G must be integral")
 
         # W contains approximate factors of G
-        W = self.mac_lane_approximants(G, required_precision=required_precision, require_maximal_degree=True, assume_squarefree=assume_squarefree)
+        W = self.mac_lane_approximants(
+            G,
+            required_precision=required_precision,
+            require_maximal_degree=True,
+            assume_squarefree=assume_squarefree,
+        )
         ret = [w.phi() for w in W]
 
         from sage.structure.factorization import Factorization
+
         return Factorization([(g, 1) for g in ret], simplify=False)
 
     def _ge_(self, other):
@@ -1055,7 +1119,10 @@ class MacLaneApproximantNode:
         sage: v.extension(GaussianIntegers())  # indirect doctest
         3-adic valuation
     """
-    def __init__(self, valuation, parent, ef, principal_part_bound, coefficients, valuations):
+
+    def __init__(
+        self, valuation, parent, ef, principal_part_bound, coefficients, valuations
+    ):
         r"""
         TESTS::
 
@@ -1087,7 +1154,23 @@ class MacLaneApproximantNode:
         """
         if type(self) is not type(other):
             return False
-        return (self.valuation, self.parent, self.ef, self.principal_part_bound, self.coefficients, self.valuations, self.forced_leaf) == (other.valuation, other.parent, other.ef, other.principal_part_bound, other.coefficients, other.valuations, other.forced_leaf)
+        return (
+            self.valuation,
+            self.parent,
+            self.ef,
+            self.principal_part_bound,
+            self.coefficients,
+            self.valuations,
+            self.forced_leaf,
+        ) == (
+            other.valuation,
+            other.parent,
+            other.ef,
+            other.principal_part_bound,
+            other.coefficients,
+            other.valuations,
+            other.forced_leaf,
+        )
 
     def __ne__(self, other):
         r"""

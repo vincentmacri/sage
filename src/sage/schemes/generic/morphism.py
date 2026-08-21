@@ -236,9 +236,15 @@ class SchemeMorphism(Element):
                     try:
                         x = D(x)
                     except (TypeError, NotImplementedError):
-                        raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (x, self.domain()))
+                        raise TypeError(
+                            "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                            % (x, self.domain())
+                        )
                 elif self.domain() != x.codomain():
-                    raise TypeError("%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented" % (x, self.domain()))
+                    raise TypeError(
+                        "%s fails to convert into the map's domain %s, but a `pushforward` method is not properly implemented"
+                        % (x, self.domain())
+                    )
         else:
             x = converter(x)
         if not args and not kwds:
@@ -365,7 +371,9 @@ class SchemeMorphism(Element):
         if not isinstance(right, SchemeMorphism):
             return coercion_model.bin_op(self, right, operator.mul)
         if right.codomain() != self.domain():
-            raise TypeError("self (=%s) domain must equal right (=%s) codomain" % (self, right))
+            raise TypeError(
+                "self (=%s) domain must equal right (=%s) codomain" % (self, right)
+            )
         if isinstance(self, SchemeMorphism_id):
             return right
         if isinstance(right, SchemeMorphism_id):
@@ -627,6 +635,7 @@ class SchemeMorphism(Element):
                       Defn: y |--> ybar
         """
         from . import glue
+
         return glue.GluedScheme(self, other)
 
 
@@ -645,6 +654,7 @@ class SchemeMorphism_id(SchemeMorphism):
         Scheme endomorphism of Spectrum of Integer Ring
           Defn: Identity map
     """
+
     def __init__(self, X):
         """
         The Python constructor.
@@ -688,6 +698,7 @@ class SchemeMorphism_structure_map(SchemeMorphism):
         Scheme endomorphism of Spectrum of Integer Ring
           Defn: Structure map
     """
+
     def __init__(self, parent, codomain=None):
         """
         The Python constructor.
@@ -705,7 +716,9 @@ class SchemeMorphism_structure_map(SchemeMorphism):
         """
         SchemeMorphism.__init__(self, parent, codomain=None)
         if self.domain().base_scheme() != self._codomain:
-            raise ValueError("parent must have codomain equal the base scheme of domain.")
+            raise ValueError(
+                "parent must have codomain equal the base scheme of domain."
+            )
 
     def _repr_defn(self):
         r"""
@@ -759,6 +772,7 @@ class SchemeMorphism_spec(SchemeMorphism):
           To:   Rational Field
           Defn: x |--> 7
     """
+
     def __init__(self, parent, phi, check=True):
         """
         The Python constructor.
@@ -779,14 +793,21 @@ class SchemeMorphism_spec(SchemeMorphism):
         SchemeMorphism.__init__(self, parent)
         if check:
             from sage.categories.rings import Rings
-            if not (isinstance(phi, Map) and phi.category_for().is_subcategory(Rings())):
+
+            if not (
+                isinstance(phi, Map) and phi.category_for().is_subcategory(Rings())
+            ):
                 raise TypeError("phi (=%s) must be a ring homomorphism" % phi)
             if phi.domain() != parent.codomain().coordinate_ring():
-                raise TypeError("phi (=%s) must have domain %s"
-                                % (phi, parent.codomain().coordinate_ring()))
+                raise TypeError(
+                    "phi (=%s) must have domain %s"
+                    % (phi, parent.codomain().coordinate_ring())
+                )
             if phi.codomain() != parent.domain().coordinate_ring():
-                raise TypeError("phi (=%s) must have codomain %s"
-                                % (phi, parent.domain().coordinate_ring()))
+                raise TypeError(
+                    "phi (=%s) must have codomain %s"
+                    % (phi, parent.domain().coordinate_ring())
+                )
         self.__ring_homomorphism = phi
 
     def _call_(self, x):
@@ -883,6 +904,7 @@ class SchemeMorphism_spec(SchemeMorphism):
 # regardless of the class
 ############################################################################
 
+
 class SchemeMorphism_polynomial(SchemeMorphism):
     r"""
     A morphism of schemes determined by polynomials that define what
@@ -928,6 +950,7 @@ class SchemeMorphism_polynomial(SchemeMorphism):
         TypeError: polys (=[e^x, e^y]) must be elements of Multivariate
         Polynomial Ring in x, y over Rational Field
     """
+
     def __init__(self, parent, polys, check=True):
         """
         The Python constructor.
@@ -958,9 +981,14 @@ class SchemeMorphism_polynomial(SchemeMorphism):
                         p = source_ring(poly.lift())
                     except (TypeError, AttributeError):
                         try:
-                            p = source_ring(poly.numerator()) / source_ring(poly.denominator())
+                            p = source_ring(poly.numerator()) / source_ring(
+                                poly.denominator()
+                            )
                         except (TypeError, AttributeError):
-                            raise TypeError("polys (=%s) must be elements of %s" % (polys, source_ring))
+                            raise TypeError(
+                                "polys (=%s) must be elements of %s"
+                                % (polys, source_ring)
+                            )
                 F.append(p)
             polys = Sequence(F)
 
@@ -1187,7 +1215,9 @@ class SchemeMorphism_polynomial(SchemeMorphism):
             Defined on coordinates by sending (x, y) to (y, x^2 + y)
         """
         i = self.domain().ambient_space()._repr_generic_point()
-        o = self._codomain.ambient_space()._repr_generic_point(self.defining_polynomials())
+        o = self._codomain.ambient_space()._repr_generic_point(
+            self.defining_polynomials()
+        )
         return "Defined on coordinates by sending %s to\n%s" % (i, o)
 
     def __getitem__(self, i):
@@ -1460,6 +1490,7 @@ class SchemeMorphism_polynomial(SchemeMorphism):
 
         if isinstance(R, Map):
             from sage.structure.coerce_maps import CallableConvertMap
+
             if R.domain() == self.base_ring():
                 S = self.domain().ambient_space().coordinate_ring()
                 T = T.ambient_space().coordinate_ring()
@@ -1482,13 +1513,17 @@ class SchemeMorphism_polynomial(SchemeMorphism):
                     else:
                         G.append(phi(f))
             else:
-                raise ValueError("no canonical coercion of base ring of morphism to domain of embedding")
+                raise ValueError(
+                    "no canonical coercion of base ring of morphism to domain of embedding"
+                )
 
         else:
             G = []
             for f in self:
                 if isinstance(f, FractionFieldElement):
-                    G.append(f.numerator().change_ring(R) / f.denominator().change_ring(R))
+                    G.append(
+                        f.numerator().change_ring(R) / f.denominator().change_ring(R)
+                    )
                 else:
                     G.append(f.change_ring(R))
         return H(G, check)
@@ -1579,13 +1614,17 @@ class SchemeMorphism_polynomial(SchemeMorphism):
         """
         if D is None:
             if phi is None:
-                raise ValueError("either the dictionary or the specialization must be provided")
+                raise ValueError(
+                    "either the dictionary or the specialization must be provided"
+                )
         else:
             if isinstance(self[0].parent(), FractionField_generic):
                 from sage.rings.polynomial.flatten import FractionSpecializationMorphism
+
                 phi = FractionSpecializationMorphism(self[0].parent(), D)
             else:
                 from sage.rings.polynomial.flatten import SpecializationMorphism
+
                 phi = SpecializationMorphism(self[0].parent(), D)
         if homset is None:
             domain = self.domain()
@@ -1707,6 +1746,7 @@ class SchemeMorphism_polynomial_id(SchemeMorphism_id, SchemeMorphism_polynomial)
         Scheme endomorphism of Spectrum of Integer Ring
           Defn: Identity map
     """
+
     def __init__(self, X):
         """
         Initialize.
@@ -1727,6 +1767,7 @@ class SchemeMorphism_polynomial_id(SchemeMorphism_id, SchemeMorphism_polynomial)
 # by coordinates.
 ############################################################################
 
+
 class SchemeMorphism_point(SchemeMorphism):
     r"""
     Base class for rational points on schemes.
@@ -1742,6 +1783,7 @@ class SchemeMorphism_point(SchemeMorphism):
         sage: type(f)
         <class 'sage.schemes.generic.morphism.SchemeMorphism'>
     """
+
     def _repr_(self):
         r"""
         Return a string representation of ``self``.
@@ -2056,15 +2098,26 @@ class SchemeMorphism_point(SchemeMorphism):
         """
         if D is None:
             if phi is None:
-                raise ValueError("either the dictionary or the specialization must be provided")
+                raise ValueError(
+                    "either the dictionary or the specialization must be provided"
+                )
         else:
             from sage.rings.polynomial.flatten import SpecializationMorphism
-            phi = SpecializationMorphism(self.codomain().ambient_space().coordinate_ring(), D)
+
+            phi = SpecializationMorphism(
+                self.codomain().ambient_space().coordinate_ring(), D
+            )
         if ambient is None:
             ambient = self.codomain()
             if isinstance(ambient, AlgebraicScheme_subscheme):
                 ambient = ambient.specialization(phi=phi)
             else:
                 ambient = ambient.change_ring(phi.codomain().base_ring())
-        psi = ambient.ambient_space().coordinate_ring().hom([0 for i in range(ambient.ambient_space().ngens())], ambient.base_ring())
+        psi = (
+            ambient.ambient_space()
+            .coordinate_ring()
+            .hom(
+                [0 for i in range(ambient.ambient_space().ngens())], ambient.base_ring()
+            )
+        )
         return ambient([psi(phi(t)) for t in self])
